@@ -168,6 +168,16 @@ const I18N={
     managerTips:"Guide Manager",csmTips:"Guide CSM Transverse",
     allAccounts:"Tous les comptes",myCsm:"Mes comptes",
     addToTeam:"Affecter à un CSM",removeClient:"Retirer",
+    loginTab:"Connexion",signupTab:"Créer un compte",welcomeBack:"Bon retour 👋",
+    accessSpace:"Accédez à votre espace Scalyo",emailLabel:"Email professionnel",
+    passwordLabel:"Mot de passe *",yourRole:"Votre rôle",
+    loginBtn:"Accéder à mon espace →",signingIn:"Connexion...",
+    createSpace:"Créer votre espace",setupScalyo:"Configurez Scalyo en 30 secondes",
+    companyName:"Nom de votre entreprise",minChars:"8 caractères minimum",
+    creatingBtn:"Création...",createBtn:"Créer mon espace Scalyo →",
+    termsText:"En créant un compte vous acceptez nos CGU.",noCardNeeded:"Aucune carte bancaire pour commencer.",
+    secureData:"🔐 Données sécurisées · RGPD · Hébergé en Europe (Ireland)",
+    platformTagline:"Votre plateforme Customer Success francophone",
     kanban:"Kanban",kanbanTitle:"Tableau Kanban",
     kanbanTodo:"À faire",kanbanInProgress:"En cours",kanbanDone:"Terminé",
     kanbanAddTask:"Ajouter une tâche",kanbanTaskTitle:"Titre",kanbanDesc:"Description (optionnel)",
@@ -189,11 +199,52 @@ const I18N={
     managerTips:"Manager Guide",csmTips:"Transverse CSM Guide",
     allAccounts:"All accounts",myCsm:"My accounts",
     addToTeam:"Assign to CSM",removeClient:"Remove",
+    loginTab:"Login",signupTab:"Create account",welcomeBack:"Welcome back 👋",
+    accessSpace:"Access your Scalyo space",emailLabel:"Professional email",
+    passwordLabel:"Password *",yourRole:"Your role",
+    loginBtn:"Access my space →",signingIn:"Signing in...",
+    createSpace:"Create your space",setupScalyo:"Set up Scalyo in 30 seconds",
+    companyName:"Company name",minChars:"8 characters minimum",
+    creatingBtn:"Creating...",createBtn:"Create my Scalyo space →",
+    termsText:"By creating an account you agree to our Terms.",noCardNeeded:"No credit card needed to start.",
+    secureData:"🔐 Secure data · GDPR · Hosted in Europe (Ireland)",
+    platformTagline:"Your francophone Customer Success platform",
     kanban:"Kanban",kanbanTitle:"Kanban Board",
     kanbanTodo:"To Do",kanbanInProgress:"In Progress",kanbanDone:"Done",
     kanbanAddTask:"Add a task",kanbanTaskTitle:"Title",kanbanDesc:"Description (optional)",
     kanbanPriority:"Priority",kanbanDueDate:"Due date",kanbanHigh:"High",kanbanMedium:"Medium",kanbanLow:"Low",
     kanbanNoTasks:"No tasks yet",kanbanMoveTo:"Move to",kanbanTasks:"tasks"
+  },
+  kr:{
+    dashboard:"대시보드",portfolio:"포트폴리오",roadmap:"로드맵 90일",kpi:"KPI",
+    wellbeing:"웰빙",coach:"AI 코치",calendar:"캘린더",tips:"CS 가이드",
+    settings:"설정",resources:"리소스",email:"이메일 스튜디오",
+    allCsm:"전체 CSM",myView:"내 뷰",addClient:"+ 고객 추가",
+    noApiKey:"🔑 API 키 없음",
+    noApiKeyMsg:"설정 → 외관에서 Anthropic API 키를 구성하여 AI 코치를 활성화하세요.",
+    configKey:"설정하기",thinking:"생각 중...",
+    filterCsm:"CSM 필터",syncCal:"동기화",exportIcal:"내보내기 (.ics)",
+    darkMode:"다크 모드",lightMode:"라이트 모드",langLabel:"언어",
+    apiKeyLabel:"Anthropic API 키",save:"저장",saved:"✓ 저장됨",
+    cancel:"취소",search:"검색...",
+    managerTips:"매니저 가이드",csmTips:"CSM 가이드",
+    allAccounts:"전체 계정",myCsm:"내 계정",
+    addToTeam:"CSM 배정",removeClient:"제거",
+    kanban:"칸반",kanbanTitle:"칸반 보드",
+    kanbanTodo:"할 일",kanbanInProgress:"진행 중",kanbanDone:"완료",
+    kanbanAddTask:"작업 추가",kanbanTaskTitle:"제목",kanbanDesc:"설명 (선택사항)",
+    kanbanPriority:"우선순위",kanbanDueDate:"마감일",kanbanHigh:"높음",kanbanMedium:"보통",kanbanLow:"낮음",
+    kanbanNoTasks:"작업 없음",kanbanMoveTo:"이동",kanbanTasks:"작업",
+    loginTab:"로그인",signupTab:"계정 만들기",welcomeBack:"다시 오신 것을 환영합니다 👋",
+    accessSpace:"Scalyo 공간에 접속하세요",emailLabel:"비즈니스 이메일",
+    passwordLabel:"비밀번호 *",yourRole:"역할 선택",
+    loginBtn:"로그인",signingIn:"로그인 중...",
+    createSpace:"공간 만들기",setupScalyo:"30초 만에 Scalyo 설정",
+    companyName:"회사 이름",minChars:"최소 8자",
+    creatingBtn:"생성 중...",createBtn:"Scalyo 공간 만들기 →",
+    termsText:"계정을 생성하면 이용약관에 동의하게 됩니다.",noCardNeeded:"시작하는 데 신용카드가 필요하지 않습니다.",
+    secureData:"🔐 안전한 데이터 · GDPR · 유럽(아일랜드)에서 호스팅",
+    platformTagline:"프랑스어 고객 성공 플랫폼"
   }
 };
 const T=(key,lang)=>(I18N[lang||"fr"]||I18N.fr)[key]||key;
@@ -616,8 +667,12 @@ const SelectField = ({
 // LOGIN SCREEN
 // ══════════════════════════════════════════════════
 const LoginScreen = ({
-  onLogin
+  onLogin,
+  lang: initLang,
+  onLang
 }) => {
+  const [lang, setLangLocal] = useState(initLang || "fr");
+  const changeLang = (l) => { setLangLocal(l); if (onLang) onLang(l); };
   const [tab, setTab] = useState("login");
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
@@ -819,7 +874,18 @@ const LoginScreen = ({
       fontSize: 14,
       marginBottom: 32
     }
-  }, "Votre plateforme Customer Success francophone"), /*#__PURE__*/React.createElement("div", {
+  }, T("platformTagline", lang)), /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", gap: 6, marginBottom: 20 }
+  }, ["fr","en","kr"].map(l => /*#__PURE__*/React.createElement("button", {
+    key: l,
+    onClick: () => changeLang(l),
+    style: {
+      padding: "5px 14px", borderRadius: 20, fontSize: 11, fontWeight: 700, cursor: "pointer",
+      background: lang === l ? C.tealBg : C.surface,
+      border: `1px solid ${lang === l ? C.tealBorder : C.border}`,
+      color: lang === l ? C.teal : C.muted, transition: "all .15s ease"
+    }
+  }, l === "fr" ? "🇫🇷 FR" : l === "en" ? "🇬🇧 EN" : "🇰🇷 KR"))), /*#__PURE__*/React.createElement("div", {
     style: {
       background: C.bg1,
       border: `1px solid ${C.border}`,
@@ -834,7 +900,7 @@ const LoginScreen = ({
     style: {
       marginBottom: 28
     }
-  }, [["login", "Connexion"], ["signup", "Créer un compte"]].map(([t, l]) => /*#__PURE__*/React.createElement("div", {
+  }, [["login", T("loginTab", lang)], ["signup", T("signupTab", lang)]].map(([t, l]) => /*#__PURE__*/React.createElement("div", {
     key: t,
     className: `tab-item${tab === t ? " active" : ""}`,
     style: {
@@ -862,14 +928,14 @@ const LoginScreen = ({
       fontWeight: 900,
       marginBottom: 4
     }
-  }, "Bon retour \uD83D\uDC4B"), /*#__PURE__*/React.createElement("p", {
+  }, T("welcomeBack", lang)), /*#__PURE__*/React.createElement("p", {
     style: {
       fontSize: 13,
       color: C.muted,
       marginBottom: 22
     }
-  }, "Acc\xE9dez \xE0 votre espace Scalyo"), /*#__PURE__*/React.createElement(Field, {
-    label: "Email professionnel",
+  }, T("accessSpace", lang)), /*#__PURE__*/React.createElement(Field, {
+    label: T("emailLabel", lang),
     value: email,
     onChange: setEmail,
     type: "email",
@@ -890,7 +956,7 @@ const LoginScreen = ({
       textTransform: "uppercase",
       letterSpacing: ".08em"
     }
-  }, "Mot de passe *"), /*#__PURE__*/React.createElement("div", {
+  }, T("passwordLabel", lang)), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative"
     }
@@ -937,7 +1003,7 @@ const LoginScreen = ({
       textTransform: "uppercase",
       letterSpacing: ".08em"
     }
-  }, "Votre r\xF4le"), /*#__PURE__*/React.createElement("div", {
+  }, T("yourRole", lang)), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
@@ -988,27 +1054,27 @@ const LoginScreen = ({
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 16,
     color: "#070D1A"
-  }), "Connexion...") : "Accéder à mon espace →")), tab === "signup" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h2", {
+  }), T("signingIn", lang)) : T("loginBtn", lang))), tab === "signup" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h2", {
     style: {
       fontSize: 20,
       fontWeight: 900,
       marginBottom: 4
     }
-  }, "Cr\xE9er votre espace"), /*#__PURE__*/React.createElement("p", {
+  }, T("createSpace", lang)), /*#__PURE__*/React.createElement("p", {
     style: {
       fontSize: 13,
       color: C.muted,
       marginBottom: 22
     }
-  }, "Configurez Scalyo en 30 secondes"), /*#__PURE__*/React.createElement(Field, {
-    label: "Nom de votre entreprise",
+  }, T("setupScalyo", lang)), /*#__PURE__*/React.createElement(Field, {
+    label: T("companyName", lang),
     value: company,
     onChange: setCompany,
     placeholder: "Ex : TechPilot SaaS",
     onEnter: handleSignup,
     required: true
   }), /*#__PURE__*/React.createElement(Field, {
-    label: "Email professionnel",
+    label: T("emailLabel", lang),
     value: email,
     onChange: setEmail,
     type: "email",
@@ -1029,7 +1095,7 @@ const LoginScreen = ({
       textTransform: "uppercase",
       letterSpacing: ".08em"
     }
-  }, "Mot de passe *"), /*#__PURE__*/React.createElement("div", {
+  }, T("passwordLabel", lang)), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative"
     }
@@ -1037,7 +1103,7 @@ const LoginScreen = ({
     value: pass,
     onChange: e => setPass(e.target.value),
     onKeyDown: e => e.key === "Enter" && handleSignup(),
-    placeholder: "8 caract\xE8res minimum",
+    placeholder: T("minChars", lang),
     type: showPass ? "text" : "password",
     style: {
       width: "100%",
@@ -1076,7 +1142,7 @@ const LoginScreen = ({
       textTransform: "uppercase",
       letterSpacing: ".08em"
     }
-  }, "Votre r\xF4le"), /*#__PURE__*/React.createElement("div", {
+  }, T("yourRole", lang)), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
@@ -1127,7 +1193,7 @@ const LoginScreen = ({
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 16,
     color: "#070D1A"
-  }), "Cr\xE9ation...") : "Créer mon espace Scalyo →"), /*#__PURE__*/React.createElement("p", {
+  }), T("creatingBtn", lang)) : T("createBtn", lang)), /*#__PURE__*/React.createElement("p", {
     style: {
       fontSize: 11,
       color: C.faint,
@@ -1135,14 +1201,14 @@ const LoginScreen = ({
       marginTop: 14,
       lineHeight: 1.6
     }
-  }, "En cr\xE9ant un compte vous acceptez nos CGU.", /*#__PURE__*/React.createElement("br", null), "Aucune carte bancaire pour commencer."))), /*#__PURE__*/React.createElement("div", {
+  }, T("termsText", lang), /*#__PURE__*/React.createElement("br", null), T("noCardNeeded", lang)))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 18,
       textAlign: "center",
       fontSize: 12,
       color: C.faint
     }
-  }, "\uD83D\uDD12 Donn\xE9es s\xE9curis\xE9es \xB7 RGPD \xB7 H\xE9berg\xE9 en Europe (Ireland)"));
+  }, T("secureData", lang)));
 };
 
 // ══════════════════════════════════════════════════
@@ -7083,16 +7149,16 @@ const SettingsView = ({
     /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 0"}},
       /*#__PURE__*/React.createElement("div",null,
         /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:700,marginBottom:2}},lang==="en"?"Language":"Langue"),
-        /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:C.muted}},"Français / English")
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:C.muted}},"Français / English / 한국어")
       ),
       /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:6}},
-        ["fr","en"].map(l=>/*#__PURE__*/React.createElement("div",{
+        ["fr","en","kr"].map(l=>/*#__PURE__*/React.createElement("div",{
           key:l,onClick:()=>onLang(l),
           style:{padding:"6px 16px",borderRadius:20,fontSize:12,fontWeight:700,cursor:"pointer",
             background:lang===l?C.tealBg:"rgba(255,255,255,0.04)",
             border:`1px solid ${lang===l?C.tealBorder:C.border}`,
             color:lang===l?C.teal:C.muted,transition:"all .15s"}
-        },l==="fr"?"🇫🇷 FR":"🇬🇧 EN"))
+        },l==="fr"?"🇫🇷 FR":l==="en"?"🇬🇧 EN":"🇰🇷 KR"))
       )
     )
   ),
@@ -7816,6 +7882,8 @@ const App = () => {
   const [theme, setTheme] = useState(()=>{ try{return localStorage.getItem("scalyo_theme")||"dark";}catch(e){return "dark";}});
   const [lang, setLang] = useState(()=>{ try{return localStorage.getItem("scalyo_lang")||"fr";}catch(e){return "fr";}});
   const [apiKey, setApiKey] = useState(()=>{ try{return localStorage.getItem("scalyo_api")||"";}catch(e){return "";}});
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(()=>{ try{return localStorage.getItem("scalyo_sidebar")==="collapsed";}catch(e){return false;}});
+  const toggleSidebar = () => { const next = !sidebarCollapsed; setSidebarCollapsed(next); try{localStorage.setItem("scalyo_sidebar",next?"collapsed":"expanded");}catch(e){} };
   // Apply theme to global C
   Object.assign(C, theme==="light" ? C_LIGHT : C_DARK);
 
@@ -7992,7 +8060,9 @@ const App = () => {
     text: "Initialisation..."
   });
   if (!session) return /*#__PURE__*/React.createElement(LoginScreen, {
-    onLogin: handleLogin
+    onLogin: handleLogin,
+    lang: lang,
+    onLang: handleLang
   });
   const {
     company,
@@ -8098,14 +8168,16 @@ const App = () => {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      width: 216,
+      width: sidebarCollapsed ? 60 : 216,
       borderRight: `1px solid ${C.border}`,
       display: "flex",
       flexDirection: "column",
-      padding: "16px 10px",
+      padding: sidebarCollapsed ? "16px 6px" : "16px 10px",
       flexShrink: 0,
       background: C.bg1,
-      boxShadow: "2px 0 16px rgba(0,0,0,0.2)"
+      boxShadow: "1px 0 12px rgba(0,0,0,0.12)",
+      transition: "width .25s ease, padding .25s ease",
+      overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -8113,7 +8185,8 @@ const App = () => {
       alignItems: "center",
       gap: 9,
       padding: "0 6px",
-      marginBottom: 28
+      marginBottom: 20,
+      justifyContent: sidebarCollapsed ? "center" : "flex-start"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -8125,13 +8198,18 @@ const App = () => {
       alignItems: "center",
       justifyContent: "center",
       boxShadow: `0 4px 16px ${C.tealGlow}`,
-      fontSize: 17
-    }
-  }, "\u26A1"), /*#__PURE__*/React.createElement("span", {
+      fontSize: 17,
+      flexShrink: 0,
+      cursor: "pointer"
+    },
+    onClick: toggleSidebar,
+    title: sidebarCollapsed ? "Expand menu" : "Collapse menu"
+  }, "\u26A1"), !sidebarCollapsed && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 22,
       fontWeight: 900,
-      letterSpacing: "-0.8px"
+      letterSpacing: "-0.8px",
+      whiteSpace: "nowrap"
     }
   }, "scal", /*#__PURE__*/React.createElement("span", {
     style: {
@@ -8142,7 +8220,9 @@ const App = () => {
       flex: 1,
       display: "flex",
       flexDirection: "column",
-      gap: 2
+      gap: 2,
+      overflowY: "auto",
+      overflowX: "hidden"
     }
   }, nav.map(({
     id,
@@ -8155,28 +8235,34 @@ const App = () => {
       key: id,
       className: "nav-btn",
       onClick: () => setScreenPersist(id),
+      title: sidebarCollapsed ? label : undefined,
       style: {
         display: "flex",
         alignItems: "center",
         gap: 9,
-        padding: "9px 10px",
+        padding: sidebarCollapsed ? "9px 0" : "9px 10px",
+        justifyContent: sidebarCollapsed ? "center" : "flex-start",
         background: active ? C.tealBg : "transparent",
         border: `1px solid ${active ? C.tealBorder : "transparent"}`,
         color: active ? C.teal : C.muted,
-        marginBottom: 1
+        marginBottom: 1,
+        position: "relative"
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 14,
+        fontSize: 16,
         flexShrink: 0
       }
-    }, icon), /*#__PURE__*/React.createElement("span", {
+    }, icon), !sidebarCollapsed && /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 13,
         fontWeight: active ? 700 : 400,
-        flex: 1
+        flex: 1,
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
       }
-    }, label), hasBadge && /*#__PURE__*/React.createElement("span", {
+    }, label), !sidebarCollapsed && hasBadge && /*#__PURE__*/React.createElement("span", {
       style: {
         background: C.red,
         color: "#fff",
@@ -8190,7 +8276,17 @@ const App = () => {
         justifyContent: "center",
         flexShrink: 0
       }
-    }, criticalCount), active && /*#__PURE__*/React.createElement("span", {
+    }, criticalCount), sidebarCollapsed && hasBadge && /*#__PURE__*/React.createElement("span", {
+      style: {
+        position: "absolute",
+        top: 4,
+        right: 4,
+        background: C.red,
+        width: 8,
+        height: 8,
+        borderRadius: "50%"
+      }
+    }), !sidebarCollapsed && active && /*#__PURE__*/React.createElement("span", {
       style: {
         width: 3,
         height: 18,
@@ -8207,11 +8303,13 @@ const App = () => {
   }, /*#__PURE__*/React.createElement("div", {
     className: "nav-btn",
     onClick: () => setScreenPersist("settings"),
+    title: sidebarCollapsed ? T("settings", lang) : undefined,
     style: {
       display: "flex",
       alignItems: "center",
       gap: 9,
-      padding: "9px 10px",
+      padding: sidebarCollapsed ? "9px 0" : "9px 10px",
+      justifyContent: sidebarCollapsed ? "center" : "flex-start",
       marginBottom: 4,
       background: screen === "settings" ? C.tealBg : "transparent",
       border: `1px solid ${screen === "settings" ? C.tealBorder : "transparent"}`,
@@ -8219,27 +8317,28 @@ const App = () => {
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 14
+      fontSize: 16
     }
-  }, "\u2699\uFE0F"), /*#__PURE__*/React.createElement("span", {
+  }, "\u2699\uFE0F"), !sidebarCollapsed && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 13,
       fontWeight: screen === "settings" ? 700 : 400
     }
-  }, "Param\xE8tres")), /*#__PURE__*/React.createElement("div", {
+  }, T("settings", lang))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
       gap: 9,
-      padding: "10px 10px 4px",
+      padding: sidebarCollapsed ? "10px 0" : "10px 10px 4px",
+      justifyContent: sidebarCollapsed ? "center" : "flex-start",
       borderTop: `1px solid ${C.border}`,
       marginTop: 4
     }
   }, /*#__PURE__*/React.createElement(Avatar, {
     name: session?.user?.email || "U",
-    size: 30,
+    size: sidebarCollapsed ? 28 : 30,
     color: company?.color || C.teal
-  }), /*#__PURE__*/React.createElement("div", {
+  }), !sidebarCollapsed && /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
       minWidth: 0
@@ -8263,7 +8362,7 @@ const App = () => {
     }
   }, company?.plan || "Starter"), " · ", role === "manager" ? "Manager" : "CSM")), /*#__PURE__*/React.createElement("button", {
     onClick: handleLogout,
-    title: "D\xE9connexion",
+    title: lang === "kr" ? "로그아웃" : lang === "en" ? "Logout" : "Déconnexion",
     style: {
       background: "none",
       border: "none",

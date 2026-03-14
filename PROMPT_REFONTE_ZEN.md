@@ -19,7 +19,7 @@ RÈGLES NON NÉGOCIABLES
 - NE MODIFIE AUCUNE logique métier, aucune fonction, aucun appel Supabase/Stripe/Anthropic
 - NE SUPPRIME aucun composant ou fonctionnalité
 - NE CHANGE PAS les noms de variables JS, fonctions, composants React
-- Tu modifies UNIQUEMENT : les couleurs, ombres, gradients, animations, polices, bordures, arrondis, opacités, ET les labels/textes "Task Board" → "Kanban"
+- Tu modifies UNIQUEMENT : les couleurs, ombres, gradients, animations, polices, bordures, arrondis, opacités, les labels/textes "Task Board" → "Kanban", ET le sidebar (collapsible) et les traductions (ajout coréen + LoginScreen multilingue)
 - Chaque modification doit être cohérente entre mode DARK et mode LIGHT
 - Le résultat doit être accessible (contraste WCAG AA, lisible pour les daltoniens)
 
@@ -500,7 +500,7 @@ PARTIE 12 — VÉRIFICATION OBLIGATOIRE
 □ AccountTodoPanel → FONCTIONNEL
 □ Kanban (ex Task Board) → FONCTIONNEL
 □ Thème clair/sombre switch → FONCTIONNE avec nouvelles palettes
-□ I18N fr/en → INTACT
+□ I18N fr/en/kr → INTACT
 □ Tous les atoms (Spinner, Loader, Avatar, Tag, etc.) → FONCTIONNEL
 □ Toutes les fonctions utilitaires → INTACT
 □ Aucun appel Supabase modifié
@@ -529,6 +529,114 @@ PARTIE 12 — VÉRIFICATION OBLIGATOIRE
 | Anti-régression | ✅/❌ |
 
 Verdict : 🟢 WARM & READY / 🟠 PRESQUE / 🔴 PAS BON
+
+═══════════════════════════════════════════════════════
+PARTIE 13 — SIDEBAR COLLAPSIBLE (UX OPTIMISÉE)
+═══════════════════════════════════════════════════════
+
+Le sidebar DOIT être collapsible pour gagner en espace et en UX :
+
+### 13.1 — État collapsé
+- Un état `sidebarCollapsed` (boolean) est déjà dans le code avec persistance localStorage
+- Cliquer sur le logo ⚡ toggle entre mode étendu (216px) et mode icônes (60px)
+- Transition fluide CSS : `transition: width .25s ease, padding .25s ease`
+
+### 13.2 — Mode icônes (collapsed = true)
+- Seuls les emojis/icônes des nav items sont affichés (pas de labels)
+- `title` attribut sur chaque nav-btn pour afficher le label au hover (tooltip natif)
+- Les badges critiques deviennent un petit point rouge (8x8px) en position absolute
+- L'avatar reste visible mais le texte (nom, plan, rôle) est masqué
+- Le bouton logout reste visible
+
+### 13.3 — Mode étendu (collapsed = false)
+- Comportement actuel : icône + label + badge + indicateur actif
+- Texte "Paramètres" traduit via T("settings", lang)
+
+### 13.4 — Persistance
+- L'état collapsed est sauvé dans localStorage `scalyo_sidebar`
+- Restauré au chargement (pas de clignotement)
+
+═══════════════════════════════════════════════════════
+PARTIE 14 — TRADUCTIONS CORÉENNES (I18N COMPLET)
+═══════════════════════════════════════════════════════
+
+### 14.1 — Ajouter le bloc `kr` à l'objet I18N
+Un bloc `kr:{}` complet est déjà dans le code. S'assurer qu'il contient :
+
+| Clé | Traduction coréenne |
+|-----|---------------------|
+| dashboard | 대시보드 |
+| portfolio | 포트폴리오 |
+| roadmap | 로드맵 90일 |
+| kpi | KPI |
+| wellbeing | 웰빙 |
+| coach | AI 코치 |
+| settings | 설정 |
+| resources | 리소스 |
+| email | 이메일 스튜디오 |
+| save | 저장 |
+| cancel | 취소 |
+| search | 검색... |
+| darkMode | 다크 모드 |
+| lightMode | 라이트 모드 |
+| kanban | 칸반 |
+| kanbanTodo | 할 일 |
+| kanbanInProgress | 진행 중 |
+| kanbanDone | 완료 |
+| (+ toutes les clés LoginScreen) | (traductions complètes) |
+
+### 14.2 — Sélecteur de langue 3 options
+- Settings : ["fr","en","kr"] avec drapeaux 🇫🇷 🇬🇧 🇰🇷
+- LoginScreen : même sélecteur 3 langues
+- Libellé : "Français / English / 한국어"
+
+═══════════════════════════════════════════════════════
+PARTIE 15 — LANDING PAGE MULTILINGUE
+═══════════════════════════════════════════════════════
+
+### 15.1 — Sélecteur de langue SUR le LoginScreen
+- Un sélecteur 🇫🇷 FR / 🇬🇧 EN / 🇰🇷 KR est affiché entre le tagline et le formulaire
+- Changer la langue met à jour TOUS les textes du formulaire en temps réel
+
+### 15.2 — Textes traduits du LoginScreen
+TOUS les textes hardcodés du LoginScreen sont maintenant via T() :
+- Tab labels : loginTab / signupTab
+- Titres : welcomeBack / createSpace
+- Sous-titres : accessSpace / setupScalyo
+- Labels : emailLabel / passwordLabel / yourRole / companyName
+- Boutons : loginBtn / signingIn / createBtn / creatingBtn
+- Footer : termsText / noCardNeeded / secureData / platformTagline
+
+### 15.3 — Cohérence avec l'app
+- La langue choisie sur le LoginScreen EST la même que celle de l'app (propagée via onLang)
+- Si l'utilisateur change la langue dans Settings, ça affecte aussi le prochain affichage du LoginScreen
+
+═══════════════════════════════════════════════════════
+VÉRIFICATION FINALE (MISE À JOUR)
+═══════════════════════════════════════════════════════
+
+### H. Sidebar collapsible
+□ Toggle via clic sur le logo ⚡
+□ Mode icônes (60px) : tooltips, pas de labels, badge point rouge
+□ Mode étendu (216px) : labels, badges complets
+□ Transition fluide
+□ Persisté en localStorage
+
+### I. Traductions coréennes
+□ Bloc `kr` complet dans I18N (toutes les clés)
+□ Sélecteur 3 langues dans Settings (FR/EN/KR)
+□ Sélecteur 3 langues sur LoginScreen
+□ Tous les textes LoginScreen traduits via T()
+□ Pas de texte hardcodé restant en français dans le LoginScreen
+
+### J. Rapport final (élargi)
+
+| Élément | Statut |
+|---------|--------|
+| Sidebar collapsible | ✅/❌ |
+| Traductions coréennes | ✅/❌ |
+| LoginScreen multilingue | ✅/❌ |
+| Sélecteur langue LoginScreen | ✅/❌ |
 
 Retourne-moi le fichier COMPLET.
 ```
