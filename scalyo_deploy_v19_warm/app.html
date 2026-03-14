@@ -21,31 +21,31 @@
 /* === CSS VARIABLES — THEME SYSTEM === */
 :root{
   --bg:#1C1714;--bg1:#252019;--bg2:#2D2720;
-  --text:#F0E6D8;--muted:rgba(240,230,216,0.50);--faint:rgba(240,230,216,0.18);
+  --text:#F0E6D8;--muted:rgba(240,230,216,0.70);--faint:rgba(240,230,216,0.35);
   --surface:rgba(255,235,210,0.04);--surfaceHi:rgba(255,235,210,0.07);
-  --border:rgba(255,235,210,0.08);--borderHi:rgba(255,235,210,0.15);
+  --border:rgba(255,235,210,0.12);--borderHi:rgba(255,235,210,0.22);
   --teal:#E8A07A;--tealBg:rgba(232,160,122,0.10);--tealBorder:rgba(232,160,122,0.22);
   --scroll-thumb:rgba(255,235,210,0.10);--scroll-thumb-h:rgba(255,235,210,0.20);
   --modal-bg:rgba(28,23,20,0.75);--modal-box:#252019;--modal-box-border:rgba(255,235,210,0.10);
-  --tab-active-bg:#353028;--tab-text:rgba(240,230,216,0.45);--tab-active-text:#F0E6D8;
-  --chip-bg:rgba(255,235,210,0.04);--chip-border:rgba(255,235,210,0.10);--chip-text:rgba(240,230,216,0.65);
+  --tab-active-bg:#353028;--tab-text:rgba(240,230,216,0.65);--tab-active-text:#F0E6D8;
+  --chip-bg:rgba(255,235,210,0.04);--chip-border:rgba(255,235,210,0.10);--chip-text:rgba(240,230,216,0.78);
   --input-bg:rgba(255,235,210,0.04);--input-border:rgba(255,235,210,0.10);--input-text:#F0E6D8;
   --tip-bg:rgba(255,235,210,0.04);--tip-border:rgba(255,235,210,0.08);
-  --nav-hover:rgba(255,235,210,0.05);--skeleton1:rgba(255,235,210,0.04);--skeleton2:rgba(255,235,210,0.08);
+  --nav-hover:rgba(255,235,210,0.08);--skeleton1:rgba(255,235,210,0.04);--skeleton2:rgba(255,235,210,0.08);
 }
 [data-theme="light"]{
   --bg:#FFF8F2;--bg1:#FFFFFF;--bg2:#FFF0E6;
-  --text:#3D2E22;--muted:rgba(61,46,34,0.55);--faint:rgba(61,46,34,0.18);
+  --text:#3D2E22;--muted:rgba(61,46,34,0.72);--faint:rgba(61,46,34,0.35);
   --surface:rgba(180,120,60,0.04);--surfaceHi:rgba(180,120,60,0.07);
-  --border:rgba(180,120,60,0.10);--borderHi:rgba(180,120,60,0.18);
+  --border:rgba(180,120,60,0.14);--borderHi:rgba(180,120,60,0.25);
   --teal:#D2785A;--tealBg:rgba(210,120,90,0.08);--tealBorder:rgba(210,120,90,0.22);
   --scroll-thumb:rgba(180,120,60,0.14);--scroll-thumb-h:rgba(180,120,60,0.25);
   --modal-bg:rgba(255,248,242,0.80);--modal-box:#FFFFFF;--modal-box-border:rgba(180,120,60,0.12);
-  --tab-active-bg:#FFFFFF;--tab-text:rgba(61,46,34,0.45);--tab-active-text:#3D2E22;
-  --chip-bg:rgba(180,120,60,0.04);--chip-border:rgba(180,120,60,0.10);--chip-text:rgba(61,46,34,0.60);
+  --tab-active-bg:#FFFFFF;--tab-text:rgba(61,46,34,0.62);--tab-active-text:#3D2E22;
+  --chip-bg:rgba(180,120,60,0.04);--chip-border:rgba(180,120,60,0.10);--chip-text:rgba(61,46,34,0.75);
   --input-bg:rgba(180,120,60,0.03);--input-border:rgba(180,120,60,0.12);--input-text:#3D2E22;
   --tip-bg:rgba(180,120,60,0.03);--tip-border:rgba(180,120,60,0.08);
-  --nav-hover:rgba(180,120,60,0.05);--skeleton1:rgba(180,120,60,0.04);--skeleton2:rgba(180,120,60,0.08);
+  --nav-hover:rgba(180,120,60,0.08);--skeleton1:rgba(180,120,60,0.04);--skeleton2:rgba(180,120,60,0.08);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body,#root{height:100%;background:#FFF8F2;font-family:'Inter',sans-serif;color:#3D2E22;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:background .3s,color .3s;font-size:14px;line-height:1.6;letter-spacing:-0.01em}
@@ -65,7 +65,7 @@ html,body,#root{height:100%;background:#FFF8F2;font-family:'Inter',sans-serif;co
 .btn-danger:hover{background:rgba(196,86,74,0.18)}
 .btn-sm{padding:5px 12px;font-size:11.5px;border-radius:8px}
 .csm-filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center;padding:0 2px;max-width:100%;overflow-x:auto}
-.csm-chip{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all .25s ease;border:1px solid rgba(180,120,60,0.10);background:rgba(180,120,60,0.04);color:rgba(61,46,34,0.6)}.csm-chip.active{background:rgba(210,120,90,0.12);border-color:rgba(210,120,90,0.35);color:#D2785A;font-weight:700}.csm-chip-X{bg);color:var(--chip-text);transition:all .15s ease}
+.csm-chip{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all .25s ease;border:1px solid rgba(180,120,60,0.10);background:rgba(180,120,60,0.04);color:rgba(61,46,34,0.75)}.csm-chip.active{background:rgba(210,120,90,0.12);border-color:rgba(210,120,90,0.35);color:#D2785A;font-weight:700}.csm-chip-X{bg);color:var(--chip-text);transition:all .15s ease}
 .csm-chip:hover{background:var(--tealBg);border-color:var(--tealBorder);color:var(--teal)}
 .csm-chip.active{background:var(--tealBg);border-color:var(--tealBorder);color:var(--teal);font-weight:700}
 .chat-input{flex:1;background:rgba(180,120,60,0.04);border:1px solid rgba(180,120,60,0.10);border-radius:14px;padding:11px 15px;color:var(--text);font-size:13px;font-family:inherit;resize:none}
@@ -93,7 +93,7 @@ input:checked+.toggle-slider::before{transform:translateX(20px)}
 .btn-base{transition:all .3s ease;cursor:pointer;border:none;font-family:'Inter',sans-serif;font-weight:600;outline:none;letter-spacing:-0.01em}
 .btn-base:hover:not(:disabled){transform:translateY(-0.5px);filter:brightness(1.04)}
 .btn-base:active:not(:disabled){transform:translateY(0);filter:brightness(0.95)}
-.btn-base:disabled{opacity:.38;cursor:not-allowed;transform:none!important;filter:none!important}
+.btn-base:disabled{opacity:.45;cursor:not-allowed;transform:none!important;filter:none!important}
 .fade-in{animation:fadeIn .45s ease forwards}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideInR{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
@@ -421,8 +421,8 @@ const C = {
   blue: "#9AB8D4",
   blueBg: "rgba(154,184,212,0.07)",
   text: "#F0E6D8",
-  muted: "rgba(240,230,216,0.50)",
-  faint: "rgba(240,230,216,0.18)"
+  muted: "rgba(240,230,216,0.70)",
+  faint: "rgba(240,230,216,0.35)"
 };
 // ══ THEME SYSTEM ══
 const C_DARK = Object.assign({},C);
@@ -453,8 +453,8 @@ const C_LIGHT = {
   blue: "#7A9AB8",
   blueBg: "rgba(122,154,184,0.07)",
   text: "#3D2E22",
-  muted: "rgba(61,46,34,0.55)",
-  faint: "rgba(61,46,34,0.18)"
+  muted: "rgba(61,46,34,0.72)",
+  faint: "rgba(61,46,34,0.35)"
 };
 const I18N={
   fr:{
@@ -13924,8 +13924,7 @@ const App = () => {
       flexShrink: 0,
       background: C.bg1,
       boxShadow: "1px 0 12px rgba(180,120,60,0.06)",
-      transition: "width .25s ease, padding .25s ease",
-      overflow: "hidden"
+      transition: "width .25s ease, padding .25s ease"
     },
     className: "sidebar-desktop"
   }, /*#__PURE__*/React.createElement("div", {
@@ -13966,7 +13965,9 @@ const App = () => {
       flex: 1,
       display: "flex",
       flexDirection: "column",
-      gap: 2
+      gap: 2,
+      overflowY: "auto",
+      overflowX: "hidden"
     }
   }, nav.map(({
     id,
