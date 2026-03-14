@@ -20,79 +20,77 @@
 <style>
 /* === CSS VARIABLES — THEME SYSTEM === */
 :root{
-  --bg:#1C1714;--bg1:#252019;--bg2:#2D2720;
-  --text:#F0E6D8;--muted:rgba(240,230,216,0.70);--faint:rgba(240,230,216,0.35);
-  --surface:rgba(255,235,210,0.04);--surfaceHi:rgba(255,235,210,0.07);
-  --border:rgba(255,235,210,0.12);--borderHi:rgba(255,235,210,0.22);
-  --teal:#E8A07A;--tealBg:rgba(232,160,122,0.10);--tealBorder:rgba(232,160,122,0.22);
-  --scroll-thumb:rgba(255,235,210,0.10);--scroll-thumb-h:rgba(255,235,210,0.20);
-  --modal-bg:rgba(28,23,20,0.75);--modal-box:#252019;--modal-box-border:rgba(255,235,210,0.10);
-  --tab-active-bg:#353028;--tab-text:rgba(240,230,216,0.65);--tab-active-text:#F0E6D8;
-  --chip-bg:rgba(255,235,210,0.04);--chip-border:rgba(255,235,210,0.10);--chip-text:rgba(240,230,216,0.78);
-  --input-bg:rgba(255,235,210,0.04);--input-border:rgba(255,235,210,0.10);--input-text:#F0E6D8;
-  --tip-bg:rgba(255,235,210,0.04);--tip-border:rgba(255,235,210,0.08);
-  --nav-hover:rgba(255,235,210,0.08);--skeleton1:rgba(255,235,210,0.04);--skeleton2:rgba(255,235,210,0.08);
+  --bg:#FFFFFF;--bg1:#FFFFFF;--bg2:#F7F6F3;
+  --text:#37352F;--muted:rgba(55,53,47,0.65);--faint:rgba(55,53,47,0.35);
+  --surface:rgba(55,53,47,0.03);--surfaceHi:rgba(55,53,47,0.06);
+  --border:rgba(55,53,47,0.09);--borderHi:rgba(55,53,47,0.16);
+  --teal:#2383E2;--tealBg:rgba(35,131,226,0.08);--tealBorder:rgba(35,131,226,0.25);
+  --scroll-thumb:rgba(55,53,47,0.12);--scroll-thumb-h:rgba(55,53,47,0.22);
+  --modal-bg:rgba(15,15,15,0.6);--modal-box:#FFFFFF;--modal-box-border:rgba(55,53,47,0.09);
+  --tab-active-bg:#FFFFFF;--tab-text:rgba(55,53,47,0.5);--tab-active-text:#37352F;
+  --chip-bg:rgba(55,53,47,0.03);--chip-border:rgba(55,53,47,0.09);--chip-text:rgba(55,53,47,0.65);
+  --input-bg:#FFFFFF;--input-border:rgba(55,53,47,0.16);--input-text:#37352F;
+  --tip-bg:rgba(55,53,47,0.03);--tip-border:rgba(55,53,47,0.09);
+  --nav-hover:rgba(55,53,47,0.04);--skeleton1:rgba(55,53,47,0.04);--skeleton2:rgba(55,53,47,0.08);
 }
-[data-theme="light"]{
-  --bg:#FFF8F2;--bg1:#FFFFFF;--bg2:#FFF0E6;
-  --text:#3D2E22;--muted:rgba(61,46,34,0.72);--faint:rgba(61,46,34,0.35);
-  --surface:rgba(180,120,60,0.04);--surfaceHi:rgba(180,120,60,0.07);
-  --border:rgba(180,120,60,0.14);--borderHi:rgba(180,120,60,0.25);
-  --teal:#D2785A;--tealBg:rgba(210,120,90,0.08);--tealBorder:rgba(210,120,90,0.22);
-  --scroll-thumb:rgba(180,120,60,0.14);--scroll-thumb-h:rgba(180,120,60,0.25);
-  --modal-bg:rgba(255,248,242,0.80);--modal-box:#FFFFFF;--modal-box-border:rgba(180,120,60,0.12);
-  --tab-active-bg:#FFFFFF;--tab-text:rgba(61,46,34,0.62);--tab-active-text:#3D2E22;
-  --chip-bg:rgba(180,120,60,0.04);--chip-border:rgba(180,120,60,0.10);--chip-text:rgba(61,46,34,0.75);
-  --input-bg:rgba(180,120,60,0.03);--input-border:rgba(180,120,60,0.12);--input-text:#3D2E22;
-  --tip-bg:rgba(180,120,60,0.03);--tip-border:rgba(180,120,60,0.08);
-  --nav-hover:rgba(180,120,60,0.08);--skeleton1:rgba(180,120,60,0.04);--skeleton2:rgba(180,120,60,0.08);
+[data-theme="dark"]{
+  --bg:#191919;--bg1:#202020;--bg2:#2F2F2F;
+  --text:#E3E2E0;--muted:rgba(227,226,224,0.65);--faint:rgba(227,226,224,0.35);
+  --surface:rgba(255,255,255,0.03);--surfaceHi:rgba(255,255,255,0.06);
+  --border:rgba(255,255,255,0.09);--borderHi:rgba(255,255,255,0.16);
+  --teal:#529CCA;--tealBg:rgba(82,156,202,0.10);--tealBorder:rgba(82,156,202,0.25);
+  --scroll-thumb:rgba(255,255,255,0.12);--scroll-thumb-h:rgba(255,255,255,0.22);
+  --modal-bg:rgba(15,15,15,0.8);--modal-box:#252525;--modal-box-border:rgba(255,255,255,0.09);
+  --tab-active-bg:#2F2F2F;--tab-text:rgba(227,226,224,0.5);--tab-active-text:#E3E2E0;
+  --chip-bg:rgba(255,255,255,0.03);--chip-border:rgba(255,255,255,0.09);--chip-text:rgba(227,226,224,0.65);
+  --input-bg:#252525;--input-border:rgba(255,255,255,0.13);--input-text:#E3E2E0;
+  --tip-bg:rgba(255,255,255,0.03);--tip-border:rgba(255,255,255,0.09);
+  --nav-hover:rgba(255,255,255,0.04);--skeleton1:rgba(255,255,255,0.04);--skeleton2:rgba(255,255,255,0.08);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body,#root{height:100%;background:#FFF8F2;font-family:'Inter',sans-serif;color:#3D2E22;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:background .3s,color .3s;font-size:14px;line-height:1.6;letter-spacing:-0.01em}
+html,body,#root{height:100%;background:#FFFFFF;font-family:'Inter',sans-serif;color:#37352F;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:background .3s,color .3s;font-size:14px;line-height:1.6;letter-spacing:-0.01em}
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:var(--scroll-thumb-h)}
 /* === v8 STYLES === */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:12px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .3s ease;letter-spacing:-.2px}
-.btn-primary{background:linear-gradient(135deg,#D2785A,#C4923A);color:#fff;box-shadow:0 4px 20px rgba(210,120,90,0.18)}
-.btn-primary:hover{transform:translateY(-0.5px);box-shadow:0 6px 28px rgba(210,120,90,0.24)}
-.btn-primary{background:linear-gradient(135deg,#D2785A,#C4923A);color:#fff;box-shadow:0 4px 20px rgba(210,120,90,0.18)}
-.btn-primary:hover{transform:translateY(-0.5px);box-shadow:0 6px 28px rgba(210,120,90,0.24)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:4px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .15s ease;letter-spacing:-.01em}
+.btn-primary{background:#2383E2;color:#fff}
+.btn-primary:hover{background:#1B6EC2}
 .btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border)}
 .btn-secondary:hover{background:var(--surfaceHi);border-color:var(--borderHi)}
-.btn-danger{background:rgba(212,135,143,0.08);color:#D4878F;border:1px solid rgba(212,135,143,0.2)}
-.btn-danger:hover{background:rgba(196,86,74,0.18)}
-.btn-sm{padding:5px 12px;font-size:11.5px;border-radius:8px}
+.btn-danger{background:rgba(235,87,87,0.08);color:#EB5757;border:1px solid rgba(235,87,87,0.2)}
+.btn-danger:hover{background:rgba(235,87,87,0.15)}
+.btn-sm{padding:5px 12px;font-size:11.5px;border-radius:4px}
 .csm-filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center;padding:0 2px;max-width:100%;overflow-x:auto}
-.csm-chip{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all .25s ease;border:1px solid rgba(180,120,60,0.10);background:rgba(180,120,60,0.04);color:rgba(61,46,34,0.75)}.csm-chip.active{background:rgba(210,120,90,0.12);border-color:rgba(210,120,90,0.35);color:#D2785A;font-weight:700}.csm-chip-X{bg);color:var(--chip-text);transition:all .15s ease}
+.csm-chip{padding:5px 14px;border-radius:12px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s ease;border:1px solid var(--chip-border);background:var(--chip-bg);color:var(--chip-text)}
 .csm-chip:hover{background:var(--tealBg);border-color:var(--tealBorder);color:var(--teal)}
 .csm-chip.active{background:var(--tealBg);border-color:var(--tealBorder);color:var(--teal);font-weight:700}
-.chat-input{flex:1;background:rgba(180,120,60,0.04);border:1px solid rgba(180,120,60,0.10);border-radius:14px;padding:11px 15px;color:var(--text);font-size:13px;font-family:inherit;resize:none}
-.chat-input:focus{outline:none;border-color:rgba(210,120,90,0.35);background:var(--tealBg)}
-.chat-send-btn{background:linear-gradient(135deg,var(--teal),#8AAED4);border:none;border-radius:12px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;box-shadow:0 4px 20px rgba(210,120,90,0.14);transition:all .18s ease;flex-shrink:0}
-.chat-send-btn:hover{transform:scale(1.02);box-shadow:0 6px 20px rgba(210,120,90,0.42)}
-.chat-send-btn:disabled{opacity:.4;transform:none;cursor:not-allowed}
-.api-banner{padding:14px 18px;background:rgba(196,146,58,0.09);border:1px solid rgba(196,146,58,0.25);border-radius:12px;margin:12px 18px;display:flex;gap:12px;font-size:13px;align-items:flex-start}
-.tip-card{background:var(--tip-bg);border:1px solid var(--tip-border);border-radius:14px;padding:16px 18px;margin-bottom:8px;cursor:pointer;transition:all .3s ease;border-color:var(--tealBorder)}
+.chat-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:11px 15px;color:var(--text);font-size:13px;font-family:inherit;resize:none}
+.chat-input:focus{outline:none;border-color:var(--tealBorder);background:var(--tealBg)}
+.chat-send-btn{background:var(--teal);border:none;border-radius:4px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:all .15s ease;flex-shrink:0}
+.chat-send-btn:hover{opacity:.85}
+.chat-send-btn:disabled{opacity:.4;cursor:not-allowed}
+.api-banner{padding:14px 18px;background:rgba(203,145,47,0.08);border:1px solid rgba(203,145,47,0.20);border-radius:4px;margin:12px 18px;display:flex;gap:12px;font-size:13px;align-items:flex-start}
+.tip-card{background:var(--tip-bg);border:1px solid var(--tip-border);border-radius:4px;padding:16px 18px;margin-bottom:8px;cursor:pointer;transition:all .15s ease}
 .tip-card.open{border-color:var(--tealBorder);background:var(--tealBg)}
-.quick-chip{padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--muted);transition:all .15s ease;font-weight:500}
+.quick-chip{padding:7px 14px;border-radius:12px;font-size:12px;cursor:pointer;background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--muted);transition:all .15s ease;font-weight:500}
 .quick-chip:hover{background:var(--tealBg);border-color:var(--tealBorder);color:var(--teal)}
 .toggle-switch{position:relative;width:46px;height:26px;display:inline-block;flex-shrink:0}
 .toggle-switch input{display:none}
 .toggle-slider{position:absolute;inset:0;border-radius:26px;background:var(--surface);cursor:pointer;transition:.3s;border:1px solid var(--border)}
 .toggle-slider::before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 2px 6px rgba(0,0,0,0.25)}
-input:checked+.toggle-slider{background:linear-gradient(135deg,var(--teal),#8AAED4);border-color:var(--teal)}
+input:checked+.toggle-slider{background:var(--teal);border-color:var(--teal)}
 input:checked+.toggle-slider::before{transform:translateX(20px)}
-.nav-btn{transition:all .25s ease;border-radius:10px;cursor:pointer}
+.nav-btn{transition:all .15s ease;border-radius:4px;cursor:pointer}
 .nav-btn:hover{background:var(--nav-hover)!important}
 .row-item{transition:background .2s ease;cursor:pointer}
 .row-item:hover{background:var(--tealBg)!important}
-.card-lift{transition:transform .35s ease,border-color .35s ease}
-.card-lift:hover{transform:translateY(-1px);border-color:var(--tealBorder)!important}
+.card-lift{transition:border-color .15s ease}
+.card-lift:hover{border-color:var(--borderHi)!important}
 .btn-base{transition:all .3s ease;cursor:pointer;border:none;font-family:'Inter',sans-serif;font-weight:600;outline:none;letter-spacing:-0.01em}
-.btn-base:hover:not(:disabled){transform:translateY(-0.5px);filter:brightness(1.04)}
-.btn-base:active:not(:disabled){transform:translateY(0);filter:brightness(0.95)}
+.btn-base:hover:not(:disabled){filter:brightness(0.96)}
+.btn-base:active:not(:disabled){filter:brightness(0.92)}
 .btn-base:disabled{opacity:.45;cursor:not-allowed;transform:none!important;filter:none!important}
 .fade-in{animation:fadeIn .45s ease forwards}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
@@ -104,9 +102,9 @@ input:checked+.toggle-slider::before{transform:translateX(20px)}
 .pulse{animation:pulse 2s infinite}
 .spin{animation:spin .7s linear infinite}
 input,select,textarea{outline:none;font-family:'Inter',sans-serif;-webkit-appearance:none;appearance:none}
-input:focus,select:focus,textarea:focus{border-color:rgba(210,120,90,0.5)!important;box-shadow:0 0 0 4px rgba(210,120,90,0.08)!important}
+input:focus,select:focus,textarea:focus{border-color:rgba(35,131,226,0.5)!important;box-shadow:0 0 0 4px rgba(35,131,226,0.08)!important}
 .modal-overlay{position:fixed;inset:0;background:rgba(61,46,34,0.50);backdrop-filter:blur(16px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .35s ease}
-.modal-box{background:#FFFFFF;border:1px solid rgba(180,120,60,0.10);border-radius:24px;width:100%;animation:slideUp .25s ease;max-height:90vh;overflow-y:auto;color:var(--text)}
+.modal-box{background:#FFFFFF;border:1px solid rgba(55,53,47,0.10);border-radius:24px;width:100%;animation:slideUp .25s ease;max-height:90vh;overflow-y:auto;color:var(--text)}
 .side-panel{animation:slideInR .22s ease}
 .tab-bar{display:flex;gap:4px;background:var(--surface);border-radius:12px;padding:4px;border:1px solid var(--border)}
 .tab-item{padding:7px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .25s ease;color:var(--tab-text);white-space:nowrap}
@@ -114,9 +112,9 @@ input:focus,select:focus,textarea:focus{border-color:rgba(210,120,90,0.5)!import
 .tab-item:hover:not(.active){color:var(--text);background:var(--surfaceHi)}
 .skeleton{background:linear-gradient(90deg,var(--skeleton1) 25%,var(--skeleton2) 50%,var(--skeleton1) 75%);background-size:200% 100%;animation:shimmer 2.5s ease-in-out infinite;border-radius:10px}
 /* Light mode input/select overrides */
-[data-theme="light"] input,[data-theme="light"] select,[data-theme="light"] textarea{color:var(--text);background:var(--input-bg)}
-[data-theme="light"] .modal-box{box-shadow:0 20px 60px rgba(0,0,0,0.15)}
-[data-theme="light"] select option{background:#fff;color:#1E293B}
+input,select,textarea{color:var(--text);background:var(--input-bg)}
+.modal-box{box-shadow:0 20px 60px rgba(0,0,0,0.08)}
+select option{background:var(--bg);color:var(--text)}
 
     @keyframes bounce {
       0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
@@ -124,13 +122,13 @@ input:focus,select:focus,textarea:focus{border-color:rgba(210,120,90,0.5)!import
     }
     /* ── KPI Custom & Import styles ── */
     .kpi-custom-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;transition:all .2s ease;position:relative;overflow:hidden}
-    .kpi-custom-card:hover{border-color:var(--tealBorder);transform:translateY(-2px);box-shadow:0 8px 24px rgba(210,120,90,0.1)}
+    .kpi-custom-card:hover{border-color:var(--tealBorder);transform:translateY(-2px);box-shadow:0 8px 24px rgba(35,131,226,0.1)}
     .kpi-custom-card .accent-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0}
     .kpi-custom-form{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px}
     .kpi-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .kpi-form-field label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.6px}
     .kpi-form-field input,.kpi-form-field select{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;padding:9px 12px;color:var(--input-text);font-size:13px;font-family:'Inter',sans-serif;font-weight:600}
-    .kpi-form-field input:focus,.kpi-form-field select:focus{border-color:rgba(210,120,90,.5);outline:none}
+    .kpi-form-field input:focus,.kpi-form-field select:focus{border-color:rgba(35,131,226,.5);outline:none}
     .import-drop-zone{border:2px dashed var(--border);border-radius:16px;padding:40px 20px;text-align:center;cursor:pointer;transition:all .2s ease;background:var(--surface)}
     .import-drop-zone:hover,.import-drop-zone.drag-over{border-color:var(--teal);background:var(--tealBg)}
     .import-drop-zone input[type=file]{display:none}
@@ -142,12 +140,12 @@ input:focus,select:focus,textarea:focus{border-color:rgba(210,120,90,0.5)!import
     .color-picker-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
     .color-dot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s ease;flex-shrink:0}
     .color-dot:hover,.color-dot.active{border-color:#fff;transform:scale(1.2)}
-    .trend-up{color:#8BBF9A}.trend-down{color:#D4878F}.trend-flat{color:#D4B87A}
+    .trend-up{color:#0F7B6C}.trend-down{color:#EB5757}.trend-flat{color:#CB912F}
     .import-col-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:var(--surface);border:1px solid var(--border)}
     .chart-type-btn{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s}
     .chart-type-btn.active{background:var(--tealBg);border-color:var(--tealBorder);color:var(--teal)}
     .kpi-history-entry{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:10px;font-size:12px;margin-bottom:6px}
-    [data-theme="light"] .kpi-form-field input,[data-theme="light"] .kpi-form-field select{color:var(--text);background:var(--input-bg)}
+    .kpi-form-field input,.kpi-form-field select{color:var(--text);background:var(--input-bg)}
 
 /* ===== RESPONSIVE MOBILE ===== */
 @media (max-width: 768px) {
@@ -191,7 +189,7 @@ input:focus,select:focus,textarea:focus{border-color:rgba(210,120,90,0.5)!import
   letter-spacing: 0.03em;
 }
 .bottom-nav-item.active {
-  color: var(--teal, #E8A07A);
+  color: var(--teal, #2383E2);
 }
 .bottom-nav-item svg { width: 20px; height: 20px; }
 /* ============================= */
@@ -395,72 +393,73 @@ var lang = (function(){ try { return localStorage.getItem("scalyo_lang")||"fr"; 
 
 // ─── Design tokens
 const C = {
-  bg: "#1C1714",
-  bg1: "#252019",
-  bg2: "#2D2720",
-  bg3: "#353028",
-  surface: "rgba(255,235,210,0.04)",
-  surfaceHi: "rgba(255,235,210,0.07)",
-  border: "rgba(255,235,210,0.08)",
-  borderHi: "rgba(255,235,210,0.15)",
-  teal: "#E8A07A",
-  tealBg: "rgba(232,160,122,0.10)",
-  tealBorder: "rgba(232,160,122,0.22)",
-  tealGlow: "rgba(232,160,122,0.08)",
-  red: "#D4878F",
-  redBg: "rgba(212,135,143,0.08)",
-  redBorder: "rgba(212,135,143,0.18)",
-  amber: "#D4B87A",
-  amberBg: "rgba(212,184,122,0.08)",
-  amberBorder: "rgba(212,184,122,0.20)",
-  green: "#8BBF9A",
-  greenBg: "rgba(139,191,154,0.08)",
-  greenBorder: "rgba(139,191,154,0.20)",
-  purple: "#B8A0D4",
-  purpleBg: "rgba(184,160,212,0.08)",
-  blue: "#9AB8D4",
-  blueBg: "rgba(154,184,212,0.07)",
-  text: "#F0E6D8",
-  muted: "rgba(240,230,216,0.70)",
-  faint: "rgba(240,230,216,0.35)"
+  bg: "#FFFFFF",
+  bg1: "#FFFFFF",
+  bg2: "#F7F6F3",
+  bg3: "#EDECE9",
+  surface: "rgba(55,53,47,0.03)",
+  surfaceHi: "rgba(55,53,47,0.06)",
+  border: "rgba(55,53,47,0.09)",
+  borderHi: "rgba(55,53,47,0.16)",
+  teal: "#2383E2",
+  tealBg: "rgba(35,131,226,0.08)",
+  tealBorder: "rgba(35,131,226,0.25)",
+  tealGlow: "transparent",
+  red: "#EB5757",
+  redBg: "rgba(235,87,87,0.08)",
+  redBorder: "rgba(235,87,87,0.20)",
+  amber: "#CB912F",
+  amberBg: "rgba(203,145,47,0.08)",
+  amberBorder: "rgba(203,145,47,0.20)",
+  green: "#0F7B6C",
+  greenBg: "rgba(15,123,108,0.08)",
+  greenBorder: "rgba(15,123,108,0.20)",
+  purple: "#9065B0",
+  purpleBg: "rgba(144,101,176,0.08)",
+  blue: "#2383E2",
+  blueBg: "rgba(35,131,226,0.07)",
+  text: "#37352F",
+  muted: "rgba(55,53,47,0.65)",
+  faint: "rgba(55,53,47,0.35)"
 };
 // ══ THEME SYSTEM ══
-const C_DARK = Object.assign({},C);
-const C_LIGHT = {
-  bg: "#FFF8F2",
-  bg1: "#FFFFFF",
-  bg2: "#FFF0E6",
-  bg3: "#FFE8D6",
-  surface: "rgba(180,120,60,0.04)",
-  surfaceHi: "rgba(180,120,60,0.07)",
-  border: "rgba(180,120,60,0.10)",
-  borderHi: "rgba(180,120,60,0.18)",
-  teal: "#D2785A",
-  tealBg: "rgba(210,120,90,0.08)",
-  tealBorder: "rgba(210,120,90,0.22)",
-  tealGlow: "rgba(210,120,90,0.10)",
-  red: "#C4564A",
-  redBg: "rgba(196,86,74,0.07)",
-  redBorder: "rgba(196,86,74,0.20)",
-  amber: "#C4923A",
-  amberBg: "rgba(196,146,58,0.07)",
-  amberBorder: "rgba(196,146,58,0.22)",
-  green: "#5A9E6F",
-  greenBg: "rgba(90,158,111,0.07)",
-  greenBorder: "rgba(90,158,111,0.20)",
-  purple: "#9B7AB8",
-  purpleBg: "rgba(155,122,184,0.08)",
-  blue: "#7A9AB8",
-  blueBg: "rgba(122,154,184,0.07)",
-  text: "#3D2E22",
-  muted: "rgba(61,46,34,0.72)",
-  faint: "rgba(61,46,34,0.35)"
+const C_LIGHT = Object.assign({},C);
+const C_DARK = {
+  bg: "#191919",
+  bg1: "#202020",
+  bg2: "#2F2F2F",
+  bg3: "#373737",
+  surface: "rgba(255,255,255,0.03)",
+  surfaceHi: "rgba(255,255,255,0.06)",
+  border: "rgba(255,255,255,0.09)",
+  borderHi: "rgba(255,255,255,0.16)",
+  teal: "#529CCA",
+  tealBg: "rgba(82,156,202,0.10)",
+  tealBorder: "rgba(82,156,202,0.25)",
+  tealGlow: "transparent",
+  red: "#EB5757",
+  redBg: "rgba(235,87,87,0.10)",
+  redBorder: "rgba(235,87,87,0.22)",
+  amber: "#CB912F",
+  amberBg: "rgba(203,145,47,0.10)",
+  amberBorder: "rgba(203,145,47,0.22)",
+  green: "#0F7B6C",
+  greenBg: "rgba(15,123,108,0.10)",
+  greenBorder: "rgba(15,123,108,0.20)",
+  purple: "#9065B0",
+  purpleBg: "rgba(144,101,176,0.10)",
+  blue: "#529CCA",
+  blueBg: "rgba(82,156,202,0.08)",
+  text: "#E3E2E0",
+  muted: "rgba(227,226,224,0.65)",
+  faint: "rgba(227,226,224,0.35)"
 };
 const I18N={
   fr:{
     dashboard:"Dashboard",portfolio:"Portefeuille",kpi:"KPIs COPIL",
-    wellbeing:"Bien-être",coach:"Coach IA",planning:"Planning",tasks:"Kanban",
+    wellbeing:"Bien-être",coach:"Coach IA",planning:"Planning",tasks:"Task Board",
     settings:"Paramètres",resources:"Ressources",email:"Email Studio",tips:"Guide CS",
+    quotes:"Devis",kanbanView:"Kanban",eisenhowerView:"Eisenhower",
     save:"Enregistrer",saved:"✓ Enregistré",saving:"Sauvegarde...",cancel:"Annuler",
     close:"Fermer",edit:"Modifier",delete:"Supprimer",add:"Ajouter",create:"Créer",
     search:"Rechercher...",back:"Retour",update:"Mettre à jour",
@@ -818,7 +817,11 @@ const I18N={
     createKpi:"Créez et suivez vos propres indicateurs de performance",
     firstKpi:"Créer mon premier KPI",
     todoCol:"À faire", inProgressCol:"En cours", doneCol:"Terminé", noTasks:"Aucune tâche",
-    taskboard:"Kanban", currencyLabel:"Devise",
+    taskboard:"Task Board", currencyLabel:"Devise",
+    quoteTitle:"Titre du devis",quoteClient:"Client",quoteAmount:"Montant",quoteStatus:"Statut",
+    quoteDraft:"Brouillon",quoteSent:"Envoyé",quoteWon:"Gagné",quoteLost:"Perdu",
+    quoteDate:"Date",addQuote:"Nouveau devis",noQuotes:"Aucun devis",quoteNotes:"Notes",
+    quoteAll:"Tous",quoteDuplicate:"Dupliquer",quoteConversion:"Taux conversion",quoteTotalWon:"Total gagné",
     deleteAccount:"Supprimer mon compte",
     deleteAccountDesc:"Cette action est irréversible. Toutes vos données seront définitivement supprimées.",
     confirmDelete:"Tapez SUPPRIMER pour confirmer",
@@ -827,8 +830,9 @@ const I18N={
     deleteError:"Erreur lors de la suppression. Contactez le support.",},
   en:{
     dashboard:"Dashboard",portfolio:"Portfolio",kpi:"KPIs",
-    wellbeing:"Wellbeing",coach:"AI Coach",planning:"Planning",tasks:"Kanban",
+    wellbeing:"Wellbeing",coach:"AI Coach",planning:"Planning",tasks:"Task Board",
     settings:"Settings",resources:"Resources",email:"Email Studio",tips:"CS Guide",
+    quotes:"Quotes",kanbanView:"Kanban",eisenhowerView:"Eisenhower",
     save:"Save",saved:"✓ Saved",saving:"Saving...",cancel:"Cancel",
     close:"Close",edit:"Edit",delete:"Delete",add:"Add",create:"Create",
     search:"Search...",back:"Back",update:"Update",
@@ -1119,7 +1123,11 @@ const I18N={
     createKpi:"Create and track your own performance indicators",
     firstKpi:"Create my first KPI",
     todoCol:"To Do", inProgressCol:"In Progress", doneCol:"Done", noTasks:"No tasks",
-    taskboard:"Kanban", currencyLabel:"Currency",
+    taskboard:"Task Board", currencyLabel:"Currency",
+    quoteTitle:"Quote title",quoteClient:"Client",quoteAmount:"Amount",quoteStatus:"Status",
+    quoteDraft:"Draft",quoteSent:"Sent",quoteWon:"Won",quoteLost:"Lost",
+    quoteDate:"Date",addQuote:"New quote",noQuotes:"No quotes",quoteNotes:"Notes",
+    quoteAll:"All",quoteDuplicate:"Duplicate",quoteConversion:"Conversion rate",quoteTotalWon:"Total won",
     deleteAccount:"Delete my account",
     deleteAccountDesc:"This action is irreversible. All your data will be permanently deleted.",
     confirmDelete:"Type DELETE to confirm",
@@ -1134,7 +1142,7 @@ const I18N={
     wellbeing:"웰빙",
     coach:"AI 코치",
     planning:"플래닝",
-    tasks:"칸반",
+    tasks:"태스크 보드",quotes:"견적서",kanbanView:"칸반",eisenhowerView:"아이젠하워",
     settings:"설정",
     resources:"리소스",
     email:"이메일 스튜디오",
@@ -1507,7 +1515,11 @@ const I18N={
     createKpi:"자신만의 성과 지표를 만들고 추적하세요",
     firstKpi:"첫 번째 KPI 만들기",
     todoCol:"할 일", inProgressCol:"진행 중", doneCol:"완료", noTasks:"작업 없음",
-    taskboard:"칸반", currencyLabel:"통화",
+    taskboard:"태스크 보드", currencyLabel:"통화",
+    quoteTitle:"견적서 제목",quoteClient:"고객",quoteAmount:"금액",quoteStatus:"상태",
+    quoteDraft:"초안",quoteSent:"전송됨",quoteWon:"성사",quoteLost:"실패",
+    quoteDate:"날짜",addQuote:"새 견적서",noQuotes:"견적서 없음",quoteNotes:"메모",
+    quoteAll:"전체",quoteDuplicate:"복제",quoteConversion:"전환율",quoteTotalWon:"총 성사 금액",
     deleteAccount:"계정 삭제",
     deleteAccountDesc:"이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 삭제됩니다.",
     confirmDelete:"SUPPRIMER 또는 DELETE 입력",
@@ -1557,7 +1569,9 @@ const CURRENCIES = {
   CHF:{symbol:"CHF",position:"after",name:"Swiss Franc"},
   CAD:{symbol:"CA$",position:"before",name:"Canadian Dollar"},
   MAD:{symbol:"DH",position:"after",name:"Dirham marocain"},
-  XOF:{symbol:"CFA",position:"after",name:"Franc CFA"}
+  XOF:{symbol:"CFA",position:"after",name:"Franc CFA"},
+  AED:{symbol:"AED",position:"before",name:"Dirham UAE"},
+  SAR:{symbol:"SAR",position:"before",name:"Riyal saoudien"}
 };
 const fmtCur = (num, cur="EUR") => {
   const c = CURRENCIES[cur]||CURRENCIES.EUR;
@@ -1615,7 +1629,7 @@ const Loader = ({
   style: {
     width: 44,
     height: 44,
-    background: `linear-gradient(135deg,${C.teal},${C.amber})`,
+    background: C.teal,
     borderRadius: 13,
     display: "flex",
     alignItems: "center",
@@ -1836,8 +1850,8 @@ const EmptyState = ({
     padding: "10px 24px",
     borderRadius: 12,
     fontSize: 13,
-    background: `linear-gradient(135deg,${C.teal},${C.amber})`,
-    color: "#FFF8F2"
+    background: C.teal,
+    color: "#FFFFFF"
   }
 }, action));
 
@@ -2129,7 +2143,7 @@ const LoginScreen = ({
     className: "fade-in",
     style: {
       minHeight: "100vh",
-      background: `radial-gradient(ellipse 90% 60% at 50% -5%,rgba(210,120,90,0.08) 0%,transparent 70%),${C.bg}`,
+      background: C.bg,
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -2147,7 +2161,7 @@ const LoginScreen = ({
     style: {
       width: 48,
       height: 48,
-      background: `linear-gradient(135deg,${C.teal},${C.amber})`,
+      background: C.teal,
       borderRadius: 16,
       display: "flex",
       alignItems: "center",
@@ -2178,7 +2192,7 @@ const LoginScreen = ({
     onClick: ()=>onLang(l),
     className: "btn-base",
     style: {
-      padding:"6px 14px", borderRadius:20, fontSize:12, fontWeight: lang===l?700:500,
+      padding:"6px 14px", borderRadius:4, fontSize:12, fontWeight: lang===l?700:500,
       background: lang===l ? C.tealBg : "transparent",
       border: `1px solid ${lang===l ? C.tealBorder : C.border}`,
       color: lang===l ? C.teal : C.muted, cursor:"pointer"
@@ -2191,7 +2205,7 @@ const LoginScreen = ({
       padding: 36,
       width: "100%",
       maxWidth: 440,
-      boxShadow: "0 24px 64px rgba(180,120,60,0.10)"
+      boxShadow: "0 1px 3px rgba(0,0,0,0.04)"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "tab-bar",
@@ -2338,8 +2352,8 @@ const LoginScreen = ({
       padding: "14px",
       borderRadius: 11,
       fontSize: 15,
-      background: `linear-gradient(135deg,${C.teal},${C.amber})`,
-      color: "#FFF8F2",
+      background: C.teal,
+      color: "#FFFFFF",
       boxShadow: `0 6px 24px ${C.tealGlow}`
     }
   }, loading ? /*#__PURE__*/React.createElement("span", {
@@ -2351,7 +2365,7 @@ const LoginScreen = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 16,
-    color: "#FFF8F2"
+    color: "#FFFFFF"
   }), lang==="en" ? "Signing in..." : lang==="kr" ? "로그인 중..." : "Connexion...") : lang==="en" ? "Access my workspace →" : lang==="kr" ? "내 워크스페이스 접속 →" : T("loginBtn",lang))), tab === "signup" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h2", {
     style: {
       fontSize: 20,
@@ -2477,8 +2491,8 @@ const LoginScreen = ({
       padding: "14px",
       borderRadius: 11,
       fontSize: 15,
-      background: `linear-gradient(135deg,${C.teal},${C.amber})`,
-      color: "#FFF8F2",
+      background: C.teal,
+      color: "#FFFFFF",
       boxShadow: `0 6px 24px ${C.tealGlow}`
     }
   }, loading ? /*#__PURE__*/React.createElement("span", {
@@ -2490,7 +2504,7 @@ const LoginScreen = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 16,
-    color: "#FFF8F2"
+    color: "#FFFFFF"
   }), lang==="en" ? "Creating..." : lang==="kr" ? "생성 중..." : T("creating",lang)) : lang==="en" ? "Create my Scalyo workspace →" : lang==="kr" ? "내 Scalyo 워크스페이스 생성 →" : T("registerBtn",lang)), /*#__PURE__*/React.createElement("p", {
     style: {
       fontSize: 11,
@@ -2607,8 +2621,8 @@ const UpgradeModal = ({
       top: -10,
       left: "50%",
       transform: "translateX(-50%)",
-      background: `linear-gradient(135deg,${C.teal},${C.amber})`,
-      color: "#FFF8F2",
+      background: C.teal,
+      color: "#FFFFFF",
       fontSize: 10,
       fontWeight: 800,
       padding: "3px 12px",
@@ -2695,8 +2709,8 @@ const UpgradeModal = ({
       fontSize: 13,
       fontWeight: 700,
       textDecoration: "none",
-      background: p.highlight ? `linear-gradient(135deg,${C.teal},${C.amber})` : C.surfaceHi,
-      color: p.highlight ? "#1C1714" : C.text,
+      background: p.highlight ? C.teal : C.surfaceHi,
+      color: p.highlight ? "#191919" : C.text,
       border: p.highlight ? "none" : `1px solid ${C.border}`
     }
   }, "Choisir ", p.name, " \u2192") : /*#__PURE__*/React.createElement("div", {
@@ -2946,7 +2960,7 @@ const ImportModal = ({
       alignItems: "center",
       justifyContent: "center",
       background: step === s ? C.teal : ["upload", "map", "preview"].indexOf(step) > i ? C.green : "rgba(255,255,255,0.1)",
-      color: step === s || ["upload", "map", "preview"].indexOf(step) > i ? "#1C1714" : C.muted
+      color: step === s || ["upload", "map", "preview"].indexOf(step) > i ? "#191919" : C.muted
     }
   }, ["upload", "map", "preview"].indexOf(step) > i ? "✓" : i + 1), /*#__PURE__*/React.createElement("span", {
     style: {
@@ -3162,8 +3176,8 @@ const ImportModal = ({
       flex: 2,
       padding: "12px",
       borderRadius: 12,
-      background: `linear-gradient(135deg,${C.teal},${C.amber})`,
-      color: "#FFF8F2",
+      background: C.teal,
+      color: "#FFFFFF",
       fontSize: 13
     }
   }, "Pr\xE9visualiser & \xE9diter \u2192"))), step === "preview" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -3318,8 +3332,8 @@ const ImportModal = ({
       padding: "12px",
       borderRadius: 11,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},${C.amber})`,
-      color: "#FFF8F2"
+      background: C.teal,
+      color: "#FFFFFF"
     }
   }, importing ? /*#__PURE__*/React.createElement("span", {
     style: {
@@ -3330,7 +3344,7 @@ const ImportModal = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 14,
-    color: "#FFF8F2"
+    color: "#FFFFFF"
   }), lang==="en" ? "Importing..." : lang==="kr" ? "가져오는 중..." : "Import en cours...") : `⬆ Importer ${editableRows.filter(r => r.name?.trim()).length} compte${editableRows.filter(r => r.name?.trim()).length > 1 ? "s" : ""} →`))))));
 };
 
@@ -3387,7 +3401,7 @@ const RoadmapView = ({
             onClick: () => toggleItem(item.id),
             style: {
               display:"flex", alignItems:"center", gap:10, padding:"10px 14px",
-              borderRadius:12, background:C.surface, cursor:"pointer",
+              borderRadius:4, background:C.surface, cursor:"pointer",
               border:`1px solid ${C.border}`, opacity: item.done ? 0.6 : 1
             }
           },
@@ -3826,7 +3840,7 @@ const DashboardView = ({
       /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:10}},
         csmStats.map(s=>/*#__PURE__*/React.createElement("div",{
           key:s.csm,
-          style:{background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"14px 16px"}
+          style:{background:C.surface,border:`1px solid ${C.border}`,borderRadius:4,padding:"14px 16px"}
         },
           /*#__PURE__*/React.createElement("div",{style:{fontWeight:800,fontSize:13,marginBottom:8,color:C.text}},s.csm),
           /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:5}},
@@ -4036,7 +4050,7 @@ const AccountTodoPanel = ({
   }, t.done && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12,
-      color: "#FFF8F2",
+      color: "#FFFFFF",
       fontWeight: 900
     }
   }, "\u2713")), /*#__PURE__*/React.createElement("span", {
@@ -4119,7 +4133,7 @@ const AccountTodoPanel = ({
   }, t.done && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12,
-      color: "#FFF8F2",
+      color: "#FFFFFF",
       fontWeight: 900
     }
   }, "\u2713")), /*#__PURE__*/React.createElement("span", {
@@ -4200,8 +4214,8 @@ const AccountTodoPanel = ({
     style: {
       padding: "9px 14px",
       borderRadius: 9,
-      background: `linear-gradient(135deg,${C.teal},${C.amber})`,
-      color: "#FFF8F2",
+      background: C.teal,
+      color: "#FFFFFF",
       fontSize: 13
     }
   }, "+")));
@@ -4330,7 +4344,7 @@ const AddAccountModal = ({
     React.createElement("select", {
       value: form.industry,
       onChange: e => f("industry", e.target.value),
-      style:{width:"100%",padding:"9px 12px",borderRadius:12,border:`1px solid ${C.border}`,background:C.surface,color:form.industry?C.text:C.muted,fontSize:13,cursor:"pointer",outline:"none"}
+      style:{width:"100%",padding:"9px 12px",borderRadius:4,border:`1px solid ${C.border}`,background:C.surface,color:form.industry?C.text:C.muted,fontSize:13,cursor:"pointer",outline:"none"}
     },
       React.createElement("option", {value:""}, lang==="en"?"Select...":lang==="kr"?"선택...":"Choisir..."),
       ...(lang==="en"?[
@@ -4395,8 +4409,8 @@ const AddAccountModal = ({
       padding: "12px",
       borderRadius: 12,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},${C.amber})`,
-      color: "#FFF8F2"
+      background: C.teal,
+      color: "#FFFFFF"
     }
   }, saving ? /*#__PURE__*/React.createElement("span", {
     style: {
@@ -4407,7 +4421,7 @@ const AddAccountModal = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 14,
-    color: "#FFF8F2"
+    color: "#FFFFFF"
   }), T("addingAcc",lang)) : (T("createAcc",lang)))))));
 };
 
@@ -4793,8 +4807,8 @@ const EditAccountPanel = ({
       padding: "11px",
       borderRadius: 12,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},${C.amber})`,
-      color: "#FFF8F2"
+      background: C.teal,
+      color: "#FFFFFF"
     }
   }, saving ? (T("saving",lang)) : (T("saveAcc",lang))));
 };
@@ -5151,9 +5165,9 @@ const TASK_COLORS = [
   {id:"red",   hex:"#EF4444", label:"🔴 Critique",  labelEn:"🔴 Critical",   labelKr:"🔴 긴급"},
   {id:"orange",hex:"#F97316", label:"🟠 Prioritaire",labelEn:"🟠 Priority",  labelKr:"🟠 우선"},
   {id:"yellow",hex:"#EAB308", label:"🟡 À planifier",labelEn:"🟡 Plan it",   labelKr:"🟡 계획"},
-  {id:"teal",  hex:"#E8A07A", label:"🟢 En cours",  labelEn:"🟢 Ongoing",    labelKr:"🟢 진행 중"},
+  {id:"teal",  hex:"#2383E2", label:"🟢 En cours",  labelEn:"🟢 Ongoing",    labelKr:"🟢 진행 중"},
   {id:"blue",  hex:"#3B82F6", label:"🔵 Réflexion", labelEn:"🔵 Thinking",   labelKr:"🔵 검토 중"},
-  {id:"purple",hex:"#B8A0D4", label:"🟣 Déléguer",  labelEn:"🟣 Delegate",   labelKr:"🟣 위임"},
+  {id:"purple",hex:"#9065B0", label:"🟣 Déléguer",  labelEn:"🟣 Delegate",   labelKr:"🟣 위임"},
 ];
 
 const QUAD = {
@@ -5173,7 +5187,7 @@ const QUAD = {
     id:"q3",icon:"📤",
     label:"Déléguer",labelEn:"Delegate",labelKr:"위임하기",
     sub:"Urgent + Pas important",subEn:"Urgent + Not important",subKr:"긴급 + 중요하지 않음",
-    bg:"rgba(245,158,11,0.06)",border:"rgba(245,158,11,0.2)",accent:"#D4B87A"
+    bg:"rgba(245,158,11,0.06)",border:"rgba(245,158,11,0.2)",accent:"#CB912F"
   },
   q4:{
     id:"q4",icon:"🗑️",
@@ -5203,7 +5217,7 @@ const TaskCard = ({task, lang, onMove, onDelete, onToggle, onEdit, quadCount})=>
       background:hover?"rgba(255,255,255,0.07)":C.surface,
       border:`1px solid ${hover?col.hex+"55":C.border}`,
       borderLeft:`3px solid ${col.hex}`,
-      borderRadius:12,padding:"11px 13px",marginBottom:8,
+      borderRadius:4,padding:"11px 13px",marginBottom:8,
       transition:"all .15s ease",cursor:"pointer",position:"relative",
       opacity:task.done?0.55:1
     },
@@ -5234,11 +5248,11 @@ const TaskCard = ({task, lang, onMove, onDelete, onToggle, onEdit, quadCount})=>
     React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:8,gap:6}},
       React.createElement("div",{style:{display:"flex",alignItems:"center",gap:5}},
         React.createElement("span",{style:{
-          fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:12,
+          fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:4,
           background:col.hex+"22",color:col.hex
         }},lang==="en"?col.labelEn:lang==="kr"?(col.labelKr||col.label):col.label),
         isOverdue&&React.createElement("span",{style:{
-          fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:12,
+          fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:4,
           background:"rgba(239,68,68,0.12)",color:"#EF4444"
         }},T("overdue",lang)),
         task.dueDate&&!isOverdue&&React.createElement("span",{style:{fontSize:10,color:C.muted}},
@@ -5288,7 +5302,7 @@ const AddTaskModal = ({onClose,onAdd,lang,editTask,accounts=[]})=>{
   const isEdit=!!editTask;
   const inputStyle={
     width:"100%",background:C.bg2,border:`1px solid ${C.border}`,
-    borderRadius:12,padding:"10px 13px",color:C.text,fontSize:13,marginBottom:12
+    borderRadius:4,padding:"10px 13px",color:C.text,fontSize:13,marginBottom:12
   };
   return React.createElement("div",{className:"modal-overlay",onClick:e=>{if(e.target===e.currentTarget)onClose();}},
     React.createElement("div",{className:"modal-box",style:{maxWidth:480,padding:28}},
@@ -5313,7 +5327,7 @@ const AddTaskModal = ({onClose,onAdd,lang,editTask,accounts=[]})=>{
             key:col.id,
             onClick:()=>setColor(col.id),
             style:{
-              padding:"5px 11px",borderRadius:20,fontSize:11,fontWeight:700,cursor:"pointer",border:"none",
+              padding:"5px 11px",borderRadius:4,fontSize:11,fontWeight:700,cursor:"pointer",border:"none",
               background:color===col.id?col.hex+"33":"transparent",
               color:color===col.id?col.hex:C.muted,
               border:`1.5px solid ${color===col.id?col.hex:C.border}`,
@@ -5329,7 +5343,7 @@ const AddTaskModal = ({onClose,onAdd,lang,editTask,accounts=[]})=>{
             key:q.id,
             onClick:()=>setQuadrant(q.id),
             style:{
-              padding:"8px 12px",borderRadius:12,fontSize:11,fontWeight:600,cursor:"pointer",
+              padding:"8px 12px",borderRadius:4,fontSize:11,fontWeight:600,cursor:"pointer",
               border:`1.5px solid ${quadrant===q.id?q.accent:C.border}`,
               background:quadrant===q.id?q.bg:"transparent",
               color:quadrant===q.id?q.accent:C.muted,
@@ -5357,7 +5371,7 @@ const AddTaskModal = ({onClose,onAdd,lang,editTask,accounts=[]})=>{
       React.createElement("div",{style:{display:"flex",gap:8}},
         React.createElement("button",{
           onClick:onClose,
-          style:{flex:1,padding:"12px",borderRadius:12,background:C.surface,border:`1px solid ${C.border}`,color:C.muted,fontSize:13,cursor:"pointer",fontWeight:600}
+          style:{flex:1,padding:"12px",borderRadius:4,background:C.surface,border:`1px solid ${C.border}`,color:C.muted,fontSize:13,cursor:"pointer",fontWeight:600}
         },T("cancel",lang)),
         React.createElement("button",{
           disabled:!title.trim(),
@@ -5367,9 +5381,9 @@ const AddTaskModal = ({onClose,onAdd,lang,editTask,accounts=[]})=>{
             onClose();
           },
           style:{
-            flex:2,padding:"12px",borderRadius:12,fontSize:13,fontWeight:800,cursor:"pointer",border:"none",
-            background:!title.trim()?"rgba(255,255,255,0.05)":`linear-gradient(135deg,${C.teal},${C.amber})`,
-            color:!title.trim()?C.muted:"#1C1714",transition:"all .15s"
+            flex:2,padding:"12px",borderRadius:4,fontSize:13,fontWeight:800,cursor:"pointer",border:"none",
+            background:!title.trim()?"rgba(255,255,255,0.05)":C.teal,
+            color:!title.trim()?C.muted:"#191919",transition:"all .15s"
           }
         },isEdit?(T("update",lang)):(T("taskAdd",lang)))
       )
@@ -5438,11 +5452,11 @@ const KanbanBoardView = ({accounts=[], lang="fr"}) => {
           key:col.key,
           onDragOver:e=>e.preventDefault(),
           onDrop:e=>handleDrop(e,col.key),
-          style:{flex:1,background:C.surface,borderRadius:16,padding:14,border:`1px solid ${C.border}`,minHeight:300,overflow:"auto"}
+          style:{flex:1,background:C.surface,borderRadius:4,padding:14,border:`1px solid ${C.border}`,minHeight:300,overflow:"auto"}
         },
           /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:800,marginBottom:12,display:"flex",alignItems:"center",gap:8,color:col.color}},
             col.icon," ",col.label,
-            /*#__PURE__*/React.createElement("span",{style:{fontSize:11,background:`${col.color}22`,border:`1px solid ${col.color}44`,padding:"2px 8px",borderRadius:20,color:col.color,fontWeight:700}},
+            /*#__PURE__*/React.createElement("span",{style:{fontSize:11,background:`${col.color}22`,border:`1px solid ${col.color}44`,padding:"2px 8px",borderRadius:4,color:col.color,fontWeight:700}},
               columns[col.key].length)
           ),
           columns[col.key].length===0
@@ -5452,7 +5466,7 @@ const KanbanBoardView = ({accounts=[], lang="fr"}) => {
                   key:`${task.accountId}-${task.id}-${i}`,
                   draggable:true,
                   onDragStart:e=>handleDragStart(e,task,col.key),
-                  style:{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:12,padding:"12px 14px",marginBottom:8,cursor:"grab",transition:"border-color .15s"},
+                  style:{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:4,padding:"12px 14px",marginBottom:8,cursor:"grab",transition:"border-color .15s"},
                   onMouseEnter:e=>e.currentTarget.style.borderColor=col.color+"66",
                   onMouseLeave:e=>e.currentTarget.style.borderColor=C.border
                 },
@@ -5544,7 +5558,7 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
         React.createElement("button",{
           onClick:getAiTip,disabled:aiLoading,
           style:{
-            display:"flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:12,
+            display:"flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:4,
             border:`1px solid ${C.tealBorder}`,background:C.tealBg,color:C.teal,
             fontSize:12,fontWeight:700,cursor:aiLoading?"not-allowed":"pointer",opacity:aiLoading?.7:1
           }
@@ -5552,8 +5566,8 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
         React.createElement("button",{
           onClick:()=>{setDefaultQuad("q1");setEditTask(null);setShowAdd(true);},
           style:{
-            display:"flex",alignItems:"center",gap:6,padding:"8px 16px",borderRadius:12,
-            background:`linear-gradient(135deg,${C.teal},${C.amber})`,color:"#FFF8F2",
+            display:"flex",alignItems:"center",gap:6,padding:"8px 16px",borderRadius:4,
+            background:C.teal,color:"#FFFFFF",
             fontSize:12,fontWeight:800,border:"none",cursor:"pointer"
           }
         },"+ "+(T("newTask",lang)))
@@ -5562,10 +5576,10 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
     // AI tip banner
     aiTip&&React.createElement("div",{style:{
       background:"rgba(167,139,250,0.08)",border:"1px solid rgba(167,139,250,0.22)",
-      borderRadius:12,padding:"12px 16px",marginBottom:14,fontSize:12.5,
+      borderRadius:4,padding:"12px 16px",marginBottom:14,fontSize:12.5,
       color:C.text,lineHeight:1.7,flexShrink:0,position:"relative"
     }},
-      React.createElement("span",{style:{fontWeight:800,color:"#B8A0D4"}},"✨ Coach IA  "),
+      React.createElement("span",{style:{fontWeight:800,color:"#9065B0"}},"✨ Coach IA  "),
       aiTip,
       React.createElement("button",{
         onClick:()=>setAiTip(""),
@@ -5580,7 +5594,7 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
         key:val,
         onClick:()=>setFilter(val),
         style:{
-          padding:"4px 12px",borderRadius:20,fontSize:11,fontWeight:600,cursor:"pointer",
+          padding:"4px 12px",borderRadius:4,fontSize:11,fontWeight:600,cursor:"pointer",
           border:`1px solid ${filter===val?C.tealBorder:C.border}`,
           background:filter===val?C.tealBg:C.surface,
           color:filter===val?C.teal:C.muted,transition:"all .12s"
@@ -5596,7 +5610,7 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
           return React.createElement("div",{
             key:q.id,
             style:{
-              background:q.bg,border:`1.5px solid ${q.border}`,borderRadius:16,
+              background:q.bg,border:`1.5px solid ${q.border}`,borderRadius:4,
               padding:"14px",display:"flex",flexDirection:"column",minHeight:180
             }
           },
@@ -5606,7 +5620,7 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
                   q.icon," ",lang==="en"?q.labelEn:lang==="kr"?q.labelKr||q.label:q.label,
                   React.createElement("span",{style:{
                     fontSize:10,background:q.accent+"22",color:q.accent,
-                    borderRadius:12,padding:"1px 7px",fontWeight:700
+                    borderRadius:4,padding:"1px 7px",fontWeight:700
                   }},qTasks.length)
                 ),
                 React.createElement("div",{style:{fontSize:10,color:C.muted,marginTop:1}},lang==="en"?q.subEn:lang==="kr"?q.subKr||q.subEn:q.sub)
@@ -5652,15 +5666,49 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
   );
 };
 
+// ══════════════════════════════════════════════════
+// UNIFIED TASK BOARD — Kanban + Eisenhower tabs
+// ══════════════════════════════════════════════════
+const UnifiedTaskBoard = ({accounts=[], role="csm", lang="fr", companyId=null}) => {
+  const [activeTab, setActiveTab] = useState(() => {
+    try { return localStorage.getItem("scalyo_taskboard_tab") || "kanban"; } catch(e) { return "kanban"; }
+  });
+  const switchTab = (tab) => { setActiveTab(tab); try { localStorage.setItem("scalyo_taskboard_tab", tab); } catch(e){} };
+  const tabs = [
+    {key:"kanban", label:T("kanbanView",lang), icon:"📋"},
+    {key:"eisenhower", label:T("eisenhowerView",lang), icon:"🎯"}
+  ];
+  return React.createElement("div", {className:"fade-in", style:{padding:20,height:"100%",overflow:"auto"}},
+    React.createElement("div", {style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18}},
+      React.createElement("h2", {style:{fontSize:20,fontWeight:900,letterSpacing:"-0.5px"}}, "📋 ", T("tasks",lang)),
+      React.createElement("div", {style:{display:"flex",gap:2,background:C.surface,borderRadius:4,padding:3,border:`1px solid ${C.border}`}},
+        tabs.map(tab => React.createElement("button", {
+          key:tab.key,
+          onClick:()=>switchTab(tab.key),
+          style:{
+            padding:"6px 16px",borderRadius:3,fontSize:13,fontWeight:activeTab===tab.key?700:500,
+            border:"none",cursor:"pointer",transition:"all .15s",
+            background:activeTab===tab.key?C.bg:"transparent",
+            color:activeTab===tab.key?C.text:C.muted,
+            boxShadow:activeTab===tab.key?"0 1px 3px rgba(0,0,0,0.08)":"none"
+          }
+        }, tab.icon," ",tab.label))
+      )
+    ),
+    activeTab === "kanban"
+      ? React.createElement(KanbanBoardView, {accounts, lang})
+      : React.createElement(TaskBoardView, {accounts, role, lang, companyId})
+  );
+};
 
 // ══════════════════════════════════════════════════
 // PLANNING VIEW — Calendrier + Sync Google/Outlook
 // ══════════════════════════════════════════════════
 
 const EVENT_COLORS=[
-  {id:"teal",hex:"#E8A07A"},{id:"blue",hex:"#3B82F6"},
-  {id:"purple",hex:"#B8A0D4"},{id:"green",hex:"#8BBF9A"},
-  {id:"amber",hex:"#D4B87A"},{id:"red",hex:"#D4878F"}
+  {id:"teal",hex:"#2383E2"},{id:"blue",hex:"#3B82F6"},
+  {id:"purple",hex:"#9065B0"},{id:"green",hex:"#0F7B6C"},
+  {id:"amber",hex:"#CB912F"},{id:"red",hex:"#EB5757"}
 ];
 
 const getEventsFromLS=()=>{try{const r=localStorage.getItem("scalyo_events");return r?JSON.parse(r):[];}catch(e){return [];}};
@@ -5786,7 +5834,7 @@ const PlanningView=({lang="fr",accounts=[],companyId=null})=>{
         },"⬇ Export .ics"),
         React.createElement("button",{
           onClick:()=>{setSelectedDate(today.toISOString().slice(0,10));setEditEvent(null);setShowAddEvent(true);},
-          style:{padding:"6px 14px",borderRadius:9,background:`linear-gradient(135deg,${C.teal},${C.amber})`,color:"#FFF8F2",border:"none",cursor:"pointer",fontSize:11,fontWeight:800}
+          style:{padding:"6px 14px",borderRadius:9,background:C.teal,color:"#FFFFFF",border:"none",cursor:"pointer",fontSize:11,fontWeight:800}
         },"+ "+(T("event",lang)))
       )
     ),
@@ -5923,7 +5971,7 @@ const AddEventModal=({lang,accounts,editEvent,defaultDate,onClose,onSave,onDelet
   const [account,setAccount]=useState(editEvent?.account||"");
   const [saved,setSaved]=useState(null);
   const isEdit=!!editEvent;
-  const S={width:"100%",background:C.bg2,border:`1px solid ${C.border}`,borderRadius:12,padding:"10px 13px",color:C.text,fontSize:13,marginBottom:12};
+  const S={width:"100%",background:C.bg2,border:`1px solid ${C.border}`,borderRadius:4,padding:"10px 13px",color:C.text,fontSize:13,marginBottom:12};
 
   const handleSave=()=>{
     if(!title.trim()||!date)return;
@@ -5940,17 +5988,17 @@ const AddEventModal=({lang,accounts,editEvent,defaultDate,onClose,onSave,onDelet
       ),
       React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:8,marginBottom:16}},
         React.createElement("a",{href:buildGoogleLink(saved),target:"_blank",rel:"noopener",
-          style:{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"12px",borderRadius:12,textDecoration:"none",fontWeight:700,fontSize:13,background:"rgba(234,67,53,0.1)",border:"1px solid rgba(234,67,53,0.2)",color:"#EA4335",cursor:"pointer"}
+          style:{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"12px",borderRadius:4,textDecoration:"none",fontWeight:700,fontSize:13,background:"rgba(234,67,53,0.1)",border:"1px solid rgba(234,67,53,0.2)",color:"#EA4335",cursor:"pointer"}
         },"🔴 "+(T("addToGoogle",lang))),
         React.createElement("a",{href:buildOutlookLink(saved),target:"_blank",rel:"noopener",
-          style:{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"12px",borderRadius:12,textDecoration:"none",fontWeight:700,fontSize:13,background:"rgba(0,120,212,0.1)",border:"1px solid rgba(0,120,212,0.2)",color:"#0078D4",cursor:"pointer"}
+          style:{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"12px",borderRadius:4,textDecoration:"none",fontWeight:700,fontSize:13,background:"rgba(0,120,212,0.1)",border:"1px solid rgba(0,120,212,0.2)",color:"#0078D4",cursor:"pointer"}
         },"🔵 "+(T("addToOutlook",lang))),
         React.createElement("button",{onClick:()=>exportICS([saved],`${saved.title.replace(/[^a-z0-9]/gi,"_")}.ics`),
-          style:{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"12px",borderRadius:12,fontWeight:700,fontSize:13,cursor:"pointer",background:"rgba(52,211,153,0.1)",border:"1px solid rgba(52,211,153,0.2)",color:"#8BBF9A"}
+          style:{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"12px",borderRadius:4,fontWeight:700,fontSize:13,cursor:"pointer",background:"rgba(52,211,153,0.1)",border:"1px solid rgba(52,211,153,0.2)",color:"#0F7B6C"}
         },"🍎 "+(T("exportIcs",lang)))
       ),
       React.createElement("button",{onClick:onClose,
-        style:{width:"100%",padding:"10px",borderRadius:12,background:C.surface,border:`1px solid ${C.border}`,color:C.muted,cursor:"pointer",fontSize:13,fontWeight:600}
+        style:{width:"100%",padding:"10px",borderRadius:4,background:C.surface,border:`1px solid ${C.border}`,color:C.muted,cursor:"pointer",fontSize:13,fontWeight:600}
       },T("close",lang))
     )
   );
@@ -5991,13 +6039,13 @@ const AddEventModal=({lang,accounts,editEvent,defaultDate,onClose,onSave,onDelet
       React.createElement("textarea",{value:note,onChange:e=>setNote(e.target.value),placeholder:"Notes...",rows:2,style:{...S,resize:"vertical"}}),
       React.createElement("div",{style:{display:"flex",gap:8}},
         isEdit&&React.createElement("button",{onClick:()=>onDelete(editEvent.id),
-          style:{padding:"10px 14px",borderRadius:12,background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.2)",color:"#EF4444",cursor:"pointer",fontSize:12,fontWeight:700}
+          style:{padding:"10px 14px",borderRadius:4,background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.2)",color:"#EF4444",cursor:"pointer",fontSize:12,fontWeight:700}
         },"🗑"),
-        React.createElement("button",{onClick:onClose,style:{flex:1,padding:"11px",borderRadius:12,background:C.surface,border:`1px solid ${C.border}`,color:C.muted,cursor:"pointer",fontSize:13,fontWeight:600}},T("cancel",lang)),
+        React.createElement("button",{onClick:onClose,style:{flex:1,padding:"11px",borderRadius:4,background:C.surface,border:`1px solid ${C.border}`,color:C.muted,cursor:"pointer",fontSize:13,fontWeight:600}},T("cancel",lang)),
         React.createElement("button",{disabled:!title.trim()||!date,onClick:handleSave,
-          style:{flex:2,padding:"11px",borderRadius:12,fontSize:13,fontWeight:800,cursor:"pointer",border:"none",
-            background:!title.trim()||!date?"rgba(255,255,255,0.05)":`linear-gradient(135deg,${C.teal},${C.amber})`,
-            color:!title.trim()||!date?C.muted:"#1C1714"}
+          style:{flex:2,padding:"11px",borderRadius:4,fontSize:13,fontWeight:800,cursor:"pointer",border:"none",
+            background:!title.trim()||!date?"rgba(255,255,255,0.05)":C.teal,
+            color:!title.trim()||!date?C.muted:"#191919"}
         },isEdit?(T("update",lang)):(T("taskAdd",lang)))
       )
     )
@@ -6512,13 +6560,13 @@ PROHIBITIONS: No toxic positivity, no minimizing, no 10-tip dumps, always name s
     style: {
       width: 42,
       height: 42,
-      background: `linear-gradient(135deg,${C.green},#4A8A5E)`,
+      background: C.green,
       borderRadius: 13,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       fontSize: 20,
-      boxShadow: "0 4px 14px rgba(16,185,129,0.3)"
+      boxShadow: "none"
     }
   }, "\uD83D\uDC9A"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -6570,7 +6618,7 @@ PROHIBITIONS: No toxic positivity, no minimizing, no 10-tip dumps, always name s
       height: 32,
       borderRadius: 12,
       flexShrink: 0,
-      background: "linear-gradient(135deg,${C.green},#4A8A5E)",
+      background: C.green,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -6593,11 +6641,11 @@ PROHIBITIONS: No toxic positivity, no minimizing, no 10-tip dumps, always name s
   }, m.text)))), (typing || loading) && /*#__PURE__*/React.createElement("div", {
     style: { display:"flex", gap:10, alignItems:"flex-end", marginBottom:8 }
   },
-    /*#__PURE__*/React.createElement("div", { style:{ width:32, height:32, borderRadius:12, flexShrink:0, background:"linear-gradient(135deg,${C.green},#4A8A5E)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 } }, "💚"),
-    /*#__PURE__*/React.createElement("div", { style:{ background:"linear-gradient(135deg,rgba(16,185,129,0.15),rgba(5,150,105,0.1))", border:"1px solid rgba(16,185,129,0.3)", borderRadius:"16px 16px 16px 4px", padding:"12px 16px", display:"flex", gap:6, alignItems:"center" } },
-      /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#8BBF9A", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s infinite" } }),
-      /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#8BBF9A", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.2s infinite" } }),
-      /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#8BBF9A", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.4s infinite" } })
+    /*#__PURE__*/React.createElement("div", { style:{ width:32, height:32, borderRadius:4, flexShrink:0, background:C.green, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 } }, "💚"),
+    /*#__PURE__*/React.createElement("div", { style:{ background:C.greenBg, border:"1px solid rgba(16,185,129,0.3)", borderRadius:"16px 16px 16px 4px", padding:"12px 16px", display:"flex", gap:6, alignItems:"center" } },
+      /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#0F7B6C", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s infinite" } }),
+      /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#0F7B6C", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.2s infinite" } }),
+      /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#0F7B6C", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.4s infinite" } })
     )
   ), /*#__PURE__*/React.createElement("div", {
     ref: bottomRef
@@ -6648,7 +6696,7 @@ PROHIBITIONS: No toxic positivity, no minimizing, no 10-tip dumps, always name s
     style: {
       padding: "12px 18px",
       borderRadius: 11,
-      background: "linear-gradient(135deg,${C.green},#4A8A5E)",
+      background: C.green,
       color: "#fff",
       fontSize: 14
     }
@@ -9456,7 +9504,7 @@ const KPIView = ({
   });
   const [showKpiForm, setShowKpiForm] = React.useState(false);
   const [editKpiIdx, setEditKpiIdx] = React.useState(null);
-  const [kpiForm, setKpiForm] = React.useState({name:"",unit:"",type:"number",goal:"",color:"#E8A07A",value:"",description:""});
+  const [kpiForm, setKpiForm] = React.useState({name:"",unit:"",type:"number",goal:"",color:"#2383E2",value:"",description:""});
 
   // ── PERSISTANCE : KPIs standards par période
   const [kpiHistory, setKpiHistory] = React.useState(() => {
@@ -9918,8 +9966,8 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       borderRadius: 9,
       fontWeight: 800,
       fontSize: 13,
-      background: saved ? C.green : `linear-gradient(135deg,${C.teal},${C.amber})`,
-      color: "#FFF8F2",
+      background: saved ? C.green : C.teal,
+      color: "#FFFFFF",
       transition: "all 0.2s"
     }
   }, saved ? (T("saved",lang)) : (T("save",lang))))), /*#__PURE__*/React.createElement("div", {
@@ -9954,7 +10002,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
   })),
   /* ── ALERTES BANNER ── */
   activeAlerts.length > 0 && showAlertBanner && React.createElement("div", {
-    style:{background:"rgba(240,76,91,0.08)",border:"1px solid rgba(240,76,91,0.25)",borderRadius:16,padding:"12px 16px",marginBottom:16,animation:"fadeIn .3s ease"}
+    style:{background:"rgba(240,76,91,0.08)",border:"1px solid rgba(240,76,91,0.25)",borderRadius:4,padding:"12px 16px",marginBottom:16,animation:"fadeIn .3s ease"}
   },
     React.createElement("div", {style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}},
       React.createElement("div", {style:{display:"flex",alignItems:"center",gap:8}},
@@ -9983,7 +10031,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
           ),
           React.createElement("div", {style:{display:"flex",alignItems:"center",gap:8,flexShrink:0}},
             React.createElement("span", {
-              style:{fontSize:10,fontWeight:800,padding:"3px 8px",borderRadius:20,
+              style:{fontSize:10,fontWeight:800,padding:"3px 8px",borderRadius:4,
                 background:alert.level==="critical"?"rgba(240,76,91,0.2)":"rgba(245,158,11,0.15)",
                 color:alert.level==="critical"?C.red:C.amber}
             }, alert.level==="critical"?"⚠ CRITIQUE":"→ Attention"),
@@ -10004,7 +10052,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       ? /*#__PURE__*/React.createElement("select",{
           value:csmFilter,
           onChange:e=>setCsmFilter(e.target.value),
-          style:{padding:"6px 12px",borderRadius:12,border:`1px solid ${C.border}`,background:C.surface,color:C.text,fontSize:12,fontWeight:600,cursor:"pointer",maxWidth:"100%",width:"auto"}
+          style:{padding:"6px 12px",borderRadius:4,border:`1px solid ${C.border}`,background:C.surface,color:C.text,fontSize:12,fontWeight:600,cursor:"pointer",maxWidth:"100%",width:"auto"}
         }, csms.map(csm=>/*#__PURE__*/React.createElement("option",{key:csm,value:csm},
           csm==="all"?(lang==="en"?"👥 All CSMs":lang==="kr"?"👥 전체 CSM":"👥 Tous les CSMs"):csm
         )))
@@ -10037,8 +10085,8 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     }
   },
     t.label,
-    t.alertBadge>0 && React.createElement("span",{style:{background:C.red,color:"#fff",borderRadius:20,fontSize:9,fontWeight:900,padding:"2px 6px",lineHeight:1}}, t.alertBadge),
-    t.badge>0 && React.createElement("span",{style:{background:t.badgeColor==="amber"?C.amber:C.teal,color:"#FFF8F2",borderRadius:20,fontSize:9,fontWeight:900,padding:"2px 6px",lineHeight:1}}, t.badge)
+    t.alertBadge>0 && React.createElement("span",{style:{background:C.red,color:"#fff",borderRadius:4,fontSize:9,fontWeight:900,padding:"2px 6px",lineHeight:1}}, t.alertBadge),
+    t.badge>0 && React.createElement("span",{style:{background:t.badgeColor==="amber"?C.amber:C.teal,color:"#FFFFFF",borderRadius:4,fontSize:9,fontWeight:900,padding:"2px 6px",lineHeight:1}}, t.badge)
   ))), tab === "revenue" && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -10587,9 +10635,9 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
         React.createElement("div", {style:{fontSize:12,color:C.muted,marginTop:2}}, lang==="en" ? "Create and track your own performance indicators" : lang==="kr" ? "나만의 성과 지표 생성 및 추적" : "Créez et suivez vos propres indicateurs de performance")
       ),
       React.createElement("button", {
-        onClick:()=>{setKpiForm({name:"",unit:"",type:"number",goal:"",color:"#E8A07A",value:"",description:""});setEditKpiIdx(null);setShowKpiForm(true);},
+        onClick:()=>{setKpiForm({name:"",unit:"",type:"number",goal:"",color:"#2383E2",value:"",description:""});setEditKpiIdx(null);setShowKpiForm(true);},
         className:"btn-base",
-        style:{padding:"9px 18px",borderRadius:12,fontWeight:800,fontSize:13,background:`linear-gradient(135deg,${C.teal},${C.amber})`,color:"#FFF8F2",display:"flex",alignItems:"center",gap:7}
+        style:{padding:"9px 18px",borderRadius:4,fontWeight:800,fontSize:13,background:C.teal,color:"#FFFFFF",display:"flex",alignItems:"center",gap:7}
       }, "＋ ", lang==="en" ? "New KPI" : lang==="kr" ? "새 KPI" : T("kpiNewTitle",lang))
     ),
     /* ── KPI Creation Form ── */
@@ -10630,7 +10678,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       React.createElement("div", null,
         React.createElement("label", {style:{display:"block",fontSize:11,fontWeight:700,color:C.muted,marginBottom:6,textTransform:"uppercase",letterSpacing:".6px"}}, lang==="en" ? "Color" : lang==="kr" ? "색상" : "Couleur"),
         React.createElement("div", {className:"color-picker-row"},
-          ["#E8A07A","#9AB8D4","#8BBF9A","#D4B87A","#D4878F","#B8A0D4","#FB923C","#EC4899","#60A5FA","#FACC15"].map(col=>
+          ["#2383E2","#2383E2","#0F7B6C","#CB912F","#EB5757","#9065B0","#FB923C","#EC4899","#60A5FA","#FACC15"].map(col=>
             React.createElement("div", {key:col,className:`color-dot${kpiForm.color===col?" active":""}`,style:{background:col},onClick:()=>setKpiForm(p=>({...p,color:col}))})
           )
         )
@@ -10645,7 +10693,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
             setShowKpiForm(false);setEditKpiIdx(null);
           },
           className:"btn-base",
-          style:{padding:"9px 22px",borderRadius:9,fontWeight:800,fontSize:13,background:`linear-gradient(135deg,${C.teal},${C.amber})`,color:"#FFF8F2"}
+          style:{padding:"9px 22px",borderRadius:9,fontWeight:800,fontSize:13,background:C.teal,color:"#FFFFFF"}
         }, editKpiIdx!==null?(lang==="en" ? "Update" : lang==="kr" ? "업데이트" : T("update",lang)):(lang==="en" ? "Create KPI" : lang==="kr" ? "KPI 생성" : T("kpiCreateBtn",lang))),
         React.createElement("button", {
           onClick:()=>{setShowKpiForm(false);setEditKpiIdx(null);},
@@ -10655,14 +10703,14 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       )
     ),
     /* ── Custom KPI Cards Grid ── */
-    customKpis.length === 0 && !showKpiForm && React.createElement("div", {style:{textAlign:"center",padding:"48px 20px",background:C.surface,borderRadius:16,border:`1px dashed ${C.border}`}},
+    customKpis.length === 0 && !showKpiForm && React.createElement("div", {style:{textAlign:"center",padding:"48px 20px",background:C.surface,borderRadius:4,border:`1px dashed ${C.border}`}},
       React.createElement("div", {style:{fontSize:40,marginBottom:12}}, "🎯"),
       React.createElement("div", {style:{fontSize:15,fontWeight:800,marginBottom:6}}, lang==="en" ? "No custom KPIs yet" : lang==="kr" ? "맞춤 KPI 없음" : T("kpiNoCustom",lang)),
       React.createElement("div", {style:{fontSize:13,color:C.muted,marginBottom:18}}, lang==="en" ? T("kpiCustomDesc",lang) : lang==="kr" ? "팀, 고객 또는 목표에 맞는 KPI를 생성하세요." : T("kpiCustomDesc",lang)),
       React.createElement("button", {
         onClick:()=>setShowKpiForm(true),
         className:"btn-base",
-        style:{padding:"10px 22px",borderRadius:12,fontWeight:800,fontSize:13,background:`linear-gradient(135deg,${C.teal},${C.amber})`,color:"#FFF8F2"}
+        style:{padding:"10px 22px",borderRadius:4,fontWeight:800,fontSize:13,background:C.teal,color:"#FFFFFF"}
       }, "＋ ", lang==="en" ? "Create my first KPI" : lang==="kr" ? "첫 번째 KPI 생성" : "Créer mon premier KPI")
     ),
     customKpis.length > 0 && React.createElement("div", {style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:14}},
@@ -10784,7 +10832,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
             React.createElement("div", {style:{fontSize:12,color:C.muted,marginBottom:12}}, lang==="en" ? "Supported formats: CSV, Excel (.xlsx, .xls)" : lang==="kr" ? "지원 형식: CSV, Excel (.xlsx, .xls)" : T("formats",lang)),
             React.createElement("button", {
               className:"btn-base",
-              style:{padding:"9px 22px",borderRadius:12,fontWeight:800,fontSize:13,background:`linear-gradient(135deg,${C.teal},${C.amber})`,color:"#FFF8F2"}
+              style:{padding:"9px 22px",borderRadius:4,fontWeight:800,fontSize:13,background:C.teal,color:"#FFFFFF"}
             }, lang==="en" ? "Browse file" : lang==="kr" ? "파일 찾기" : T("upload",lang))
           ),
       importError && React.createElement("div", {style:{marginTop:12,fontSize:12,color:C.red}}, "⚠ "+importError)
@@ -10792,7 +10840,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     /* ── Analysis Result ── */
     importedData && React.createElement("div", null,
       /* File info banner */
-      React.createElement("div", {style:{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",background:C.greenBg,border:`1px solid ${C.greenBorder}`,borderRadius:12,marginBottom:16}},
+      React.createElement("div", {style:{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",background:C.greenBg,border:`1px solid ${C.greenBorder}`,borderRadius:4,marginBottom:16}},
         React.createElement("span", {style:{fontSize:20}}, "✅"),
         React.createElement("div", null,
           React.createElement("div", {style:{fontSize:13,fontWeight:800,color:C.green}}, importFileName),
@@ -10801,7 +10849,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       ),
       /* ── MAPPING KPIs AUTO-DETECT ── */
       Object.keys(kpiMapping).length > 0 && React.createElement("div", {
-        style:{background:C.amberBg,border:`1px solid ${C.amberBorder}`,borderRadius:12,padding:"14px 16px",marginBottom:16}
+        style:{background:C.amberBg,border:`1px solid ${C.amberBorder}`,borderRadius:4,padding:"14px 16px",marginBottom:16}
       },
         React.createElement("div", {style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}},
           React.createElement("div", {style:{display:"flex",alignItems:"center",gap:8}},
@@ -10838,7 +10886,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
               setMappingApplied(true);
             },
             className:"btn-base",
-            style:{padding:"8px 18px",borderRadius:9,fontWeight:800,fontSize:12,background:`linear-gradient(135deg,${C.amber},#F97316)`,color:"#FFF8F2"}
+            style:{padding:"8px 18px",borderRadius:9,fontWeight:800,fontSize:12,background:C.amber,color:"#FFFFFF"}
           }, lang==="en" ? "Apply mapping (last row)" : lang==="kr" ? "매핑 적용 (마지막 행)" : T("kpiApply",lang)),
           React.createElement("button", {
             onClick:()=>{
@@ -10899,7 +10947,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
                 ),
                 React.createElement("tbody", null,
                   commonCols.slice(0,8).map((col,ci)=>{
-                    const CHART_COLORS2=["#E8A07A","#9AB8D4","#D4B87A","#B8A0D4","#D4878F","#8BBF9A"];
+                    const CHART_COLORS2=["#2383E2","#2383E2","#CB912F","#9065B0","#EB5757","#0F7B6C"];
                     const valsCurr=importedData.rows.map(r=>parseFloat(r[col.name])||0);
                     const valsPrev=compareFile.rows.map(r=>parseFloat(r[col.name])||0);
                     const avgCurr=valsCurr.length>0?valsCurr.reduce((a,b)=>a+b,0)/valsCurr.length:0;
@@ -10969,7 +11017,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
           : (dateCols[0]||strCols[0]);
         const chartMode = selectedChartType==="auto" ? (dateCols.length>0?"line":"bar") : selectedChartType;
         if(activeCols.length===0) return React.createElement("div", {style:{textAlign:"center",padding:24,color:C.muted}}, lang==="en" ? "Select numeric columns to display charts" : lang==="kr" ? "차트 표시를 위한 숫자 컬럼 선택" : T("kpiNumericHint",lang));
-        const CHART_COLORS=["#E8A07A","#9AB8D4","#D4B87A","#B8A0D4","#D4878F","#8BBF9A","#FB923C"];
+        const CHART_COLORS=["#2383E2","#2383E2","#CB912F","#9065B0","#EB5757","#0F7B6C","#FB923C"];
         const rows = importedData.rows.slice(0,50);
         const labels = labelCol ? rows.map(r=>String(r[labelCol.name]||"").slice(0,10)) : rows.map((_,i)=>String(i+1));
         const maxVal = Math.max(...activeCols.flatMap(c=>rows.map(r=>parseFloat(r[c.name])||0)),1);
@@ -12383,7 +12431,7 @@ PROHIBITED: never "it depends" without immediately explaining what and how to de
     style: {
       width: 40,
       height: 40,
-      background: `linear-gradient(135deg,${C.teal},${C.purple})`,
+      background: C.teal,
       borderRadius: 12,
       display: "flex",
       alignItems: "center",
@@ -12432,7 +12480,7 @@ PROHIBITED: never "it depends" without immediately explaining what and how to de
       width: 32,
       height: 32,
       borderRadius: 12,
-      background: `linear-gradient(135deg,${C.teal},${C.purple})`,
+      background: C.teal,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -12455,8 +12503,8 @@ PROHIBITED: never "it depends" without immediately explaining what and how to de
   }, m.text)))), (typing || loading) && /*#__PURE__*/React.createElement("div", {
     style: { display:"flex", gap:10, alignItems:"flex-end", marginBottom:8 }
   },
-    /*#__PURE__*/React.createElement("div", { style:{ width:32, height:32, borderRadius:12, flexShrink:0, background:"linear-gradient(135deg,"+C.teal+",#0D9488)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 } }, "🤖"),
-    /*#__PURE__*/React.createElement("div", { style:{ background:"linear-gradient(135deg,rgba(18,205,184,0.12),rgba(13,148,136,0.08))", border:"1px solid rgba(18,205,184,0.25)", borderRadius:"16px 16px 16px 4px", padding:"12px 16px", display:"flex", gap:6, alignItems:"center" } },
+    /*#__PURE__*/React.createElement("div", { style:{ width:32, height:32, borderRadius:4, flexShrink:0, background:C.teal, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 } }, "🤖"),
+    /*#__PURE__*/React.createElement("div", { style:{ background:C.tealBg, border:"1px solid rgba(18,205,184,0.25)", borderRadius:"16px 16px 16px 4px", padding:"12px 16px", display:"flex", gap:6, alignItems:"center" } },
       /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:C.teal, borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s infinite" } }),
       /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:C.teal, borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.2s infinite" } }),
       /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:C.teal, borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.4s infinite" } })
@@ -12510,8 +12558,8 @@ PROHIBITED: never "it depends" without immediately explaining what and how to de
     style: {
       padding: "12px 20px",
       borderRadius: 11,
-      background: `linear-gradient(135deg,${C.teal},${C.amber})`,
-      color: "#FFF8F2",
+      background: C.teal,
+      color: "#FFFFFF",
       fontSize: 14
     }
   }, "\u2192")));
@@ -12629,7 +12677,7 @@ const SettingsView = ({
       /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:6}},
         ["fr","en","kr"].map(l=>/*#__PURE__*/React.createElement("div",{
           key:l,onClick:()=>onLang(l),
-          style:{padding:"6px 16px",borderRadius:20,fontSize:12,fontWeight:700,cursor:"pointer",
+          style:{padding:"6px 16px",borderRadius:4,fontSize:12,fontWeight:700,cursor:"pointer",
             background:lang===l?C.tealBg:"rgba(255,255,255,0.04)",
             border:`1px solid ${lang===l?C.tealBorder:C.border}`,
             color:lang===l?C.teal:C.muted,transition:"all .15s"}
@@ -12640,7 +12688,7 @@ const SettingsView = ({
     /*#__PURE__*/React.createElement("h3",{style:{fontSize:15,fontWeight:800,marginBottom:16}},T("currencyLabel",lang)),
     /*#__PURE__*/React.createElement("select",{
       value:currency,onChange:e=>onCurrency(e.target.value),
-      style:{width:"100%",padding:"10px 12px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,color:C.text,fontSize:13,cursor:"pointer",outline:"none"}
+      style:{width:"100%",padding:"10px 12px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:4,color:C.text,fontSize:13,cursor:"pointer",outline:"none"}
     },Object.entries(CURRENCIES).map(([code,{name}])=>
       /*#__PURE__*/React.createElement("option",{key:code,value:code},`${name} (${code})`)
     ))
@@ -12726,8 +12774,8 @@ const SettingsView = ({
       padding: "10px 24px",
       borderRadius: 12,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},${C.amber})`,
-      color: "#FFF8F2"
+      background: C.teal,
+      color: "#FFFFFF"
     }
   }, saving ? /*#__PURE__*/React.createElement("span", {
     style: {
@@ -12737,7 +12785,7 @@ const SettingsView = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 14,
-    color: "#FFF8F2"
+    color: "#FFFFFF"
   }), T("saving",lang)) : (T("save",lang))), saved && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 13,
@@ -12796,8 +12844,8 @@ const SettingsView = ({
       padding: "11px",
       borderRadius: 12,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},${C.amber})`,
-      color: "#FFF8F2"
+      background: C.teal,
+      color: "#FFFFFF"
     }
   }, T("upgradeToGrowth",lang)))), tab === "billing" && role === "manager" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Card, {
     style: {
@@ -12878,7 +12926,7 @@ const SettingsView = ({
       left: "50%",
       transform: "translateX(-50%)",
       background: C.teal,
-      color: "#FFF8F2",
+      color: "#FFFFFF",
       fontSize: 9,
       fontWeight: 800,
       padding: "3px 10px",
@@ -12916,8 +12964,8 @@ const SettingsView = ({
       fontSize: 12,
       fontWeight: 700,
       textDecoration: "none",
-      background: `linear-gradient(135deg,${C.teal},${C.amber})`,
-      color: "#FFF8F2"
+      background: C.teal,
+      color: "#FFFFFF"
     }
   }, T("switchToPlan",lang), p.name) : /*#__PURE__*/React.createElement("div", {
     style: {
@@ -12997,7 +13045,7 @@ const SettingsView = ({
     }
   })))),
   tab === "danger" && role === "manager" && /*#__PURE__*/React.createElement("div", {
-    style: {marginTop:20, padding:20, background:C.redBg, border:`1px solid ${C.redBorder}`, borderRadius:14}
+    style: {marginTop:20, padding:20, background:C.redBg, border:`1px solid ${C.redBorder}`, borderRadius:4}
   },
     /*#__PURE__*/React.createElement("h3", {style:{fontSize:15, fontWeight:800, color:C.red, marginBottom:8}},
       T("deleteAccount",lang)),
@@ -13010,14 +13058,14 @@ const SettingsView = ({
         value: deleteConfirm,
         onChange: e=>setDeleteConfirm(e.target.value),
         placeholder: T("typeDelete",lang),
-        style: {width:"100%", padding:"10px 12px", background:"rgba(240,76,91,0.05)", border:`1px solid ${C.redBorder}`, borderRadius:12, color:C.red, fontSize:13, boxSizing:"border-box"}
+        style: {width:"100%", padding:"10px 12px", background:"rgba(240,76,91,0.05)", border:`1px solid ${C.redBorder}`, borderRadius:4, color:C.red, fontSize:13, boxSizing:"border-box"}
       })
     ),
     /*#__PURE__*/React.createElement("button", {
       onClick: handleDeleteAccount,
       disabled: deleting || (deleteConfirm !== "SUPPRIMER" && deleteConfirm !== "DELETE"),
       className: "btn-base",
-      style: {padding:"10px 20px", borderRadius:12, fontSize:13,
+      style: {padding:"10px 20px", borderRadius:4, fontSize:13,
         cursor:(deleteConfirm==="SUPPRIMER"||deleteConfirm==="DELETE")?"pointer":"not-allowed",
         background:(deleteConfirm==="SUPPRIMER"||deleteConfirm==="DELETE")?C.red:"rgba(240,76,91,0.2)",
         color:"#fff", border:"none",
@@ -13193,7 +13241,7 @@ const TipsView = ({role="csm", lang="fr"}) => {
     className:"fade-in", style:{padding:"24px 28px",maxWidth:820}
   },
     /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:6}},
-      /*#__PURE__*/React.createElement("div",{style:{width:40,height:40,borderRadius:12,background:`linear-gradient(135deg,${C.teal},${C.purple})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}},"🎓"),
+      /*#__PURE__*/React.createElement("div",{style:{width:40,height:40,borderRadius:4,background:C.teal,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}},"🎓"),
       /*#__PURE__*/React.createElement("div",null,
         /*#__PURE__*/React.createElement("h2",{style:{fontSize:20,fontWeight:900,letterSpacing:"-.4px"}},T("tipsTitle",lang)),
         /*#__PURE__*/React.createElement("p",{style:{fontSize:12,color:C.muted}},T("tipsDesc",lang))
@@ -13208,7 +13256,7 @@ const TipsView = ({role="csm", lang="fr"}) => {
     /*#__PURE__*/React.createElement("input",{
       placeholder:T("searchTips",lang),
       value:search,onChange:e=>setSearch(e.target.value),
-      style:{width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"10px 16px",color:C.text,fontSize:13,marginBottom:20,outline:"none"}
+      style:{width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:4,padding:"10px 16px",color:C.text,fontSize:13,marginBottom:20,outline:"none"}
     }),
     filtered.length===0&&/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"40px 0",color:C.muted}},T("noResults",lang)),
     filtered.map((cat,ci)=>/*#__PURE__*/React.createElement("div",{key:ci,style:{marginBottom:20}},
@@ -13231,6 +13279,186 @@ const TipsView = ({role="csm", lang="fr"}) => {
   );
 };
 // ══════════════════════════════════════════════════
+// QUOTES / DEVIS VIEW
+// ══════════════════════════════════════════════════
+const getQuotesFromLS = () => { try { const r = localStorage.getItem("scalyo_quotes"); return r ? JSON.parse(r) : []; } catch(e) { return []; } };
+const saveQuotesToLS = (q) => { try { localStorage.setItem("scalyo_quotes", JSON.stringify(q)); } catch(e){} };
+
+const QUOTE_STATUSES = ["draft","sent","won","lost"];
+const quoteStatusColor = (s) => s==="won"?C.green:s==="lost"?C.red:s==="sent"?C.blue:C.muted;
+const quoteStatusLabel = (s, lang) => T("quote"+s.charAt(0).toUpperCase()+s.slice(1), lang);
+
+const QuotesView = ({lang="fr", currency="EUR", accounts=[]}) => {
+  const [quotes, setQuotes] = useState(() => getQuotesFromLS());
+  const [filter, setFilter] = useState("all");
+  const [showModal, setShowModal] = useState(false);
+  const [editQuote, setEditQuote] = useState(null);
+
+  const saveAll = (q) => { saveQuotesToLS(q); setQuotes(q); };
+  const addOrUpdate = (q) => {
+    if (editQuote) {
+      saveAll(quotes.map(x => x.id === editQuote.id ? {...x,...q} : x));
+    } else {
+      saveAll([...quotes, {...q, id:Date.now().toString(36)+Math.random().toString(36).slice(2,6), createdAt:new Date().toISOString()}]);
+    }
+    setShowModal(false); setEditQuote(null);
+  };
+  const deleteQuote = (id) => saveAll(quotes.filter(q => q.id !== id));
+  const duplicateQuote = (q) => {
+    const dup = {...q, id:Date.now().toString(36)+Math.random().toString(36).slice(2,6), title:q.title+" (copie)", status:"draft", createdAt:new Date().toISOString()};
+    saveAll([...quotes, dup]);
+  };
+
+  const filtered = filter === "all" ? quotes : quotes.filter(q => q.status === filter);
+  const totalWon = quotes.filter(q => q.status === "won").reduce((s,q) => s + (parseFloat(q.amount)||0), 0);
+  const convRate = quotes.length > 0 ? Math.round(quotes.filter(q=>q.status==="won").length / quotes.length * 100) : 0;
+
+  return React.createElement("div", {className:"fade-in", style:{padding:20,height:"100%",overflow:"auto"}},
+    React.createElement("div", {style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18,flexWrap:"wrap",gap:10}},
+      React.createElement("h2", {style:{fontSize:20,fontWeight:900,letterSpacing:"-0.5px"}}, "📝 ", T("quotes",lang)),
+      React.createElement("button", {
+        className:"btn-base",
+        onClick:() => { setEditQuote(null); setShowModal(true); },
+        style:{padding:"8px 16px",borderRadius:4,fontSize:13,fontWeight:700,background:C.teal,color:"#fff",cursor:"pointer"}
+      }, "+ ", T("addQuote",lang))
+    ),
+    // Stats row
+    React.createElement("div", {style:{display:"flex",gap:12,marginBottom:16,flexWrap:"wrap"}},
+      [{label:T("quotes",lang), value:quotes.length, color:C.teal},
+       {label:T("quoteTotalWon",lang), value:fmtCur(totalWon, currency), color:C.green},
+       {label:T("quoteConversion",lang), value:convRate+"%", color:C.amber}
+      ].map((s,i) => React.createElement("div", {key:i, style:{flex:"1 1 140px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:4,padding:"12px 16px"}},
+        React.createElement("div", {style:{fontSize:11,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:".05em",marginBottom:4}}, s.label),
+        React.createElement("div", {style:{fontSize:20,fontWeight:900,color:s.color}}, s.value)
+      ))
+    ),
+    // Filter chips
+    React.createElement("div", {style:{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}},
+      [{key:"all",label:T("quoteAll",lang)}, ...QUOTE_STATUSES.map(s=>({key:s, label:quoteStatusLabel(s,lang)}))].map(f =>
+        React.createElement("button", {
+          key:f.key,
+          onClick:()=>setFilter(f.key),
+          style:{
+            padding:"5px 14px",borderRadius:4,fontSize:12,fontWeight:filter===f.key?700:500,
+            border:`1px solid ${filter===f.key?C.tealBorder:C.border}`,cursor:"pointer",
+            background:filter===f.key?C.tealBg:C.surface,
+            color:filter===f.key?C.teal:C.muted,transition:"all .15s"
+          }
+        }, f.label)
+      )
+    ),
+    // Quotes table
+    filtered.length === 0
+      ? React.createElement("div", {style:{textAlign:"center",padding:40,color:C.muted,fontSize:14}}, T("noQuotes",lang))
+      : React.createElement("div", {style:{display:"flex",flexDirection:"column",gap:6}},
+          filtered.map(q => {
+            const sc = quoteStatusColor(q.status);
+            return React.createElement("div", {key:q.id, style:{
+              display:"flex",alignItems:"center",gap:12,padding:"12px 16px",
+              background:C.surface,border:`1px solid ${C.border}`,borderRadius:4,
+              borderLeft:`3px solid ${sc}`,transition:"border-color .15s"
+            }},
+              React.createElement("div", {style:{flex:1,minWidth:0}},
+                React.createElement("div", {style:{fontSize:14,fontWeight:600,marginBottom:2}}, q.title),
+                React.createElement("div", {style:{fontSize:12,color:C.muted}}, q.client || "—")
+              ),
+              React.createElement("div", {style:{fontSize:14,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",minWidth:80,textAlign:"right"}},
+                fmtCur(parseFloat(q.amount)||0, q.currency||currency)),
+              React.createElement("span", {style:{
+                fontSize:11,fontWeight:700,padding:"3px 10px",borderRadius:4,
+                background:sc+"18",color:sc,border:`1px solid ${sc}44`
+              }}, quoteStatusLabel(q.status, lang)),
+              React.createElement("div", {style:{fontSize:11,color:C.muted,minWidth:70,textAlign:"right"}},
+                q.date || "—"),
+              React.createElement("div", {style:{display:"flex",gap:4}},
+                React.createElement("button", {onClick:()=>{setEditQuote(q);setShowModal(true);},
+                  style:{background:"none",border:"none",cursor:"pointer",fontSize:13,color:C.muted,padding:4}}, "✏️"),
+                React.createElement("button", {onClick:()=>duplicateQuote(q),
+                  style:{background:"none",border:"none",cursor:"pointer",fontSize:13,color:C.muted,padding:4}}, "📋"),
+                React.createElement("button", {onClick:()=>deleteQuote(q.id),
+                  style:{background:"none",border:"none",cursor:"pointer",fontSize:13,color:C.red,padding:4}}, "🗑️")
+              )
+            );
+          })
+        ),
+    // Add/Edit Modal
+    showModal && React.createElement("div", {
+      style:{position:"fixed",inset:0,background:"rgba(15,15,15,0.6)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999},
+      onClick:(e) => { if(e.target===e.currentTarget){setShowModal(false);setEditQuote(null);} }
+    },
+      React.createElement(QuoteModal, {lang, currency, quote:editQuote, accounts, onSave:addOrUpdate, onClose:()=>{setShowModal(false);setEditQuote(null);}})
+    )
+  );
+};
+
+const QuoteModal = ({lang="fr", currency="EUR", quote=null, accounts=[], onSave, onClose}) => {
+  const [title, setTitle] = useState(quote?.title || "");
+  const [client, setClient] = useState(quote?.client || "");
+  const [amount, setAmount] = useState(quote?.amount || "");
+  const [cur, setCur] = useState(quote?.currency || currency);
+  const [status, setStatus] = useState(quote?.status || "draft");
+  const [date, setDate] = useState(quote?.date || new Date().toISOString().slice(0,10));
+  const [notes, setNotes] = useState(quote?.notes || "");
+
+  const fieldStyle = {width:"100%",padding:"9px 12px",borderRadius:4,border:`1px solid ${C.border}`,background:C.surface,color:C.text,fontSize:13,outline:"none",fontFamily:"'Inter',sans-serif"};
+  const labelStyle = {fontSize:11,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:".05em",marginBottom:5,display:"block"};
+
+  return React.createElement("div", {style:{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:8,padding:28,width:440,maxWidth:"95vw",maxHeight:"90vh",overflow:"auto"}},
+    React.createElement("h3", {style:{fontSize:16,fontWeight:800,marginBottom:18}}, quote ? T("edit",lang) : T("addQuote",lang)),
+    // Title
+    React.createElement("div", {style:{marginBottom:12}},
+      React.createElement("label", {style:labelStyle}, T("quoteTitle",lang)),
+      React.createElement("input", {value:title,onChange:e=>setTitle(e.target.value),style:fieldStyle,placeholder:T("quoteTitle",lang)})
+    ),
+    // Client
+    React.createElement("div", {style:{marginBottom:12}},
+      React.createElement("label", {style:labelStyle}, T("quoteClient",lang)),
+      React.createElement("input", {value:client,onChange:e=>setClient(e.target.value),style:fieldStyle,placeholder:T("quoteClient",lang),list:"quote-clients"}),
+      React.createElement("datalist", {id:"quote-clients"}, accounts.map(a => React.createElement("option", {key:a.id||a.name, value:a.name})))
+    ),
+    // Amount + Currency row
+    React.createElement("div", {style:{display:"flex",gap:10,marginBottom:12}},
+      React.createElement("div", {style:{flex:1}},
+        React.createElement("label", {style:labelStyle}, T("quoteAmount",lang)),
+        React.createElement("input", {type:"number",value:amount,onChange:e=>setAmount(e.target.value),style:fieldStyle,placeholder:"0"})
+      ),
+      React.createElement("div", {style:{width:110}},
+        React.createElement("label", {style:labelStyle}, T("currencyLabel",lang)),
+        React.createElement("select", {value:cur,onChange:e=>setCur(e.target.value),style:{...fieldStyle,cursor:"pointer"}},
+          Object.keys(CURRENCIES).map(k => React.createElement("option", {key:k,value:k}, k+" — "+CURRENCIES[k].name))
+        )
+      )
+    ),
+    // Status + Date row
+    React.createElement("div", {style:{display:"flex",gap:10,marginBottom:12}},
+      React.createElement("div", {style:{flex:1}},
+        React.createElement("label", {style:labelStyle}, T("quoteStatus",lang)),
+        React.createElement("select", {value:status,onChange:e=>setStatus(e.target.value),style:{...fieldStyle,cursor:"pointer"}},
+          QUOTE_STATUSES.map(s => React.createElement("option", {key:s,value:s}, quoteStatusLabel(s,lang)))
+        )
+      ),
+      React.createElement("div", {style:{flex:1}},
+        React.createElement("label", {style:labelStyle}, T("quoteDate",lang)),
+        React.createElement("input", {type:"date",value:date,onChange:e=>setDate(e.target.value),style:fieldStyle})
+      )
+    ),
+    // Notes
+    React.createElement("div", {style:{marginBottom:18}},
+      React.createElement("label", {style:labelStyle}, T("quoteNotes",lang)),
+      React.createElement("textarea", {value:notes,onChange:e=>setNotes(e.target.value),rows:3,style:{...fieldStyle,resize:"vertical"}})
+    ),
+    // Actions
+    React.createElement("div", {style:{display:"flex",gap:8,justifyContent:"flex-end"}},
+      React.createElement("button", {onClick:onClose, style:{padding:"8px 16px",borderRadius:4,border:`1px solid ${C.border}`,background:C.surface,color:C.text,fontSize:13,fontWeight:600,cursor:"pointer"}}, T("cancel",lang)),
+      React.createElement("button", {
+        onClick:()=>{ if(!title.trim()) return; onSave({title,client,amount,currency:cur,status,date,notes}); },
+        style:{padding:"8px 16px",borderRadius:4,border:"none",background:C.teal,color:"#fff",fontSize:13,fontWeight:700,cursor:"pointer",opacity:title.trim()?1:0.5}
+      }, T("save",lang))
+    )
+  );
+};
+
+// ══════════════════════════════════════════════════
 // MAIN APP
 // ══════════════════════════════════════════════════
 const NAV_MANAGER = (lang) => [{
@@ -13248,7 +13476,7 @@ const NAV_MANAGER = (lang) => [{
 }, {
   id: "tasks",
   label: T("tasks",lang),
-  icon: "🎯"
+  icon: "📋"
 }, {
   id: "planning",
   label: T("planning",lang),
@@ -13278,9 +13506,9 @@ const NAV_MANAGER = (lang) => [{
   label: T("email",lang),
   icon: "✉️"
 }, {
-  id: "taskboard",
-  label: T("taskboard",lang),
-  icon: "📋"
+  id: "quotes",
+  label: T("quotes",lang),
+  icon: "📝"
 }];
 const NAV_CSM = (lang) => [{
   id: "dashboard",
@@ -13297,7 +13525,7 @@ const NAV_CSM = (lang) => [{
 }, {
   id: "tasks",
   label: T("tasks",lang),
-  icon: "🎯"
+  icon: "📋"
 }, {
   id: "planning",
   label: T("planning",lang),
@@ -13319,9 +13547,9 @@ const NAV_CSM = (lang) => [{
   label: T("tips",lang),
   icon: "🎓"
 }, {
-  id: "taskboard",
-  label: T("taskboard",lang),
-  icon: "📋"
+  id: "quotes",
+  label: T("quotes",lang),
+  icon: "📝"
 }];
 
 // ── COACHING REMINDER BANNER (Elite Manager only, 1 fois/mois)
@@ -13329,7 +13557,7 @@ const CoachingReminderBanner = ({lang="fr", onClose}) => /*#__PURE__*/React.crea
   style:{
     background:"rgba(139,92,246,.1)",
     border:"1px solid rgba(139,92,246,.3)",
-    borderRadius:12,
+    borderRadius:4,
     padding:"12px 16px",
     margin:"0 0 14px 0",
     display:"flex",
@@ -13342,7 +13570,7 @@ const CoachingReminderBanner = ({lang="fr", onClose}) => /*#__PURE__*/React.crea
   /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10,flex:1}},
     /*#__PURE__*/React.createElement("span",{style:{fontSize:18}},"📅"),
     /*#__PURE__*/React.createElement("div",null,
-      /*#__PURE__*/React.createElement("div",{style:{fontWeight:700,color:"#B8A0D4",marginBottom:2}},
+      /*#__PURE__*/React.createElement("div",{style:{fontWeight:700,color:"#9065B0",marginBottom:2}},
         lang==="en" ? "Your monthly coaching session is available!" : lang==="kr" ? "월간 코칭 세션을 이용할 수 있습니다!" : T("tipsCoaching",lang)
       ),
       /*#__PURE__*/React.createElement("div",{style:{color:"#C4B5FD",fontSize:12}},
@@ -13364,7 +13592,7 @@ const CoachingReminderBanner = ({lang="fr", onClose}) => /*#__PURE__*/React.crea
     /*#__PURE__*/React.createElement("button",{
       onClick:onClose,
       style:{
-        background:"none",border:"none",color:"#B8A0D4",cursor:"pointer",
+        background:"none",border:"none",color:"#9065B0",cursor:"pointer",
         fontSize:18,lineHeight:1,padding:"0 2px"
       }
     },"×")
@@ -13375,7 +13603,7 @@ const SyncWarningBanner = ({lang="fr", onDismiss}) => /*#__PURE__*/React.createE
   style:{
     background:"rgba(251,191,36,.08)",
     border:"1px solid rgba(251,191,36,.2)",
-    borderRadius:12,
+    borderRadius:4,
     padding:"10px 16px",
     margin:"0 0 16px 0",
     display:"flex",
@@ -13480,7 +13708,7 @@ const FeedbackView = ({lang="fr"}) => {
           onMouseEnter:()=>setHover(n),
           onMouseLeave:()=>setHover(0),
           style:{
-            width:44,height:44,borderRadius:12,border:"1px solid",
+            width:44,height:44,borderRadius:4,border:"1px solid",
             borderColor:(hover||rating)>=n?C.tealBorder:C.border,
             background:(hover||rating)>=n?C.tealBg:"transparent",
             color:(hover||rating)>=n?C.teal:C.muted,
@@ -13503,7 +13731,7 @@ const FeedbackView = ({lang="fr"}) => {
           key:cat,
           onClick:()=>setCategory(cat),
           style:{
-            padding:"8px 14px",borderRadius:20,border:"1px solid",
+            padding:"8px 14px",borderRadius:4,border:"1px solid",
             borderColor:category===cat?C.tealBorder:C.border,
             background:category===cat?C.tealBg:"transparent",
             color:category===cat?C.teal:C.muted,
@@ -13523,7 +13751,7 @@ const FeedbackView = ({lang="fr"}) => {
         onChange:e=>setMessage(e.target.value),
         placeholder:lang==="en" ? "Describe what happened, what you expected, or what you'd like to see..." : lang==="kr" ? "무슨 일이 있었는지, 기대했던 것, 또는 바라는 것을 설명해주세요..." : "Décrivez ce qui s'est passé, ce que vous attendiez, ou ce que vous aimeriez voir...",
         rows:4,
-        style:{width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"12px 14px",color:C.text,fontSize:14,fontFamily:"inherit",outline:"none",resize:"vertical",lineHeight:1.6}
+        style:{width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:4,padding:"12px 14px",color:C.text,fontSize:14,fontFamily:"inherit",outline:"none",resize:"vertical",lineHeight:1.6}
       })
     ),
 
@@ -13537,7 +13765,7 @@ const FeedbackView = ({lang="fr"}) => {
         value:email,
         onChange:e=>setEmail(e.target.value),
         placeholder:"you@company.io",
-        style:{width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"11px 14px",color:C.text,fontSize:14,fontFamily:"inherit",outline:"none"}
+        style:{width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:4,padding:"11px 14px",color:C.text,fontSize:14,fontFamily:"inherit",outline:"none"}
       })
     ),
 
@@ -13601,7 +13829,7 @@ const App = () => {
   const [theme, setTheme] = useState(()=>{ try{return localStorage.getItem("scalyo_theme")||"light";}catch(e){return "dark";}});
   const [lang, setLang] = useState(()=>{ try{return localStorage.getItem("scalyo_lang")||"fr";}catch(e){return "fr";}});
   // Apply theme to global C
-  Object.assign(C, theme==="light" ? C_LIGHT : C_DARK);
+  Object.assign(C, theme==="dark" ? C_DARK : C_LIGHT);
   // Init CSS vars for data-theme
   if (typeof document !== "undefined") document.documentElement.setAttribute("data-theme", theme);
 
@@ -13700,7 +13928,7 @@ const App = () => {
       console.error("loadData error:", e);
       // Fallback : afficher l'app avec données vides plutôt que rester bloqué
       setAppData({
-        company: { id: null, name: T("myCompany",lang), plan: "Starter", arr: 0, churn: 0, nps: 0, color: "#E8A07A" },
+        company: { id: null, name: T("myCompany",lang), plan: "Starter", arr: 0, churn: 0, nps: 0, color: "#2383E2" },
         accounts: [],
         roadmap: { id: null, phase: "Phase 1 — Launch", progress: 0, items: [] },
         wellbeing: { score: 70, burnout: "none", charge: 70, trend: "+0", alerts: [], team: [] }
@@ -13710,11 +13938,11 @@ const App = () => {
   };
   const handleTheme = t => {
     try{localStorage.setItem("scalyo_theme",t);}catch(e){}
-    Object.assign(C, t==="light"?C_LIGHT:C_DARK);
+    Object.assign(C, t==="dark"?C_DARK:C_LIGHT);
     document.documentElement.setAttribute("data-theme", t);
-    document.body.style.background = t==="light"?"#FFF8F2":"#1C1714";
+    document.body.style.background = t==="dark"?"#191919":"#FFFFFF";
     document.body.style.color = t==="light"?"#1E293B":"#E8EDF5";
-    document.getElementById("root").style.background = t==="light"?"#FFF8F2":"#1C1714";
+    document.getElementById("root").style.background = t==="light"?"#FFFFFF":"#191919";
     setTheme(t);
   };
   const handleLang = l => { try{localStorage.setItem("scalyo_lang",l);}catch(e){} setLang(l); };
@@ -13827,7 +14055,7 @@ const App = () => {
           plan: company?.plan || "Starter"
         });
       case "tasks":
-        return /*#__PURE__*/React.createElement(TaskBoardView, {
+        return /*#__PURE__*/React.createElement(UnifiedTaskBoard, {
           accounts: accounts,
           role: role,
           lang: lang,
@@ -13888,8 +14116,8 @@ const App = () => {
           updateRoadmap: updateRoadmap,
           lang: lang
         });
-      case "taskboard":
-        return /*#__PURE__*/React.createElement(KanbanBoardView, {accounts:accounts, lang:lang});
+      case "quotes":
+        return /*#__PURE__*/React.createElement(QuotesView, {lang:lang, currency:currency, accounts:accounts});
       case "tips":
         return /*#__PURE__*/React.createElement(TipsView, {role:role, lang:lang});
       default:
@@ -13923,7 +14151,7 @@ const App = () => {
       padding: sidebarCollapsed ? "16px 8px" : "16px 10px",
       flexShrink: 0,
       background: C.bg1,
-      boxShadow: "1px 0 12px rgba(180,120,60,0.06)",
+      boxShadow: "none",
       transition: "width .25s ease, padding .25s ease",
       overflow: "hidden"
     },
@@ -13943,7 +14171,7 @@ const App = () => {
     style: {
       width: 34,
       height: 34,
-      background: `linear-gradient(135deg,${C.teal},${C.amber})`,
+      background: C.teal,
       borderRadius: 12,
       display: "flex",
       alignItems: "center",
