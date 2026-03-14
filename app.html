@@ -20,32 +20,32 @@
 <style>
 /* === CSS VARIABLES — THEME SYSTEM === */
 :root{
-  --bg:#FFFFFF;--bg1:#FFFFFF;--bg2:#F7F6F3;
-  --text:#37352F;--muted:rgba(55,53,47,0.65);--faint:rgba(55,53,47,0.35);
-  --surface:rgba(55,53,47,0.03);--surfaceHi:rgba(55,53,47,0.06);
-  --border:rgba(55,53,47,0.09);--borderHi:rgba(55,53,47,0.16);
-  --teal:#2383E2;--tealBg:rgba(35,131,226,0.08);--tealBorder:rgba(35,131,226,0.25);
-  --scroll-thumb:rgba(55,53,47,0.12);--scroll-thumb-h:rgba(55,53,47,0.22);
-  --modal-bg:rgba(15,15,15,0.6);--modal-box:#FFFFFF;--modal-box-border:rgba(55,53,47,0.09);
-  --tab-active-bg:#FFFFFF;--tab-text:rgba(55,53,47,0.5);--tab-active-text:#37352F;
-  --chip-bg:rgba(55,53,47,0.03);--chip-border:rgba(55,53,47,0.09);--chip-text:rgba(55,53,47,0.65);
-  --input-bg:#FFFFFF;--input-border:rgba(55,53,47,0.16);--input-text:#37352F;
-  --tip-bg:rgba(55,53,47,0.03);--tip-border:rgba(55,53,47,0.09);
-  --nav-hover:rgba(55,53,47,0.04);--skeleton1:rgba(55,53,47,0.04);--skeleton2:rgba(55,53,47,0.08);
+  --bg:#1A1F2E;--bg1:#212636;--bg2:#272D3D;
+  --text:#D4D8E4;--muted:rgba(212,216,228,0.45);--faint:rgba(212,216,228,0.15);
+  --surface:rgba(255,255,255,0.035);--surfaceHi:rgba(255,255,255,0.06);
+  --border:rgba(255,255,255,0.06);--borderHi:rgba(255,255,255,0.12);
+  --teal:#7EC8B8;--tealBg:rgba(126,200,184,0.08);--tealBorder:rgba(126,200,184,0.18);
+  --scroll-thumb:rgba(255,255,255,0.06);--scroll-thumb-h:rgba(255,255,255,0.12);
+  --modal-bg:rgba(26,31,46,0.75);--modal-box:#212636;--modal-box-border:rgba(255,255,255,0.08);
+  --tab-active-bg:#2D3344;--tab-text:rgba(212,216,228,0.45);--tab-active-text:#D4D8E4;
+  --chip-bg:rgba(255,255,255,0.035);--chip-border:rgba(255,255,255,0.08);--chip-text:rgba(212,216,228,0.65);
+  --input-bg:rgba(255,255,255,0.04);--input-border:rgba(255,255,255,0.08);--input-text:#D4D8E4;
+  --tip-bg:rgba(255,255,255,0.035);--tip-border:rgba(255,255,255,0.06);
+  --nav-hover:rgba(255,255,255,0.04);--skeleton1:rgba(255,255,255,0.03);--skeleton2:rgba(255,255,255,0.05);
 }
-[data-theme="dark"]{
-  --bg:#191919;--bg1:#202020;--bg2:#2F2F2F;
-  --text:#E3E2E0;--muted:rgba(227,226,224,0.65);--faint:rgba(227,226,224,0.35);
-  --surface:rgba(255,255,255,0.03);--surfaceHi:rgba(255,255,255,0.06);
-  --border:rgba(255,255,255,0.09);--borderHi:rgba(255,255,255,0.16);
-  --teal:#529CCA;--tealBg:rgba(82,156,202,0.10);--tealBorder:rgba(82,156,202,0.25);
-  --scroll-thumb:rgba(255,255,255,0.12);--scroll-thumb-h:rgba(255,255,255,0.22);
-  --modal-bg:rgba(15,15,15,0.8);--modal-box:#252525;--modal-box-border:rgba(255,255,255,0.09);
-  --tab-active-bg:#2F2F2F;--tab-text:rgba(227,226,224,0.5);--tab-active-text:#E3E2E0;
-  --chip-bg:rgba(255,255,255,0.03);--chip-border:rgba(255,255,255,0.09);--chip-text:rgba(227,226,224,0.65);
-  --input-bg:#252525;--input-border:rgba(255,255,255,0.13);--input-text:#E3E2E0;
-  --tip-bg:rgba(255,255,255,0.03);--tip-border:rgba(255,255,255,0.09);
-  --nav-hover:rgba(255,255,255,0.04);--skeleton1:rgba(255,255,255,0.04);--skeleton2:rgba(255,255,255,0.08);
+[data-theme="light"]{
+  --bg:#F5F0EB;--bg1:#FDFBF8;--bg2:#EDE8E2;
+  --text:#3D3A36;--muted:rgba(61,58,54,0.5);--faint:rgba(61,58,54,0.15);
+  --surface:rgba(120,100,80,0.035);--surfaceHi:rgba(120,100,80,0.06);
+  --border:rgba(120,100,80,0.08);--borderHi:rgba(120,100,80,0.15);
+  --teal:#5A9E8F;--tealBg:rgba(90,158,143,0.07);--tealBorder:rgba(90,158,143,0.2);
+  --scroll-thumb:rgba(61,58,54,0.12);--scroll-thumb-h:rgba(61,58,54,0.2);
+  --modal-bg:rgba(245,240,235,0.85);--modal-box:#FDFBF8;--modal-box-border:rgba(120,100,80,0.12);
+  --tab-active-bg:#E5DFD8;--tab-text:rgba(61,58,54,0.5);--tab-active-text:#3D3A36;
+  --chip-bg:rgba(120,100,80,0.04);--chip-border:rgba(120,100,80,0.1);--chip-text:rgba(61,58,54,0.65);
+  --input-bg:rgba(120,100,80,0.03);--input-border:rgba(120,100,80,0.1);--input-text:#3D3A36;
+  --tip-bg:rgba(120,100,80,0.03);--tip-border:rgba(120,100,80,0.07);
+  --nav-hover:rgba(120,100,80,0.05);--skeleton1:rgba(120,100,80,0.04);--skeleton2:rgba(120,100,80,0.07);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body,#root{height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:background .2s,color .2s;font-size:14px;line-height:1.6;letter-spacing:-0.01em}
@@ -54,25 +54,25 @@ html,body,#root{height:100%;background:var(--bg);font-family:'Inter',sans-serif;
 ::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:var(--scroll-thumb-h)}
 /* === v8 STYLES === */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:4px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .3s ease;letter-spacing:-.2px}
-.btn-primary{background:#2383E2;color:#fff;box-shadow:none}
-.btn-primary:hover{filter:brightness(1.05)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:12px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .3s ease;letter-spacing:-.2px}
+.btn-primary{background:linear-gradient(135deg,var(--teal),#8AAED4);color:#fff;box-shadow:0 4px 20px rgba(126,200,184,0.12)}
+.btn-primary:hover{transform:translateY(-0.5px);box-shadow:0 6px 28px rgba(126,200,184,0.16)}
 .btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border)}
 .btn-secondary:hover{background:var(--surfaceHi);border-color:var(--borderHi)}
-.btn-danger{background:rgba(212,135,143,0.08);color:#EB5757;border:1px solid rgba(212,135,143,0.2)}
+.btn-danger{background:rgba(212,135,143,0.08);color:#D4878F;border:1px solid rgba(212,135,143,0.2)}
 .btn-danger:hover{background:rgba(240,76,91,0.18)}
-.btn-sm{padding:5px 12px;font-size:11.5px;border-radius:4px}
+.btn-sm{padding:5px 12px;font-size:11.5px;border-radius:8px}
 .csm-filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center;padding:0 2px;max-width:100%;overflow-x:auto}
-.csm-chip{padding:5px 14px;border-radius:12px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--chip-border);background:var(--chip-bg);color:var(--chip-text);transition:all .15s ease}
+.csm-chip{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all .25s ease;border:1px solid var(--chip-border);background:var(--chip-bg);color:var(--chip-text);transition:all .15s ease}
 .csm-chip:hover{background:var(--tealBg);border-color:var(--tealBorder);color:var(--teal)}
 .csm-chip.active{background:var(--tealBg);border-color:var(--tealBorder);color:var(--teal);font-weight:700}
-.chat-input{flex:1;background:var(--input-bg);border:1px solid var(--input-border);border-radius:4px;padding:11px 15px;color:var(--input-text);font-size:13px;font-family:inherit;resize:none}
+.chat-input{flex:1;background:var(--input-bg);border:1px solid var(--input-border);border-radius:12px;padding:11px 15px;color:var(--input-text);font-size:13px;font-family:inherit;resize:none}
 .chat-input:focus{outline:none;border-color:rgba(18,205,184,0.35);background:var(--tealBg)}
-.chat-send-btn{background:var(--teal);border:none;border-radius:4px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;box-shadow:none;transition:all .18s ease;flex-shrink:0}
-.chat-send-btn:hover{filter:brightness(1.05)}
+.chat-send-btn{background:linear-gradient(135deg,var(--teal),#8AAED4);border:none;border-radius:12px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;box-shadow:0 4px 20px rgba(126,200,184,0.1);transition:all .18s ease;flex-shrink:0}
+.chat-send-btn:hover{transform:scale(1.02);box-shadow:0 6px 20px rgba(18,205,184,0.42)}
 .chat-send-btn:disabled{opacity:.4;transform:none;cursor:not-allowed}
 .api-banner{padding:14px 18px;background:rgba(245,158,11,0.09);border:1px solid rgba(245,158,11,0.25);border-radius:12px;margin:12px 18px;display:flex;gap:12px;font-size:13px;align-items:flex-start}
-.tip-card{background:var(--tip-bg);border:1px solid var(--tip-border);border-radius:4px;padding:16px 18px;margin-bottom:8px;cursor:pointer;transition:all .3s ease;border-color:var(--tealBorder)}
+.tip-card{background:var(--tip-bg);border:1px solid var(--tip-border);border-radius:14px;padding:16px 18px;margin-bottom:8px;cursor:pointer;transition:all .3s ease;border-color:var(--tealBorder)}
 .tip-card.open{border-color:var(--tealBorder);background:var(--tealBg)}
 .quick-chip{padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--muted);transition:all .15s ease;font-weight:500}
 .quick-chip:hover{background:var(--tealBg);border-color:var(--tealBorder);color:var(--teal)}
@@ -80,16 +80,16 @@ html,body,#root{height:100%;background:var(--bg);font-family:'Inter',sans-serif;
 .toggle-switch input{display:none}
 .toggle-slider{position:absolute;inset:0;border-radius:26px;background:var(--surface);cursor:pointer;transition:.3s;border:1px solid var(--border)}
 .toggle-slider::before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 2px 6px rgba(0,0,0,0.25)}
-input:checked+.toggle-slider{background:var(--teal);border-color:var(--teal)}
+input:checked+.toggle-slider{background:linear-gradient(135deg,var(--teal),#8AAED4);border-color:var(--teal)}
 input:checked+.toggle-slider::before{transform:translateX(20px)}
-.nav-btn{transition:all .25s ease;border-radius:4px;cursor:pointer}
+.nav-btn{transition:all .25s ease;border-radius:10px;cursor:pointer}
 .nav-btn:hover{background:var(--nav-hover)!important}
 .row-item{transition:background .2s ease;cursor:pointer}
 .row-item:hover{background:var(--tealBg)!important}
-.card-lift{transition:border-color .35s ease}
-.card-lift:hover{border-color:var(--tealBorder)!important}
+.card-lift{transition:transform .35s ease,border-color .35s ease}
+.card-lift:hover{transform:translateY(-1px);border-color:var(--tealBorder)!important}
 .btn-base{transition:all .3s ease;cursor:pointer;border:none;font-family:'Inter',sans-serif;font-weight:600;outline:none;letter-spacing:-0.01em}
-.btn-base:hover:not(:disabled){filter:brightness(1.04)}
+.btn-base:hover:not(:disabled){transform:translateY(-0.5px);filter:brightness(1.04)}
 .btn-base:active:not(:disabled){transform:translateY(0);filter:brightness(0.95)}
 .btn-base:disabled{opacity:.38;cursor:not-allowed;transform:none!important;filter:none!important}
 .fade-in{animation:fadeIn .45s ease forwards}
@@ -111,10 +111,10 @@ input:focus,select:focus,textarea:focus{border-color:rgba(18,205,184,0.5)!import
 .tab-item.active{background:var(--tab-active-bg);color:var(--tab-active-text);box-shadow:0 1px 6px rgba(0,0,0,0.15)}
 .tab-item:hover:not(.active){color:var(--text);background:var(--surfaceHi)}
 .skeleton{background:linear-gradient(90deg,var(--skeleton1) 25%,var(--skeleton2) 50%,var(--skeleton1) 75%);background-size:200% 100%;animation:shimmer 2.5s ease-in-out infinite;border-radius:10px}
-/* Input/select overrides */
-input,select,textarea{color:var(--text);background:var(--input-bg)}
-.modal-box{box-shadow:0 1px 3px rgba(0,0,0,0.04)}
-select option{background:var(--modal-box);color:var(--text)}
+/* Light mode input/select overrides */
+[data-theme="light"] input,[data-theme="light"] select,[data-theme="light"] textarea{color:var(--text);background:var(--input-bg)}
+[data-theme="light"] .modal-box{box-shadow:0 20px 60px rgba(0,0,0,0.15)}
+[data-theme="light"] select option{background:#fff;color:#1E293B}
 
     @keyframes bounce {
       0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
@@ -140,12 +140,12 @@ select option{background:var(--modal-box);color:var(--text)}
     .color-picker-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
     .color-dot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s ease;flex-shrink:0}
     .color-dot:hover,.color-dot.active{border-color:#fff;transform:scale(1.2)}
-    .trend-up{color:#8BBFA0}.trend-down{color:#EB5757}.trend-flat{color:#D4B896}
+    .trend-up{color:#8BBFA0}.trend-down{color:#D4878F}.trend-flat{color:#D4B896}
     .import-col-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:var(--surface);border:1px solid var(--border)}
     .chart-type-btn{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s}
     .chart-type-btn.active{background:var(--tealBg);border-color:var(--tealBorder);color:var(--teal)}
     .kpi-history-entry{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:10px;font-size:12px;margin-bottom:6px}
-    .kpi-form-field input,.kpi-form-field select{color:var(--text);background:var(--input-bg)}
+    [data-theme="light"] .kpi-form-field input,[data-theme="light"] .kpi-form-field select{color:var(--text);background:var(--input-bg)}
 
 /* ===== RESPONSIVE MOBILE ===== */
 @media (max-width: 768px) {
@@ -393,30 +393,48 @@ var lang = (function(){ try { return localStorage.getItem("scalyo_lang")||"fr"; 
 
 // ─── Design tokens
 const C = {
-  bg: "#FFFFFF", bg1: "#FFFFFF", bg2: "#F7F6F3", bg3: "#EDECE9",
-  surface: "rgba(55,53,47,0.03)", surfaceHi: "rgba(55,53,47,0.06)",
-  border: "rgba(55,53,47,0.09)", borderHi: "rgba(55,53,47,0.16)",
-  teal: "#2383E2", tealBg: "rgba(35,131,226,0.08)", tealBorder: "rgba(35,131,226,0.25)", tealGlow: "transparent",
-  red: "#EB5757", redBg: "rgba(235,87,87,0.08)", redBorder: "rgba(235,87,87,0.20)",
-  amber: "#CB912F", amberBg: "rgba(203,145,47,0.08)", amberBorder: "rgba(203,145,47,0.20)",
-  green: "#0F7B6C", greenBg: "rgba(15,123,108,0.08)", greenBorder: "rgba(15,123,108,0.20)",
-  purple: "#9065B0", purpleBg: "rgba(144,101,176,0.08)",
-  blue: "#2383E2", blueBg: "rgba(35,131,226,0.07)",
-  text: "#37352F", muted: "rgba(55,53,47,0.65)", faint: "rgba(55,53,47,0.35)"
+  bg: "#1A1F2E",
+  bg1: "#212636",
+  bg2: "#272D3D",
+  bg3: "#2D3344",
+  surface: "rgba(255,255,255,0.035)",
+  surfaceHi: "rgba(255,255,255,0.06)",
+  border: "rgba(255,255,255,0.06)",
+  borderHi: "rgba(255,255,255,0.12)",
+  teal: "#7EC8B8",
+  tealBg: "rgba(126,200,184,0.08)",
+  tealBorder: "rgba(126,200,184,0.18)",
+  tealGlow: "rgba(126,200,184,0.06)",
+  red: "#D4878F",
+  redBg: "rgba(212,135,143,0.06)",
+  redBorder: "rgba(212,135,143,0.15)",
+  amber: "#D4B896",
+  amberBg: "rgba(212,184,150,0.06)",
+  amberBorder: "rgba(212,184,150,0.18)",
+  green: "#8BBFA0",
+  greenBg: "rgba(139,191,160,0.06)",
+  greenBorder: "rgba(139,191,160,0.18)",
+  purple: "#B0A0D4",
+  purpleBg: "rgba(176,160,212,0.07)",
+  blue: "#8AAED4",
+  blueBg: "rgba(138,174,212,0.07)",
+  text: "#D4D8E4",
+  muted: "rgba(212,216,228,0.45)",
+  faint: "rgba(212,216,228,0.15)"
 };
 // ══ THEME SYSTEM ══
-const C_LIGHT = Object.assign({},C);
-const C_DARK = {
-  bg: "#191919", bg1: "#202020", bg2: "#2F2F2F", bg3: "#373737",
-  surface: "rgba(255,255,255,0.03)", surfaceHi: "rgba(255,255,255,0.06)",
-  border: "rgba(255,255,255,0.09)", borderHi: "rgba(255,255,255,0.16)",
-  teal: "#529CCA", tealBg: "rgba(82,156,202,0.10)", tealBorder: "rgba(82,156,202,0.25)", tealGlow: "transparent",
-  red: "#EB5757", redBg: "rgba(235,87,87,0.10)", redBorder: "rgba(235,87,87,0.22)",
-  amber: "#CB912F", amberBg: "rgba(203,145,47,0.10)", amberBorder: "rgba(203,145,47,0.22)",
-  green: "#0F7B6C", greenBg: "rgba(15,123,108,0.10)", greenBorder: "rgba(15,123,108,0.20)",
-  purple: "#9065B0", purpleBg: "rgba(144,101,176,0.10)",
-  blue: "#529CCA", blueBg: "rgba(82,156,202,0.08)",
-  text: "#E3E2E0", muted: "rgba(227,226,224,0.65)", faint: "rgba(227,226,224,0.35)"
+const C_DARK = Object.assign({},C);
+const C_LIGHT = {
+  bg:"#F5F0EB", bg1:"#FDFBF8", bg2:"#EDE8E2", bg3:"#E5DFD8",
+  surface:"rgba(120,100,80,0.035)", surfaceHi:"rgba(120,100,80,0.06)",
+  border:"rgba(120,100,80,0.08)", borderHi:"rgba(120,100,80,0.15)",
+  teal:"#5A9E8F", tealBg:"rgba(90,158,143,0.07)", tealBorder:"rgba(90,158,143,0.2)", tealGlow:"rgba(90,158,143,0.08)",
+  red:"#C4757E", redBg:"rgba(196,117,126,0.06)", redBorder:"rgba(196,117,126,0.18)",
+  amber:"#B8976A", amberBg:"rgba(184,151,106,0.06)", amberBorder:"rgba(184,151,106,0.2)",
+  green:"#6B9E7E", greenBg:"rgba(107,158,126,0.06)", greenBorder:"rgba(107,158,126,0.18)",
+  purple:"#9488B8", purpleBg:"rgba(148,136,184,0.07)",
+  blue:"#6E94B8", blueBg:"rgba(110,148,184,0.07)",
+  text:"#3D3A36", muted:"rgba(61,58,54,0.5)", faint:"rgba(61,58,54,0.15)"
 };
 const I18N={
   fr:{
@@ -781,6 +799,10 @@ const I18N={
     firstKpi:"Créer mon premier KPI",
     todoCol:"À faire", inProgressCol:"En cours", doneCol:"Terminé", noTasks:"Aucune tâche",
     taskboard:"Task Board", currencyLabel:"Devise",
+    quoteTitle:"Titre du devis",quoteClient:"Client",quoteAmount:"Montant",quoteStatus:"Statut",
+    quoteDraft:"Brouillon",quoteSent:"Envoyé",quoteWon:"Gagné",quoteLost:"Perdu",
+    quoteDate:"Date",addQuote:"Nouveau devis",noQuotes:"Aucun devis",quoteNotes:"Notes",
+    quoteAll:"Tous",quoteDuplicate:"Dupliquer",quoteConversion:"Taux conversion",quoteTotalWon:"Total gagné",
     deleteAccount:"Supprimer mon compte",
     deleteAccountDesc:"Cette action est irréversible. Toutes vos données seront définitivement supprimées.",
     confirmDelete:"Tapez SUPPRIMER pour confirmer",
@@ -790,7 +812,7 @@ const I18N={
   en:{
     dashboard:"Dashboard",portfolio:"Portfolio",kpi:"KPIs",
     wellbeing:"Wellbeing",coach:"AI Coach",planning:"Planning",tasks:"Task Board",
-    settings:"Settings",resources:"Resources",email:"Email Studio",tips:"CS Guide",
+    settings:"Settings",resources:"Resources",email:"Email Studio",tips:"CS Guide",quotes:"Quotes",kanbanView:"Kanban",eisenhowerView:"Eisenhower",
     save:"Save",saved:"✓ Saved",saving:"Saving...",cancel:"Cancel",
     close:"Close",edit:"Edit",delete:"Delete",add:"Add",create:"Create",
     search:"Search...",back:"Back",update:"Update",
@@ -5610,7 +5632,7 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
 const EVENT_COLORS=[
   {id:"teal",hex:"#7EC8B8"},{id:"blue",hex:"#3B82F6"},
   {id:"purple",hex:"#B0A0D4"},{id:"green",hex:"#8BBFA0"},
-  {id:"amber",hex:"#D4B896"},{id:"red",hex:"#EB5757"}
+  {id:"amber",hex:"#D4B896"},{id:"red",hex:"#D4878F"}
 ];
 
 const getEventsFromLS=()=>{try{const r=localStorage.getItem("scalyo_events");return r?JSON.parse(r):[];}catch(e){return [];}};
@@ -10580,7 +10602,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       React.createElement("div", null,
         React.createElement("label", {style:{display:"block",fontSize:11,fontWeight:700,color:C.muted,marginBottom:6,textTransform:"uppercase",letterSpacing:".6px"}}, lang==="en" ? "Color" : lang==="kr" ? "색상" : "Couleur"),
         React.createElement("div", {className:"color-picker-row"},
-          ["#7EC8B8","#8AAED4","#8BBFA0","#D4B896","#EB5757","#B0A0D4","#FB923C","#EC4899","#60A5FA","#FACC15"].map(col=>
+          ["#7EC8B8","#8AAED4","#8BBFA0","#D4B896","#D4878F","#B0A0D4","#FB923C","#EC4899","#60A5FA","#FACC15"].map(col=>
             React.createElement("div", {key:col,className:`color-dot${kpiForm.color===col?" active":""}`,style:{background:col},onClick:()=>setKpiForm(p=>({...p,color:col}))})
           )
         )
@@ -10849,7 +10871,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
                 ),
                 React.createElement("tbody", null,
                   commonCols.slice(0,8).map((col,ci)=>{
-                    const CHART_COLORS2=["#7EC8B8","#8AAED4","#D4B896","#B0A0D4","#EB5757","#8BBFA0"];
+                    const CHART_COLORS2=["#7EC8B8","#8AAED4","#D4B896","#B0A0D4","#D4878F","#8BBFA0"];
                     const valsCurr=importedData.rows.map(r=>parseFloat(r[col.name])||0);
                     const valsPrev=compareFile.rows.map(r=>parseFloat(r[col.name])||0);
                     const avgCurr=valsCurr.length>0?valsCurr.reduce((a,b)=>a+b,0)/valsCurr.length:0;
@@ -10919,7 +10941,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
           : (dateCols[0]||strCols[0]);
         const chartMode = selectedChartType==="auto" ? (dateCols.length>0?"line":"bar") : selectedChartType;
         if(activeCols.length===0) return React.createElement("div", {style:{textAlign:"center",padding:24,color:C.muted}}, lang==="en" ? "Select numeric columns to display charts" : lang==="kr" ? "차트 표시를 위한 숫자 컬럼 선택" : T("kpiNumericHint",lang));
-        const CHART_COLORS=["#7EC8B8","#8AAED4","#D4B896","#B0A0D4","#EB5757","#8BBFA0","#FB923C"];
+        const CHART_COLORS=["#7EC8B8","#8AAED4","#D4B896","#B0A0D4","#D4878F","#8BBFA0","#FB923C"];
         const rows = importedData.rows.slice(0,50);
         const labels = labelCol ? rows.map(r=>String(r[labelCol.name]||"").slice(0,10)) : rows.map((_,i)=>String(i+1));
         const maxVal = Math.max(...activeCols.flatMap(c=>rows.map(r=>parseFloat(r[c.name])||0)),1);
@@ -13180,177 +13202,6 @@ const TipsView = ({role="csm", lang="fr"}) => {
     ))
   );
 };
-
-// ══════════════════════════════════════════════════
-// QUOTES / DEVIS VIEW
-// ══════════════════════════════════════════════════
-const getQuotesFromLS = () => { try { const r = localStorage.getItem("scalyo_quotes"); return r ? JSON.parse(r) : []; } catch(e) { return []; } };
-const saveQuotesToLS = (q) => { try { localStorage.setItem("scalyo_quotes", JSON.stringify(q)); } catch(e){} };
-
-const QUOTE_STATUSES = ["draft","sent","won","lost"];
-const quoteStatusColor = (s) => s==="won"?C.green:s==="lost"?C.red:s==="sent"?C.blue:C.muted;
-const quoteStatusLabel = (s, lang) => T("quote"+s.charAt(0).toUpperCase()+s.slice(1), lang);
-
-const QuotesView = ({lang="fr", currency="EUR", accounts=[]}) => {
-  const [quotes, setQuotes] = useState(() => getQuotesFromLS());
-  const [filter, setFilter] = useState("all");
-  const [showModal, setShowModal] = useState(false);
-  const [editQuote, setEditQuote] = useState(null);
-
-  const saveAll = (q) => { saveQuotesToLS(q); setQuotes(q); };
-  const addOrUpdate = (q) => {
-    if (editQuote) {
-      saveAll(quotes.map(x => x.id === editQuote.id ? {...x,...q} : x));
-    } else {
-      saveAll([...quotes, {...q, id:Date.now().toString(36)+Math.random().toString(36).slice(2,6), createdAt:new Date().toISOString()}]);
-    }
-    setShowModal(false); setEditQuote(null);
-  };
-  const deleteQuote = (id) => saveAll(quotes.filter(q => q.id !== id));
-  const duplicateQuote = (q) => {
-    const dup = {...q, id:Date.now().toString(36)+Math.random().toString(36).slice(2,6), title:q.title+" (copie)", status:"draft", createdAt:new Date().toISOString()};
-    saveAll([...quotes, dup]);
-  };
-
-  const filtered = filter === "all" ? quotes : quotes.filter(q => q.status === filter);
-  const totalWon = quotes.filter(q => q.status === "won").reduce((s,q) => s + (parseFloat(q.amount)||0), 0);
-  const convRate = quotes.length > 0 ? Math.round(quotes.filter(q=>q.status==="won").length / quotes.length * 100) : 0;
-
-  return React.createElement("div", {className:"fade-in", style:{padding:20,height:"100%",overflow:"auto"}},
-    React.createElement("div", {style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18,flexWrap:"wrap",gap:10}},
-      React.createElement("h2", {style:{fontSize:20,fontWeight:900,letterSpacing:"-0.5px"}}, "📝 ", T("quotes",lang)),
-      React.createElement("button", {
-        className:"btn-base",
-        onClick:() => { setEditQuote(null); setShowModal(true); },
-        style:{padding:"8px 16px",borderRadius:4,fontSize:13,fontWeight:700,background:C.teal,color:"#fff",cursor:"pointer"}
-      }, "+ ", T("addQuote",lang))
-    ),
-    React.createElement("div", {style:{display:"flex",gap:12,marginBottom:16,flexWrap:"wrap"}},
-      [{label:T("quotes",lang), value:quotes.length, color:C.teal},
-       {label:T("quoteTotalWon",lang), value:fmtCur(totalWon, currency), color:C.green},
-       {label:T("quoteConversion",lang), value:convRate+"%", color:C.amber}
-      ].map((s,i) => React.createElement("div", {key:i, style:{flex:"1 1 140px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:4,padding:"12px 16px"}},
-        React.createElement("div", {style:{fontSize:11,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:".05em",marginBottom:4}}, s.label),
-        React.createElement("div", {style:{fontSize:20,fontWeight:900,color:s.color}}, s.value)
-      ))
-    ),
-    React.createElement("div", {style:{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}},
-      [{key:"all",label:T("quoteAll",lang)}, ...QUOTE_STATUSES.map(s=>({key:s, label:quoteStatusLabel(s,lang)}))].map(f =>
-        React.createElement("button", {
-          key:f.key,
-          onClick:()=>setFilter(f.key),
-          style:{
-            padding:"5px 14px",borderRadius:12,fontSize:12,fontWeight:filter===f.key?700:500,
-            border:`1px solid ${filter===f.key?C.tealBorder:C.border}`,cursor:"pointer",
-            background:filter===f.key?C.tealBg:C.surface,
-            color:filter===f.key?C.teal:C.muted,transition:"all .15s"
-          }
-        }, f.label)
-      )
-    ),
-    filtered.length === 0
-      ? React.createElement("div", {style:{textAlign:"center",padding:40,color:C.muted,fontSize:14}}, T("noQuotes",lang))
-      : React.createElement("div", {style:{display:"flex",flexDirection:"column",gap:6}},
-          filtered.map(q => {
-            const sc = quoteStatusColor(q.status);
-            return React.createElement("div", {key:q.id, style:{
-              display:"flex",alignItems:"center",gap:12,padding:"12px 16px",
-              background:C.surface,border:`1px solid ${C.border}`,borderRadius:4,
-              borderLeft:`3px solid ${sc}`,transition:"border-color .15s"
-            }},
-              React.createElement("div", {style:{flex:1,minWidth:0}},
-                React.createElement("div", {style:{fontSize:14,fontWeight:600,marginBottom:2}}, q.title),
-                React.createElement("div", {style:{fontSize:12,color:C.muted}}, q.client || "—")
-              ),
-              React.createElement("div", {style:{fontSize:14,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",minWidth:80,textAlign:"right"}},
-                fmtCur(parseFloat(q.amount)||0, q.currency||currency)),
-              React.createElement("span", {style:{
-                fontSize:11,fontWeight:700,padding:"3px 10px",borderRadius:12,
-                background:sc+"18",color:sc,border:`1px solid ${sc}44`
-              }}, quoteStatusLabel(q.status, lang)),
-              React.createElement("div", {style:{fontSize:11,color:C.muted,minWidth:70,textAlign:"right"}},
-                q.date || "—"),
-              React.createElement("div", {style:{display:"flex",gap:4}},
-                React.createElement("button", {onClick:()=>{setEditQuote(q);setShowModal(true);},
-                  style:{background:"none",border:"none",cursor:"pointer",fontSize:13,color:C.muted,padding:4}}, "✏️"),
-                React.createElement("button", {onClick:()=>duplicateQuote(q),
-                  style:{background:"none",border:"none",cursor:"pointer",fontSize:13,color:C.muted,padding:4}}, "📋"),
-                React.createElement("button", {onClick:()=>deleteQuote(q.id),
-                  style:{background:"none",border:"none",cursor:"pointer",fontSize:13,color:C.red,padding:4}}, "🗑️")
-              )
-            );
-          })
-        ),
-    showModal && React.createElement("div", {
-      style:{position:"fixed",inset:0,background:"rgba(15,15,15,0.6)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999},
-      onClick:(e) => { if(e.target===e.currentTarget){setShowModal(false);setEditQuote(null);} }
-    },
-      React.createElement(QuoteModal, {lang, currency, quote:editQuote, accounts, onSave:addOrUpdate, onClose:()=>{setShowModal(false);setEditQuote(null);}})
-    )
-  );
-};
-
-const QuoteModal = ({lang="fr", currency="EUR", quote=null, accounts=[], onSave, onClose}) => {
-  const [title, setTitle] = useState(quote?.title || "");
-  const [client, setClient] = useState(quote?.client || "");
-  const [amount, setAmount] = useState(quote?.amount || "");
-  const [cur, setCur] = useState(quote?.currency || currency);
-  const [status, setStatus] = useState(quote?.status || "draft");
-  const [date, setDate] = useState(quote?.date || new Date().toISOString().slice(0,10));
-  const [notes, setNotes] = useState(quote?.notes || "");
-
-  const fieldStyle = {width:"100%",padding:"9px 12px",borderRadius:4,border:`1px solid ${C.border}`,background:C.surface,color:C.text,fontSize:13,outline:"none",fontFamily:"'Inter',sans-serif"};
-  const labelStyle = {fontSize:11,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:".05em",marginBottom:5,display:"block"};
-
-  return React.createElement("div", {style:{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:8,padding:28,width:440,maxWidth:"95vw",maxHeight:"90vh",overflow:"auto"}},
-    React.createElement("h3", {style:{fontSize:16,fontWeight:800,marginBottom:18}}, quote ? T("edit",lang) : T("addQuote",lang)),
-    React.createElement("div", {style:{marginBottom:12}},
-      React.createElement("label", {style:labelStyle}, T("quoteTitle",lang)),
-      React.createElement("input", {value:title,onChange:e=>setTitle(e.target.value),style:fieldStyle,placeholder:T("quoteTitle",lang)})
-    ),
-    React.createElement("div", {style:{marginBottom:12}},
-      React.createElement("label", {style:labelStyle}, T("quoteClient",lang)),
-      React.createElement("input", {value:client,onChange:e=>setClient(e.target.value),style:fieldStyle,placeholder:T("quoteClient",lang),list:"quote-clients"}),
-      React.createElement("datalist", {id:"quote-clients"}, accounts.map(a => React.createElement("option", {key:a.id||a.name, value:a.name})))
-    ),
-    React.createElement("div", {style:{display:"flex",gap:10,marginBottom:12}},
-      React.createElement("div", {style:{flex:1}},
-        React.createElement("label", {style:labelStyle}, T("quoteAmount",lang)),
-        React.createElement("input", {type:"number",value:amount,onChange:e=>setAmount(e.target.value),style:fieldStyle,placeholder:"0"})
-      ),
-      React.createElement("div", {style:{width:110}},
-        React.createElement("label", {style:labelStyle}, T("currencyLabel",lang)),
-        React.createElement("select", {value:cur,onChange:e=>setCur(e.target.value),style:{...fieldStyle,cursor:"pointer"}},
-          Object.keys(CURRENCIES).map(k => React.createElement("option", {key:k,value:k}, k+" — "+CURRENCIES[k].name))
-        )
-      )
-    ),
-    React.createElement("div", {style:{display:"flex",gap:10,marginBottom:12}},
-      React.createElement("div", {style:{flex:1}},
-        React.createElement("label", {style:labelStyle}, T("quoteStatus",lang)),
-        React.createElement("select", {value:status,onChange:e=>setStatus(e.target.value),style:{...fieldStyle,cursor:"pointer"}},
-          QUOTE_STATUSES.map(s => React.createElement("option", {key:s,value:s}, quoteStatusLabel(s,lang)))
-        )
-      ),
-      React.createElement("div", {style:{flex:1}},
-        React.createElement("label", {style:labelStyle}, T("quoteDate",lang)),
-        React.createElement("input", {type:"date",value:date,onChange:e=>setDate(e.target.value),style:fieldStyle})
-      )
-    ),
-    React.createElement("div", {style:{marginBottom:18}},
-      React.createElement("label", {style:labelStyle}, T("quoteNotes",lang)),
-      React.createElement("textarea", {value:notes,onChange:e=>setNotes(e.target.value),rows:3,style:{...fieldStyle,resize:"vertical"}})
-    ),
-    React.createElement("div", {style:{display:"flex",gap:8,justifyContent:"flex-end"}},
-      React.createElement("button", {onClick:onClose, style:{padding:"8px 16px",borderRadius:4,border:`1px solid ${C.border}`,background:C.surface,color:C.text,fontSize:13,fontWeight:600,cursor:"pointer"}}, T("cancel",lang)),
-      React.createElement("button", {
-        onClick:()=>{ if(!title.trim()) return; onSave({title,client,amount,currency:cur,status,date,notes}); },
-        style:{padding:"8px 16px",borderRadius:4,border:"none",background:C.teal,color:"#fff",fontSize:13,fontWeight:700,cursor:"pointer",opacity:title.trim()?1:0.5}
-      }, T("save",lang))
-    )
-  );
-};
-
 // ══════════════════════════════════════════════════
 // MAIN APP
 // ══════════════════════════════════════════════════
@@ -13369,7 +13220,7 @@ const NAV_MANAGER = (lang) => [{
 }, {
   id: "tasks",
   label: T("tasks",lang),
-  icon: "📋"
+  icon: "🎯"
 }, {
   id: "planning",
   label: T("planning",lang),
@@ -13399,9 +13250,9 @@ const NAV_MANAGER = (lang) => [{
   label: T("email",lang),
   icon: "✉️"
 }, {
-  id: "quotes",
-  label: T("quotes",lang),
-  icon: "📝"
+  id: "taskboard",
+  label: T("taskboard",lang),
+  icon: "📋"
 }];
 const NAV_CSM = (lang) => [{
   id: "dashboard",
@@ -13418,7 +13269,7 @@ const NAV_CSM = (lang) => [{
 }, {
   id: "tasks",
   label: T("tasks",lang),
-  icon: "📋"
+  icon: "🎯"
 }, {
   id: "planning",
   label: T("planning",lang),
@@ -13440,9 +13291,9 @@ const NAV_CSM = (lang) => [{
   label: T("tips",lang),
   icon: "🎓"
 }, {
-  id: "quotes",
-  label: T("quotes",lang),
-  icon: "📝"
+  id: "taskboard",
+  label: T("taskboard",lang),
+  icon: "📋"
 }];
 
 // ── COACHING REMINDER BANNER (Elite Manager only, 1 fois/mois)
@@ -13722,7 +13573,7 @@ const App = () => {
   const [theme, setTheme] = useState(()=>{ try{return localStorage.getItem("scalyo_theme")||"dark";}catch(e){return "dark";}});
   const [lang, setLang] = useState(()=>{ try{return localStorage.getItem("scalyo_lang")||"fr";}catch(e){return "fr";}});
   // Apply theme to global C
-  Object.assign(C, theme==="dark" ? C_DARK : C_LIGHT);
+  Object.assign(C, theme==="light" ? C_LIGHT : C_DARK);
   // Init CSS vars for data-theme
   if (typeof document !== "undefined") document.documentElement.setAttribute("data-theme", theme);
 
@@ -13831,11 +13682,11 @@ const App = () => {
   };
   const handleTheme = t => {
     try{localStorage.setItem("scalyo_theme",t);}catch(e){}
-    Object.assign(C, t==="dark"?C_DARK:C_LIGHT);
+    Object.assign(C, t==="light"?C_LIGHT:C_DARK);
     document.documentElement.setAttribute("data-theme", t);
-    document.body.style.background = t==="dark"?"#191919":"#FFFFFF";
-    document.body.style.color = t==="dark"?"#E3E2E0":"#37352F";
-    document.getElementById("root").style.background = t==="dark"?"#191919":"#FFFFFF";
+    document.body.style.background = t==="light"?"#F5F0EB":"#1A1F2E";
+    document.body.style.color = t==="light"?"#1E293B":"#E8EDF5";
+    document.getElementById("root").style.background = t==="light"?"#F5F0EB":"#1A1F2E";
     setTheme(t);
   };
   const handleLang = l => { try{localStorage.setItem("scalyo_lang",l);}catch(e){} setLang(l); };
@@ -13942,7 +13793,7 @@ const App = () => {
           plan: company?.plan || "Starter"
         });
       case "tasks":
-        return /*#__PURE__*/React.createElement(UnifiedTaskBoard, {
+        return /*#__PURE__*/React.createElement(TaskBoardView, {
           accounts: accounts,
           role: role,
           lang: lang,
@@ -14003,8 +13854,8 @@ const App = () => {
           updateRoadmap: updateRoadmap,
           lang: lang
         });
-      case "quotes":
-        return /*#__PURE__*/React.createElement(QuotesView, {lang:lang, currency:currency, accounts:accounts});
+      case "taskboard":
+        return /*#__PURE__*/React.createElement(KanbanBoardView, {accounts:accounts, lang:lang});
       case "tips":
         return /*#__PURE__*/React.createElement(TipsView, {role:role, lang:lang});
       default:
