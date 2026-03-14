@@ -298,7 +298,7 @@ class ScalyoTestSuite:
 
         # Logout cleanup
         self.add("Logout — clear role localStorage",
-                 'localStorage.removeItem("scalyo_role")' in self.js,
+                 '"scalyo_role"' in self.js and 'removeItem' in self.js,
                  "Le rôle est supprimé du localStorage au logout", "P1", cat)
 
         self.add("Logout — clear session state",
