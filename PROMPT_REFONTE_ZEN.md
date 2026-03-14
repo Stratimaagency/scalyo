@@ -1,6 +1,6 @@
-# PROMPT — Refonte Design "Bibliothèque Zen" v3
+# PROMPT — Refonte "Bibliothèque Zen" v4 — PRODUCTION READY
 
-> **Mode d'emploi** : Copiez-collez ce prompt dans Claude Chat en joignant votre fichier `index.html` en pièce jointe.
+> **Mode d'emploi** : Copiez-collez ce prompt dans Claude Chat en joignant votre fichier `index.html` en pièce jointe. Le résultat doit être prêt pour la production.
 
 ---
 
@@ -12,208 +12,274 @@ L'inspiration est un croisement entre :
 - L'ambiance "Nomadic Tribe" (tons parchemin, bleus poudrés, verts sauge, palette terreuse zen)
 - La sérénité d'une bibliothèque avec du beau papier, de la lumière chaude, du bois
 
-Tu dois aussi :
-1. T'assurer que le KANBAN est bien accessible et fonctionnel (bouton visible dans le sidebar)
-2. Rendre le SIDEBAR SCROLLABLE — logo en haut et avatar/settings en bas FIXES, items de navigation au milieu scrollent avec la souris
-
-La landing page (LoginScreen) et l'application doivent partager la MÊME direction artistique.
+IMPORTANT :
+- La landing page (LoginScreen) et l'application DOIVENT avoir la MÊME direction artistique exacte
+- Le résultat doit être PRÊT POUR LA PRODUCTION — zéro bug visuel, zéro texte illisible
+- Tu dois aussi t'assurer que le KANBAN fonctionne et que le SIDEBAR scrolle correctement
 
 ═══════════════════════════════════════════════════════
 RÈGLES NON NÉGOCIABLES
 ═══════════════════════════════════════════════════════
 
-- Retourne le fichier COMPLET à la fin
+- Retourne le fichier COMPLET à la fin — pas d'extrait, le fichier ENTIER
 - NE MODIFIE AUCUNE logique métier, aucune fonction, aucun appel Supabase/Stripe/Anthropic
 - NE SUPPRIME aucun composant ou fonctionnalité
 - NE CHANGE PAS les noms de variables JS, fonctions, composants React
-- Tu modifies UNIQUEMENT : les couleurs, ombres, gradients, animations, polices, bordures, arrondis, opacités, ET la structure du sidebar (scrollable) et la vérification du Kanban
+- NE CHANGE PAS les IDs de navigation (dashboard, portfolio, kanban, roadmap, etc.)
+- Tu modifies UNIQUEMENT : les couleurs, ombres, gradients, animations, polices, bordures, arrondis, opacités
 - Chaque modification doit être cohérente entre mode DARK et mode LIGHT
 - Le résultat doit être accessible (contraste WCAG AA) et HYPER LISIBLE
+- AUCUN texte ne doit être invisible ou difficile à lire
 
 ═══════════════════════════════════════════════════════
-⚠️ PARTIE 0 — RECHERCHER-REMPLACER GLOBAL (CRITIQUE)
+⚠️⚠️⚠️ PARTIE 0 — RECHERCHER-REMPLACER GLOBAL ⚠️⚠️⚠️
+(EXÉCUTE CES REMPLACEMENTS EN PREMIER, AVANT TOUT)
 ═══════════════════════════════════════════════════════
 
-AVANT de toucher quoi que ce soit d'autre, exécute ces remplacements dans TOUT le fichier.
+### 0.1 — TEXTE DES BOUTONS (⚠️ LE PLUS CRITIQUE)
 
-### 0.1 — TEXTE DES BOUTONS (⚠️ CAUSE D'ILLISIBILITÉ)
+`color: "#070D1A"` apparaît **24 fois** dans le fichier.
+C'est l'ancienne couleur de fond sombre (#070D1A) utilisée comme couleur de texte sur les boutons gradient.
+Maintenant que les gradients utilisent des couleurs poudrées, le texte doit être BLANC pour rester lisible.
 
-`color: "#070D1A"` apparaît **24 fois**. C'est l'ancienne couleur de fond sombre utilisée comme texte de boutons.
-**REMPLACE** : `color: "#070D1A"` → `color: "#FFFFFF"` — PARTOUT, les 24 occurrences.
-Ce sont tous des textes de boutons sur fond gradient/sombre → doivent être blancs.
+CHERCHE : `color: "#070D1A"`
+REMPLACE PAR : `color: "#FFFFFF"`
+NOMBRE ATTENDU : **24 occurrences** — remplace-les TOUTES.
 
-Aussi : `Spinner` avec `color: "#070D1A"` → `color: "#FFFFFF"`.
+Cela inclut :
+- Tous les boutons submit/action avec gradient (login, signup, sauvegarde, etc.)
+- Tous les Spinner avec color: "#070D1A"
+- Lignes concernées : 539, 1044, 1056, 1183, 1195, 1313, 1868, 2024, 2035, 2661, 2744, 2826, 3001, 3012, 3391, 3981, 4118, 6010, 7061, 7253, 7263, 7323, 7404, 7443
 
-### 0.2 — BLEU NÉON (#0EA5E9 — 22 occurrences)
+### 0.2 — BLEU NÉON HARDCODÉ (#0EA5E9 — 22 occurrences)
 
-**REMPLACE** dans les template literals :
-`#0EA5E9` → `${C.blue}`
+CHERCHE dans TOUT le fichier : `#0EA5E9`
+REMPLACE PAR : `${C.blue}` (dans les template literals avec backticks)
+Si c'est dans une string normale entre guillemets, utilise le mécanisme approprié.
 
-Le but : AUCUN `#0EA5E9` ne reste dans le fichier.
+Les 22 occurrences sont :
+- 3x dans le CSS (btn-primary, chat-send-btn, toggle checked)
+- 19x dans le JS inline (gradients de boutons, logo, sidebar logo)
 
-### 0.3 — TEAL NÉON DANS LE CSS (rgba(18,205,184,...) — 18 occurrences)
+Le but : **ZÉRO** `#0EA5E9` dans le fichier final.
 
-Dans le `<style>` CSS :
-- `rgba(18,205,184,` → `rgba(123,155,175,` (bleu poudré)
+### 0.3 — TEAL NÉON DANS LE CSS (#12CDB8 et rgba(18,205,184,...))
+
+Dans la section `<style>` CSS (lignes ~18-85) :
 - `#12CDB8` → `#7B9BAF` (bleu poudré)
+- `rgba(18,205,184,0.3)` → `rgba(123,155,175,0.18)`
+- `rgba(18,205,184,0.4)` → `rgba(123,155,175,0.24)`
+- `rgba(18,205,184,0.28)` → `rgba(123,155,175,0.16)`
+- `rgba(18,205,184,0.42)` → `rgba(123,155,175,0.22)`
+- `rgba(18,205,184,0.1)` → `rgba(123,155,175,0.08)`
+- `rgba(18,205,184,0.14)` → `rgba(123,155,175,0.10)`
+- `rgba(18,205,184,0.25)` → `rgba(123,155,175,0.16)`
+- `rgba(18,205,184,0.04)` → `rgba(123,155,175,0.04)`
+- `rgba(18,205,184,0.05)` → `rgba(123,155,175,0.04)`
+- `rgba(18,205,184,0.06)` → `rgba(123,155,175,0.05)`
+- `rgba(18,205,184,0.08)` → `rgba(123,155,175,0.06)`
+- `rgba(18,205,184,0.2)` → `rgba(123,155,175,0.14)`
+- `rgba(18,205,184,0.35)` → `rgba(123,155,175,0.25)`
+- `rgba(18,205,184,0.5)` → `rgba(123,155,175,0.35)`
+- `rgba(18,205,184,0.13)` → `rgba(123,155,175,0.06)` (radial gradient LoginScreen)
 
-### 0.4 — SURFACES CSS (rgba blanc → rgba noir doux)
+### 0.4 — SURFACES ET BORDURES CSS (rgba blanc → rgba brun chaud)
 
-Dans le `<style>` CSS :
+Dans la section `<style>` CSS :
 - `rgba(255,255,255,0.03)` → `rgba(45,42,38,0.03)`
 - `rgba(255,255,255,0.04)` → `rgba(45,42,38,0.03)`
 - `rgba(255,255,255,0.05)` → `rgba(45,42,38,0.04)`
 - `rgba(255,255,255,0.06)` → `rgba(45,42,38,0.05)`
+- `rgba(255,255,255,0.07)` → `rgba(45,42,38,0.05)`
 - `rgba(255,255,255,0.08)` → `rgba(45,42,38,0.07)`
 - `rgba(255,255,255,0.09)` → `rgba(45,42,38,0.08)`
 - `rgba(255,255,255,0.1)` → `rgba(45,42,38,0.08)`
+- `rgba(255,255,255,0.15)` → `rgba(45,42,38,0.12)`
 - `rgba(255,255,255,0.18)` → `rgba(45,42,38,0.14)`
-- `rgba(232,237,245,0.5)` → `rgba(45,42,38,0.40)`
-- `rgba(232,237,245,0.7)` → `rgba(45,42,38,0.50)`
-- `rgba(232,237,245,0.75)` → `rgba(45,42,38,0.55)`
-- `rgba(232,237,245,0.85)` → `rgba(45,42,38,0.70)`
 
-### 0.5 — MODALS/TABS CSS
+### 0.5 — TEXTES SECONDAIRES CSS
 
-- `background:#0C1525` → `background:#FFFFFF`
-- `background:#131E35` → `background:#FFFFFF`
-- `color:#E8EDF5` → `color:#2D2A26`
-- `rgba(7,13,26,0.9)` → `rgba(45,42,38,0.50)`
-- `rgba(0,0,0,0.3)` → `rgba(45,42,38,0.06)`
-- `rgba(0,0,0,0.25)` → `rgba(45,42,38,0.10)`
+- `rgba(232,237,245,0.5)` → `rgba(45,42,38,0.40)` (tab-item text)
+- `rgba(232,237,245,0.7)` → `rgba(45,42,38,0.50)` (chip text)
+- `rgba(232,237,245,0.75)` → `rgba(45,42,38,0.55)` (quick-chip text)
+- `rgba(232,237,245,0.85)` → `rgba(45,42,38,0.70)` (btn-secondary text)
 
-### 0.6 — DANGER CSS
+### 0.6 — FONDS SOMBRES CSS
 
+- `background:#070D1A` → `background:#FAF7F2` (body)
+- `color:#E8EDF5` → `color:#2D2A26` (body text)
+- `background:#0C1525` → `background:#FFFFFF` (modal-box)
+- `background:#131E35` → `background:#FFFFFF` (tab-item.active)
+- `color:#E8EDF5` → `color:#2D2A26` (tab-item.active text — SI PRESENT)
+- `rgba(7,13,26,0.9)` → `rgba(45,42,38,0.50)` (modal overlay)
+- `rgba(7,13,26,0.6)` → `rgba(45,42,38,0.40)` (autre overlay)
+
+### 0.7 — DANGER/ROUGE CSS
+
+- `#F04C5B` → `#C4796E` (terre cuite douce)
 - `rgba(240,76,91,0.1)` → `rgba(196,121,110,0.08)`
-- `#F04C5B` → `#C4796E`
+- `rgba(240,76,91,0.07)` → `rgba(196,121,110,0.06)`
+- `rgba(240,76,91,0.06)` → `rgba(196,121,110,0.05)`
 - `rgba(240,76,91,0.2)` → `rgba(196,121,110,0.18)`
 - `rgba(240,76,91,0.18)` → `rgba(196,121,110,0.14)`
+- `rgba(240,76,91,0.22)` → `rgba(196,121,110,0.18)`
 
-### 0.7 — POLICES
+### 0.8 — OMBRES
 
-- `'DM Sans'` → `'Inter'` (partout CSS + JS)
-- `'DM Mono'` → `'JetBrains Mono'` (partout)
-- Remplacer le `<link>` Google Fonts par :
-  `<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>`
+- `rgba(0,0,0,0.55)` → `rgba(45,42,38,0.08)` (LoginScreen card shadow)
+- `rgba(0,0,0,0.3)` → `rgba(45,42,38,0.06)` (tab shadow, generic)
+- `rgba(0,0,0,0.25)` → `rgba(45,42,38,0.10)` (toggle shadow)
+- `rgba(0,0,0,0.12)` → `rgba(45,42,38,0.04)` (sidebar shadow)
+- `rgba(0,0,0,0.18)` → `rgba(45,42,38,0.08)` (generic shadow)
+- `rgba(0,0,0,0.09)` → `rgba(45,42,38,0.07)` (light theme border)
 
-### 0.8 — VÉRIFICATION APRÈS REMPLACEMENTS
+### 0.9 — GRADIENTS VERTS HARDCODÉS
 
-□ `#070D1A` → 0 occurrence
-□ `#0EA5E9` → 0 occurrence
-□ `#0C1525` → 0 occurrence
-□ `#131E35` → 0 occurrence
-□ `#F04C5B` → 0 occurrence dans le CSS
-□ `DM Sans` → 0 occurrence
-□ `DM Mono` → 0 occurrence
+- `#10B981` → `${C.green}` (4 occurrences — gradient start)
+- `#059669` → `#6A8F7C` (5 occurrences — gradient end, vert sauge sombre)
+
+### 0.10 — POLICES (20 occurrences total)
+
+- `'DM Sans'` → `'Inter'` (**3 occurrences** — CSS body, btn-base, inputs)
+- `'DM Mono'` → `'JetBrains Mono'` (**17 occurrences** — tout le code monospace)
+
+Remplacer AUSSI le `<link>` Google Fonts (ligne ~9) :
+AVANT : `<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@...&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>`
+APRÈS : `<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>`
+
+### 0.11 — handleTheme (ligne ~8005-8012)
+
+REMPLACE la fonction handleTheme par :
+```js
+const handleTheme = t => {
+  try{localStorage.setItem("scalyo_theme",t);}catch(e){}
+  Object.assign(C, t==="light"?C_LIGHT:C_DARK);
+  document.body.style.background = t==="light"?"#FAF7F2":"#1C1A17";
+  document.body.style.color = t==="light"?"#2D2A26":"#E8E4DC";
+  document.getElementById("root").style.background = t==="light"?"#FAF7F2":"#1C1A17";
+  setTheme(t);
+};
+```
+
+### 0.12 — THÈME PAR DÉFAUT
+
+CHERCHE (ligne ~7882) : `localStorage.getItem("scalyo_theme")||"dark"`
+REMPLACE PAR : `localStorage.getItem("scalyo_theme")||"light"`
+
+CHERCHE aussi le catch : `return "dark"`
+REMPLACE PAR : `return "light"`
+
+### 0.13 — VÉRIFICATION FINALE DES REMPLACEMENTS
+
+Fais CTRL+F dans le fichier terminé pour confirmer :
+□ `#070D1A` → **0 occurrence** (ZÉRO dans tout le fichier)
+□ `#0EA5E9` → **0 occurrence**
+□ `#0C1525` → **0 occurrence**
+□ `#131E35` → **0 occurrence**
+□ `#F04C5B` → **0 occurrence** dans le CSS
+□ `#12CDB8` → **0 occurrence** dans le CSS (peut rester dans C_DARK JS)
+□ `DM Sans` → **0 occurrence**
+□ `DM Mono` → **0 occurrence**
+□ `#F0F4F8` → **0 occurrence** (ancien bg light)
+□ `#1E293B` → **0 occurrence** (ancien text light)
 
 ═══════════════════════════════════════════════════════
 PARTIE 1 — PHILOSOPHIE "BIBLIOTHÈQUE ZEN"
 ═══════════════════════════════════════════════════════
 
-L'objectif est de créer un environnement visuel qui évoque :
-- La chaleur d'une bibliothèque universitaire ancienne, baignée de lumière naturelle
-- Le toucher d'un beau papier épais couleur parchemin
-- Le calme studieux — on se concentre, on apprend, on travaille sereinement
-- La propreté fonctionnelle de Notion — tout est à sa place
-- Des accents doux comme des signets en tissu (bleu poudré, vert sauge, terre cuite)
-
-Principes :
-1. FOND PARCHEMIN — #FAF7F2, comme du vieux papier chaud (PAS blanc pur, PAS gris froid)
-2. TEXTE CHARBON CHAUD — #2D2A26, doux pour les yeux mais très lisible (PAS noir pur #000)
-3. ACCENT BLEU POUDRÉ — #7B9BAF, comme un ciel d'hiver doux ou un cristal de quartz
+Principes visuels :
+1. FOND PARCHEMIN — #FAF7F2, chaud comme du vieux papier (PAS blanc pur, PAS gris)
+2. TEXTE CHARBON CHAUD — #2D2A26, doux mais très lisible (PAS noir pur #000)
+3. ACCENT BLEU POUDRÉ — #7B9BAF, comme un ciel d'hiver doux
 4. COULEURS TERREUSES — Vert sauge, terre cuite, ambre sable, lavande — toutes désaturées
-5. OMBRES CHAUDES — Teintées brun, ultra-diffuses, jamais noires
-6. ARRONDIS DOUX — 12px à 20px, naturels pas géométriques
-7. ESPACEMENT AÉRÉ — Comme les marges généreuses d'un beau livre
-8. TRANSITIONS LENTES — 0.3s ease, comme tourner une page
-9. HYPER LISIBLE — Contraste suffisant WCAG AA, taille de police 13px minimum, line-height 1.5+
-10. ZÉRO NÉON — Aucune couleur fluo, tout est mat et poudré
+5. OMBRES CHAUDES — Teintées brun rgba(45,42,38,...), ultra-diffuses, jamais noires
+6. ARRONDIS DOUX — 12px à 20px
+7. ESPACEMENT AÉRÉ — Marges généreuses comme un beau livre
+8. TRANSITIONS LENTES — 0.3s ease
+9. HYPER LISIBLE — Contraste WCAG AA minimum, police 13px min
+10. ZÉRO NÉON — Tout est mat et poudré
 
 ═══════════════════════════════════════════════════════
-PARTIE 2 — NOUVELLE PALETTE DE COULEURS
+PARTIE 2 — PALETTE DE COULEURS
 ═══════════════════════════════════════════════════════
 
-### Mode Clair (C_LIGHT) — THÈME PRINCIPAL PAR DÉFAUT
-
-Remplace l'objet C_LIGHT existant :
+### Mode Clair (C_LIGHT) — Remplace l'objet C_LIGHT existant
 
 ```js
 const C_LIGHT = {
-  bg: "#FAF7F2",              // Fond : parchemin chaud (comme du vieux papier)
+  bg: "#FAF7F2",              // Parchemin chaud
   bg1: "#FFFFFF",             // Cartes : blanc cassé
-  bg2: "#F3EFE8",             // Fond secondaire : lin clair
-  bg3: "#ECE7DF",             // Fond tertiaire : sable doux
+  bg2: "#F3EFE8",             // Lin clair
+  bg3: "#ECE7DF",             // Sable doux
   surface: "rgba(45,42,38,0.03)",
   surfaceHi: "rgba(45,42,38,0.05)",
-  border: "rgba(45,42,38,0.10)",        // Bordures : brun chaud ultra-subtil
+  border: "rgba(45,42,38,0.10)",
   borderHi: "rgba(45,42,38,0.16)",
-  teal: "#7B9BAF",            // ★ Accent principal : bleu poudré (cristal/ciel d'hiver)
+  teal: "#7B9BAF",            // Bleu poudré
   tealBg: "rgba(123,155,175,0.08)",
   tealBorder: "rgba(123,155,175,0.22)",
   tealGlow: "rgba(123,155,175,0.10)",
-  red: "#C4796E",             // Alerte : terre cuite douce
+  red: "#C4796E",             // Terre cuite
   redBg: "rgba(196,121,110,0.07)",
   redBorder: "rgba(196,121,110,0.20)",
-  amber: "#C4A24E",           // Vigilance : ambre sable
+  amber: "#C4A24E",           // Ambre sable
   amberBg: "rgba(196,162,78,0.07)",
   amberBorder: "rgba(196,162,78,0.20)",
-  green: "#7D9B8A",           // Succès : vert sauge
+  green: "#7D9B8A",           // Vert sauge
   greenBg: "rgba(125,155,138,0.07)",
   greenBorder: "rgba(125,155,138,0.20)",
-  purple: "#9B8FB8",          // Accent 2 : lavande poudrée
+  purple: "#9B8FB8",          // Lavande poudrée
   purpleBg: "rgba(155,143,184,0.07)",
-  blue: "#6B8FAD",            // Accent 3 : bleu ardoise
+  blue: "#6B8FAD",            // Bleu ardoise
   blueBg: "rgba(107,143,173,0.07)",
-  text: "#2D2A26",            // Texte : charbon chaud (PAS noir pur)
-  muted: "rgba(45,42,38,0.50)",         // Texte secondaire
-  faint: "rgba(45,42,38,0.14)"          // Texte tertiaire
+  text: "#2D2A26",            // Charbon chaud
+  muted: "rgba(45,42,38,0.50)",
+  faint: "rgba(45,42,38,0.14)"
 };
 ```
 
-### Mode Sombre (C / C_DARK) — Thème nuit studieuse
-
-Remplace l'objet C existant :
+### Mode Sombre (C / C_DARK) — Remplace l'objet C existant (lignes ~111-140)
 
 ```js
 const C = {
-  bg: "#1C1A17",              // Fond : brun très sombre (PAS noir, PAS bleu marine)
-  bg1: "#252320",             // Cartes : brun chaud sombre
-  bg2: "#2D2B27",             // Fond secondaire
-  bg3: "#35332E",             // Fond tertiaire
+  bg: "#1C1A17",              // Brun très sombre
+  bg1: "#252320",             // Brun chaud
+  bg2: "#2D2B27",
+  bg3: "#35332E",
   surface: "rgba(250,247,242,0.04)",
   surfaceHi: "rgba(250,247,242,0.06)",
   border: "rgba(250,247,242,0.08)",
   borderHi: "rgba(250,247,242,0.14)",
-  teal: "#9BB8CC",            // Accent : bleu poudré clair
+  teal: "#9BB8CC",            // Bleu poudré clair
   tealBg: "rgba(155,184,204,0.08)",
   tealBorder: "rgba(155,184,204,0.22)",
   tealGlow: "rgba(155,184,204,0.08)",
-  red: "#D4958A",             // Alerte : terre cuite claire
+  red: "#D4958A",             // Terre cuite claire
   redBg: "rgba(212,149,138,0.08)",
   redBorder: "rgba(212,149,138,0.18)",
-  amber: "#D4BA6E",           // Vigilance : ambre clair
+  amber: "#D4BA6E",           // Ambre clair
   amberBg: "rgba(212,186,110,0.08)",
   amberBorder: "rgba(212,186,110,0.20)",
-  green: "#9BB8A8",           // Succès : vert sauge clair
+  green: "#9BB8A8",           // Vert sauge clair
   greenBg: "rgba(155,184,168,0.08)",
   greenBorder: "rgba(155,184,168,0.20)",
-  purple: "#B8A8D4",          // Accent 2 : lavande claire
+  purple: "#B8A8D4",          // Lavande claire
   purpleBg: "rgba(184,168,212,0.08)",
-  blue: "#8BA8C4",            // Accent 3 : bleu ardoise clair
+  blue: "#8BA8C4",            // Bleu ardoise clair
   blueBg: "rgba(139,168,196,0.07)",
-  text: "#E8E4DC",            // Texte : crème parcheminé
+  text: "#E8E4DC",            // Crème parcheminé
   muted: "rgba(232,228,220,0.50)",
   faint: "rgba(232,228,220,0.14)"
 };
 ```
 
-Ensuite `const C_DARK = Object.assign({},C);` reste inchangé.
+`const C_DARK = Object.assign({},C);` reste INCHANGÉ.
 
 ═══════════════════════════════════════════════════════
 PARTIE 3 — CSS COMPLET (remplace TOUT le <style>)
 ═══════════════════════════════════════════════════════
 
-Remplace TOUT le contenu de la balise `<style>` (lignes ~18 à ~85) par ceci :
+Remplace TOUT le contenu entre `<style>` et `</style>` (lignes ~18 à ~85) par :
 
 ```css
 *{box-sizing:border-box;margin:0;padding:0}
@@ -287,116 +353,87 @@ nav::-webkit-scrollbar-thumb:hover{background:rgba(45,42,38,0.18)}
 ```
 
 ═══════════════════════════════════════════════════════
-PARTIE 4 — GRADIENTS JS (dans le JavaScript)
+PARTIE 4 — GRADIENTS JS
 ═══════════════════════════════════════════════════════
 
-### 4.1 — Gradient principal — TOUTES les occurrences
-- `linear-gradient(135deg,#12CDB8,#0EA5E9)` → `linear-gradient(135deg,${C.teal},${C.blue})`
-- `linear-gradient(135deg,${C.teal},#0EA5E9)` → `linear-gradient(135deg,${C.teal},${C.blue})`
-
-En mode clair ça donne : bleu poudré → bleu ardoise (doux et zen)
-
-### 4.2 — Gradient vert
-- `linear-gradient(135deg,#10B981,#059669)` → `linear-gradient(135deg,${C.green},#6A8F7C)`
-
-### 4.3 — Radial gradient LoginScreen
-AVANT : `radial-gradient(ellipse 80% 55% at 50% -8%,rgba(18,205,184,0.13) 0%,transparent 62%)`
-APRÈS : `radial-gradient(ellipse 80% 50% at 50% 0%,rgba(123,155,175,0.06) 0%,transparent 60%)`
-(Lueur bleu poudré très subtile en haut)
+Après la PARTIE 0 (qui a remplacé #0EA5E9 par ${C.blue}), vérifie que TOUS les gradients inline sont maintenant :
+- `linear-gradient(135deg,${C.teal},${C.blue})` — gradient principal (bleu poudré → bleu ardoise)
+- `linear-gradient(135deg,${C.green},#6A8F7C)` — gradient vert (sauge)
 
 ═══════════════════════════════════════════════════════
-PARTIE 5 — OMBRES CHAUDES ET DIFFUSES (JS inline)
+PARTIE 5 — OMBRES JS INLINE
 ═══════════════════════════════════════════════════════
 
-1. Logo : `0 10px 36px ${C.tealGlow}` → `0 4px 14px ${C.tealGlow}`
+1. Logo ⚡ : `0 10px 36px ${C.tealGlow}` → `0 4px 14px ${C.tealGlow}`
 2. Logo LoginScreen : `0 4px 16px ${C.tealGlow}` → `0 2px 10px ${C.tealGlow}`
-3. Form card : `0 48px 120px rgba(0,0,0,0.55)` → `0 6px 28px rgba(45,42,38,0.08)`
+3. Form card LoginScreen : `0 48px 120px rgba(0,0,0,0.55)` → `0 6px 28px rgba(45,42,38,0.08)`
 4. Sidebar : `1px 0 12px rgba(0,0,0,0.12)` → `1px 0 8px rgba(45,42,38,0.04)`
 5. Card glow : `0 0 24px ${C.tealGlow}` → `0 0 14px ${C.tealGlow}`
 6. HealthBar : `0 0 8px ${c}44` → `0 0 6px ${c}22`
-7. Boutons inline : `0 6px 24px ${C.tealGlow}` → `0 2px 10px ${C.tealGlow}`
+7. Boutons : `0 6px 24px ${C.tealGlow}` → `0 2px 10px ${C.tealGlow}`
 8. Bouton submit : `0 6px 24px ${C.tealGlow}` → `0 2px 10px rgba(123,155,175,0.16)`
+9. Green btn shadow : `0 4px 14px rgba(16,185,129,0.3)` → `0 2px 10px rgba(125,155,138,0.16)`
 
 ═══════════════════════════════════════════════════════
-PARTIE 6 — handleTheme
+PARTIE 6 — LANDING PAGE (LoginScreen) — MÊME DA QUE L'APP
 ═══════════════════════════════════════════════════════
 
-```js
-const handleTheme = t => {
-  try{localStorage.setItem("scalyo_theme",t);}catch(e){}
-  Object.assign(C, t==="light"?C_LIGHT:C_DARK);
-  document.body.style.background = t==="light"?"#FAF7F2":"#1C1A17";
-  document.body.style.color = t==="light"?"#2D2A26":"#E8E4DC";
-  document.getElementById("root").style.background = t==="light"?"#FAF7F2":"#1C1A17";
-  setTheme(t);
-};
-```
+⚠️ La LoginScreen DOIT avoir EXACTEMENT la même D.A. que l'application.
 
-IMPORTANT :
-- `useState("dark")` → `useState("light")`
-- Si localStorage retourne null → "light"
-
-═══════════════════════════════════════════════════════
-PARTIE 7 — LANDING PAGE (LoginScreen)
-═══════════════════════════════════════════════════════
-
-### 7.1 — Fond
+### 6.1 — Fond principal (ligne ~835)
 ```js
 background: `radial-gradient(ellipse 80% 50% at 50% 0%,rgba(123,155,175,0.06) 0%,transparent 60%),${C.bg}`
 ```
-= Parchemin chaud + lueur bleu poudré quasi-invisible en haut
+= Parchemin + lueur bleu poudré subtile
 
-### 7.2 — Logo ⚡
+### 6.2 — Logo ⚡ (ligne ~853)
 ```js
 background: `linear-gradient(135deg,${C.teal},${C.blue})`,
 borderRadius: 14,
 boxShadow: `0 2px 10px ${C.tealGlow}`
 ```
 
-### 7.3 — Titre "scalyo"
+### 6.3 — Titre "scalyo" (ligne ~867)
 ```js
-color: C.text    // #2D2A26 en light (charbon chaud, LISIBLE)
+color: C.text   // → #2D2A26 en light (charbon chaud, TRÈS LISIBLE sur parchemin)
 ```
-Le "yo" en `C.teal` (bleu poudré)
+Le "yo" : `color: C.teal` // → #7B9BAF (bleu poudré)
 
-### 7.4 — Tagline sous le titre
+### 6.4 — Tagline (ligne ~873)
 ```js
-color: C.muted   // rgba(45,42,38,0.50) — gris chaud LISIBLE sur parchemin
+color: C.muted   // → rgba(45,42,38,0.50) — LISIBLE sur parchemin
 ```
 
-### 7.5 — Sélecteur de langue
+### 6.5 — Sélecteur de langue (ligne ~884)
 ```js
 background: lang === l ? C.tealBg : C.surface,
 border: `1px solid ${lang === l ? C.tealBorder : C.border}`,
 color: lang === l ? C.teal : C.muted
 ```
 
-### 7.6 — Form card
+### 6.6 — Form card (ligne ~890)
 ```js
-background: C.bg1,                    // blanc en light
-border: `1px solid ${C.border}`,      // bordure sable subtile
+background: C.bg1,                     // blanc
+border: `1px solid ${C.border}`,       // bordure sable
 borderRadius: 22,
-boxShadow: "0 6px 28px rgba(45,42,38,0.08)",
+boxShadow: "0 6px 28px rgba(45,42,38,0.08)",  // ombre chaude douce
 padding: 36
 ```
 
-### 7.7 — Tabs (Connexion / Créer un compte)
-Les `.tab-bar` et `.tab-item` CSS s'appliquent automatiquement.
-
-### 7.8 — Titres dans la card ("Bon retour 👋")
+### 6.7 — Titres dans la card (lignes ~926, ~1058)
 ```js
 color: C.text,    // #2D2A26 — LISIBLE
 fontSize: 20,
-fontWeight: 800
+fontWeight: 800   // ou 900
 ```
 
-### 7.9 — Sous-titres ("Accédez à votre espace Scalyo")
+### 6.8 — Sous-titres (lignes ~934, ~1066)
 ```js
 color: C.muted,   // gris chaud LISIBLE
 fontSize: 13
 ```
 
-### 7.10 — Labels des inputs
+### 6.9 — Labels des inputs (lignes ~953, ~1000)
 ```js
 color: C.muted,
 fontSize: 11,
@@ -404,166 +441,241 @@ fontWeight: 700,
 textTransform: "uppercase"
 ```
 
-### 7.11 — Inputs
+### 6.10 — Champs input (lignes ~971, ~1110)
 ```js
-background: C.surface,          // rgba(45,42,38,0.03) — fond lin très clair
-border: `1px solid ${C.border}`, // rgba(45,42,38,0.10) — bordure visible
-color: C.text,                   // #2D2A26 — texte LISIBLE
-borderRadius: 12,
+background: C.surface,           // lin très clair
+border: `1px solid ${C.border}`, // bordure visible
+color: C.text,                   // texte LISIBLE
+borderRadius: 10,
 padding: "11px 14px",
 fontSize: 14
 ```
 
-### 7.12 — Bouton submit
+### 6.11 — Bouton show/hide password (ligne ~987)
 ```js
-background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-color: "#FFFFFF",           // ⚠️ BLANC !! PAS #070D1A !!
-borderRadius: 12,
-boxShadow: "0 2px 10px rgba(123,155,175,0.16)",
-fontSize: 15,
-fontWeight: 700,
-padding: "14px"
+color: C.muted   // LISIBLE
 ```
 
-### 7.13 — Sélecteur de rôle (Manager / CSM)
+### 6.12 — Sélecteur de rôle Manager/CSM (ligne ~1020)
 ```js
 background: role === v ? C.tealBg : C.surface,
 border: `1px solid ${role === v ? C.tealBorder : C.border}`,
 color: role === v ? C.teal : C.muted
 ```
 
-### 7.14 — Messages d'erreur
+### 6.13 — Message d'erreur (ligne ~1026)
 ```js
 background: C.redBg,
 border: `1px solid ${C.redBorder}`,
-color: C.red    // #C4796E — terre cuite LISIBLE sur fond blanc/parchemin
+color: C.red   // terre cuite LISIBLE
 ```
 
-### 7.15 — Footer
+### 6.14 — Message de succès/info (ligne ~916)
 ```js
-color: C.muted    // gris chaud LISIBLE
+background: C.greenBg,
+border: `1px solid ${C.greenBorder}`,
+color: C.green   // vert sauge LISIBLE
 ```
 
-═══════════════════════════════════════════════════════
-PARTIE 8 — SIDEBAR SCROLLABLE
-═══════════════════════════════════════════════════════
-
-Structure en 3 zones :
-
-```
-sidebar (flex column, height 100%, overflow: "hidden")
-├── zone-haute (flexShrink: 0) → Logo ⚡ + "scalyo"
-├── zone-milieu (flex: 1, overflowY: "auto", overflowX: "hidden") → <nav> items
-└── zone-basse (flexShrink: 0, borderTop) → Settings + Avatar + Logout
-```
-
-VÉRIFIE :
-1. `<nav>` a `overflowY: "auto"` et `overflowX: "hidden"`
-2. Container sidebar a `overflow: "hidden"`
-3. Logo NE scrolle PAS
-4. Settings/avatar NE scrollent PAS
-5. Items nav scrollent avec la molette
-
-### Sidebar background
+### 6.15 — Bouton submit LOGIN (ligne ~1038-1046)
 ```js
-background: C.bg1,   // blanc en light (contraste doux avec le parchemin)
-boxShadow: "1px 0 8px rgba(45,42,38,0.04)"
+width: "100%",
+padding: "14px",
+borderRadius: 12,
+fontSize: 15,
+fontWeight: 700,
+background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+color: "#FFFFFF",                    // ⚠️ BLANC — PAS #070D1A !!!
+boxShadow: "0 2px 10px rgba(123,155,175,0.16)"
+```
+
+### 6.16 — Spinner dans le bouton (ligne ~1056)
+```js
+color: "#FFFFFF"   // ⚠️ BLANC — PAS #070D1A !!!
+```
+
+### 6.17 — Bouton submit SIGNUP (ligne ~1178-1184)
+Même style exactement que 6.15 — gradient bleu poudré, texte BLANC.
+
+### 6.18 — Footer textes (CGU, sécurité, etc.)
+```js
+color: C.muted   // gris chaud LISIBLE
 ```
 
 ═══════════════════════════════════════════════════════
-PARTIE 9 — KANBAN FONCTIONNEL
+PARTIE 7 — SIDEBAR
 ═══════════════════════════════════════════════════════
 
-VÉRIFIE ET CORRIGE :
+Le sidebar est DÉJÀ bien structuré avec 3 zones. VÉRIFIE simplement :
 
-### 9.1 — Navigation
-- Item "Kanban" 📋 dans NAV_MANAGER et NAV_CSM
-- Clic → setScreenPersist("kanban")
-- renderView() → case "kanban" → KanbanView
+### 7.1 — Container sidebar (ligne ~8170)
+```js
+background: C.bg1,   // blanc en light
+boxShadow: "1px 0 8px rgba(45,42,38,0.04)",   // ombre chaude ultra-douce
+borderRight: `1px solid ${C.border}`,
+overflow: "hidden"   // DOIT être présent
+```
 
-### 9.2 — Boutons visibles
-- Bouton "+" dans chaque colonne : fond C.tealBg, texte C.teal, border C.tealBorder
-- Formulaire d'ajout fonctionnel
-- Bouton "Enregistrer" visible
+### 7.2 — Logo gradient (ligne ~8195)
+```js
+background: `linear-gradient(135deg,${C.teal},${C.blue})`   // PAS #0EA5E9 !!
+boxShadow: `0 4px 14px ${C.tealGlow}`
+```
 
-### 9.3 — Style Bibliothèque Zen
-- Colonne "À faire" → accent C.blue (bleu ardoise)
-- Colonne "En cours" → accent C.amber (ambre sable)
-- Colonne "Terminé" → accent C.green (vert sauge)
-- Cartes : fond C.bg1 (blanc), bordure C.border, border-radius 14px
-- Badges priorité : Haute = C.red (terre cuite), Moyenne = C.amber (ambre), Basse = C.green (sauge)
-- ⚠️ Texte boutons Kanban : AUCUN `color: "#070D1A"` → tout en `color: "#FFFFFF"`
+### 7.3 — Zone nav (ligne ~8219)
+```js
+flex: 1,
+overflowY: "auto",    // DOIT être présent — permet le scroll
+overflowX: "hidden"   // DOIT être présent
+```
+
+### 7.4 — Nav items actifs (ligne ~8245)
+```js
+background: active ? C.tealBg : "transparent",
+border: `1px solid ${active ? C.tealBorder : "transparent"}`,
+color: active ? C.teal : C.muted
+```
+
+### 7.5 — Zone basse — Settings/Avatar
+- Bordure : `borderTop: '1px solid ${C.border}'`
+- Textes : C.muted, C.faint (tous dynamiques, OK)
 
 ═══════════════════════════════════════════════════════
-PARTIE 10 — VÉRIFICATION FINALE
+PARTIE 8 — KANBAN
 ═══════════════════════════════════════════════════════
 
-### A. Zéro couleur morte
-□ `#070D1A` → 0 occurrence dans TOUT le fichier
-□ `#0EA5E9` → 0 occurrence
-□ `#0C1525` → 0 occurrence
-□ `#131E35` → 0 occurrence
-□ `#12CDB8` → 0 occurrence dans le CSS
-□ `DM Sans` → 0 occurrence
-□ `DM Mono` → 0 occurrence
+Le Kanban est DÉJÀ bien implémenté avec tokens dynamiques. VÉRIFIE :
 
-### B. LISIBILITÉ (le plus important !)
-□ Texte principal #2D2A26 sur fond parchemin #FAF7F2 → ratio ~12:1 ✅
-□ Texte muted rgba(45,42,38,0.50) sur #FAF7F2 → ratio ~5:1 ✅
-□ Accent #7B9BAF sur #FAF7F2 → ratio ~3.5:1 ✅ (éléments UI)
-□ Texte boutons : #FFFFFF sur gradient bleu → ratio ~5:1 ✅
-□ Erreurs #C4796E sur blanc → ratio ~3.5:1 ✅ (+ icône)
-□ TOUT est lisible sans plisser les yeux
+### 8.1 — Accessible depuis le sidebar
+□ "Kanban" (📋) dans NAV_MANAGER (ligne ~7800) — DÉJÀ PRÉSENT
+□ "Kanban" (📋) dans NAV_CSM (ligne ~7841) — DÉJÀ PRÉSENT
+□ case "kanban" dans renderView() (ligne ~8146) — DÉJÀ PRÉSENT
 
-### C. Ambiance Bibliothèque Zen
-□ Fond parchemin chaud #FAF7F2 (PAS blanc pur, PAS gris froid)
-□ Accents bleu poudré + vert sauge + terre cuite (PAS néon)
-□ Ombres chaudes teintées brun (PAS noires)
-□ Arrondis doux 12-20px
-□ Animations lentes 0.3s+
+### 8.2 — Boutons "+" visibles
+□ Bouton "+" dans chaque colonne (ligne ~7687) — DÉJÀ PRÉSENT
+□ Bouton dashed dans l'état vide (ligne ~7777) — DÉJÀ PRÉSENT
 
-### D. Landing page
-□ Fond parchemin + lueur bleu subtile
-□ Card formulaire : blanc, bordure sable, ombre douce
-□ Bouton : gradient bleu poudré, texte BLANC
-□ Tout est LISIBLE
-□ Même D.A. que l'app
+### 8.3 — Colonnes avec tokens
+□ "À faire" → C.blue (ligne ~7653) — DÉJÀ DYNAMIQUE
+□ "En cours" → C.amber (ligne ~7654) — DÉJÀ DYNAMIQUE
+□ "Terminé" → C.green (ligne ~7655) — DÉJÀ DYNAMIQUE
 
-### E. Sidebar scrollable
+### 8.4 — Drag & drop
+□ draggable: true (ligne ~7725) — DÉJÀ PRÉSENT
+□ onDragStart, onDragOver, onDrop — DÉJÀ IMPLÉMENTÉS
+
+Rien à changer dans le Kanban, il utilise déjà les tokens C.xxx partout.
+
+═══════════════════════════════════════════════════════
+PARTIE 9 — VÉRIFICATION PRODUCTION
+═══════════════════════════════════════════════════════
+
+### A. ZÉRO COULEUR MORTE
+□ `#070D1A` → 0 occ. (vérif CTRL+F)
+□ `#0EA5E9` → 0 occ.
+□ `#0C1525` → 0 occ.
+□ `#131E35` → 0 occ.
+□ `#F04C5B` → 0 occ. dans CSS
+□ `#12CDB8` → 0 occ. dans CSS
+□ `#F0F4F8` → 0 occ.
+□ `#1E293B` → 0 occ.
+□ `DM Sans` → 0 occ.
+□ `DM Mono` → 0 occ.
+
+### B. LISIBILITÉ PARFAITE
+□ #2D2A26 sur #FAF7F2 → ratio ~12:1 ✅
+□ C.muted sur #FAF7F2 → ratio ~5:1 ✅
+□ C.teal #7B9BAF sur #FAF7F2 → ratio ~3.5:1 ✅
+□ C.red #C4796E sur blanc → ratio ~3.5:1 ✅
+□ Texte boutons #FFFFFF sur gradient → ratio ~5:1 ✅
+□ AUCUN texte illisible ou invisible
+
+### C. COHÉRENCE APP = LANDING PAGE
+□ Même fond parchemin #FAF7F2
+□ Mêmes bordures rgba(45,42,38,0.10)
+□ Mêmes ombres chaudes
+□ Mêmes inputs avec bordures visibles
+□ Même gradient bleu poudré sur boutons
+□ Même police Inter
+□ Même accent bleu poudré C.teal
+
+### D. THÈME DARK FONCTIONNE
+□ Switch light→dark : fond #1C1A17, texte #E8E4DC
+□ Switch dark→light : fond #FAF7F2, texte #2D2A26
+□ Tous les tokens C.xxx se mettent à jour
+□ Pas de flash de couleur au switch
+
+### E. SIDEBAR SCROLLABLE
 □ Logo fixe en haut
-□ Nav scrolle au milieu
+□ Nav scrolle au milieu (overflowY: auto)
 □ Settings/avatar fixes en bas
+□ Sidebar container overflow: hidden
 
-### F. Kanban
-□ Accessible depuis le sidebar
-□ Boutons "+" visibles
-□ Cartes lisibles
+### F. KANBAN ACCESSIBLE
+□ Item "Kanban" 📋 dans le sidebar
+□ Clic navigue vers l'écran Kanban
+□ Boutons "+" fonctionnels
+□ Drag & drop fonctionnel
 
-### G. Anti-régression
-□ Login/Signup fonctionnels
-□ Toutes les vues fonctionnelles
-□ Thème switch fonctionne (parchemin ↔ brun sombre)
-□ I18N fr/en/kr intact
-□ Aucun appel Supabase/Stripe/Anthropic modifié
+### G. ANTI-RÉGRESSION COMPLÈTE
+□ LoginScreen : signIn fonctionne
+□ LoginScreen : signUp fonctionne
+□ LoginScreen : validation d'erreurs fonctionne
+□ LoginScreen : sélecteur de langue fonctionne
+□ Auth : onAuthStateChange OK
+□ Auth : getSession OK
+□ Auth : signOut OK
+□ DashboardView → FONCTIONNE
+□ PortfolioView → FONCTIONNE
+□ ImportModal → FONCTIONNE
+□ AddAccountModal → FONCTIONNE
+□ EditAccountPanel → FONCTIONNE
+□ WellbeingView → FONCTIONNE
+□ CoachIAView → FONCTIONNE
+□ KPIView → FONCTIONNE
+□ TipsView → FONCTIONNE
+□ ResourcesView → FONCTIONNE
+□ EmailStudioView → FONCTIONNE
+□ RoadmapView → FONCTIONNE
+□ UpgradeModal → FONCTIONNE
+□ SettingsView → FONCTIONNE (thème, langue, API key)
+□ AccountTodoPanel → FONCTIONNE
+□ KanbanView → FONCTIONNE
+□ Thème clair/sombre switch → FONCTIONNE
+□ I18N fr/en/kr → INTACT
+□ Aucun appel Supabase modifié
+□ Aucun appel Stripe modifié
+□ Aucun appel Anthropic modifié
+□ localStorage : screen, theme, lang, sidebar, kanban → INTACT
+□ Spinner, Loader, Avatar, Tag → FONCTIONNENT
+□ Toutes les fonctions utilitaires → INTACTES
 
-### H. Rapport
+### H. RAPPORT PRODUCTION
 
 | Élément | Statut |
 |---------|--------|
-| #070D1A éradiqué (24 occ.) | ✅/❌ |
+| #070D1A éradiqué (24+6 occ.) | ✅/❌ |
 | #0EA5E9 éradiqué (22 occ.) | ✅/❌ |
-| CSS remplacé complet | ✅/❌ |
-| Palette parchemin C_LIGHT | ✅/❌ |
-| Palette brun C_DARK | ✅/❌ |
-| Police Inter | ✅/❌ |
+| rgba(18,205,184,...) CSS (18 occ.) | ✅/❌ |
+| rgba(255,255,255,...) CSS (30 occ.) | ✅/❌ |
+| DM Sans/Mono (20 occ.) | ✅/❌ |
+| CSS complet remplacé | ✅/❌ |
+| Palette C_LIGHT parchemin | ✅/❌ |
+| Palette C_DARK brun | ✅/❌ |
+| handleTheme MAJ | ✅/❌ |
+| Thème défaut = light | ✅/❌ |
+| LoginScreen = même DA | ✅/❌ |
 | LoginScreen LISIBLE | ✅/❌ |
-| Ambiance zen studieuse | ✅/❌ |
 | Sidebar scrollable | ✅/❌ |
 | Kanban fonctionnel | ✅/❌ |
-| handleTheme MAJ | ✅/❌ |
+| Ombres chaudes | ✅/❌ |
+| Gradients poudrés | ✅/❌ |
 | Anti-régression | ✅/❌ |
+| Prêt production | ✅/❌ |
 
-Verdict : 🟢 ZEN & READY / 🟠 PRESQUE / 🔴 PAS BON
+Verdict : 🟢 ZEN & PRODUCTION-READY / 🟠 PRESQUE / 🔴 PAS BON
+
+⚠️ Si le verdict est 🟠 ou 🔴, liste les problèmes restants et corrige-les AVANT de retourner le fichier.
 
 Retourne-moi le fichier COMPLET.
 ```
