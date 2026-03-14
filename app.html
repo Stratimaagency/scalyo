@@ -1591,7 +1591,7 @@ const Loader = ({
   style: {
     width: 44,
     height: 44,
-    background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+    background: C.teal,
     borderRadius: 13,
     display: "flex",
     alignItems: "center",
@@ -1812,8 +1812,8 @@ const EmptyState = ({
     padding: "10px 24px",
     borderRadius: 12,
     fontSize: 13,
-    background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-    color: "#070D1A"
+    background: C.teal,
+    color: "#FFFFFF"
   }
 }, action));
 
@@ -2123,7 +2123,7 @@ const LoginScreen = ({
     style: {
       width: 48,
       height: 48,
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      background: C.teal,
       borderRadius: 16,
       display: "flex",
       alignItems: "center",
@@ -2302,8 +2302,8 @@ const LoginScreen = ({
       padding: "14px",
       borderRadius: 11,
       fontSize: 15,
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-      color: "#070D1A",
+      background: C.teal,
+      color: "#FFFFFF",
       boxShadow: "none"
     }
   }, loading ? /*#__PURE__*/React.createElement("span", {
@@ -2315,7 +2315,7 @@ const LoginScreen = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 16,
-    color: "#070D1A"
+    color: "#FFFFFF"
   }), lang==="en" ? "Signing in..." : lang==="kr" ? "로그인 중..." : "Connexion...") : lang==="en" ? "Access my workspace →" : lang==="kr" ? "내 워크스페이스 접속 →" : T("loginBtn",lang))), tab === "signup" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h2", {
     style: {
       fontSize: 20,
@@ -2441,8 +2441,8 @@ const LoginScreen = ({
       padding: "14px",
       borderRadius: 11,
       fontSize: 15,
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-      color: "#070D1A",
+      background: C.teal,
+      color: "#FFFFFF",
       boxShadow: "none"
     }
   }, loading ? /*#__PURE__*/React.createElement("span", {
@@ -2454,7 +2454,7 @@ const LoginScreen = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 16,
-    color: "#070D1A"
+    color: "#FFFFFF"
   }), lang==="en" ? "Creating..." : lang==="kr" ? "생성 중..." : T("creating",lang)) : lang==="en" ? "Create my Scalyo workspace →" : lang==="kr" ? "내 Scalyo 워크스페이스 생성 →" : T("registerBtn",lang)), /*#__PURE__*/React.createElement("p", {
     style: {
       fontSize: 11,
@@ -2571,8 +2571,8 @@ const UpgradeModal = ({
       top: -10,
       left: "50%",
       transform: "translateX(-50%)",
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-      color: "#070D1A",
+      background: C.teal,
+      color: "#FFFFFF",
       fontSize: 10,
       fontWeight: 800,
       padding: "3px 12px",
@@ -2659,8 +2659,8 @@ const UpgradeModal = ({
       fontSize: 13,
       fontWeight: 700,
       textDecoration: "none",
-      background: p.highlight ? `linear-gradient(135deg,${C.teal},${C.blue})` : C.surfaceHi,
-      color: p.highlight ? "#070D1A" : C.text,
+      background: p.highlight ? C.teal : C.surfaceHi,
+      color: p.highlight ? "#FFFFFF" : C.text,
       border: p.highlight ? "none" : `1px solid ${C.border}`
     }
   }, "Choisir ", p.name, " \u2192") : /*#__PURE__*/React.createElement("div", {
@@ -2910,7 +2910,7 @@ const ImportModal = ({
       alignItems: "center",
       justifyContent: "center",
       background: step === s ? C.teal : ["upload", "map", "preview"].indexOf(step) > i ? C.green : "rgba(255,255,255,0.1)",
-      color: step === s || ["upload", "map", "preview"].indexOf(step) > i ? "#070D1A" : C.muted
+      color: step === s || ["upload", "map", "preview"].indexOf(step) > i ? "#FFFFFF" : C.muted
     }
   }, ["upload", "map", "preview"].indexOf(step) > i ? "✓" : i + 1), /*#__PURE__*/React.createElement("span", {
     style: {
@@ -3126,8 +3126,8 @@ const ImportModal = ({
       flex: 2,
       padding: "12px",
       borderRadius: 12,
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-      color: "#070D1A",
+      background: C.teal,
+      color: "#FFFFFF",
       fontSize: 13
     }
   }, "Pr\xE9visualiser & \xE9diter \u2192"))), step === "preview" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -3282,8 +3282,8 @@ const ImportModal = ({
       padding: "12px",
       borderRadius: 11,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-      color: "#070D1A"
+      background: C.teal,
+      color: "#FFFFFF"
     }
   }, importing ? /*#__PURE__*/React.createElement("span", {
     style: {
@@ -3294,7 +3294,7 @@ const ImportModal = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 14,
-    color: "#070D1A"
+    color: "#FFFFFF"
   }), lang==="en" ? "Importing..." : lang==="kr" ? "가져오는 중..." : "Import en cours...") : `⬆ Importer ${editableRows.filter(r => r.name?.trim()).length} compte${editableRows.filter(r => r.name?.trim()).length > 1 ? "s" : ""} →`))))));
 };
 
@@ -4000,7 +4000,7 @@ const AccountTodoPanel = ({
   }, t.done && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12,
-      color: "#070D1A",
+      color: "#FFFFFF",
       fontWeight: 900
     }
   }, "\u2713")), /*#__PURE__*/React.createElement("span", {
@@ -4083,7 +4083,7 @@ const AccountTodoPanel = ({
   }, t.done && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12,
-      color: "#070D1A",
+      color: "#FFFFFF",
       fontWeight: 900
     }
   }, "\u2713")), /*#__PURE__*/React.createElement("span", {
@@ -4164,8 +4164,8 @@ const AccountTodoPanel = ({
     style: {
       padding: "9px 14px",
       borderRadius: 9,
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-      color: "#070D1A",
+      background: C.teal,
+      color: "#FFFFFF",
       fontSize: 13
     }
   }, "+")));
@@ -4359,8 +4359,8 @@ const AddAccountModal = ({
       padding: "12px",
       borderRadius: 12,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-      color: "#070D1A"
+      background: C.teal,
+      color: "#FFFFFF"
     }
   }, saving ? /*#__PURE__*/React.createElement("span", {
     style: {
@@ -4371,7 +4371,7 @@ const AddAccountModal = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 14,
-    color: "#070D1A"
+    color: "#FFFFFF"
   }), T("addingAcc",lang)) : (T("createAcc",lang)))))));
 };
 
@@ -4757,8 +4757,8 @@ const EditAccountPanel = ({
       padding: "11px",
       borderRadius: 12,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-      color: "#070D1A"
+      background: C.teal,
+      color: "#FFFFFF"
     }
   }, saving ? (T("saving",lang)) : (T("saveAcc",lang))));
 };
@@ -5332,8 +5332,8 @@ const AddTaskModal = ({onClose,onAdd,lang,editTask,accounts=[]})=>{
           },
           style:{
             flex:2,padding:"12px",borderRadius:6,fontSize:13,fontWeight:800,cursor:"pointer",border:"none",
-            background:!title.trim()?"rgba(255,255,255,0.05)":`linear-gradient(135deg,${C.teal},${C.blue})`,
-            color:!title.trim()?C.muted:"#070D1A",transition:"all .15s"
+            background:!title.trim()?"rgba(255,255,255,0.05)":C.teal,
+            color:!title.trim()?C.muted:"#FFFFFF",transition:"all .15s"
           }
         },isEdit?(T("update",lang)):(T("taskAdd",lang)))
       )
@@ -5517,7 +5517,7 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
           onClick:()=>{setDefaultQuad("q1");setEditTask(null);setShowAdd(true);},
           style:{
             display:"flex",alignItems:"center",gap:6,padding:"8px 16px",borderRadius:6,
-            background:`linear-gradient(135deg,${C.teal},${C.blue})`,color:"#070D1A",
+            background:C.teal,color:"#FFFFFF",
             fontSize:12,fontWeight:800,border:"none",cursor:"pointer"
           }
         },"+ "+(T("newTask",lang)))
@@ -5785,7 +5785,7 @@ const PlanningView=({lang="fr",accounts=[],companyId=null})=>{
         },"⬇ Export .ics"),
         React.createElement("button",{
           onClick:()=>{setSelectedDate(today.toISOString().slice(0,10));setEditEvent(null);setShowAddEvent(true);},
-          style:{padding:"6px 14px",borderRadius:9,background:`linear-gradient(135deg,${C.teal},${C.blue})`,color:"#070D1A",border:"none",cursor:"pointer",fontSize:11,fontWeight:800}
+          style:{padding:"6px 14px",borderRadius:9,background:C.teal,color:"#FFFFFF",border:"none",cursor:"pointer",fontSize:11,fontWeight:800}
         },"+ "+(T("event",lang)))
       )
     ),
@@ -5995,8 +5995,8 @@ const AddEventModal=({lang,accounts,editEvent,defaultDate,onClose,onSave,onDelet
         React.createElement("button",{onClick:onClose,style:{flex:1,padding:"11px",borderRadius:6,background:C.surface,border:`1px solid ${C.border}`,color:C.muted,cursor:"pointer",fontSize:13,fontWeight:600}},T("cancel",lang)),
         React.createElement("button",{disabled:!title.trim()||!date,onClick:handleSave,
           style:{flex:2,padding:"11px",borderRadius:6,fontSize:13,fontWeight:800,cursor:"pointer",border:"none",
-            background:!title.trim()||!date?"rgba(255,255,255,0.05)":`linear-gradient(135deg,${C.teal},${C.blue})`,
-            color:!title.trim()||!date?C.muted:"#070D1A"}
+            background:!title.trim()||!date?"rgba(255,255,255,0.05)":C.teal,
+            color:!title.trim()||!date?C.muted:"#FFFFFF"}
         },isEdit?(T("update",lang)):(T("taskAdd",lang)))
       )
     )
@@ -6511,7 +6511,7 @@ PROHIBITIONS: No toxic positivity, no minimizing, no 10-tip dumps, always name s
     style: {
       width: 42,
       height: 42,
-      background: `linear-gradient(135deg,${C.green},${C.teal})`,
+      background: C.green,
       borderRadius: 13,
       display: "flex",
       alignItems: "center",
@@ -6569,7 +6569,7 @@ PROHIBITIONS: No toxic positivity, no minimizing, no 10-tip dumps, always name s
       height: 32,
       borderRadius: 12,
       flexShrink: 0,
-      background: "linear-gradient(135deg,${C.green},${C.teal})",
+      background: C.green,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -6592,7 +6592,7 @@ PROHIBITIONS: No toxic positivity, no minimizing, no 10-tip dumps, always name s
   }, m.text)))), (typing || loading) && /*#__PURE__*/React.createElement("div", {
     style: { display:"flex", gap:10, alignItems:"flex-end", marginBottom:8 }
   },
-    /*#__PURE__*/React.createElement("div", { style:{ width:32, height:32, borderRadius:6, flexShrink:0, background:"linear-gradient(135deg,${C.green},${C.teal})", display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 } }, "💚"),
+    /*#__PURE__*/React.createElement("div", { style:{ width:32, height:32, borderRadius:6, flexShrink:0, background:C.green, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 } }, "💚"),
     /*#__PURE__*/React.createElement("div", { style:{ background:"linear-gradient(135deg,rgba(16,185,129,0.15),rgba(5,150,105,0.1))", border:"1px solid rgba(16,185,129,0.3)", borderRadius:"16px 16px 16px 4px", padding:"12px 16px", display:"flex", gap:6, alignItems:"center" } },
       /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#4DAB6D", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s infinite" } }),
       /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#4DAB6D", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.2s infinite" } }),
@@ -6647,7 +6647,7 @@ PROHIBITIONS: No toxic positivity, no minimizing, no 10-tip dumps, always name s
     style: {
       padding: "12px 18px",
       borderRadius: 11,
-      background: "linear-gradient(135deg,${C.green},${C.teal})",
+      background: C.green,
       color: "#fff",
       fontSize: 14
     }
@@ -9917,8 +9917,8 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       borderRadius: 9,
       fontWeight: 800,
       fontSize: 13,
-      background: saved ? C.green : `linear-gradient(135deg,${C.teal},${C.blue})`,
-      color: "#070D1A",
+      background: saved ? C.green : C.teal,
+      color: "#FFFFFF",
       transition: "all 0.2s"
     }
   }, saved ? (T("saved",lang)) : (T("save",lang))))), /*#__PURE__*/React.createElement("div", {
@@ -10037,7 +10037,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
   },
     t.label,
     t.alertBadge>0 && React.createElement("span",{style:{background:C.red,color:"#fff",borderRadius:16,fontSize:9,fontWeight:900,padding:"2px 6px",lineHeight:1}}, t.alertBadge),
-    t.badge>0 && React.createElement("span",{style:{background:t.badgeColor==="amber"?C.amber:C.teal,color:"#070D1A",borderRadius:16,fontSize:9,fontWeight:900,padding:"2px 6px",lineHeight:1}}, t.badge)
+    t.badge>0 && React.createElement("span",{style:{background:t.badgeColor==="amber"?C.amber:C.teal,color:"#FFFFFF",borderRadius:16,fontSize:9,fontWeight:900,padding:"2px 6px",lineHeight:1}}, t.badge)
   ))), tab === "revenue" && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -10588,7 +10588,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       React.createElement("button", {
         onClick:()=>{setKpiForm({name:"",unit:"",type:"number",goal:"",color:"#4DB6A0",value:"",description:""});setEditKpiIdx(null);setShowKpiForm(true);},
         className:"btn-base",
-        style:{padding:"9px 18px",borderRadius:6,fontWeight:800,fontSize:13,background:`linear-gradient(135deg,${C.teal},${C.blue})`,color:"#070D1A",display:"flex",alignItems:"center",gap:7}
+        style:{padding:"9px 18px",borderRadius:6,fontWeight:800,fontSize:13,background:C.teal,color:"#FFFFFF",display:"flex",alignItems:"center",gap:7}
       }, "＋ ", lang==="en" ? "New KPI" : lang==="kr" ? "새 KPI" : T("kpiNewTitle",lang))
     ),
     /* ── KPI Creation Form ── */
@@ -10644,7 +10644,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
             setShowKpiForm(false);setEditKpiIdx(null);
           },
           className:"btn-base",
-          style:{padding:"9px 22px",borderRadius:9,fontWeight:800,fontSize:13,background:`linear-gradient(135deg,${C.teal},${C.blue})`,color:"#070D1A"}
+          style:{padding:"9px 22px",borderRadius:9,fontWeight:800,fontSize:13,background:C.teal,color:"#FFFFFF"}
         }, editKpiIdx!==null?(lang==="en" ? "Update" : lang==="kr" ? "업데이트" : T("update",lang)):(lang==="en" ? "Create KPI" : lang==="kr" ? "KPI 생성" : T("kpiCreateBtn",lang))),
         React.createElement("button", {
           onClick:()=>{setShowKpiForm(false);setEditKpiIdx(null);},
@@ -10661,7 +10661,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       React.createElement("button", {
         onClick:()=>setShowKpiForm(true),
         className:"btn-base",
-        style:{padding:"10px 22px",borderRadius:6,fontWeight:800,fontSize:13,background:`linear-gradient(135deg,${C.teal},${C.blue})`,color:"#070D1A"}
+        style:{padding:"10px 22px",borderRadius:6,fontWeight:800,fontSize:13,background:C.teal,color:"#FFFFFF"}
       }, "＋ ", lang==="en" ? "Create my first KPI" : lang==="kr" ? "첫 번째 KPI 생성" : "Créer mon premier KPI")
     ),
     customKpis.length > 0 && React.createElement("div", {style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:14}},
@@ -10783,7 +10783,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
             React.createElement("div", {style:{fontSize:12,color:C.muted,marginBottom:12}}, lang==="en" ? "Supported formats: CSV, Excel (.xlsx, .xls)" : lang==="kr" ? "지원 형식: CSV, Excel (.xlsx, .xls)" : T("formats",lang)),
             React.createElement("button", {
               className:"btn-base",
-              style:{padding:"9px 22px",borderRadius:6,fontWeight:800,fontSize:13,background:`linear-gradient(135deg,${C.teal},${C.blue})`,color:"#070D1A"}
+              style:{padding:"9px 22px",borderRadius:6,fontWeight:800,fontSize:13,background:C.teal,color:"#FFFFFF"}
             }, lang==="en" ? "Browse file" : lang==="kr" ? "파일 찾기" : T("upload",lang))
           ),
       importError && React.createElement("div", {style:{marginTop:12,fontSize:12,color:C.red}}, "⚠ "+importError)
@@ -10837,7 +10837,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
               setMappingApplied(true);
             },
             className:"btn-base",
-            style:{padding:"8px 18px",borderRadius:9,fontWeight:800,fontSize:12,background:`linear-gradient(135deg,${C.amber},#F97316)`,color:"#070D1A"}
+            style:{padding:"8px 18px",borderRadius:9,fontWeight:800,fontSize:12,background:C.amber,color:"#FFFFFF"}
           }, lang==="en" ? "Apply mapping (last row)" : lang==="kr" ? "매핑 적용 (마지막 행)" : T("kpiApply",lang)),
           React.createElement("button", {
             onClick:()=>{
@@ -12382,7 +12382,7 @@ PROHIBITED: never "it depends" without immediately explaining what and how to de
     style: {
       width: 40,
       height: 40,
-      background: `linear-gradient(135deg,${C.teal},${C.purple})`,
+      background: C.teal,
       borderRadius: 12,
       display: "flex",
       alignItems: "center",
@@ -12431,7 +12431,7 @@ PROHIBITED: never "it depends" without immediately explaining what and how to de
       width: 32,
       height: 32,
       borderRadius: 12,
-      background: `linear-gradient(135deg,${C.teal},${C.purple})`,
+      background: C.teal,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -12509,8 +12509,8 @@ PROHIBITED: never "it depends" without immediately explaining what and how to de
     style: {
       padding: "12px 20px",
       borderRadius: 11,
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-      color: "#070D1A",
+      background: C.teal,
+      color: "#FFFFFF",
       fontSize: 14
     }
   }, "\u2192")));
@@ -12725,8 +12725,8 @@ const SettingsView = ({
       padding: "10px 24px",
       borderRadius: 12,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-      color: "#070D1A"
+      background: C.teal,
+      color: "#FFFFFF"
     }
   }, saving ? /*#__PURE__*/React.createElement("span", {
     style: {
@@ -12736,7 +12736,7 @@ const SettingsView = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 14,
-    color: "#070D1A"
+    color: "#FFFFFF"
   }), T("saving",lang)) : (T("save",lang))), saved && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 13,
@@ -12795,8 +12795,8 @@ const SettingsView = ({
       padding: "11px",
       borderRadius: 12,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-      color: "#070D1A"
+      background: C.teal,
+      color: "#FFFFFF"
     }
   }, T("upgradeToGrowth",lang)))), tab === "billing" && role === "manager" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Card, {
     style: {
@@ -12877,7 +12877,7 @@ const SettingsView = ({
       left: "50%",
       transform: "translateX(-50%)",
       background: C.teal,
-      color: "#070D1A",
+      color: "#FFFFFF",
       fontSize: 9,
       fontWeight: 800,
       padding: "3px 10px",
@@ -12915,8 +12915,8 @@ const SettingsView = ({
       fontSize: 12,
       fontWeight: 700,
       textDecoration: "none",
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-      color: "#070D1A"
+      background: C.teal,
+      color: "#FFFFFF"
     }
   }, T("switchToPlan",lang), p.name) : /*#__PURE__*/React.createElement("div", {
     style: {
@@ -13192,7 +13192,7 @@ const TipsView = ({role="csm", lang="fr"}) => {
     className:"fade-in", style:{padding:"24px 28px",maxWidth:820}
   },
     /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:6}},
-      /*#__PURE__*/React.createElement("div",{style:{width:40,height:40,borderRadius:6,background:`linear-gradient(135deg,${C.teal},${C.purple})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}},"🎓"),
+      /*#__PURE__*/React.createElement("div",{style:{width:40,height:40,borderRadius:6,background:C.teal,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}},"🎓"),
       /*#__PURE__*/React.createElement("div",null,
         /*#__PURE__*/React.createElement("h2",{style:{fontSize:20,fontWeight:900,letterSpacing:"-.4px"}},T("tipsTitle",lang)),
         /*#__PURE__*/React.createElement("p",{style:{fontSize:12,color:C.muted}},T("tipsDesc",lang))
@@ -13931,7 +13931,7 @@ const App = () => {
     style: {
       width: 34,
       height: 34,
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      background: C.teal,
       borderRadius: 12,
       display: "flex",
       alignItems: "center",
