@@ -167,7 +167,12 @@ const I18N={
     cancel:"Annuler",search:"Rechercher...",
     managerTips:"Guide Manager",csmTips:"Guide CSM Transverse",
     allAccounts:"Tous les comptes",myCsm:"Mes comptes",
-    addToTeam:"Affecter à un CSM",removeClient:"Retirer"
+    addToTeam:"Affecter à un CSM",removeClient:"Retirer",
+    kanban:"Kanban",kanbanTitle:"Tableau Kanban",
+    kanbanTodo:"À faire",kanbanInProgress:"En cours",kanbanDone:"Terminé",
+    kanbanAddTask:"Ajouter une tâche",kanbanTaskTitle:"Titre",kanbanDesc:"Description (optionnel)",
+    kanbanPriority:"Priorité",kanbanDueDate:"Échéance",kanbanHigh:"Haute",kanbanMedium:"Moyenne",kanbanLow:"Basse",
+    kanbanNoTasks:"Aucune tâche",kanbanMoveTo:"Déplacer vers",kanbanTasks:"tâches"
   },
   en:{
     dashboard:"Dashboard",portfolio:"Portfolio",roadmap:"Roadmap 90D",kpi:"KPIs",
@@ -183,7 +188,12 @@ const I18N={
     cancel:"Cancel",search:"Search...",
     managerTips:"Manager Guide",csmTips:"Transverse CSM Guide",
     allAccounts:"All accounts",myCsm:"My accounts",
-    addToTeam:"Assign to CSM",removeClient:"Remove"
+    addToTeam:"Assign to CSM",removeClient:"Remove",
+    kanban:"Kanban",kanbanTitle:"Kanban Board",
+    kanbanTodo:"To Do",kanbanInProgress:"In Progress",kanbanDone:"Done",
+    kanbanAddTask:"Add a task",kanbanTaskTitle:"Title",kanbanDesc:"Description (optional)",
+    kanbanPriority:"Priority",kanbanDueDate:"Due date",kanbanHigh:"High",kanbanMedium:"Medium",kanbanLow:"Low",
+    kanbanNoTasks:"No tasks yet",kanbanMoveTo:"Move to",kanbanTasks:"tasks"
   }
 };
 const T=(key,lang)=>(I18N[lang||"fr"]||I18N.fr)[key]||key;
@@ -7544,6 +7554,172 @@ const TipsView = ({role="csm", lang="fr"}) => {
   );
 };
 // ══════════════════════════════════════════════════
+// KANBAN VIEW
+// ══════════════════════════════════════════════════
+const KanbanView = ({ companyId, lang = "fr" }) => {
+  const storageKey = `scalyo_kanban_${companyId || "default"}`;
+  const initTasks = () => { try { return JSON.parse(localStorage.getItem(storageKey) || "[]"); } catch(e) { return []; } };
+  const [tasks, setTasks] = useState(initTasks);
+  const [showAdd, setShowAdd] = useState(null);
+  const [newTitle, setNewTitle] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [newPrio, setNewPrio] = useState("medium");
+  const [newDue, setNewDue] = useState("");
+  const [dragId, setDragId] = useState(null);
+  const [editId, setEditId] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+
+  const save = (newTasks) => { setTasks(newTasks); try { localStorage.setItem(storageKey, JSON.stringify(newTasks)); } catch(e) {} };
+  const addTask = (column) => {
+    if (!newTitle.trim()) return;
+    save([...tasks, { id: `k${Date.now()}`, title: newTitle.trim(), description: newDesc.trim(), priority: newPrio, due: newDue, status: column, created: new Date().toISOString() }]);
+    setNewTitle(""); setNewDesc(""); setNewPrio("medium"); setNewDue(""); setShowAdd(null);
+  };
+  const moveTask = (id, newStatus) => { save(tasks.map(t => t.id === id ? { ...t, status: newStatus } : t)); };
+  const removeTask = (id) => { save(tasks.filter(t => t.id !== id)); };
+  const startEdit = (task) => { setEditId(task.id); setEditTitle(task.title); };
+  const saveEdit = (id) => { if (editTitle.trim()) save(tasks.map(t => t.id === id ? { ...t, title: editTitle.trim() } : t)); setEditId(null); };
+  const onDragStart = (e, id) => { setDragId(id); e.dataTransfer.effectAllowed = "move"; };
+  const onDragOver = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; };
+  const onDrop = (e, status) => { e.preventDefault(); if (dragId) moveTask(dragId, status); setDragId(null); };
+
+  const columns = [
+    { id: "todo", label: T("kanbanTodo", lang), color: C.blue || C.teal, icon: "📥" },
+    { id: "in_progress", label: T("kanbanInProgress", lang), color: C.amber, icon: "⚡" },
+    { id: "done", label: T("kanbanDone", lang), color: C.green, icon: "✅" }
+  ];
+  const prioColor = (p) => p === "high" ? C.red : p === "medium" ? C.amber : C.green;
+  const prioIcon = (p) => p === "high" ? "⚠️" : p === "medium" ? "◆" : "▽";
+  const prioLabel = (p) => T(p === "high" ? "kanbanHigh" : p === "medium" ? "kanbanMedium" : "kanbanLow", lang);
+
+  return /*#__PURE__*/React.createElement("div", { className: "fade-in", style: { padding: "22px 28px", maxWidth: 1200 } },
+    /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 } },
+      /*#__PURE__*/React.createElement("div", null,
+        /*#__PURE__*/React.createElement("h2", { style: { fontSize: 22, fontWeight: 900, letterSpacing: "-0.5px", marginBottom: 4, color: C.text } }, "📋 ", T("kanbanTitle", lang)),
+        /*#__PURE__*/React.createElement("p", { style: { color: C.muted, fontSize: 13 } }, tasks.length, " ", T("kanbanTasks", lang))
+      )
+    ),
+    /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 16, alignItems: "flex-start" } },
+      ...columns.map(col => {
+        const colTasks = tasks.filter(t => t.status === col.id);
+        return /*#__PURE__*/React.createElement("div", {
+          key: col.id,
+          onDragOver: onDragOver,
+          onDrop: (e) => onDrop(e, col.id),
+          style: { flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: 14, minHeight: 340, transition: "background .2s ease" }
+        },
+          /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, paddingBottom: 10, borderBottom: `1px solid ${C.border}` } },
+            /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+              /*#__PURE__*/React.createElement("span", { style: { fontSize: 16 } }, col.icon),
+              /*#__PURE__*/React.createElement("span", { style: { fontWeight: 700, fontSize: 14, color: C.text } }, col.label),
+              /*#__PURE__*/React.createElement("span", { style: { color: C.muted, fontSize: 12, fontWeight: 600, background: C.surfaceHi, borderRadius: 10, padding: "2px 8px" } }, colTasks.length)
+            ),
+            /*#__PURE__*/React.createElement("button", {
+              onClick: () => { setShowAdd(showAdd === col.id ? null : col.id); setNewTitle(""); setNewDesc(""); setNewPrio("medium"); setNewDue(""); },
+              title: T("kanbanAddTask", lang),
+              style: { background: showAdd === col.id ? `${C.teal}22` : "none", border: `1px solid ${showAdd === col.id ? C.teal : "transparent"}`, color: C.teal, cursor: "pointer", fontSize: 18, fontWeight: 700, width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", transition: "all .2s ease" }
+            }, "+")
+          ),
+          showAdd === col.id && /*#__PURE__*/React.createElement("div", {
+            style: { background: C.bg1, border: `1px solid ${C.tealBorder}`, borderRadius: 12, padding: 12, marginBottom: 12 }
+          },
+            /*#__PURE__*/React.createElement("input", {
+              value: newTitle, onChange: e => setNewTitle(e.target.value),
+              onKeyDown: e => e.key === "Enter" && addTask(col.id),
+              placeholder: T("kanbanTaskTitle", lang),
+              autoFocus: true,
+              style: { width: "100%", boxSizing: "border-box", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: "8px 10px", color: C.text, fontSize: 13, fontFamily: "inherit", marginBottom: 6 }
+            }),
+            /*#__PURE__*/React.createElement("input", {
+              value: newDesc, onChange: e => setNewDesc(e.target.value),
+              placeholder: T("kanbanDesc", lang),
+              style: { width: "100%", boxSizing: "border-box", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: "8px 10px", color: C.text, fontSize: 12, fontFamily: "inherit", marginBottom: 6 }
+            }),
+            /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 6, marginBottom: 8 } },
+              /*#__PURE__*/React.createElement("select", {
+                value: newPrio, onChange: e => setNewPrio(e.target.value),
+                style: { flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: "6px 8px", color: C.text, fontSize: 12, fontFamily: "inherit" }
+              },
+                /*#__PURE__*/React.createElement("option", { value: "high" }, prioIcon("high") + " " + prioLabel("high")),
+                /*#__PURE__*/React.createElement("option", { value: "medium" }, prioIcon("medium") + " " + prioLabel("medium")),
+                /*#__PURE__*/React.createElement("option", { value: "low" }, prioIcon("low") + " " + prioLabel("low"))
+              ),
+              /*#__PURE__*/React.createElement("input", {
+                type: "date", value: newDue, onChange: e => setNewDue(e.target.value),
+                style: { flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: "6px 8px", color: C.text, fontSize: 12, fontFamily: "inherit" }
+              })
+            ),
+            /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 6 } },
+              /*#__PURE__*/React.createElement("button", { className: "btn btn-primary btn-sm", onClick: () => addTask(col.id) }, T("save", lang)),
+              /*#__PURE__*/React.createElement("button", { className: "btn btn-secondary btn-sm", onClick: () => setShowAdd(null) }, T("cancel", lang))
+            )
+          ),
+          ...colTasks.map(task => /*#__PURE__*/React.createElement("div", {
+            key: task.id,
+            draggable: true,
+            onDragStart: (e) => onDragStart(e, task.id),
+            className: "card-lift",
+            style: {
+              background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10,
+              padding: "10px 12px", marginBottom: 8, cursor: "grab",
+              borderLeft: `3px solid ${prioColor(task.priority)}`,
+              opacity: dragId === task.id ? 0.5 : 1,
+              transition: "opacity .2s ease, transform .2s ease"
+            }
+          },
+            /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 } },
+              editId === task.id
+                ? /*#__PURE__*/React.createElement("input", {
+                    value: editTitle, onChange: e => setEditTitle(e.target.value),
+                    onKeyDown: e => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditId(null); },
+                    onBlur: () => saveEdit(task.id),
+                    autoFocus: true,
+                    style: { flex: 1, background: C.surface, border: `1px solid ${C.tealBorder}`, borderRadius: 6, padding: "4px 8px", color: C.text, fontSize: 13, fontFamily: "inherit", marginRight: 6 }
+                  })
+                : /*#__PURE__*/React.createElement("span", {
+                    onDoubleClick: () => startEdit(task),
+                    style: { fontWeight: 600, fontSize: 13, color: C.text, flex: 1, cursor: "text" },
+                    title: lang === "fr" ? "Double-cliquer pour modifier" : "Double-click to edit"
+                  }, task.title),
+              /*#__PURE__*/React.createElement("button", {
+                onClick: () => removeTask(task.id),
+                style: { background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 16, padding: "0 2px", lineHeight: 1, opacity: 0.6 },
+                title: lang === "fr" ? "Supprimer" : "Delete"
+              }, "\u00D7")
+            ),
+            task.description && /*#__PURE__*/React.createElement("p", { style: { color: C.muted, fontSize: 11, marginBottom: 6, lineHeight: 1.4 } }, task.description),
+            /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginTop: 4 } },
+              /*#__PURE__*/React.createElement("span", { style: { fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 6, background: `${prioColor(task.priority)}18`, color: prioColor(task.priority) } }, prioIcon(task.priority), " ", prioLabel(task.priority)),
+              task.due && /*#__PURE__*/React.createElement("span", { style: { fontSize: 10, color: C.muted } }, "\uD83D\uDCC5 ", task.due),
+              /*#__PURE__*/React.createElement("div", { style: { marginLeft: "auto", display: "flex", gap: 4 } },
+                col.id !== "todo" && /*#__PURE__*/React.createElement("button", {
+                  onClick: () => moveTask(task.id, col.id === "done" ? "in_progress" : "todo"),
+                  style: { fontSize: 10, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 6, padding: "2px 8px", color: C.muted, cursor: "pointer", transition: "all .2s ease" }
+                }, "\u2190 ", columns.find(c => c.id === (col.id === "done" ? "in_progress" : "todo")).label),
+                col.id !== "done" && /*#__PURE__*/React.createElement("button", {
+                  onClick: () => moveTask(task.id, col.id === "todo" ? "in_progress" : "done"),
+                  style: { fontSize: 10, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 6, padding: "2px 8px", color: C.muted, cursor: "pointer", transition: "all .2s ease" }
+                }, columns.find(c => c.id === (col.id === "todo" ? "in_progress" : "done")).label, " \u2192")
+              )
+            )
+          )),
+          colTasks.length === 0 && showAdd !== col.id && /*#__PURE__*/React.createElement("div", {
+            style: { color: C.faint, fontSize: 12, textAlign: "center", padding: "30px 10px" }
+          },
+            /*#__PURE__*/React.createElement("div", { style: { fontSize: 28, marginBottom: 8, opacity: 0.5 } }, col.icon),
+            /*#__PURE__*/React.createElement("p", null, T("kanbanNoTasks", lang)),
+            /*#__PURE__*/React.createElement("button", {
+              onClick: () => setShowAdd(col.id),
+              style: { marginTop: 8, background: "none", border: `1px dashed ${C.border}`, borderRadius: 8, padding: "6px 14px", color: C.muted, cursor: "pointer", fontSize: 12, transition: "all .2s ease" }
+            }, "+ ", T("kanbanAddTask", lang))
+          )
+        );
+      })
+    )
+  );
+};
+
+// ══════════════════════════════════════════════════
 // MAIN APP
 // ══════════════════════════════════════════════════
 const NAV_MANAGER = [{
@@ -7554,6 +7730,10 @@ const NAV_MANAGER = [{
   id: "portfolio",
   label: "Portefeuille",
   icon: "💼"
+}, {
+  id: "kanban",
+  label: "Kanban",
+  icon: "📋"
 }, {
   id: "roadmap",
   label: "Roadmap 90J",
@@ -7592,6 +7772,10 @@ const NAV_CSM = [{
   label: "Mes Comptes",
   icon: "💼"
 }, {
+  id: "kanban",
+  label: "Kanban",
+  icon: "📋"
+}, {
   id: "roadmap",
   label: "Roadmap 90J",
   icon: "🗺"
@@ -7623,7 +7807,8 @@ const NAV_CSM = [{
 const App = () => {
   const [session, setSession] = useState(null);
   const [role, setRole] = useState(() => { try { return localStorage.getItem("scalyo_role") || "manager"; } catch(e) { return "manager"; } });
-  const [screen, setScreen] = useState("dashboard");
+  const [screen, setScreen] = useState(() => { try { return localStorage.getItem("scalyo_screen") || "dashboard"; } catch(e) { return "dashboard"; } });
+  const setScreenPersist = (s) => { try { localStorage.setItem("scalyo_screen", s); } catch(e) {} setScreen(s); };
   const [appData, setAppData] = useState(null);
   const [dataLoading, setDataLoading] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
@@ -7657,7 +7842,7 @@ const App = () => {
       if (!s) setAuthReady(true);
     }).catch(() => setAuthReady(true));
     // Fallback : si Supabase ne répond pas en 4s → afficher login quand même
-    const fallback = setTimeout(() => setAuthReady(true), 1500);
+    const fallback = setTimeout(() => setAuthReady(true), 300);
     return () => {
       subscription.unsubscribe();
       clearTimeout(fallback);
@@ -7666,9 +7851,21 @@ const App = () => {
   const loadData = async sess => {
     if (!sess?.user?.id) return;
     setDataLoading(true);
+    // Cache read: show cached data instantly while fresh data loads
+    if (!appData) {
+      try {
+        const cached = JSON.parse(localStorage.getItem("scalyo_cache"));
+        if (cached && Date.now() - cached.ts < 3600000) {
+          setAppData({ company: cached.company, accounts: cached.accounts || [],
+            roadmap: cached.roadmap || { id: null, phase: "Phase 1 — Démarrage", progress: 0, items: [] },
+            wellbeing: cached.wellbeing || { score: 70, burnout: "moderate", charge: 70, trend: "+0", alerts: [], team: [] }
+          });
+        }
+      } catch(e) {}
+    }
     try {
       // Étape 1 : récupérer la company filtrée par auth_user_id
-      const companiesTimeout = new Promise((_,rej) => setTimeout(()=>rej(new Error("companies_timeout")), 5000));
+      const companiesTimeout = new Promise((_,rej) => setTimeout(()=>rej(new Error("companies_timeout")), 3000));
       const cr = await Promise.race([
         db.from("companies").select("*").eq("auth_user_id", sess.user.id).single(),
         companiesTimeout
@@ -7688,7 +7885,7 @@ const App = () => {
         roadmapData = null,
         wellbeingData = null;
       if (company.id) {
-        const timeout = new Promise((_,rej) => setTimeout(()=>rej(new Error("timeout")), 5000));
+        const timeout = new Promise((_,rej) => setTimeout(()=>rej(new Error("timeout")), 3000));
         const [ar, rr, wr] = await Promise.race([
           Promise.all([
             db.from("accounts").select("*").eq("company_id", company.id),
@@ -7704,7 +7901,7 @@ const App = () => {
         roadmapData = rr.data;
         wellbeingData = wr.data;
       }
-      setAppData({
+      const finalData = {
         company,
         accounts,
         roadmap: roadmapData || {
@@ -7721,7 +7918,10 @@ const App = () => {
           alerts: [],
           team: []
         }
-      });
+      };
+      setAppData(finalData);
+      // Cache write for instant display on next load
+      try { localStorage.setItem("scalyo_cache", JSON.stringify({ ...finalData, accounts: finalData.accounts.slice(0, 50), ts: Date.now() })); } catch(e) {}
     } catch (e) {
       console.error("loadData error:", e);
       // Fallback : afficher l'app avec données vides plutôt que rester bloqué
@@ -7753,6 +7953,7 @@ const App = () => {
   const handleLogout = async () => {
     // FIX #6 : setScreen inutile (onAuthStateChange remet null → LoginScreen s'affiche)
     localStorage.removeItem("scalyo_role");
+    localStorage.removeItem("scalyo_screen");
     await db.auth.signOut();
     setSession(null);
     setAppData(null);
@@ -7793,17 +7994,20 @@ const App = () => {
   if (!session) return /*#__PURE__*/React.createElement(LoginScreen, {
     onLogin: handleLogin
   });
-  if (dataLoading || !appData) return /*#__PURE__*/React.createElement(Loader, {
-    text: "Chargement de votre espace Scalyo..."
-  });
   const {
     company,
     accounts,
     roadmap,
     wellbeing
-  } = appData;
+  } = appData || {
+    company: { id: null, name: "Mon Entreprise", plan: "Starter", arr: 0, churn: 0, nps: 0, color: C.teal },
+    accounts: [],
+    roadmap: { id: null, phase: "Phase 1 — Démarrage", progress: 0, items: [] },
+    wellbeing: { score: 70, burnout: "moderate", charge: 70, trend: "+0", alerts: [], team: [] }
+  };
   const nav = role === "manager" ? NAV_MANAGER : NAV_CSM;
   const renderView = () => {
+    if (dataLoading && !appData) return /*#__PURE__*/React.createElement(Loader, { text: "Chargement..." });
     switch (screen) {
       case "dashboard":
         return /*#__PURE__*/React.createElement(DashboardView, {
@@ -7812,7 +8016,7 @@ const App = () => {
           roadmap: roadmap,
           wellbeing: wellbeing,
           role: role,
-          onNavigate: setScreen
+          onNavigate: setScreenPersist
         });
       case "portfolio":
         return /*#__PURE__*/React.createElement(PortfolioView, {
@@ -7854,7 +8058,7 @@ const App = () => {
           plan: company?.plan || "Starter"
         });
       case "coach":
-        return /*#__PURE__*/React.createElement(CoachIAView, {apiKey:apiKey, lang:lang, onGoSettings:()=>setScreen("settings")});
+        return /*#__PURE__*/React.createElement(CoachIAView, {apiKey:apiKey, lang:lang, onGoSettings:()=>setScreenPersist("settings")});
       case "settings":
         return /*#__PURE__*/React.createElement(SettingsView, {
           company: company,
@@ -7869,6 +8073,8 @@ const App = () => {
           onLang: handleLang,
           onApiKey: handleApiKey
         });
+      case "kanban":
+        return /*#__PURE__*/React.createElement(KanbanView, { companyId: company?.id, lang: lang });
       case "tips":
         return /*#__PURE__*/React.createElement(TipsView, {role:role, lang:lang});
       default:
@@ -7878,7 +8084,7 @@ const App = () => {
           roadmap: roadmap,
           wellbeing: wellbeing,
           role: role,
-          onNavigate: setScreen
+          onNavigate: setScreenPersist
         });
     }
   };
@@ -7948,7 +8154,7 @@ const App = () => {
     return /*#__PURE__*/React.createElement("div", {
       key: id,
       className: "nav-btn",
-      onClick: () => setScreen(id),
+      onClick: () => setScreenPersist(id),
       style: {
         display: "flex",
         alignItems: "center",
@@ -8000,7 +8206,7 @@ const App = () => {
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "nav-btn",
-    onClick: () => setScreen("settings"),
+    onClick: () => setScreenPersist("settings"),
     style: {
       display: "flex",
       alignItems: "center",
@@ -8119,7 +8325,7 @@ const App = () => {
       gap: 10
     }
   }, criticalCount > 0 && /*#__PURE__*/React.createElement("button", {
-    onClick: () => setScreen("portfolio"),
+    onClick: () => setScreenPersist("portfolio"),
     className: "btn-base",
     style: {
       display: "flex",
