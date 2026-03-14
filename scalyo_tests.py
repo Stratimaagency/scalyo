@@ -33,7 +33,7 @@ from datetime import datetime, timedelta
 # ═══════════════════════════════════════════════════════
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-INDEX_HTML = os.path.join(SCRIPT_DIR, "index.html")
+INDEX_HTML = os.path.join(SCRIPT_DIR, "app.html")
 
 with open(INDEX_HTML, "r", encoding="utf-8") as f:
     SRC = f.read()
@@ -306,12 +306,12 @@ class ScalyoTestSuite:
                  "Session et données effacées au logout", "P1", cat)
 
         # XSS / injection checks
-        dsihtml_count = self.js.count("dangerouslySetInnerHTML")
-        self.add("Sécurité — dangerouslySetInnerHTML utilisé avec précaution",
-                 dsihtml_count == 0,
-                 f"dangerouslySetInnerHTML trouvé {dsihtml_count} fois — utilisé dans le rendu IA Coach "
-                 f"pour le bold (**text**). Risque XSS si la réponse IA contient du HTML malveillant. "
-                 f"Recommandation : utiliser un sanitizer (DOMPurify) ou un parser markdown sécurisé.",
+        # Count actual usage of dangerouslySetInnerHTML (not comments mentioning it)
+        dsihtml_usage = len(re.findall(r'dangerouslySetInnerHTML\s*=', self.js))
+        self.add("Sécurité — dangerouslySetInnerHTML non utilisé",
+                 dsihtml_usage == 0,
+                 f"dangerouslySetInnerHTML utilisé {dsihtml_usage} fois. "
+                 f"Recommandation : utiliser un parser markdown sécurisé.",
                  "P1", cat)
 
         self.add("Sécurité — pas d'eval() sur données utilisateur",
@@ -502,7 +502,7 @@ class ScalyoTestSuite:
 
         # Suppression compte
         self.add("B2B — suppression avec confirmation",
-                 'window.confirm("Supprimer ce compte' in self.js,
+                 'window.confirm(' in self.js and ('confirmDelete' in self.js or 'Supprimer' in self.js),
                  "Confirmation avant suppression d'un compte", "P1", cat)
 
     # ═══════════════════════════════════════════════════
@@ -566,9 +566,9 @@ class ScalyoTestSuite:
                  "supabase.co" in self.js,
                  "URL Supabase présente", "P0", cat)
 
-        self.add("Supabase — clé publishable",
-                 "sb_publishable_" in self.js,
-                 "Clé publishable (pas de clé secrète exposée)", "P0", cat)
+        self.add("Supabase — clé anon JWT (pas service_role)",
+                 "SUPABASE_KEY" in self.js and "eyJ" in self.js,
+                 "Clé anon Supabase présente (JWT, pas de clé secrète)", "P0", cat)
 
         self.add("Supabase — pas de clé service_role exposée",
                  "service_role" not in self.js,
@@ -593,22 +593,22 @@ class ScalyoTestSuite:
                  "starter:" in self.js and "growth:" in self.js and "elite:" in self.js,
                  "Plans Starter, Growth et Elite configurés", "P1", cat)
 
-        # Anthropic
-        self.add("Anthropic — endpoint API",
-                 "api.anthropic.com/v1/messages" in self.js,
-                 "Endpoint Anthropic configuré", "P1", cat)
+        # Coach IA — API via Cloudflare Workers proxy
+        self.add("Coach IA — endpoint API proxy",
+                 "scalyo-ai.stratimaagency.workers.dev" in self.js,
+                 "Endpoint Coach IA via Cloudflare Workers proxy", "P1", cat)
 
-        self.add("Anthropic — version header",
-                 "anthropic-version" in self.js and "2023-06-01" in self.js,
-                 "Version API Anthropic spécifiée", "P1", cat)
+        self.add("Coach IA — modèle configuré",
+                 "deepseek-chat" in self.js or "claude" in self.js,
+                 "Modèle IA configuré pour le Coach", "P1", cat)
 
-        self.add("Anthropic — direct browser access header",
-                 "anthropic-dangerous-direct-browser-access" in self.js,
-                 "Header pour accès navigateur direct", "P2", cat)
+        self.add("Coach IA — Content-Type JSON",
+                 '"Content-Type": "application/json"' in self.js or '"Content-Type":"application/json"' in self.js,
+                 "Header Content-Type pour appels API", "P2", cat)
 
-        self.add("Anthropic — clé API non hardcodée",
-                 "x-api-key" in self.js,
-                 "Clé API passée via header (pas en dur)", "P0", cat)
+        self.add("Coach IA — pas de clé API exposée côté client",
+                 "sk-ant-" not in self.js and "sk-" not in self.js,
+                 "Aucune clé API secrète exposée dans le code client", "P0", cat)
 
         # External libs CDN
         self.add("CDN — React 18 chargé",
@@ -657,7 +657,7 @@ class ScalyoTestSuite:
 
         # Clés essentielles
         keys_fr = {
-            "dashboard": "Tableau de bord",
+            "dashboard": "Dashboard",
             "portfolio": "Portefeuille",
             "settings": "Paramètres",
             "coach": "Coach IA",
@@ -728,7 +728,7 @@ class ScalyoTestSuite:
                  "Fond clair utilise des blancs/gris", "P2", cat)
 
         self.add("Thème clair — texte sombre",
-                 '"#1E293B"' in self.js,
+                 '"#37352F"' in self.js or '"#1E293B"' in self.js,
                  "Texte sombre en mode clair", "P2", cat)
 
     # ═══════════════════════════════════════════════════
@@ -866,9 +866,9 @@ class ScalyoTestSuite:
                  "box-sizing:border-box" in self.src,
                  "box-sizing global", "P2", cat)
 
-        self.add("CSS — font DM Sans",
-                 "DM+Sans" in self.src or "DM Sans" in self.src,
-                 "Police DM Sans chargée", "P2", cat)
+        self.add("CSS — font Inter",
+                 "Inter" in self.src,
+                 "Police Inter chargée", "P2", cat)
 
         self.add("CSS — antialiasing",
                  "-webkit-font-smoothing:antialiased" in self.src,
@@ -918,14 +918,14 @@ class ScalyoTestSuite:
         cat = "14. Design Tokens"
 
         tokens = {
-            "bg": "#070D1A",
-            "teal": "#12CDB8",
-            "red": "#F04C5B",
-            "amber": "#F59E0B",
-            "green": "#34D399",
-            "purple": "#A78BFA",
-            "blue": "#60A5FA",
-            "text": "#E8EDF5",
+            "bg": "#191919",
+            "teal": "#4DB6A0",
+            "red": "#EB5757",
+            "amber": "#E8A838",
+            "green": "#4DAB6D",
+            "purple": "#9B6BDF",
+            "blue": "#529CCA",
+            "text": "rgba(255,255,255,0.85)",
         }
         for name, value in tokens.items():
             self.add(f"Token — {name} = {value}",
