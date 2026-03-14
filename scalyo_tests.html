@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<title>Scalyo — Tests Browser-Side v15g</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#070D1A;color:#E8EDF5;font-family:'Segoe UI',system-ui,sans-serif;padding:24px}
+h1{font-size:22px;margin-bottom:8px}
+.subtitle{color:rgba(232,237,245,0.5);font-size:13px;margin-bottom:24px}
+.category{margin-bottom:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px}
+.cat-header{font-size:15px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.test-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.test-row:last-child{border-bottom:none}
+.pass{color:#34D399}.fail{color:#F04C5B}.warn{color:#F59E0B}
+.badge{font-size:10px;padding:2px 6px;border-radius:10px;font-weight:700}
+.badge-p0{background:rgba(240,76,91,0.15);color:#F04C5B;border:1px solid rgba(240,76,91,0.3)}
+.badge-p1{background:rgba(245,158,11,0.12);color:#F59E0B;border:1px solid rgba(245,158,11,0.3)}
+.badge-p2{background:rgba(96,165,250,0.12);color:#60A5FA;border:1px solid rgba(96,165,250,0.3)}
+.summary{margin-top:24px;padding:20px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px}
+.summary h2{font-size:18px;margin-bottom:12px}
+.bar{height:8px;border-radius:8px;background:rgba(255,255,255,0.08);overflow:hidden;margin:8px 0}
+.bar-fill{height:100%;border-radius:8px;transition:width .5s ease}
+.detail{font-size:11px;color:rgba(232,237,245,0.4);margin-left:24px;margin-top:2px}
+#run-btn{padding:10px 24px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;
+  background:linear-gradient(135deg,#12CDB8,#0EA5E9);color:#070D1A;margin-bottom:20px}
+#run-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(18,205,184,0.3)}
+</style>
+</head>
+<body>
+<h1>Scalyo — Tests Browser-Side v15g</h1>
+<p class="subtitle">Tests JavaScript exécutés directement dans le navigateur</p>
+<button id="run-btn" onclick="runAllTests()">Lancer les tests</button>
+<div id="results"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// TEST FRAMEWORK MINI
+// ═══════════════════════════════════════════════════════
+const results = [];
+function assert(name, condition, detail = "", severity = "P2", category = "Misc") {
+  results.push({ name, passed: !!condition, detail, severity, category });
+}
+
+// ═══════════════════════════════════════════════════════
+// REPRODUIRE LES FONCTIONS À TESTER
+// (Copiées du code source pour test unitaire)
+// ═══════════════════════════════════════════════════════
+
+const C = {
+  bg:"#070D1A",bg1:"#0C1525",bg2:"#101E30",bg3:"#162036",
+  surface:"rgba(255,255,255,0.04)",surfaceHi:"rgba(255,255,255,0.07)",
+  border:"rgba(255,255,255,0.08)",borderHi:"rgba(255,255,255,0.15)",
+  teal:"#12CDB8",tealBg:"rgba(18,205,184,0.08)",tealBorder:"rgba(18,205,184,0.22)",tealGlow:"rgba(18,205,184,0.14)",
+  red:"#F04C5B",redBg:"rgba(240,76,91,0.07)",redBorder:"rgba(240,76,91,0.22)",
+  amber:"#F59E0B",amberBg:"rgba(245,158,11,0.07)",amberBorder:"rgba(245,158,11,0.25)",
+  green:"#34D399",greenBg:"rgba(52,211,153,0.07)",greenBorder:"rgba(52,211,153,0.22)",
+  purple:"#A78BFA",purpleBg:"rgba(167,139,250,0.08)",
+  blue:"#60A5FA",blueBg:"rgba(96,165,250,0.08)",
+  text:"#E8EDF5",muted:"rgba(232,237,245,0.5)",faint:"rgba(232,237,245,0.18)"
+};
+
+const parseItems = items => {
+  if (!items) return [];
+  if (Array.isArray(items)) return items;
+  try { return JSON.parse(items); } catch { return []; }
+};
+
+const safeParseArray = v => {
+  if (Array.isArray(v)) return v;
+  if (typeof v === "string" && v.trim().startsWith("[")) {
+    try { return JSON.parse(v); } catch(_) { return []; }
+  }
+  return [];
+};
+
+const fmtMRR = v => v >= 10000 ? `${(v/1000).toFixed(0)}K\u20AC` : `${(v/1000).toFixed(1)}K\u20AC`;
+const fmtARR = v => {
+  const a = v * 12;
+  return a >= 1000000 ? `${(a/1000000).toFixed(1)}M\u20AC` : a >= 1000 ? `${(a/1000).toFixed(0)}K\u20AC` : `${a}\u20AC`;
+};
+
+const riskColor = r => r === "critical" ? C.red : r === "medium" ? C.amber : C.green;
+const riskLabel = r => r === "critical" ? "Critique" : r === "medium" ? "Vigilance" : "Sain";
+const planColor = p => p === "Elite" ? C.purple : p === "Growth" ? C.teal : C.blue;
+
+const healthToRisk = h => h >= 70 ? "low" : h >= 40 ? "medium" : "critical";
+
+const I18N = {
+  fr:{ dashboard:"Tableau de bord",portfolio:"Portefeuille",settings:"Param\u00E8tres",coach:"Coach IA",save:"Enregistrer",cancel:"Annuler" },
+  en:{ dashboard:"Dashboard",portfolio:"Portfolio",settings:"Settings",coach:"AI Coach",save:"Save",cancel:"Cancel" }
+};
+const T = (key,lang) => (I18N[lang||"fr"]||I18N.fr)[key]||key;
+
+// ═══════════════════════════════════════════════════════
+// TESTS
+// ═══════════════════════════════════════════════════════
+
+function runAllTests() {
+  results.length = 0;
+
+  // ── 1. parseItems ──
+  const cat1 = "1. parseItems";
+  assert("parseItems(null) → []", JSON.stringify(parseItems(null)) === "[]", "", "P0", cat1);
+  assert("parseItems(undefined) → []", JSON.stringify(parseItems(undefined)) === "[]", "", "P0", cat1);
+  assert("parseItems([1,2]) → [1,2]", JSON.stringify(parseItems([1,2])) === "[1,2]", "", "P0", cat1);
+  assert("parseItems('[]') → []", JSON.stringify(parseItems("[]")) === "[]", "", "P1", cat1);
+  assert('parseItems(\'["a","b"]\') → ["a","b"]', JSON.stringify(parseItems('["a","b"]')) === '["a","b"]', "", "P1", cat1);
+  assert("parseItems('invalid') → []", JSON.stringify(parseItems("invalid")) === "[]", "", "P1", cat1);
+  assert("parseItems(0) → []", JSON.stringify(parseItems(0)) === "[]", "", "P2", cat1);
+  assert("parseItems('') → []", JSON.stringify(parseItems("")) === "[]", "", "P2", cat1);
+
+  // ── 2. safeParseArray ──
+  const cat2 = "2. safeParseArray";
+  assert("safeParseArray([1]) → [1]", JSON.stringify(safeParseArray([1])) === "[1]", "", "P0", cat2);
+  assert("safeParseArray('[1]') → [1]", JSON.stringify(safeParseArray("[1]")) === "[1]", "", "P0", cat2);
+  assert("safeParseArray('not json') → []", JSON.stringify(safeParseArray("not json")) === "[]", "", "P1", cat2);
+  assert("safeParseArray(null) → []", JSON.stringify(safeParseArray(null)) === "[]", "", "P1", cat2);
+  assert("safeParseArray(42) → []", JSON.stringify(safeParseArray(42)) === "[]", "", "P2", cat2);
+  assert("safeParseArray(' [1,2] ') → [1,2]", JSON.stringify(safeParseArray(" [1,2] ")) === "[1,2]", "Espaces autour", "P2", cat2);
+  assert("safeParseArray('{bad}') → []", JSON.stringify(safeParseArray("{bad}")) === "[]", "Objet pas un tableau", "P2", cat2);
+
+  // ── 3. fmtMRR ──
+  const cat3 = "3. fmtMRR";
+  assert("fmtMRR(3500) → '3.5K\u20AC'", fmtMRR(3500) === "3.5K\u20AC", "", "P0", cat3);
+  assert("fmtMRR(10000) → '10K\u20AC'", fmtMRR(10000) === "10K\u20AC", "", "P0", cat3);
+  assert("fmtMRR(50000) → '50K\u20AC'", fmtMRR(50000) === "50K\u20AC", "", "P1", cat3);
+  assert("fmtMRR(1000) → '1.0K\u20AC'", fmtMRR(1000) === "1.0K\u20AC", "", "P1", cat3);
+  assert("fmtMRR(999) → '1.0K\u20AC'", fmtMRR(999) === "1.0K\u20AC", "Arrondi", "P2", cat3);
+  assert("fmtMRR(0) → '0.0K\u20AC'", fmtMRR(0) === "0.0K\u20AC", "", "P2", cat3);
+
+  // ── 4. fmtARR ──
+  const cat4 = "4. fmtARR";
+  assert("fmtARR(3500) → '42K\u20AC'", fmtARR(3500) === "42K\u20AC", "3500*12=42000", "P0", cat4);
+  assert("fmtARR(100000) → '1.2M\u20AC'", fmtARR(100000) === "1.2M\u20AC", "100K*12=1.2M", "P0", cat4);
+  assert("fmtARR(83334) → '1.0M\u20AC'", fmtARR(83334) === "1.0M\u20AC", "~1M ARR", "P1", cat4);
+  assert("fmtARR(5833334) → '70.0M\u20AC'", fmtARR(5833334) === "70.0M\u20AC", "ERPCorp 70M ARR", "P1", cat4);
+  assert("fmtARR(0) → '0\u20AC'", fmtARR(0) === "0\u20AC", "", "P2", cat4);
+  assert("fmtARR(50) → '600\u20AC'", fmtARR(50) === "600\u20AC", "Petit MRR", "P2", cat4);
+
+  // ── 5. riskColor ──
+  const cat5 = "5. riskColor / riskLabel";
+  assert("riskColor('critical') → red", riskColor("critical") === "#F04C5B", "", "P0", cat5);
+  assert("riskColor('medium') → amber", riskColor("medium") === "#F59E0B", "", "P0", cat5);
+  assert("riskColor('low') → green", riskColor("low") === "#34D399", "", "P0", cat5);
+  assert("riskColor('unknown') → green (default)", riskColor("unknown") === "#34D399", "", "P2", cat5);
+  assert("riskLabel('critical') → 'Critique'", riskLabel("critical") === "Critique", "", "P0", cat5);
+  assert("riskLabel('medium') → 'Vigilance'", riskLabel("medium") === "Vigilance", "", "P0", cat5);
+  assert("riskLabel('low') → 'Sain'", riskLabel("low") === "Sain", "", "P0", cat5);
+
+  // ── 6. planColor ──
+  const cat6 = "6. planColor";
+  assert("planColor('Elite') → purple", planColor("Elite") === "#A78BFA", "", "P1", cat6);
+  assert("planColor('Growth') → teal", planColor("Growth") === "#12CDB8", "", "P1", cat6);
+  assert("planColor('Starter') → blue", planColor("Starter") === "#60A5FA", "", "P1", cat6);
+  assert("planColor('other') → blue (default)", planColor("Free") === "#60A5FA", "", "P2", cat6);
+
+  // ── 7. healthToRisk ──
+  const cat7 = "7. Health → Risk";
+  assert("health=100 → low", healthToRisk(100) === "low", "", "P0", cat7);
+  assert("health=70 → low", healthToRisk(70) === "low", "Seuil exact", "P0", cat7);
+  assert("health=69 → medium", healthToRisk(69) === "medium", "", "P0", cat7);
+  assert("health=40 → medium", healthToRisk(40) === "medium", "Seuil exact", "P0", cat7);
+  assert("health=39 → critical", healthToRisk(39) === "critical", "", "P0", cat7);
+  assert("health=0 → critical", healthToRisk(0) === "critical", "", "P0", cat7);
+  assert("health=50 → medium", healthToRisk(50) === "medium", "", "P1", cat7);
+
+  // ── 8. I18N ──
+  const cat8 = "8. Internationalisation";
+  assert("T('dashboard','fr') → 'Tableau de bord'", T("dashboard","fr") === "Tableau de bord", "", "P0", cat8);
+  assert("T('dashboard','en') → 'Dashboard'", T("dashboard","en") === "Dashboard", "", "P0", cat8);
+  assert("T('coach','fr') → 'Coach IA'", T("coach","fr") === "Coach IA", "", "P1", cat8);
+  assert("T('coach','en') → 'AI Coach'", T("coach","en") === "AI Coach", "", "P1", cat8);
+  assert("T('save','fr') → 'Enregistrer'", T("save","fr") === "Enregistrer", "", "P1", cat8);
+  assert("T('unknown_key','fr') → 'unknown_key'", T("unknown_key","fr") === "unknown_key", "Fallback: retourne la clé", "P2", cat8);
+  assert("T('dashboard') → FR par défaut", T("dashboard") === "Tableau de bord", "Langue par défaut = FR", "P1", cat8);
+
+  // ── 9. Filtrage portfolio (simulation) ──
+  const cat9 = "9. Filtrage Portfolio";
+  const mockAccounts = [
+    { id:1, name:"Alpha SaaS", csm:"Marie", risk:"critical", health:25, mrr:5000 },
+    { id:2, name:"Beta Corp", csm:"Pierre", risk:"low", health:85, mrr:3000 },
+    { id:3, name:"Gamma Tech", csm:"Marie", risk:"medium", health:55, mrr:8000 },
+    { id:4, name:"Delta Inc", csm:"Sophie", risk:"low", health:90, mrr:2000 },
+    { id:5, name:"Epsilon", csm:"Pierre", risk:"critical", health:15, mrr:12000 },
+  ];
+
+  const filterAccounts = (accounts, filter, csmFilter, search) => {
+    return accounts.filter(a => {
+      const matchFilter = filter === "all" || a.risk === filter;
+      const matchCsm = csmFilter === "all" || a.csm === csmFilter;
+      const matchSearch = !search || a.name?.toLowerCase().includes(search.toLowerCase()) || a.csm?.toLowerCase().includes(search.toLowerCase());
+      return matchFilter && matchCsm && matchSearch;
+    });
+  };
+
+  assert("Filtre 'all' → 5 résultats", filterAccounts(mockAccounts, "all", "all", "").length === 5, "", "P0", cat9);
+  assert("Filtre 'critical' → 2 résultats", filterAccounts(mockAccounts, "critical", "all", "").length === 2, "", "P0", cat9);
+  assert("Filtre 'medium' → 1 résultat", filterAccounts(mockAccounts, "medium", "all", "").length === 1, "", "P0", cat9);
+  assert("Filtre 'low' → 2 résultats", filterAccounts(mockAccounts, "low", "all", "").length === 2, "", "P0", cat9);
+  assert("Filtre CSM='Marie' → 2 résultats", filterAccounts(mockAccounts, "all", "Marie", "").length === 2, "", "P0", cat9);
+  assert("Filtre critical + Marie → 1 résultat", filterAccounts(mockAccounts, "critical", "Marie", "").length === 1, "", "P1", cat9);
+  assert("Recherche 'alpha' → 1 résultat", filterAccounts(mockAccounts, "all", "all", "alpha").length === 1, "", "P0", cat9);
+  assert("Recherche 'ALPHA' (casse) → 1 résultat", filterAccounts(mockAccounts, "all", "all", "ALPHA").length === 1, "Insensible à la casse", "P1", cat9);
+  assert("Recherche CSM 'pierre' → 2 résultats", filterAccounts(mockAccounts, "all", "all", "pierre").length === 2, "", "P1", cat9);
+  assert("Recherche vide → tout", filterAccounts(mockAccounts, "all", "all", "").length === 5, "", "P2", cat9);
+
+  // ── 10. Calculs financiers ──
+  const cat10 = "10. Calculs financiers";
+  const totalARR = mockAccounts.reduce((s,a) => s + (a.mrr||0), 0) * 12;
+  assert("Total ARR mock = 360K\u20AC", totalARR === 360000, `${totalARR}`, "P0", cat10);
+
+  const criticalExposure = mockAccounts.filter(a=>a.risk==="critical").reduce((s,a) => s + (a.mrr||0)*12, 0);
+  assert("Exposition critique = 204K\u20AC", criticalExposure === 204000, `${criticalExposure}`, "P0", cat10);
+
+  const avgHealth = mockAccounts.reduce((s,a) => s + (a.health||70), 0) / mockAccounts.length;
+  assert("Health moyen mock = 54", avgHealth === 54, `${avgHealth}`, "P1", cat10);
+
+  // ── 11. MRR parsing ──
+  const cat11 = "11. Parsing MRR import";
+  const parseMRR = v => parseFloat(String(v).replace(/[^\d.]/g, "")) || 0;
+  assert("parseMRR('3500') → 3500", parseMRR("3500") === 3500, "", "P0", cat11);
+  assert("parseMRR('3,500\u20AC') → 3500", parseMRR("3,500\u20AC") === 3500, "", "P1", cat11);
+  assert("parseMRR('$5000') → 5000", parseMRR("$5000") === 5000, "", "P1", cat11);
+  assert("parseMRR('') → 0", parseMRR("") === 0, "", "P2", cat11);
+  assert("parseMRR('abc') → 0", parseMRR("abc") === 0, "", "P2", cat11);
+  assert("parseMRR('12.5K') → 12.5", parseMRR("12.5K") === 12.5, "Note: ne parse pas le K", "P2", cat11);
+
+  // ── 12. Design tokens ──
+  const cat12 = "12. Design Tokens";
+  assert("Token bg = #070D1A", C.bg === "#070D1A", "", "P2", cat12);
+  assert("Token teal = #12CDB8", C.teal === "#12CDB8", "", "P2", cat12);
+  assert("Token red = #F04C5B", C.red === "#F04C5B", "", "P2", cat12);
+  assert("Token green = #34D399", C.green === "#34D399", "", "P2", cat12);
+  assert("Token text = #E8EDF5", C.text === "#E8EDF5", "", "P2", cat12);
+
+  // ── 13. Edge cases & sécurité ──
+  const cat13 = "13. Edge cases";
+  assert("parseItems avec injection XSS", (() => {
+    const r = parseItems('<script>alert("xss")</script>');
+    return Array.isArray(r) && r.length === 0;
+  })(), "Ne doit pas exécuter du HTML", "P0", cat13);
+
+  assert("safeParseArray avec très long string", (() => {
+    const r = safeParseArray("x".repeat(100000));
+    return Array.isArray(r) && r.length === 0;
+  })(), "Pas de crash sur string très longue", "P1", cat13);
+
+  assert("fmtMRR avec valeur négative", typeof fmtMRR(-1000) === "string", "Pas de crash", "P2", cat13);
+  assert("fmtARR avec valeur négative", typeof fmtARR(-500) === "string", "Pas de crash", "P2", cat13);
+
+  assert("healthToRisk avec NaN → critical", healthToRisk(NaN) === "critical", "NaN < 40", "P1", cat13);
+  assert("healthToRisk avec 200 → low", healthToRisk(200) === "low", "Pas de clamp, mais pas de crash", "P2", cat13);
+
+  // ── 14. Compteurs portfolio ──
+  const cat14 = "14. Compteurs";
+  const counts = {
+    all: mockAccounts.length,
+    critical: mockAccounts.filter(a => a.risk === "critical").length,
+    medium: mockAccounts.filter(a => a.risk === "medium").length,
+    low: mockAccounts.filter(a => a.risk === "low").length
+  };
+  assert("Compteur all = 5", counts.all === 5, "", "P1", cat14);
+  assert("Compteur critical = 2", counts.critical === 2, "", "P1", cat14);
+  assert("Compteur medium = 1", counts.medium === 1, "", "P1", cat14);
+  assert("Compteur low = 2", counts.low === 2, "", "P1", cat14);
+  assert("Somme compteurs = total", counts.critical + counts.medium + counts.low === counts.all, "", "P0", cat14);
+
+  // ── RENDU ──
+  renderResults();
+}
+
+function renderResults() {
+  const container = document.getElementById("results");
+  const total = results.length;
+  const passed = results.filter(r => r.passed).length;
+  const failed = total - passed;
+  const pct = total > 0 ? (passed/total*100) : 0;
+
+  // Grouper par catégorie
+  const cats = {};
+  results.forEach(r => {
+    if (!cats[r.category]) cats[r.category] = [];
+    cats[r.category].push(r);
+  });
+
+  // Failures par sévérité
+  const failsBySev = {};
+  results.filter(r => !r.passed).forEach(r => {
+    if (!failsBySev[r.severity]) failsBySev[r.severity] = [];
+    failsBySev[r.severity].push(r);
+  });
+
+  let html = "";
+
+  // Catégories
+  for (const [catName, tests] of Object.entries(cats)) {
+    const catPassed = tests.filter(t => t.passed).length;
+    const catTotal = tests.length;
+    const icon = catPassed === catTotal ? "\u2705" : catPassed > catTotal * 0.8 ? "\u26A0\uFE0F" : "\u274C";
+
+    html += `<div class="category">`;
+    html += `<div class="cat-header">${icon} ${catName} \u2014 ${catPassed}/${catTotal}</div>`;
+    tests.forEach(t => {
+      const cls = t.passed ? "pass" : "fail";
+      const badge = !t.passed ? ` <span class="badge badge-${t.severity.toLowerCase()}">${t.severity}</span>` : "";
+      html += `<div class="test-row"><span class="${cls}">${t.passed ? "\u2705" : "\u274C"}</span> ${t.name}${badge}</div>`;
+      if (!t.passed && t.detail) {
+        html += `<div class="detail">\u2192 ${t.detail}</div>`;
+      }
+    });
+    html += `</div>`;
+  }
+
+  // Résumé
+  const barColor = pct === 100 ? "#34D399" : pct >= 80 ? "#F59E0B" : "#F04C5B";
+  const p0Fails = (failsBySev["P0"]||[]).length;
+  const p1Fails = (failsBySev["P1"]||[]).length;
+
+  let verdict;
+  if (p0Fails > 0) verdict = "\uD83D\uDD34 BLOQU\u00C9 \u2014 Corrections P0 requises";
+  else if (p1Fails > 0) verdict = "\uD83D\uDFE0 ATTENTION \u2014 Corrections P1 recommand\u00E9es";
+  else if (failed > 0) verdict = "\uD83D\uDFE1 ACCEPTABLE \u2014 Points mineurs";
+  else verdict = "\uD83D\uDFE2 PR\u00CAT POUR LIVRAISON";
+
+  html += `<div class="summary">`;
+  html += `<h2>R\u00E9sum\u00E9</h2>`;
+  html += `<div>${passed}/${total} tests pass\u00E9s (${pct.toFixed(1)}%)</div>`;
+  html += `<div class="bar"><div class="bar-fill" style="width:${pct}%;background:${barColor}"></div></div>`;
+  if (Object.keys(failsBySev).length > 0) {
+    html += `<div style="margin-top:12px;font-size:13px">`;
+    for (const [sev, fails] of Object.entries(failsBySev).sort()) {
+      html += `<div><span class="badge badge-${sev.toLowerCase()}">${sev}</span> ${fails.length} \u00E9chec(s)</div>`;
+    }
+    html += `</div>`;
+  }
+  html += `<div style="margin-top:14px;font-size:16px;font-weight:800">${verdict}</div>`;
+  html += `</div>`;
+
+  container.innerHTML = html;
+}
+</script>
+</body>
+</html>
