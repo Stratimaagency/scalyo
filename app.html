@@ -20,32 +20,32 @@
 <style>
 /* === CSS VARIABLES — THEME SYSTEM === */
 :root{
-  --bg:#1A1F2E;--bg1:#212636;--bg2:#272D3D;
-  --text:#D4D8E4;--muted:rgba(212,216,228,0.45);--faint:rgba(212,216,228,0.15);
-  --surface:rgba(255,255,255,0.035);--surfaceHi:rgba(255,255,255,0.06);
-  --border:rgba(255,255,255,0.06);--borderHi:rgba(255,255,255,0.12);
-  --teal:#7EC8B8;--tealBg:rgba(126,200,184,0.08);--tealBorder:rgba(126,200,184,0.18);
-  --scroll-thumb:rgba(255,255,255,0.06);--scroll-thumb-h:rgba(255,255,255,0.12);
-  --modal-bg:rgba(26,31,46,0.75);--modal-box:#212636;--modal-box-border:rgba(255,255,255,0.08);
-  --tab-active-bg:#2D3344;--tab-text:rgba(212,216,228,0.45);--tab-active-text:#D4D8E4;
-  --chip-bg:rgba(255,255,255,0.035);--chip-border:rgba(255,255,255,0.08);--chip-text:rgba(212,216,228,0.65);
-  --input-bg:rgba(255,255,255,0.04);--input-border:rgba(255,255,255,0.08);--input-text:#D4D8E4;
-  --tip-bg:rgba(255,255,255,0.035);--tip-border:rgba(255,255,255,0.06);
-  --nav-hover:rgba(255,255,255,0.04);--skeleton1:rgba(255,255,255,0.03);--skeleton2:rgba(255,255,255,0.05);
+  --bg:#191919;--bg1:#202020;--bg2:#2F2F2F;
+  --text:rgba(255,255,255,0.85);--muted:rgba(255,255,255,0.72);--faint:rgba(255,255,255,0.38);
+  --surface:rgba(255,255,255,0.055);--surfaceHi:rgba(255,255,255,0.09);
+  --border:rgba(255,255,255,0.09);--borderHi:rgba(255,255,255,0.16);
+  --teal:#4DB6A0;--tealBg:rgba(77,182,160,0.12);--tealBorder:rgba(77,182,160,0.28);
+  --scroll-thumb:rgba(255,255,255,0.10);--scroll-thumb-h:rgba(255,255,255,0.18);
+  --modal-bg:rgba(0,0,0,0.65);--modal-box:#252525;--modal-box-border:rgba(255,255,255,0.10);
+  --tab-active-bg:#2F2F2F;--tab-text:rgba(255,255,255,0.55);--tab-active-text:rgba(255,255,255,0.85);
+  --chip-bg:rgba(255,255,255,0.055);--chip-border:rgba(255,255,255,0.10);--chip-text:rgba(255,255,255,0.72);
+  --input-bg:rgba(255,255,255,0.055);--input-border:rgba(255,255,255,0.12);--input-text:rgba(255,255,255,0.85);
+  --tip-bg:rgba(255,255,255,0.04);--tip-border:rgba(255,255,255,0.09);
+  --nav-hover:rgba(255,255,255,0.055);--skeleton1:rgba(255,255,255,0.04);--skeleton2:rgba(255,255,255,0.08);
 }
 [data-theme="light"]{
-  --bg:#F5F0EB;--bg1:#FDFBF8;--bg2:#EDE8E2;
-  --text:#3D3A36;--muted:rgba(61,58,54,0.5);--faint:rgba(61,58,54,0.15);
-  --surface:rgba(120,100,80,0.035);--surfaceHi:rgba(120,100,80,0.06);
-  --border:rgba(120,100,80,0.08);--borderHi:rgba(120,100,80,0.15);
-  --teal:#5A9E8F;--tealBg:rgba(90,158,143,0.07);--tealBorder:rgba(90,158,143,0.2);
-  --scroll-thumb:rgba(61,58,54,0.12);--scroll-thumb-h:rgba(61,58,54,0.2);
-  --modal-bg:rgba(245,240,235,0.85);--modal-box:#FDFBF8;--modal-box-border:rgba(120,100,80,0.12);
-  --tab-active-bg:#E5DFD8;--tab-text:rgba(61,58,54,0.5);--tab-active-text:#3D3A36;
-  --chip-bg:rgba(120,100,80,0.04);--chip-border:rgba(120,100,80,0.1);--chip-text:rgba(61,58,54,0.65);
-  --input-bg:rgba(120,100,80,0.03);--input-border:rgba(120,100,80,0.1);--input-text:#3D3A36;
-  --tip-bg:rgba(120,100,80,0.03);--tip-border:rgba(120,100,80,0.07);
-  --nav-hover:rgba(120,100,80,0.05);--skeleton1:rgba(120,100,80,0.04);--skeleton2:rgba(120,100,80,0.07);
+  --bg:#FFFFFF;--bg1:#FFFFFF;--bg2:#F7F6F3;
+  --text:#37352F;--muted:rgba(55,53,47,0.72);--faint:rgba(55,53,47,0.40);
+  --surface:rgba(55,53,47,0.04);--surfaceHi:rgba(55,53,47,0.07);
+  --border:rgba(55,53,47,0.12);--borderHi:rgba(55,53,47,0.20);
+  --teal:#0F7B6C;--tealBg:rgba(15,123,108,0.08);--tealBorder:rgba(15,123,108,0.25);
+  --scroll-thumb:rgba(55,53,47,0.14);--scroll-thumb-h:rgba(55,53,47,0.25);
+  --modal-bg:rgba(15,15,15,0.6);--modal-box:#FFFFFF;--modal-box-border:rgba(55,53,47,0.12);
+  --tab-active-bg:#FFFFFF;--tab-text:rgba(55,53,47,0.50);--tab-active-text:#37352F;
+  --chip-bg:rgba(55,53,47,0.04);--chip-border:rgba(55,53,47,0.12);--chip-text:rgba(55,53,47,0.72);
+  --input-bg:#FFFFFF;--input-border:rgba(55,53,47,0.18);--input-text:#37352F;
+  --tip-bg:rgba(55,53,47,0.03);--tip-border:rgba(55,53,47,0.09);
+  --nav-hover:rgba(55,53,47,0.04);--skeleton1:rgba(55,53,47,0.05);--skeleton2:rgba(55,53,47,0.09);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body,#root{height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:background .2s,color .2s;font-size:14px;line-height:1.6;letter-spacing:-0.01em}
@@ -54,42 +54,42 @@ html,body,#root{height:100%;background:var(--bg);font-family:'Inter',sans-serif;
 ::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:var(--scroll-thumb-h)}
 /* === v8 STYLES === */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:12px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .3s ease;letter-spacing:-.2px}
-.btn-primary{background:linear-gradient(135deg,var(--teal),#8AAED4);color:#fff;box-shadow:0 4px 20px rgba(126,200,184,0.12)}
-.btn-primary:hover{transform:translateY(-0.5px);box-shadow:0 6px 28px rgba(126,200,184,0.16)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:6px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .2s ease;letter-spacing:-.2px}
+.btn-primary{background:var(--teal);color:#fff}
+.btn-primary:hover{filter:brightness(1.08)}
 .btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border)}
 .btn-secondary:hover{background:var(--surfaceHi);border-color:var(--borderHi)}
-.btn-danger{background:rgba(212,135,143,0.08);color:#D4878F;border:1px solid rgba(212,135,143,0.2)}
-.btn-danger:hover{background:rgba(240,76,91,0.18)}
-.btn-sm{padding:5px 12px;font-size:11.5px;border-radius:8px}
+.btn-danger{background:rgba(235,87,87,0.08);color:#EB5757;border:1px solid rgba(235,87,87,0.2)}
+.btn-danger:hover{background:rgba(235,87,87,0.18)}
+.btn-sm{padding:5px 12px;font-size:11.5px;border-radius:4px}
 .csm-filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center;padding:0 2px;max-width:100%;overflow-x:auto}
-.csm-chip{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all .25s ease;border:1px solid var(--chip-border);background:var(--chip-bg);color:var(--chip-text);transition:all .15s ease}
+.csm-chip{padding:5px 14px;border-radius:16px;font-size:12px;font-weight:600;cursor:pointer;transition:all .25s ease;border:1px solid var(--chip-border);background:var(--chip-bg);color:var(--chip-text);transition:all .15s ease}
 .csm-chip:hover{background:var(--tealBg);border-color:var(--tealBorder);color:var(--teal)}
 .csm-chip.active{background:var(--tealBg);border-color:var(--tealBorder);color:var(--teal);font-weight:700}
-.chat-input{flex:1;background:var(--input-bg);border:1px solid var(--input-border);border-radius:12px;padding:11px 15px;color:var(--input-text);font-size:13px;font-family:inherit;resize:none}
-.chat-input:focus{outline:none;border-color:rgba(18,205,184,0.35);background:var(--tealBg)}
-.chat-send-btn{background:linear-gradient(135deg,var(--teal),#8AAED4);border:none;border-radius:12px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;box-shadow:0 4px 20px rgba(126,200,184,0.1);transition:all .18s ease;flex-shrink:0}
-.chat-send-btn:hover{transform:scale(1.02);box-shadow:0 6px 20px rgba(18,205,184,0.42)}
+.chat-input{flex:1;background:var(--input-bg);border:1px solid var(--input-border);border-radius:6px;padding:11px 15px;color:var(--input-text);font-size:13px;font-family:inherit;resize:none}
+.chat-input:focus{outline:none;border-color:rgba(77,182,160,0.35);background:var(--tealBg)}
+.chat-send-btn{background:var(--teal);border:none;border-radius:6px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:all .18s ease;flex-shrink:0}
+.chat-send-btn:hover{filter:brightness(1.08)}
 .chat-send-btn:disabled{opacity:.4;transform:none;cursor:not-allowed}
-.api-banner{padding:14px 18px;background:rgba(245,158,11,0.09);border:1px solid rgba(245,158,11,0.25);border-radius:12px;margin:12px 18px;display:flex;gap:12px;font-size:13px;align-items:flex-start}
-.tip-card{background:var(--tip-bg);border:1px solid var(--tip-border);border-radius:14px;padding:16px 18px;margin-bottom:8px;cursor:pointer;transition:all .3s ease;border-color:var(--tealBorder)}
+.api-banner{padding:14px 18px;background:rgba(245,158,11,0.09);border:1px solid rgba(245,158,11,0.25);border-radius:6px;margin:12px 18px;display:flex;gap:12px;font-size:13px;align-items:flex-start}
+.tip-card{background:var(--tip-bg);border:1px solid var(--tip-border);border-radius:6px;padding:16px 18px;margin-bottom:8px;cursor:pointer;transition:all .3s ease;border-color:var(--tealBorder)}
 .tip-card.open{border-color:var(--tealBorder);background:var(--tealBg)}
-.quick-chip{padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--muted);transition:all .15s ease;font-weight:500}
+.quick-chip{padding:7px 14px;border-radius:16px;font-size:12px;cursor:pointer;background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--muted);transition:all .15s ease;font-weight:500}
 .quick-chip:hover{background:var(--tealBg);border-color:var(--tealBorder);color:var(--teal)}
 .toggle-switch{position:relative;width:46px;height:26px;display:inline-block;flex-shrink:0}
 .toggle-switch input{display:none}
 .toggle-slider{position:absolute;inset:0;border-radius:26px;background:var(--surface);cursor:pointer;transition:.3s;border:1px solid var(--border)}
 .toggle-slider::before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 2px 6px rgba(0,0,0,0.25)}
-input:checked+.toggle-slider{background:linear-gradient(135deg,var(--teal),#8AAED4);border-color:var(--teal)}
+input:checked+.toggle-slider{background:var(--teal);border-color:var(--teal)}
 input:checked+.toggle-slider::before{transform:translateX(20px)}
 .nav-btn{transition:all .25s ease;border-radius:10px;cursor:pointer}
 .nav-btn:hover{background:var(--nav-hover)!important}
 .row-item{transition:background .2s ease;cursor:pointer}
 .row-item:hover{background:var(--tealBg)!important}
-.card-lift{transition:transform .35s ease,border-color .35s ease}
-.card-lift:hover{transform:translateY(-1px);border-color:var(--tealBorder)!important}
+.card-lift{transition:border-color .25s ease}
+.card-lift:hover{border-color:var(--tealBorder)!important}
 .btn-base{transition:all .3s ease;cursor:pointer;border:none;font-family:'Inter',sans-serif;font-weight:600;outline:none;letter-spacing:-0.01em}
-.btn-base:hover:not(:disabled){transform:translateY(-0.5px);filter:brightness(1.04)}
+.btn-base:hover:not(:disabled){filter:brightness(1.08)}
 .btn-base:active:not(:disabled){transform:translateY(0);filter:brightness(0.95)}
 .btn-base:disabled{opacity:.38;cursor:not-allowed;transform:none!important;filter:none!important}
 .fade-in{animation:fadeIn .45s ease forwards}
@@ -102,45 +102,45 @@ input:checked+.toggle-slider::before{transform:translateX(20px)}
 .pulse{animation:pulse 2s infinite}
 .spin{animation:spin .7s linear infinite}
 input,select,textarea{outline:none;font-family:'Inter',sans-serif;-webkit-appearance:none;appearance:none}
-input:focus,select:focus,textarea:focus{border-color:rgba(18,205,184,0.5)!important;box-shadow:0 0 0 4px rgba(126,200,184,0.06)!important}
+input:focus,select:focus,textarea:focus{border-color:rgba(77,182,160,0.5)!important;box-shadow:0 0 0 4px rgba(77,182,160,0.06)!important}
 .modal-overlay{position:fixed;inset:0;background:var(--modal-bg);backdrop-filter:blur(16px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .35s ease}
-.modal-box{background:var(--modal-box);border:1px solid var(--modal-box-border);border-radius:24px;width:100%;animation:slideUp .25s ease;max-height:90vh;overflow-y:auto;color:var(--text)}
+.modal-box{background:var(--modal-box);border:1px solid var(--modal-box-border);border-radius:8px;width:100%;animation:slideUp .25s ease;max-height:90vh;overflow-y:auto;color:var(--text)}
 .side-panel{animation:slideInR .22s ease}
-.tab-bar{display:flex;gap:4px;background:var(--surface);border-radius:12px;padding:4px;border:1px solid var(--border)}
-.tab-item{padding:7px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .25s ease;color:var(--tab-text);white-space:nowrap}
+.tab-bar{display:flex;gap:4px;background:var(--surface);border-radius:8px;padding:4px;border:1px solid var(--border)}
+.tab-item{padding:7px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;transition:all .25s ease;color:var(--tab-text);white-space:nowrap}
 .tab-item.active{background:var(--tab-active-bg);color:var(--tab-active-text);box-shadow:0 1px 6px rgba(0,0,0,0.15)}
 .tab-item:hover:not(.active){color:var(--text);background:var(--surfaceHi)}
 .skeleton{background:linear-gradient(90deg,var(--skeleton1) 25%,var(--skeleton2) 50%,var(--skeleton1) 75%);background-size:200% 100%;animation:shimmer 2.5s ease-in-out infinite;border-radius:10px}
 /* Light mode input/select overrides */
 [data-theme="light"] input,[data-theme="light"] select,[data-theme="light"] textarea{color:var(--text);background:var(--input-bg)}
 [data-theme="light"] .modal-box{box-shadow:0 20px 60px rgba(0,0,0,0.15)}
-[data-theme="light"] select option{background:#fff;color:#1E293B}
+[data-theme="light"] select option{background:#fff;color:#37352F}
 
     @keyframes bounce {
       0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
       30% { transform: translateY(-6px); opacity: 1; }
     }
     /* ── KPI Custom & Import styles ── */
-    .kpi-custom-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;transition:all .2s ease;position:relative;overflow:hidden}
-    .kpi-custom-card:hover{border-color:var(--tealBorder);transform:translateY(-2px);box-shadow:0 8px 24px rgba(18,205,184,0.1)}
-    .kpi-custom-card .accent-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0}
-    .kpi-custom-form{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px}
+    .kpi-custom-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px;transition:all .2s ease;position:relative;overflow:hidden}
+    .kpi-custom-card:hover{border-color:var(--tealBorder)}
+    .kpi-custom-card .accent-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:8px 8px 0 0}
+    .kpi-custom-form{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px}
     .kpi-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .kpi-form-field label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.6px}
     .kpi-form-field input,.kpi-form-field select{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;padding:9px 12px;color:var(--input-text);font-size:13px;font-family:'Inter',sans-serif;font-weight:600}
-    .kpi-form-field input:focus,.kpi-form-field select:focus{border-color:rgba(18,205,184,.5);outline:none}
-    .import-drop-zone{border:2px dashed var(--border);border-radius:16px;padding:40px 20px;text-align:center;cursor:pointer;transition:all .2s ease;background:var(--surface)}
+    .kpi-form-field input:focus,.kpi-form-field select:focus{border-color:rgba(77,182,160,.5);outline:none}
+    .import-drop-zone{border:2px dashed var(--border);border-radius:8px;padding:40px 20px;text-align:center;cursor:pointer;transition:all .2s ease;background:var(--surface)}
     .import-drop-zone:hover,.import-drop-zone.drag-over{border-color:var(--teal);background:var(--tealBg)}
     .import-drop-zone input[type=file]{display:none}
     .analysis-table{width:100%;border-collapse:collapse;font-size:12px}
     .analysis-table th{background:var(--surface);padding:8px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
     .analysis-table td{padding:8px 12px;border-bottom:1px solid var(--border);font-weight:600}
     .analysis-table tr:hover td{background:var(--tealBg)}
-    .chart-container{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px}
+    .chart-container{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:16px}
     .color-picker-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
     .color-dot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s ease;flex-shrink:0}
     .color-dot:hover,.color-dot.active{border-color:#fff;transform:scale(1.2)}
-    .trend-up{color:#8BBFA0}.trend-down{color:#D4878F}.trend-flat{color:#D4B896}
+    .trend-up{color:#4DAB6D}.trend-down{color:#EB5757}.trend-flat{color:#E8A838}
     .import-col-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:var(--surface);border:1px solid var(--border)}
     .chart-type-btn{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s}
     .chart-type-btn.active{background:var(--tealBg);border-color:var(--tealBorder);color:var(--teal)}
@@ -164,8 +164,8 @@ input:focus,select:focus,textarea:focus{border-color:rgba(18,205,184,0.5)!import
   position: fixed;
   bottom: 0; left: 0; right: 0;
   height: 56px;
-  background: var(--bg1, #0D1117);
-  border-top: 1px solid var(--border, #1E2530);
+  background: var(--bg1, #202020);
+  border-top: 1px solid var(--border, #2F2F2F);
   display: none;
   align-items: center;
   justify-content: space-around;
@@ -182,14 +182,14 @@ input:focus,select:focus,textarea:focus{border-color:rgba(18,205,184,0.5)!import
   border-radius: 8px;
   transition: background 0.15s;
   min-width: 44px;
-  color: var(--muted, #6B7A99);
+  color: var(--muted, rgba(255,255,255,0.55));
   font-size: 9px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
 .bottom-nav-item.active {
-  color: var(--teal, #7EC8B8);
+  color: var(--teal, #4DB6A0);
 }
 .bottom-nav-item svg { width: 20px; height: 20px; }
 /* ============================= */
@@ -393,54 +393,36 @@ var lang = (function(){ try { return localStorage.getItem("scalyo_lang")||"fr"; 
 
 // ─── Design tokens
 const C = {
-  bg: "#1A1F2E",
-  bg1: "#212636",
-  bg2: "#272D3D",
-  bg3: "#2D3344",
-  surface: "rgba(255,255,255,0.035)",
-  surfaceHi: "rgba(255,255,255,0.06)",
-  border: "rgba(255,255,255,0.06)",
-  borderHi: "rgba(255,255,255,0.12)",
-  teal: "#7EC8B8",
-  tealBg: "rgba(126,200,184,0.08)",
-  tealBorder: "rgba(126,200,184,0.18)",
-  tealGlow: "rgba(126,200,184,0.06)",
-  red: "#D4878F",
-  redBg: "rgba(212,135,143,0.06)",
-  redBorder: "rgba(212,135,143,0.15)",
-  amber: "#D4B896",
-  amberBg: "rgba(212,184,150,0.06)",
-  amberBorder: "rgba(212,184,150,0.18)",
-  green: "#8BBFA0",
-  greenBg: "rgba(139,191,160,0.06)",
-  greenBorder: "rgba(139,191,160,0.18)",
-  purple: "#B0A0D4",
-  purpleBg: "rgba(176,160,212,0.07)",
-  blue: "#8AAED4",
-  blueBg: "rgba(138,174,212,0.07)",
-  text: "#D4D8E4",
-  muted: "rgba(212,216,228,0.45)",
-  faint: "rgba(212,216,228,0.15)"
+  bg:"#191919", bg1:"#202020", bg2:"#2F2F2F", bg3:"#373737",
+  surface:"rgba(255,255,255,0.055)", surfaceHi:"rgba(255,255,255,0.09)",
+  border:"rgba(255,255,255,0.09)", borderHi:"rgba(255,255,255,0.16)",
+  teal:"#4DB6A0", tealBg:"rgba(77,182,160,0.12)", tealBorder:"rgba(77,182,160,0.28)", tealGlow:"rgba(77,182,160,0.08)",
+  red:"#EB5757", redBg:"rgba(235,87,87,0.12)", redBorder:"rgba(235,87,87,0.22)",
+  amber:"#E8A838", amberBg:"rgba(232,168,56,0.10)", amberBorder:"rgba(232,168,56,0.22)",
+  green:"#4DAB6D", greenBg:"rgba(77,171,109,0.10)", greenBorder:"rgba(77,171,109,0.22)",
+  purple:"#9B6BDF", purpleBg:"rgba(155,107,223,0.10)",
+  blue:"#529CCA", blueBg:"rgba(82,156,202,0.10)",
+  text:"rgba(255,255,255,0.85)", muted:"rgba(255,255,255,0.72)", faint:"rgba(255,255,255,0.38)"
 };
 // ══ THEME SYSTEM ══
 const C_DARK = Object.assign({},C);
 const C_LIGHT = {
-  bg:"#F5F0EB", bg1:"#FDFBF8", bg2:"#EDE8E2", bg3:"#E5DFD8",
-  surface:"rgba(120,100,80,0.035)", surfaceHi:"rgba(120,100,80,0.06)",
-  border:"rgba(120,100,80,0.08)", borderHi:"rgba(120,100,80,0.15)",
-  teal:"#5A9E8F", tealBg:"rgba(90,158,143,0.07)", tealBorder:"rgba(90,158,143,0.2)", tealGlow:"rgba(90,158,143,0.08)",
-  red:"#C4757E", redBg:"rgba(196,117,126,0.06)", redBorder:"rgba(196,117,126,0.18)",
-  amber:"#B8976A", amberBg:"rgba(184,151,106,0.06)", amberBorder:"rgba(184,151,106,0.2)",
-  green:"#6B9E7E", greenBg:"rgba(107,158,126,0.06)", greenBorder:"rgba(107,158,126,0.18)",
-  purple:"#9488B8", purpleBg:"rgba(148,136,184,0.07)",
-  blue:"#6E94B8", blueBg:"rgba(110,148,184,0.07)",
-  text:"#3D3A36", muted:"rgba(61,58,54,0.5)", faint:"rgba(61,58,54,0.15)"
+  bg:"#FFFFFF", bg1:"#FFFFFF", bg2:"#F7F6F3", bg3:"#EDECE9",
+  surface:"rgba(55,53,47,0.04)", surfaceHi:"rgba(55,53,47,0.07)",
+  border:"rgba(55,53,47,0.12)", borderHi:"rgba(55,53,47,0.20)",
+  teal:"#0F7B6C", tealBg:"rgba(15,123,108,0.08)", tealBorder:"rgba(15,123,108,0.25)", tealGlow:"rgba(15,123,108,0.06)",
+  red:"#E03E3E", redBg:"rgba(224,62,62,0.08)", redBorder:"rgba(224,62,62,0.20)",
+  amber:"#D9730D", amberBg:"rgba(217,115,13,0.08)", amberBorder:"rgba(217,115,13,0.20)",
+  green:"#0F7B6C", greenBg:"rgba(15,123,108,0.08)", greenBorder:"rgba(15,123,108,0.20)",
+  purple:"#6940A5", purpleBg:"rgba(105,64,165,0.08)",
+  blue:"#2383E2", blueBg:"rgba(35,131,226,0.07)",
+  text:"#37352F", muted:"rgba(55,53,47,0.72)", faint:"rgba(55,53,47,0.40)"
 };
 const I18N={
   fr:{
     dashboard:"Dashboard",portfolio:"Portefeuille",kpi:"KPIs COPIL",
     wellbeing:"Bien-être",coach:"Coach IA",planning:"Planning",tasks:"Task Board",
-    settings:"Paramètres",resources:"Ressources",email:"Email Studio",tips:"Guide CS",
+    settings:"Paramètres",resources:"Ressources",email:"Email Studio",tips:"Guide CS",quotes:"Devis",kanbanView:"Kanban",eisenhowerView:"Eisenhower",
     save:"Enregistrer",saved:"✓ Enregistré",saving:"Sauvegarde...",cancel:"Annuler",
     close:"Fermer",edit:"Modifier",delete:"Supprimer",add:"Ajouter",create:"Créer",
     search:"Rechercher...",back:"Retour",update:"Mettre à jour",
@@ -1104,6 +1086,10 @@ const I18N={
     firstKpi:"Create my first KPI",
     todoCol:"To Do", inProgressCol:"In Progress", doneCol:"Done", noTasks:"No tasks",
     taskboard:"Task Board", currencyLabel:"Currency",
+    quoteTitle:"Quote title",quoteClient:"Client",quoteAmount:"Amount",quoteStatus:"Status",
+    quoteDraft:"Draft",quoteSent:"Sent",quoteWon:"Won",quoteLost:"Lost",
+    quoteDate:"Date",addQuote:"New quote",noQuotes:"No quotes",quoteNotes:"Notes",
+    quoteAll:"All",quoteDuplicate:"Duplicate",quoteConversion:"Conversion rate",quoteTotalWon:"Total won",
     deleteAccount:"Delete my account",
     deleteAccountDesc:"This action is irreversible. All your data will be permanently deleted.",
     confirmDelete:"Type DELETE to confirm",
@@ -1118,7 +1104,7 @@ const I18N={
     wellbeing:"웰빙",
     coach:"AI 코치",
     planning:"플래닝",
-    tasks:"업무 보드",
+    tasks:"업무 보드",quotes:"견적서",kanbanView:"칸반",eisenhowerView:"아이젠하워",
     settings:"설정",
     resources:"리소스",
     email:"이메일 스튜디오",
@@ -1492,6 +1478,10 @@ const I18N={
     firstKpi:"첫 번째 KPI 만들기",
     todoCol:"할 일", inProgressCol:"진행 중", doneCol:"완료", noTasks:"작업 없음",
     taskboard:"작업 보드", currencyLabel:"통화",
+    quoteTitle:"견적서 제목",quoteClient:"고객",quoteAmount:"금액",quoteStatus:"상태",
+    quoteDraft:"초안",quoteSent:"전송됨",quoteWon:"성사",quoteLost:"실패",
+    quoteDate:"날짜",addQuote:"새 견적서",noQuotes:"견적서 없음",quoteNotes:"메모",
+    quoteAll:"전체",quoteDuplicate:"복제",quoteConversion:"전환율",quoteTotalWon:"총 성사 금액",
     deleteAccount:"계정 삭제",
     deleteAccountDesc:"이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 삭제됩니다.",
     confirmDelete:"SUPPRIMER 또는 DELETE 입력",
@@ -1541,7 +1531,9 @@ const CURRENCIES = {
   CHF:{symbol:"CHF",position:"after",name:"Swiss Franc"},
   CAD:{symbol:"CA$",position:"before",name:"Canadian Dollar"},
   MAD:{symbol:"DH",position:"after",name:"Dirham marocain"},
-  XOF:{symbol:"CFA",position:"after",name:"Franc CFA"}
+  XOF:{symbol:"CFA",position:"after",name:"Franc CFA"},
+  AED:{symbol:"AED",position:"before",name:"Dirham UAE"},
+  SAR:{symbol:"SAR",position:"before",name:"Riyal saoudien"}
 };
 const fmtCur = (num, cur="EUR") => {
   const c = CURRENCIES[cur]||CURRENCIES.EUR;
@@ -1605,7 +1597,7 @@ const Loader = ({
     alignItems: "center",
     justifyContent: "center",
     fontSize: 22,
-    boxShadow: `0 8px 32px ${C.tealGlow}`
+    boxShadow: "none"
   }
 }, "\u26A1"), /*#__PURE__*/React.createElement(Spinner, {
   size: 24
@@ -1728,7 +1720,7 @@ const Card = ({
       border: `1px solid ${border}`,
       borderRadius: 16,
       padding: 16,
-      boxShadow: glow ? `0 0 24px ${C.tealGlow}` : undefined,
+      boxShadow: glow ? `0 0 0 1px ${C.tealBorder}` : undefined,
       ...style
     }
   }, children);
@@ -2113,7 +2105,7 @@ const LoginScreen = ({
     className: "fade-in",
     style: {
       minHeight: "100vh",
-      background: `radial-gradient(ellipse 90% 60% at 50% -5%,rgba(126,200,184,0.06) 0%,transparent 70%),${C.bg}`,
+      background: `radial-gradient(ellipse 90% 60% at 50% -5%,rgba(77,182,160,0.06) 0%,transparent 70%),${C.bg}`,
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -2137,7 +2129,7 @@ const LoginScreen = ({
       alignItems: "center",
       justifyContent: "center",
       fontSize: 24,
-      boxShadow: `0 10px 36px ${C.tealGlow}`
+      boxShadow: "none"
     }
   }, "\u26A1"), /*#__PURE__*/React.createElement("span", {
     style: {
@@ -2163,7 +2155,7 @@ const LoginScreen = ({
       padding: 36,
       width: "100%",
       maxWidth: 440,
-      boxShadow: "0 24px 64px rgba(0,0,0,0.15)"
+      boxShadow: "0 4px 16px rgba(0,0,0,0.08)"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "tab-bar",
@@ -2312,7 +2304,7 @@ const LoginScreen = ({
       fontSize: 15,
       background: `linear-gradient(135deg,${C.teal},${C.blue})`,
       color: "#070D1A",
-      boxShadow: `0 6px 24px ${C.tealGlow}`
+      boxShadow: "none"
     }
   }, loading ? /*#__PURE__*/React.createElement("span", {
     style: {
@@ -2451,7 +2443,7 @@ const LoginScreen = ({
       fontSize: 15,
       background: `linear-gradient(135deg,${C.teal},${C.blue})`,
       color: "#070D1A",
-      boxShadow: `0 6px 24px ${C.tealGlow}`
+      boxShadow: "none"
     }
   }, loading ? /*#__PURE__*/React.createElement("span", {
     style: {
@@ -2571,7 +2563,7 @@ const UpgradeModal = ({
       borderRadius: 16,
       padding: 22,
       position: "relative",
-      boxShadow: p.highlight ? `0 0 32px ${C.tealGlow}` : undefined
+      boxShadow: p.highlight ? `0 0 0 1px ${C.tealBorder}` : undefined
     }
   }, p.highlight && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3359,7 +3351,7 @@ const RoadmapView = ({
             onClick: () => toggleItem(item.id),
             style: {
               display:"flex", alignItems:"center", gap:10, padding:"10px 14px",
-              borderRadius:12, background:C.surface, cursor:"pointer",
+              borderRadius:6, background:C.surface, cursor:"pointer",
               border:`1px solid ${C.border}`, opacity: item.done ? 0.6 : 1
             }
           },
@@ -3512,7 +3504,7 @@ const DashboardView = ({
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
-      background: "rgba(240,76,91,0.06)",
+      background: "rgba(235,87,87,0.06)",
       borderRadius: 12,
       padding: "10px 14px"
     }
@@ -3798,7 +3790,7 @@ const DashboardView = ({
       /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:10}},
         csmStats.map(s=>/*#__PURE__*/React.createElement("div",{
           key:s.csm,
-          style:{background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"14px 16px"}
+          style:{background:C.surface,border:`1px solid ${C.border}`,borderRadius:6,padding:"14px 16px"}
         },
           /*#__PURE__*/React.createElement("div",{style:{fontWeight:800,fontSize:13,marginBottom:8,color:C.text}},s.csm),
           /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:5}},
@@ -4302,7 +4294,7 @@ const AddAccountModal = ({
     React.createElement("select", {
       value: form.industry,
       onChange: e => f("industry", e.target.value),
-      style:{width:"100%",padding:"9px 12px",borderRadius:12,border:`1px solid ${C.border}`,background:C.surface,color:form.industry?C.text:C.muted,fontSize:13,cursor:"pointer",outline:"none"}
+      style:{width:"100%",padding:"9px 12px",borderRadius:6,border:`1px solid ${C.border}`,background:C.surface,color:form.industry?C.text:C.muted,fontSize:13,cursor:"pointer",outline:"none"}
     },
       React.createElement("option", {value:""}, lang==="en"?"Select...":lang==="kr"?"선택...":"Choisir..."),
       ...(lang==="en"?[
@@ -5123,9 +5115,9 @@ const TASK_COLORS = [
   {id:"red",   hex:"#EF4444", label:"🔴 Critique",  labelEn:"🔴 Critical",   labelKr:"🔴 긴급"},
   {id:"orange",hex:"#F97316", label:"🟠 Prioritaire",labelEn:"🟠 Priority",  labelKr:"🟠 우선"},
   {id:"yellow",hex:"#EAB308", label:"🟡 À planifier",labelEn:"🟡 Plan it",   labelKr:"🟡 계획"},
-  {id:"teal",  hex:"#7EC8B8", label:"🟢 En cours",  labelEn:"🟢 Ongoing",    labelKr:"🟢 진행 중"},
+  {id:"teal",  hex:"#4DB6A0", label:"🟢 En cours",  labelEn:"🟢 Ongoing",    labelKr:"🟢 진행 중"},
   {id:"blue",  hex:"#3B82F6", label:"🔵 Réflexion", labelEn:"🔵 Thinking",   labelKr:"🔵 검토 중"},
-  {id:"purple",hex:"#B0A0D4", label:"🟣 Déléguer",  labelEn:"🟣 Delegate",   labelKr:"🟣 위임"},
+  {id:"purple",hex:"#9B6BDF", label:"🟣 Déléguer",  labelEn:"🟣 Delegate",   labelKr:"🟣 위임"},
 ];
 
 const QUAD = {
@@ -5145,7 +5137,7 @@ const QUAD = {
     id:"q3",icon:"📤",
     label:"Déléguer",labelEn:"Delegate",labelKr:"위임하기",
     sub:"Urgent + Pas important",subEn:"Urgent + Not important",subKr:"긴급 + 중요하지 않음",
-    bg:"rgba(245,158,11,0.06)",border:"rgba(245,158,11,0.2)",accent:"#D4B896"
+    bg:"rgba(245,158,11,0.06)",border:"rgba(245,158,11,0.2)",accent:"#E8A838"
   },
   q4:{
     id:"q4",icon:"🗑️",
@@ -5175,7 +5167,7 @@ const TaskCard = ({task, lang, onMove, onDelete, onToggle, onEdit, quadCount})=>
       background:hover?"rgba(255,255,255,0.07)":C.surface,
       border:`1px solid ${hover?col.hex+"55":C.border}`,
       borderLeft:`3px solid ${col.hex}`,
-      borderRadius:12,padding:"11px 13px",marginBottom:8,
+      borderRadius:6,padding:"11px 13px",marginBottom:8,
       transition:"all .15s ease",cursor:"pointer",position:"relative",
       opacity:task.done?0.55:1
     },
@@ -5206,11 +5198,11 @@ const TaskCard = ({task, lang, onMove, onDelete, onToggle, onEdit, quadCount})=>
     React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:8,gap:6}},
       React.createElement("div",{style:{display:"flex",alignItems:"center",gap:5}},
         React.createElement("span",{style:{
-          fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:12,
+          fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:6,
           background:col.hex+"22",color:col.hex
         }},lang==="en"?col.labelEn:lang==="kr"?(col.labelKr||col.label):col.label),
         isOverdue&&React.createElement("span",{style:{
-          fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:12,
+          fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:6,
           background:"rgba(239,68,68,0.12)",color:"#EF4444"
         }},T("overdue",lang)),
         task.dueDate&&!isOverdue&&React.createElement("span",{style:{fontSize:10,color:C.muted}},
@@ -5260,7 +5252,7 @@ const AddTaskModal = ({onClose,onAdd,lang,editTask,accounts=[]})=>{
   const isEdit=!!editTask;
   const inputStyle={
     width:"100%",background:C.bg2,border:`1px solid ${C.border}`,
-    borderRadius:12,padding:"10px 13px",color:C.text,fontSize:13,marginBottom:12
+    borderRadius:6,padding:"10px 13px",color:C.text,fontSize:13,marginBottom:12
   };
   return React.createElement("div",{className:"modal-overlay",onClick:e=>{if(e.target===e.currentTarget)onClose();}},
     React.createElement("div",{className:"modal-box",style:{maxWidth:480,padding:28}},
@@ -5285,7 +5277,7 @@ const AddTaskModal = ({onClose,onAdd,lang,editTask,accounts=[]})=>{
             key:col.id,
             onClick:()=>setColor(col.id),
             style:{
-              padding:"5px 11px",borderRadius:20,fontSize:11,fontWeight:700,cursor:"pointer",border:"none",
+              padding:"5px 11px",borderRadius:16,fontSize:11,fontWeight:700,cursor:"pointer",border:"none",
               background:color===col.id?col.hex+"33":"transparent",
               color:color===col.id?col.hex:C.muted,
               border:`1.5px solid ${color===col.id?col.hex:C.border}`,
@@ -5301,7 +5293,7 @@ const AddTaskModal = ({onClose,onAdd,lang,editTask,accounts=[]})=>{
             key:q.id,
             onClick:()=>setQuadrant(q.id),
             style:{
-              padding:"8px 12px",borderRadius:12,fontSize:11,fontWeight:600,cursor:"pointer",
+              padding:"8px 12px",borderRadius:6,fontSize:11,fontWeight:600,cursor:"pointer",
               border:`1.5px solid ${quadrant===q.id?q.accent:C.border}`,
               background:quadrant===q.id?q.bg:"transparent",
               color:quadrant===q.id?q.accent:C.muted,
@@ -5329,7 +5321,7 @@ const AddTaskModal = ({onClose,onAdd,lang,editTask,accounts=[]})=>{
       React.createElement("div",{style:{display:"flex",gap:8}},
         React.createElement("button",{
           onClick:onClose,
-          style:{flex:1,padding:"12px",borderRadius:12,background:C.surface,border:`1px solid ${C.border}`,color:C.muted,fontSize:13,cursor:"pointer",fontWeight:600}
+          style:{flex:1,padding:"12px",borderRadius:6,background:C.surface,border:`1px solid ${C.border}`,color:C.muted,fontSize:13,cursor:"pointer",fontWeight:600}
         },T("cancel",lang)),
         React.createElement("button",{
           disabled:!title.trim(),
@@ -5339,7 +5331,7 @@ const AddTaskModal = ({onClose,onAdd,lang,editTask,accounts=[]})=>{
             onClose();
           },
           style:{
-            flex:2,padding:"12px",borderRadius:12,fontSize:13,fontWeight:800,cursor:"pointer",border:"none",
+            flex:2,padding:"12px",borderRadius:6,fontSize:13,fontWeight:800,cursor:"pointer",border:"none",
             background:!title.trim()?"rgba(255,255,255,0.05)":`linear-gradient(135deg,${C.teal},${C.blue})`,
             color:!title.trim()?C.muted:"#070D1A",transition:"all .15s"
           }
@@ -5410,11 +5402,11 @@ const KanbanBoardView = ({accounts=[], lang="fr"}) => {
           key:col.key,
           onDragOver:e=>e.preventDefault(),
           onDrop:e=>handleDrop(e,col.key),
-          style:{flex:1,background:C.surface,borderRadius:16,padding:14,border:`1px solid ${C.border}`,minHeight:300,overflow:"auto"}
+          style:{flex:1,background:C.surface,borderRadius:8,padding:14,border:`1px solid ${C.border}`,minHeight:300,overflow:"auto"}
         },
           /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:800,marginBottom:12,display:"flex",alignItems:"center",gap:8,color:col.color}},
             col.icon," ",col.label,
-            /*#__PURE__*/React.createElement("span",{style:{fontSize:11,background:`${col.color}22`,border:`1px solid ${col.color}44`,padding:"2px 8px",borderRadius:20,color:col.color,fontWeight:700}},
+            /*#__PURE__*/React.createElement("span",{style:{fontSize:11,background:`${col.color}22`,border:`1px solid ${col.color}44`,padding:"2px 8px",borderRadius:16,color:col.color,fontWeight:700}},
               columns[col.key].length)
           ),
           columns[col.key].length===0
@@ -5424,7 +5416,7 @@ const KanbanBoardView = ({accounts=[], lang="fr"}) => {
                   key:`${task.accountId}-${task.id}-${i}`,
                   draggable:true,
                   onDragStart:e=>handleDragStart(e,task,col.key),
-                  style:{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:12,padding:"12px 14px",marginBottom:8,cursor:"grab",transition:"border-color .15s"},
+                  style:{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:6,padding:"12px 14px",marginBottom:8,cursor:"grab",transition:"border-color .15s"},
                   onMouseEnter:e=>e.currentTarget.style.borderColor=col.color+"66",
                   onMouseLeave:e=>e.currentTarget.style.borderColor=C.border
                 },
@@ -5516,7 +5508,7 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
         React.createElement("button",{
           onClick:getAiTip,disabled:aiLoading,
           style:{
-            display:"flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:12,
+            display:"flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:6,
             border:`1px solid ${C.tealBorder}`,background:C.tealBg,color:C.teal,
             fontSize:12,fontWeight:700,cursor:aiLoading?"not-allowed":"pointer",opacity:aiLoading?.7:1
           }
@@ -5524,7 +5516,7 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
         React.createElement("button",{
           onClick:()=>{setDefaultQuad("q1");setEditTask(null);setShowAdd(true);},
           style:{
-            display:"flex",alignItems:"center",gap:6,padding:"8px 16px",borderRadius:12,
+            display:"flex",alignItems:"center",gap:6,padding:"8px 16px",borderRadius:6,
             background:`linear-gradient(135deg,${C.teal},${C.blue})`,color:"#070D1A",
             fontSize:12,fontWeight:800,border:"none",cursor:"pointer"
           }
@@ -5534,10 +5526,10 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
     // AI tip banner
     aiTip&&React.createElement("div",{style:{
       background:"rgba(167,139,250,0.08)",border:"1px solid rgba(167,139,250,0.22)",
-      borderRadius:12,padding:"12px 16px",marginBottom:14,fontSize:12.5,
+      borderRadius:6,padding:"12px 16px",marginBottom:14,fontSize:12.5,
       color:C.text,lineHeight:1.7,flexShrink:0,position:"relative"
     }},
-      React.createElement("span",{style:{fontWeight:800,color:"#B0A0D4"}},"✨ Coach IA  "),
+      React.createElement("span",{style:{fontWeight:800,color:"#9B6BDF"}},"✨ Coach IA  "),
       aiTip,
       React.createElement("button",{
         onClick:()=>setAiTip(""),
@@ -5552,7 +5544,7 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
         key:val,
         onClick:()=>setFilter(val),
         style:{
-          padding:"4px 12px",borderRadius:20,fontSize:11,fontWeight:600,cursor:"pointer",
+          padding:"4px 12px",borderRadius:16,fontSize:11,fontWeight:600,cursor:"pointer",
           border:`1px solid ${filter===val?C.tealBorder:C.border}`,
           background:filter===val?C.tealBg:C.surface,
           color:filter===val?C.teal:C.muted,transition:"all .12s"
@@ -5568,7 +5560,7 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
           return React.createElement("div",{
             key:q.id,
             style:{
-              background:q.bg,border:`1.5px solid ${q.border}`,borderRadius:16,
+              background:q.bg,border:`1.5px solid ${q.border}`,borderRadius:8,
               padding:"14px",display:"flex",flexDirection:"column",minHeight:180
             }
           },
@@ -5578,7 +5570,7 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
                   q.icon," ",lang==="en"?q.labelEn:lang==="kr"?q.labelKr||q.label:q.label,
                   React.createElement("span",{style:{
                     fontSize:10,background:q.accent+"22",color:q.accent,
-                    borderRadius:12,padding:"1px 7px",fontWeight:700
+                    borderRadius:6,padding:"1px 7px",fontWeight:700
                   }},qTasks.length)
                 ),
                 React.createElement("div",{style:{fontSize:10,color:C.muted,marginTop:1}},lang==="en"?q.subEn:lang==="kr"?q.subKr||q.subEn:q.sub)
@@ -5624,15 +5616,50 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
   );
 };
 
+// ══════════════════════════════════════════════════
+// UNIFIED TASK BOARD — Kanban + Eisenhower tabs
+// ══════════════════════════════════════════════════
+const UnifiedTaskBoard = ({accounts=[], role="csm", lang="fr", companyId=null}) => {
+  const [activeTab, setActiveTab] = useState(() => {
+    try { return localStorage.getItem("scalyo_taskboard_tab") || "kanban"; } catch(e) { return "kanban"; }
+  });
+  const switchTab = (tab) => { setActiveTab(tab); try { localStorage.setItem("scalyo_taskboard_tab", tab); } catch(e){} };
+  const tabs = [
+    {key:"kanban", label:T("kanbanView",lang), icon:"\u{1F4CB}"},
+    {key:"eisenhower", label:T("eisenhowerView",lang), icon:"\u{1F3AF}"}
+  ];
+  return React.createElement("div", {className:"fade-in", style:{padding:20,height:"100%",overflow:"auto"}},
+    React.createElement("div", {style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18}},
+      React.createElement("h2", {style:{fontSize:20,fontWeight:900,letterSpacing:"-0.5px"}}, "\u{1F4CB} ", T("tasks",lang)),
+      React.createElement("div", {style:{display:"flex",gap:2,background:C.surface,borderRadius:10,padding:3,border:"1px solid "+C.border}},
+        tabs.map(function(tab) { return React.createElement("button", {
+          key:tab.key,
+          onClick:function(){switchTab(tab.key);},
+          style:{
+            padding:"6px 16px",borderRadius:8,fontSize:13,fontWeight:activeTab===tab.key?700:500,
+            border:"none",cursor:"pointer",transition:"all .15s",
+            background:activeTab===tab.key?C.bg:"transparent",
+            color:activeTab===tab.key?C.text:C.muted,
+            boxShadow:activeTab===tab.key?"0 1px 3px rgba(0,0,0,0.1)":"none"
+          }
+        }, tab.icon," ",tab.label); })
+      )
+    ),
+    activeTab === "kanban"
+      ? React.createElement(KanbanBoardView, {accounts:accounts, lang:lang})
+      : React.createElement(TaskBoardView, {accounts:accounts, role:role, lang:lang, companyId:companyId})
+  );
+};
+
 
 // ══════════════════════════════════════════════════
 // PLANNING VIEW — Calendrier + Sync Google/Outlook
 // ══════════════════════════════════════════════════
 
 const EVENT_COLORS=[
-  {id:"teal",hex:"#7EC8B8"},{id:"blue",hex:"#3B82F6"},
-  {id:"purple",hex:"#B0A0D4"},{id:"green",hex:"#8BBFA0"},
-  {id:"amber",hex:"#D4B896"},{id:"red",hex:"#D4878F"}
+  {id:"teal",hex:"#4DB6A0"},{id:"blue",hex:"#3B82F6"},
+  {id:"purple",hex:"#9B6BDF"},{id:"green",hex:"#4DAB6D"},
+  {id:"amber",hex:"#E8A838"},{id:"red",hex:"#EB5757"}
 ];
 
 const getEventsFromLS=()=>{try{const r=localStorage.getItem("scalyo_events");return r?JSON.parse(r):[];}catch(e){return [];}};
@@ -5799,11 +5826,11 @@ const PlanningView=({lang="fr",accounts=[],companyId=null})=>{
                   style:{
                     minHeight:50,padding:"2px 3px",
                     borderLeft:`1px solid ${C.border}`,
-                    background:isT?"rgba(18,205,184,0.02)":"transparent",
+                    background:isT?"rgba(77,182,160,0.02)":"transparent",
                     cursor:"pointer",transition:"background .12s",position:"relative"
                   },
                   onMouseEnter:e=>e.currentTarget.style.background=C.tealBg,
-                  onMouseLeave:e=>e.currentTarget.style.background=isT?"rgba(18,205,184,0.02)":"transparent"
+                  onMouseLeave:e=>e.currentTarget.style.background=isT?"rgba(77,182,160,0.02)":"transparent"
                 },
                   h===8&&React.createElement("div",{style:{fontSize:9,color:C.muted,padding:"2px 0"}}),
                   dayEvs.map(ev=>{
@@ -5895,7 +5922,7 @@ const AddEventModal=({lang,accounts,editEvent,defaultDate,onClose,onSave,onDelet
   const [account,setAccount]=useState(editEvent?.account||"");
   const [saved,setSaved]=useState(null);
   const isEdit=!!editEvent;
-  const S={width:"100%",background:C.bg2,border:`1px solid ${C.border}`,borderRadius:12,padding:"10px 13px",color:C.text,fontSize:13,marginBottom:12};
+  const S={width:"100%",background:C.bg2,border:`1px solid ${C.border}`,borderRadius:6,padding:"10px 13px",color:C.text,fontSize:13,marginBottom:12};
 
   const handleSave=()=>{
     if(!title.trim()||!date)return;
@@ -5912,17 +5939,17 @@ const AddEventModal=({lang,accounts,editEvent,defaultDate,onClose,onSave,onDelet
       ),
       React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:8,marginBottom:16}},
         React.createElement("a",{href:buildGoogleLink(saved),target:"_blank",rel:"noopener",
-          style:{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"12px",borderRadius:12,textDecoration:"none",fontWeight:700,fontSize:13,background:"rgba(234,67,53,0.1)",border:"1px solid rgba(234,67,53,0.2)",color:"#EA4335",cursor:"pointer"}
+          style:{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"12px",borderRadius:6,textDecoration:"none",fontWeight:700,fontSize:13,background:"rgba(234,67,53,0.1)",border:"1px solid rgba(234,67,53,0.2)",color:"#EA4335",cursor:"pointer"}
         },"🔴 "+(T("addToGoogle",lang))),
         React.createElement("a",{href:buildOutlookLink(saved),target:"_blank",rel:"noopener",
-          style:{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"12px",borderRadius:12,textDecoration:"none",fontWeight:700,fontSize:13,background:"rgba(0,120,212,0.1)",border:"1px solid rgba(0,120,212,0.2)",color:"#0078D4",cursor:"pointer"}
+          style:{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"12px",borderRadius:6,textDecoration:"none",fontWeight:700,fontSize:13,background:"rgba(0,120,212,0.1)",border:"1px solid rgba(0,120,212,0.2)",color:"#0078D4",cursor:"pointer"}
         },"🔵 "+(T("addToOutlook",lang))),
         React.createElement("button",{onClick:()=>exportICS([saved],`${saved.title.replace(/[^a-z0-9]/gi,"_")}.ics`),
-          style:{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"12px",borderRadius:12,fontWeight:700,fontSize:13,cursor:"pointer",background:"rgba(52,211,153,0.1)",border:"1px solid rgba(52,211,153,0.2)",color:"#8BBFA0"}
+          style:{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"12px",borderRadius:6,fontWeight:700,fontSize:13,cursor:"pointer",background:"rgba(52,211,153,0.1)",border:"1px solid rgba(52,211,153,0.2)",color:"#4DAB6D"}
         },"🍎 "+(T("exportIcs",lang)))
       ),
       React.createElement("button",{onClick:onClose,
-        style:{width:"100%",padding:"10px",borderRadius:12,background:C.surface,border:`1px solid ${C.border}`,color:C.muted,cursor:"pointer",fontSize:13,fontWeight:600}
+        style:{width:"100%",padding:"10px",borderRadius:6,background:C.surface,border:`1px solid ${C.border}`,color:C.muted,cursor:"pointer",fontSize:13,fontWeight:600}
       },T("close",lang))
     )
   );
@@ -5963,11 +5990,11 @@ const AddEventModal=({lang,accounts,editEvent,defaultDate,onClose,onSave,onDelet
       React.createElement("textarea",{value:note,onChange:e=>setNote(e.target.value),placeholder:"Notes...",rows:2,style:{...S,resize:"vertical"}}),
       React.createElement("div",{style:{display:"flex",gap:8}},
         isEdit&&React.createElement("button",{onClick:()=>onDelete(editEvent.id),
-          style:{padding:"10px 14px",borderRadius:12,background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.2)",color:"#EF4444",cursor:"pointer",fontSize:12,fontWeight:700}
+          style:{padding:"10px 14px",borderRadius:6,background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.2)",color:"#EF4444",cursor:"pointer",fontSize:12,fontWeight:700}
         },"🗑"),
-        React.createElement("button",{onClick:onClose,style:{flex:1,padding:"11px",borderRadius:12,background:C.surface,border:`1px solid ${C.border}`,color:C.muted,cursor:"pointer",fontSize:13,fontWeight:600}},T("cancel",lang)),
+        React.createElement("button",{onClick:onClose,style:{flex:1,padding:"11px",borderRadius:6,background:C.surface,border:`1px solid ${C.border}`,color:C.muted,cursor:"pointer",fontSize:13,fontWeight:600}},T("cancel",lang)),
         React.createElement("button",{disabled:!title.trim()||!date,onClick:handleSave,
-          style:{flex:2,padding:"11px",borderRadius:12,fontSize:13,fontWeight:800,cursor:"pointer",border:"none",
+          style:{flex:2,padding:"11px",borderRadius:6,fontSize:13,fontWeight:800,cursor:"pointer",border:"none",
             background:!title.trim()||!date?"rgba(255,255,255,0.05)":`linear-gradient(135deg,${C.teal},${C.blue})`,
             color:!title.trim()||!date?C.muted:"#070D1A"}
         },isEdit?(T("update",lang)):(T("taskAdd",lang)))
@@ -6565,11 +6592,11 @@ PROHIBITIONS: No toxic positivity, no minimizing, no 10-tip dumps, always name s
   }, m.text)))), (typing || loading) && /*#__PURE__*/React.createElement("div", {
     style: { display:"flex", gap:10, alignItems:"flex-end", marginBottom:8 }
   },
-    /*#__PURE__*/React.createElement("div", { style:{ width:32, height:32, borderRadius:12, flexShrink:0, background:"linear-gradient(135deg,${C.green},${C.teal})", display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 } }, "💚"),
+    /*#__PURE__*/React.createElement("div", { style:{ width:32, height:32, borderRadius:6, flexShrink:0, background:"linear-gradient(135deg,${C.green},${C.teal})", display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 } }, "💚"),
     /*#__PURE__*/React.createElement("div", { style:{ background:"linear-gradient(135deg,rgba(16,185,129,0.15),rgba(5,150,105,0.1))", border:"1px solid rgba(16,185,129,0.3)", borderRadius:"16px 16px 16px 4px", padding:"12px 16px", display:"flex", gap:6, alignItems:"center" } },
-      /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#8BBFA0", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s infinite" } }),
-      /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#8BBFA0", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.2s infinite" } }),
-      /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#8BBFA0", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.4s infinite" } })
+      /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#4DAB6D", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s infinite" } }),
+      /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#4DAB6D", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.2s infinite" } }),
+      /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#4DAB6D", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.4s infinite" } })
     )
   ), /*#__PURE__*/React.createElement("div", {
     ref: bottomRef
@@ -9428,7 +9455,7 @@ const KPIView = ({
   });
   const [showKpiForm, setShowKpiForm] = React.useState(false);
   const [editKpiIdx, setEditKpiIdx] = React.useState(null);
-  const [kpiForm, setKpiForm] = React.useState({name:"",unit:"",type:"number",goal:"",color:"#7EC8B8",value:"",description:""});
+  const [kpiForm, setKpiForm] = React.useState({name:"",unit:"",type:"number",goal:"",color:"#4DB6A0",value:"",description:""});
 
   // ── PERSISTANCE : KPIs standards par période
   const [kpiHistory, setKpiHistory] = React.useState(() => {
@@ -9746,7 +9773,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
         width: bw,
         height: Math.max(bh, 1),
         rx: 2,
-        fill: d.hi ? C.teal : "rgba(18,205,184,0.22)",
+        fill: d.hi ? C.teal : "rgba(77,182,160,0.22)",
         opacity: 0.95
       }), /*#__PURE__*/React.createElement("text", {
         x: x + bw / 2,
@@ -9926,7 +9953,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
   })),
   /* ── ALERTES BANNER ── */
   activeAlerts.length > 0 && showAlertBanner && React.createElement("div", {
-    style:{background:"rgba(240,76,91,0.08)",border:"1px solid rgba(240,76,91,0.25)",borderRadius:16,padding:"12px 16px",marginBottom:16,animation:"fadeIn .3s ease"}
+    style:{background:"rgba(235,87,87,0.08)",border:"1px solid rgba(235,87,87,0.25)",borderRadius:8,padding:"12px 16px",marginBottom:16,animation:"fadeIn .3s ease"}
   },
     React.createElement("div", {style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}},
       React.createElement("div", {style:{display:"flex",alignItems:"center",gap:8}},
@@ -9944,7 +9971,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       activeAlerts.map((alert,ai)=>
         React.createElement("div", {
           key:alert.id,
-          style:{display:"flex",alignItems:"center",justifyContent:"space-between",background:"rgba(240,76,91,0.06)",borderRadius:9,padding:"8px 12px",gap:10}
+          style:{display:"flex",alignItems:"center",justifyContent:"space-between",background:"rgba(235,87,87,0.06)",borderRadius:9,padding:"8px 12px",gap:10}
         },
           React.createElement("div", {style:{display:"flex",alignItems:"center",gap:8,flex:1}},
             React.createElement("span", {style:{fontSize:14,flexShrink:0}}, alert.icon),
@@ -9955,8 +9982,8 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
           ),
           React.createElement("div", {style:{display:"flex",alignItems:"center",gap:8,flexShrink:0}},
             React.createElement("span", {
-              style:{fontSize:10,fontWeight:800,padding:"3px 8px",borderRadius:20,
-                background:alert.level==="critical"?"rgba(240,76,91,0.2)":"rgba(245,158,11,0.15)",
+              style:{fontSize:10,fontWeight:800,padding:"3px 8px",borderRadius:16,
+                background:alert.level==="critical"?"rgba(235,87,87,0.2)":"rgba(245,158,11,0.15)",
                 color:alert.level==="critical"?C.red:C.amber}
             }, alert.level==="critical"?"⚠ CRITIQUE":"→ Attention"),
             React.createElement("span", {style:{fontSize:12,fontWeight:900,fontFamily:"'JetBrains Mono',monospace",color:C.red}}, alert.current),
@@ -9976,7 +10003,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       ? /*#__PURE__*/React.createElement("select",{
           value:csmFilter,
           onChange:e=>setCsmFilter(e.target.value),
-          style:{padding:"6px 12px",borderRadius:12,border:`1px solid ${C.border}`,background:C.surface,color:C.text,fontSize:12,fontWeight:600,cursor:"pointer",maxWidth:"100%",width:"auto"}
+          style:{padding:"6px 12px",borderRadius:6,border:`1px solid ${C.border}`,background:C.surface,color:C.text,fontSize:12,fontWeight:600,cursor:"pointer",maxWidth:"100%",width:"auto"}
         }, csms.map(csm=>/*#__PURE__*/React.createElement("option",{key:csm,value:csm},
           csm==="all"?(lang==="en"?"👥 All CSMs":lang==="kr"?"👥 전체 CSM":"👥 Tous les CSMs"):csm
         )))
@@ -10009,8 +10036,8 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     }
   },
     t.label,
-    t.alertBadge>0 && React.createElement("span",{style:{background:C.red,color:"#fff",borderRadius:20,fontSize:9,fontWeight:900,padding:"2px 6px",lineHeight:1}}, t.alertBadge),
-    t.badge>0 && React.createElement("span",{style:{background:t.badgeColor==="amber"?C.amber:C.teal,color:"#070D1A",borderRadius:20,fontSize:9,fontWeight:900,padding:"2px 6px",lineHeight:1}}, t.badge)
+    t.alertBadge>0 && React.createElement("span",{style:{background:C.red,color:"#fff",borderRadius:16,fontSize:9,fontWeight:900,padding:"2px 6px",lineHeight:1}}, t.alertBadge),
+    t.badge>0 && React.createElement("span",{style:{background:t.badgeColor==="amber"?C.amber:C.teal,color:"#070D1A",borderRadius:16,fontSize:9,fontWeight:900,padding:"2px 6px",lineHeight:1}}, t.badge)
   ))), tab === "revenue" && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -10020,7 +10047,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
   },
   kpis.mrr === 0 && kpis.expansionRevenue === 0 && /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "rgba(18,205,184,0.06)",
+      background: "rgba(77,182,160,0.06)",
       border: `1px solid ${C.tealBorder}`,
       borderRadius: 12,
       padding: "12px 16px",
@@ -10559,9 +10586,9 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
         React.createElement("div", {style:{fontSize:12,color:C.muted,marginTop:2}}, lang==="en" ? "Create and track your own performance indicators" : lang==="kr" ? "나만의 성과 지표 생성 및 추적" : "Créez et suivez vos propres indicateurs de performance")
       ),
       React.createElement("button", {
-        onClick:()=>{setKpiForm({name:"",unit:"",type:"number",goal:"",color:"#7EC8B8",value:"",description:""});setEditKpiIdx(null);setShowKpiForm(true);},
+        onClick:()=>{setKpiForm({name:"",unit:"",type:"number",goal:"",color:"#4DB6A0",value:"",description:""});setEditKpiIdx(null);setShowKpiForm(true);},
         className:"btn-base",
-        style:{padding:"9px 18px",borderRadius:12,fontWeight:800,fontSize:13,background:`linear-gradient(135deg,${C.teal},${C.blue})`,color:"#070D1A",display:"flex",alignItems:"center",gap:7}
+        style:{padding:"9px 18px",borderRadius:6,fontWeight:800,fontSize:13,background:`linear-gradient(135deg,${C.teal},${C.blue})`,color:"#070D1A",display:"flex",alignItems:"center",gap:7}
       }, "＋ ", lang==="en" ? "New KPI" : lang==="kr" ? "새 KPI" : T("kpiNewTitle",lang))
     ),
     /* ── KPI Creation Form ── */
@@ -10602,7 +10629,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       React.createElement("div", null,
         React.createElement("label", {style:{display:"block",fontSize:11,fontWeight:700,color:C.muted,marginBottom:6,textTransform:"uppercase",letterSpacing:".6px"}}, lang==="en" ? "Color" : lang==="kr" ? "색상" : "Couleur"),
         React.createElement("div", {className:"color-picker-row"},
-          ["#7EC8B8","#8AAED4","#8BBFA0","#D4B896","#D4878F","#B0A0D4","#FB923C","#EC4899","#60A5FA","#FACC15"].map(col=>
+          ["#4DB6A0","#529CCA","#4DAB6D","#E8A838","#EB5757","#9B6BDF","#FB923C","#EC4899","#60A5FA","#FACC15"].map(col=>
             React.createElement("div", {key:col,className:`color-dot${kpiForm.color===col?" active":""}`,style:{background:col},onClick:()=>setKpiForm(p=>({...p,color:col}))})
           )
         )
@@ -10627,14 +10654,14 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       )
     ),
     /* ── Custom KPI Cards Grid ── */
-    customKpis.length === 0 && !showKpiForm && React.createElement("div", {style:{textAlign:"center",padding:"48px 20px",background:C.surface,borderRadius:16,border:`1px dashed ${C.border}`}},
+    customKpis.length === 0 && !showKpiForm && React.createElement("div", {style:{textAlign:"center",padding:"48px 20px",background:C.surface,borderRadius:8,border:`1px dashed ${C.border}`}},
       React.createElement("div", {style:{fontSize:40,marginBottom:12}}, "🎯"),
       React.createElement("div", {style:{fontSize:15,fontWeight:800,marginBottom:6}}, lang==="en" ? "No custom KPIs yet" : lang==="kr" ? "맞춤 KPI 없음" : T("kpiNoCustom",lang)),
       React.createElement("div", {style:{fontSize:13,color:C.muted,marginBottom:18}}, lang==="en" ? T("kpiCustomDesc",lang) : lang==="kr" ? "팀, 고객 또는 목표에 맞는 KPI를 생성하세요." : T("kpiCustomDesc",lang)),
       React.createElement("button", {
         onClick:()=>setShowKpiForm(true),
         className:"btn-base",
-        style:{padding:"10px 22px",borderRadius:12,fontWeight:800,fontSize:13,background:`linear-gradient(135deg,${C.teal},${C.blue})`,color:"#070D1A"}
+        style:{padding:"10px 22px",borderRadius:6,fontWeight:800,fontSize:13,background:`linear-gradient(135deg,${C.teal},${C.blue})`,color:"#070D1A"}
       }, "＋ ", lang==="en" ? "Create my first KPI" : lang==="kr" ? "첫 번째 KPI 생성" : "Créer mon premier KPI")
     ),
     customKpis.length > 0 && React.createElement("div", {style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:14}},
@@ -10756,7 +10783,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
             React.createElement("div", {style:{fontSize:12,color:C.muted,marginBottom:12}}, lang==="en" ? "Supported formats: CSV, Excel (.xlsx, .xls)" : lang==="kr" ? "지원 형식: CSV, Excel (.xlsx, .xls)" : T("formats",lang)),
             React.createElement("button", {
               className:"btn-base",
-              style:{padding:"9px 22px",borderRadius:12,fontWeight:800,fontSize:13,background:`linear-gradient(135deg,${C.teal},${C.blue})`,color:"#070D1A"}
+              style:{padding:"9px 22px",borderRadius:6,fontWeight:800,fontSize:13,background:`linear-gradient(135deg,${C.teal},${C.blue})`,color:"#070D1A"}
             }, lang==="en" ? "Browse file" : lang==="kr" ? "파일 찾기" : T("upload",lang))
           ),
       importError && React.createElement("div", {style:{marginTop:12,fontSize:12,color:C.red}}, "⚠ "+importError)
@@ -10764,7 +10791,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     /* ── Analysis Result ── */
     importedData && React.createElement("div", null,
       /* File info banner */
-      React.createElement("div", {style:{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",background:C.greenBg,border:`1px solid ${C.greenBorder}`,borderRadius:12,marginBottom:16}},
+      React.createElement("div", {style:{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",background:C.greenBg,border:`1px solid ${C.greenBorder}`,borderRadius:6,marginBottom:16}},
         React.createElement("span", {style:{fontSize:20}}, "✅"),
         React.createElement("div", null,
           React.createElement("div", {style:{fontSize:13,fontWeight:800,color:C.green}}, importFileName),
@@ -10773,7 +10800,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       ),
       /* ── MAPPING KPIs AUTO-DETECT ── */
       Object.keys(kpiMapping).length > 0 && React.createElement("div", {
-        style:{background:C.amberBg,border:`1px solid ${C.amberBorder}`,borderRadius:12,padding:"14px 16px",marginBottom:16}
+        style:{background:C.amberBg,border:`1px solid ${C.amberBorder}`,borderRadius:6,padding:"14px 16px",marginBottom:16}
       },
         React.createElement("div", {style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}},
           React.createElement("div", {style:{display:"flex",alignItems:"center",gap:8}},
@@ -10871,7 +10898,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
                 ),
                 React.createElement("tbody", null,
                   commonCols.slice(0,8).map((col,ci)=>{
-                    const CHART_COLORS2=["#7EC8B8","#8AAED4","#D4B896","#B0A0D4","#D4878F","#8BBFA0"];
+                    const CHART_COLORS2=["#4DB6A0","#529CCA","#E8A838","#9B6BDF","#EB5757","#4DAB6D"];
                     const valsCurr=importedData.rows.map(r=>parseFloat(r[col.name])||0);
                     const valsPrev=compareFile.rows.map(r=>parseFloat(r[col.name])||0);
                     const avgCurr=valsCurr.length>0?valsCurr.reduce((a,b)=>a+b,0)/valsCurr.length:0;
@@ -10941,7 +10968,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
           : (dateCols[0]||strCols[0]);
         const chartMode = selectedChartType==="auto" ? (dateCols.length>0?"line":"bar") : selectedChartType;
         if(activeCols.length===0) return React.createElement("div", {style:{textAlign:"center",padding:24,color:C.muted}}, lang==="en" ? "Select numeric columns to display charts" : lang==="kr" ? "차트 표시를 위한 숫자 컬럼 선택" : T("kpiNumericHint",lang));
-        const CHART_COLORS=["#7EC8B8","#8AAED4","#D4B896","#B0A0D4","#D4878F","#8BBFA0","#FB923C"];
+        const CHART_COLORS=["#4DB6A0","#529CCA","#E8A838","#9B6BDF","#EB5757","#4DAB6D","#FB923C"];
         const rows = importedData.rows.slice(0,50);
         const labels = labelCol ? rows.map(r=>String(r[labelCol.name]||"").slice(0,10)) : rows.map((_,i)=>String(i+1));
         const maxVal = Math.max(...activeCols.flatMap(c=>rows.map(r=>parseFloat(r[c.name])||0)),1);
@@ -11259,7 +11286,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     ),
     React.createElement("div", {style:{display:"flex",flexDirection:"column",gap:4}},
       activeAlerts.map((al,ali)=>
-        React.createElement("div", {key:ali,style:{display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:12,padding:"6px 10px",background:al.level==="critical"?"rgba(240,76,91,0.08)":"rgba(245,158,11,0.07)",borderRadius:8}},
+        React.createElement("div", {key:ali,style:{display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:12,padding:"6px 10px",background:al.level==="critical"?"rgba(235,87,87,0.08)":"rgba(245,158,11,0.07)",borderRadius:8}},
           React.createElement("span", null, al.icon," ",al.msg),
           React.createElement("span", {style:{fontWeight:800,color:al.level==="critical"?C.red:C.amber,fontSize:10}},
             al.level==="critical"?"⚠ CRITIQUE":"→ Attention"
@@ -12427,8 +12454,8 @@ PROHIBITED: never "it depends" without immediately explaining what and how to de
   }, m.text)))), (typing || loading) && /*#__PURE__*/React.createElement("div", {
     style: { display:"flex", gap:10, alignItems:"flex-end", marginBottom:8 }
   },
-    /*#__PURE__*/React.createElement("div", { style:{ width:32, height:32, borderRadius:12, flexShrink:0, background:"linear-gradient(135deg,"+C.teal+",#0D9488)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 } }, "🤖"),
-    /*#__PURE__*/React.createElement("div", { style:{ background:"linear-gradient(135deg,rgba(18,205,184,0.12),rgba(13,148,136,0.08))", border:"1px solid rgba(18,205,184,0.25)", borderRadius:"16px 16px 16px 4px", padding:"12px 16px", display:"flex", gap:6, alignItems:"center" } },
+    /*#__PURE__*/React.createElement("div", { style:{ width:32, height:32, borderRadius:6, flexShrink:0, background:"linear-gradient(135deg,"+C.teal+",#0D9488)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 } }, "🤖"),
+    /*#__PURE__*/React.createElement("div", { style:{ background:"linear-gradient(135deg,rgba(77,182,160,0.12),rgba(13,148,136,0.08))", border:"1px solid rgba(77,182,160,0.25)", borderRadius:"16px 16px 16px 4px", padding:"12px 16px", display:"flex", gap:6, alignItems:"center" } },
       /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:C.teal, borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s infinite" } }),
       /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:C.teal, borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.2s infinite" } }),
       /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:C.teal, borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.4s infinite" } })
@@ -12590,7 +12617,7 @@ const SettingsView = ({
       ),
       /*#__PURE__*/React.createElement("div",{
         onClick:()=>onTheme(theme==="dark"?"light":"dark"),
-        style:{width:46,height:26,borderRadius:13,cursor:"pointer",transition:"background .2s",background:theme==="dark"?C.teal:"rgba(255,255,255,0.15)",position:"relative",border:`1px solid ${theme==="dark"?C.tealBorder:C.border}`}
+        style:{width:46,height:26,borderRadius:6,cursor:"pointer",transition:"background .2s",background:theme==="dark"?C.teal:"rgba(255,255,255,0.15)",position:"relative",border:`1px solid ${theme==="dark"?C.tealBorder:C.border}`}
       },/*#__PURE__*/React.createElement("div",{style:{position:"absolute",top:3,transition:"left .2s",left:theme==="dark"?22:3,width:20,height:20,borderRadius:"50%",background:"#fff",boxShadow:"0 2px 6px rgba(0,0,0,0.3)"}}))
     ),
     /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 0"}},
@@ -12601,7 +12628,7 @@ const SettingsView = ({
       /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:6}},
         ["fr","en","kr"].map(l=>/*#__PURE__*/React.createElement("div",{
           key:l,onClick:()=>onLang(l),
-          style:{padding:"6px 16px",borderRadius:20,fontSize:12,fontWeight:700,cursor:"pointer",
+          style:{padding:"6px 16px",borderRadius:16,fontSize:12,fontWeight:700,cursor:"pointer",
             background:lang===l?C.tealBg:"rgba(255,255,255,0.04)",
             border:`1px solid ${lang===l?C.tealBorder:C.border}`,
             color:lang===l?C.teal:C.muted,transition:"all .15s"}
@@ -12612,7 +12639,7 @@ const SettingsView = ({
     /*#__PURE__*/React.createElement("h3",{style:{fontSize:15,fontWeight:800,marginBottom:16}},T("currencyLabel",lang)),
     /*#__PURE__*/React.createElement("select",{
       value:currency,onChange:e=>onCurrency(e.target.value),
-      style:{width:"100%",padding:"10px 12px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,color:C.text,fontSize:13,cursor:"pointer",outline:"none"}
+      style:{width:"100%",padding:"10px 12px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:6,color:C.text,fontSize:13,cursor:"pointer",outline:"none"}
     },Object.entries(CURRENCIES).map(([code,{name}])=>
       /*#__PURE__*/React.createElement("option",{key:code,value:code},`${name} (${code})`)
     ))
@@ -12969,7 +12996,7 @@ const SettingsView = ({
     }
   })))),
   tab === "danger" && role === "manager" && /*#__PURE__*/React.createElement("div", {
-    style: {marginTop:20, padding:20, background:C.redBg, border:`1px solid ${C.redBorder}`, borderRadius:14}
+    style: {marginTop:20, padding:20, background:C.redBg, border:`1px solid ${C.redBorder}`, borderRadius:6}
   },
     /*#__PURE__*/React.createElement("h3", {style:{fontSize:15, fontWeight:800, color:C.red, marginBottom:8}},
       T("deleteAccount",lang)),
@@ -12982,16 +13009,16 @@ const SettingsView = ({
         value: deleteConfirm,
         onChange: e=>setDeleteConfirm(e.target.value),
         placeholder: T("typeDelete",lang),
-        style: {width:"100%", padding:"10px 12px", background:"rgba(240,76,91,0.05)", border:`1px solid ${C.redBorder}`, borderRadius:12, color:C.red, fontSize:13, boxSizing:"border-box"}
+        style: {width:"100%", padding:"10px 12px", background:"rgba(235,87,87,0.05)", border:`1px solid ${C.redBorder}`, borderRadius:6, color:C.red, fontSize:13, boxSizing:"border-box"}
       })
     ),
     /*#__PURE__*/React.createElement("button", {
       onClick: handleDeleteAccount,
       disabled: deleting || (deleteConfirm !== "SUPPRIMER" && deleteConfirm !== "DELETE"),
       className: "btn-base",
-      style: {padding:"10px 20px", borderRadius:12, fontSize:13,
+      style: {padding:"10px 20px", borderRadius:6, fontSize:13,
         cursor:(deleteConfirm==="SUPPRIMER"||deleteConfirm==="DELETE")?"pointer":"not-allowed",
-        background:(deleteConfirm==="SUPPRIMER"||deleteConfirm==="DELETE")?C.red:"rgba(240,76,91,0.2)",
+        background:(deleteConfirm==="SUPPRIMER"||deleteConfirm==="DELETE")?C.red:"rgba(235,87,87,0.2)",
         color:"#fff", border:"none",
         opacity:(deleteConfirm==="SUPPRIMER"||deleteConfirm==="DELETE")?1:0.4}
     }, deleting?"...":T("deleteAccountBtn",lang))
@@ -13165,7 +13192,7 @@ const TipsView = ({role="csm", lang="fr"}) => {
     className:"fade-in", style:{padding:"24px 28px",maxWidth:820}
   },
     /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:6}},
-      /*#__PURE__*/React.createElement("div",{style:{width:40,height:40,borderRadius:12,background:`linear-gradient(135deg,${C.teal},${C.purple})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}},"🎓"),
+      /*#__PURE__*/React.createElement("div",{style:{width:40,height:40,borderRadius:6,background:`linear-gradient(135deg,${C.teal},${C.purple})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}},"🎓"),
       /*#__PURE__*/React.createElement("div",null,
         /*#__PURE__*/React.createElement("h2",{style:{fontSize:20,fontWeight:900,letterSpacing:"-.4px"}},T("tipsTitle",lang)),
         /*#__PURE__*/React.createElement("p",{style:{fontSize:12,color:C.muted}},T("tipsDesc",lang))
@@ -13180,7 +13207,7 @@ const TipsView = ({role="csm", lang="fr"}) => {
     /*#__PURE__*/React.createElement("input",{
       placeholder:T("searchTips",lang),
       value:search,onChange:e=>setSearch(e.target.value),
-      style:{width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"10px 16px",color:C.text,fontSize:13,marginBottom:20,outline:"none"}
+      style:{width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:6,padding:"10px 16px",color:C.text,fontSize:13,marginBottom:20,outline:"none"}
     }),
     filtered.length===0&&/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"40px 0",color:C.muted}},T("noResults",lang)),
     filtered.map((cat,ci)=>/*#__PURE__*/React.createElement("div",{key:ci,style:{marginBottom:20}},
@@ -13301,7 +13328,7 @@ const CoachingReminderBanner = ({lang="fr", onClose}) => /*#__PURE__*/React.crea
   style:{
     background:"rgba(139,92,246,.1)",
     border:"1px solid rgba(139,92,246,.3)",
-    borderRadius:12,
+    borderRadius:6,
     padding:"12px 16px",
     margin:"0 0 14px 0",
     display:"flex",
@@ -13314,7 +13341,7 @@ const CoachingReminderBanner = ({lang="fr", onClose}) => /*#__PURE__*/React.crea
   /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10,flex:1}},
     /*#__PURE__*/React.createElement("span",{style:{fontSize:18}},"📅"),
     /*#__PURE__*/React.createElement("div",null,
-      /*#__PURE__*/React.createElement("div",{style:{fontWeight:700,color:"#B0A0D4",marginBottom:2}},
+      /*#__PURE__*/React.createElement("div",{style:{fontWeight:700,color:"#9B6BDF",marginBottom:2}},
         lang==="en" ? "Your monthly coaching session is available!" : lang==="kr" ? "월간 코칭 세션을 이용할 수 있습니다!" : T("tipsCoaching",lang)
       ),
       /*#__PURE__*/React.createElement("div",{style:{color:"#C4B5FD",fontSize:12}},
@@ -13336,7 +13363,7 @@ const CoachingReminderBanner = ({lang="fr", onClose}) => /*#__PURE__*/React.crea
     /*#__PURE__*/React.createElement("button",{
       onClick:onClose,
       style:{
-        background:"none",border:"none",color:"#B0A0D4",cursor:"pointer",
+        background:"none",border:"none",color:"#9B6BDF",cursor:"pointer",
         fontSize:18,lineHeight:1,padding:"0 2px"
       }
     },"×")
@@ -13347,7 +13374,7 @@ const SyncWarningBanner = ({lang="fr", onDismiss}) => /*#__PURE__*/React.createE
   style:{
     background:"rgba(251,191,36,.08)",
     border:"1px solid rgba(251,191,36,.2)",
-    borderRadius:12,
+    borderRadius:6,
     padding:"10px 16px",
     margin:"0 0 16px 0",
     display:"flex",
@@ -13452,7 +13479,7 @@ const FeedbackView = ({lang="fr"}) => {
           onMouseEnter:()=>setHover(n),
           onMouseLeave:()=>setHover(0),
           style:{
-            width:44,height:44,borderRadius:12,border:"1px solid",
+            width:44,height:44,borderRadius:6,border:"1px solid",
             borderColor:(hover||rating)>=n?C.tealBorder:C.border,
             background:(hover||rating)>=n?C.tealBg:"transparent",
             color:(hover||rating)>=n?C.teal:C.muted,
@@ -13475,7 +13502,7 @@ const FeedbackView = ({lang="fr"}) => {
           key:cat,
           onClick:()=>setCategory(cat),
           style:{
-            padding:"8px 14px",borderRadius:20,border:"1px solid",
+            padding:"8px 14px",borderRadius:16,border:"1px solid",
             borderColor:category===cat?C.tealBorder:C.border,
             background:category===cat?C.tealBg:"transparent",
             color:category===cat?C.teal:C.muted,
@@ -13495,7 +13522,7 @@ const FeedbackView = ({lang="fr"}) => {
         onChange:e=>setMessage(e.target.value),
         placeholder:lang==="en" ? "Describe what happened, what you expected, or what you'd like to see..." : lang==="kr" ? "무슨 일이 있었는지, 기대했던 것, 또는 바라는 것을 설명해주세요..." : "Décrivez ce qui s'est passé, ce que vous attendiez, ou ce que vous aimeriez voir...",
         rows:4,
-        style:{width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"12px 14px",color:C.text,fontSize:14,fontFamily:"inherit",outline:"none",resize:"vertical",lineHeight:1.6}
+        style:{width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:6,padding:"12px 14px",color:C.text,fontSize:14,fontFamily:"inherit",outline:"none",resize:"vertical",lineHeight:1.6}
       })
     ),
 
@@ -13509,7 +13536,7 @@ const FeedbackView = ({lang="fr"}) => {
         value:email,
         onChange:e=>setEmail(e.target.value),
         placeholder:"you@company.io",
-        style:{width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"11px 14px",color:C.text,fontSize:14,fontFamily:"inherit",outline:"none"}
+        style:{width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:6,padding:"11px 14px",color:C.text,fontSize:14,fontFamily:"inherit",outline:"none"}
       })
     ),
 
@@ -13672,7 +13699,7 @@ const App = () => {
       console.error("loadData error:", e);
       // Fallback : afficher l'app avec données vides plutôt que rester bloqué
       setAppData({
-        company: { id: null, name: T("myCompany",lang), plan: "Starter", arr: 0, churn: 0, nps: 0, color: "#7EC8B8" },
+        company: { id: null, name: T("myCompany",lang), plan: "Starter", arr: 0, churn: 0, nps: 0, color: "#4DB6A0" },
         accounts: [],
         roadmap: { id: null, phase: "Phase 1 — Launch", progress: 0, items: [] },
         wellbeing: { score: 70, burnout: "none", charge: 70, trend: "+0", alerts: [], team: [] }
@@ -13684,9 +13711,9 @@ const App = () => {
     try{localStorage.setItem("scalyo_theme",t);}catch(e){}
     Object.assign(C, t==="light"?C_LIGHT:C_DARK);
     document.documentElement.setAttribute("data-theme", t);
-    document.body.style.background = t==="light"?"#F5F0EB":"#1A1F2E";
-    document.body.style.color = t==="light"?"#1E293B":"#E8EDF5";
-    document.getElementById("root").style.background = t==="light"?"#F5F0EB":"#1A1F2E";
+    document.body.style.background = t==="light"?"#FFFFFF":"#191919";
+    document.body.style.color = t==="light"?"#37352F":"rgba(255,255,255,0.85)";
+    document.getElementById("root").style.background = t==="light"?"#FFFFFF":"#191919";
     setTheme(t);
   };
   const handleLang = l => { try{localStorage.setItem("scalyo_lang",l);}catch(e){} setLang(l); };
@@ -13909,7 +13936,7 @@ const App = () => {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      boxShadow: `0 4px 16px ${C.tealGlow}`,
+      boxShadow: "none",
       fontSize: 17
     }
   }, "\u26A1"), /*#__PURE__*/React.createElement("span", {
@@ -13927,7 +13954,9 @@ const App = () => {
       flex: 1,
       display: "flex",
       flexDirection: "column",
-      gap: 2
+      gap: 2,
+      overflowY: "auto",
+      overflowX: "hidden"
     }
   }, nav.map(({
     id,
