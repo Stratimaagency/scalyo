@@ -6,7 +6,7 @@
 <title>Scalyo — Customer Success Platform</title>
 <meta name="description" content="Pilotez votre équipe CS. Réduisez le churn. Développez l'ARR."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin/>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin/>
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js" as="script" crossorigin/>
@@ -17,71 +17,73 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body,#root{height:100%;background:#070D1A;font-family:'DM Sans',sans-serif;color:#E8EDF5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+html,body,#root{height:100%;background:#FAF7F2;font-family:'Inter',sans-serif;color:#2D2A26;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.09);border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.18)}
-/* === v6 STYLES === */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:10px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .18s ease;letter-spacing:-.2px}
-.btn-primary{background:linear-gradient(135deg,#12CDB8,#0EA5E9);color:#fff;box-shadow:0 4px 14px rgba(18,205,184,0.3)}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(18,205,184,0.4)}
-.btn-secondary{background:rgba(255,255,255,0.06);color:rgba(232,237,245,0.85);border:1px solid rgba(255,255,255,0.1)}
-.btn-secondary:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.18)}
-.btn-danger{background:rgba(240,76,91,0.1);color:#F04C5B;border:1px solid rgba(240,76,91,0.2)}
-.btn-danger:hover{background:rgba(240,76,91,0.18)}
-.btn-sm{padding:5px 12px;font-size:11.5px;border-radius:8px}
+::-webkit-scrollbar-thumb{background:rgba(45,42,38,0.12);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:rgba(45,42,38,0.22)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .3s ease;letter-spacing:-.2px}
+.btn-primary{background:linear-gradient(135deg,#7B9BAF,#6B8FAD);color:#fff;box-shadow:0 2px 8px rgba(123,155,175,0.15)}
+.btn-primary:hover{transform:translateY(-0.5px);box-shadow:0 4px 14px rgba(123,155,175,0.20)}
+.btn-secondary{background:rgba(45,42,38,0.04);color:rgba(45,42,38,0.65);border:1px solid rgba(45,42,38,0.10)}
+.btn-secondary:hover{background:rgba(45,42,38,0.07);border-color:rgba(45,42,38,0.16)}
+.btn-danger{background:rgba(196,121,110,0.06);color:#C4796E;border:1px solid rgba(196,121,110,0.16)}
+.btn-danger:hover{background:rgba(196,121,110,0.12)}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:10px}
 .csm-filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center;padding:0 2px}
-.csm-chip{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(232,237,245,0.7);transition:all .15s ease}
-.csm-chip:hover{background:rgba(18,205,184,0.1);border-color:rgba(18,205,184,0.25);color:#12CDB8}
-.csm-chip.active{background:rgba(18,205,184,0.14);border-color:rgba(18,205,184,0.4);color:#12CDB8;font-weight:700}
-.chat-input{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:11px 15px;color:#E8EDF5;font-size:13px;font-family:inherit;resize:none}
-.chat-input:focus{outline:none;border-color:rgba(18,205,184,0.35);background:rgba(18,205,184,0.04)}
-.chat-send-btn{background:linear-gradient(135deg,#12CDB8,#0EA5E9);border:none;border-radius:12px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;box-shadow:0 4px 14px rgba(18,205,184,0.28);transition:all .18s ease;flex-shrink:0}
-.chat-send-btn:hover{transform:scale(1.06);box-shadow:0 6px 20px rgba(18,205,184,0.42)}
-.chat-send-btn:disabled{opacity:.4;transform:none;cursor:not-allowed}
-.api-banner{padding:14px 18px;background:rgba(245,158,11,0.09);border:1px solid rgba(245,158,11,0.25);border-radius:12px;margin:12px 18px;display:flex;gap:12px;font-size:13px;align-items:flex-start}
-.tip-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 18px;margin-bottom:8px;cursor:pointer;transition:all .18s ease}
-.tip-card:hover{background:rgba(18,205,184,0.06);border-color:rgba(18,205,184,0.2)}
-.tip-card.open{border-color:rgba(18,205,184,0.3);background:rgba(18,205,184,0.05)}
-.quick-chip{padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(232,237,245,0.75);transition:all .15s ease;font-weight:500}
-.quick-chip:hover{background:rgba(18,205,184,0.1);border-color:rgba(18,205,184,0.28);color:#12CDB8}
+.csm-chip{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(45,42,38,0.10);background:rgba(45,42,38,0.03);color:rgba(45,42,38,0.50);transition:all .25s ease}
+.csm-chip:hover{background:rgba(123,155,175,0.06);border-color:rgba(123,155,175,0.18);color:#7B9BAF}
+.csm-chip.active{background:rgba(123,155,175,0.08);border-color:rgba(123,155,175,0.25);color:#7B9BAF;font-weight:700}
+.chat-input{flex:1;background:rgba(45,42,38,0.03);border:1px solid rgba(45,42,38,0.10);border-radius:14px;padding:12px 16px;color:#2D2A26;font-size:13px;font-family:inherit;resize:none}
+.chat-input:focus{outline:none;border-color:rgba(123,155,175,0.35);background:#FFFFFF}
+.chat-send-btn{background:linear-gradient(135deg,#7B9BAF,#6B8FAD);border:none;border-radius:14px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;box-shadow:0 2px 8px rgba(123,155,175,0.14);transition:all .3s ease;flex-shrink:0}
+.chat-send-btn:hover{transform:scale(1.03);box-shadow:0 4px 14px rgba(123,155,175,0.20)}
+.chat-send-btn:disabled{opacity:.35;transform:none;cursor:not-allowed}
+.api-banner{padding:14px 18px;background:rgba(196,162,78,0.05);border:1px solid rgba(196,162,78,0.15);border-radius:14px;margin:12px 18px;display:flex;gap:12px;font-size:13px;align-items:flex-start}
+.tip-card{background:rgba(45,42,38,0.02);border:1px solid rgba(45,42,38,0.07);border-radius:16px;padding:16px 18px;margin-bottom:8px;cursor:pointer;transition:all .3s ease}
+.tip-card:hover{background:rgba(123,155,175,0.03);border-color:rgba(123,155,175,0.14)}
+.tip-card.open{border-color:rgba(123,155,175,0.20);background:rgba(123,155,175,0.03)}
+.quick-chip{padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;background:rgba(45,42,38,0.03);border:1px solid rgba(45,42,38,0.10);color:rgba(45,42,38,0.50);transition:all .25s ease;font-weight:500}
+.quick-chip:hover{background:rgba(123,155,175,0.06);border-color:rgba(123,155,175,0.18);color:#7B9BAF}
 .toggle-switch{position:relative;width:46px;height:26px;display:inline-block;flex-shrink:0}
 .toggle-switch input{display:none}
-.toggle-slider{position:absolute;inset:0;border-radius:26px;background:rgba(255,255,255,0.1);cursor:pointer;transition:.3s}
-.toggle-slider::before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 2px 6px rgba(0,0,0,0.25)}
-input:checked+.toggle-slider{background:linear-gradient(135deg,#12CDB8,#0EA5E9)}
+.toggle-slider{position:absolute;inset:0;border-radius:26px;background:rgba(45,42,38,0.10);cursor:pointer;transition:.3s}
+.toggle-slider::before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(45,42,38,0.12)}
+input:checked+.toggle-slider{background:#7B9BAF}
 input:checked+.toggle-slider::before{transform:translateX(20px)}
-
-.nav-btn{transition:all .15s ease;border-radius:10px;cursor:pointer}
-.nav-btn:hover{background:rgba(255,255,255,0.05)!important}
-.row-item{transition:background .12s ease;cursor:pointer}
-.row-item:hover{background:rgba(18,205,184,0.04)!important}
-.card-lift{transition:transform .2s ease,border-color .2s ease}
-.card-lift:hover{transform:translateY(-2px);border-color:rgba(18,205,184,0.28)!important}
-.btn-base{transition:all .18s ease;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;font-weight:700;outline:none}
-.btn-base:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.08)}
-.btn-base:active:not(:disabled){transform:translateY(0);filter:brightness(0.95)}
-.btn-base:disabled{opacity:.38;cursor:not-allowed;transform:none!important;filter:none!important}
-.fade-in{animation:fadeIn .28s ease forwards}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideInR{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
-@keyframes slideUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.nav-btn{transition:all .25s ease;border-radius:12px;cursor:pointer}
+.nav-btn:hover{background:rgba(45,42,38,0.04)!important}
+.row-item{transition:background .2s ease;cursor:pointer}
+.row-item:hover{background:rgba(123,155,175,0.03)!important}
+.card-lift{transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease}
+.card-lift:hover{transform:translateY(-1px);border-color:rgba(123,155,175,0.14)!important;box-shadow:0 4px 14px rgba(45,42,38,0.05)}
+.btn-base{transition:all .3s ease;cursor:pointer;border:none;font-family:'Inter',sans-serif;font-weight:600;outline:none}
+.btn-base:hover:not(:disabled){transform:translateY(-0.5px);filter:brightness(1.03)}
+.btn-base:active:not(:disabled){transform:translateY(0);filter:brightness(0.97)}
+.btn-base:disabled{opacity:.35;cursor:not-allowed;transform:none!important;filter:none!important}
+.fade-in{animation:fadeIn .4s ease forwards}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideInR{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-.pulse{animation:pulse 2s infinite}
+.pulse{animation:pulse 2.5s infinite}
 .spin{animation:spin .7s linear infinite}
-input,select,textarea{outline:none;font-family:'DM Sans',sans-serif;-webkit-appearance:none;appearance:none}
-input:focus,select:focus,textarea:focus{border-color:rgba(18,205,184,0.5)!important;box-shadow:0 0 0 3px rgba(18,205,184,0.1)!important}
-.modal-overlay{position:fixed;inset:0;background:rgba(7,13,26,0.9);backdrop-filter:blur(12px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s ease}
-.modal-box{background:#0C1525;border:1px solid rgba(255,255,255,0.1);border-radius:22px;width:100%;animation:slideUp .25s ease;max-height:90vh;overflow-y:auto}
-.side-panel{animation:slideInR .22s ease}
-.tab-bar{display:flex;gap:4px;background:rgba(255,255,255,0.03);border-radius:12px;padding:4px}
-.tab-item{padding:7px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s ease;color:rgba(232,237,245,0.5);white-space:nowrap}
-.tab-item.active{background:#131E35;color:#E8EDF5;box-shadow:0 1px 6px rgba(0,0,0,0.3)}
-.tab-item:hover:not(.active){color:#E8EDF5;background:rgba(255,255,255,0.04)}
-.skeleton{background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
+input,select,textarea{outline:none;font-family:'Inter',sans-serif;-webkit-appearance:none;appearance:none}
+input:focus,select:focus,textarea:focus{border-color:rgba(123,155,175,0.35)!important;box-shadow:0 0 0 3px rgba(123,155,175,0.06)!important}
+.modal-overlay{position:fixed;inset:0;background:rgba(45,42,38,0.50);backdrop-filter:blur(16px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s ease}
+.modal-box{background:#FFFFFF;border:1px solid rgba(45,42,38,0.08);border-radius:22px;width:100%;animation:slideUp .35s ease;max-height:90vh;overflow-y:auto;box-shadow:0 12px 40px rgba(45,42,38,0.08)}
+.side-panel{animation:slideInR .3s ease}
+.tab-bar{display:flex;gap:4px;background:rgba(45,42,38,0.04);border-radius:14px;padding:4px}
+.tab-item{padding:8px 18px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:all .25s ease;color:rgba(45,42,38,0.40);white-space:nowrap}
+.tab-item.active{background:#FFFFFF;color:#2D2A26;box-shadow:0 1px 3px rgba(45,42,38,0.06)}
+.tab-item:hover:not(.active){color:#2D2A26;background:rgba(45,42,38,0.03)}
+.skeleton{background:linear-gradient(90deg,rgba(45,42,38,0.03) 25%,rgba(45,42,38,0.06) 50%,rgba(45,42,38,0.03) 75%);background-size:200% 100%;animation:shimmer 2s ease-in-out infinite;border-radius:10px}
+nav::-webkit-scrollbar{width:3px}
+nav::-webkit-scrollbar-track{background:transparent}
+nav::-webkit-scrollbar-thumb{background:rgba(45,42,38,0.08);border-radius:3px}
+nav::-webkit-scrollbar-thumb:hover{background:rgba(45,42,38,0.14)}
 </style>
 </head>
 <body>
@@ -109,48 +111,48 @@ const {
 
 // ─── Design tokens
 const C = {
-  bg: "#070D1A",
-  bg1: "#0C1525",
-  bg2: "#101E30",
-  bg3: "#162036",
-  surface: "rgba(255,255,255,0.04)",
-  surfaceHi: "rgba(255,255,255,0.07)",
-  border: "rgba(255,255,255,0.08)",
-  borderHi: "rgba(255,255,255,0.15)",
-  teal: "#12CDB8",
-  tealBg: "rgba(18,205,184,0.08)",
-  tealBorder: "rgba(18,205,184,0.22)",
-  tealGlow: "rgba(18,205,184,0.14)",
-  red: "#F04C5B",
-  redBg: "rgba(240,76,91,0.07)",
-  redBorder: "rgba(240,76,91,0.22)",
-  amber: "#F59E0B",
-  amberBg: "rgba(245,158,11,0.07)",
-  amberBorder: "rgba(245,158,11,0.25)",
-  green: "#34D399",
-  greenBg: "rgba(52,211,153,0.07)",
-  greenBorder: "rgba(52,211,153,0.22)",
-  purple: "#A78BFA",
-  purpleBg: "rgba(167,139,250,0.08)",
-  blue: "#60A5FA",
-  blueBg: "rgba(96,165,250,0.08)",
-  text: "#E8EDF5",
-  muted: "rgba(232,237,245,0.5)",
-  faint: "rgba(232,237,245,0.18)"
+  bg: "#1C1A17",
+  bg1: "#252320",
+  bg2: "#2D2B27",
+  bg3: "#35332E",
+  surface: "rgba(250,247,242,0.04)",
+  surfaceHi: "rgba(250,247,242,0.06)",
+  border: "rgba(250,247,242,0.08)",
+  borderHi: "rgba(250,247,242,0.14)",
+  teal: "#9BB8CC",
+  tealBg: "rgba(155,184,204,0.08)",
+  tealBorder: "rgba(155,184,204,0.20)",
+  tealGlow: "rgba(155,184,204,0.08)",
+  red: "#D4958A",
+  redBg: "rgba(212,149,138,0.08)",
+  redBorder: "rgba(212,149,138,0.18)",
+  amber: "#D4BA6E",
+  amberBg: "rgba(212,186,110,0.08)",
+  amberBorder: "rgba(212,186,110,0.20)",
+  green: "#9BB8A8",
+  greenBg: "rgba(155,184,168,0.08)",
+  greenBorder: "rgba(155,184,168,0.20)",
+  purple: "#B8A8D4",
+  purpleBg: "rgba(184,168,212,0.08)",
+  blue: "#8BA8C4",
+  blueBg: "rgba(139,168,196,0.07)",
+  text: "#E8E4DC",
+  muted: "rgba(232,228,220,0.50)",
+  faint: "rgba(232,228,220,0.14)"
 };
 // ══ THEME SYSTEM ══
 const C_DARK = Object.assign({},C);
 const C_LIGHT = {
-  bg:"#F0F4F8",bg1:"#FFFFFF",bg2:"#E8EEF4",bg3:"#DDE5EF",
-  surface:"rgba(0,0,0,0.03)",surfaceHi:"rgba(0,0,0,0.055)",
-  border:"rgba(0,0,0,0.09)",borderHi:"rgba(0,0,0,0.18)",
-  teal:"#0D9488",tealBg:"rgba(13,148,136,0.1)",tealBorder:"rgba(13,148,136,0.3)",tealGlow:"rgba(13,148,136,0.18)",
-  red:"#DC2626",redBg:"rgba(220,38,38,0.08)",redBorder:"rgba(220,38,38,0.25)",
-  amber:"#D97706",amberBg:"rgba(217,119,6,0.08)",amberBorder:"rgba(217,119,6,0.28)",
-  green:"#059669",greenBg:"rgba(5,150,105,0.08)",greenBorder:"rgba(5,150,105,0.25)",
-  purple:"#7C3AED",purpleBg:"rgba(124,58,237,0.1)",
-  blue:"#2563EB",blueBg:"rgba(37,99,235,0.09)",
-  text:"#1E293B",muted:"rgba(30,41,59,0.55)",faint:"rgba(30,41,59,0.16)"
+  bg:"#FAF7F2",bg1:"#FFFFFF",bg2:"#F3EFE8",bg3:"#ECE7DF",
+  surface:"rgba(45,42,38,0.03)",surfaceHi:"rgba(45,42,38,0.05)",
+  border:"rgba(45,42,38,0.10)",borderHi:"rgba(45,42,38,0.16)",
+  teal:"#7B9BAF",tealBg:"rgba(123,155,175,0.07)",tealBorder:"rgba(123,155,175,0.20)",tealGlow:"rgba(123,155,175,0.08)",
+  red:"#C4796E",redBg:"rgba(196,121,110,0.06)",redBorder:"rgba(196,121,110,0.18)",
+  amber:"#C4A24E",amberBg:"rgba(196,162,78,0.06)",amberBorder:"rgba(196,162,78,0.18)",
+  green:"#7D9B8A",greenBg:"rgba(125,155,138,0.06)",greenBorder:"rgba(125,155,138,0.18)",
+  purple:"#9B8FB8",purpleBg:"rgba(155,143,184,0.07)",
+  blue:"#6B8FAD",blueBg:"rgba(107,143,173,0.07)",
+  text:"#2D2A26",muted:"rgba(45,42,38,0.50)",faint:"rgba(45,42,38,0.14)"
 };
 const I18N={
   fr:{
@@ -295,7 +297,7 @@ const Spinner = ({
     width: size,
     height: size,
     borderRadius: "50%",
-    border: `2px solid rgba(255,255,255,0.1)`,
+    border: `2px solid ${C.border}`,
     borderTop: `2px solid ${color}`,
     flexShrink: 0
   }
@@ -316,7 +318,7 @@ const Loader = ({
   style: {
     width: 44,
     height: 44,
-    background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
+    background: `linear-gradient(135deg,${C.teal},${C.blue})`,
     borderRadius: 13,
     display: "flex",
     alignItems: "center",
@@ -352,7 +354,7 @@ const Avatar = ({
       fontWeight: 800,
       color: color,
       flexShrink: 0,
-      fontFamily: "'DM Mono',monospace"
+      fontFamily: "'JetBrains Mono',monospace"
     }
   }, init);
 };
@@ -400,7 +402,7 @@ const HealthBar = ({
     style: {
       height: h,
       borderRadius: h,
-      background: "rgba(255,255,255,0.06)",
+      background: C.surfaceHi,
       overflow: "hidden",
       position: "relative"
     }
@@ -485,7 +487,7 @@ const KpiCard = ({
     color: color,
     letterSpacing: "-0.5px",
     marginBottom: 4,
-    fontFamily: "'DM Mono',monospace"
+    fontFamily: "'JetBrains Mono',monospace"
   }
 }, value), sub && /*#__PURE__*/React.createElement("div", {
   style: {
@@ -535,8 +537,8 @@ const EmptyState = ({
     padding: "10px 24px",
     borderRadius: 10,
     fontSize: 13,
-    background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-    color: "#070D1A"
+    background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+    color: "#FFFFFF"
   }
 }, action));
 
@@ -832,7 +834,7 @@ const LoginScreen = ({
     className: "fade-in",
     style: {
       minHeight: "100vh",
-      background: `radial-gradient(ellipse 80% 55% at 50% -8%,rgba(18,205,184,0.13) 0%,transparent 62%),${C.bg}`,
+      background: C.bg,
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -850,13 +852,13 @@ const LoginScreen = ({
     style: {
       width: 48,
       height: 48,
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
       borderRadius: 14,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       fontSize: 24,
-      boxShadow: `0 10px 36px ${C.tealGlow}`
+      boxShadow: `0 3px 12px ${C.tealGlow}`
     }
   }, "\u26A1"), /*#__PURE__*/React.createElement("span", {
     style: {
@@ -893,7 +895,7 @@ const LoginScreen = ({
       padding: 36,
       width: "100%",
       maxWidth: 440,
-      boxShadow: "0 48px 120px rgba(0,0,0,0.55)"
+      boxShadow: "0 4px 20px rgba(45,42,38,0.06)"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "tab-bar",
@@ -1040,9 +1042,9 @@ const LoginScreen = ({
       padding: "14px",
       borderRadius: 11,
       fontSize: 15,
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-      color: "#070D1A",
-      boxShadow: `0 6px 24px ${C.tealGlow}`
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      color: "#FFFFFF",
+      boxShadow: `0 2px 8px ${C.tealGlow}`
     }
   }, loading ? /*#__PURE__*/React.createElement("span", {
     style: {
@@ -1053,7 +1055,7 @@ const LoginScreen = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 16,
-    color: "#070D1A"
+    color: "#FFFFFF"
   }), T("signingIn", lang)) : T("loginBtn", lang))), tab === "signup" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h2", {
     style: {
       fontSize: 20,
@@ -1179,9 +1181,9 @@ const LoginScreen = ({
       padding: "14px",
       borderRadius: 11,
       fontSize: 15,
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-      color: "#070D1A",
-      boxShadow: `0 6px 24px ${C.tealGlow}`
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      color: "#FFFFFF",
+      boxShadow: `0 2px 8px ${C.tealGlow}`
     }
   }, loading ? /*#__PURE__*/React.createElement("span", {
     style: {
@@ -1192,7 +1194,7 @@ const LoginScreen = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 16,
-    color: "#070D1A"
+    color: "#FFFFFF"
   }), T("creatingBtn", lang)) : T("createBtn", lang)), /*#__PURE__*/React.createElement("p", {
     style: {
       fontSize: 11,
@@ -1309,8 +1311,8 @@ const UpgradeModal = ({
       top: -10,
       left: "50%",
       transform: "translateX(-50%)",
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-      color: "#070D1A",
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      color: "#FFFFFF",
       fontSize: 10,
       fontWeight: 800,
       padding: "3px 12px",
@@ -1348,7 +1350,7 @@ const UpgradeModal = ({
       fontSize: 28,
       fontWeight: 900,
       color: p.highlight ? C.teal : C.text,
-      fontFamily: "'DM Mono',monospace"
+      fontFamily: "'JetBrains Mono',monospace"
     }
   }, p.price), /*#__PURE__*/React.createElement("span", {
     style: {
@@ -1397,8 +1399,8 @@ const UpgradeModal = ({
       fontSize: 13,
       fontWeight: 700,
       textDecoration: "none",
-      background: p.highlight ? `linear-gradient(135deg,${C.teal},#0EA5E9)` : C.surfaceHi,
-      color: p.highlight ? "#070D1A" : C.text,
+      background: p.highlight ? `linear-gradient(135deg,${C.teal},${C.blue})` : C.surfaceHi,
+      color: p.highlight ? "#FFFFFF" : C.text,
       border: p.highlight ? "none" : `1px solid ${C.border}`
     }
   }, "Choisir ", p.name, " \u2192") : /*#__PURE__*/React.createElement("div", {
@@ -1647,8 +1649,8 @@ const ImportModal = ({
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      background: step === s ? C.teal : ["upload", "map", "preview"].indexOf(step) > i ? C.green : "rgba(255,255,255,0.1)",
-      color: step === s || ["upload", "map", "preview"].indexOf(step) > i ? "#070D1A" : C.muted
+      background: step === s ? C.teal : ["upload", "map", "preview"].indexOf(step) > i ? C.green : C.border,
+      color: step === s || ["upload", "map", "preview"].indexOf(step) > i ? "#FFFFFF" : C.muted
     }
   }, ["upload", "map", "preview"].indexOf(step) > i ? "✓" : i + 1), /*#__PURE__*/React.createElement("span", {
     style: {
@@ -1864,8 +1866,8 @@ const ImportModal = ({
       flex: 2,
       padding: "12px",
       borderRadius: 10,
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-      color: "#070D1A",
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      color: "#FFFFFF",
       fontSize: 13
     }
   }, "Pr\xE9visualiser & \xE9diter \u2192"))), step === "preview" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -2020,8 +2022,8 @@ const ImportModal = ({
       padding: "12px",
       borderRadius: 11,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-      color: "#070D1A"
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      color: "#FFFFFF"
     }
   }, importing ? /*#__PURE__*/React.createElement("span", {
     style: {
@@ -2032,7 +2034,7 @@ const ImportModal = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 14,
-    color: "#070D1A"
+    color: "#FFFFFF"
   }), "Import en cours...") : `⬆ Importer ${editableRows.filter(r => r.name?.trim()).length} compte${editableRows.filter(r => r.name?.trim()).length > 1 ? "s" : ""} →`))))));
 };
 
@@ -2171,7 +2173,7 @@ const DashboardView = ({
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
-      background: "rgba(240,76,91,0.06)",
+      background: C.redBg,
       borderRadius: 10,
       padding: "10px 14px"
     }
@@ -2254,7 +2256,7 @@ const DashboardView = ({
       fontSize: 28,
       fontWeight: 900,
       color: C.teal,
-      fontFamily: "'DM Mono',monospace"
+      fontFamily: "'JetBrains Mono',monospace"
     }
   }, rm?.progress || 0, "%")), /*#__PURE__*/React.createElement("button", {
     onClick: () => onNavigate("roadmap"),
@@ -2353,7 +2355,7 @@ const DashboardView = ({
     style: {
       fontSize: 28,
       fontWeight: 900,
-      fontFamily: "'DM Mono',monospace",
+      fontFamily: "'JetBrains Mono',monospace",
       color: (wb?.score || 70) >= 70 ? C.green : (wb?.score || 70) >= 50 ? C.amber : C.red
     }
   }, wb?.score || 70), /*#__PURE__*/React.createElement("div", {
@@ -2658,7 +2660,7 @@ const AccountTodoPanel = ({
   }, t.done && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12,
-      color: "#070D1A",
+      color: "#FFFFFF",
       fontWeight: 900
     }
   }, "\u2713")), /*#__PURE__*/React.createElement("span", {
@@ -2741,7 +2743,7 @@ const AccountTodoPanel = ({
   }, t.done && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12,
-      color: "#070D1A",
+      color: "#FFFFFF",
       fontWeight: 900
     }
   }, "\u2713")), /*#__PURE__*/React.createElement("span", {
@@ -2822,8 +2824,8 @@ const AccountTodoPanel = ({
     style: {
       padding: "9px 14px",
       borderRadius: 9,
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-      color: "#070D1A",
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      color: "#FFFFFF",
       fontSize: 13
     }
   }, "+")));
@@ -2997,8 +2999,8 @@ const AddAccountModal = ({
       padding: "12px",
       borderRadius: 10,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-      color: "#070D1A"
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      color: "#FFFFFF"
     }
   }, saving ? /*#__PURE__*/React.createElement("span", {
     style: {
@@ -3009,7 +3011,7 @@ const AddAccountModal = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 14,
-    color: "#070D1A"
+    color: "#FFFFFF"
   }), "Ajout...") : "Créer le compte →")))));
 };
 
@@ -3149,7 +3151,7 @@ const AccountDetailPanel = ({
       fontSize: 15,
       fontWeight: 900,
       color: C.teal,
-      fontFamily: "'DM Mono',monospace"
+      fontFamily: "'JetBrains Mono',monospace"
     }
   }, (sel.mrr || 0) >= 10000 ? `${((sel.mrr || 0) / 1000).toFixed(0)}K€` : `${((sel.mrr || 0) / 1000).toFixed(1)}K€`), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3168,7 +3170,7 @@ const AccountDetailPanel = ({
     style: {
       fontSize: 15,
       fontWeight: 900,
-      fontFamily: "'DM Mono',monospace"
+      fontFamily: "'JetBrains Mono',monospace"
     }
   }, sel.health || 70), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3387,8 +3389,8 @@ const EditAccountPanel = ({
       padding: "11px",
       borderRadius: 10,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-      color: "#070D1A"
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      color: "#FFFFFF"
     }
   }, saving ? "Sauvegarde..." : "💾 Sauvegarder"));
 };
@@ -3846,7 +3848,7 @@ const RoadmapView = ({
       fontSize: 38,
       fontWeight: 900,
       color: C.teal,
-      fontFamily: "'DM Mono',monospace",
+      fontFamily: "'JetBrains Mono',monospace",
       lineHeight: 1
     }
   }, progress, "%"), /*#__PURE__*/React.createElement("div", {
@@ -3891,7 +3893,7 @@ const RoadmapView = ({
     style: {
       fontSize: 18,
       fontWeight: 900,
-      fontFamily: "'DM Mono',monospace",
+      fontFamily: "'JetBrains Mono',monospace",
       color: d === total && total > 0 ? C.green : C.text
     }
   }, d, "/", total), /*#__PURE__*/React.createElement(HealthBar, {
@@ -3978,7 +3980,7 @@ const RoadmapView = ({
     }, item.done && /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 12,
-        color: "#070D1A",
+        color: "#FFFFFF",
         fontWeight: 900
       }
     }, "\u2713")), /*#__PURE__*/React.createElement("div", {
@@ -4114,8 +4116,8 @@ const RoadmapView = ({
     style: {
       padding: "7px 18px",
       borderRadius: 9,
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-      color: "#070D1A",
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      color: "#FFFFFF",
       fontSize: 12
     }
   }, "Ajouter"), /*#__PURE__*/React.createElement("button", {
@@ -4528,13 +4530,13 @@ const WellbeingView = ({
     style: {
       width: 42,
       height: 42,
-      background: `linear-gradient(135deg,#10B981,#059669)`,
+      background: `linear-gradient(135deg,${C.green},#6A8F7C)`,
       borderRadius: 13,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       fontSize: 20,
-      boxShadow: "0 4px 14px rgba(16,185,129,0.3)"
+      boxShadow: "0 2px 8px rgba(125,155,138,0.14)"
     }
   }, "\uD83D\uDC9A"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4586,7 +4588,7 @@ const WellbeingView = ({
       height: 32,
       borderRadius: 10,
       flexShrink: 0,
-      background: "linear-gradient(135deg,#10B981,#059669)",
+      background: "linear-gradient(135deg,${C.green},#6A8F7C)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -4616,7 +4618,7 @@ const WellbeingView = ({
       width: 32,
       height: 32,
       borderRadius: 10,
-      background: "linear-gradient(135deg,#10B981,#059669)",
+      background: "linear-gradient(135deg,${C.green},#6A8F7C)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -4688,7 +4690,7 @@ const WellbeingView = ({
     style: {
       padding: "12px 18px",
       borderRadius: 11,
-      background: "linear-gradient(135deg,#10B981,#059669)",
+      background: "linear-gradient(135deg,${C.green},#6A8F7C)",
       color: "#fff",
       fontSize: 14
     }
@@ -5264,7 +5266,7 @@ const ResourcesView = ({
     onClick: r.locked ? onUpgrade : () => RESOURCE_CONTENT[r.title] ? setSelectedResource(r) : null,
     className: "card-lift",
     style: {
-      background: r.locked ? "rgba(255,255,255,0.02)" : C.surface,
+      background: r.locked ? C.surface : C.surface,
       border: `1px solid ${C.border}`,
       borderRadius: 14,
       padding: 20,
@@ -5277,7 +5279,7 @@ const ResourcesView = ({
     style: {
       position: "absolute",
       inset: 0,
-      background: "rgba(7,13,26,0.6)",
+      background: "rgba(45,42,38,0.40)",
       borderRadius: 14,
       display: "flex",
       flexDirection: "column",
@@ -5667,7 +5669,7 @@ const EmailStudioView = ({
       padding: "14px",
       color: C.text,
       fontSize: 13,
-      fontFamily: "'DM Mono',monospace",
+      fontFamily: "'JetBrains Mono',monospace",
       resize: "vertical",
       lineHeight: 1.7
     }
@@ -5773,7 +5775,7 @@ const KPIView = ({
     }, /*#__PURE__*/React.createElement("path", {
       d: `M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`,
       fill: "none",
-      stroke: "rgba(255,255,255,0.06)",
+      stroke: C.surfaceHi,
       strokeWidth: 7
     }), pct > 0.01 && /*#__PURE__*/React.createElement("path", {
       d: `M ${cx - r} ${cy} A ${r} ${r} 0 ${large} 1 ${ep.x} ${ep.y}`,
@@ -5793,7 +5795,7 @@ const KPIView = ({
       y: cy + 10,
       textAnchor: "middle",
       fontSize: 6,
-      fill: "rgba(255,255,255,0.4)"
+      fill: C.muted
     }, label));
   };
 
@@ -5823,20 +5825,20 @@ const KPIView = ({
         width: bw,
         height: Math.max(bh, 1),
         rx: 2,
-        fill: d.hi ? C.teal : "rgba(18,205,184,0.22)",
+        fill: d.hi ? C.teal : C.tealBg,
         opacity: 0.95
       }), /*#__PURE__*/React.createElement("text", {
         x: x + bw / 2,
         y: h - 5,
         textAnchor: "middle",
         fontSize: 5.5,
-        fill: "rgba(255,255,255,0.4)"
+        fill: C.muted
       }, d.l), d.v > 0 && /*#__PURE__*/React.createElement("text", {
         x: x + bw / 2,
         y: h - 21 - bh,
         textAnchor: "middle",
         fontSize: 5.5,
-        fill: d.hi ? C.teal : "rgba(255,255,255,0.5)",
+        fill: d.hi ? C.teal : C.muted,
         fontWeight: "bold"
       }, d.v));
     }));
@@ -5919,7 +5921,7 @@ const KPIView = ({
       color: C.text,
       fontSize: 16,
       fontWeight: 900,
-      fontFamily: "'DM Mono',monospace"
+      fontFamily: "'JetBrains Mono',monospace"
     }
   }), unit && /*#__PURE__*/React.createElement("span", {
     style: {
@@ -6006,8 +6008,8 @@ const KPIView = ({
       borderRadius: 9,
       fontWeight: 800,
       fontSize: 13,
-      background: saved ? C.green : `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-      color: "#070D1A",
+      background: saved ? C.green : `linear-gradient(135deg,${C.teal},${C.blue})`,
+      color: "#FFFFFF",
       transition: "all 0.2s"
     }
   }, saved ? "✓ Sauvegardé" : "Sauvegarder"))), /*#__PURE__*/React.createElement("div", {
@@ -6252,7 +6254,7 @@ const KPIView = ({
       fontSize: 15,
       fontWeight: 900,
       color: m.color,
-      fontFamily: "'DM Mono',monospace"
+      fontFamily: "'JetBrains Mono',monospace"
     }
   }, m.val))))))), tab === "satisfaction" && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -6552,7 +6554,7 @@ const KPIView = ({
       fontSize: 15,
       fontWeight: 900,
       color: m.color,
-      fontFamily: "'DM Mono',monospace"
+      fontFamily: "'JetBrains Mono',monospace"
     }
   }, m.val))))), /*#__PURE__*/React.createElement(Card, {
     style: {
@@ -6718,7 +6720,7 @@ const KPIView = ({
     style: {
       fontWeight: 800,
       color: C.text,
-      fontFamily: "'DM Mono',monospace"
+      fontFamily: "'JetBrains Mono',monospace"
     }
   }, item.val), item.status && /*#__PURE__*/React.createElement(Tag, {
     color: item.status.startsWith("✓") ? C.green : item.status.startsWith("⚠") ? C.red : C.amber,
@@ -6806,7 +6808,7 @@ const formatMsg = text => {
           fontSize: 13,
           margin: "3px 0",
           color: C.muted,
-          fontFamily: "'DM Mono',monospace"
+          fontFamily: "'JetBrains Mono',monospace"
         }
       }, line);
     }
@@ -7057,8 +7059,8 @@ const CoachIAView = ({apiKey="", lang="fr", onGoSettings=()=>{}}) => {
     style: {
       padding: "12px 20px",
       borderRadius: 11,
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-      color: "#070D1A",
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      color: "#FFFFFF",
       fontSize: 14
     }
   }, "\u2192")));
@@ -7143,8 +7145,8 @@ const SettingsView = ({
       ),
       /*#__PURE__*/React.createElement("div",{
         onClick:()=>onTheme(theme==="dark"?"light":"dark"),
-        style:{width:46,height:26,borderRadius:13,cursor:"pointer",transition:"background .2s",background:theme==="dark"?C.teal:"rgba(255,255,255,0.15)",position:"relative",border:`1px solid ${theme==="dark"?C.tealBorder:C.border}`}
-      },/*#__PURE__*/React.createElement("div",{style:{position:"absolute",top:3,transition:"left .2s",left:theme==="dark"?22:3,width:20,height:20,borderRadius:"50%",background:"#fff",boxShadow:"0 2px 6px rgba(0,0,0,0.3)"}}))
+        style:{width:46,height:26,borderRadius:13,cursor:"pointer",transition:"background .2s",background:theme==="dark"?C.teal:"rgba(45,42,38,0.10)",position:"relative",border:`1px solid ${theme==="dark"?C.tealBorder:C.border}`}
+      },/*#__PURE__*/React.createElement("div",{style:{position:"absolute",top:3,transition:"left .2s",left:theme==="dark"?22:3,width:20,height:20,borderRadius:"50%",background:"#fff",boxShadow:"0 1px 3px rgba(45,42,38,0.08)"}}))
     ),
     /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 0"}},
       /*#__PURE__*/React.createElement("div",null,
@@ -7155,7 +7157,7 @@ const SettingsView = ({
         ["fr","en","kr"].map(l=>/*#__PURE__*/React.createElement("div",{
           key:l,onClick:()=>onLang(l),
           style:{padding:"6px 16px",borderRadius:20,fontSize:12,fontWeight:700,cursor:"pointer",
-            background:lang===l?C.tealBg:"rgba(255,255,255,0.04)",
+            background:lang===l?C.tealBg:C.surface,
             border:`1px solid ${lang===l?C.tealBorder:C.border}`,
             color:lang===l?C.teal:C.muted,transition:"all .15s"}
         },l==="fr"?"🇫🇷 FR":l==="en"?"🇬🇧 EN":"🇰🇷 KR"))
@@ -7170,7 +7172,7 @@ const SettingsView = ({
         type:"password",value:localApiKey,
         onChange:e=>setLocalApiKey(e.target.value),
         placeholder:"sk-ant-api03-...",
-        style:{flex:1,background:C.surface,border:`1px solid ${localApiKey?C.tealBorder:C.border}`,borderRadius:10,padding:"10px 14px",color:C.text,fontSize:13,fontFamily:"'DM Mono',monospace",outline:"none"}
+        style:{flex:1,background:C.surface,border:`1px solid ${localApiKey?C.tealBorder:C.border}`,borderRadius:10,padding:"10px 14px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}
       }),
       /*#__PURE__*/React.createElement("button",{
         className:"btn btn-primary",
@@ -7221,7 +7223,7 @@ const SettingsView = ({
     readOnly: true,
     style: {
       width: "100%",
-      background: "rgba(255,255,255,0.02)",
+      background: C.surface,
       border: `1px solid ${C.border}`,
       borderRadius: 10,
       padding: "11px 14px",
@@ -7249,8 +7251,8 @@ const SettingsView = ({
       padding: "10px 24px",
       borderRadius: 10,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-      color: "#070D1A"
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      color: "#FFFFFF"
     }
   }, saving ? /*#__PURE__*/React.createElement("span", {
     style: {
@@ -7260,7 +7262,7 @@ const SettingsView = ({
     }
   }, /*#__PURE__*/React.createElement(Spinner, {
     size: 14,
-    color: "#070D1A"
+    color: "#FFFFFF"
   }), "Sauvegarde...") : "Sauvegarder"), saved && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 13,
@@ -7319,8 +7321,8 @@ const SettingsView = ({
       padding: "11px",
       borderRadius: 10,
       fontSize: 13,
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-      color: "#070D1A"
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      color: "#FFFFFF"
     }
   }, "Passer \xE0 Growth pour inviter votre \xE9quipe \u2192"))), tab === "billing" && role === "manager" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Card, {
     style: {
@@ -7401,7 +7403,7 @@ const SettingsView = ({
       left: "50%",
       transform: "translateX(-50%)",
       background: C.teal,
-      color: "#070D1A",
+      color: "#FFFFFF",
       fontSize: 9,
       fontWeight: 800,
       padding: "3px 10px",
@@ -7418,7 +7420,7 @@ const SettingsView = ({
     style: {
       fontSize: 24,
       fontWeight: 900,
-      fontFamily: "'DM Mono',monospace",
+      fontFamily: "'JetBrains Mono',monospace",
       color: p.highlight ? C.teal : C.text,
       marginBottom: 2
     }
@@ -7439,8 +7441,8 @@ const SettingsView = ({
       fontSize: 12,
       fontWeight: 700,
       textDecoration: "none",
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
-      color: "#070D1A"
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
+      color: "#FFFFFF"
     }
   }, "Passer \xE0 ", p.name) : /*#__PURE__*/React.createElement("div", {
     style: {
@@ -7511,7 +7513,7 @@ const SettingsView = ({
       borderRadius: 13,
       cursor: "pointer",
       transition: "background .2s",
-      background: notifs[key] ? C.teal : "rgba(255,255,255,0.1)",
+      background: notifs[key] ? C.teal : C.border,
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -7524,7 +7526,7 @@ const SettingsView = ({
       height: 20,
       borderRadius: "50%",
       background: "#fff",
-      boxShadow: "0 1px 4px rgba(0,0,0,0.3)"
+      boxShadow: "0 1px 3px rgba(45,42,38,0.08)"
     }
   }))))));
 };
@@ -7879,7 +7881,7 @@ const App = () => {
   const [dataLoading, setDataLoading] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [authReady, setAuthReady] = useState(false);
-  const [theme, setTheme] = useState(()=>{ try{return localStorage.getItem("scalyo_theme")||"dark";}catch(e){return "dark";}});
+  const [theme, setTheme] = useState(()=>{ try{return localStorage.getItem("scalyo_theme")||"light";}catch(e){return "light";}});
   const [lang, setLang] = useState(()=>{ try{return localStorage.getItem("scalyo_lang")||"fr";}catch(e){return "fr";}});
   const [apiKey, setApiKey] = useState(()=>{ try{return localStorage.getItem("scalyo_api")||"";}catch(e){return "";}});
   const [sidebarCollapsed, setSidebarCollapsed] = useState(()=>{ try{return localStorage.getItem("scalyo_sidebar")==="collapsed";}catch(e){return false;}});
@@ -8005,9 +8007,9 @@ const App = () => {
   const handleTheme = t => {
     try{localStorage.setItem("scalyo_theme",t);}catch(e){}
     Object.assign(C, t==="light"?C_LIGHT:C_DARK);
-    document.body.style.background = t==="light"?"#F0F4F8":"#070D1A";
-    document.body.style.color = t==="light"?"#1E293B":"#E8EDF5";
-    document.getElementById("root").style.background = t==="light"?"#F0F4F8":"#070D1A";
+    document.body.style.background = t==="light"?"#FAF7F2":"#1C1A17";
+    document.body.style.color = t==="light"?"#2D2A26":"#E8E4DC";
+    document.getElementById("root").style.background = t==="light"?"#FAF7F2":"#1C1A17";
     setTheme(t);
   };
   const handleLang = l => { try{localStorage.setItem("scalyo_lang",l);}catch(e){} setLang(l); };
@@ -8175,7 +8177,7 @@ const App = () => {
       padding: sidebarCollapsed ? "16px 6px" : "16px 10px",
       flexShrink: 0,
       background: C.bg1,
-      boxShadow: "1px 0 12px rgba(0,0,0,0.12)",
+      boxShadow: "1px 0 6px rgba(45,42,38,0.03)",
       transition: "width .25s ease, padding .25s ease",
       overflow: "hidden"
     }
@@ -8192,7 +8194,7 @@ const App = () => {
     style: {
       width: 34,
       height: 34,
-      background: `linear-gradient(135deg,${C.teal},#0EA5E9)`,
+      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
       borderRadius: 10,
       display: "flex",
       alignItems: "center",
