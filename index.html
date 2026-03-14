@@ -84,6 +84,16 @@ nav::-webkit-scrollbar{width:3px}
 nav::-webkit-scrollbar-track{background:transparent}
 nav::-webkit-scrollbar-thumb{background:rgba(45,42,38,0.08);border-radius:3px}
 nav::-webkit-scrollbar-thumb:hover{background:rgba(45,42,38,0.14)}
+.notion-h1{font-size:40px;font-weight:700;letter-spacing:-1.5px;line-height:1.15;color:#2D2A26}
+.notion-h2{font-size:28px;font-weight:700;letter-spacing:-0.8px;line-height:1.25;color:#2D2A26}
+.notion-h3{font-size:20px;font-weight:600;letter-spacing:-0.4px;line-height:1.35;color:#2D2A26}
+.notion-body{font-size:15px;font-weight:400;line-height:1.7;color:rgba(45,42,38,0.70)}
+.notion-caption{font-size:13px;font-weight:400;line-height:1.6;color:rgba(45,42,38,0.45)}
+.notion-label{font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:rgba(45,42,38,0.40)}
+.landing-section{max-width:1080px;margin:0 auto;padding:0 32px}
+.landing-feature-card{background:#FFFFFF;border:1px solid rgba(45,42,38,0.08);border-radius:16px;padding:28px 24px;transition:all .3s ease}
+.landing-feature-card:hover{border-color:rgba(123,155,175,0.20);box-shadow:0 4px 20px rgba(45,42,38,0.05);transform:translateY(-2px)}
+@media(max-width:768px){.notion-h1{font-size:28px}.landing-section{padding:0 20px}}
 </style>
 </head>
 <body>
@@ -184,7 +194,22 @@ const I18N={
     kanbanTodo:"À faire",kanbanInProgress:"En cours",kanbanDone:"Terminé",
     kanbanAddTask:"Ajouter une tâche",kanbanTaskTitle:"Titre",kanbanDesc:"Description (optionnel)",
     kanbanPriority:"Priorité",kanbanDueDate:"Échéance",kanbanHigh:"Haute",kanbanMedium:"Moyenne",kanbanLow:"Basse",
-    kanbanNoTasks:"Aucune tâche",kanbanMoveTo:"Déplacer vers",kanbanTasks:"tâches"
+    kanbanNoTasks:"Aucune tâche",kanbanMoveTo:"Déplacer vers",kanbanTasks:"tâches",
+    process:"Process",processTitle:"Process & Workflows",processDesc:"Gérez vos processus CS, SOPs et workflows d'équipe.",
+    processAdd:"Nouveau process",processName:"Nom du process",processSteps:"Étapes",processOwner:"Responsable",
+    processStatus:"Statut",processDraft:"Brouillon",processActive:"Actif",processArchived:"Archivé",
+    processNoItems:"Aucun process créé",processDelete:"Supprimer",processEdit:"Modifier",
+    landingHero:"La plateforme Customer Success pensée pour les équipes francophones",
+    landingSubHero:"Pilotez votre équipe CS, réduisez le churn et développez l'ARR — le tout dans un espace clair et intuitif.",
+    landingCta:"Commencer gratuitement",landingLogin:"J'ai déjà un compte",
+    landingFeature1:"Dashboard intelligent",landingFeature1Desc:"Vue d'ensemble de vos KPIs, santé client et performance équipe en temps réel.",
+    landingFeature2:"Gestion de portefeuille",landingFeature2Desc:"Suivez chaque compte client, identifiez les risques et saisissez les opportunités.",
+    landingFeature3:"Coach IA intégré",landingFeature3Desc:"Un assistant IA spécialisé Customer Success qui vous guide au quotidien.",
+    landingFeature4:"Kanban & Process",landingFeature4Desc:"Organisez vos tâches et standardisez vos workflows avec des SOPs clairs.",
+    landingFeature5:"Roadmap 90 jours",landingFeature5Desc:"Planifiez vos actions sur 3 mois avec un suivi de progression visuel.",
+    landingFeature6:"Bien-être équipe",landingFeature6Desc:"Suivez la charge et le moral de votre équipe pour prévenir le burnout.",
+    landingSocial:"Conçu par des CSM, pour des CSM",landingTrust:"Données sécurisées · RGPD · Hébergé en Europe",
+    landingPricing:"Tarifs simples, sans surprise"
   },
   en:{
     dashboard:"Dashboard",portfolio:"Portfolio",roadmap:"Roadmap 90D",kpi:"KPIs",
@@ -215,7 +240,22 @@ const I18N={
     kanbanTodo:"To Do",kanbanInProgress:"In Progress",kanbanDone:"Done",
     kanbanAddTask:"Add a task",kanbanTaskTitle:"Title",kanbanDesc:"Description (optional)",
     kanbanPriority:"Priority",kanbanDueDate:"Due date",kanbanHigh:"High",kanbanMedium:"Medium",kanbanLow:"Low",
-    kanbanNoTasks:"No tasks yet",kanbanMoveTo:"Move to",kanbanTasks:"tasks"
+    kanbanNoTasks:"No tasks yet",kanbanMoveTo:"Move to",kanbanTasks:"tasks",
+    process:"Process",processTitle:"Process & Workflows",processDesc:"Manage your CS processes, SOPs and team workflows.",
+    processAdd:"New process",processName:"Process name",processSteps:"Steps",processOwner:"Owner",
+    processStatus:"Status",processDraft:"Draft",processActive:"Active",processArchived:"Archived",
+    processNoItems:"No processes created",processDelete:"Delete",processEdit:"Edit",
+    landingHero:"The Customer Success platform built for francophone teams",
+    landingSubHero:"Manage your CS team, reduce churn and grow ARR — all in one clear, intuitive workspace.",
+    landingCta:"Start for free",landingLogin:"I already have an account",
+    landingFeature1:"Smart Dashboard",landingFeature1Desc:"Overview of your KPIs, client health and team performance in real-time.",
+    landingFeature2:"Portfolio Management",landingFeature2Desc:"Track every client account, identify risks and seize opportunities.",
+    landingFeature3:"Built-in AI Coach",landingFeature3Desc:"A Customer Success-specialized AI assistant to guide you daily.",
+    landingFeature4:"Kanban & Process",landingFeature4Desc:"Organize tasks and standardize workflows with clear SOPs.",
+    landingFeature5:"90-Day Roadmap",landingFeature5Desc:"Plan your actions over 3 months with visual progress tracking.",
+    landingFeature6:"Team Wellbeing",landingFeature6Desc:"Track team workload and morale to prevent burnout.",
+    landingSocial:"Built by CSMs, for CSMs",landingTrust:"Secure data · GDPR · Hosted in Europe",
+    landingPricing:"Simple, transparent pricing"
   },
   kr:{
     dashboard:"대시보드",portfolio:"포트폴리오",roadmap:"로드맵 90일",kpi:"KPI",
@@ -237,6 +277,21 @@ const I18N={
     kanbanAddTask:"작업 추가",kanbanTaskTitle:"제목",kanbanDesc:"설명 (선택사항)",
     kanbanPriority:"우선순위",kanbanDueDate:"마감일",kanbanHigh:"높음",kanbanMedium:"보통",kanbanLow:"낮음",
     kanbanNoTasks:"작업 없음",kanbanMoveTo:"이동",kanbanTasks:"작업",
+    process:"프로세스",processTitle:"프로세스 & 워크플로우",processDesc:"CS 프로세스, SOP 및 팀 워크플로우를 관리하세요.",
+    processAdd:"새 프로세스",processName:"프로세스 이름",processSteps:"단계",processOwner:"담당자",
+    processStatus:"상태",processDraft:"초안",processActive:"활성",processArchived:"보관",
+    processNoItems:"생성된 프로세스 없음",processDelete:"삭제",processEdit:"수정",
+    landingHero:"프랑스어권 팀을 위한 고객 성공 플랫폼",
+    landingSubHero:"CS 팀을 관리하고, 이탈을 줄이고, ARR을 성장시키세요.",
+    landingCta:"무료로 시작하기",landingLogin:"이미 계정이 있습니다",
+    landingFeature1:"스마트 대시보드",landingFeature1Desc:"KPI, 고객 건강 및 팀 성과를 실시간으로 확인하세요.",
+    landingFeature2:"포트폴리오 관리",landingFeature2Desc:"모든 고객 계정을 추적하고 리스크를 식별하세요.",
+    landingFeature3:"AI 코치",landingFeature3Desc:"고객 성공 전문 AI 어시스턴트가 매일 가이드합니다.",
+    landingFeature4:"칸반 & 프로세스",landingFeature4Desc:"작업을 정리하고 명확한 SOP로 워크플로우를 표준화하세요.",
+    landingFeature5:"90일 로드맵",landingFeature5Desc:"3개월 간 액션을 계획하고 진행 상황을 시각적으로 추적하세요.",
+    landingFeature6:"팀 웰빙",landingFeature6Desc:"팀 업무 부하와 사기를 추적하여 번아웃을 예방하세요.",
+    landingSocial:"CSM이 만든, CSM을 위한 플랫폼",landingTrust:"안전한 데이터 · GDPR · 유럽에서 호스팅",
+    landingPricing:"간단하고 투명한 요금제",
     loginTab:"로그인",signupTab:"계정 만들기",welcomeBack:"다시 오신 것을 환영합니다 👋",
     accessSpace:"Scalyo 공간에 접속하세요",emailLabel:"비즈니스 이메일",
     passwordLabel:"비밀번호 *",yourRole:"역할 선택",
@@ -675,6 +730,7 @@ const LoginScreen = ({
 }) => {
   const [lang, setLangLocal] = useState(initLang || "fr");
   const changeLang = (l) => { setLangLocal(l); if (onLang) onLang(l); };
+  const [showAuth, setShowAuth] = useState(false);
   const [tab, setTab] = useState("login");
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
@@ -830,64 +886,14 @@ const LoginScreen = ({
       setLoading(false);
     }
   };
-  return /*#__PURE__*/React.createElement("div", {
-    className: "fade-in",
-    style: {
-      minHeight: "100vh",
-      background: C.bg,
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: 24
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 12,
-      marginBottom: 12
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 48,
-      height: 48,
-      background: `linear-gradient(135deg,${C.teal},${C.blue})`,
-      borderRadius: 14,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontSize: 24,
-      boxShadow: `0 3px 12px ${C.tealGlow}`
-    }
-  }, "\u26A1"), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 34,
-      fontWeight: 900,
-      letterSpacing: "-1.5px"
-    }
-  }, "scal", /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: C.teal
-    }
-  }, "yo"))), /*#__PURE__*/React.createElement("p", {
-    style: {
-      color: C.muted,
-      fontSize: 14,
-      marginBottom: 32
-    }
-  }, T("platformTagline", lang)), /*#__PURE__*/React.createElement("div", {
-    style: { display: "flex", gap: 6, marginBottom: 20 }
-  }, ["fr","en","kr"].map(l => /*#__PURE__*/React.createElement("button", {
-    key: l,
-    onClick: () => changeLang(l),
-    style: {
-      padding: "5px 14px", borderRadius: 20, fontSize: 11, fontWeight: 700, cursor: "pointer",
-      background: lang === l ? C.tealBg : C.surface,
-      border: `1px solid ${lang === l ? C.tealBorder : C.border}`,
-      color: lang === l ? C.teal : C.muted, transition: "all .15s ease"
-    }
-  }, l === "fr" ? "🇫🇷 FR" : l === "en" ? "🇬🇧 EN" : "🇰🇷 KR"))), /*#__PURE__*/React.createElement("div", {
+  // ── AUTH FORM (shared between landing and standalone)
+  const authFormRef = useRef(null);
+  const scrollToAuth = () => {
+    setShowAuth(true);
+    setTimeout(() => { if (authFormRef.current) authFormRef.current.scrollIntoView({ behavior: "smooth", block: "center" }); }, 100);
+  };
+
+  const AuthForm = () => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       background: C.bg1,
       border: `1px solid ${C.border}`,
@@ -1211,6 +1217,200 @@ const LoginScreen = ({
       color: C.faint
     }
   }, T("secureData", lang)));
+
+  // ── FEATURES DATA
+  const features = [
+    { icon: "📊", key: "landingFeature1", descKey: "landingFeature1Desc", color: C.teal },
+    { icon: "💼", key: "landingFeature2", descKey: "landingFeature2Desc", color: C.green },
+    { icon: "🤖", key: "landingFeature3", descKey: "landingFeature3Desc", color: C.purple },
+    { icon: "📋", key: "landingFeature4", descKey: "landingFeature4Desc", color: C.amber },
+    { icon: "🗺", key: "landingFeature5", descKey: "landingFeature5Desc", color: C.blue },
+    { icon: "💚", key: "landingFeature6", descKey: "landingFeature6Desc", color: C.green }
+  ];
+
+  // ── PRICING DATA (same as UpgradeModal)
+  const pricingPlans = [
+    { name: "Starter", price: "97€", period: "/mois", users: "1 CSM", features: ["5 comptes clients", "Dashboard & roadmap", "Ressources CS", "Support email"] },
+    { name: "Growth", price: "297€", period: "/mois", users: "5 CSMs", highlight: true, features: ["Comptes illimités", "Bien-être équipe", "Email Studio", "Coach IA", "Import CSV", "Support prioritaire"] },
+    { name: "Elite", price: "697€", period: "/mois", users: "CSMs illimités", features: ["Tout Growth", "Playbooks sur-mesure", "Coaching mensuel", "Onboarding dédié", "SLA 99.9%", "Support 7j/7"] }
+  ];
+
+  // ── LANDING PAGE RETURN
+  return /*#__PURE__*/React.createElement("div", {
+    className: "fade-in",
+    style: { minHeight: "100vh", background: C.bg, fontFamily: "'Inter', sans-serif" }
+  },
+    // ── HEADER / NAV BAR
+    /*#__PURE__*/React.createElement("div", {
+      style: { position: "sticky", top: 0, zIndex: 100, background: C.bg, borderBottom: `1px solid ${C.border}`, backdropFilter: "blur(12px)" }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "landing-section",
+      style: { display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }
+    },
+      /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
+        /*#__PURE__*/React.createElement("div", {
+          style: { width: 34, height: 34, background: `linear-gradient(135deg,${C.teal},${C.blue})`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17 }
+        }, "\u26A1"),
+        /*#__PURE__*/React.createElement("span", { style: { fontSize: 22, fontWeight: 700, letterSpacing: "-0.8px" } }, "scal", /*#__PURE__*/React.createElement("span", { style: { color: C.teal } }, "yo"))
+      ),
+      /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12 } },
+        /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4 } },
+          ["fr","en","kr"].map(l => /*#__PURE__*/React.createElement("button", {
+            key: l, onClick: () => changeLang(l),
+            style: { padding: "4px 10px", borderRadius: 16, fontSize: 11, fontWeight: 600, cursor: "pointer", background: lang === l ? C.tealBg : "transparent", border: `1px solid ${lang === l ? C.tealBorder : "transparent"}`, color: lang === l ? C.teal : C.muted, transition: "all .15s ease" }
+          }, l.toUpperCase()))
+        ),
+        /*#__PURE__*/React.createElement("button", {
+          onClick: () => { setShowAuth(true); setTab("login"); scrollToAuth(); },
+          style: { padding: "7px 18px", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer", background: "transparent", border: `1px solid ${C.border}`, color: C.text, transition: "all .2s ease" }
+        }, T("landingLogin", lang)),
+        /*#__PURE__*/React.createElement("button", {
+          onClick: () => { setShowAuth(true); setTab("signup"); scrollToAuth(); },
+          style: { padding: "7px 18px", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer", background: `linear-gradient(135deg,${C.teal},${C.blue})`, border: "none", color: "#FFFFFF", transition: "all .2s ease" }
+        }, T("landingCta", lang))
+      )
+    )),
+
+    // ── HERO SECTION
+    /*#__PURE__*/React.createElement("div", {
+      style: { padding: "100px 0 80px", textAlign: "center" }
+    }, /*#__PURE__*/React.createElement("div", { className: "landing-section" },
+      /*#__PURE__*/React.createElement("div", {
+        style: { display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 20, background: C.tealBg, border: `1px solid ${C.tealBorder}`, marginBottom: 24, fontSize: 13, fontWeight: 600, color: C.teal }
+      }, "\u2728 ", T("landingSocial", lang)),
+      /*#__PURE__*/React.createElement("h1", {
+        className: "notion-h1",
+        style: { maxWidth: 720, margin: "0 auto 20px", color: C.text }
+      }, T("landingHero", lang)),
+      /*#__PURE__*/React.createElement("p", {
+        className: "notion-body",
+        style: { maxWidth: 560, margin: "0 auto 40px", fontSize: 17, color: C.muted }
+      }, T("landingSubHero", lang)),
+      /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" } },
+        /*#__PURE__*/React.createElement("button", {
+          onClick: () => { setShowAuth(true); setTab("signup"); scrollToAuth(); },
+          className: "btn-base",
+          style: { padding: "14px 32px", borderRadius: 12, fontSize: 15, fontWeight: 700, background: `linear-gradient(135deg,${C.teal},${C.blue})`, color: "#FFFFFF", boxShadow: `0 4px 16px ${C.tealGlow}` }
+        }, T("landingCta", lang), " \u2192"),
+        /*#__PURE__*/React.createElement("button", {
+          onClick: () => { setShowAuth(true); setTab("login"); scrollToAuth(); },
+          className: "btn-base",
+          style: { padding: "14px 32px", borderRadius: 12, fontSize: 15, fontWeight: 600, background: C.surface, border: `1px solid ${C.border}`, color: C.text }
+        }, T("landingLogin", lang))
+      ),
+      /*#__PURE__*/React.createElement("p", {
+        className: "notion-caption",
+        style: { marginTop: 20, color: C.muted }
+      }, T("landingTrust", lang))
+    )),
+
+    // ── FEATURES GRID
+    /*#__PURE__*/React.createElement("div", {
+      style: { padding: "60px 0 80px", background: C.bg1 }
+    }, /*#__PURE__*/React.createElement("div", { className: "landing-section" },
+      /*#__PURE__*/React.createElement("h2", {
+        className: "notion-h2",
+        style: { textAlign: "center", marginBottom: 8, color: C.text }
+      }, "\u2728 Tout pour piloter votre CS"),
+      /*#__PURE__*/React.createElement("p", {
+        className: "notion-body",
+        style: { textAlign: "center", marginBottom: 48, color: C.muted }
+      }, "Un espace unique pour votre \u00e9quipe Customer Success."),
+      /*#__PURE__*/React.createElement("div", {
+        style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }
+      },
+        ...features.map((f, i) => /*#__PURE__*/React.createElement("div", {
+          key: i, className: "landing-feature-card",
+          style: { background: C.bg1, border: `1px solid ${C.border}` }
+        },
+          /*#__PURE__*/React.createElement("div", {
+            style: { width: 44, height: 44, borderRadius: 12, background: `${f.color}18`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 16 }
+          }, f.icon),
+          /*#__PURE__*/React.createElement("h3", {
+            className: "notion-h3",
+            style: { marginBottom: 8, color: C.text }
+          }, T(f.key, lang)),
+          /*#__PURE__*/React.createElement("p", {
+            className: "notion-body",
+            style: { color: C.muted }
+          }, T(f.descKey, lang))
+        ))
+      )
+    )),
+
+    // ── PRICING SECTION
+    /*#__PURE__*/React.createElement("div", {
+      style: { padding: "80px 0" }
+    }, /*#__PURE__*/React.createElement("div", { className: "landing-section" },
+      /*#__PURE__*/React.createElement("h2", {
+        className: "notion-h2",
+        style: { textAlign: "center", marginBottom: 8, color: C.text }
+      }, T("landingPricing", lang)),
+      /*#__PURE__*/React.createElement("p", {
+        className: "notion-body",
+        style: { textAlign: "center", marginBottom: 48, color: C.muted }
+      }, T("noCardNeeded", lang)),
+      /*#__PURE__*/React.createElement("div", {
+        style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20, maxWidth: 960, margin: "0 auto" }
+      },
+        ...pricingPlans.map((p, i) => /*#__PURE__*/React.createElement("div", {
+          key: i,
+          style: {
+            background: C.bg1, border: `1px solid ${p.highlight ? C.tealBorder : C.border}`, borderRadius: 18, padding: "32px 28px",
+            position: "relative", boxShadow: p.highlight ? `0 4px 20px ${C.tealGlow}` : "none"
+          }
+        },
+          p.highlight && /*#__PURE__*/React.createElement("div", {
+            style: { position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: `linear-gradient(135deg,${C.teal},${C.blue})`, color: "#fff", fontSize: 11, fontWeight: 700, padding: "4px 14px", borderRadius: 20, letterSpacing: ".04em" }
+          }, "POPULAIRE"),
+          /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, fontWeight: 600, color: C.muted, marginBottom: 8, textTransform: "uppercase", letterSpacing: ".04em" } }, p.name),
+          /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "baseline", gap: 4, marginBottom: 4 } },
+            /*#__PURE__*/React.createElement("span", { style: { fontSize: 36, fontWeight: 700, letterSpacing: "-1px", color: C.text } }, p.price),
+            /*#__PURE__*/React.createElement("span", { style: { fontSize: 14, color: C.muted } }, p.period)
+          ),
+          /*#__PURE__*/React.createElement("div", { style: { fontSize: 12, color: C.muted, marginBottom: 20 } }, p.users),
+          /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 } },
+            ...p.features.map((feat, fi) => /*#__PURE__*/React.createElement("div", {
+              key: fi, style: { display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: C.text }
+            }, /*#__PURE__*/React.createElement("span", { style: { color: C.green, fontSize: 14 } }, "\u2713"), feat))
+          ),
+          /*#__PURE__*/React.createElement("button", {
+            onClick: () => { setShowAuth(true); setTab("signup"); scrollToAuth(); },
+            className: "btn-base",
+            style: {
+              width: "100%", padding: "12px", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer",
+              background: p.highlight ? `linear-gradient(135deg,${C.teal},${C.blue})` : C.surface,
+              border: p.highlight ? "none" : `1px solid ${C.border}`,
+              color: p.highlight ? "#FFFFFF" : C.text
+            }
+          }, T("landingCta", lang))
+        ))
+      )
+    )),
+
+    // ── AUTH SECTION (appears when user clicks CTA or Login)
+    showAuth && /*#__PURE__*/React.createElement("div", {
+      style: { padding: "60px 0 80px", background: C.bg1 }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "landing-section",
+      style: { display: "flex", flexDirection: "column", alignItems: "center" }
+    },
+      /*#__PURE__*/React.createElement(AuthForm, null)
+    )),
+
+    // ── FOOTER
+    /*#__PURE__*/React.createElement("div", {
+      style: { padding: "32px 0", borderTop: `1px solid ${C.border}`, textAlign: "center" }
+    }, /*#__PURE__*/React.createElement("div", { className: "landing-section" },
+      /*#__PURE__*/React.createElement("p", {
+        className: "notion-caption",
+        style: { color: C.faint }
+      }, T("secureData", lang)),
+      /*#__PURE__*/React.createElement("p", {
+        style: { fontSize: 12, color: C.faint, marginTop: 8 }
+      }, "\u00A9 2025 Scalyo \u2014 Customer Success Platform")
+    ))
+  );
 };
 
 // ══════════════════════════════════════════════════
@@ -7622,6 +7822,185 @@ const TipsView = ({role="csm", lang="fr"}) => {
   );
 };
 // ══════════════════════════════════════════════════
+// PROCESS VIEW — SOPs & Workflows
+// ══════════════════════════════════════════════════
+const ProcessView = ({ companyId, lang = "fr" }) => {
+  const storageKey = `scalyo_processes_${companyId || "default"}`;
+  const initProcesses = () => { try { return JSON.parse(localStorage.getItem(storageKey) || "[]"); } catch(e) { return []; } };
+  const [processes, setProcesses] = useState(initProcesses);
+  const [showAdd, setShowAdd] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [name, setName] = useState("");
+  const [owner, setOwner] = useState("");
+  const [status, setStatus] = useState("draft");
+  const [steps, setSteps] = useState([""]);
+  const [filter, setFilter] = useState("all");
+  const [expandedId, setExpandedId] = useState(null);
+
+  const save = (p) => { setProcesses(p); try { localStorage.setItem(storageKey, JSON.stringify(p)); } catch(e) {} };
+  const addStep = () => setSteps([...steps, ""]);
+  const updateStep = (i, v) => { const s = [...steps]; s[i] = v; setSteps(s); };
+  const removeStep = (i) => setSteps(steps.filter((_, idx) => idx !== i));
+
+  const resetForm = () => { setName(""); setOwner(""); setStatus("draft"); setSteps([""]); setEditId(null); setShowAdd(false); };
+
+  const saveProcess = () => {
+    if (!name.trim()) return;
+    const cleanSteps = steps.filter(s => s.trim());
+    if (editId) {
+      save(processes.map(p => p.id === editId ? { ...p, name: name.trim(), owner: owner.trim(), status, steps: cleanSteps, updated: new Date().toISOString() } : p));
+    } else {
+      save([...processes, { id: `proc_${Date.now()}`, name: name.trim(), owner: owner.trim(), status, steps: cleanSteps, created: new Date().toISOString(), updated: new Date().toISOString() }]);
+    }
+    resetForm();
+  };
+
+  const startEdit = (p) => { setEditId(p.id); setName(p.name); setOwner(p.owner || ""); setStatus(p.status); setSteps(p.steps.length ? p.steps : [""]); setShowAdd(true); };
+  const deleteProcess = (id) => save(processes.filter(p => p.id !== id));
+
+  const statusColor = (s) => s === "active" ? C.green : s === "archived" ? C.muted : C.amber;
+  const statusLabel = (s) => T(s === "active" ? "processActive" : s === "archived" ? "processArchived" : "processDraft", lang);
+  const filtered = filter === "all" ? processes : processes.filter(p => p.status === filter);
+
+  return /*#__PURE__*/React.createElement("div", { className: "fade-in", style: { padding: "22px 28px", maxWidth: 1000 } },
+    /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 } },
+      /*#__PURE__*/React.createElement("div", null,
+        /*#__PURE__*/React.createElement("h2", { style: { fontSize: 22, fontWeight: 700, letterSpacing: "-0.5px", marginBottom: 4, color: C.text } }, "\u2699\uFE0F ", T("processTitle", lang)),
+        /*#__PURE__*/React.createElement("p", { style: { color: C.muted, fontSize: 13 } }, T("processDesc", lang))
+      ),
+      /*#__PURE__*/React.createElement("button", {
+        onClick: () => { resetForm(); setShowAdd(true); },
+        className: "btn-base",
+        style: { padding: "9px 18px", borderRadius: 10, fontSize: 13, fontWeight: 700, background: `linear-gradient(135deg,${C.teal},${C.blue})`, color: "#fff", boxShadow: `0 2px 8px ${C.tealGlow}` }
+      }, "+ ", T("processAdd", lang))
+    ),
+
+    // Filter bar
+    /*#__PURE__*/React.createElement("div", { className: "csm-filter-bar", style: { marginTop: 16, marginBottom: 20 } },
+      ["all", "draft", "active", "archived"].map(f => /*#__PURE__*/React.createElement("span", {
+        key: f, className: `csm-chip${filter === f ? " active" : ""}`,
+        onClick: () => setFilter(f),
+        style: { cursor: "pointer" }
+      }, f === "all" ? "Tous" : statusLabel(f), " (", f === "all" ? processes.length : processes.filter(p => p.status === f).length, ")"))
+    ),
+
+    // Add/Edit modal
+    showAdd && /*#__PURE__*/React.createElement("div", {
+      style: { background: C.bg1, border: `1px solid ${C.tealBorder}`, borderRadius: 16, padding: 24, marginBottom: 24, boxShadow: "0 4px 20px rgba(45,42,38,0.06)" }
+    },
+      /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 } },
+        /*#__PURE__*/React.createElement("h3", { style: { fontSize: 16, fontWeight: 700, color: C.text } }, editId ? T("processEdit", lang) : T("processAdd", lang)),
+        /*#__PURE__*/React.createElement("button", { onClick: resetForm, className: "btn-base", style: { background: "none", border: "none", color: C.muted, fontSize: 18, cursor: "pointer" } }, "\u2715")
+      ),
+      /*#__PURE__*/React.createElement("input", {
+        value: name, onChange: e => setName(e.target.value), placeholder: T("processName", lang), autoFocus: true,
+        style: { width: "100%", boxSizing: "border-box", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "11px 14px", color: C.text, fontSize: 14, fontFamily: "inherit", marginBottom: 12 }
+      }),
+      /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 12, marginBottom: 12 } },
+        /*#__PURE__*/React.createElement("input", {
+          value: owner, onChange: e => setOwner(e.target.value), placeholder: T("processOwner", lang),
+          style: { flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "10px 14px", color: C.text, fontSize: 13, fontFamily: "inherit" }
+        }),
+        /*#__PURE__*/React.createElement("select", {
+          value: status, onChange: e => setStatus(e.target.value),
+          style: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "10px 14px", color: C.text, fontSize: 13, fontFamily: "inherit" }
+        },
+          /*#__PURE__*/React.createElement("option", { value: "draft" }, statusLabel("draft")),
+          /*#__PURE__*/React.createElement("option", { value: "active" }, statusLabel("active")),
+          /*#__PURE__*/React.createElement("option", { value: "archived" }, statusLabel("archived"))
+        )
+      ),
+      /*#__PURE__*/React.createElement("div", { style: { marginBottom: 12 } },
+        /*#__PURE__*/React.createElement("label", { style: { fontSize: 11, fontWeight: 700, color: C.muted, display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: ".06em" } }, T("processSteps", lang)),
+        ...steps.map((s, i) => /*#__PURE__*/React.createElement("div", {
+          key: i, style: { display: "flex", gap: 8, alignItems: "center", marginBottom: 6 }
+        },
+          /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, fontWeight: 700, color: C.muted, width: 24, textAlign: "center", flexShrink: 0 } }, i + 1),
+          /*#__PURE__*/React.createElement("input", {
+            value: s, onChange: e => updateStep(i, e.target.value), placeholder: `\u00C9tape ${i + 1}...`,
+            style: { flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: "8px 12px", color: C.text, fontSize: 13, fontFamily: "inherit" }
+          }),
+          steps.length > 1 && /*#__PURE__*/React.createElement("button", {
+            onClick: () => removeStep(i), className: "btn-base",
+            style: { background: C.redBg, border: `1px solid ${C.redBorder}`, borderRadius: 8, width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", color: C.red, fontSize: 14, cursor: "pointer" }
+          }, "\u2212")
+        )),
+        /*#__PURE__*/React.createElement("button", {
+          onClick: addStep, className: "btn-base",
+          style: { marginTop: 4, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: "6px 14px", color: C.teal, fontSize: 12, fontWeight: 600, cursor: "pointer" }
+        }, "+ Ajouter une \u00e9tape")
+      ),
+      /*#__PURE__*/React.createElement("button", {
+        onClick: saveProcess, className: "btn-base",
+        style: { padding: "11px 24px", borderRadius: 10, fontSize: 14, fontWeight: 700, background: `linear-gradient(135deg,${C.teal},${C.blue})`, color: "#fff", cursor: "pointer" }
+      }, T("save", lang))
+    ),
+
+    // Process list
+    filtered.length === 0
+      ? /*#__PURE__*/React.createElement("div", {
+          style: { textAlign: "center", padding: "60px 20px", color: C.muted }
+        },
+          /*#__PURE__*/React.createElement("div", { style: { fontSize: 48, marginBottom: 12, opacity: 0.4 } }, "\u2699\uFE0F"),
+          /*#__PURE__*/React.createElement("p", { style: { fontSize: 15, fontWeight: 600, marginBottom: 4 } }, T("processNoItems", lang)),
+          /*#__PURE__*/React.createElement("p", { style: { fontSize: 13 } }, "Cr\u00e9ez votre premier process pour standardiser vos workflows.")
+        )
+      : /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 12 } },
+          ...filtered.map(p => /*#__PURE__*/React.createElement("div", {
+            key: p.id,
+            className: "card-lift",
+            style: { background: C.bg1, border: `1px solid ${expandedId === p.id ? C.tealBorder : C.border}`, borderRadius: 14, padding: "18px 20px", cursor: "pointer" },
+            onClick: () => setExpandedId(expandedId === p.id ? null : p.id)
+          },
+            /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
+              /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12 } },
+                /*#__PURE__*/React.createElement("div", {
+                  style: { width: 36, height: 36, borderRadius: 10, background: `${statusColor(p.status)}18`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }
+                }, "\u2699\uFE0F"),
+                /*#__PURE__*/React.createElement("div", null,
+                  /*#__PURE__*/React.createElement("div", { style: { fontWeight: 700, fontSize: 15, color: C.text, marginBottom: 2 } }, p.name),
+                  /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: C.muted } },
+                    p.owner && /*#__PURE__*/React.createElement("span", null, "\uD83D\uDC64 ", p.owner),
+                    /*#__PURE__*/React.createElement("span", null, p.steps.length, " ", T("processSteps", lang).toLowerCase())
+                  )
+                )
+              ),
+              /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+                /*#__PURE__*/React.createElement(Tag, { color: statusColor(p.status), size: "xs" }, statusLabel(p.status)),
+                /*#__PURE__*/React.createElement("span", { style: { fontSize: 16, color: C.muted } }, expandedId === p.id ? "\u25B2" : "\u25BC")
+              )
+            ),
+            expandedId === p.id && /*#__PURE__*/React.createElement("div", {
+              style: { marginTop: 16, paddingTop: 16, borderTop: `1px solid ${C.border}` }
+            },
+              /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 } },
+                ...p.steps.map((s, i) => /*#__PURE__*/React.createElement("div", {
+                  key: i, style: { display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: C.surface, borderRadius: 8, border: `1px solid ${C.border}` }
+                },
+                  /*#__PURE__*/React.createElement("div", {
+                    style: { width: 24, height: 24, borderRadius: "50%", background: C.tealBg, border: `1px solid ${C.tealBorder}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: C.teal, flexShrink: 0 }
+                  }, i + 1),
+                  /*#__PURE__*/React.createElement("span", { style: { fontSize: 13, color: C.text } }, s)
+                ))
+              ),
+              /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 8 } },
+                /*#__PURE__*/React.createElement("button", {
+                  onClick: (e) => { e.stopPropagation(); startEdit(p); },
+                  className: "btn-base",
+                  style: { padding: "6px 14px", borderRadius: 8, fontSize: 12, fontWeight: 600, background: C.tealBg, border: `1px solid ${C.tealBorder}`, color: C.teal, cursor: "pointer" }
+                }, "\u270F\uFE0F ", T("processEdit", lang)),
+                /*#__PURE__*/React.createElement("button", {
+                  onClick: (e) => { e.stopPropagation(); deleteProcess(p.id); },
+                  className: "btn-base",
+                  style: { padding: "6px 14px", borderRadius: 8, fontSize: 12, fontWeight: 600, background: C.redBg, border: `1px solid ${C.redBorder}`, color: C.red, cursor: "pointer" }
+                }, "\uD83D\uDDD1 ", T("processDelete", lang))
+              )
+            )
+          ))
+        )
+  );
+};
+// ══════════════════════════════════════════════════
 // KANBAN VIEW
 // ══════════════════════════════════════════════════
 const KanbanView = ({ companyId, lang = "fr" }) => {
@@ -7803,6 +8182,10 @@ const NAV_MANAGER = [{
   label: "Kanban",
   icon: "📋"
 }, {
+  id: "process",
+  label: "Process",
+  icon: "⚙️"
+}, {
   id: "roadmap",
   label: "Roadmap 90J",
   icon: "🗺"
@@ -7843,6 +8226,10 @@ const NAV_CSM = [{
   id: "kanban",
   label: "Kanban",
   icon: "📋"
+}, {
+  id: "process",
+  label: "Process",
+  icon: "⚙️"
 }, {
   id: "roadmap",
   label: "Roadmap 90J",
@@ -8147,6 +8534,8 @@ const App = () => {
         });
       case "kanban":
         return /*#__PURE__*/React.createElement(KanbanView, { companyId: company?.id, lang: lang });
+      case "process":
+        return /*#__PURE__*/React.createElement(ProcessView, { companyId: company?.id, lang: lang });
       case "tips":
         return /*#__PURE__*/React.createElement(TipsView, {role:role, lang:lang});
       default:
