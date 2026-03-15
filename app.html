@@ -13735,12 +13735,15 @@ const App = () => {
   const [screen, _setScreen] = useState(() => { try { return localStorage.getItem("scalyo_screen") || "dashboard"; } catch(e) { return "dashboard"; } });
   const setScreen = (s) => { _setScreen(s); try { localStorage.setItem("scalyo_screen", s); } catch(e) {} };
   const [appData, setAppData] = useState(() => {
-    // FIX LOADING: charger immédiatement depuis le cache pour ne jamais afficher le loading screen inutilement
+    // FIX LOADING: charger depuis le cache pour affichage instantané
     try {
-      const cachedCompany = localStorage.getItem("scalyo_company_cache");
       const cachedAccounts = localStorage.getItem("scalyo_accounts_cache");
-      if (cachedCompany && cachedAccounts) {
-        const company = JSON.parse(cachedCompany);
+      if (cachedAccounts) {
+        const cachedCompany = localStorage.getItem("scalyo_company_cache");
+        const cachedPlan = localStorage.getItem("scalyo_plan");
+        const company = cachedCompany
+          ? JSON.parse(cachedCompany)
+          : { id: "_cached", name: "Mon Entreprise", plan: cachedPlan || "Starter", arr: 0, churn: 0, nps: 0, color: "#4DB6A0" };
         return {
           company,
           accounts: JSON.parse(cachedAccounts).map(a => ({ ...a, issues: Array.isArray(a.issues) ? a.issues : [] })),
@@ -13760,10 +13763,15 @@ const App = () => {
   const [syncWarningDismissed, setSyncWarningDismissed] = useState(false);
   useEffect(() => {
     if (!appData) return;
+    // Ne jamais afficher le warning si on a un company.id (réel ou cache)
     if (appData.company?.id) { setShowSyncWarning(false); return; }
     if (syncWarningDismissed) return;
-    // Attendre 20s avant d'afficher le warning (loadData peut prendre jusqu'à 18s avec les timeouts)
-    const t = setTimeout(() => setShowSyncWarning(true), 20000);
+    // Attendre 30s avant d'afficher le warning
+    const t = setTimeout(() => {
+      // Revérifier une dernière fois avant d'afficher
+      if (appData.company?.id) return;
+      setShowSyncWarning(true);
+    }, 30000);
     return () => clearTimeout(t);
   }, [appData, syncWarningDismissed]);
   // ── Coaching reminder : 1 fois par mois pour les Elite Manager uniquement
