@@ -2478,8 +2478,20 @@ const LoginScreen = ({
 // ══════════════════════════════════════════════════
 const UpgradeModal = ({
   onClose,
-  currentPlan = "Starter"
+  currentPlan = "Starter",
+  companyId = null,
+  onPlanChanged = null
 }) => {
+  const handleUpgrade = async (planName) => {
+    // Mettre à jour le plan immédiatement dans localStorage
+    try { localStorage.setItem("scalyo_plan", planName); } catch(e) {}
+    // Mettre à jour dans Supabase si on a un company ID
+    if (companyId) {
+      try { await db.from("companies").update({ plan: planName }).eq("id", companyId); } catch(e) { console.error("Plan update error:", e); }
+    }
+    // Notifier le parent pour mise à jour du state React
+    if (onPlanChanged) onPlanChanged(planName);
+  };
   const plans = [{
     id: "starter",
     name: "Starter",
@@ -2651,6 +2663,7 @@ const UpgradeModal = ({
     href: p.link,
     target: "_blank",
     rel: "noopener noreferrer",
+    onClick: () => handleUpgrade(p.name),
     style: {
       display: "block",
       textAlign: "center",
@@ -2663,7 +2676,7 @@ const UpgradeModal = ({
       color: p.highlight ? "#FFFFFF" : C.text,
       border: p.highlight ? "none" : `1px solid ${C.border}`
     }
-  }, "Choisir ", p.name, " \u2192") : /*#__PURE__*/React.createElement("div", {
+  }, lang==="en"?"Choose ":"Choisir ", p.name, " \u2192") : /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       padding: "10px",
@@ -12551,7 +12564,7 @@ const SettingsView = ({
         await db.from("wellbeing").delete().eq("company_id", company.id);
         await db.from("companies").delete().eq("id", company.id);
       }
-      ["scalyo_role","scalyo_theme","scalyo_lang","scalyo_api","scalyo_currency","scalyo_pending","scalyo_screen","scalyo_coach_messages","scalyo_wb_messages","scalyo_pf_filter","scalyo_pf_search","scalyo_pf_csm","scalyo_kpi_period","scalyo_draft_add_account","scalyo_draft_import"].forEach(k=>{
+      ["scalyo_role","scalyo_theme","scalyo_lang","scalyo_api","scalyo_currency","scalyo_pending","scalyo_screen","scalyo_plan","scalyo_coach_messages","scalyo_wb_messages","scalyo_pf_filter","scalyo_pf_search","scalyo_pf_csm","scalyo_kpi_period","scalyo_draft_add_account","scalyo_draft_import"].forEach(k=>{
         try{localStorage.removeItem(k);}catch(e){}
       });
       // Nettoyer aussi les drafts d'édition par compte
@@ -12918,6 +12931,11 @@ const SettingsView = ({
     href: p.link,
     target: "_blank",
     rel: "noopener noreferrer",
+    onClick: async () => {
+      try { localStorage.setItem("scalyo_plan", p.name); } catch(e) {}
+      if (company?.id) { try { await db.from("companies").update({plan:p.name}).eq("id",company.id); } catch(e) {} }
+      if (onCompanyUpdate) onCompanyUpdate({...company, plan:p.name});
+    },
     style: {
       display: "block",
       padding: "8px",
@@ -13650,6 +13668,16 @@ const App = () => {
   const loadData = async sess => {
     if (!sess?.user?.id) return;
     setDataLoading(true);
+    // Plan sticky : ne jamais rétrograder un plan payé à cause d'un timeout réseau
+    const cachedPlan = (() => { try { return localStorage.getItem("scalyo_plan"); } catch(e) { return null; } })();
+    const safePlan = (plan) => {
+      const rank = {Starter:0, Growth:1, Elite:2};
+      // Si on a un plan en cache et que le nouveau est inférieur, garder le cache
+      if (cachedPlan && (rank[cachedPlan]||0) > (rank[plan]||0)) return cachedPlan;
+      // Persister le plan le plus haut connu
+      try { localStorage.setItem("scalyo_plan", plan); } catch(e) {}
+      return plan;
+    };
     try {
       // Étape 1 : récupérer la company filtrée par auth_user_id
       const companiesTimeout = new Promise((_,rej) => setTimeout(()=>rej(new Error("companies_timeout")), 5000));
@@ -13660,12 +13688,14 @@ const App = () => {
       const company = cr.data || {
         id: null,
         name: T("myCompany",lang),
-        plan: "Starter",
+        plan: cachedPlan || "Starter",
         arr: 0,
         churn: 0,
         nps: 0,
         color: C.teal
       };
+      // Protéger le plan : ne jamais rétrograder
+      company.plan = safePlan(company.plan || "Starter");
 
       // Étape 2 : données filtrées par company_id (FIX sécurité — pas de fuite cross-client)
       let accounts = [],
@@ -13709,8 +13739,9 @@ const App = () => {
     } catch (e) {
       console.error("loadData error:", e);
       // Fallback : afficher l'app avec données vides plutôt que rester bloqué
+      // Ne jamais rétrograder le plan en cas d'erreur réseau
       setAppData({
-        company: { id: null, name: T("myCompany",lang), plan: "Starter", arr: 0, churn: 0, nps: 0, color: "#4DB6A0" },
+        company: { id: null, name: T("myCompany",lang), plan: cachedPlan || "Starter", arr: 0, churn: 0, nps: 0, color: "#4DB6A0" },
         accounts: [],
         roadmap: { id: null, phase: "Phase 1 — Launch", progress: 0, items: [] },
         wellbeing: { score: 70, burnout: "none", charge: 70, trend: "+0", alerts: [], team: [] }
@@ -13738,7 +13769,7 @@ const App = () => {
   };
   const handleLogout = async () => {
     // FIX #6 : setScreen inutile (onAuthStateChange remet null → LoginScreen s'affiche)
-    ["scalyo_role","scalyo_screen","scalyo_coach_messages","scalyo_wb_messages","scalyo_pf_filter","scalyo_pf_search","scalyo_pf_csm","scalyo_kpi_period","scalyo_draft_add_account","scalyo_draft_import"].forEach(k=>{ try{localStorage.removeItem(k);}catch(e){} });
+    ["scalyo_role","scalyo_screen","scalyo_plan","scalyo_coach_messages","scalyo_wb_messages","scalyo_pf_filter","scalyo_pf_search","scalyo_pf_csm","scalyo_kpi_period","scalyo_draft_add_account","scalyo_draft_import"].forEach(k=>{ try{localStorage.removeItem(k);}catch(e){} });
     try { Object.keys(localStorage).filter(k=>k.startsWith("scalyo_draft_edit_")).forEach(k=>localStorage.removeItem(k)); } catch(e) {}
     await db.auth.signOut();
     setSession(null);
@@ -14257,7 +14288,12 @@ const App = () => {
   )
   ), showUpgrade && /*#__PURE__*/React.createElement(UpgradeModal, {
     onClose: () => setShowUpgrade(false),
-    currentPlan: company?.plan || "Starter"
+    currentPlan: company?.plan || "Starter",
+    companyId: company?.id,
+    onPlanChanged: (newPlan) => {
+      setAppData(prev => ({...prev, company: {...prev.company, plan: newPlan}}));
+      setShowUpgrade(false);
+    }
   }));
 };
 ReactDOM.render(React.createElement(App), document.getElementById("root"));
