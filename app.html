@@ -6376,6 +6376,17 @@ const WellbeingView = ({
     return [{role:"assistant",text:lang==="en"?NOVA_EN_WELCOME:lang==="kr"?NOVA_KR_WELCOME:NOVA_RESPONSES.default.answer,time:new Date()}];
   });
   React.useEffect(() => { try { localStorage.setItem("scalyo_wb_messages", JSON.stringify(messages)); } catch(e) {} }, [messages]);
+  // FIX: réinitialiser les messages quand la langue change
+  const prevLangRef = React.useRef(lang);
+  React.useEffect(() => {
+    if (prevLangRef.current !== lang) {
+      prevLangRef.current = lang;
+      const welcomeText = lang==="en" ? NOVA_EN_WELCOME : lang==="kr" ? NOVA_KR_WELCOME : NOVA_RESPONSES.default.answer;
+      const newMessages = [{role:"assistant", text:welcomeText, time:new Date()}];
+      setMessages(newMessages);
+      try { localStorage.setItem("scalyo_wb_messages", JSON.stringify(newMessages)); } catch(e) {}
+    }
+  }, [lang]);
   const [input, setInput] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [typing, setTyping] = React.useState(false);
@@ -12483,6 +12494,21 @@ const CoachIAView = ({lang="fr"}) => {
   const bottomRef = useRef();
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
   useEffect(() => { try { localStorage.setItem("scalyo_coach_messages", JSON.stringify(messages)); } catch(e) {} }, [messages]);
+  // FIX: réinitialiser les messages quand la langue change
+  const prevLangRef = useRef(lang);
+  useEffect(() => {
+    if (prevLangRef.current !== lang) {
+      prevLangRef.current = lang;
+      const w = lang==="en"
+        ? "Hi! I'm your CS Coach. Ask me anything about churn, QBRs, NPS, onboarding, or CS strategy."
+        : lang==="kr"
+        ? "안녕하세요! CS 코치입니다. 이탈, QBR, NPS, 온보딩 또는 CS 전략에 대해 무엇이든 물어보세요."
+        : "Bonjour ! Je suis votre Coach CS. Posez-moi vos questions sur le churn, les QBR, le NPS, l'onboarding ou la strategie CS.";
+      const newMessages = [{role:"assistant", text:w}];
+      setMessages(newMessages);
+      try { localStorage.setItem("scalyo_coach_messages", JSON.stringify(newMessages)); } catch(e) {}
+    }
+  }, [lang]);
 
   // FIX BUG-04 : QUICK array corrige sans doublons de condition
   const QUICK = lang === "kr"
