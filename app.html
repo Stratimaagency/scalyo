@@ -13786,9 +13786,14 @@ const App = () => {
     } = db.auth.onAuthStateChange(async (event, sess) => {
       setSession(sess);
       if (sess) {
+        // FIX: Ne recharger les données que lors d'un vrai login (SIGNED_IN), pas sur TOKEN_REFRESHED
+        // TOKEN_REFRESHED se déclenche quand on revient sur l'onglet → ne pas recharger
+        if (event === "TOKEN_REFRESHED") { setAuthReady(true); return; }
         // Skip if initial load already handled this session
         if (initialLoaded && loadingRef.current) { setAuthReady(true); return; }
         if (loadingRef.current) { setAuthReady(true); return; }
+        // Ne pas recharger si on a déjà des données chargées (évite reload inutile)
+        if (appData && appData.company) { setAuthReady(true); return; }
         loadingRef.current = true;
         await loadData(sess);
         loadingRef.current = false;
@@ -13840,7 +13845,13 @@ const App = () => {
       let accounts = [],
         roadmapData = null,
         wellbeingData = null;
-      if (company.id) {
+      if (!company.id) {
+        // Pas de company_id (timeout ou première connexion) → charger le cache localStorage
+        try {
+          const cached = localStorage.getItem("scalyo_accounts_cache");
+          if (cached) accounts = JSON.parse(cached).map(a => ({ ...a, issues: safeParseArray(a.issues) }));
+        } catch(e) {}
+      } else if (company.id) {
         const timeout = new Promise((_,rej) => setTimeout(()=>rej(new Error("timeout")), 10000));
         let ar, rr, wr;
         try {
