@@ -13737,11 +13737,12 @@ const App = () => {
   const [appData, setAppData] = useState(() => {
     // FIX LOADING: charger immédiatement depuis le cache pour ne jamais afficher le loading screen inutilement
     try {
-      const cachedPlan = localStorage.getItem("scalyo_plan");
+      const cachedCompany = localStorage.getItem("scalyo_company_cache");
       const cachedAccounts = localStorage.getItem("scalyo_accounts_cache");
-      if (cachedAccounts) {
+      if (cachedCompany && cachedAccounts) {
+        const company = JSON.parse(cachedCompany);
         return {
-          company: { id: null, name: "Mon Entreprise", plan: cachedPlan || "Starter", arr: 0, churn: 0, nps: 0, color: "#4DB6A0" },
+          company,
           accounts: JSON.parse(cachedAccounts).map(a => ({ ...a, issues: Array.isArray(a.issues) ? a.issues : [] })),
           roadmap: { id: null, phase: "Phase 1 — Launch", progress: 0, items: [] },
           wellbeing: { score: 70, burnout: "none", charge: 70, trend: "+0", alerts: [], team: [] }
@@ -13761,7 +13762,8 @@ const App = () => {
     if (!appData) return;
     if (appData.company?.id) { setShowSyncWarning(false); return; }
     if (syncWarningDismissed) return;
-    const t = setTimeout(() => setShowSyncWarning(true), 5000);
+    // Attendre 20s avant d'afficher le warning (loadData peut prendre jusqu'à 18s avec les timeouts)
+    const t = setTimeout(() => setShowSyncWarning(true), 20000);
     return () => clearTimeout(t);
   }, [appData, syncWarningDismissed]);
   // ── Coaching reminder : 1 fois par mois pour les Elite Manager uniquement
@@ -13869,6 +13871,8 @@ const App = () => {
       };
       // Protéger le plan : ne jamais rétrograder
       company.plan = safePlan(company.plan || "Starter");
+      // Cache la company pour démarrage instantané
+      try { if(company.id) localStorage.setItem("scalyo_company_cache", JSON.stringify(company)); } catch(e) {}
 
       // Étape 2 : données filtrées par company_id (FIX sécurité — pas de fuite cross-client)
       let accounts = [],
@@ -13962,7 +13966,7 @@ const App = () => {
   };
   const handleLogout = async () => {
     // FIX #6 : setScreen inutile (onAuthStateChange remet null → LoginScreen s'affiche)
-    ["scalyo_role","scalyo_screen","scalyo_plan","scalyo_coach_messages","scalyo_wb_messages","scalyo_pf_filter","scalyo_pf_search","scalyo_pf_csm","scalyo_kpi_period","scalyo_draft_add_account","scalyo_draft_import"].forEach(k=>{ try{localStorage.removeItem(k);}catch(e){} });
+    ["scalyo_role","scalyo_screen","scalyo_plan","scalyo_company_cache","scalyo_accounts_cache","scalyo_coach_messages","scalyo_wb_messages","scalyo_pf_filter","scalyo_pf_search","scalyo_pf_csm","scalyo_kpi_period","scalyo_draft_add_account","scalyo_draft_import"].forEach(k=>{ try{localStorage.removeItem(k);}catch(e){} });
     try { Object.keys(localStorage).filter(k=>k.startsWith("scalyo_draft_edit_")).forEach(k=>localStorage.removeItem(k)); } catch(e) {}
     await db.auth.signOut();
     setSession(null);
