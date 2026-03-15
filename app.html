@@ -430,8 +430,8 @@ const I18N={
     allAccounts:"Tous les comptes",myCsm:"Mes comptes",addToTeam:"Assigner à un CSM",
     removeClient:"Retirer",filterCsm:"Filtrer CSM",
     target:"Obj: ",reached:"atteint",
-    noApiKey:"🔑 Clé API manquante",
-    noApiKeyMsg:"Configurez votre clé API Anthropic dans Paramètres pour activer le Coach IA.",
+    noApiKey:"🔑 Coach IA indisponible",
+    noApiKeyMsg:"Le Coach IA est temporairement indisponible. Réessayez dans quelques instants.",
     configKey:"Configurer",thinking:"Réflexion...",
     darkMode:"Mode sombre",lightMode:"Mode clair",langLabel:"Langue",
     themeDesc:"Interface sombre ou claire",
@@ -744,8 +744,8 @@ const I18N={
     namePlaceholder:'Votre prénom et nom',
     newTask:'Nouvelle tâche',
     noAccount:'Aucun compte',
-    noApiKey:'🔑 Clé API manquante',
-    noApiKeyMsg:'Configurez votre clé API Anthropic dans les Paramètres pour activer le Coach IA.',
+    noApiKey:'🔑 Coach IA indisponible',
+    noApiKeyMsg:'Le Coach IA est temporairement indisponible. Réessayez dans quelques instants.',
     noResults:'Aucun résultat',
     noRisk:'Aucun risque détecté',
     notifTitle:'Préférences de notification',
@@ -802,8 +802,8 @@ const I18N={
     allAccounts:"All accounts",myCsm:"My accounts",addToTeam:"Assign to CSM",
     removeClient:"Remove",filterCsm:"Filter CSM",
     target:"Target: ",reached:"reached",
-    noApiKey:"🔑 API Key missing",
-    noApiKeyMsg:"Configure your Anthropic API key in Settings to enable AI Coach.",
+    noApiKey:"🔑 AI Coach unavailable",
+    noApiKeyMsg:"AI Coach is temporarily unavailable. Please try again in a moment.",
     configKey:"Configure",thinking:"Thinking...",
     darkMode:"Dark mode",lightMode:"Light mode",langLabel:"Language",
     themeDesc:"Toggle dark / light interface",
@@ -1131,8 +1131,8 @@ const I18N={
     filterCsm:"CSM 필터",
     target:"목표: ",
     reached:"달성",
-    noApiKey:"🔑 API 키 없음",
-    noApiKeyMsg:"AI 코치를 활성화하려면 설정에서 Anthropic API 키를 구성하세요.",
+    noApiKey:"🔑 AI 코치 사용 불가",
+    noApiKeyMsg:"AI 코치를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.",
     configKey:"설정",
     thinking:"분석 중...",
     darkMode:"다크 모드",
@@ -13258,6 +13258,102 @@ const TipsView = ({role="csm", lang="fr"}) => {
   );
 };
 // ══════════════════════════════════════════════════
+// QUOTES / DEVIS
+// ══════════════════════════════════════════════════
+const QuotesView = ({lang="fr", currency="EUR", companyId}) => {
+  const STATUSES = ["draft","sent","won","lost"];
+  const statusLabel = s => T("quote"+s.charAt(0).toUpperCase()+s.slice(1), lang);
+  const statusColor = s => s==="won"?C.green:s==="lost"?C.red:s==="sent"?C.blue:C.muted;
+  const statusBg = s => s==="won"?C.greenBg:s==="lost"?C.redBg:s==="sent"?C.blueBg:C.surface;
+  const statusBorder = s => s==="won"?C.greenBorder:s==="lost"?C.redBorder:s==="sent"?"rgba(35,131,226,0.18)":C.border;
+  const storageKey = "scalyo_quotes_"+(companyId||"local");
+  const loadQuotes = () => { try{return JSON.parse(localStorage.getItem(storageKey))||[];}catch(e){return [];} };
+  const [quotes, setQuotes] = useState(loadQuotes);
+  const [filter, setFilter] = useState("all");
+  const [showForm, setShowForm] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [form, setForm] = useState({title:"",client:"",amount:"",status:"draft",date:new Date().toISOString().slice(0,10),notes:""});
+  const save = (list) => { setQuotes(list); try{localStorage.setItem(storageKey,JSON.stringify(list));}catch(e){} };
+  const filtered = filter==="all"?quotes:quotes.filter(q=>q.status===filter);
+  const totalWon = quotes.filter(q=>q.status==="won").reduce((s,q)=>s+parseFloat(q.amount||0),0);
+  const convRate = quotes.length?Math.round(quotes.filter(q=>q.status==="won").length/quotes.length*100):0;
+  const fmtAmount = v => {const n=parseFloat(v||0);return currency==="USD"?"$"+n.toLocaleString():currency==="GBP"?"£"+n.toLocaleString():currency==="AED"?n.toLocaleString()+" AED":currency==="SAR"?n.toLocaleString()+" SAR":n.toLocaleString()+"€";};
+  const openNew = () => { setEditId(null); setForm({title:"",client:"",amount:"",status:"draft",date:new Date().toISOString().slice(0,10),notes:""}); setShowForm(true); };
+  const openEdit = q => { setEditId(q.id); setForm({title:q.title,client:q.client,amount:String(q.amount),status:q.status,date:q.date,notes:q.notes||""}); setShowForm(true); };
+  const duplicate = q => { const nq={...q,id:Date.now(),title:q.title+" ("+T("quoteDuplicate",lang)+")",status:"draft",date:new Date().toISOString().slice(0,10)}; save([nq,...quotes]); };
+  const submit = () => {
+    if(!form.title.trim()||!form.client.trim()) return;
+    if(editId){save(quotes.map(q=>q.id===editId?{...q,...form,amount:parseFloat(form.amount||0)}:q));}
+    else{save([{id:Date.now(),...form,amount:parseFloat(form.amount||0)},...quotes]);}
+    setShowForm(false);
+  };
+  const remove = id => save(quotes.filter(q=>q.id!==id));
+  return /*#__PURE__*/React.createElement("div",{className:"fade-in",style:{padding:"24px 28px",maxWidth:960}},
+    /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20,flexWrap:"wrap",gap:12}},
+      /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12}},
+        /*#__PURE__*/React.createElement("div",{style:{width:40,height:40,borderRadius:6,background:C.teal,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}},"📄"),
+        /*#__PURE__*/React.createElement("div",null,
+          /*#__PURE__*/React.createElement("h2",{style:{fontSize:20,fontWeight:900,letterSpacing:"-.4px"}},T("quotes",lang)),
+          /*#__PURE__*/React.createElement("p",{style:{fontSize:12,color:C.muted}},quotes.length+" "+(lang==="en"?"quote(s)":lang==="kr"?"견적서":"devis"))
+        )
+      ),
+      /*#__PURE__*/React.createElement("button",{className:"btn-base",onClick:openNew,style:{background:C.teal,color:"#fff",padding:"10px 20px",borderRadius:6,fontSize:13,fontWeight:700}},T("addQuote",lang))
+    ),
+    /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:16,marginBottom:20,flexWrap:"wrap"}},
+      /*#__PURE__*/React.createElement("div",{style:{padding:"12px 18px",borderRadius:6,background:C.surface,border:`1px solid ${C.border}`,flex:1,minWidth:140}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:C.muted,fontWeight:600,marginBottom:4}},T("quoteTotalWon",lang)),
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:22,fontWeight:800,color:C.green}},fmtAmount(totalWon))
+      ),
+      /*#__PURE__*/React.createElement("div",{style:{padding:"12px 18px",borderRadius:6,background:C.surface,border:`1px solid ${C.border}`,flex:1,minWidth:140}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:C.muted,fontWeight:600,marginBottom:4}},T("quoteConversion",lang)),
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:22,fontWeight:800,color:C.teal}},convRate+"%")
+      )
+    ),
+    /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:6,marginBottom:18,flexWrap:"wrap"}},
+      ["all",...STATUSES].map(s=>/*#__PURE__*/React.createElement("button",{key:s,className:"btn-base",onClick:()=>setFilter(s),style:{padding:"6px 14px",borderRadius:20,fontSize:12,fontWeight:600,background:filter===s?C.tealBg:"transparent",color:filter===s?C.teal:C.muted,border:`1px solid ${filter===s?C.tealBorder:C.border}`}},s==="all"?T("quoteAll",lang):statusLabel(s)))
+    ),
+    filtered.length===0&&/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"60px 0",color:C.muted}},T("noQuotes",lang)),
+    filtered.map(q=>/*#__PURE__*/React.createElement("div",{key:q.id,className:"row-item",style:{display:"flex",alignItems:"center",gap:14,padding:"14px 16px",borderRadius:6,border:`1px solid ${C.border}`,marginBottom:8,background:C.bg1}},
+      /*#__PURE__*/React.createElement("div",{style:{flex:1,minWidth:0}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:700,marginBottom:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},q.title),
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:C.muted}},q.client+" · "+q.date)
+      ),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:15,fontWeight:700,whiteSpace:"nowrap"}},fmtAmount(q.amount)),
+      /*#__PURE__*/React.createElement("div",{style:{padding:"4px 10px",borderRadius:20,fontSize:11,fontWeight:700,background:statusBg(q.status),color:statusColor(q.status),border:`1px solid ${statusBorder(q.status)}`}},statusLabel(q.status)),
+      /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:6}},
+        /*#__PURE__*/React.createElement("button",{className:"btn-base",onClick:()=>openEdit(q),style:{padding:"4px 10px",borderRadius:6,fontSize:11,background:C.surface,color:C.text,border:`1px solid ${C.border}`}},T("edit",lang)),
+        /*#__PURE__*/React.createElement("button",{className:"btn-base",onClick:()=>duplicate(q),style:{padding:"4px 10px",borderRadius:6,fontSize:11,background:C.surface,color:C.text,border:`1px solid ${C.border}`}},"⧉"),
+        /*#__PURE__*/React.createElement("button",{className:"btn-base",onClick:()=>remove(q.id),style:{padding:"4px 10px",borderRadius:6,fontSize:11,background:C.redBg,color:C.red,border:`1px solid ${C.redBorder}`}},"×")
+      )
+    )),
+    showForm&&/*#__PURE__*/React.createElement("div",{className:"modal-overlay",onClick:e=>{if(e.target===e.currentTarget)setShowForm(false);}},
+      /*#__PURE__*/React.createElement("div",{className:"modal-box",style:{maxWidth:480,padding:28}},
+        /*#__PURE__*/React.createElement("h3",{style:{fontSize:16,fontWeight:800,marginBottom:20}},editId?T("edit",lang):T("addQuote",lang)),
+        [["title",T("quoteTitle",lang),"text"],["client",T("quoteClient",lang),"text"],["amount",T("quoteAmount",lang),"number"],["date",T("quoteDate",lang),"date"]].map(([k,l,t])=>
+          /*#__PURE__*/React.createElement("div",{key:k,style:{marginBottom:14}},
+            /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:600,color:C.muted,display:"block",marginBottom:4}},l),
+            /*#__PURE__*/React.createElement("input",{type:t,value:form[k],onChange:e=>setForm({...form,[k]:e.target.value}),style:{width:"100%",padding:"10px 14px",borderRadius:6,background:C.surface,border:`1px solid ${C.border}`,color:C.text,fontSize:13}})
+          )
+        ),
+        /*#__PURE__*/React.createElement("div",{style:{marginBottom:14}},
+          /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:600,color:C.muted,display:"block",marginBottom:4}},T("quoteStatus",lang)),
+          /*#__PURE__*/React.createElement("select",{value:form.status,onChange:e=>setForm({...form,status:e.target.value}),style:{width:"100%",padding:"10px 14px",borderRadius:6,background:C.surface,border:`1px solid ${C.border}`,color:C.text,fontSize:13}},
+            STATUSES.map(s=>/*#__PURE__*/React.createElement("option",{key:s,value:s},statusLabel(s)))
+          )
+        ),
+        /*#__PURE__*/React.createElement("div",{style:{marginBottom:20}},
+          /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:600,color:C.muted,display:"block",marginBottom:4}},T("quoteNotes",lang)),
+          /*#__PURE__*/React.createElement("textarea",{value:form.notes,onChange:e=>setForm({...form,notes:e.target.value}),rows:3,style:{width:"100%",padding:"10px 14px",borderRadius:6,background:C.surface,border:`1px solid ${C.border}`,color:C.text,fontSize:13,resize:"vertical"}})
+        ),
+        /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:10,justifyContent:"flex-end"}},
+          /*#__PURE__*/React.createElement("button",{className:"btn-base",onClick:()=>setShowForm(false),style:{padding:"10px 20px",borderRadius:6,fontSize:13,background:C.surface,color:C.text,border:`1px solid ${C.border}`}},T("cancel",lang)),
+          /*#__PURE__*/React.createElement("button",{className:"btn-base",onClick:submit,style:{padding:"10px 20px",borderRadius:6,fontSize:13,background:C.teal,color:"#fff",fontWeight:700}},editId?T("update",lang):T("create",lang))
+        )
+      )
+    )
+  );
+};
+// ══════════════════════════════════════════════════
 // MAIN APP
 // ══════════════════════════════════════════════════
 const NAV_MANAGER = (lang) => [{
@@ -13300,6 +13396,10 @@ const NAV_MANAGER = (lang) => [{
   id: "resources",
   label: T("resources",lang),
   icon: "📚"
+}, {
+  id: "quotes",
+  label: T("quotes",lang),
+  icon: "📄"
 }, {
   id: "email",
   label: T("email",lang),
@@ -13345,6 +13445,10 @@ const NAV_CSM = (lang) => [{
   id: "tips",
   label: T("tips",lang),
   icon: "🎓"
+}, {
+  id: "quotes",
+  label: T("quotes",lang),
+  icon: "📄"
 }, {
   id: "taskboard",
   label: T("taskboard",lang),
@@ -13928,6 +14032,8 @@ const App = () => {
         return /*#__PURE__*/React.createElement(KanbanBoardView, {accounts:accounts, lang:lang});
       case "tips":
         return /*#__PURE__*/React.createElement(TipsView, {role:role, lang:lang});
+      case "quotes":
+        return /*#__PURE__*/React.createElement(QuotesView, {lang:lang, currency:currency, companyId:company?.id});
       default:
         return /*#__PURE__*/React.createElement(DashboardView, {
           company: company,
