@@ -34,18 +34,18 @@
   --nav-hover:rgba(250,247,242,0.04);--skeleton1:rgba(250,247,242,0.04);--skeleton2:rgba(250,247,242,0.06);
 }
 [data-theme="light"]{
-  --bg:#FAF7F2;--bg1:#FFFFFF;--bg2:#F3EFE8;
-  --text:#2D2A26;--muted:rgba(45,42,38,0.50);--faint:rgba(45,42,38,0.14);
-  --surface:rgba(45,42,38,0.03);--surfaceHi:rgba(45,42,38,0.05);
-  --border:rgba(45,42,38,0.10);--borderHi:rgba(45,42,38,0.16);
-  --teal:#7B9BAF;--tealBg:rgba(123,155,175,0.07);--tealBorder:rgba(123,155,175,0.20);
-  --scroll-thumb:rgba(45,42,38,0.12);--scroll-thumb-h:rgba(45,42,38,0.22);
-  --modal-bg:rgba(45,42,38,0.50);--modal-box:#FFFFFF;--modal-box-border:rgba(45,42,38,0.08);
-  --tab-active-bg:#FFFFFF;--tab-text:rgba(45,42,38,0.40);--tab-active-text:#2D2A26;
-  --chip-bg:rgba(45,42,38,0.03);--chip-border:rgba(45,42,38,0.10);--chip-text:rgba(45,42,38,0.50);
-  --input-bg:#FFFFFF;--input-border:rgba(45,42,38,0.10);--input-text:#2D2A26;
-  --tip-bg:rgba(45,42,38,0.02);--tip-border:rgba(45,42,38,0.07);
-  --nav-hover:rgba(45,42,38,0.04);--skeleton1:rgba(45,42,38,0.03);--skeleton2:rgba(45,42,38,0.06);
+  --bg:#FFFFFF;--bg1:#FFFFFF;--bg2:#F7F6F3;
+  --text:#37352F;--muted:rgba(55,53,47,0.65);--faint:rgba(55,53,47,0.35);
+  --surface:rgba(55,53,47,0.04);--surfaceHi:rgba(55,53,47,0.07);
+  --border:rgba(55,53,47,0.09);--borderHi:rgba(55,53,47,0.16);
+  --teal:#0F7B6C;--tealBg:rgba(15,123,108,0.06);--tealBorder:rgba(15,123,108,0.20);
+  --scroll-thumb:rgba(55,53,47,0.14);--scroll-thumb-h:rgba(55,53,47,0.25);
+  --modal-bg:rgba(15,15,15,0.6);--modal-box:#FFFFFF;--modal-box-border:rgba(55,53,47,0.09);
+  --tab-active-bg:#FFFFFF;--tab-text:rgba(55,53,47,0.50);--tab-active-text:#37352F;
+  --chip-bg:rgba(55,53,47,0.04);--chip-border:rgba(55,53,47,0.09);--chip-text:rgba(55,53,47,0.65);
+  --input-bg:#FFFFFF;--input-border:rgba(55,53,47,0.16);--input-text:#37352F;
+  --tip-bg:rgba(55,53,47,0.03);--tip-border:rgba(55,53,47,0.06);
+  --nav-hover:rgba(55,53,47,0.04);--skeleton1:rgba(55,53,47,0.04);--skeleton2:rgba(55,53,47,0.08);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body,#root{height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:background .2s,color .2s;font-size:14px;line-height:1.6;letter-spacing:-0.01em}
@@ -102,7 +102,7 @@ input:checked+.toggle-slider::before{transform:translateX(20px)}
 .pulse{animation:pulse 2s infinite}
 .spin{animation:spin .7s linear infinite}
 input,select,textarea{outline:none;font-family:'Inter',sans-serif;-webkit-appearance:none;appearance:none}
-input:focus,select:focus,textarea:focus{border-color:rgba(123,155,175,0.35)!important;box-shadow:0 0 0 3px rgba(123,155,175,0.06)!important}
+input:focus,select:focus,textarea:focus{border-color:rgba(35,131,226,0.5)!important;box-shadow:0 0 0 3px rgba(35,131,226,0.08)!important}
 .modal-overlay{position:fixed;inset:0;background:var(--modal-bg);backdrop-filter:blur(16px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .35s ease}
 .modal-box{background:var(--modal-box);border:1px solid var(--modal-box-border);border-radius:8px;width:100%;animation:slideUp .25s ease;max-height:90vh;overflow-y:auto;color:var(--text)}
 .side-panel{animation:slideInR .22s ease}
@@ -114,7 +114,7 @@ input:focus,select:focus,textarea:focus{border-color:rgba(123,155,175,0.35)!impo
 /* Light mode input/select overrides */
 [data-theme="light"] input,[data-theme="light"] select,[data-theme="light"] textarea{color:var(--text);background:var(--input-bg)}
 [data-theme="light"] .modal-box{box-shadow:0 12px 40px rgba(45,42,38,0.08)}
-[data-theme="light"] select option{background:#fff;color:#2D2A26}
+[data-theme="light"] select option{background:#fff;color:#37352F}
 
     @keyframes bounce {
       0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
@@ -407,16 +407,16 @@ const C = {
 // ══ THEME SYSTEM ══
 const C_DARK = Object.assign({},C);
 const C_LIGHT = {
-  bg:"#FAF7F2", bg1:"#FFFFFF", bg2:"#F3EFE8", bg3:"#ECE7DF",
-  surface:"rgba(45,42,38,0.03)", surfaceHi:"rgba(45,42,38,0.05)",
-  border:"rgba(45,42,38,0.10)", borderHi:"rgba(45,42,38,0.16)",
-  teal:"#7B9BAF", tealBg:"rgba(123,155,175,0.07)", tealBorder:"rgba(123,155,175,0.20)", tealGlow:"rgba(123,155,175,0.08)",
-  red:"#C4796E", redBg:"rgba(196,121,110,0.06)", redBorder:"rgba(196,121,110,0.18)",
-  amber:"#C4A24E", amberBg:"rgba(196,162,78,0.06)", amberBorder:"rgba(196,162,78,0.18)",
-  green:"#7D9B8A", greenBg:"rgba(125,155,138,0.06)", greenBorder:"rgba(125,155,138,0.18)",
-  purple:"#9B8FB8", purpleBg:"rgba(155,143,184,0.07)",
-  blue:"#6B8FAD", blueBg:"rgba(107,143,173,0.07)",
-  text:"#2D2A26", muted:"rgba(45,42,38,0.50)", faint:"rgba(45,42,38,0.14)"
+  bg:"#FFFFFF", bg1:"#FFFFFF", bg2:"#F7F6F3", bg3:"#EDECE9",
+  surface:"rgba(55,53,47,0.04)", surfaceHi:"rgba(55,53,47,0.07)",
+  border:"rgba(55,53,47,0.09)", borderHi:"rgba(55,53,47,0.16)",
+  teal:"#0F7B6C", tealBg:"rgba(15,123,108,0.06)", tealBorder:"rgba(15,123,108,0.20)", tealGlow:"rgba(15,123,108,0.06)",
+  red:"#E03E3E", redBg:"rgba(224,62,62,0.06)", redBorder:"rgba(224,62,62,0.18)",
+  amber:"#D9730D", amberBg:"rgba(217,115,13,0.06)", amberBorder:"rgba(217,115,13,0.18)",
+  green:"#0F7B6C", greenBg:"rgba(15,123,108,0.06)", greenBorder:"rgba(15,123,108,0.18)",
+  purple:"#6940A5", purpleBg:"rgba(105,64,165,0.06)",
+  blue:"#2383E2", blueBg:"rgba(35,131,226,0.06)",
+  text:"#37352F", muted:"rgba(55,53,47,0.65)", faint:"rgba(55,53,47,0.35)"
 };
 const I18N={
   fr:{
@@ -13753,9 +13753,9 @@ const App = () => {
     try{localStorage.setItem("scalyo_theme",t);}catch(e){}
     Object.assign(C, t==="light"?C_LIGHT:C_DARK);
     document.documentElement.setAttribute("data-theme", t);
-    document.body.style.background = t==="light"?"#FAF7F2":"#1C1A17";
-    document.body.style.color = t==="light"?"#2D2A26":"#E8E4DC";
-    document.getElementById("root").style.background = t==="light"?"#FAF7F2":"#1C1A17";
+    document.body.style.background = t==="light"?"#FFFFFF":"#1C1A17";
+    document.body.style.color = t==="light"?"#37352F":"#E8E4DC";
+    document.getElementById("root").style.background = t==="light"?"#FFFFFF":"#1C1A17";
     setTheme(t);
   };
   const handleLang = l => { try{localStorage.setItem("scalyo_lang",l);}catch(e){} setLang(l); };
