@@ -2233,7 +2233,7 @@ const LoginScreen = ({
       textTransform: "uppercase",
       letterSpacing: ".08em"
     }
-  }, "Mot de passe *"), /*#__PURE__*/React.createElement("div", {
+  }, lang==="kr"?"비밀번호 *":lang==="en"?"Password *":"Mot de passe *"), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative"
     }
@@ -2343,11 +2343,11 @@ const LoginScreen = ({
       color: C.muted,
       marginBottom: 22
     }
-  }, "Configurez Scalyo en 30 secondes"), /*#__PURE__*/React.createElement(Field, {
+  }, lang==="kr"?"30초 만에 Scalyo 설정하기":lang==="en"?"Set up Scalyo in 30 seconds":"Configurez Scalyo en 30 secondes"), /*#__PURE__*/React.createElement(Field, {
     label: lang==="en" ? "Your company name" : lang==="kr" ? "회사명" : T("companyPlaceholder",lang),
     value: company,
     onChange: setCompany,
-    placeholder: "Ex : TechPilot SaaS",
+    placeholder: lang==="kr"?"예: TechPilot SaaS":lang==="en"?"E.g.: TechPilot SaaS":"Ex : TechPilot SaaS",
     onEnter: handleSignup,
     required: true
   }), /*#__PURE__*/React.createElement(Field, {
@@ -2372,7 +2372,7 @@ const LoginScreen = ({
       textTransform: "uppercase",
       letterSpacing: ".08em"
     }
-  }, "Mot de passe *"), /*#__PURE__*/React.createElement("div", {
+  }, lang==="kr"?"비밀번호 *":lang==="en"?"Password *":"Mot de passe *"), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative"
     }
@@ -2380,7 +2380,7 @@ const LoginScreen = ({
     value: pass,
     onChange: e => setPass(e.target.value),
     onKeyDown: e => e.key === "Enter" && handleSignup(),
-    placeholder: "8 caract\xE8res minimum",
+    placeholder: lang==="kr"?"최소 8자":lang==="en"?"8 characters minimum":"8 caractères minimum",
     type: showPass ? "text" : "password",
     style: {
       width: "100%",
@@ -3029,7 +3029,7 @@ const ImportModal = ({
       color: C.teal,
       cursor: "pointer"
     }
-  }, "Parcourir \u2192"), /*#__PURE__*/React.createElement("input", {
+  }, lang==="kr"?"찾아보기 →":lang==="en"?"Browse →":"Parcourir →"), /*#__PURE__*/React.createElement("input", {
     id: "imp-file-v5",
     type: "file",
     accept: ".xlsx,.xls,.csv",
@@ -3161,7 +3161,7 @@ const ImportModal = ({
       color: "#FFFFFF",
       fontSize: 13
     }
-  }, "Pr\xE9visualiser & \xE9diter \u2192"))), step === "preview" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, lang==="kr"?"미리보기 & 편집 →":lang==="en"?"Preview & edit →":"Prévisualiser & éditer →"))), step === "preview" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -3997,7 +3997,7 @@ const AccountTodoPanel = ({
       letterSpacing: ".08em",
       marginBottom: 8
     }
-  }, "Actions standard"), todos.filter(t => !t.custom).map(t => /*#__PURE__*/React.createElement("div", {
+  }, lang==="kr"?"기본 액션":lang==="en"?"Standard actions":"Actions standard"), todos.filter(t => !t.custom).map(t => /*#__PURE__*/React.createElement("div", {
     key: t.id,
     style: {
       marginBottom: 7,
@@ -4057,7 +4057,7 @@ const AccountTodoPanel = ({
   })), /*#__PURE__*/React.createElement("input", {
     value: t.note || "",
     onChange: e => updateNote(t.id, e.target.value),
-    placeholder: "Note libre (contexte, d\xE9tail...)",
+    placeholder: lang==="kr"?"메모 (상황, 세부사항...)":lang==="en"?"Note (context, details...)":"Note libre (contexte, détail...)",
     style: {
       marginTop: 6,
       width: "100%",
@@ -4082,7 +4082,7 @@ const AccountTodoPanel = ({
       letterSpacing: ".08em",
       marginBottom: 8
     }
-  }, "T\xE2ches personnalis\xE9es"), todos.filter(t => t.custom).map(t => /*#__PURE__*/React.createElement("div", {
+  }, lang==="kr"?"맞춤 업무":lang==="en"?"Custom tasks":"Tâches personnalisées"), todos.filter(t => t.custom).map(t => /*#__PURE__*/React.createElement("div", {
     key: t.id,
     style: {
       marginBottom: 7,
@@ -4302,7 +4302,7 @@ const AddAccountModal = ({
     label: lang==="en" ? "Account name" : lang==="kr" ? "계정명" : T("accNameLabel",lang),
     value: form.name,
     onChange: v => f("name", v),
-    placeholder: "Ex : TechPilot SaaS",
+    placeholder: lang==="kr"?"예: TechPilot SaaS":lang==="en"?"E.g.: TechPilot SaaS":"Ex : TechPilot SaaS",
     required: true,
     autoFocus: true
   }), /*#__PURE__*/React.createElement("div", {
@@ -4312,10 +4312,10 @@ const AddAccountModal = ({
       gap: 12
     }
   }, /*#__PURE__*/React.createElement(Field, {
-    label: "CSM assign\xE9",
+    label: lang==="kr"?"담당 CSM":lang==="en"?"Assigned CSM":"CSM assigné",
     value: form.csm,
     onChange: v => f("csm", v),
-    placeholder: "Pr\xE9nom Nom"
+    placeholder: lang==="kr"?"이름":lang==="en"?"First Last":"Prénom Nom"
   }), /*#__PURE__*/React.createElement("div", {style:{marginBottom:0}},
     React.createElement("label", {style:{fontSize:11,fontWeight:700,color:C.muted,display:"block",marginBottom:6,textTransform:"uppercase",letterSpacing:".06em"}},
       lang==="en" ? "Industry" : lang==="kr" ? "산업" : "Secteur"
@@ -4347,12 +4347,12 @@ const AddAccountModal = ({
       gap: 12
     }
   }, /*#__PURE__*/React.createElement(Field, {
-    label: `MRR (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol}/mois)`,
+    label: `MRR (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol}/${lang==="kr"?"월":lang==="en"?"month":"mois"})`,
     value: form.mrr,
     onChange: v => f("mrr", v),
     placeholder: "3500"
   }), /*#__PURE__*/React.createElement(Field, {
-    label: "Health Score (0-100)",
+    label: lang==="kr"?"건강 점수 (0-100)":lang==="en"?"Health Score (0-100)":"Health Score (0-100)",
     value: form.health,
     onChange: v => f("health", v),
     placeholder: "70"
@@ -4360,7 +4360,7 @@ const AddAccountModal = ({
     label: lang==="en" ? "Renewal date" : lang==="kr" ? "갱신일" : "Date de renouvellement",
     value: form.renewal,
     onChange: v => f("renewal", v),
-    placeholder: "J+90, 2025-06-30..."
+    placeholder: lang==="kr"?"D+90, 2025-06-30...":lang==="en"?"D+90, 2025-06-30...":"J+90, 2025-06-30..."
   }), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -4570,7 +4570,7 @@ const AccountDetailPanel = ({
       color: C.muted,
       marginTop: 2
     }
-  }, "Health")), /*#__PURE__*/React.createElement("div", {
+  }, lang==="kr"?"건강":"Health")), /*#__PURE__*/React.createElement("div", {
     style: {
       background: C.surface,
       borderRadius: 12,
@@ -4586,7 +4586,7 @@ const AccountDetailPanel = ({
       color: C.muted,
       marginTop: 5
     }
-  }, "Statut"))), /*#__PURE__*/React.createElement("div", {
+  }, lang==="kr"?"상태":lang==="en"?"Status":"Statut"))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 14
     }
@@ -4756,14 +4756,14 @@ const EditAccountPanel = ({
       gap: 10
     }
   }, /*#__PURE__*/React.createElement(Field, {
-    label: "MRR (\u20AC)",
+    label: "MRR (€)",
     value: form.mrr,
     onChange: v => setForm(p => ({
       ...p,
       mrr: v
     }))
   }), /*#__PURE__*/React.createElement(Field, {
-    label: "Health (0-100)",
+    label: lang==="kr"?"건강 (0-100)":"Health (0-100)",
     value: form.health,
     onChange: v => setForm(p => ({
       ...p,
@@ -10332,10 +10332,10 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     k: "nps",
     goalKey: "nps"
   , kpis:kpis, goals:goals, draft:draft, upd:upd, commitUpd:commitUpd, lang:lang}), /*#__PURE__*/React.createElement(KpiField, {
-    label: "Nb. r\xE9ponses NPS",
+    label: lang==="kr"?"NPS 응답 수":lang==="en"?"NPS responses":"Nb. réponses NPS",
     k: "npsResponses"
   , kpis:kpis, goals:goals, draft:draft, upd:upd, commitUpd:commitUpd, lang:lang}), /*#__PURE__*/React.createElement(KpiField, {
-    label: "CSAT (0-10)",
+    label: lang==="kr"?"CSAT (0-10)":"CSAT (0-10)",
     k: "csat",
     goalKey: "csat"
   , kpis:kpis, goals:goals, draft:draft, upd:upd, commitUpd:commitUpd, lang:lang}), /*#__PURE__*/React.createElement(KpiField, {
@@ -10527,11 +10527,11 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     label: lang==="en" ? "Open tickets" : lang==="kr" ? "오픈 티켓" : "Tickets ouverts",
     k: "openTickets"
   , kpis:kpis, goals:goals, draft:draft, upd:upd, commitUpd:commitUpd, lang:lang}), /*#__PURE__*/React.createElement(KpiField, {
-    label: "Tickets r\xE9solus",
+    label: lang==="kr"?"해결된 티켓":lang==="en"?"Resolved tickets":"Tickets résolus",
     k: "resolvedTickets",
     goalKey: "resolvedTickets"
   , kpis:kpis, goals:goals, draft:draft, upd:upd, commitUpd:commitUpd, lang:lang}), /*#__PURE__*/React.createElement(KpiField, {
-    label: "D\xE9lai r\xE9solution (h)",
+    label: lang==="kr"?"해결 시간 (h)":lang==="en"?"Resolution time (h)":"Délai résolution (h)",
     k: "avgResolutionTime",
     unit: "h"
   , kpis:kpis, goals:goals, draft:draft, upd:upd, commitUpd:commitUpd, lang:lang}), /*#__PURE__*/React.createElement(KpiField, {
@@ -14566,7 +14566,7 @@ const App = () => {
     }
   }, company?.plan || "Starter"), " · ", role === "manager" ? "Manager" : "CSM")), /*#__PURE__*/React.createElement("button", {
     onClick: handleLogout,
-    title: "D\xE9connexion",
+    title: lang==="kr"?"로그아웃":lang==="en"?"Log out":"Déconnexion",
     style: {
       background: "none",
       border: "none",
