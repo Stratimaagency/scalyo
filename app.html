@@ -5372,101 +5372,93 @@ const AddTaskModal = ({onClose,onAdd,lang,editTask,accounts=[]})=>{
   );
 };
 
-const KanbanBoardView = ({accounts=[], lang="fr"}) => {
-  const [columns, setColumns] = useState({todo:[], in_progress:[], done:[]});
+const KanbanBoardView = ({accounts=[], lang="fr", tasks=[], onUpdate, onAdd}) => {
   const [dragItem, setDragItem] = useState(null);
+  const [showAdd, setShowAdd] = useState(false);
+  const [editTask, setEditTask] = useState(null);
 
-  useEffect(()=>{
-    const todo=[], inProg=[], done=[];
-    const today = new Date().toISOString().slice(0,10);
-    accounts.forEach(acc=>{
-      try{
-        const raw=localStorage.getItem(`scalyo_todos_${acc.id}`);
-        if(!raw) return;
-        JSON.parse(raw).forEach(t=>{
-          const item={...t, accountId:acc.id, accountName:acc.name};
-          if(t.done) done.push(item);
-          else if(t.date && t.date<=today) inProg.push(item);
-          else todo.push(item);
-        });
-      }catch(e){}
-    });
-    setColumns({todo, in_progress:inProg, done});
-  },[accounts]);
+  // Répartir les tâches en colonnes kanban basé sur quadrant + done
+  const todo = tasks.filter(t => !t.done && (t.quadrant === "q3" || t.quadrant === "q4"));
+  const inProgress = tasks.filter(t => !t.done && (t.quadrant === "q1" || t.quadrant === "q2"));
+  const done = tasks.filter(t => t.done);
+  const columns = {todo, in_progress: inProgress, done};
 
-  const handleDragStart=(e,task,fromCol)=>{ setDragItem({task,fromCol}); e.dataTransfer.effectAllowed="move"; };
-  const handleDrop=(e,toCol)=>{
+  const handleDragStart = (e, task, fromCol) => { setDragItem({task, fromCol}); e.dataTransfer.effectAllowed = "move"; };
+  const handleDrop = (e, toCol) => {
     e.preventDefault();
-    if(!dragItem) return;
-    const {task,fromCol}=dragItem;
-    if(fromCol===toCol) return;
-    const newDone=toCol==="done";
-    try{
-      const raw=localStorage.getItem(`scalyo_todos_${task.accountId}`);
-      if(raw){
-        const tasks=JSON.parse(raw);
-        const idx=tasks.findIndex(t=>t.id===task.id);
-        if(idx>=0){ tasks[idx]={...tasks[idx],done:newDone}; localStorage.setItem(`scalyo_todos_${task.accountId}`,JSON.stringify(tasks)); }
-      }
-    }catch(e){}
-    setColumns(prev=>{
-      const n={...prev};
-      n[fromCol]=prev[fromCol].filter(t=>!(t.id===task.id&&t.accountId===task.accountId));
-      n[toCol]=[...prev[toCol],{...task,done:newDone}];
-      return n;
-    });
+    if (!dragItem) return;
+    const {task, fromCol} = dragItem;
+    if (fromCol === toCol) { setDragItem(null); return; }
+    let updated;
+    if (toCol === "done") updated = {...task, done: true};
+    else if (toCol === "in_progress") updated = {...task, done: false, quadrant: task.quadrant === "q3" || task.quadrant === "q4" ? "q1" : task.quadrant};
+    else updated = {...task, done: false, quadrant: task.quadrant === "q1" || task.quadrant === "q2" ? "q3" : task.quadrant};
+    const newTasks = tasks.map(t => t.id === task.id ? updated : t);
+    onUpdate(newTasks);
     setDragItem(null);
   };
 
-  const colConfig=[
-    {key:"todo",      label:T("todoCol",lang),        color:C.amber, icon:"⏳"},
-    {key:"in_progress",label:T("inProgressCol",lang), color:C.blue,  icon:"🔄"},
-    {key:"done",      label:T("doneCol",lang),         color:C.green, icon:"✅"}
+  const colConfig = [
+    {key: "todo", label: T("todoCol", lang), color: C.amber, icon: "⏳"},
+    {key: "in_progress", label: T("inProgressCol", lang), color: C.blue, icon: "🔄"},
+    {key: "done", label: T("doneCol", lang), color: C.green, icon: "✅"}
   ];
 
-  return /*#__PURE__*/React.createElement("div",{className:"fade-in",style:{padding:20,height:"100%",overflow:"auto"}},
-    /*#__PURE__*/React.createElement("h2",{style:{fontSize:20,fontWeight:900,marginBottom:18,letterSpacing:"-0.5px"}},
-      "📋 ",T("taskboard",lang)),
-    /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:14,minHeight:400}},
-      colConfig.map(col=>
-        /*#__PURE__*/React.createElement("div",{
-          key:col.key,
-          onDragOver:e=>e.preventDefault(),
-          onDrop:e=>handleDrop(e,col.key),
-          style:{flex:1,background:C.surface,borderRadius:8,padding:14,border:`1px solid ${C.border}`,minHeight:300,overflow:"auto"}
+  return React.createElement("div", {className: "fade-in", style: {padding: 20, height: "100%", overflow: "auto"}},
+    React.createElement("div", {style: {display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18}},
+      React.createElement("h2", {style: {fontSize: 20, fontWeight: 900, letterSpacing: "-0.5px"}}, "📋 ", T("taskboard", lang)),
+      React.createElement("button", {
+        onClick: () => { setEditTask(null); setShowAdd(true); },
+        style: {display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 6, background: C.teal, color: "#FFFFFF", fontSize: 12, fontWeight: 800, border: "none", cursor: "pointer"}
+      }, "+ " + T("newTask", lang))
+    ),
+    React.createElement("div", {style: {display: "flex", gap: 14, minHeight: 400}},
+      colConfig.map(col =>
+        React.createElement("div", {
+          key: col.key,
+          onDragOver: e => e.preventDefault(),
+          onDrop: e => handleDrop(e, col.key),
+          style: {flex: 1, background: C.surface, borderRadius: 8, padding: 14, border: `1px solid ${C.border}`, minHeight: 300, overflow: "auto"}
         },
-          /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:800,marginBottom:12,display:"flex",alignItems:"center",gap:8,color:col.color}},
-            col.icon," ",col.label,
-            /*#__PURE__*/React.createElement("span",{style:{fontSize:11,background:`${col.color}22`,border:`1px solid ${col.color}44`,padding:"2px 8px",borderRadius:16,color:col.color,fontWeight:700}},
+          React.createElement("div", {style: {fontSize: 13, fontWeight: 800, marginBottom: 12, display: "flex", alignItems: "center", gap: 8, color: col.color}},
+            col.icon, " ", col.label,
+            React.createElement("span", {style: {fontSize: 11, background: `${col.color}22`, border: `1px solid ${col.color}44`, padding: "2px 8px", borderRadius: 16, color: col.color, fontWeight: 700}},
               columns[col.key].length)
           ),
-          columns[col.key].length===0
-            ? /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:C.muted,textAlign:"center",padding:20}},T("noTasks",lang))
-            : columns[col.key].map((task,i)=>
-                /*#__PURE__*/React.createElement("div",{
-                  key:`${task.accountId}-${task.id}-${i}`,
-                  draggable:true,
-                  onDragStart:e=>handleDragStart(e,task,col.key),
-                  style:{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:6,padding:"12px 14px",marginBottom:8,cursor:"grab",transition:"border-color .15s"},
-                  onMouseEnter:e=>e.currentTarget.style.borderColor=col.color+"66",
-                  onMouseLeave:e=>e.currentTarget.style.borderColor=C.border
+          columns[col.key].length === 0
+            ? React.createElement("div", {style: {fontSize: 12, color: C.muted, textAlign: "center", padding: 20, border: `1px dashed ${C.border}`, borderRadius: 8}}, T("noTasks", lang))
+            : columns[col.key].map(task => {
+                const taskColor = TASK_COLORS.find(c => c.id === task.color) || TASK_COLORS[0];
+                return React.createElement("div", {
+                  key: task.id,
+                  draggable: true,
+                  onDragStart: e => handleDragStart(e, task, col.key),
+                  onClick: () => { setEditTask(task); setShowAdd(true); },
+                  style: {background: C.bg, border: `1px solid ${C.border}`, borderLeft: `3px solid ${taskColor.hex}`, borderRadius: 6, padding: "12px 14px", marginBottom: 8, cursor: "grab", transition: "border-color .15s"}
                 },
-                  /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:600,marginBottom:4,display:"flex",alignItems:"center",gap:6}},
-                    task.icon||"📌"," ",task.label),
-                  /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:C.muted,display:"flex",justifyContent:"space-between"}},
-                    /*#__PURE__*/React.createElement("span",null,task.accountName),
-                    task.date?/*#__PURE__*/React.createElement("span",null,"📅 ",task.date):null
+                  React.createElement("div", {style: {fontSize: 13, fontWeight: 600, marginBottom: 4, textDecoration: task.done ? "line-through" : "none", opacity: task.done ? 0.6 : 1}}, task.title),
+                  React.createElement("div", {style: {fontSize: 11, color: C.muted, display: "flex", justifyContent: "space-between", alignItems: "center"}},
+                    React.createElement("span", null, task.account || ""),
+                    task.dueDate ? React.createElement("span", {style: {color: new Date(task.dueDate) < new Date() && !task.done ? C.red : C.muted}}, "📅 " + task.dueDate) : null
                   )
-                )
-              )
+                );
+              })
         )
       )
-    )
+    ),
+    showAdd && React.createElement(AddTaskModal, {
+      lang, accounts,
+      editTask: editTask ? {...editTask} : {quadrant: "q1"},
+      onClose: () => { setShowAdd(false); setEditTask(null); },
+      onAdd: task => { onAdd(task); setShowAdd(false); setEditTask(null); }
+    })
   );
 };
 
-const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
-  const [tasks,setTasks]=useState(()=>getTasksFromLS());
+const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null, sharedTasks, onSharedSave, onSharedAdd, onSharedDelete, onSharedToggle, onSharedMove})=>{
+  // Si tâches partagées depuis UnifiedTaskBoard, les utiliser ; sinon, état local (standalone)
+  const [localTasks,setLocalTasks]=useState(()=>getTasksFromLS());
+  const tasks = sharedTasks || localTasks;
   const [showAdd,setShowAdd]=useState(false);
   const [editTask,setEditTask]=useState(null);
   const [filter,setFilter]=useState("all");
@@ -5474,21 +5466,17 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
   const [aiLoading,setAiLoading]=useState(false);
   const [defaultQuad,setDefaultQuad]=useState("q1");
 
-  // Chargement Supabase au montage
+  // Chargement Supabase au montage (seulement en mode standalone)
   useEffect(()=>{
-    if(!companyId) return;
-    TaskDB.load(companyId).then(t=>{ if(t&&t.length) setTasks(t); });
-  },[companyId]);
+    if(sharedTasks || !companyId) return;
+    TaskDB.load(companyId).then(t=>{ if(t&&t.length) setLocalTasks(t); });
+  },[companyId, sharedTasks]);
 
-  const save=t=>{ setTasks(t); TaskDB.save(companyId, t); };
-  const addTask=task=>{
-    const existing=tasks.findIndex(t=>t.id===task.id);
-    if(existing>=0){const n=[...tasks];n[existing]=task;save(n);}
-    else save([...tasks,task]);
-  };
-  const deleteTask=id=>save(tasks.filter(t=>t.id!==id));
-  const toggleTask=id=>save(tasks.map(t=>t.id===id?{...t,done:!t.done}:t));
-  const moveTask=(id,quad)=>save(tasks.map(t=>t.id===id?{...t,quadrant:quad}:t));
+  const save=t=>{ if(onSharedSave) onSharedSave(t); else { setLocalTasks(t); TaskDB.save(companyId, t); } };
+  const addTask=task=>{ if(onSharedAdd) onSharedAdd(task); else { const existing=tasks.findIndex(t=>t.id===task.id); if(existing>=0){const n=[...tasks];n[existing]=task;save(n);} else save([...tasks,task]); }};
+  const deleteTask=id=>{ if(onSharedDelete) onSharedDelete(id); else save(tasks.filter(t=>t.id!==id)); };
+  const toggleTask=id=>{ if(onSharedToggle) onSharedToggle(id); else save(tasks.map(t=>t.id===id?{...t,done:!t.done}:t)); };
+  const moveTask=(id,quad)=>{ if(onSharedMove) onSharedMove(id,quad); else save(tasks.map(t=>t.id===id?{...t,quadrant:quad}:t)); };
 
   const filtered=filter==="all"?tasks:filter==="done"?tasks.filter(t=>t.done):tasks.filter(t=>t.color===filter&&!t.done);
   const todo=filtered.filter(t=>!t.done);
@@ -5651,17 +5639,35 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null})=>{
 // UNIFIED TASK BOARD — Kanban + Eisenhower tabs
 // ══════════════════════════════════════════════════
 const UnifiedTaskBoard = ({accounts=[], role="csm", lang="fr", companyId=null}) => {
+  // État partagé des tâches entre Kanban et Eisenhower
+  const [tasks, setTasks] = useState(() => getTasksFromLS());
   const [activeTab, setActiveTab] = useState(() => {
     try { return localStorage.getItem("scalyo_taskboard_tab") || "kanban"; } catch(e) { return "kanban"; }
   });
+
+  // Chargement Supabase au montage
+  useEffect(() => {
+    if (!companyId) return;
+    TaskDB.load(companyId).then(t => { if (t && t.length) setTasks(t); });
+  }, [companyId]);
+
+  const save = t => { setTasks(t); TaskDB.save(companyId, t); };
+  const addTask = task => {
+    const existing = tasks.findIndex(t => t.id === task.id);
+    if (existing >= 0) { const n = [...tasks]; n[existing] = task; save(n); }
+    else save([...tasks, task]);
+  };
+  const deleteTask = id => save(tasks.filter(t => t.id !== id));
+  const toggleTask = id => save(tasks.map(t => t.id === id ? {...t, done: !t.done} : t));
+  const moveTask = (id, quad) => save(tasks.map(t => t.id === id ? {...t, quadrant: quad} : t));
+
   const switchTab = (tab) => { setActiveTab(tab); try { localStorage.setItem("scalyo_taskboard_tab", tab); } catch(e){} };
   const tabs = [
     {key:"kanban", label:T("kanbanView",lang), icon:"\u{1F4CB}"},
     {key:"eisenhower", label:T("eisenhowerView",lang), icon:"\u{1F3AF}"}
   ];
-  return React.createElement("div", {className:"fade-in", style:{padding:20,height:"100%",overflow:"auto"}},
-    React.createElement("div", {style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18}},
-      React.createElement("h2", {style:{fontSize:20,fontWeight:900,letterSpacing:"-0.5px"}}, "\u{1F4CB} ", T("tasks",lang)),
+  return React.createElement("div", {className:"fade-in", style:{padding:0,height:"100%",overflow:"auto"}},
+    React.createElement("div", {style:{display:"flex",alignItems:"center",justifyContent:"flex-end",padding:"20px 20px 0",marginBottom:0}},
       React.createElement("div", {style:{display:"flex",gap:2,background:C.surface,borderRadius:10,padding:3,border:"1px solid "+C.border}},
         tabs.map(function(tab) { return React.createElement("button", {
           key:tab.key,
@@ -5677,8 +5683,8 @@ const UnifiedTaskBoard = ({accounts=[], role="csm", lang="fr", companyId=null}) 
       )
     ),
     activeTab === "kanban"
-      ? React.createElement(KanbanBoardView, {accounts:accounts, lang:lang})
-      : React.createElement(TaskBoardView, {accounts:accounts, role:role, lang:lang, companyId:companyId})
+      ? React.createElement(KanbanBoardView, {accounts:accounts, lang:lang, tasks:tasks, onUpdate:save, onAdd:addTask})
+      : React.createElement(TaskBoardView, {accounts:accounts, role:role, lang:lang, companyId:companyId, sharedTasks:tasks, onSharedSave:save, onSharedAdd:addTask, onSharedDelete:deleteTask, onSharedToggle:toggleTask, onSharedMove:moveTask})
   );
 };
 
@@ -14021,16 +14027,24 @@ const App = () => {
       wellbeing: { ...prev.wellbeing, ...updates }
     }));
   };
-  if (!authReady) return /*#__PURE__*/React.createElement(Loader, {
-    text: T("initializingApp",lang)
-  });
-  if (!session) return /*#__PURE__*/React.createElement(LoginScreen, {
+  // FIX LOADING DEFINITIF: Si on a des données en cache, JAMAIS de loading screen
+  // Le loading ne s'affiche QUE pour la toute première connexion (aucun cache)
+  if (!appData) {
+    // Pas de cache → on doit attendre
+    if (!authReady) return /*#__PURE__*/React.createElement(Loader, {
+      text: T("initializingApp",lang)
+    });
+    if (!session) return /*#__PURE__*/React.createElement(LoginScreen, {
+      onLogin: handleLogin, lang: lang
+    });
+    return /*#__PURE__*/React.createElement(Loader, {
+      text: lang === "en" ? "Loading your Scalyo workspace..." : lang === "kr" ? "Scalyo 워크스페이스 로딩 중..." : "Chargement de votre espace Scalyo..."
+    });
+  }
+  // On a des données (cache ou DB) → afficher l'app immédiatement
+  // Si pas encore de session, montrer le login
+  if (authReady && !session) return /*#__PURE__*/React.createElement(LoginScreen, {
     onLogin: handleLogin, lang: lang
-  });
-  // FIX: Ne montrer le loading QUE si on n'a aucune donnée (première connexion)
-  // Si on a des données en cache, les afficher immédiatement pendant le chargement en fond
-  if (!appData) return /*#__PURE__*/React.createElement(Loader, {
-    text: lang === "en" ? "Loading your Scalyo workspace..." : lang === "kr" ? "Scalyo 워크스페이스 로딩 중..." : "Chargement de votre espace Scalyo..."
   });
   const {
     company,
