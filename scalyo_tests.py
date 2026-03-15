@@ -724,11 +724,11 @@ class ScalyoTestSuite:
 
         # Light theme colors
         self.add("Thème clair — background blanc",
-                 '"#F0F4F8"' in self.js or '"#FFFFFF"' in self.js,
+                 '"#FAF7F2"' in self.js or '"#F0F4F8"' in self.js or '"#FFFFFF"' in self.js,
                  "Fond clair utilise des blancs/gris", "P2", cat)
 
         self.add("Thème clair — texte sombre",
-                 '"#37352F"' in self.js or '"#1E293B"' in self.js,
+                 '"#2D2A26"' in self.js or '"#37352F"' in self.js or '"#1E293B"' in self.js,
                  "Texte sombre en mode clair", "P2", cat)
 
     # ═══════════════════════════════════════════════════
@@ -918,14 +918,14 @@ class ScalyoTestSuite:
         cat = "14. Design Tokens"
 
         tokens = {
-            "bg": "#191919",
-            "teal": "#4DB6A0",
-            "red": "#EB5757",
-            "amber": "#E8A838",
-            "green": "#4DAB6D",
-            "purple": "#9B6BDF",
-            "blue": "#529CCA",
-            "text": "rgba(255,255,255,0.85)",
+            "bg": "#1C1A17",
+            "teal": "#9BB8CC",
+            "red": "#D4958A",
+            "amber": "#D4BA6E",
+            "green": "#9BB8A8",
+            "purple": "#B8A8D4",
+            "blue": "#8BA8C4",
+            "text": "#E8E4DC",
         }
         for name, value in tokens.items():
             self.add(f"Token — {name} = {value}",

@@ -20,32 +20,32 @@
 <style>
 /* === CSS VARIABLES — THEME SYSTEM === */
 :root{
-  --bg:#191919;--bg1:#202020;--bg2:#2F2F2F;
-  --text:rgba(255,255,255,0.85);--muted:rgba(255,255,255,0.72);--faint:rgba(255,255,255,0.38);
-  --surface:rgba(255,255,255,0.055);--surfaceHi:rgba(255,255,255,0.09);
-  --border:rgba(255,255,255,0.09);--borderHi:rgba(255,255,255,0.16);
-  --teal:#4DB6A0;--tealBg:rgba(77,182,160,0.12);--tealBorder:rgba(77,182,160,0.28);
-  --scroll-thumb:rgba(255,255,255,0.10);--scroll-thumb-h:rgba(255,255,255,0.18);
-  --modal-bg:rgba(0,0,0,0.65);--modal-box:#252525;--modal-box-border:rgba(255,255,255,0.10);
-  --tab-active-bg:#2F2F2F;--tab-text:rgba(255,255,255,0.55);--tab-active-text:rgba(255,255,255,0.85);
-  --chip-bg:rgba(255,255,255,0.055);--chip-border:rgba(255,255,255,0.10);--chip-text:rgba(255,255,255,0.72);
-  --input-bg:rgba(255,255,255,0.055);--input-border:rgba(255,255,255,0.12);--input-text:rgba(255,255,255,0.85);
-  --tip-bg:rgba(255,255,255,0.04);--tip-border:rgba(255,255,255,0.09);
-  --nav-hover:rgba(255,255,255,0.055);--skeleton1:rgba(255,255,255,0.04);--skeleton2:rgba(255,255,255,0.08);
+  --bg:#1C1A17;--bg1:#252320;--bg2:#2D2B27;
+  --text:#E8E4DC;--muted:rgba(232,228,220,0.50);--faint:rgba(232,228,220,0.14);
+  --surface:rgba(250,247,242,0.04);--surfaceHi:rgba(250,247,242,0.06);
+  --border:rgba(250,247,242,0.08);--borderHi:rgba(250,247,242,0.14);
+  --teal:#9BB8CC;--tealBg:rgba(155,184,204,0.08);--tealBorder:rgba(155,184,204,0.20);
+  --scroll-thumb:rgba(250,247,242,0.10);--scroll-thumb-h:rgba(250,247,242,0.18);
+  --modal-bg:rgba(28,26,23,0.65);--modal-box:#252320;--modal-box-border:rgba(250,247,242,0.10);
+  --tab-active-bg:#2D2B27;--tab-text:rgba(232,228,220,0.50);--tab-active-text:#E8E4DC;
+  --chip-bg:rgba(250,247,242,0.04);--chip-border:rgba(250,247,242,0.08);--chip-text:rgba(232,228,220,0.50);
+  --input-bg:rgba(250,247,242,0.04);--input-border:rgba(250,247,242,0.08);--input-text:#E8E4DC;
+  --tip-bg:rgba(250,247,242,0.04);--tip-border:rgba(250,247,242,0.06);
+  --nav-hover:rgba(250,247,242,0.04);--skeleton1:rgba(250,247,242,0.04);--skeleton2:rgba(250,247,242,0.06);
 }
 [data-theme="light"]{
-  --bg:#FFFFFF;--bg1:#FFFFFF;--bg2:#F7F6F3;
-  --text:#37352F;--muted:rgba(55,53,47,0.72);--faint:rgba(55,53,47,0.40);
-  --surface:rgba(55,53,47,0.04);--surfaceHi:rgba(55,53,47,0.07);
-  --border:rgba(55,53,47,0.12);--borderHi:rgba(55,53,47,0.20);
-  --teal:#0F7B6C;--tealBg:rgba(15,123,108,0.08);--tealBorder:rgba(15,123,108,0.25);
-  --scroll-thumb:rgba(55,53,47,0.14);--scroll-thumb-h:rgba(55,53,47,0.25);
-  --modal-bg:rgba(15,15,15,0.6);--modal-box:#FFFFFF;--modal-box-border:rgba(55,53,47,0.12);
-  --tab-active-bg:#FFFFFF;--tab-text:rgba(55,53,47,0.50);--tab-active-text:#37352F;
-  --chip-bg:rgba(55,53,47,0.04);--chip-border:rgba(55,53,47,0.12);--chip-text:rgba(55,53,47,0.72);
-  --input-bg:#FFFFFF;--input-border:rgba(55,53,47,0.18);--input-text:#37352F;
-  --tip-bg:rgba(55,53,47,0.03);--tip-border:rgba(55,53,47,0.09);
-  --nav-hover:rgba(55,53,47,0.04);--skeleton1:rgba(55,53,47,0.05);--skeleton2:rgba(55,53,47,0.09);
+  --bg:#FAF7F2;--bg1:#FFFFFF;--bg2:#F3EFE8;
+  --text:#2D2A26;--muted:rgba(45,42,38,0.50);--faint:rgba(45,42,38,0.14);
+  --surface:rgba(45,42,38,0.03);--surfaceHi:rgba(45,42,38,0.05);
+  --border:rgba(45,42,38,0.10);--borderHi:rgba(45,42,38,0.16);
+  --teal:#7B9BAF;--tealBg:rgba(123,155,175,0.07);--tealBorder:rgba(123,155,175,0.20);
+  --scroll-thumb:rgba(45,42,38,0.12);--scroll-thumb-h:rgba(45,42,38,0.22);
+  --modal-bg:rgba(45,42,38,0.50);--modal-box:#FFFFFF;--modal-box-border:rgba(45,42,38,0.08);
+  --tab-active-bg:#FFFFFF;--tab-text:rgba(45,42,38,0.40);--tab-active-text:#2D2A26;
+  --chip-bg:rgba(45,42,38,0.03);--chip-border:rgba(45,42,38,0.10);--chip-text:rgba(45,42,38,0.50);
+  --input-bg:#FFFFFF;--input-border:rgba(45,42,38,0.10);--input-text:#2D2A26;
+  --tip-bg:rgba(45,42,38,0.02);--tip-border:rgba(45,42,38,0.07);
+  --nav-hover:rgba(45,42,38,0.04);--skeleton1:rgba(45,42,38,0.03);--skeleton2:rgba(45,42,38,0.06);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body,#root{height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:background .2s,color .2s;font-size:14px;line-height:1.6;letter-spacing:-0.01em}
@@ -79,7 +79,7 @@ html,body,#root{height:100%;background:var(--bg);font-family:'Inter',sans-serif;
 .toggle-switch{position:relative;width:46px;height:26px;display:inline-block;flex-shrink:0}
 .toggle-switch input{display:none}
 .toggle-slider{position:absolute;inset:0;border-radius:26px;background:var(--surface);cursor:pointer;transition:.3s;border:1px solid var(--border)}
-.toggle-slider::before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 2px 6px rgba(0,0,0,0.25)}
+.toggle-slider::before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(45,42,38,0.08)}
 input:checked+.toggle-slider{background:var(--teal);border-color:var(--teal)}
 input:checked+.toggle-slider::before{transform:translateX(20px)}
 .nav-btn{transition:all .25s ease;border-radius:10px;cursor:pointer}
@@ -102,19 +102,19 @@ input:checked+.toggle-slider::before{transform:translateX(20px)}
 .pulse{animation:pulse 2s infinite}
 .spin{animation:spin .7s linear infinite}
 input,select,textarea{outline:none;font-family:'Inter',sans-serif;-webkit-appearance:none;appearance:none}
-input:focus,select:focus,textarea:focus{border-color:rgba(77,182,160,0.5)!important;box-shadow:0 0 0 4px rgba(77,182,160,0.06)!important}
+input:focus,select:focus,textarea:focus{border-color:rgba(123,155,175,0.35)!important;box-shadow:0 0 0 3px rgba(123,155,175,0.06)!important}
 .modal-overlay{position:fixed;inset:0;background:var(--modal-bg);backdrop-filter:blur(16px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .35s ease}
 .modal-box{background:var(--modal-box);border:1px solid var(--modal-box-border);border-radius:8px;width:100%;animation:slideUp .25s ease;max-height:90vh;overflow-y:auto;color:var(--text)}
 .side-panel{animation:slideInR .22s ease}
 .tab-bar{display:flex;gap:4px;background:var(--surface);border-radius:8px;padding:4px;border:1px solid var(--border)}
 .tab-item{padding:7px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;transition:all .25s ease;color:var(--tab-text);white-space:nowrap}
-.tab-item.active{background:var(--tab-active-bg);color:var(--tab-active-text);box-shadow:0 1px 6px rgba(0,0,0,0.15)}
+.tab-item.active{background:var(--tab-active-bg);color:var(--tab-active-text);box-shadow:0 1px 4px rgba(45,42,38,0.06)}
 .tab-item:hover:not(.active){color:var(--text);background:var(--surfaceHi)}
 .skeleton{background:linear-gradient(90deg,var(--skeleton1) 25%,var(--skeleton2) 50%,var(--skeleton1) 75%);background-size:200% 100%;animation:shimmer 2.5s ease-in-out infinite;border-radius:10px}
 /* Light mode input/select overrides */
 [data-theme="light"] input,[data-theme="light"] select,[data-theme="light"] textarea{color:var(--text);background:var(--input-bg)}
-[data-theme="light"] .modal-box{box-shadow:0 20px 60px rgba(0,0,0,0.15)}
-[data-theme="light"] select option{background:#fff;color:#37352F}
+[data-theme="light"] .modal-box{box-shadow:0 12px 40px rgba(45,42,38,0.08)}
+[data-theme="light"] select option{background:#fff;color:#2D2A26}
 
     @keyframes bounce {
       0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
@@ -393,30 +393,30 @@ var lang = (function(){ try { return localStorage.getItem("scalyo_lang")||"fr"; 
 
 // ─── Design tokens
 const C = {
-  bg:"#191919", bg1:"#202020", bg2:"#2F2F2F", bg3:"#373737",
-  surface:"rgba(255,255,255,0.055)", surfaceHi:"rgba(255,255,255,0.09)",
-  border:"rgba(255,255,255,0.09)", borderHi:"rgba(255,255,255,0.16)",
-  teal:"#4DB6A0", tealBg:"rgba(77,182,160,0.12)", tealBorder:"rgba(77,182,160,0.28)", tealGlow:"rgba(77,182,160,0.08)",
-  red:"#EB5757", redBg:"rgba(235,87,87,0.12)", redBorder:"rgba(235,87,87,0.22)",
-  amber:"#E8A838", amberBg:"rgba(232,168,56,0.10)", amberBorder:"rgba(232,168,56,0.22)",
-  green:"#4DAB6D", greenBg:"rgba(77,171,109,0.10)", greenBorder:"rgba(77,171,109,0.22)",
-  purple:"#9B6BDF", purpleBg:"rgba(155,107,223,0.10)",
-  blue:"#529CCA", blueBg:"rgba(82,156,202,0.10)",
-  text:"rgba(255,255,255,0.85)", muted:"rgba(255,255,255,0.72)", faint:"rgba(255,255,255,0.38)"
+  bg:"#1C1A17", bg1:"#252320", bg2:"#2D2B27", bg3:"#35332E",
+  surface:"rgba(250,247,242,0.04)", surfaceHi:"rgba(250,247,242,0.06)",
+  border:"rgba(250,247,242,0.08)", borderHi:"rgba(250,247,242,0.14)",
+  teal:"#9BB8CC", tealBg:"rgba(155,184,204,0.08)", tealBorder:"rgba(155,184,204,0.20)", tealGlow:"rgba(155,184,204,0.08)",
+  red:"#D4958A", redBg:"rgba(212,149,138,0.08)", redBorder:"rgba(212,149,138,0.18)",
+  amber:"#D4BA6E", amberBg:"rgba(212,186,110,0.08)", amberBorder:"rgba(212,186,110,0.20)",
+  green:"#9BB8A8", greenBg:"rgba(155,184,168,0.08)", greenBorder:"rgba(155,184,168,0.20)",
+  purple:"#B8A8D4", purpleBg:"rgba(184,168,212,0.08)",
+  blue:"#8BA8C4", blueBg:"rgba(139,168,196,0.07)",
+  text:"#E8E4DC", muted:"rgba(232,228,220,0.50)", faint:"rgba(232,228,220,0.14)"
 };
 // ══ THEME SYSTEM ══
 const C_DARK = Object.assign({},C);
 const C_LIGHT = {
-  bg:"#FFFFFF", bg1:"#FFFFFF", bg2:"#F7F6F3", bg3:"#EDECE9",
-  surface:"rgba(55,53,47,0.04)", surfaceHi:"rgba(55,53,47,0.07)",
-  border:"rgba(55,53,47,0.12)", borderHi:"rgba(55,53,47,0.20)",
-  teal:"#0F7B6C", tealBg:"rgba(15,123,108,0.08)", tealBorder:"rgba(15,123,108,0.25)", tealGlow:"rgba(15,123,108,0.06)",
-  red:"#E03E3E", redBg:"rgba(224,62,62,0.08)", redBorder:"rgba(224,62,62,0.20)",
-  amber:"#D9730D", amberBg:"rgba(217,115,13,0.08)", amberBorder:"rgba(217,115,13,0.20)",
-  green:"#0F7B6C", greenBg:"rgba(15,123,108,0.08)", greenBorder:"rgba(15,123,108,0.20)",
-  purple:"#6940A5", purpleBg:"rgba(105,64,165,0.08)",
-  blue:"#2383E2", blueBg:"rgba(35,131,226,0.07)",
-  text:"#37352F", muted:"rgba(55,53,47,0.72)", faint:"rgba(55,53,47,0.40)"
+  bg:"#FAF7F2", bg1:"#FFFFFF", bg2:"#F3EFE8", bg3:"#ECE7DF",
+  surface:"rgba(45,42,38,0.03)", surfaceHi:"rgba(45,42,38,0.05)",
+  border:"rgba(45,42,38,0.10)", borderHi:"rgba(45,42,38,0.16)",
+  teal:"#7B9BAF", tealBg:"rgba(123,155,175,0.07)", tealBorder:"rgba(123,155,175,0.20)", tealGlow:"rgba(123,155,175,0.08)",
+  red:"#C4796E", redBg:"rgba(196,121,110,0.06)", redBorder:"rgba(196,121,110,0.18)",
+  amber:"#C4A24E", amberBg:"rgba(196,162,78,0.06)", amberBorder:"rgba(196,162,78,0.18)",
+  green:"#7D9B8A", greenBg:"rgba(125,155,138,0.06)", greenBorder:"rgba(125,155,138,0.18)",
+  purple:"#9B8FB8", purpleBg:"rgba(155,143,184,0.07)",
+  blue:"#6B8FAD", blueBg:"rgba(107,143,173,0.07)",
+  text:"#2D2A26", muted:"rgba(45,42,38,0.50)", faint:"rgba(45,42,38,0.14)"
 };
 const I18N={
   fr:{
@@ -2155,7 +2155,7 @@ const LoginScreen = ({
       padding: 36,
       width: "100%",
       maxWidth: 440,
-      boxShadow: "0 4px 16px rgba(0,0,0,0.08)"
+      boxShadow: "0 4px 20px rgba(45,42,38,0.06)"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "tab-bar",
@@ -5656,7 +5656,7 @@ const UnifiedTaskBoard = ({accounts=[], role="csm", lang="fr", companyId=null}) 
             border:"none",cursor:"pointer",transition:"all .15s",
             background:activeTab===tab.key?C.bg:"transparent",
             color:activeTab===tab.key?C.text:C.muted,
-            boxShadow:activeTab===tab.key?"0 1px 3px rgba(0,0,0,0.1)":"none"
+            boxShadow:activeTab===tab.key?"0 1px 3px rgba(45,42,38,0.06)":"none"
           }
         }, tab.icon," ",tab.label); })
       )
@@ -6533,7 +6533,7 @@ PROHIBITIONS: No toxic positivity, no minimizing, no 10-tip dumps, always name s
       alignItems: "center",
       justifyContent: "center",
       fontSize: 20,
-      boxShadow: "0 4px 14px rgba(16,185,129,0.3)"
+      boxShadow: "0 2px 8px rgba(125,155,138,0.14)"
     }
   }, "\uD83D\uDC9A"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -6609,7 +6609,7 @@ PROHIBITIONS: No toxic positivity, no minimizing, no 10-tip dumps, always name s
     style: { display:"flex", gap:10, alignItems:"flex-end", marginBottom:8 }
   },
     /*#__PURE__*/React.createElement("div", { style:{ width:32, height:32, borderRadius:6, flexShrink:0, background:C.green, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 } }, "💚"),
-    /*#__PURE__*/React.createElement("div", { style:{ background:"linear-gradient(135deg,rgba(16,185,129,0.15),rgba(5,150,105,0.1))", border:"1px solid rgba(16,185,129,0.3)", borderRadius:"16px 16px 16px 4px", padding:"12px 16px", display:"flex", gap:6, alignItems:"center" } },
+    /*#__PURE__*/React.createElement("div", { style:{ background:`linear-gradient(135deg,${C.greenBg},${C.greenBg})`, border:`1px solid ${C.greenBorder}`, borderRadius:"16px 16px 16px 4px", padding:"12px 16px", display:"flex", gap:6, alignItems:"center" } },
       /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#4DAB6D", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s infinite" } }),
       /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#4DAB6D", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.2s infinite" } }),
       /*#__PURE__*/React.createElement("span", { style:{ width:7, height:7, background:"#4DAB6D", borderRadius:"50%", display:"inline-block", animation:"bounce 1.2s 0.4s infinite" } })
@@ -8701,7 +8701,7 @@ const ResourcesView = ({
     style: {
       position: "absolute",
       inset: 0,
-      background: "rgba(7,13,26,0.6)",
+      background: "rgba(45,42,38,0.40)",
       borderRadius: 16,
       display: "flex",
       flexDirection: "column",
@@ -12641,7 +12641,7 @@ const SettingsView = ({
       /*#__PURE__*/React.createElement("div",{
         onClick:()=>onTheme(theme==="dark"?"light":"dark"),
         style:{width:46,height:26,borderRadius:6,cursor:"pointer",transition:"background .2s",background:theme==="dark"?C.teal:"rgba(255,255,255,0.15)",position:"relative",border:`1px solid ${theme==="dark"?C.tealBorder:C.border}`}
-      },/*#__PURE__*/React.createElement("div",{style:{position:"absolute",top:3,transition:"left .2s",left:theme==="dark"?22:3,width:20,height:20,borderRadius:"50%",background:"#fff",boxShadow:"0 2px 6px rgba(0,0,0,0.3)"}}))
+      },/*#__PURE__*/React.createElement("div",{style:{position:"absolute",top:3,transition:"left .2s",left:theme==="dark"?22:3,width:20,height:20,borderRadius:"50%",background:"#fff",boxShadow:"0 1px 3px rgba(45,42,38,0.08)"}}))
     ),
     /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 0"}},
       /*#__PURE__*/React.createElement("div",null,
@@ -13020,7 +13020,7 @@ const SettingsView = ({
       height: 20,
       borderRadius: "50%",
       background: "#fff",
-      boxShadow: "0 1px 4px rgba(0,0,0,0.3)"
+      boxShadow: "0 1px 3px rgba(45,42,38,0.08)"
     }
   })))),
   tab === "danger" && role === "manager" && /*#__PURE__*/React.createElement("div", {
@@ -13626,7 +13626,7 @@ const App = () => {
     } catch(e) {}
   }, [appData, role]);
   const [authReady, setAuthReady] = useState(false);
-  const [theme, setTheme] = useState(()=>{ try{return localStorage.getItem("scalyo_theme")||"dark";}catch(e){return "dark";}});
+  const [theme, setTheme] = useState(()=>{ try{return localStorage.getItem("scalyo_theme")||"light";}catch(e){return "light";}});
   const [lang, setLang] = useState(()=>{ try{return localStorage.getItem("scalyo_lang")||"fr";}catch(e){return "fr";}});
   // Apply theme to global C
   Object.assign(C, theme==="light" ? C_LIGHT : C_DARK);
@@ -13753,9 +13753,9 @@ const App = () => {
     try{localStorage.setItem("scalyo_theme",t);}catch(e){}
     Object.assign(C, t==="light"?C_LIGHT:C_DARK);
     document.documentElement.setAttribute("data-theme", t);
-    document.body.style.background = t==="light"?"#FFFFFF":"#191919";
-    document.body.style.color = t==="light"?"#37352F":"rgba(255,255,255,0.85)";
-    document.getElementById("root").style.background = t==="light"?"#FFFFFF":"#191919";
+    document.body.style.background = t==="light"?"#FAF7F2":"#1C1A17";
+    document.body.style.color = t==="light"?"#2D2A26":"#E8E4DC";
+    document.getElementById("root").style.background = t==="light"?"#FAF7F2":"#1C1A17";
     setTheme(t);
   };
   const handleLang = l => { try{localStorage.setItem("scalyo_lang",l);}catch(e){} setLang(l); };
@@ -13959,7 +13959,7 @@ const App = () => {
       padding: "16px 10px",
       flexShrink: 0,
       background: C.bg1,
-      boxShadow: "1px 0 12px rgba(0,0,0,0.08)"
+      boxShadow: "1px 0 6px rgba(45,42,38,0.03)"
     },
     className: "sidebar-desktop"
   }, /*#__PURE__*/React.createElement("div", {
