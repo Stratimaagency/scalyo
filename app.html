@@ -13731,6 +13731,7 @@ const App = () => {
   const [appData, setAppData] = useState(null);
   const [dataLoading, setDataLoading] = useState(false);
   const loadingRef = useRef(false); // FIX BUG-06 : guard anti double-trigger onAuthStateChange
+  const dataLoadedRef = useRef(false); // FIX: empêche les rechargements inutiles
   const [showUpgrade, setShowUpgrade] = useState(false);
   // ── SyncWarning : dismissible, visible seulement après 5s (évite flash sur chargement rapide)
   const [showSyncWarning, setShowSyncWarning] = useState(false);
@@ -13787,19 +13788,18 @@ const App = () => {
     } = db.auth.onAuthStateChange(async (event, sess) => {
       setSession(sess);
       if (sess) {
-        // FIX: Ne recharger les données que lors d'un vrai login (SIGNED_IN), pas sur TOKEN_REFRESHED
-        // TOKEN_REFRESHED se déclenche quand on revient sur l'onglet → ne pas recharger
-        if (event === "TOKEN_REFRESHED") { setAuthReady(true); return; }
-        // Skip if initial load already handled this session
-        if (initialLoaded && loadingRef.current) { setAuthReady(true); return; }
+        // FIX RELOAD: Seul SIGNED_IN doit recharger les données.
+        // TOKEN_REFRESHED, INITIAL_SESSION, USER_UPDATED → ne pas recharger
+        if (event !== "SIGNED_IN") { setAuthReady(true); return; }
+        // Si les données sont déjà chargées, ne pas recharger
+        if (dataLoadedRef.current) { setAuthReady(true); return; }
         if (loadingRef.current) { setAuthReady(true); return; }
-        // Ne pas recharger si on a déjà des données chargées (évite reload inutile)
-        if (appData && appData.company) { setAuthReady(true); return; }
         loadingRef.current = true;
         await loadData(sess);
         loadingRef.current = false;
       } else {
         setAppData(null);
+        dataLoadedRef.current = false;
       }
       setAuthReady(true);
     });
@@ -13900,6 +13900,7 @@ const App = () => {
           team: []
         }
       });
+      dataLoadedRef.current = true;
     } catch (e) {
       console.error("loadData error:", e);
       // Fallback : afficher l'app avec données vides plutôt que rester bloqué
@@ -13938,6 +13939,7 @@ const App = () => {
     await db.auth.signOut();
     setSession(null);
     setAppData(null);
+    dataLoadedRef.current = false;
   };
   const updateRoadmap = async newRm => {
     setAppData(prev => ({
