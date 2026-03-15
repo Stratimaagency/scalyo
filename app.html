@@ -13734,25 +13734,24 @@ const App = () => {
   const [role, setRole] = useState(() => { try { return localStorage.getItem("scalyo_role") || "manager"; } catch(e) { return "manager"; } });
   const [screen, _setScreen] = useState(() => { try { return localStorage.getItem("scalyo_screen") || "dashboard"; } catch(e) { return "dashboard"; } });
   const setScreen = (s) => { _setScreen(s); try { localStorage.setItem("scalyo_screen", s); } catch(e) {} };
+  // FIX LOADING DEFINITIF: Détecter si l'utilisateur est revenu (a déjà utilisé l'app)
+  const isReturningUser = (() => { try { return !!(localStorage.getItem("scalyo_theme") || localStorage.getItem("scalyo_lang") || localStorage.getItem("scalyo_plan") || localStorage.getItem("scalyo_accounts_cache")); } catch(e) { return false; } })();
   const [appData, setAppData] = useState(() => {
-    // FIX LOADING: charger depuis le cache pour affichage instantané
+    if (!isReturningUser) return null; // Nouveau user → loading normal
+    // Utilisateur qui revient → toujours fournir des données pour éviter le loading screen
     try {
+      const cachedCompany = localStorage.getItem("scalyo_company_cache");
       const cachedAccounts = localStorage.getItem("scalyo_accounts_cache");
-      if (cachedAccounts) {
-        const cachedCompany = localStorage.getItem("scalyo_company_cache");
-        const cachedPlan = localStorage.getItem("scalyo_plan");
-        const company = cachedCompany
-          ? JSON.parse(cachedCompany)
-          : { id: "_cached", name: "Mon Entreprise", plan: cachedPlan || "Starter", arr: 0, churn: 0, nps: 0, color: "#4DB6A0" };
-        return {
-          company,
-          accounts: JSON.parse(cachedAccounts).map(a => ({ ...a, issues: Array.isArray(a.issues) ? a.issues : [] })),
-          roadmap: { id: null, phase: "Phase 1 — Launch", progress: 0, items: [] },
-          wellbeing: { score: 70, burnout: "none", charge: 70, trend: "+0", alerts: [], team: [] }
-        };
-      }
-    } catch(e) {}
-    return null;
+      const cachedPlan = localStorage.getItem("scalyo_plan");
+      return {
+        company: cachedCompany ? JSON.parse(cachedCompany) : { id: "_loading", name: "Mon Entreprise", plan: cachedPlan || "Starter", arr: 0, churn: 0, nps: 0, color: "#4DB6A0" },
+        accounts: cachedAccounts ? JSON.parse(cachedAccounts).map(a => ({ ...a, issues: Array.isArray(a.issues) ? a.issues : [] })) : [],
+        roadmap: { id: null, phase: "Phase 1 — Launch", progress: 0, items: [] },
+        wellbeing: { score: 70, burnout: "none", charge: 70, trend: "+0", alerts: [], team: [] }
+      };
+    } catch(e) {
+      return { company: { id: "_loading", name: "Mon Entreprise", plan: "Starter", arr: 0, churn: 0, nps: 0, color: "#4DB6A0" }, accounts: [], roadmap: { id: null, phase: "Phase 1 — Launch", progress: 0, items: [] }, wellbeing: { score: 70, burnout: "none", charge: 70, trend: "+0", alerts: [], team: [] } };
+    }
   });
   const [dataLoading, setDataLoading] = useState(false);
   const loadingRef = useRef(false); // FIX BUG-06 : guard anti double-trigger onAuthStateChange
@@ -13763,16 +13762,12 @@ const App = () => {
   const [syncWarningDismissed, setSyncWarningDismissed] = useState(false);
   useEffect(() => {
     if (!appData) return;
-    // Ne jamais afficher le warning si on a un company.id (réel ou cache)
+    // Ne jamais afficher le warning si on a un company.id (réel, cache, ou _loading)
     if (appData.company?.id) { setShowSyncWarning(false); return; }
     if (syncWarningDismissed) return;
-    // Attendre 30s avant d'afficher le warning
-    const t = setTimeout(() => {
-      // Revérifier une dernière fois avant d'afficher
-      if (appData.company?.id) return;
-      setShowSyncWarning(true);
-    }, 30000);
-    return () => clearTimeout(t);
+    // Ne l'afficher qu'après que loadData a eu le temps de finir ET a échoué
+    if (!dataLoadedRef.current) return; // loadData pas encore terminé → pas de warning
+    setShowSyncWarning(true);
   }, [appData, syncWarningDismissed]);
   // ── Coaching reminder : 1 fois par mois pour les Elite Manager uniquement
   const [showCoachingReminder, setShowCoachingReminder] = useState(false);
@@ -13790,7 +13785,8 @@ const App = () => {
       if (stored !== monthKey) setShowCoachingReminder(true);
     } catch(e) {}
   }, [appData, role]);
-  const [authReady, setAuthReady] = useState(false);
+  const [authReady, setAuthReady] = useState(isReturningUser);
+  const sessionCheckedRef = useRef(false); // true seulement quand getSession a répondu
   const [theme, setTheme] = useState(()=>{ try{return localStorage.getItem("scalyo_theme")||"light";}catch(e){return "light";}});
   const [lang, setLang] = useState(()=>{ try{return localStorage.getItem("scalyo_lang")||"fr";}catch(e){return "fr";}});
   // Apply theme to global C
@@ -13804,6 +13800,7 @@ const App = () => {
     let initialLoaded = false;
     db.auth.getSession().then(async ({data:{session:s}}) => {
       initialLoaded = true;
+      sessionCheckedRef.current = true;
       setSession(s);
       if (s) {
         loadingRef.current = true;
@@ -13811,7 +13808,7 @@ const App = () => {
         loadingRef.current = false;
       }
       setAuthReady(true);
-    }).catch(() => { setAuthReady(true); });
+    }).catch(() => { sessionCheckedRef.current = true; setAuthReady(true); });
     const {
       data: {
         subscription
@@ -13868,15 +13865,15 @@ const App = () => {
         db.from("companies").select("*").eq("auth_user_id", sess.user.id).single(),
         companiesTimeout
       ]).catch(() => ({ data: null }));
-      const company = cr.data || {
-        id: null,
-        name: T("myCompany",lang),
-        plan: cachedPlan || "Starter",
-        arr: 0,
-        churn: 0,
-        nps: 0,
-        color: C.teal
-      };
+      let company = cr.data;
+      if (!company) {
+        // Pas de company depuis Supabase → utiliser le cache s'il existe
+        try {
+          const cc = localStorage.getItem("scalyo_company_cache");
+          if (cc) company = JSON.parse(cc);
+        } catch(e) {}
+        if (!company) company = { id: null, name: T("myCompany",lang), plan: cachedPlan || "Starter", arr: 0, churn: 0, nps: 0, color: C.teal };
+      }
       // Protéger le plan : ne jamais rétrograder
       company.plan = safePlan(company.plan || "Starter");
       // Cache la company pour démarrage instantané
@@ -13943,10 +13940,10 @@ const App = () => {
       dataLoadedRef.current = true;
     } catch (e) {
       console.error("loadData error:", e);
-      // Fallback : afficher l'app avec données vides plutôt que rester bloqué
-      // Ne jamais rétrograder le plan en cas d'erreur réseau
-      setAppData({
-        company: { id: null, name: T("myCompany",lang), plan: cachedPlan || "Starter", arr: 0, churn: 0, nps: 0, color: "#4DB6A0" },
+      // Fallback : garder les données actuelles (cache) plutôt que les écraser
+      // Ne rien faire si on a déjà des données en cache
+      if (!appData || !appData.company?.id || appData.company.id === "_loading") setAppData({
+        company: (() => { try { const cc = localStorage.getItem("scalyo_company_cache"); if(cc) return JSON.parse(cc); } catch(e){} return { id: null, name: T("myCompany",lang), plan: cachedPlan || "Starter", arr: 0, churn: 0, nps: 0, color: "#4DB6A0" }; })(),
         accounts: [],
         roadmap: { id: null, phase: "Phase 1 — Launch", progress: 0, items: [] },
         wellbeing: { score: 70, burnout: "none", charge: 70, trend: "+0", alerts: [], team: [] }
@@ -14054,8 +14051,8 @@ const App = () => {
     });
   }
   // On a des données (cache ou DB) → afficher l'app immédiatement
-  // Si pas encore de session, montrer le login
-  if (authReady && !session) return /*#__PURE__*/React.createElement(LoginScreen, {
+  // Ne montrer le login QUE si getSession a confirmé qu'il n'y a pas de session
+  if (sessionCheckedRef.current && !session) return /*#__PURE__*/React.createElement(LoginScreen, {
     onLogin: handleLogin, lang: lang
   });
   const {
