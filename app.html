@@ -106,7 +106,7 @@ input:focus,select:focus,textarea:focus{border-color:rgba(35,131,226,0.5)!import
 .modal-overlay{position:fixed;inset:0;background:var(--modal-bg);backdrop-filter:blur(16px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .35s ease}
 .modal-box{background:var(--modal-box);border:1px solid var(--modal-box-border);border-radius:8px;width:100%;animation:slideUp .25s ease;max-height:90vh;overflow-y:auto;color:var(--text)}
 .side-panel{animation:slideInR .22s ease}
-.tab-bar{display:flex;gap:4px;background:var(--surface);border-radius:8px;padding:4px;border:1px solid var(--border)}
+.tab-bar{display:flex;flex-wrap:wrap;gap:4px;background:var(--surface);border-radius:8px;padding:4px;border:1px solid var(--border)}
 .tab-item{padding:7px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;transition:all .25s ease;color:var(--tab-text);white-space:nowrap}
 .tab-item.active{background:var(--tab-active-bg);color:var(--tab-active-text);box-shadow:0 1px 4px rgba(45,42,38,0.06)}
 .tab-item:hover:not(.active){color:var(--text);background:var(--surfaceHi)}
@@ -1547,7 +1547,8 @@ const CURRENCIES = {
   MAD:{symbol:"DH",position:"after",name:"Dirham marocain"},
   XOF:{symbol:"CFA",position:"after",name:"Franc CFA"},
   AED:{symbol:"AED",position:"before",name:"Dirham UAE"},
-  SAR:{symbol:"SAR",position:"before",name:"Riyal saoudien"}
+  SAR:{symbol:"SAR",position:"before",name:"Riyal saoudien"},
+  KRW:{symbol:"₩",position:"before",name:"Won coréen"}
 };
 const fmtCur = (num, cur="EUR") => {
   const c = CURRENCIES[cur]||CURRENCIES.EUR;
@@ -13313,7 +13314,7 @@ const QuotesView = ({lang="fr", currency="EUR", companyId}) => {
   const filtered = filter==="all"?quotes:quotes.filter(q=>q.status===filter);
   const totalWon = quotes.filter(q=>q.status==="won").reduce((s,q)=>s+parseFloat(q.amount||0),0);
   const convRate = quotes.length?Math.round(quotes.filter(q=>q.status==="won").length/quotes.length*100):0;
-  const fmtAmount = v => {const n=parseFloat(v||0);return currency==="USD"?"$"+n.toLocaleString():currency==="GBP"?"£"+n.toLocaleString():currency==="AED"?n.toLocaleString()+" AED":currency==="SAR"?n.toLocaleString()+" SAR":n.toLocaleString()+"€";};
+  const fmtAmount = v => {const n=parseFloat(v||0);const c=CURRENCIES[currency]||CURRENCIES.EUR;return c.position==="before"?c.symbol+n.toLocaleString():n.toLocaleString()+c.symbol;};
   const openNew = () => { setEditId(null); setForm({title:"",client:"",amount:"",status:"draft",date:new Date().toISOString().slice(0,10),notes:""}); setShowForm(true); };
   const openEdit = q => { setEditId(q.id); setForm({title:q.title,client:q.client,amount:String(q.amount),status:q.status,date:q.date,notes:q.notes||""}); setShowForm(true); };
   const duplicate = q => { const nq={...q,id:Date.now(),title:q.title+" ("+T("quoteDuplicate",lang)+")",status:"draft",date:new Date().toISOString().slice(0,10)}; save([nq,...quotes]); };
