@@ -2514,7 +2514,7 @@ const UpgradeModal = ({
     period: T("perMonth",lang),
     users: "1 CSM",
     highlight: false,
-    features: lang==="en"||lang==="kr"?[T("upgrade5Acc",lang),"Dashboard & roadmap","Basic CS resources",T("emailPro",lang)]:[T("upgrade5Acc",lang),T("upgradeDashboard",lang),"Ressources CS de base","Support email"],
+    features: lang==="kr"?[T("upgrade5Acc",lang),"대시보드 & 로드맵","기본 CS 리소스",T("emailPro",lang)]:lang==="en"?[T("upgrade5Acc",lang),"Dashboard & roadmap","Basic CS resources",T("emailPro",lang)]:[T("upgrade5Acc",lang),T("upgradeDashboard",lang),"Ressources CS de base","Support email"],
     link: STRIPE.starter,
     current: currentPlan === "Starter"
   }, {
@@ -2524,7 +2524,7 @@ const UpgradeModal = ({
     period: T("perMonth",lang),
     users: "5 CSMs",
     highlight: true,
-    features: lang==="en"?["Unlimited accounts", "Team wellbeing", T("email",lang), "AI Coach", "CSV/Excel Import", "Priority support"]:[lang==="en" ? "Unlimited accounts" : lang==="kr" ? "무제한 계정" : T("upgradeUnlimitedAcc",lang), lang==="en" ? "Team wellbeing" : lang==="kr" ? "팀 웰빙" : T("upgradeWellbeing",lang), T("email",lang), "Coach IA", "Import CSV/Excel", "Support prioritaire"],
+    features: lang==="kr"?["무제한 계정","팀 웰빙",T("email",lang),"AI 코치","CSV/Excel 가져오기","우선 지원"]:lang==="en"?["Unlimited accounts","Team wellbeing",T("email",lang),"AI Coach","CSV/Excel Import","Priority support"]:[T("upgradeUnlimitedAcc",lang),T("upgradeWellbeing",lang),T("email",lang),"Coach IA","Import CSV/Excel","Support prioritaire"],
     link: STRIPE.growth,
     current: currentPlan === "Growth"
   }, {
@@ -2534,7 +2534,7 @@ const UpgradeModal = ({
     period: T("perMonth",lang),
     users: lang==="en" ? "Unlimited CSMs" : lang==="kr" ? "무제한 CSM" : T("upgradeUnlimitedCSM",lang),
     highlight: false,
-    features: lang==="en"?["Everything in Growth", "Custom playbooks", "Monthly coaching session", "Dedicated onboarding", "99.9% SLA", "7/7 support"]:["Tout Growth inclus", "Playbooks sur-mesure", "Session coaching mensuelle", lang==="en" ? "Dedicated onboarding" : lang==="kr" ? "전담 온보딩" : T("upgradeOnboarding",lang), "SLA 99.9%", "Support 7j/7"],
+    features: lang==="kr"?["Growth 전체 포함","맞춤 플레이북","월간 코칭 세션","전담 온보딩","SLA 99.9%","24/7 지원"]:lang==="en"?["Everything in Growth","Custom playbooks","Monthly coaching session","Dedicated onboarding","99.9% SLA","7/7 support"]:["Tout Growth inclus","Playbooks sur-mesure","Session coaching mensuelle",T("upgradeOnboarding",lang),"SLA 99.9%","Support 7j/7"],
     link: STRIPE.elite,
     current: currentPlan === "Elite"
   }];
@@ -2606,7 +2606,7 @@ const UpgradeModal = ({
       borderRadius: 20,
       whiteSpace: "nowrap"
     }
-  }, "\u2B50 RECOMMAND\xC9"), p.current && /*#__PURE__*/React.createElement("div", {
+  }, lang==="kr"?"⭐ 추천":lang==="en"?"⭐ RECOMMENDED":"⭐ RECOMMANDÉ"), p.current && /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
       top: -10,
@@ -2752,7 +2752,7 @@ const ImportModal = ({
     required: false
   }, {
     key: "health",
-    label: "Health Score",
+    label: lang==="kr"?"건강 점수":lang==="en"?"Health Score":"Score de Santé",
     required: false
   }];
   const autoMap = hdrs => {
@@ -3512,7 +3512,7 @@ const DashboardView = ({
       fontSize: 15,
       color: C.red
     }
-  }, critical.length, " ", lang==="en"||lang==="kr"?`account${critical.length>1?"s":""} at critical risk — immediate action required`:critical.length > 1 ? T("dashRiskN",lang) : T("dashRisk1",lang))), /*#__PURE__*/React.createElement("button", {
+  }, critical.length, " ", lang==="kr"?`계정 위험 상태 — 즉시 조치 필요`:lang==="en"?`account${critical.length>1?"s":""} at critical risk — immediate action required`:critical.length > 1 ? T("dashRiskN",lang) : T("dashRisk1",lang))), /*#__PURE__*/React.createElement("button", {
     onClick: () => onNavigate("portfolio"),
     className: "btn-base",
     style: {
@@ -3699,7 +3699,7 @@ const DashboardView = ({
       border: `1px solid ${C.border}`,
       color: C.muted
     }
-  }, "D\xE9tail \u2192")), /*#__PURE__*/React.createElement("div", {
+  }, lang==="kr"?"상세 →":lang==="en"?"Detail →":"Détail →")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
@@ -3834,7 +3834,7 @@ const DashboardView = ({
               /*#__PURE__*/React.createElement("span",{style:{fontWeight:700,color:C.teal}},fmtARR((s.arr||0)/12, currency))
             ),
             /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",fontSize:12}},
-              /*#__PURE__*/React.createElement("span",{style:{color:C.muted}},"💚 Health"),
+              /*#__PURE__*/React.createElement("span",{style:{color:C.muted}},lang==="kr"?"💚 건강":"💚 Health"),
               /*#__PURE__*/React.createElement("span",{style:{fontWeight:700,color:s.health>=70?C.green:s.health>=40?C.amber:C.red}},`${s.health}/100`)
             ),
             s.crit > 0 && /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",fontSize:12}},
@@ -3878,7 +3878,7 @@ const TODO_STANDARD = [{
 }, {
   id: "health",
   icon: "💚",
-  label: "Check health score"
+  label: lang==="kr"?"건강 점수 확인":lang==="en"?"Check health score":"Vérifier le score santé"
 }];
 const AccountTodoPanel = ({
   account: acc,
@@ -4144,7 +4144,7 @@ const AccountTodoPanel = ({
   }, "\u2715")), /*#__PURE__*/React.createElement("input", {
     value: t.note || "",
     onChange: e => updateNote(t.id, e.target.value),
-    placeholder: "Note...",
+    placeholder: lang==="kr"?"메모...":lang==="en"?"Note...":"Note...",
     style: {
       marginTop: 6,
       width: "100%",
@@ -4598,7 +4598,7 @@ const AccountDetailPanel = ({
       color: C.muted,
       marginBottom: 5
     }
-  }, /*#__PURE__*/React.createElement("span", null, "Health Score"), /*#__PURE__*/React.createElement("span", {
+  }, /*#__PURE__*/React.createElement("span", null, lang==="kr"?"건강 점수":"Health Score"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontWeight: 700,
       color: C.text
@@ -4634,7 +4634,7 @@ const AccountDetailPanel = ({
       color: C.red,
       marginBottom: 8
     }
-  }, "\u26A0 Signaux d'alerte"), issues.map((issue, i) => /*#__PURE__*/React.createElement("div", {
+  }, lang==="kr"?"⚠ 경고 신호":lang==="en"?"⚠ Alert signals":"⚠ Signaux d'alerte"), issues.map((issue, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       display: "flex",
@@ -6845,7 +6845,7 @@ PROHIBITIONS: No toxic positivity, no minimizing, no 10-tip dumps, always name s
     style: {
       marginLeft: "auto"
     }
-  }, (m.charge || 70) > 85 ? "Surcharge" : (m.charge || 70) > 70 ? "Vigilance" : "Sain")), /*#__PURE__*/React.createElement(HealthBar, {
+  }, (m.charge || 70) > 85 ? (lang==="kr"?"과부하":lang==="en"?"Overload":"Surcharge") : (m.charge || 70) > 70 ? (lang==="kr"?"주의":lang==="en"?"Caution":"Vigilance") : (lang==="kr"?"양호":lang==="en"?"Healthy":"Sain"))), /*#__PURE__*/React.createElement(HealthBar, {
     val: 100 - (m.charge || 70)
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -6863,7 +6863,7 @@ PROHIBITIONS: No toxic positivity, no minimizing, no 10-tip dumps, always name s
       fontSize: 10,
       color: (m.sat || 7) >= 8 ? C.green : (m.sat || 7) >= 6 ? C.amber : C.red
     }
-  }, "Sat : ", m.sat || 7, "/10")))))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, lang==="kr"?"만족: ":lang==="en"?"Sat: ":"Sat : ", m.sat || 7, "/10")))))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 800,
@@ -6886,7 +6886,7 @@ PROHIBITIONS: No toxic positivity, no minimizing, no 10-tip dumps, always name s
   }, {
     icon: "🧘",
     title: lang==="en" ? "Decompression techniques" : lang==="kr" ? "스트레스 해소 기법" : T("wbDecompress",lang),
-    desc: "Respiration, mindfulness",
+    desc: lang==="kr"?"호흡, 마음챙김":lang==="en"?"Breathing, mindfulness":"Respiration, mindfulness",
     "color": C.teal
   }, {
     icon: "📝",
@@ -9985,7 +9985,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     value: `${nrr}%`,
     icon: "\uD83D\uDCC8",
     color: nrr >= 100 ? C.green : nrr >= 90 ? C.amber : C.red,
-    sub: nrr >= 100 ? (lang==="en" ? "Net Expansion" : lang==="kr" ? "순 확장" : "Expansion nette") : "Contraction"
+    sub: nrr >= 100 ? (lang==="kr" ? "순 확장" : lang==="en" ? "Net Expansion" : "Expansion nette") : (lang==="kr" ? "수축" : lang==="en" ? "Contraction" : "Contraction")
   }), /*#__PURE__*/React.createElement(KpiCard, {
     label: "NPS",
     value: kpis.nps || "—",
@@ -10238,7 +10238,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       v: kpis.mrr,
       hi: true
     }, {
-      l: "Expansion",
+      l: lang==="kr"?"확장":lang==="en"?"Expansion":"Expansion",
       v: kpis.expansionRevenue,
       hi: false
     }, {
@@ -10267,7 +10267,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     val: `${churnRate}%`,
     color: churnRate > 5 ? C.red : churnRate > 2 ? C.amber : C.green
   }, {
-    label: "NRR (Net Revenue Retention)",
+    label: lang==="kr"?"NRR (순수익유지율)":lang==="en"?"NRR (Net Revenue Retention)":"NRR (Rétention Nette de Revenus)",
     val: `${nrr}%`,
     color: nrr >= 100 ? C.green : nrr >= 90 ? C.amber : C.red
   }, {
@@ -10466,7 +10466,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     val: churnRate,
     max: 15,
     color: churnRate <= 2 ? C.green : churnRate <= 5 ? C.amber : C.red,
-    label: "Churn Rate",
+    label: lang==="kr"?"이탈률":"Churn Rate",
     unit: "%"
   })))), goals.nps > 0 && /*#__PURE__*/React.createElement(Card, {
     style: {
@@ -10608,10 +10608,10 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       fontWeight: 800,
       marginBottom: 10
     }
-  }, "Tickets \u2014 ", periodLabel), /*#__PURE__*/React.createElement(BarChart, {
+  }, lang==="kr"?"티켓 — ":lang==="en"?"Tickets — ":"Tickets — ", periodLabel), /*#__PURE__*/React.createElement(BarChart, {
     h: 90,
     data: [{
-      l: "Ouverts",
+      l: lang==="kr"?"오픈":lang==="en"?"Open":"Ouverts",
       v: kpis.openTickets,
       hi: false
     }, {
@@ -10710,10 +10710,10 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
         const pct=kpi.goal>0?Math.min(kpi.value/kpi.goal*100,100):null;
         const ok=pct===null?null:(kpi.value>=kpi.goal);
         const fmtVal=(v)=>{
-          if(kpi.type==="currency") return v.toLocaleString("fr-FR")+" €";
+          if(kpi.type==="currency") return v.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")+" €";
           if(kpi.type==="percent") return v+"%";
           if(kpi.type==="score") return v+"/10";
-          if(kpi.type==="days") return v+(lang==="en" ? " days" : lang==="kr" ? " 일" : " jours");
+          if(kpi.type==="days") return v+(lang==="kr"?" 일":lang==="en"?" days":" jours");
           return v+(kpi.unit?" "+kpi.unit:"");
         };
         return React.createElement("div", {key:kpi.id,className:"kpi-custom-card"},
@@ -11099,13 +11099,13 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
                     const total=vals.reduce((a,b)=>a+b,0);
                     const trendVal=vals.length>2?(vals[vals.length-1]-vals[0])/Math.abs(vals[0]||1)*100:0;
                     const trendClass=trendVal>2?"trend-up":trendVal<-2?"trend-down":"trend-flat";
-                    const trendLabel=trendVal>2?"↑ +"+(trendVal.toFixed(1))+"%":trendVal<-2?"↓ "+(trendVal.toFixed(1))+"%":"→ Stable";
+                    const trendLabel=trendVal>2?"↑ +"+(trendVal.toFixed(1))+"%":trendVal<-2?"↓ "+(trendVal.toFixed(1))+"%":(lang==="kr"?"→ 안정":"→ Stable");
                     return React.createElement("tr", {key:ci},
                       React.createElement("td", {style:{color:CHART_COLORS[ci%CHART_COLORS.length],fontWeight:800}}, col.name),
-                      React.createElement("td", {style:{fontFamily:"'JetBrains Mono',monospace"}}, mn.toLocaleString("fr-FR")),
-                      React.createElement("td", {style:{fontFamily:"'JetBrains Mono',monospace"}}, mx.toLocaleString("fr-FR")),
+                      React.createElement("td", {style:{fontFamily:"'JetBrains Mono',monospace"}}, mn.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")),
+                      React.createElement("td", {style:{fontFamily:"'JetBrains Mono',monospace"}}, mx.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")),
                       React.createElement("td", {style:{fontFamily:"'JetBrains Mono',monospace"}}, avg.toFixed(2)),
-                      React.createElement("td", {style:{fontFamily:"'JetBrains Mono',monospace"}}, total.toLocaleString("fr-FR")),
+                      React.createElement("td", {style:{fontFamily:"'JetBrains Mono',monospace"}}, total.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")),
                       React.createElement("td", {className:trendClass,fontWeight:800}, trendLabel)
                     );
                   })
@@ -11194,15 +11194,15 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       label: "NPS",
       val: kpis.nps || "—",
       obj: goals.nps > 0 ? lang==="kr"?`목표: ${goals.nps}`:lang==="en"?`Target: ${goals.nps}`:`Objectif : ${goals.nps}` : "",
-      status: kpis.nps >= 50 ? "✓ Excellent" : kpis.nps >= 30 ? (lang==="en" ? "→ Good" : lang==="kr" ? "→ 좋음" : "→ Bon") : (lang==="en" ? "⚠ To improve" : lang==="kr" ? "⚠ 개선 필요" : T("kpiWarn",lang))
+      status: kpis.nps >= 50 ? (lang==="kr"?"✓ 우수":"✓ Excellent") : kpis.nps >= 30 ? (lang==="kr" ? "→ 좋음" : lang==="en" ? "→ Good" : "→ Bon") : (lang==="kr" ? "⚠ 개선 필요" : lang==="en" ? "⚠ To improve" : T("kpiWarn",lang))
     }, {
       label: "CSAT",
       val: `${kpis.csat || "—"}/10`,
-      status: kpis.csat >= 8 ? "✓ Excellent" : kpis.csat >= 6 ? (lang==="en" ? "→ OK" : lang==="kr" ? "→ 양호" : "→ Correct") : (lang==="en" ? "⚠ To improve" : lang==="kr" ? "⚠ 개선 필요" : T("kpiWarn",lang))
+      status: kpis.csat >= 8 ? (lang==="kr"?"✓ 우수":"✓ Excellent") : kpis.csat >= 6 ? (lang==="kr" ? "→ 양호" : lang==="en" ? "→ OK" : "→ Correct") : (lang==="kr" ? "⚠ 개선 필요" : lang==="en" ? "⚠ To improve" : T("kpiWarn",lang))
     }, {
       label: lang==="en"?"Renewal Rate":lang==="kr"?"갱신률":"Taux de Renouvellement",
       val: `${kpis.renewalRate}%`,
-      status: kpis.renewalRate >= 85 ? (lang==="en" ? "✓ Good" : lang==="kr" ? "✓ 좋음" : "✓ Bon") : kpis.renewalRate >= 70 ? "→ Acceptable" : (lang==="en" ? "⚠ To improve" : lang==="kr" ? "⚠ 개선 필요" : T("kpiWarn",lang))
+      status: kpis.renewalRate >= 85 ? (lang==="kr" ? "✓ 좋음" : lang==="en" ? "✓ Good" : "✓ Bon") : kpis.renewalRate >= 70 ? (lang==="kr"?"→ 적정":"→ Acceptable") : (lang==="kr" ? "⚠ 개선 필요" : lang==="en" ? "⚠ To improve" : T("kpiWarn",lang))
     }]
   }, {
     title: lang==="kr"?"💼 포트폴리오":lang==="en"?"💼 Portfolio":"💼 Portefeuille",
@@ -11229,7 +11229,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     }, {
       label: lang==="en" ? "Average resolution time" : lang==="kr" ? "평균 해결 시간" : T("kpiResolutionAvg",lang),
       val: `${kpis.avgResolutionTime}h`,
-      status: kpis.avgResolutionTime > 48 ? "⚠ Long" : kpis.avgResolutionTime > 0 ? "✓ OK" : "—"
+      status: kpis.avgResolutionTime > 48 ? (lang==="kr"?"⚠ 길다":"⚠ Long") : kpis.avgResolutionTime > 0 ? "✓ OK" : "—"
     }, {
       label: lang==="en" ? "Avg Time to Value" : lang==="kr" ? "평균 가치 실현 시간" : "Time to Value moyen",
       val: `${kpis.avgTimeToValue} ${lang==="kr"?"일":lang==="en"?"days":"jours"}`
@@ -13767,7 +13767,9 @@ const FeedbackView = ({lang="fr"}) => {
   const [email, setEmail] = React.useState("");
   const [sending, setSending] = React.useState(false);
 
-  const categories = lang === "en" || lang === "kr"
+  const categories = lang === "kr"
+    ? ["🐛 버그", "💡 기능 요청", "🎨 UX/디자인", "⚡ 성능", "💬 기타"]
+    : lang === "en"
     ? ["🐛 Bug", "💡 Feature request", "🎨 UX/Design", "⚡ Performance", "💬 Other"]
     : ["🐛 Bug", T("fbFeature",lang), "🎨 UX/Design", "⚡ Performance", "💬 Autre"];
 
@@ -14621,7 +14623,7 @@ const App = () => {
       fontSize: 12,
       color: C.muted
     }
-  }, "\xB7 ", role === "manager" ? "Manager CS" : "Customer Success Manager")), /*#__PURE__*/React.createElement("div", {
+  }, "\xB7 ", role === "manager" ? (lang==="kr"?"CS 매니저":"Manager CS") : (lang==="kr"?"고객 성공 매니저":"Customer Success Manager"))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -14644,7 +14646,7 @@ const App = () => {
     }
   }, /*#__PURE__*/React.createElement("span", {
     className: "pulse"
-  }, "\uD83D\uDEA8"), criticalCount, " critique", criticalCount > 1 ? "s" : ""), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDEA8"), criticalCount, lang==="kr"?" 위험":lang==="en"?(" critical"+(criticalCount>1?"s":"")):" critique"+(criticalCount > 1 ? "s" : "")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
