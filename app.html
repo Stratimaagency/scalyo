@@ -13,10 +13,10 @@
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js" as="script" crossorigin/>
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" as="script" crossorigin/>
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" as="script" crossorigin/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
 <style>
 /* === CSS VARIABLES — THEME SYSTEM === */
 :root{
@@ -196,7 +196,7 @@ input:focus,select:focus,textarea:focus{border-color:rgba(35,131,226,0.5)!import
 </style>
 </head>
 <body>
-<div id="root"></div>
+<div id="root"><div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--bg)"><div style="width:44px;height:44px;background:var(--teal);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div><div style="width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin 1s linear infinite"></div><p style="color:var(--muted);font-size:14px">Chargement...</p></div></div>
 <script type="text/javascript">
 
 // ══════════════════════════════════════════════════
@@ -421,7 +421,7 @@ const C_LIGHT = {
 const I18N={
   fr:{
     dashboard:"Dashboard",portfolio:"Portefeuille",kpi:"KPIs COPIL",
-    wellbeing:"Bien-être",coach:"Coach IA",planning:"Planning",tasks:"Task Board",
+    wellbeing:"Bien-être",coach:"Coach IA",planning:"Planning",tasks:"Tâches",
     settings:"Paramètres",resources:"Ressources",email:"Email Studio",tips:"Guide CS",quotes:"Devis",kanbanView:"Kanban",eisenhowerView:"Eisenhower",
     save:"Enregistrer",saved:"✓ Enregistré",saving:"Sauvegarde...",cancel:"Annuler",
     close:"Fermer",edit:"Modifier",delete:"Supprimer",add:"Ajouter",create:"Créer",
@@ -780,7 +780,7 @@ const I18N={
     createKpi:"Créez et suivez vos propres indicateurs de performance",
     firstKpi:"Créer mon premier KPI",
     todoCol:"À faire", inProgressCol:"En cours", doneCol:"Terminé", noTasks:"Aucune tâche",
-    taskboard:"Task Board", currencyLabel:"Devise",
+    taskboard:"Tâches", currencyLabel:"Devise",
     quoteTitle:"Titre du devis",quoteClient:"Client",quoteAmount:"Montant",quoteStatus:"Statut",
     quoteDraft:"Brouillon",quoteSent:"Envoyé",quoteWon:"Gagné",quoteLost:"Perdu",
     quoteDate:"Date",addQuote:"Nouveau devis",noQuotes:"Aucun devis",quoteNotes:"Notes",
@@ -12582,7 +12582,7 @@ const SettingsView = ({
     teamWellbeing: true,
     renewalAlerts: true
   });
-  const tabs = role === "manager" ? [["profile", T("tabProfile",lang)], ["team", T("tabTeam",lang)], ["billing", T("tabBilling",lang)], ["notifs", T("tabNotifs",lang)], ["apparence", T("tabAppearance",lang)], ["danger", "⚠️ "+T("deleteAccount",lang)]] : [["profile", T("tabProfile",lang)], ["notifs", T("tabNotifs",lang)], ["apparence", T("tabAppearance",lang)]];
+  const tabs = role === "manager" ? [["profile", T("tabProfile",lang)], ["team", T("tabTeam",lang)], ["billing", T("tabBilling",lang)], ["notifs", T("tabNotifs",lang)], ["apparence", T("tabAppearance",lang)], ["danger", "⚠️ "+T("deleteAccount",lang)]] : [["profile", T("tabProfile",lang)], ["notifs", T("tabNotifs",lang)], ["apparence", T("tabAppearance",lang)], ["danger", "⚠️ "+T("deleteAccount",lang)]];
   const saveProfile = async () => {
     setSaving(true);
     if (db && company?.id) {
@@ -13023,7 +13023,7 @@ const SettingsView = ({
       boxShadow: "0 1px 3px rgba(45,42,38,0.08)"
     }
   })))),
-  tab === "danger" && role === "manager" && /*#__PURE__*/React.createElement("div", {
+  tab === "danger" && /*#__PURE__*/React.createElement("div", {
     style: {marginTop:20, padding:20, background:C.redBg, border:`1px solid ${C.redBorder}`, borderRadius:6}
   },
     /*#__PURE__*/React.createElement("h3", {style:{fontSize:15, fontWeight:800, color:C.red, marginBottom:8}},
@@ -13404,10 +13404,6 @@ const NAV_MANAGER = (lang) => [{
   id: "email",
   label: T("email",lang),
   icon: "✉️"
-}, {
-  id: "taskboard",
-  label: T("taskboard",lang),
-  icon: "📋"
 }];
 const NAV_CSM = (lang) => [{
   id: "dashboard",
@@ -13449,10 +13445,6 @@ const NAV_CSM = (lang) => [{
   id: "quotes",
   label: T("quotes",lang),
   icon: "📄"
-}, {
-  id: "taskboard",
-  label: T("taskboard",lang),
-  icon: "📋"
 }];
 
 // ── COACHING REMINDER BANNER (Elite Manager only, 1 fois/mois)
@@ -13967,7 +13959,7 @@ const App = () => {
           plan: company?.plan || "Starter"
         });
       case "tasks":
-        return /*#__PURE__*/React.createElement(TaskBoardView, {
+        return /*#__PURE__*/React.createElement(UnifiedTaskBoard, {
           accounts: accounts,
           role: role,
           lang: lang,
@@ -14029,7 +14021,7 @@ const App = () => {
           lang: lang
         });
       case "taskboard":
-        return /*#__PURE__*/React.createElement(KanbanBoardView, {accounts:accounts, lang:lang});
+        return /*#__PURE__*/React.createElement(UnifiedTaskBoard, {accounts:accounts, role:role, lang:lang, companyId:company?.id||null});
       case "tips":
         return /*#__PURE__*/React.createElement(TipsView, {role:role, lang:lang});
       case "quotes":
