@@ -144,7 +144,7 @@ input:focus,select:focus,textarea:focus{border-color:rgba(35,131,226,0.5)!import
     .chart-container{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:16px}
     .color-picker-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
     .color-dot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s ease;flex-shrink:0}
-    .color-dot:hover,.color-dot.active{border-color:#fff;transform:scale(1.2)}
+    .color-dot:hover,.color-dot.active{border-color:var(--text);transform:scale(1.2)}
     .trend-up{color:#4DAB6D}.trend-down{color:#EB5757}.trend-flat{color:#E8A838}
     .import-col-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:var(--surface);border:1px solid var(--border)}
     .chart-type-btn{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s}
@@ -276,31 +276,36 @@ const SB = {
 // ── Helpers KPI
 const KpiDB = {
   async saveMonthly(companyId, period, kpis, goals) {
-    // DT-01 : inliné, SB.saveWith() retiré (code mort)
     try { localStorage.setItem(`scalyo_kpis_${period}`, JSON.stringify({kpis, goals})); } catch(e){}
     if(!companyId) return;
-    await db.from("kpi_data").upsert(
-      { company_id: companyId, period, kpis, goals, updated_at: new Date().toISOString() },
-      { onConflict: "company_id,period" }
-    );
+    try {
+      await db.from("kpi_data").upsert(
+        { company_id: companyId, period, kpis, goals, updated_at: new Date().toISOString() },
+        { onConflict: "company_id,period" }
+      );
+    } catch(e) { console.error("KpiDB.saveMonthly error:", e); }
   },
   async saveCustom(companyId, customKpis, kpiHistory) {
     const payload = { custom_kpis: customKpis, history: kpiHistory };
     if(companyId) {
-      await db.from("kpi_data").upsert(
-        { company_id: companyId, period: "__custom__", ...payload, updated_at: new Date().toISOString() },
-        { onConflict: "company_id,period" }
-      );
+      try {
+        await db.from("kpi_data").upsert(
+          { company_id: companyId, period: "__custom__", ...payload, updated_at: new Date().toISOString() },
+          { onConflict: "company_id,period" }
+        );
+      } catch(e) { console.error("KpiDB.saveCustom error:", e); }
     }
     try { localStorage.setItem("scalyo_custom_kpis", JSON.stringify(customKpis)); } catch(e){}
     try { localStorage.setItem("scalyo_kpi_history", JSON.stringify(kpiHistory)); } catch(e){}
   },
   async saveGoals(companyId, goals) {
     if(companyId) {
-      await db.from("kpi_data").upsert(
-        { company_id: companyId, period: "__goals__", goals, updated_at: new Date().toISOString() },
-        { onConflict: "company_id,period" }
-      );
+      try {
+        await db.from("kpi_data").upsert(
+          { company_id: companyId, period: "__goals__", goals, updated_at: new Date().toISOString() },
+          { onConflict: "company_id,period" }
+        );
+      } catch(e) { console.error("KpiDB.saveGoals error:", e); }
     }
     try { localStorage.setItem("scalyo_goals", JSON.stringify(goals)); } catch(e){}
   },
@@ -346,10 +351,12 @@ const EventDB = {
   async save(companyId, events) {
     try { localStorage.setItem("scalyo_events", JSON.stringify(events)); } catch(e){}
     if(!companyId) return;
-    await db.from("cal_events").upsert(
-      { company_id: companyId, events, updated_at: new Date().toISOString() },
-      { onConflict: "company_id" }
-    );
+    try {
+      await db.from("cal_events").upsert(
+        { company_id: companyId, events, updated_at: new Date().toISOString() },
+        { onConflict: "company_id" }
+      );
+    } catch(e) { console.error("EventDB.save error:", e); }
   },
   async load(companyId) {
     if(companyId) {
@@ -365,10 +372,12 @@ const TodoDB = {
   async save(companyId, accountId, todos) {
     try { localStorage.setItem(`scalyo_todos_${accountId}`, JSON.stringify(todos)); } catch(e){}
     if(!companyId) return;
-    await db.from("account_todos").upsert(
-      { company_id: companyId, account_id: accountId, todos, updated_at: new Date().toISOString() },
-      { onConflict: "company_id,account_id" }
-    );
+    try {
+      await db.from("account_todos").upsert(
+        { company_id: companyId, account_id: accountId, todos, updated_at: new Date().toISOString() },
+        { onConflict: "company_id,account_id" }
+      );
+    } catch(e) { console.error("TodoDB.save error:", e); }
   },
   async load(companyId, accountId) {
     if(companyId) {
@@ -1575,7 +1584,7 @@ const Spinner = ({
     width: size,
     height: size,
     borderRadius: "50%",
-    border: `2px solid rgba(255,255,255,0.1)`,
+    border: `2px solid ${C.border}`,
     borderTop: `2px solid ${color}`,
     flexShrink: 0
   }
@@ -1682,7 +1691,7 @@ const HealthBar = ({
     style: {
       height: h,
       borderRadius: h,
-      background: "rgba(255,255,255,0.06)",
+      background: C.surface,
       overflow: "hidden",
       position: "relative"
     }
@@ -2930,7 +2939,7 @@ const ImportModal = ({
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      background: step === s ? C.teal : ["upload", "map", "preview"].indexOf(step) > i ? C.green : "rgba(255,255,255,0.1)",
+      background: step === s ? C.teal : ["upload", "map", "preview"].indexOf(step) > i ? C.green : C.surface,
       color: step === s || ["upload", "map", "preview"].indexOf(step) > i ? "#FFFFFF" : C.muted
     }
   }, ["upload", "map", "preview"].indexOf(step) > i ? "✓" : i + 1), /*#__PURE__*/React.createElement("span", {
@@ -5185,7 +5194,7 @@ const TaskCard = ({task, lang, onMove, onDelete, onToggle, onEdit, quadCount})=>
   const isOverdue = task.dueDate && new Date(task.dueDate)<new Date() && !task.done;
   return React.createElement("div",{
     style:{
-      background:hover?"rgba(255,255,255,0.07)":C.surface,
+      background:hover?C.surfaceHi:C.surface,
       border:`1px solid ${hover?col.hex+"55":C.border}`,
       borderLeft:`3px solid ${col.hex}`,
       borderRadius:6,padding:"11px 13px",marginBottom:8,
@@ -5353,7 +5362,7 @@ const AddTaskModal = ({onClose,onAdd,lang,editTask,accounts=[]})=>{
           },
           style:{
             flex:2,padding:"12px",borderRadius:6,fontSize:13,fontWeight:800,cursor:"pointer",border:"none",
-            background:!title.trim()?"rgba(255,255,255,0.05)":C.teal,
+            background:!title.trim()?C.surface:C.teal,
             color:!title.trim()?C.muted:"#FFFFFF",transition:"all .15s"
           }
         },isEdit?(T("update",lang)):(T("taskAdd",lang)))
@@ -6016,7 +6025,7 @@ const AddEventModal=({lang,accounts,editEvent,defaultDate,onClose,onSave,onDelet
         React.createElement("button",{onClick:onClose,style:{flex:1,padding:"11px",borderRadius:6,background:C.surface,border:`1px solid ${C.border}`,color:C.muted,cursor:"pointer",fontSize:13,fontWeight:600}},T("cancel",lang)),
         React.createElement("button",{disabled:!title.trim()||!date,onClick:handleSave,
           style:{flex:2,padding:"11px",borderRadius:6,fontSize:13,fontWeight:800,cursor:"pointer",border:"none",
-            background:!title.trim()||!date?"rgba(255,255,255,0.05)":C.teal,
+            background:!title.trim()||!date?C.surface:C.teal,
             color:!title.trim()||!date?C.muted:"#FFFFFF"}
         },isEdit?(T("update",lang)):(T("taskAdd",lang)))
       )
@@ -6372,17 +6381,18 @@ const WellbeingView = ({
   const saveWellbeing = React.useCallback(async (updates) => {
     const next = { ...wbData, ...updates };
     setWbData(next);
-    // FIX MIN-02 : notifier le parent pour synchro Dashboard
     if (onWellbeingUpdate) onWellbeingUpdate(next);
     if (!companyId) return;
-    await db.from("wellbeing").update({
-      score: next.score,
-      burnout: next.burnout,
-      charge: next.charge,
-      trend: next.trend,
-      alerts: JSON.stringify(next.alerts),
-      team: JSON.stringify(next.team)
-    }).eq("company_id", companyId);
+    try {
+      await db.from("wellbeing").update({
+        score: next.score,
+        burnout: next.burnout,
+        charge: next.charge,
+        trend: next.trend,
+        alerts: JSON.stringify(next.alerts),
+        team: JSON.stringify(next.team)
+      }).eq("company_id", companyId);
+    } catch(e) { console.error("saveWellbeing error:", e); }
   }, [wbData, companyId, onWellbeingUpdate]);
   const bottomRef = React.useRef();
   React.useEffect(() => {
@@ -8693,7 +8703,7 @@ const ResourcesView = ({
     onClick: r.locked ? onUpgrade : () => setSelectedResource(r),
     className: "card-lift",
     style: {
-      background: r.locked ? "rgba(255,255,255,0.02)" : C.surface,
+      background: r.locked ? C.faint : C.surface,
       border: `1px solid ${C.border}`,
       borderRadius: 16,
       padding: 20,
@@ -9727,7 +9737,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     }, /*#__PURE__*/React.createElement("path", {
       d: `M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`,
       fill: "none",
-      stroke: "rgba(255,255,255,0.06)",
+      stroke: C.border,
       strokeWidth: 7
     }), pct > 0.01 && /*#__PURE__*/React.createElement("path", {
       d: `M ${cx - r} ${cy} A ${r} ${r} 0 ${large} 1 ${ep.x} ${ep.y}`,
@@ -9747,7 +9757,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       y: cy + 10,
       textAnchor: "middle",
       fontSize: 6,
-      fill: "rgba(255,255,255,0.4)"
+      fill: C.muted
     }, label));
   };
 
@@ -9802,13 +9812,13 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
         y: h - 5,
         textAnchor: "middle",
         fontSize: 5.5,
-        fill: "rgba(255,255,255,0.4)"
+        fill: C.muted
       }, d.l), d.v > 0 && /*#__PURE__*/React.createElement("text", {
         x: x + bw / 2,
         y: h - 21 - bh,
         textAnchor: "middle",
         fontSize: 5.5,
-        fill: d.hi ? C.teal : "rgba(255,255,255,0.5)",
+        fill: d.hi ? C.teal : C.muted,
         fontWeight: "bold"
       }, d.v));
     }));
@@ -11013,11 +11023,11 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
               React.createElement("svg", {viewBox:`0 0 ${svgW} ${svgH}`,style:{width:"100%",minWidth:300,height:svgH}},
                 /* Grid lines */
                 [0,.25,.5,.75,1].map((f,i)=>
-                  React.createElement("line", {key:i,x1:pad.l,x2:svgW-pad.r,y1:pad.t+chartH*(1-f),y2:pad.t+chartH*(1-f),stroke:"rgba(255,255,255,0.05)",strokeWidth:1})
+                  React.createElement("line", {key:i,x1:pad.l,x2:svgW-pad.r,y1:pad.t+chartH*(1-f),y2:pad.t+chartH*(1-f),stroke:C.border,strokeWidth:1})
                 ),
                 /* Y axis labels */
                 [0,.5,1].map((f,i)=>
-                  React.createElement("text", {key:i,x:pad.l-4,y:pad.t+chartH*(1-f)+4,textAnchor:"end",fontSize:8,fill:"rgba(255,255,255,0.3)"}, Math.round(maxVal*f))
+                  React.createElement("text", {key:i,x:pad.l-4,y:pad.t+chartH*(1-f)+4,textAnchor:"end",fontSize:8,fill:C.muted}, Math.round(maxVal*f))
                 ),
                 /* Data */
                 activeCols.map((col,ci)=>{
@@ -11051,7 +11061,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
                   const step=Math.ceil(nRows/8);
                   return labels.filter((_,i)=>i%step===0||i===nRows-1).map((l,i)=>{
                     const idx=i*step>nRows-1?nRows-1:i*step;
-                    return React.createElement("text", {key:i,x:pad.l+idx*(chartW/(nRows-1||1)),y:svgH-4,textAnchor:"middle",fontSize:7.5,fill:"rgba(255,255,255,0.3)"}, l);
+                    return React.createElement("text", {key:i,x:pad.l+idx*(chartW/(nRows-1||1)),y:svgH-4,textAnchor:"middle",fontSize:7.5,fill:C.muted}, l);
                   });
                 })()
               )
@@ -12590,16 +12600,18 @@ const SettingsView = ({
   const tabs = role === "manager" ? [["profile", T("tabProfile",lang)], ["team", T("tabTeam",lang)], ["billing", T("tabBilling",lang)], ["notifs", T("tabNotifs",lang)], ["apparence", T("tabAppearance",lang)], ["danger", "⚠️ "+T("deleteAccount",lang)]] : [["profile", T("tabProfile",lang)], ["notifs", T("tabNotifs",lang)], ["apparence", T("tabAppearance",lang)], ["danger", "⚠️ "+T("deleteAccount",lang)]];
   const saveProfile = async () => {
     setSaving(true);
-    if (db && company?.id) {
-      await db.from("companies").update({
-        name: companyName.trim()
-      }).eq("id", company.id);
-      if (onCompanyUpdate) onCompanyUpdate({
-        ...company,
-        name: companyName.trim()
-      });
-    }
-    
+    try {
+      if (db && company?.id) {
+        const { error } = await db.from("companies").update({
+          name: companyName.trim()
+        }).eq("id", company.id);
+        if (error) { console.error("saveProfile error:", error.message); }
+        if (onCompanyUpdate) onCompanyUpdate({
+          ...company,
+          name: companyName.trim()
+        });
+      }
+    } catch(e) { console.error("saveProfile exception:", e); }
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
@@ -12725,7 +12737,7 @@ const SettingsView = ({
     readOnly: true,
     style: {
       width: "100%",
-      background: "rgba(255,255,255,0.02)",
+      background: C.surface,
       border: `1px solid ${C.border}`,
       borderRadius: 12,
       padding: "11px 14px",
