@@ -201,7 +201,7 @@ input:focus,select:focus,textarea:focus{border-color:rgba(35,131,226,0.5)!import
 </style>
 </head>
 <body>
-<div id="root"><div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--bg)"><div style="width:44px;height:44px;background:var(--teal);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div><div style="width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin 1s linear infinite"></div><p style="color:var(--muted);font-size:14px">Chargement...</p></div></div>
+<div id="root"><div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--bg)"><div style="width:44px;height:44px;background:var(--teal);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div><div style="width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin 1s linear infinite"></div><p style="color:var(--muted);font-size:14px" id="loading-text">Loading...</p><script>try{var l=localStorage.getItem("scalyo_lang");document.getElementById("loading-text").textContent=l==="kr"?"로딩 중...":l==="en"?"Loading...":"Chargement...";}catch(e){}</script></div></div>
 <script type="text/javascript">
 
 // ══════════════════════════════════════════════════
@@ -2691,7 +2691,7 @@ const UpgradeModal = ({
       color: p.highlight ? "#FFFFFF" : C.text,
       border: p.highlight ? "none" : `1px solid ${C.border}`
     }
-  }, lang==="en"?"Choose ":"Choisir ", p.name, " \u2192") : /*#__PURE__*/React.createElement("div", {
+  }, lang==="kr"?"선택 ":lang==="en"?"Choose ":"Choisir ", p.name, " \u2192") : /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       padding: "10px",
@@ -2740,7 +2740,7 @@ const ImportModal = ({
     required: false
   }, {
     key: "mrr",
-    label: "MRR (€/mois)",
+    label: lang==="kr"?"MRR (€/월)":lang==="en"?"MRR (€/month)":"MRR (€/mois)",
     required: false
   }, {
     key: "industry",
@@ -3173,7 +3173,7 @@ const ImportModal = ({
       fontSize: 13,
       color: C.muted
     }
-  }, editableRows.length, lang==="en"?(" account"+(editableRows.length>1?"s":"")):" compte"+(editableRows.length>1?"s":""), " \u2014 ", /*#__PURE__*/React.createElement("strong", {
+  }, editableRows.length, lang==="kr"?" 계정":lang==="en"?(" account"+(editableRows.length>1?"s":"")):" compte"+(editableRows.length>1?"s":""), " \u2014 ", /*#__PURE__*/React.createElement("strong", {
     style: {
       color: C.text
     }
@@ -3726,7 +3726,7 @@ const DashboardView = ({
       color: C.muted,
       marginTop: 2
     }
-  }, "Score /100")), /*#__PURE__*/React.createElement("div", {
+  }, lang==="kr"?"점수 /100":"Score /100")), /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       background: C.surface,
@@ -4899,7 +4899,7 @@ const PortfolioView = ({
       border: `1px solid ${C.tealBorder}`,
       color: C.teal
     }
-  }, "\u2B06 Import"))), importMsg && /*#__PURE__*/React.createElement("div", {
+  }, "\u2B06 "+(lang==="kr"?"가져오기":T("import",lang))))), importMsg && /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 10,
       padding: "9px 12px",
@@ -5012,7 +5012,7 @@ const PortfolioView = ({
       fontSize: 10,
       color: C.muted
     }
-  }, "Score ", a.health || 70))))), sel && /*#__PURE__*/React.createElement(AccountDetailPanel, {
+  }, lang==="kr"?"점수 ":"Score ", a.health || 70))))), sel && /*#__PURE__*/React.createElement(AccountDetailPanel, {
     account: sel,
     lang: lang,
     currency: currency,
@@ -5519,8 +5519,7 @@ const TaskBoardView = ({accounts=[], role="csm", lang="fr", companyId=null, shar
       React.createElement("div",null,
         React.createElement("h1",{style:{fontSize:22,fontWeight:900,letterSpacing:"-.5px",marginBottom:3}},"🎯 "+T("tasks",lang)),
         React.createElement("p",{style:{fontSize:12,color:C.muted}},
-          lang==="en"||lang==="kr"?`${stats.total} active · ${stats.done} done${stats.overdue>0?" · ⚠ "+stats.overdue+" overdue":""}`
-          :lang==="en"||lang==="kr"?`${stats.total} active · ${stats.done} done${stats.overdue>0?" · ⚠ "+stats.overdue+" overdue":""}`:` ${stats.total} en cours · ${stats.done} terminées${stats.overdue>0?" · ⚠ "+stats.overdue+" en retard":""}`
+          lang==="kr"?`${stats.total} 활성 · ${stats.done} 완료${stats.overdue>0?" · ⚠ "+stats.overdue+" 지연":""}`:lang==="en"?`${stats.total} active · ${stats.done} done${stats.overdue>0?" · ⚠ "+stats.overdue+" overdue":""}`:` ${stats.total} en cours · ${stats.done} terminées${stats.overdue>0?" · ⚠ "+stats.overdue+" en retard":""}`
         )
       ),
       React.createElement("div",{style:{display:"flex",gap:8,alignItems:"center"}},
@@ -6268,15 +6267,18 @@ Tout ce que tu partages ici reste entre nous. Je peux aussi t'aider à préparer
   }
 };
 const getNovaResponse = (msg, lang) => {
-  const isEN = lang === "en" || lang === "kr";
   const lower = msg.toLowerCase();
   if (NOVA_RESPONSES.crise.trigger.some(t => lower.includes(t))) {
-    return isEN
+    return lang==="kr"
+      ? "당신의 말을 듣고 있어요. 지금 느끼는 감정은 중요해요.\n\n**오늘 믿을 수 있는 사람에게 연락해주세요.** 매니저, 친구, 또는 상담사. 혼자 짊어질 필요 없어요.\n\n→ 여기 있을게요. 더 이야기해줘요."
+      : lang==="en"
       ? "I hear you. What you are feeling matters right now.\n\n**Please reach out to someone you trust today.** A manager, friend, or therapist. You don't have to carry this alone.\n\n\u2192 I'm here to listen. Tell me more."
       : NOVA_RESPONSES.crise.answer;
   }
   if (NOVA_RESPONSES.tristesse.trigger.some(t => lower.includes(t))) {
-    return isEN
+    return lang==="kr"
+      ? "이해해요. 괜찮지 않아도 괜찮아요.\n\n**느끼는 것은 진짜예요.** CS 일은 감정적으로 힘들 수 있어요.\n\n→ 이 감정을 촉발한 것이 무엇인지 이야기해볼까요?"
+      : lang==="en"
       ? "I hear you. It's okay to not be okay.\n\n**What you're feeling is valid.** CS work can be emotionally draining.\n\n\u2192 Would it help to talk about what triggered this?"
       : NOVA_RESPONSES.tristesse.answer;
   }
@@ -6316,12 +6318,14 @@ const getNovaResponse = (msg, lang) => {
       motivation_perte: "**CS에서 다시 동기 찾기**\n\n• 자랑스러운 고객 한 명을 찾아 오늘 연락해보세요\n• 이 역할이 올해 가르쳐준 것들을 적어보세요\n• 매니저에게: \"어떻게 하면 더 큰 임팩트를 낼 수 있을까요?\"\n\n**더 깊은 질문:**\n→ 더 이상 맞지 않는 게 역할인가요, 아니면 현재 환경인가요?\n\n→ CS에서 가장 그리운 것이 무엇인가요?",
       fatigue_chron:   "**만성 피로: 진짜로 회복하기**\n\n→ 저녁: 잠들기 1시간 전 디지털 차단\n→ 주말: 일 생각 없이 반나절 보내기\n→ 휴가: 완전한 단절\n\n**2주 이상 지속된다면** → 의사에게 상담받으세요\n\n→ 이런 느낌이 얼마나 됐나요?" 
     };
-      return lang==="kr" ? (KR_MAP[key] || EN_MAP[key] || val.answer) : isEN ? (EN_MAP[key] || val.answer) : val.answer;
+      return lang==="kr" ? (KR_MAP[key] || EN_MAP[key] || val.answer) : lang==="en" ? (EN_MAP[key] || val.answer) : val.answer;
     }
   }
-  return isEN
+  return lang==="kr"
+    ? "감사해요, 이야기해줘서요. 💚\n\n**여기 있을게요.** CS 일은 정말 힘들 수 있어요.\n\n무슨 일이 있었는지 더 이야기해줄 수 있어요?"
+    : lang==="en"
     ? "Thank you for sharing that with me.\n\n**I'm here for you.** CS work is demanding mentally and emotionally.\n\nTell me more about what you're going through."
-    : lang==="kr" ? "감사해요, 이야기해줘서요. 💚\n\n**여기 있을게요.** CS 일은 정말 힘들 수 있어요.\n\n무슨 일이 있었는지 더 이야기해줄 수 있어요?" : "Merci de partager ca avec moi. Je t'ecoute.\n\n**Je suis la pour toi.** Le metier de CS est exigeant.\n\nDis-moi ce qui se passe, et on va traverser ca ensemble.";
+    : "Merci de partager ca avec moi. Je t'ecoute.\n\n**Je suis la pour toi.** Le metier de CS est exigeant.\n\nDis-moi ce qui se passe, et on va traverser ca ensemble.";
 };
 
 const renderMD = (text) => {
@@ -9449,7 +9453,6 @@ const EmailStudioView = ({
 // ══════════════════════════════════════════════════
 const KpiField = ({label, k, unit, goalKey, placeholder, kpis, goals, draft, upd, commitUpd, lang}) => {
   const val = draft[k] !== undefined ? draft[k] : (kpis[k] || "");
-  const isEN = lang === "en" || lang === "kr";
   return React.createElement("div", {style:{display:"flex",flexDirection:"column",gap:4}},
     React.createElement("label", {style:{fontSize:11,color:C.muted}}, label),
     React.createElement("div", {style:{display:"flex",gap:6,alignItems:"center"}},
@@ -9464,8 +9467,8 @@ const KpiField = ({label, k, unit, goalKey, placeholder, kpis, goals, draft, upd
       unit && React.createElement("span",{style:{fontSize:11,color:C.muted,flexShrink:0}},unit)
     ),
     goalKey && goals[goalKey]>0 && React.createElement("div",{style:{fontSize:10,color:kpis[k]>=goals[goalKey]?C.green:C.amber}},
-      isEN?"Target: ":"Obj: ", goals[goalKey], unit, " · ",
-      kpis[k]>=goals[goalKey]?"✓":("⚠ "+Math.round(kpis[k]/goals[goalKey]*100)+"% "+(isEN?"reached":"atteint"))
+      lang==="kr"?"목표: ":lang==="en"?"Target: ":"Obj: ", goals[goalKey], unit, " · ",
+      kpis[k]>=goals[goalKey]?"✓":("⚠ "+Math.round(kpis[k]/goals[goalKey]*100)+"% "+(lang==="kr"?"달성":lang==="en"?"reached":"atteint"))
     )
   );
 };
@@ -9553,19 +9556,18 @@ const KPIView = ({
   // ── ALERTES ENGINE : calcul des alertes actives
   const activeAlerts = React.useMemo(()=>{
     const alerts=[];
-    const isEN=lang==="en"||lang==="kr";
     // KPIs standards
-    if(goals.nps>0&&kpis.nps>0&&kpis.nps<goals.nps){alerts.push({id:"nps",level:kpis.nps<goals.nps*0.7?"critical":"warning",kpi:"NPS",current:kpis.nps,goal:goals.nps,msg:isEN?`NPS ${kpis.nps} below target ${goals.nps}`:`NPS ${kpis.nps} sous objectif ${goals.nps}`,icon:"⭐"});}
-    if(goals.renewalRate>0&&kpis.renewalRate>0&&kpis.renewalRate<goals.renewalRate){alerts.push({id:"renewal",level:kpis.renewalRate<goals.renewalRate-15?"critical":"warning",kpi:isEN?"Renewal Rate":"Taux Renouvellement",current:kpis.renewalRate+"%",goal:goals.renewalRate+"%",msg:isEN?`Renewal rate ${kpis.renewalRate}% below target ${goals.renewalRate}%`:`Renouvellement ${kpis.renewalRate}% sous objectif ${goals.renewalRate}%`,icon:"🔄"});}
-    if(goals.csat>0&&kpis.csat>0&&kpis.csat<goals.csat){alerts.push({id:"csat",level:kpis.csat<goals.csat-2?"critical":"warning",kpi:"CSAT",current:kpis.csat+"/10",goal:goals.csat+"/10",msg:isEN?`CSAT ${kpis.csat}/10 below target ${goals.csat}/10`:`CSAT ${kpis.csat}/10 sous objectif ${goals.csat}/10`,icon:"😊"});}
-    if(goals.mrr>0&&kpis.mrr>0&&kpis.mrr<goals.mrr){alerts.push({id:"mrr",level:kpis.mrr<goals.mrr*0.8?"critical":"warning",kpi:"MRR",current:kpis.mrr.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")+"€",goal:goals.mrr.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")+"€",msg:isEN?`MRR ${kpis.mrr.toLocaleString()}€ below target ${goals.mrr.toLocaleString()}€`:`MRR ${kpis.mrr.toLocaleString("fr-FR")}€ sous objectif ${goals.mrr.toLocaleString("fr-FR")}€`,icon:"💰"});}
+    if(goals.nps>0&&kpis.nps>0&&kpis.nps<goals.nps){alerts.push({id:"nps",level:kpis.nps<goals.nps*0.7?"critical":"warning",kpi:"NPS",current:kpis.nps,goal:goals.nps,msg:lang==="kr"?`NPS ${kpis.nps} — 목표 ${goals.nps} 미달`:lang==="en"?`NPS ${kpis.nps} below target ${goals.nps}`:`NPS ${kpis.nps} sous objectif ${goals.nps}`,icon:"⭐"});}
+    if(goals.renewalRate>0&&kpis.renewalRate>0&&kpis.renewalRate<goals.renewalRate){alerts.push({id:"renewal",level:kpis.renewalRate<goals.renewalRate-15?"critical":"warning",kpi:lang==="kr"?"갱신률":lang==="en"?"Renewal Rate":"Taux Renouvellement",current:kpis.renewalRate+"%",goal:goals.renewalRate+"%",msg:lang==="kr"?`갱신률 ${kpis.renewalRate}% — 목표 ${goals.renewalRate}% 미달`:lang==="en"?`Renewal rate ${kpis.renewalRate}% below target ${goals.renewalRate}%`:`Renouvellement ${kpis.renewalRate}% sous objectif ${goals.renewalRate}%`,icon:"🔄"});}
+    if(goals.csat>0&&kpis.csat>0&&kpis.csat<goals.csat){alerts.push({id:"csat",level:kpis.csat<goals.csat-2?"critical":"warning",kpi:"CSAT",current:kpis.csat+"/10",goal:goals.csat+"/10",msg:lang==="kr"?`CSAT ${kpis.csat}/10 — 목표 ${goals.csat}/10 미달`:lang==="en"?`CSAT ${kpis.csat}/10 below target ${goals.csat}/10`:`CSAT ${kpis.csat}/10 sous objectif ${goals.csat}/10`,icon:"😊"});}
+    if(goals.mrr>0&&kpis.mrr>0&&kpis.mrr<goals.mrr){alerts.push({id:"mrr",level:kpis.mrr<goals.mrr*0.8?"critical":"warning",kpi:"MRR",current:kpis.mrr.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")+"€",goal:goals.mrr.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")+"€",msg:lang==="kr"?`MRR ${kpis.mrr.toLocaleString("ko-KR")}€ — 목표 ${goals.mrr.toLocaleString("ko-KR")}€ 미달`:lang==="en"?`MRR ${kpis.mrr.toLocaleString()}€ below target ${goals.mrr.toLocaleString()}€`:`MRR ${kpis.mrr.toLocaleString("fr-FR")}€ sous objectif ${goals.mrr.toLocaleString("fr-FR")}€`,icon:"💰"});}
     if(goals.nrr>0&&kpis.nrr>0&&kpis.nrr<goals.nrr){alerts.push({id:"nrr",level:kpis.nrr<80?"critical":"warning",kpi:"NRR",current:kpis.nrr+"%",goal:goals.nrr+"%",msg:lang==="kr"?`NRR ${kpis.nrr}% — 목표 ${goals.nrr}% 미달${kpis.nrr<80?" (위험 — 즉시 조치 필요)":""}`:lang==="en"?`NRR ${kpis.nrr}% below target ${goals.nrr}%${kpis.nrr<80?" — critical, immediate action required":""}`:`NRR ${kpis.nrr}% sous l'objectif ${goals.nrr}%${kpis.nrr<80?" — critique, action immédiate requise":""}`})}
-if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"critical",kpi:isEN?"Churn":"Churn",current:kpis.churned,goal:goals.churned,msg:lang==="kr"?`${kpis.churned}개 이탈 — 임계값 ${goals.churned} 초과`:isEN?`${kpis.churned} churned clients exceed max ${goals.churned}`:`${kpis.churned} churns dépassent le seuil max ${goals.churned}`,icon:"📉"});}
+if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"critical",kpi:"Churn",current:kpis.churned,goal:goals.churned,msg:lang==="kr"?`${kpis.churned}개 이탈 — 임계값 ${goals.churned} 초과`:lang==="en"?`${kpis.churned} churned clients exceed max ${goals.churned}`:`${kpis.churned} churns dépassent le seuil max ${goals.churned}`,icon:"📉"});}
     // KPIs custom
     customKpis.forEach(k=>{
       if(k.goal>0&&k.value>0&&k.value<k.goal){
         const pct=k.value/k.goal*100;
-        alerts.push({id:"custom_"+k.id,level:pct<70?"critical":"warning",kpi:k.name,current:k.value+(k.unit?" "+k.unit:""),goal:k.goal+(k.unit?" "+k.unit:""),msg:(isEN?`${k.name}: ${k.value} below target ${k.goal}`:`${k.name} : ${k.value} sous objectif ${k.goal}`)+(k.unit?" "+k.unit:""),icon:"🎯",color:k.color});
+        alerts.push({id:"custom_"+k.id,level:pct<70?"critical":"warning",kpi:k.name,current:k.value+(k.unit?" "+k.unit:""),goal:k.goal+(k.unit?" "+k.unit:""),msg:(lang==="kr"?`${k.name}: ${k.value} — 목표 ${k.goal} 미달`:lang==="en"?`${k.name}: ${k.value} below target ${k.goal}`:`${k.name} : ${k.value} sous objectif ${k.goal}`)+(k.unit?" "+k.unit:""),icon:"🎯",color:k.color});
       }
     });
     return alerts.filter(a=>!alertsDismissed.includes(a.id));
@@ -10568,7 +10570,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     color: kpis.avgResolutionTime > 48 ? C.red : kpis.avgResolutionTime > 24 ? C.amber : C.green
   }, {
     label: lang==="en" ? "Avg Time to Value" : lang==="kr" ? "평균 가치 실현 시간" : "Time to Value moyen",
-    val: `${kpis.avgTimeToValue} jours`,
+    val: `${kpis.avgTimeToValue} ${lang==="kr"?"일":lang==="en"?"days":"jours"}`,
     color: kpis.avgTimeToValue > 30 ? C.red : kpis.avgTimeToValue > 14 ? C.amber : C.green
   }, {
     label: lang==="en" ? "Critical accounts" : lang==="kr" ? "위험 계정" : "Comptes critiques",
@@ -10640,7 +10642,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
         ),
         React.createElement("div", {className:"kpi-form-field"},
           React.createElement("label", null, lang==="en" ? "Unit" : lang==="kr" ? "단위" : T("unit",lang)),
-          React.createElement("input", {type:"text",placeholder:"%, €, pts, jours...",value:kpiForm.unit,onChange:e=>setKpiForm(p=>({...p,unit:e.target.value}))})
+          React.createElement("input", {type:"text",placeholder:lang==="kr"?"%, €, pts, 일...":lang==="en"?"%, €, pts, days...":"%, €, pts, jours...",value:kpiForm.unit,onChange:e=>setKpiForm(p=>({...p,unit:e.target.value}))})
         ),
         React.createElement("div", {className:"kpi-form-field"},
           React.createElement("label", null, lang==="en" ? "Current Value" : lang==="kr" ? "현재 값" : "Valeur Actuelle"),
@@ -10654,9 +10656,9 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
           React.createElement("label", null, lang==="en" ? "Format" : lang==="kr" ? "형식" : "Format"),
           React.createElement("select", {value:kpiForm.type,onChange:e=>setKpiForm(p=>({...p,type:e.target.value}))},
             React.createElement("option", {value:"number"}, lang==="en" ? "Number" : lang==="kr" ? "숫자" : "Nombre"),
-            React.createElement("option", {value:"percent"}, "Pourcentage (%)"),
+            React.createElement("option", {value:"percent"}, lang==="kr"?"백분율 (%)":lang==="en"?"Percentage (%)":"Pourcentage (%)"),
             React.createElement("option", {value:"currency"}, lang==="en" ? "Currency (€)" : lang==="kr" ? "통화 (€)" : T("kpiMonetary",lang)),
-            React.createElement("option", {value:"score"}, "Score (0-10)"),
+            React.createElement("option", {value:"score"}, lang==="kr"?"점수 (0-10)":lang==="en"?"Score (0-10)":"Score (0-10)"),
             React.createElement("option", {value:"days"}, lang==="en" ? "Duration (days)" : lang==="kr" ? "기간 (일)" : T("kpiDuration",lang))
           )
         ),
@@ -11165,15 +11167,15 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       color: C.muted,
       marginTop: 3
     }
-  }, "P\xE9riode : ", periodLabel)), /*#__PURE__*/React.createElement(Tag, {
+  }, lang==="kr"?"기간 : ":lang==="en"?"Period: ":"Période : ", periodLabel)), /*#__PURE__*/React.createElement(Tag, {
     color: C.teal,
     size: "xs"
-  }, "Pr\xEAt \xE0 pr\xE9senter")), [{
-    title: "💰 Performance Revenus",
+  }, lang==="kr"?"발표 준비 완료":lang==="en"?"Ready to present":"Prêt à présenter")), [{
+    title: lang==="kr"?"💰 매출 성과":lang==="en"?"💰 Revenue Performance":"💰 Performance Revenus",
     items: [{
       label: "MRR",
-      val: `${kpis.mrr.toLocaleString("fr-FR")} €`,
-      obj: goals.mrr > 0 ? lang==="en"?`Target: ${goals.mrr.toLocaleString("en-US")} €`:`Objectif : ${goals.mrr.toLocaleString("fr-FR")} €` : ""
+      val: `${kpis.mrr.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")} €`,
+      obj: goals.mrr > 0 ? lang==="kr"?`목표: ${goals.mrr.toLocaleString("ko-KR")} €`:lang==="en"?`Target: ${goals.mrr.toLocaleString("en-US")} €`:`Objectif : ${goals.mrr.toLocaleString("fr-FR")} €` : ""
     }, {
       label: lang==="en" ? "Churn Rate" : lang==="kr" ? "이탈률" : "Taux de Churn",
       val: `${churnRate}%`,
@@ -11181,17 +11183,17 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     }, {
       label: "NRR",
       val: `${nrr}%`,
-      status: nrr >= 100 ? (lang==="en" ? "✓ Net Expansion" : lang==="kr" ? "✓ 순 확장" : "✓ Expansion nette") : nrr >= 90 ? "→ Stable" : "⚠ Contraction"
+      status: nrr >= 100 ? (lang==="kr" ? "✓ 순 확장" : lang==="en" ? "✓ Net Expansion" : "✓ Expansion nette") : nrr >= 90 ? (lang==="kr" ? "→ 안정" : lang==="en" ? "→ Stable" : "→ Stable") : (lang==="kr" ? "⚠ 수축" : lang==="en" ? "⚠ Contraction" : "⚠ Contraction")
     }, {
       label: lang==="en" ? "Expansion Revenue" : lang==="kr" ? "확장 매출" : "Revenu d'expansion",
-      val: `${kpis.expansionRevenue.toLocaleString("fr-FR")} €`
+      val: `${kpis.expansionRevenue.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")} €`
     }]
   }, {
-    title: "⭐ Satisfaction Client",
+    title: lang==="kr"?"⭐ 고객 만족도":lang==="en"?"⭐ Customer Satisfaction":"⭐ Satisfaction Client",
     items: [{
       label: "NPS",
       val: kpis.nps || "—",
-      obj: goals.nps > 0 ? lang==="en"?`Target: ${goals.nps}`:`Objectif : ${goals.nps}` : "",
+      obj: goals.nps > 0 ? lang==="kr"?`목표: ${goals.nps}`:lang==="en"?`Target: ${goals.nps}`:`Objectif : ${goals.nps}` : "",
       status: kpis.nps >= 50 ? "✓ Excellent" : kpis.nps >= 30 ? (lang==="en" ? "→ Good" : lang==="kr" ? "→ 좋음" : "→ Bon") : (lang==="en" ? "⚠ To improve" : lang==="kr" ? "⚠ 개선 필요" : T("kpiWarn",lang))
     }, {
       label: "CSAT",
@@ -11203,7 +11205,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       status: kpis.renewalRate >= 85 ? (lang==="en" ? "✓ Good" : lang==="kr" ? "✓ 좋음" : "✓ Bon") : kpis.renewalRate >= 70 ? "→ Acceptable" : (lang==="en" ? "⚠ To improve" : lang==="kr" ? "⚠ 개선 필요" : T("kpiWarn",lang))
     }]
   }, {
-    title: "💼 Portefeuille",
+    title: lang==="kr"?"💼 포트폴리오":lang==="en"?"💼 Portfolio":"💼 Portefeuille",
     items: [{
       label: lang==="en" ? "Total accounts" : lang==="kr" ? "총 계정" : T("kpiTotalAccounts",lang),
       val: totalClients
@@ -11219,7 +11221,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       status: (accounts?.filter(a => a.risk === "critical").length || 0) > 0 ? (lang==="en" ? "⚠ Warning" : lang==="kr" ? "⚠ 주의" : "⚠ Attention") : "✓ OK"
     }]
   }, {
-    title: T("kpiOpsPerf","fr"),
+    title: lang==="kr"?"⚙️ 운영 성과":T("kpiOpsPerf",lang),
     items: [{
       label: lang==="en" ? "Resolved tickets" : lang==="kr" ? "해결된 티켓" : T("kpiTicketsResolved",lang),
       val: `${kpis.resolvedTickets} / ${kpis.openTickets + kpis.resolvedTickets}`,
@@ -11230,7 +11232,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       status: kpis.avgResolutionTime > 48 ? "⚠ Long" : kpis.avgResolutionTime > 0 ? "✓ OK" : "—"
     }, {
       label: lang==="en" ? "Avg Time to Value" : lang==="kr" ? "평균 가치 실현 시간" : "Time to Value moyen",
-      val: `${kpis.avgTimeToValue} jours`
+      val: `${kpis.avgTimeToValue} ${lang==="kr"?"일":lang==="en"?"days":"jours"}`
     }]
   }].map((section, si) => /*#__PURE__*/React.createElement("div", {
     key: si,
@@ -11294,10 +11296,10 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     React.createElement("div", {style:{display:"flex",flexDirection:"column",gap:6}},
       customKpis.map((k,ki)=>{
         const fmtV=(v)=>{
-          if(k.type==="currency") return v.toLocaleString("fr-FR")+" €";
+          if(k.type==="currency") return v.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")+" €";
           if(k.type==="percent") return v+"%";
           if(k.type==="score") return v+"/10";
-          if(k.type==="days") return v+" jours";
+          if(k.type==="days") return v+(lang==="kr"?" 일":lang==="en"?" days":" jours");
           return v+(k.unit?" "+k.unit:"");
         };
         const ok=k.goal>0?k.value>=k.goal:null;
@@ -11308,7 +11310,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
             React.createElement("span", {style:{color:C.muted}}, k.name)
           ),
           React.createElement("div", {style:{display:"flex",alignItems:"center",gap:10}},
-            k.goal>0&&React.createElement("span", {style:{fontSize:11,color:C.faint}}, lang==="en"?"Target: ":lang==="kr"?"목표: ":"Obj: "+fmtV(k.goal)),
+            k.goal>0&&React.createElement("span", {style:{fontSize:11,color:C.faint}}, (lang==="kr"?"목표: ":lang==="en"?"Target: ":"Obj: ")+fmtV(k.goal)),
             React.createElement("span", {style:{fontWeight:800,color:k.color,fontFamily:"'JetBrains Mono',monospace"}}, fmtV(k.value)),
             ok!==null&&React.createElement(Tag, {
               color:ok?C.green:pct>70?C.amber:C.red,size:"xs"
@@ -11328,7 +11330,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
         React.createElement("div", {key:ali,style:{display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:12,padding:"6px 10px",background:al.level==="critical"?"rgba(235,87,87,0.08)":"rgba(245,158,11,0.07)",borderRadius:8}},
           React.createElement("span", null, al.icon," ",al.msg),
           React.createElement("span", {style:{fontWeight:800,color:al.level==="critical"?C.red:C.amber,fontSize:10}},
-            al.level==="critical"?"⚠ CRITIQUE":"→ Attention"
+            al.level==="critical"?(lang==="kr"?"⚠ 위험":lang==="en"?"⚠ CRITICAL":"⚠ CRITIQUE"):(lang==="kr"?"→ 주의":lang==="en"?"→ Warning":"→ Attention")
           )
         )
       )
@@ -12245,6 +12247,194 @@ Ask your question or click a topic below!`
   }
 ];
 
+const CS_COACH_RESPONSES_KR = {
+  churn: {
+    answer: `**이탈 방지 전략 — 개입 프레임워크**
+
+1. **조기 감지 (D-60)**: 3가지 핵심 신호에 알림 설정:
+   • 2주간 사용량 30% 이상 감소
+   • 이메일 무응답 10일 이상
+   • 최근 NPS 6 미만
+
+2. **리스크 분류**:
+   • 낮은 리스크 → 사용량 리포트 + 확인 이메일
+   • 중간 리스크 → 5일 내 CSM 전화
+   • 높은 리스크 → 매니저 에스컬레이션 + 구제 계획
+
+3. **긴급 통화**: 제품이 아닌, 인지된 가치에 대한 개방형 질문 3개 준비
+
+4. **구제 계획**: 30일 SMART 목표, 스폰서 확인, 주간 터치포인트
+
+긴급 통화 스크립트 작성을 도와드릴까요?`
+  },
+  onboarding: {
+    answer: `**B2B 온보딩 프레임워크 — D0~D60**
+
+**D0 → D7 (활성화)**:
+• 계약 후 2시간 내 환영 이메일
+• 48시간 내 킥오프 콜
+• 기본 설정 + 첫 번째 퀵윈 확인
+
+**D8 → D30 (도입)**:
+• 핵심 사용자 교육 (최대 2시간, 녹화)
+• 고객과 성공 KPI 3개 정의
+• 주간 체크인 (30분)
+
+**D31 → D60 (확장)**:
+• 첫 사용량 리포트 공유
+• 비공식 NPS 확인
+• 챔피언 사용자 파악
+• 제품 로드맵 프레젠테이션
+
+**모니터링 활성화 지표**:
+→ D7 로그인률: 목표 > 70%
+→ D30 활성화 기능: 목표 > 3개
+→ D60 도입 점수: 목표 > 65/100`
+  },
+  nps: {
+    answer: `**NPS 개선 — 60일 실행 계획**
+
+**NPS가 정체되는 이유는?**
+가장 흔한 3가지 원인:
+1. 약속된 가치와 인지된 가치 간의 격차
+2. 해결되지 않은 마찰점 (온보딩, 지원)
+3. 핵심 순간 사이 사전적 연락 부족
+
+**60일 계획**:
+
+*1~2주차*: 비추천 고객 대응 (점수 0-6)
+→ 개인화된 통화, 문서화된 실행 계획, 2주 후 후속 조치
+
+*3~4주차*: 중립 고객 활성화 (점수 7-8)
+→ 맞춤 리소스 공유, 이벤트 초대
+
+*5~6주차*: 추천 고객을 옹호자로 전환
+→ 추천 프로그램, 후기, 고객 사례 연구
+
+**퀵윈**: 90일마다 NPS 수집으로는 부족합니다. 핵심 순간(온보딩 후, 지원 후, D180)에 거래 NPS로 전환하세요.`
+  },
+  qbr: {
+    answer: `**B2B QBR 구조 — 분기별 비즈니스 리뷰**
+
+**권장 시간**: 45분
+
+**어젠다**:
+
+1. **분기 실적** (10분)
+   • 공동 정의된 목표 대비 KPI
+   • 이전 분기와 비교
+   • 계산 및 정량화된 ROI
+
+2. **핵심 사항 & 조치** (10분)
+   • 잘 된 것
+   • 발생한 장애와 해결 방법
+
+3. **다음 분기 목표** (15분)
+   • 공동 정의된 2~3개 SMART 목표
+   • 고객 측 필요 리소스
+   • 중간 마일스톤
+
+4. **로드맵 & 혁신** (5분)
+   • 관련 새 기능 소개
+   • 베타 또는 얼리 액세스
+
+5. **자유 질문** (5분)
+   → "아직 저희에게 기대하시는 것이 있으신가요?" — 놓치면 안 되는 질문
+
+**흔한 실수**: 고객의 비즈니스 성과가 아닌 제품 중심으로 QBR을 진행하는 것.`
+  },
+  burnout: {
+    answer: `**CSM 번아웃 예방 — 신호 & 조치**
+
+**초기 경고 신호**:
+• 체크인 시 만족도 < 6/10
+• 실수나 지연 증가
+• 사전적 커뮤니케이션 감소
+• 위험 계정 > 포트폴리오의 30%
+
+**예방 조치**:
+
+*매니저 측*:
+→ KPI가 아닌 감정에 초점을 맞춘 월간 1:1
+→ 과부하 전 사전적 계정 재배분
+→ 작은 성과도 축하하기
+→ 어려운 고객 대응 교육 (롤플레이)
+
+*CSM 측*:
+→ 주 2시간 딥워크 블록 (미팅 없음)
+→ 긴급 업무 배치: 하루 2 × 30분 슬롯
+→ 복잡한 계정 문서화로 정신적 부담 경감
+→ 과부하를 매니저에게 사전 보고
+
+**핵심 지표**: 80% 이상의 업무량이 4주 이상 지속되면 위험 신호입니다.`
+  },
+  expansion: {
+    answer: `**고객 확장 전략 — PACT 프레임워크**
+
+**P — 인내(Patience)**: 도입이 입증된 후에만 확장 접근 (점수 > 70/100, NPS ≥ 7)
+
+**A — 가치 앵커(Anchor)**: 업그레이드 이야기 전에 구체적인 ROI를 계산하고 보여주기
+   → "월 X시간 절약 = €Y 가치 창출"
+
+**C — 비즈니스 맥락(Context)**: 확장은 판매 목표가 아닌 파악된 신규 니즈를 해결해야 함
+
+**T — 타이밍(Timing)**: 확장 최적 3가지 순간:
+   1. 눈에 띄는 성공 후 (퀵윈)
+   2. 갱신 전 (D-90)
+   3. 고객사 조직 변화 시
+
+**오프닝 스크립트**:
+*"[기능 X]를 집중적으로 사용하고 계시네요. [팀 Z]에도 같은 효과를 줄 [기능 Y]를 고려해 보셨나요?"*
+
+**피해야 할 함정**: 계정이 어려울 때 확장을 제안하는 것. 먼저 안정화, 그 다음 확장.`
+  },
+  default: {
+    answer: `**안녕하세요! CS 코치입니다. 💚**
+
+도움을 드릴 수 있는 분야:
+
+• **이탈 방지**: 프로토콜, 스크립트, 구제 계획
+• **온보딩**: D0→D60 구조, 활성화 KPI
+• **NPS**: 점수 개선, 피드백 루프 닫기
+• **QBR**: 구조, 어젠다, 핵심 질문
+• **확장**: 기회 파악, 타이밍
+• **팀 웰빙**: 번아웃 예방, 업무량 관리
+
+CS 상황에 대한 구체적인 질문을 해주시면 실행 가능한 조언을 드리겠습니다.`
+  }
+};
+
+const getCoachResponseKR = (msg) => {
+  const lower = msg.toLowerCase();
+  // Check EN knowledge base (same triggers work for Korean input)
+  for (const item of COACH_KB_EN) {
+    if (item.triggers.some(t => lower.includes(t))) {
+      // Return Korean version from CS_COACH_RESPONSES_KR if matching key exists
+      const matchKey = Object.keys(CS_COACH_RESPONSES_KR).find(k => k !== "default" && CS_COACH_RESPONSES[k]?.trigger?.some(t => item.triggers.includes(t)));
+      if (matchKey) return CS_COACH_RESPONSES_KR[matchKey].answer;
+      return item.answer; // Fallback to EN knowledge base
+    }
+  }
+  // Korean triggers
+  const KR_TRIGGERS = {
+    churn: ["이탈", "해지", "떠나", "취소", "잃", "churn", "cancel"],
+    onboarding: ["온보딩", "시작", "활성화", "신규 고객", "onboarding", "kickoff"],
+    nps: ["nps", "만족도", "추천", "점수", "satisfaction"],
+    qbr: ["qbr", "분기", "리뷰", "quarterly"],
+    burnout: ["번아웃", "피로", "스트레스", "burnout", "과로"],
+    expansion: ["확장", "업셀", "업그레이드", "expansion", "upsell"]
+  };
+  for (const [key, triggers] of Object.entries(KR_TRIGGERS)) {
+    if (triggers.some(t => lower.includes(t))) return CS_COACH_RESPONSES_KR[key].answer;
+  }
+  // Also check FR/EN triggers
+  for (const [key, val] of Object.entries(CS_COACH_RESPONSES)) {
+    if (key === "default") continue;
+    if (val.trigger && val.trigger.some(t => lower.includes(t)) && CS_COACH_RESPONSES_KR[key]) return CS_COACH_RESPONSES_KR[key].answer;
+  }
+  return CS_COACH_RESPONSES_KR.default.answer;
+};
+
 const getCoachResponseEN = (msg) => {
   const lower = msg.toLowerCase();
   for (const item of COACH_KB_EN) {
@@ -12261,7 +12451,8 @@ const getCoachResponseEN = (msg) => {
 };
 
 const getCoachResponsense = (msg, lang) => {
-  if (lang === "en" || lang === "kr") return getCoachResponseEN(msg);
+  if (lang === "en") return getCoachResponseEN(msg);
+  if (lang === "kr") return getCoachResponseKR(msg);
   const lower = msg.toLowerCase();
   // Check COACH_KB (richer answers) first
   for (const item of COACH_KB) {
@@ -12294,7 +12485,9 @@ const CoachIAView = ({lang="fr"}) => {
   useEffect(() => { try { localStorage.setItem("scalyo_coach_messages", JSON.stringify(messages)); } catch(e) {} }, [messages]);
 
   // FIX BUG-04 : QUICK array corrige sans doublons de condition
-  const QUICK = lang === "en" || lang === "kr"
+  const QUICK = lang === "kr"
+    ? ["이탈률 줄이는 방법?", "QBR 구성하기", "NPS 점수 개선", "번아웃 예방", "확장 전략"]
+    : lang === "en"
     ? ["How to reduce churn?", "Structure a QBR", "Improve NPS score", "Prevent burnout", "Expansion strategy"]
     : ["Comment reduire le churn ?", "Structurer un QBR", "Ameliorer le NPS", "Prevenir le burnout", "Strategie d'expansion"];
 
