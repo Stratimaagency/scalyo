@@ -13728,7 +13728,22 @@ const App = () => {
   const [role, setRole] = useState(() => { try { return localStorage.getItem("scalyo_role") || "manager"; } catch(e) { return "manager"; } });
   const [screen, _setScreen] = useState(() => { try { return localStorage.getItem("scalyo_screen") || "dashboard"; } catch(e) { return "dashboard"; } });
   const setScreen = (s) => { _setScreen(s); try { localStorage.setItem("scalyo_screen", s); } catch(e) {} };
-  const [appData, setAppData] = useState(null);
+  const [appData, setAppData] = useState(() => {
+    // FIX LOADING: charger immédiatement depuis le cache pour ne jamais afficher le loading screen inutilement
+    try {
+      const cachedPlan = localStorage.getItem("scalyo_plan");
+      const cachedAccounts = localStorage.getItem("scalyo_accounts_cache");
+      if (cachedAccounts) {
+        return {
+          company: { id: null, name: "Mon Entreprise", plan: cachedPlan || "Starter", arr: 0, churn: 0, nps: 0, color: "#4DB6A0" },
+          accounts: JSON.parse(cachedAccounts).map(a => ({ ...a, issues: Array.isArray(a.issues) ? a.issues : [] })),
+          roadmap: { id: null, phase: "Phase 1 — Launch", progress: 0, items: [] },
+          wellbeing: { score: 70, burnout: "none", charge: 70, trend: "+0", alerts: [], team: [] }
+        };
+      }
+    } catch(e) {}
+    return null;
+  });
   const [dataLoading, setDataLoading] = useState(false);
   const loadingRef = useRef(false); // FIX BUG-06 : guard anti double-trigger onAuthStateChange
   const dataLoadedRef = useRef(false); // FIX: empêche les rechargements inutiles
@@ -13786,21 +13801,28 @@ const App = () => {
         subscription
       }
     } = db.auth.onAuthStateChange(async (event, sess) => {
-      setSession(sess);
-      if (sess) {
-        // FIX RELOAD: Seul SIGNED_IN doit recharger les données.
-        // TOKEN_REFRESHED, INITIAL_SESSION, USER_UPDATED → ne pas recharger
-        if (event !== "SIGNED_IN") { setAuthReady(true); return; }
-        // Si les données sont déjà chargées, ne pas recharger
-        if (dataLoadedRef.current) { setAuthReady(true); return; }
-        if (loadingRef.current) { setAuthReady(true); return; }
-        loadingRef.current = true;
-        await loadData(sess);
-        loadingRef.current = false;
-      } else {
+      // FIX RELOAD TOTAL: ignorer complètement les events qui ne sont pas un vrai login ou logout
+      if (event === "TOKEN_REFRESHED" || event === "USER_UPDATED") return;
+      if (event === "INITIAL_SESSION") {
+        // INITIAL_SESSION duplique getSession — ignorer si déjà traité
+        if (initialLoaded || dataLoadedRef.current) return;
+        if (sess) { setSession(sess); setAuthReady(true); }
+        return;
+      }
+      if (event === "SIGNED_OUT" || !sess) {
+        setSession(null);
         setAppData(null);
         dataLoadedRef.current = false;
+        setAuthReady(true);
+        return;
       }
+      // SIGNED_IN uniquement
+      setSession(sess);
+      if (dataLoadedRef.current) { setAuthReady(true); return; }
+      if (loadingRef.current) { setAuthReady(true); return; }
+      loadingRef.current = true;
+      await loadData(sess);
+      loadingRef.current = false;
       setAuthReady(true);
     });
     // Fallback : si Supabase ne répond pas en 3s → afficher login quand même
@@ -14005,7 +14027,9 @@ const App = () => {
   if (!session) return /*#__PURE__*/React.createElement(LoginScreen, {
     onLogin: handleLogin, lang: lang
   });
-  if (dataLoading || !appData) return /*#__PURE__*/React.createElement(Loader, {
+  // FIX: Ne montrer le loading QUE si on n'a aucune donnée (première connexion)
+  // Si on a des données en cache, les afficher immédiatement pendant le chargement en fond
+  if (!appData) return /*#__PURE__*/React.createElement(Loader, {
     text: lang === "en" ? "Loading your Scalyo workspace..." : lang === "kr" ? "Scalyo 워크스페이스 로딩 중..." : "Chargement de votre espace Scalyo..."
   });
   const {
