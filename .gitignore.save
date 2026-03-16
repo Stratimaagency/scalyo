@@ -10,8 +10,6 @@ build/
 *.whl
 .env
 
-*/venv/
-
 # Django
 backend/staticfiles/
 backend/media/
