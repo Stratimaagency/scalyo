@@ -3,12 +3,12 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from . import views
 
 urlpatterns = [
-    path('register/', views.register_view),
-    path('login/', views.login_view),
+    path('register/', views.RegisterView.as_view()),
+    path('login/', views.LoginView.as_view()),
     path('token/refresh/', TokenRefreshView.as_view()),
-    path('profile/', views.profile_view),
-    path('company/', views.company_view),
-    path('notifications/', views.notification_prefs_view),
-    path('delete-account/', views.delete_account_view),
-    path('stripe-urls/', views.stripe_urls_view),
+    path('profile/', views.ProfileView.as_view()),
+    path('company/', views.CompanyView.as_view()),
+    path('notifications/', views.NotificationPrefsView.as_view()),
+    path('delete-account/', views.DeleteAccountView.as_view()),
+    path('stripe-urls/', views.StripeUrlsView.as_view()),
 ]

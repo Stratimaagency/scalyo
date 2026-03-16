@@ -1,14 +1,44 @@
+from abc import ABCMeta
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from .permissions import IsCompanyMember
 
 
-class SingletonModelViewMixin:
+class SingletonModelViewMeta(ABCMeta):
+    """LSP: Metaclass that enforces subclasses define model_class and serializer_class.
+    This ensures any subclass satisfies the contract at class definition time,
+    preventing silent failures at runtime."""
+
+    def __init__(cls, name, bases, namespace):
+        super().__init__(name, bases, namespace)
+        # Skip validation on the base mixin itself
+        if name != 'SingletonModelViewMixin' and bases:
+            is_concrete = any(
+                issubclass(b, SingletonModelViewMixin)
+                for b in bases
+                if b is not SingletonModelViewMixin
+                and hasattr(b, 'model_class')
+            )
+            if not is_concrete:
+                if getattr(cls, 'model_class', None) is None:
+                    raise TypeError(
+                        f"{name} must define 'model_class' "
+                        f"(LSP: subclasses must fulfill the base contract)"
+                    )
+                if getattr(cls, 'serializer_class', None) is None:
+                    raise TypeError(
+                        f"{name} must define 'serializer_class' "
+                        f"(LSP: subclasses must fulfill the base contract)"
+                    )
+
+
+class SingletonModelViewMixin(metaclass=SingletonModelViewMeta):
     """
-    Mixin for models with a OneToOne relationship to Company.
-    Handles get_or_create pattern used by TaskBoard, CalendarEvents,
-    Wellbeing, and Roadmap.
+    LSP: Mixin for models with a OneToOne relationship to Company.
+    Subclasses MUST define model_class and serializer_class to satisfy
+    the Liskov Substitution Principle — any subclass can be used wherever
+    the base mixin is expected without breaking behavior.
     """
     model_class = None
     serializer_class = None

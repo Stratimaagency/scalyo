@@ -2,7 +2,7 @@ from .models import Account
 
 
 class AccountImportService:
-    """Handles bulk import of accounts for a company."""
+    """SRP: Handles bulk import of accounts for a company."""
 
     @staticmethod
     def import_accounts(company, accounts_data):

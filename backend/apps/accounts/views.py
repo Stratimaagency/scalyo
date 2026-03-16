@@ -1,7 +1,7 @@
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.conf import settings
 
 from apps.core.permissions import IsCompanyMember
@@ -10,87 +10,114 @@ from .serializers import (
     CompanySerializer, NotificationPreferencesSerializer,
 )
 from .models import NotificationPreferences
-from .services import AuthService, AccountDeletionService
+from .services import AuthService, TokenService, UserService
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def register_view(request):
-    serializer = RegisterSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    user = serializer.save()
-    tokens = AuthService.get_tokens(user)
-    return Response({
-        'user': UserSerializer(user).data,
-        'tokens': tokens,
-    }, status=status.HTTP_201_CREATED)
+# SRP: Each view class handles a single resource/action
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def login_view(request):
-    serializer = LoginSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    user = AuthService.authenticate(
-        email=serializer.validated_data['email'],
-        password=serializer.validated_data['password'],
-    )
-    if not user:
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-    tokens = AuthService.get_tokens(user)
-    return Response({
-        'user': UserSerializer(user).data,
-        'tokens': tokens,
-    })
+class RegisterView(APIView):
+    """Handles user registration."""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        tokens = TokenService.get_tokens(user)
+        return Response({
+            'user': UserSerializer(user).data,
+            'tokens': tokens,
+        }, status=status.HTTP_201_CREATED)
 
 
-@api_view(['GET', 'PATCH'])
-@permission_classes([IsAuthenticated])
-def profile_view(request):
-    if request.method == 'GET':
+class LoginView(APIView):
+    """Handles user login."""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = AuthService.authenticate(
+            email=serializer.validated_data['email'],
+            password=serializer.validated_data['password'],
+        )
+        if not user:
+            return Response(
+                {'error': 'Invalid credentials'},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        tokens = TokenService.get_tokens(user)
+        return Response({
+            'user': UserSerializer(user).data,
+            'tokens': tokens,
+        })
+
+
+class ProfileView(APIView):
+    """SRP: Handles user profile read and update as separate methods."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
         return Response(UserSerializer(request.user).data)
-    serializer = UserSerializer(request.user, data=request.data, partial=True)
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
-    return Response(serializer.data)
+
+    def patch(self, request):
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
-@api_view(['GET', 'PATCH'])
-@permission_classes([IsCompanyMember])
-def company_view(request):
-    company = request.user.company
-    if request.method == 'GET':
-        return Response(CompanySerializer(company).data)
-    serializer = CompanySerializer(company, data=request.data, partial=True)
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
-    return Response(serializer.data)
+class CompanyView(APIView):
+    """SRP: Handles company read and update."""
+    permission_classes = [IsCompanyMember]
+
+    def get(self, request):
+        return Response(CompanySerializer(request.user.company).data)
+
+    def patch(self, request):
+        serializer = CompanySerializer(
+            request.user.company, data=request.data, partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
-@api_view(['GET', 'PATCH'])
-@permission_classes([IsAuthenticated])
-def notification_prefs_view(request):
-    prefs, _ = NotificationPreferences.objects.get_or_create(user=request.user)
-    if request.method == 'GET':
+class NotificationPrefsView(APIView):
+    """SRP: Handles notification preferences read and update."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        prefs, _ = NotificationPreferences.objects.get_or_create(user=request.user)
         return Response(NotificationPreferencesSerializer(prefs).data)
-    serializer = NotificationPreferencesSerializer(prefs, data=request.data, partial=True)
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
-    return Response(serializer.data)
+
+    def patch(self, request):
+        prefs, _ = NotificationPreferences.objects.get_or_create(user=request.user)
+        serializer = NotificationPreferencesSerializer(
+            prefs, data=request.data, partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
-def delete_account_view(request):
-    AccountDeletionService.delete_user(request.user)
-    return Response(status=status.HTTP_204_NO_CONTENT)
+class DeleteAccountView(APIView):
+    """SRP: Handles account deletion only."""
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        UserService.delete(request.user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def stripe_urls_view(request):
-    return Response({
-        'starter': settings.STRIPE_STARTER_URL,
-        'growth': settings.STRIPE_GROWTH_URL,
-        'elite': settings.STRIPE_ELITE_URL,
-    })
+class StripeUrlsView(APIView):
+    """SRP: Provides Stripe payment URLs."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({
+            'starter': settings.STRIPE_STARTER_URL,
+            'growth': settings.STRIPE_GROWTH_URL,
+            'elite': settings.STRIPE_ELITE_URL,
+        })

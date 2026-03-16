@@ -9,7 +9,7 @@ from .serializers import (
     AccountSerializer, AccountListSerializer,
     AccountTodoSerializer, ImportAccountSerializer,
 )
-from .services import AccountImportService
+from .services import AccountImportService  # SRP: import from portfolio's own services
 
 
 class AccountViewSet(CompanyQuerySetMixin, viewsets.ModelViewSet):
