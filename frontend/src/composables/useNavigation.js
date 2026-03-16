@@ -14,7 +14,6 @@ const ALL_NAV_ITEMS = [
   { key: 'email-studio', icon: '✉️', role: 'all' },
   { key: 'roadmap', icon: '🗺️', role: 'manager' },
   { key: 'tips', icon: '💡', role: 'all' },
-  { key: 'quotes', icon: '📝', role: 'all' },
   { key: 'settings', icon: '⚙️', role: 'all' },
 ]
 
@@ -30,7 +29,6 @@ const LABEL_KEYS = {
   'email-studio': 'email',
   roadmap: 'roadmap',
   tips: 'tips',
-  quotes: 'quotes',
   settings: 'settings',
 }
 
