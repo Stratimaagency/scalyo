@@ -14,6 +14,7 @@ const ALL_NAV_ITEMS = [
   { key: 'email-studio', icon: '✉️', role: 'all' },
   { key: 'roadmap', icon: '🗺️', role: 'manager' },
   { key: 'tips', icon: '💡', role: 'all' },
+  { key: 'quotes', icon: '📝', role: 'all' },
   { key: 'settings', icon: '⚙️', role: 'all' },
 ]
 
@@ -29,6 +30,7 @@ const LABEL_KEYS = {
   'email-studio': 'email',
   roadmap: 'roadmap',
   tips: 'tips',
+  quotes: 'quotes',
   settings: 'settings',
 }
 
@@ -47,7 +49,11 @@ export function useNavigation() {
       }))
   })
 
-  const mobileNavItems = computed(() => navItems.value.slice(0, 5))
+  const mobileNavItems = computed(() =>
+    navItems.value
+      .filter(item => ['dashboard', 'portfolio', 'tasks', 'kpis', 'wellbeing', 'email-studio'].includes(item.key))
+      .slice(0, 6)
+  )
 
   return { navItems, mobileNavItems }
 }
