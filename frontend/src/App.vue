@@ -41,7 +41,7 @@
         <main class="main-scroll">
           <div class="topbar-area">
             <div class="topbar-left">
-              <h2 class="topbar-title">{{ currentNavItem?.label || 'Dashboard' }}</h2>
+              <h2 class="topbar-title">{{ currentNavItem?.label || t('dashboard') }}</h2>
             </div>
             <div class="topbar-right">
               <span class="topbar-user">{{ authStore.user?.display_name || authStore.user?.email }}</span>
@@ -107,7 +107,7 @@ const navManagerItems = computed(() => [
   { key: 'coach', icon: '🤖', label: t('coach'), shortLabel: 'Coach' },
   { key: 'resources', icon: '📚', label: t('resources') },
   { key: 'email', icon: '✉️', label: t('email'), shortLabel: 'Email' },
-  { key: 'roadmap', icon: '🗺️', label: 'Roadmap' },
+  { key: 'roadmap', icon: '🗺️', label: t('roadmap') },
   { key: 'tips', icon: '💡', label: t('tips'), shortLabel: 'Tips' },
   { key: 'settings', icon: '⚙️', label: t('settings') },
 ])

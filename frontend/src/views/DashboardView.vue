@@ -92,10 +92,9 @@ onMounted(async () => {
 
 const fmtARR = computed(() => {
   const total = accounts.value.reduce((s, a) => s + (parseFloat(a.arr) || 0), 0)
-  const annual = total * 12
-  if (annual >= 1000000) return `${(annual / 1000000).toFixed(1)}M€`
-  if (annual >= 1000) return `${(annual / 1000).toFixed(0)}K€`
-  return `${annual}€`
+  if (total >= 1000000) return `${(total / 1000000).toFixed(1)}M€`
+  if (total >= 1000) return `${(total / 1000).toFixed(0)}K€`
+  return `${total}€`
 })
 
 const avgHealth = computed(() => {

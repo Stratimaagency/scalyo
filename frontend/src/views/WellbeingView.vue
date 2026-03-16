@@ -1,7 +1,7 @@
 <template>
   <div class="fade-in">
     <div class="tab-bar mb-lg">
-      <button class="tab-item" :class="{ active: tab === 'overview' }" @click="tab = 'overview'">💚 Overview</button>
+      <button class="tab-item" :class="{ active: tab === 'overview' }" @click="tab = 'overview'">💚 {{ t('wbOverview') }}</button>
       <button class="tab-item" :class="{ active: tab === 'nova' }" @click="tab = 'nova'">🧘 Nova</button>
       <button class="tab-item" :class="{ active: tab === 'team' }" @click="tab = 'team'">👥 {{ t('wbDetail') }}</button>
     </div>
@@ -34,7 +34,7 @@
         <AppCard class="card-lift" style="cursor: pointer">
           <div style="font-size: 24px; margin-bottom: 8px">📊</div>
           <div style="font-weight: 700; margin-bottom: 4px">{{ t('wbManage') }}</div>
-          <div style="font-size: 12px; color: var(--muted)">Track and manage workload</div>
+          <div style="font-size: 12px; color: var(--muted)">{{ t('wbTrackWorkload') }}</div>
         </AppCard>
       </div>
     </template>
@@ -96,7 +96,7 @@
           </div>
         </AppCard>
       </div>
-      <EmptyState v-else icon="👥" title="No team data yet" desc="Team wellbeing data will appear once configured." />
+      <EmptyState v-else icon="👥" :title="t('wbNoTeam')" :desc="t('wbNoTeamDesc')" />
     </template>
   </div>
 </template>

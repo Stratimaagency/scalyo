@@ -38,7 +38,7 @@
     <template v-if="tab === 'team'">
       <AppCard>
         <h4 style="font-weight: 800; margin-bottom: 14px">{{ t('teamSectionTitle') }}</h4>
-        <p style="font-size: 13px; color: var(--muted); margin-bottom: 14px">Team management features available on Growth plan and above.</p>
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 14px">{{ t('teamGrowthNote') }}</p>
         <button class="btn btn-primary">{{ t('inviteCSM') }}</button>
       </AppCard>
     </template>
@@ -61,7 +61,7 @@
             <li v-for="f in plan.features" :key="f" style="padding: 3px 0">✓ {{ f }}</li>
           </ul>
           <button class="btn" :class="plan.name === authStore.company?.plan ? 'btn-secondary' : 'btn-primary'" style="width: 100%; justify-content: center">
-            {{ plan.name === authStore.company?.plan ? 'Current' : 'Upgrade' }}
+            {{ plan.name === authStore.company?.plan ? t('currentPlan') : t('upgradePlan') }}
           </button>
         </AppCard>
       </div>

@@ -72,7 +72,13 @@ class AccountTodoViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer):
+        company = self.request.user.company
+        # Validate that the account belongs to the user's company
+        account_pk = self.kwargs['account_pk']
+        if not Account.objects.filter(pk=account_pk, company=company).exists():
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied('Account does not belong to your company.')
         serializer.save(
-            company=self.request.user.company,
-            account_id=self.kwargs['account_pk'],
+            company=company,
+            account_id=account_pk,
         )

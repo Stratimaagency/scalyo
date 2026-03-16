@@ -10,9 +10,9 @@
       />
       <div style="display: flex; gap: 6px; flex-wrap: wrap">
         <button class="chip" :class="{ active: filter === 'all' }" @click="filter = 'all'">{{ t('allAccounts') }}</button>
-        <button class="chip" :class="{ active: filter === 'low' }" @click="filter = 'low'">Sain</button>
-        <button class="chip" :class="{ active: filter === 'medium' }" @click="filter = 'medium'">Vigilance</button>
-        <button class="chip" :class="{ active: filter === 'critical' }" @click="filter = 'critical'">Critique</button>
+        <button class="chip" :class="{ active: filter === 'low' }" @click="filter = 'low'">{{ t('riskLow') }}</button>
+        <button class="chip" :class="{ active: filter === 'medium' }" @click="filter = 'medium'">{{ t('riskMedium') }}</button>
+        <button class="chip" :class="{ active: filter === 'critical' }" @click="filter = 'critical'">{{ t('riskCritical') }}</button>
       </div>
       <div style="flex: 1"></div>
       <button class="btn btn-primary" @click="showAdd = true">{{ t('newAccount') }}</button>
@@ -57,7 +57,7 @@
     <AppModal v-if="showAdd" :title="t('newAccount')" @close="showAdd = false">
       <AppField :label="t('accNameLabel')" v-model="newAcc.name" required />
       <AppField label="CSM" v-model="newAcc.csm" placeholder="CSM name" />
-      <AppField label="ARR (MRR)" v-model="newAcc.arr" type="number" placeholder="0" />
+      <AppField label="ARR (€)" v-model="newAcc.arr" type="number" placeholder="0" />
       <AppField label="Health (0-100)" v-model="newAcc.health" type="number" />
       <div class="field-group">
         <label class="field-label">Risk</label>
@@ -155,20 +155,23 @@ const filteredAccounts = computed(() => {
   return list
 })
 
-function formatARR(mrr) {
-  const v = parseFloat(mrr) || 0
-  const a = v * 12
-  if (a >= 1000000) return `${(a / 1000000).toFixed(1)}M€`
-  if (a >= 1000) return `${(a / 1000).toFixed(0)}K€`
-  return `${a}€`
+function formatARR(arr) {
+  const v = parseFloat(arr) || 0
+  if (v >= 1000000) return `${(v / 1000000).toFixed(1)}M€`
+  if (v >= 1000) return `${(v / 1000).toFixed(0)}K€`
+  return `${v}€`
 }
 
 async function createAccount() {
   if (!newAcc.value.name) return
   creating.value = true
-  await portfolioStore.createAccount(newAcc.value)
-  newAcc.value = { name: '', csm: '', arr: 0, health: 70, risk: 'low', contact: '', contact_email: '', notes: '' }
-  showAdd.value = false
+  try {
+    await portfolioStore.createAccount(newAcc.value)
+    newAcc.value = { name: '', csm: '', arr: 0, health: 70, risk: 'low', contact: '', contact_email: '', notes: '' }
+    showAdd.value = false
+  } catch (e) {
+    console.error('createAccount error:', e)
+  }
   creating.value = false
 }
 

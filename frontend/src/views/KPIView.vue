@@ -162,19 +162,33 @@ function fmtK(v) {
 
 async function saveMonthly() {
   saving.value = true
-  await kpiApi.saveMonthly({ period: period.value, kpis: { ...kpis }, goals: { ...goals } })
+  try {
+    await kpiApi.saveMonthly({ period: period.value, kpis: { ...kpis } })
+  } catch (e) {
+    console.error('saveMonthly error:', e)
+  }
   saving.value = false
 }
 
 async function saveGoals() {
   saving.value = true
-  await kpiApi.saveGoals({ goals: { ...goals } })
+  try {
+    await kpiApi.saveGoals({ goals: { ...goals } })
+  } catch (e) {
+    console.error('saveGoals error:', e)
+  }
   saving.value = false
 }
 
 async function addCustomKpi() {
   customKpis.value.push({ ...newKpi.value })
-  await kpiApi.saveCustom({ custom_kpis: customKpis.value })
+  try {
+    await kpiApi.saveCustom({ custom_kpis: customKpis.value })
+  } catch (e) {
+    customKpis.value.pop()
+    console.error('addCustomKpi error:', e)
+    return
+  }
   newKpi.value = { name: '', value: 0, goal: 0, unit: '', color: '#7EC8B8' }
   showNewKpi.value = false
 }
