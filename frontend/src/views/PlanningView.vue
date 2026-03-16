@@ -44,7 +44,7 @@
         <button class="btn btn-secondary btn-sm" @click="changeMonth(1)"> →</button>
       </div>
       <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px">
-        <div v-for="d in ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di']" :key="d" style="text-align: center; font-size: 11px; font-weight: 700; color: var(--muted); padding: 6px">{{ d }}</div>
+        <div v-for="d in dayAbbrevs" :key="d" style="text-align: center; font-size: 11px; font-weight: 700; color: var(--muted); padding: 6px">{{ d }}</div>
         <div v-for="(day, i) in monthDays" :key="i" style="min-height: 60px; background: var(--surface); border-radius: 8px; padding: 4px; font-size: 12px"
           :style="{ opacity: day.inMonth ? 1 : 0.3 }"
         >
@@ -100,10 +100,13 @@
 import { ref, computed, onMounted } from 'vue'
 import { planningApi } from '../api'
 import { useI18n } from '../i18n'
+import { usePreferencesStore } from '../stores/preferences'
 import AppModal from '../components/AppModal.vue'
 import AppField from '../components/AppField.vue'
 
 const { t } = useI18n()
+const prefsStore = usePreferencesStore()
+const locale = computed(() => prefsStore.lang === 'en' ? 'en-US' : prefsStore.lang === 'kr' ? 'ko-KR' : 'fr-FR')
 const events = ref([])
 const view = ref('week')
 const showAdd = ref(false)
@@ -120,11 +123,13 @@ onMounted(async () => {
   } catch {}
 })
 
-const todayFormatted = computed(() => new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }))
+const dayAbbrevs = computed(() => [t('dayMon'), t('dayTue'), t('dayWed'), t('dayThu'), t('dayFri'), t('daySat'), t('daySun')])
+
+const todayFormatted = computed(() => new Date().toLocaleDateString(locale.value, { weekday: 'long', day: 'numeric', month: 'long' }))
 
 const monthLabel = computed(() => {
   const d = currentDate.value
-  return d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+  return d.toLocaleDateString(locale.value, { month: 'long', year: 'numeric' })
 })
 
 const weekDays = computed(() => {
@@ -137,7 +142,7 @@ const weekDays = computed(() => {
     d.setDate(d.getDate() + i)
     days.push({
       date: d.toISOString().slice(0, 10),
-      label: d.toLocaleDateString('fr-FR', { weekday: 'short' }),
+      label: d.toLocaleDateString(locale.value, { weekday: 'short' }),
       num: d.getDate(),
       isToday: d.toDateString() === today.toDateString(),
     })

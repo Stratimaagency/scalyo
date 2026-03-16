@@ -4,7 +4,7 @@
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 26px;">
       <div>
         <h1 style="font-size: 24px; font-weight: 900; letter-spacing: -0.6px; margin-bottom: 5px;">
-          {{ greeting }}
+          {{ t('overview') }} 👋
         </h1>
         <p style="color: var(--muted); font-size: 13px;">{{ company?.name }} · {{ todayFormatted }}</p>
       </div>
@@ -21,14 +21,14 @@
     <!-- KPI Cards -->
     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
       <KpiCard :label="t('portfolioARR')" :value="fmtARR" icon="💰" color="var(--teal)"
-        :sub="accounts.length + ' ' + (lang === 'en' ? 'active accounts' : lang === 'kr' ? '활성 계정' : 'comptes actifs')" />
+        :sub="accounts.length + ' ' + t('activeAccounts')" />
       <KpiCard :label="t('avgHealth')" :value="avgHealth + '/100'" icon="💚" :color="healthColor"
         :sub="healthSub" />
       <KpiCard :label="t('criticalAccounts')" :value="String(criticalCount)" icon="🚨"
         :color="criticalCount === 0 ? 'var(--green)' : 'var(--red)'"
         :sub="criticalSub" />
-      <KpiCard :label="'Roadmap ' + (lang === 'en' ? '90D' : lang === 'kr' ? '90일' : '90J')" value="0%"
-        icon="🗺" color="var(--teal)" sub="0/0 steps" />
+      <KpiCard :label="t('roadmap90')" :value="roadmapProgress + '%'"
+        icon="🗺" color="var(--teal)" :sub="roadmapDone + '/' + roadmapTotal + ' ' + t('steps')" />
     </div>
 
     <!-- Critical accounts alert -->
@@ -37,7 +37,7 @@
         <div style="display: flex; align-items: center; gap: 8px;">
           <span style="font-size: 20px;">🚨</span>
           <span style="font-weight: 800; font-size: 15px; color: var(--red);">
-            {{ criticalAccounts.length }} {{ criticalAlertText }}
+            {{ criticalAccounts.length }} {{ criticalAccounts.length > 1 ? t('accountsCriticalAlert') : t('accountCriticalAlert') }}
           </span>
         </div>
         <router-link :to="{ name: 'portfolio' }" class="btn-base"
@@ -55,14 +55,14 @@
             <div>
               <div style="font-weight: 700; font-size: 13px;">{{ acc.name }}</div>
               <div style="font-size: 11px; color: var(--muted);">
-                {{ Array.isArray(acc.issues) && acc.issues[0] ? acc.issues[0] : defaultIssue }}
+                {{ Array.isArray(acc.issues) && acc.issues[0] ? acc.issues[0] : t('criticalSituation') }}
               </div>
             </div>
           </div>
           <div style="text-align: right;">
             <div style="font-size: 12px; font-weight: 700; color: var(--red);">{{ fmtAccountARR(acc) }}</div>
             <div style="font-size: 11px; color: var(--muted);">
-              {{ lang === 'en' ? 'Renewal ' : lang === 'kr' ? '갱신 ' : 'Renouvellement ' }}{{ acc.renewal || 'N/A' }}
+              {{ t('renewal') }} {{ acc.renewal || 'N/A' }}
             </div>
           </div>
         </div>
@@ -76,24 +76,24 @@
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
           <div>
             <div style="font-weight: 800; font-size: 15px; margin-bottom: 2px;">
-              {{ lang === 'en' ? '🗺️ 90-Day Roadmap' : lang === 'kr' ? '🗺️ 90일 로드맵' : '🗺 Roadmap 90J' }}
+              🗺️ {{ t('roadmap90Title') }}
             </div>
-            <div style="font-size: 12px; color: var(--muted);">Phase 1</div>
+            <div style="font-size: 12px; color: var(--muted);">{{ roadmapPhase }}</div>
           </div>
           <div style="display: flex; align-items: center; gap: 12px;">
             <div style="text-align: right;">
-              <div style="font-size: 28px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">0%</div>
+              <div style="font-size: 28px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">{{ roadmapProgress }}%</div>
             </div>
-            <router-link :to="{ name: 'tasks' }" class="btn-base"
+            <router-link :to="{ name: 'roadmap' }" class="btn-base"
               style="font-size: 11px; padding: 5px 12px; border-radius: 20px; background: var(--tealBg); border: 1px solid var(--tealBorder); color: var(--teal); text-decoration: none;">
-              {{ lang === 'en' ? 'Manage →' : lang === 'kr' ? '관리 →' : 'Gérer →' }}
+              {{ t('manageBtn') }} →
             </router-link>
           </div>
         </div>
-        <HealthBar :val="0" />
-        <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 6px;">
+        <HealthBar :val="roadmapProgress" />
+        <div v-if="!roadmapTotal" style="margin-top: 14px; display: flex; flex-direction: column; gap: 6px;">
           <p style="font-size: 13px; color: var(--muted); text-align: center; padding: 8px;">
-            {{ lang === 'en' ? 'No roadmap items yet' : lang === 'kr' ? '아직 로드맵 항목이 없습니다' : 'Aucune étape pour le moment' }}
+            {{ t('noRoadmapItems') }}
           </p>
         </div>
       </div>
@@ -102,20 +102,20 @@
       <div class="card" style="padding: 20px;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
           <div style="font-weight: 800; font-size: 15px;">
-            {{ lang === 'en' ? '💚 Team Wellbeing' : lang === 'kr' ? '💚 팀 웰빙' : '💚 Bien-être équipe' }}
+            💚 {{ t('teamWellbeing') }}
           </div>
           <router-link :to="{ name: 'wellbeing' }" class="btn-base"
             style="font-size: 11px; padding: 5px 12px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); text-decoration: none;">
-            {{ lang === 'kr' ? '상세 →' : lang === 'en' ? 'Detail →' : 'Détail →' }}
+            {{ t('detailBtn') }} →
           </router-link>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
           <div style="text-align: center; background: var(--surface); border-radius: 11px; padding: 13px;">
             <div :style="{ fontSize: '28px', fontWeight: 900, fontFamily: 'JetBrains Mono, monospace', color: wellbeingScoreColor }">
-              {{ wellbeing?.score || 70 }}
+              {{ wellbeingScore }}
             </div>
             <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">
-              {{ lang === 'kr' ? '점수 /100' : 'Score /100' }}
+              {{ t('scoreLabel') }}
             </div>
           </div>
           <div style="text-align: center; background: var(--surface); border-radius: 11px; padding: 13px;">
@@ -123,12 +123,12 @@
               {{ burnoutLabel }}
             </div>
             <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">
-              {{ lang === 'en' ? 'Burnout Risk' : lang === 'kr' ? '번아웃 위험' : 'Risque burnout' }}
+              {{ t('burnoutRisk') }}
             </div>
           </div>
         </div>
         <p v-if="!wellbeing?.team?.length" style="font-size: 12px; color: var(--muted); text-align: center; padding: 8px 0;">
-          {{ lang === 'en' ? 'No team members' : lang === 'kr' ? '팀 구성원 없음' : "Aucun membre d'équipe" }}
+          {{ t('noTeamMembers') }}
         </p>
       </div>
     </div>
@@ -150,7 +150,7 @@ import { useAuthStore } from '../stores/auth'
 import { usePortfolioStore } from '../stores/portfolio'
 import { usePreferencesStore } from '../stores/preferences'
 import { useI18n } from '../i18n'
-import { wellbeingApi } from '../api'
+import { wellbeingApi, roadmapApi } from '../api'
 import KpiCard from '../components/KpiCard.vue'
 import HealthBar from '../components/HealthBar.vue'
 import EmptyState from '../components/EmptyState.vue'
@@ -160,10 +160,27 @@ const portfolioStore = usePortfolioStore()
 const prefsStore = usePreferencesStore()
 const { t } = useI18n()
 const wellbeing = ref(null)
+const roadmap = ref({ phase: '', progress: 0, items: [] })
 
 const lang = computed(() => prefsStore.lang)
 const company = computed(() => authStore.company)
 const accounts = computed(() => portfolioStore.accounts)
+
+const currencySymbol = computed(() => {
+  const c = prefsStore.currency
+  if (c === 'USD') return '$'
+  if (c === 'GBP') return '£'
+  if (c === 'CHF') return 'CHF'
+  if (c === 'CAD') return 'CA$'
+  return '€'
+})
+
+function fmtCurrency(value) {
+  const s = currencySymbol.value
+  if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M${s}`
+  if (value >= 1000) return `${(value / 1000).toFixed(0)}K${s}`
+  return `${value}${s}`
+}
 
 onMounted(async () => {
   await portfolioStore.fetchAccounts()
@@ -171,12 +188,16 @@ onMounted(async () => {
     const { data } = await wellbeingApi.get()
     wellbeing.value = data
   } catch {}
-})
-
-const greeting = computed(() => {
-  if (lang.value === 'en') return 'Overview 👋'
-  if (lang.value === 'kr') return '개요 👋'
-  return "Vue d'ensemble 👋"
+  try {
+    const { data } = await roadmapApi.get()
+    if (data) {
+      roadmap.value = {
+        phase: data.phase || t('roadmapPhaseDefault'),
+        progress: data.progress || 0,
+        items: Array.isArray(data.items) ? data.items : [],
+      }
+    }
+  } catch {}
 })
 
 const todayFormatted = computed(() => {
@@ -184,25 +205,25 @@ const todayFormatted = computed(() => {
   return new Date().toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 })
 
+// Roadmap computeds - bound to real data
+const roadmapProgress = computed(() => roadmap.value.progress)
+const roadmapPhase = computed(() => roadmap.value.phase || t('roadmapPhaseDefault'))
+const roadmapTotal = computed(() => roadmap.value.items.length)
+const roadmapDone = computed(() => roadmap.value.items.filter(i => i.done).length)
+
 const fmtARR = computed(() => {
   const total = accounts.value.reduce((s, a) => s + (parseFloat(a.mrr || a.arr) || 0), 0)
-  const annual = total * 12
-  if (annual >= 1000000) return `${(annual / 1000000).toFixed(1)}M€`
-  if (annual >= 1000) return `${(annual / 1000).toFixed(0)}K€`
-  return `${annual}€`
+  return fmtCurrency(total * 12)
 })
 
 function fmtAccountARR(acc) {
   const mrr = parseFloat(acc.mrr || acc.arr) || 0
-  const annual = mrr * 12
-  if (annual >= 1000000) return `${(annual / 1000000).toFixed(1)}M€`
-  if (annual >= 1000) return `${(annual / 1000).toFixed(0)}K€`
-  return `${annual}€`
+  return fmtCurrency(mrr * 12)
 }
 
 const avgHealth = computed(() => {
   if (!accounts.value.length) return 0
-  return Math.round(accounts.value.reduce((s, a) => s + (a.health || 70), 0) / accounts.value.length)
+  return Math.round(accounts.value.reduce((s, a) => s + (a.health || 0), 0) / accounts.value.length)
 })
 
 const healthColor = computed(() => avgHealth.value >= 70 ? 'var(--green)' : avgHealth.value >= 40 ? 'var(--amber)' : 'var(--red)')
@@ -219,23 +240,34 @@ const criticalAccounts = computed(() => accounts.value.filter(a => a.risk === 'c
 const criticalSub = computed(() => {
   if (criticalCount.value > 0) {
     const arrRisk = criticalAccounts.value.reduce((s, a) => s + (parseFloat(a.mrr || a.arr) || 0), 0) * 12
-    const fmtRisk = arrRisk >= 1000 ? `${(arrRisk / 1000).toFixed(0)}K€` : `${arrRisk}€`
+    const fmtRisk = fmtCurrency(arrRisk)
     return `${fmtRisk} ARR ${t('atRisk')}`
   }
   return t('noRisk')
 })
 
-const criticalAlertText = computed(() => {
-  const n = criticalAccounts.value.length
-  if (lang.value === 'kr') return '계정 위험 상태 — 즉시 조치 필요'
-  if (lang.value === 'en') return `account${n > 1 ? 's' : ''} at critical risk — immediate action required`
-  return n > 1 ? 'comptes en risque critique — action immédiate requise' : 'compte en risque critique — action immédiate requise'
+// Wellbeing
+const wellbeingScore = computed(() => wellbeing.value?.score ?? 0)
+
+const wellbeingScoreColor = computed(() => {
+  const s = wellbeingScore.value
+  if (s >= 70) return 'var(--green)'
+  if (s >= 50) return 'var(--amber)'
+  return 'var(--red)'
 })
 
-const defaultIssue = computed(() => {
-  if (lang.value === 'en') return 'Account in critical situation'
-  if (lang.value === 'kr') return '위기 상황 계정'
-  return 'Compte en situation critique'
+const burnoutLevel = computed(() => wellbeing.value?.burnout || 'none')
+const burnoutColor = computed(() => {
+  const b = burnoutLevel.value
+  if (b === 'low' || b === 'none') return 'var(--green)'
+  if (b === 'high') return 'var(--red)'
+  return 'var(--amber)'
+})
+const burnoutLabel = computed(() => {
+  const b = burnoutLevel.value
+  const key = b === 'low' ? 'burnoutLow' : b === 'high' ? 'burnoutHigh' : b === 'moderate' ? 'burnoutModerate' : 'burnoutNone'
+  const emoji = b === 'low' || b === 'none' ? ' 🟢' : b === 'high' ? ' 🔴' : ' 🟡'
+  return t(key) + emoji
 })
 
 // Plan tag styling
@@ -254,33 +286,11 @@ const planBg = computed(() => {
 const planBorder = computed(() => {
   const plan = company.value?.plan || 'Starter'
   if (plan === 'Growth') return 'var(--tealBorder)'
-  if (plan === 'Elite') return 'rgba(184,168,212,0.2)'
+  if (plan === 'Elite') return 'var(--purpleBorder, rgba(184,168,212,0.2))'
   return 'var(--border)'
 })
 
 const roleColorVal = computed(() => authStore.user?.role === 'manager' ? 'var(--purple)' : 'var(--blue)')
 const roleBg = computed(() => authStore.user?.role === 'manager' ? 'var(--purpleBg)' : 'var(--blueBg)')
-const roleBorder = computed(() => authStore.user?.role === 'manager' ? 'rgba(184,168,212,0.2)' : 'rgba(139,168,196,0.2)')
-
-// Wellbeing
-const wellbeingScoreColor = computed(() => {
-  const s = wellbeing.value?.score || 70
-  if (s >= 70) return 'var(--green)'
-  if (s >= 50) return 'var(--amber)'
-  return 'var(--red)'
-})
-
-const burnoutLevel = computed(() => wellbeing.value?.burnout || 'moderate')
-const burnoutColor = computed(() => {
-  const b = burnoutLevel.value
-  if (b === 'low') return 'var(--green)'
-  if (b === 'high') return 'var(--red)'
-  return 'var(--amber)'
-})
-const burnoutLabel = computed(() => {
-  const b = burnoutLevel.value
-  if (lang.value === 'en') return b === 'low' ? 'Low 🟢' : b === 'high' ? 'High 🔴' : 'Moderate 🟡'
-  if (lang.value === 'kr') return b === 'low' ? '낮음 🟢' : b === 'high' ? '높음 🔴' : '보통 🟡'
-  return b === 'low' ? 'Faible 🟢' : b === 'high' ? 'Élevé 🔴' : 'Modéré 🟡'
-})
+const roleBorder = computed(() => authStore.user?.role === 'manager' ? 'var(--purpleBorder, rgba(184,168,212,0.2))' : 'var(--blueBorder, rgba(139,168,196,0.2))')
 </script>

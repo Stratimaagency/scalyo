@@ -3,7 +3,7 @@
     <AppCard v-if="!sent">
       <div style="text-align: center; margin-bottom: 20px">
         <div style="font-size: 32px; margin-bottom: 8px">💬</div>
-        <h3 style="font-weight: 800">Feedback</h3>
+        <h3 style="font-weight: 800">{{ t('feedbackTitle') }}</h3>
       </div>
 
       <!-- Category -->
@@ -40,7 +40,7 @@
       <div style="font-size: 48px; margin-bottom: 16px">🎉</div>
       <h3 style="font-weight: 800; margin-bottom: 8px">{{ t('fbSent') }}</h3>
       <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px">{{ t('fbThanks') }}</p>
-      <button class="btn btn-primary" @click="reset">Send another</button>
+      <button class="btn btn-primary" @click="reset">{{ t('sendAnother') }}</button>
     </AppCard>
   </div>
 </template>

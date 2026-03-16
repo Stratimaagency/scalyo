@@ -104,15 +104,17 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
+import { usePortfolioStore } from '../stores/portfolio'
 import { useI18n } from '../i18n'
 import { useNavigation } from '../composables/useNavigation'
 
 const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()
+const portfolioStore = usePortfolioStore()
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
@@ -120,15 +122,20 @@ const { navItems, mobileNavItems } = useNavigation()
 
 const company = computed(() => authStore.company)
 
+onMounted(() => {
+  if (!portfolioStore.accounts.length) {
+    portfolioStore.fetchAccounts()
+  }
+})
+
 // Filter out settings from main nav (it's in the footer)
 const mainNavItems = computed(() =>
   navItems.value.filter(item => item.key !== 'settings')
 )
 
-const criticalCount = computed(() => {
-  // This will be populated from the portfolio store if available
-  return 0
-})
+const criticalCount = computed(() =>
+  portfolioStore.accounts.filter(a => a.risk === 'critical').length
+)
 
 const userInitial = computed(() => {
   const email = authStore.user?.email || 'U'
@@ -143,11 +150,8 @@ const planColor = computed(() => {
 })
 
 const roleLabel = computed(() => {
-  const role = authStore.user?.role
-  if (role === 'manager') {
-    return prefsStore.lang === 'kr' ? 'CS 매니저' : prefsStore.lang === 'en' ? 'Manager CS' : 'Manager CS'
-  }
-  return 'Customer Success Manager'
+  if (authStore.user?.role === 'manager') return t('csManager')
+  return 'CSM'
 })
 
 const criticalLabel = computed(() => {

@@ -9,13 +9,13 @@
     <!-- Overview -->
     <template v-if="tab === 'overview'">
       <div class="grid-3 mb-lg" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
-        <KpiCard label="Wellbeing Score" :value="wellbeing.score + '%'" icon="💚" :color="scoreColor" />
-        <KpiCard label="Workload" :value="wellbeing.charge + '%'" icon="⚡" :color="wellbeing.charge > 85 ? 'var(--red)' : 'var(--green)'" />
-        <KpiCard label="Burnout Risk" :value="wellbeing.burnout" icon="🔥" :color="burnoutColor" />
+        <KpiCard :label="t('wellbeingScore')" :value="wellbeing.score + '%'" icon="💚" :color="scoreColor" />
+        <KpiCard :label="t('workload')" :value="wellbeing.charge + '%'" icon="⚡" :color="wellbeing.charge > 85 ? 'var(--red)' : 'var(--green)'" />
+        <KpiCard :label="t('burnoutRisk')" :value="burnoutDisplay" icon="🔥" :color="burnoutColor" />
       </div>
 
       <AppCard class="mb-md">
-        <h4 style="font-weight: 800; margin-bottom: 12px">Team Score</h4>
+        <h4 style="font-weight: 800; margin-bottom: 12px">{{ t('teamScore') }}</h4>
         <HealthBar :val="wellbeing.score" />
         <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--muted)">
           <span>0%</span>
@@ -31,10 +31,10 @@
           <div style="font-weight: 700; margin-bottom: 4px">{{ t('wbDecompress') }}</div>
           <div style="font-size: 12px; color: var(--muted)">{{ t('wbTalkSomeone') }}</div>
         </AppCard>
-        <AppCard class="card-lift" style="cursor: pointer">
+        <AppCard class="card-lift" style="cursor: pointer" @click="tab = 'team'">
           <div style="font-size: 24px; margin-bottom: 8px">📊</div>
           <div style="font-weight: 700; margin-bottom: 4px">{{ t('wbManage') }}</div>
-          <div style="font-size: 12px; color: var(--muted)">Track and manage workload</div>
+          <div style="font-size: 12px; color: var(--muted)">{{ t('trackWorkload') }}</div>
         </AppCard>
       </div>
     </template>
@@ -44,8 +44,8 @@
       <AppCard style="max-width: 700px; margin: 0 auto">
         <div style="text-align: center; margin-bottom: 20px">
           <div style="font-size: 32px; margin-bottom: 8px">🧘</div>
-          <h3 style="font-weight: 800">Nova</h3>
-          <p style="font-size: 13px; color: var(--muted)">Your wellbeing companion</p>
+          <h3 style="font-weight: 800">{{ t('novaTitle') }}</h3>
+          <p style="font-size: 13px; color: var(--muted)">{{ t('novaDesc') }}</p>
         </div>
 
         <div style="max-height: 400px; overflow-y: auto; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px">
@@ -86,17 +86,17 @@
               </div>
               <div>
                 <div style="font-weight: 700">{{ member.name }}</div>
-                <div style="font-size: 11px; color: var(--muted)">{{ member.accounts || 0 }} accounts</div>
+                <div style="font-size: 11px; color: var(--muted)">{{ member.accounts || 0 }} {{ t('accounts') }}</div>
               </div>
             </div>
             <div style="text-align: right">
-              <div style="font-weight: 700; font-family: 'JetBrains Mono', monospace">{{ member.score || 70 }}%</div>
-              <HealthBar :val="member.score || 70" style="width: 80px" />
+              <div style="font-weight: 700; font-family: 'JetBrains Mono', monospace">{{ member.score || 0 }}%</div>
+              <HealthBar :val="member.score || 0" style="width: 80px" />
             </div>
           </div>
         </AppCard>
       </div>
-      <EmptyState v-else icon="👥" title="No team data yet" desc="Team wellbeing data will appear once configured." />
+      <EmptyState v-else icon="👥" :title="t('noTeamData')" :desc="t('noTeamDataDesc')" />
     </template>
   </div>
 </template>
@@ -112,7 +112,7 @@ import EmptyState from '../components/EmptyState.vue'
 
 const { t } = useI18n()
 const tab = ref('overview')
-const wellbeing = ref({ score: 70, burnout: 'none', charge: 70, trend: '+0', alerts: [], team: [] })
+const wellbeing = ref({ score: 0, burnout: 'none', charge: 0, trend: '+0', alerts: [], team: [] })
 const novaMessages = ref([])
 const novaInput = ref('')
 const novaLoading = ref(false)
@@ -135,6 +135,12 @@ const burnoutColor = computed(() => {
   return b === 'high' ? 'var(--red)' : b === 'moderate' ? 'var(--amber)' : 'var(--green)'
 })
 
+const burnoutDisplay = computed(() => {
+  const b = wellbeing.value.burnout
+  const key = b === 'low' ? 'burnoutLow' : b === 'high' ? 'burnoutHigh' : b === 'moderate' ? 'burnoutModerate' : 'burnoutNone'
+  return t(key)
+})
+
 async function sendNova(text) {
   if (!text?.trim()) return
   novaMessages.value.push({ role: 'user', content: text.trim() })
@@ -147,7 +153,7 @@ async function sendNova(text) {
     )
     novaMessages.value.push({ role: 'assistant', content: data.content })
   } catch {
-    novaMessages.value.push({ role: 'assistant', content: 'Sorry, something went wrong. Please try again.' })
+    novaMessages.value.push({ role: 'assistant', content: t('novaError') })
   }
   novaLoading.value = false
 }
