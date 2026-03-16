@@ -3,8 +3,8 @@
     <div class="login-card">
       <div class="login-logo">
         <div class="logo-icon" style="width: 48px; height: 48px; font-size: 24px">⚡</div>
-        <div style="font-size: 28px; font-weight: 900; letter-spacing: -1px; background: linear-gradient(135deg, var(--teal), var(--blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent">
-          Scalyo
+        <div style="font-size: 28px; font-weight: 900; letter-spacing: -1px">
+          scal<span style="color: var(--teal)">yo</span>
         </div>
       </div>
 
@@ -125,7 +125,7 @@ async function submit() {
   max-width: 400px;
   background: var(--bg1);
   border: 1px solid var(--border);
-  border-radius: 24px;
+  border-radius: 8px;
   padding: 36px 32px;
 }
 .login-logo {

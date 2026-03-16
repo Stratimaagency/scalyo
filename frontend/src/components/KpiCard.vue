@@ -1,21 +1,18 @@
 <template>
-  <AppCard>
-    <div class="flex-between mb-sm">
-      <span style="font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .1em">{{ label }}</span>
-      <span style="font-size: 18px">{{ icon }}</span>
+  <div class="card card-lift" style="padding: 14px 16px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+      <span style="font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em;">{{ label }}</span>
+      <span style="font-size: 18px;">{{ icon }}</span>
     </div>
     <div class="kpi-value" :style="{ color: color || 'var(--text)' }">{{ value }}</div>
-    <div v-if="sub" style="font-size: 11px; font-weight: 600; margin-top: 4px" :style="{ color: trendColor }">
-      {{ trendIcon }} {{ sub }}
+    <div v-if="sub" style="font-size: 11px; font-weight: 500; margin-top: 6px; color: var(--muted);">
+      {{ sub }}
     </div>
-  </AppCard>
+  </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import AppCard from './AppCard.vue'
-
-const props = defineProps({
+defineProps({
   label: String,
   value: [String, Number],
   icon: String,
@@ -23,11 +20,4 @@ const props = defineProps({
   sub: String,
   trend: String,
 })
-
-const trendColor = computed(() =>
-  props.trend === 'up' ? 'var(--green)' : props.trend === 'down' ? 'var(--red)' : 'var(--muted)'
-)
-const trendIcon = computed(() =>
-  props.trend === 'up' ? '↑' : props.trend === 'down' ? '↓' : ''
-)
 </script>

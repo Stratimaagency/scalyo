@@ -23,20 +23,19 @@ defineProps({ text: { type: String, default: 'Loading...' } })
 .loader-icon {
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, var(--teal), var(--blue));
+  background: var(--teal);
   border-radius: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 22px;
-  box-shadow: 0 8px 32px var(--tealGlow);
 }
 .loader-spinner {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-top: 2px solid var(--teal);
+  border: 2px solid var(--border);
+  border-top-color: var(--teal);
 }
 .loader-text { color: var(--muted); font-size: 14px; }
 </style>
