@@ -240,4 +240,5 @@ export default {
   daySun: 'Di',
   // KPI
   quarterlyGoals: 'Objectifs trimestriels',
+  csmTeamView: '👥 Vue équipe CSM',
 }

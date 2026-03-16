@@ -240,4 +240,5 @@ export default {
   daySun: '일',
   // KPI
   quarterlyGoals: '분기 목표',
+  csmTeamView: '👥 CSM 팀 보기',
 }

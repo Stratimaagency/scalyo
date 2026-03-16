@@ -1,71 +1,198 @@
 <template>
-  <div class="fade-in">
-    <!-- Toolbar -->
-    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; align-items: center">
-      <input
-        v-model="search"
-        :placeholder="t('searchAccount')"
-        class="field-input"
-        style="max-width: 300px; padding: 9px 14px; font-size: 13px"
-      />
-      <div style="display: flex; gap: 6px; flex-wrap: wrap">
-        <button class="chip" :class="{ active: filter === 'all' }" @click="filter = 'all'">{{ t('allAccounts') }}</button>
-        <button class="chip" :class="{ active: filter === 'low' }" @click="filter = 'low'">{{ t('filterHealthy') }}</button>
-        <button class="chip" :class="{ active: filter === 'medium' }" @click="filter = 'medium'">{{ t('filterWatch') }}</button>
-        <button class="chip" :class="{ active: filter === 'critical' }" @click="filter = 'critical'">{{ t('filterCritical') }}</button>
+  <div class="fade-in" style="display: flex; height: 100%; overflow: hidden;">
+    <!-- Left panel: Account list -->
+    <div :style="{ width: selectedAccount ? '340px' : undefined, flex: selectedAccount ? undefined : 1, borderRight: '1px solid var(--border)', overflow: 'auto', padding: '20px 16px', flexShrink: 0, minWidth: '290px' }">
+      <!-- Header -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+        <h2 style="font-size: 20px; font-weight: 900; letter-spacing: -0.5px;">💼 {{ t('portfolio') }}</h2>
+        <div style="display: flex; gap: 6px;">
+          <button class="btn-base" @click="showAdd = true"
+            style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--greenBg, var(--tealBg)); border: 1px solid var(--greenBorder, var(--tealBorder)); color: var(--green, var(--teal));">
+            + {{ t('add') }}
+          </button>
+          <button class="btn-base" @click="showImport = true"
+            style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--tealBg); border: 1px solid var(--tealBorder); color: var(--teal);">
+            ⬆ {{ t('importPortfolio') }}
+          </button>
+        </div>
       </div>
-      <div style="flex: 1"></div>
-      <button class="btn btn-primary" @click="showAdd = true">{{ t('newAccount') }}</button>
-      <button class="btn btn-secondary" @click="showImport = true">{{ t('importPortfolio') }}</button>
+
+      <!-- Import success message -->
+      <div v-if="importMsg" style="margin-bottom: 10px; padding: 9px 12px; background: var(--greenBg, var(--tealBg)); border: 1px solid var(--greenBorder, var(--tealBorder)); border-radius: 9px; font-size: 12px; color: var(--green, var(--teal));">
+        {{ importMsg }}
+      </div>
+
+      <!-- Search -->
+      <input v-model="search" :placeholder="'🔍 ' + t('searchAccount')"
+        style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 9px 12px; color: var(--text); font-size: 13px; margin-bottom: 12px;" />
+
+      <!-- Risk filters with counts -->
+      <div style="display: flex; gap: 5px; margin-bottom: 14px; flex-wrap: wrap;">
+        <button v-for="f in filterOptions" :key="f.value" class="btn-base" @click="filter = f.value"
+          :style="{
+            fontSize: '11px', padding: '4px 11px', borderRadius: '20px',
+            background: filter === f.value ? 'var(--tealBg)' : 'var(--surface)',
+            border: '1px solid ' + (filter === f.value ? 'var(--tealBorder)' : 'var(--border)'),
+            color: filter === f.value ? 'var(--teal)' : 'var(--muted)'
+          }">
+          {{ f.label }} <span style="margin-left: 3px; opacity: 0.7;">{{ f.count }}</span>
+        </button>
+      </div>
+
+      <!-- CSM filter -->
+      <div v-if="csmList.length > 1" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 11px; color: var(--muted); font-weight: 700;">{{ t('filterCsm') }}:</span>
+        <select v-model="csmFilter" style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; color: var(--text); font-size: 12px; cursor: pointer;">
+          <option value="">{{ t('allCsm') }}</option>
+          <option v-for="csm in csmList" :key="csm" :value="csm">{{ csm }}</option>
+        </select>
+      </div>
+
+      <!-- Account list -->
+      <template v-if="filteredAccounts.length">
+        <div v-for="acc in filteredAccounts" :key="acc.id" class="row-item"
+          @click="selectedAccount = selectedAccount?.id === acc.id ? null : acc"
+          :style="{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '11px 10px', borderRadius: '11px', marginBottom: '4px',
+            background: selectedAccount?.id === acc.id ? 'var(--tealBg)' : undefined,
+            border: '1px solid ' + (selectedAccount?.id === acc.id ? 'var(--tealBorder)' : 'transparent'),
+            cursor: 'pointer', transition: 'all .12s'
+          }">
+          <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+            <div style="width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; color: #fff;"
+              :style="{ background: riskColor(acc.risk) }">
+              {{ (acc.name || '?')[0] }}
+            </div>
+            <div style="min-width: 0;">
+              <div style="font-weight: 700; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ acc.name }}</div>
+              <div style="font-size: 11px; color: var(--muted);">{{ acc.csm || t('unassigned') }} · {{ formatMRR(acc.mrr || acc.arr) }}</div>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
+            <RiskPill :risk="acc.risk" />
+            <div style="font-size: 10px; color: var(--muted);">Score {{ acc.health || 70 }}</div>
+          </div>
+        </div>
+      </template>
+      <EmptyState v-else-if="!portfolioStore.loading" icon="📭"
+        :title="portfolioStore.accounts.length === 0 ? t('portfolioEmpty') : t('noAccountMatch')"
+        :action="'+ ' + t('newAccount')" @action="showAdd = true" />
     </div>
 
-    <!-- CSM filter -->
-    <div v-if="csmList.length > 1" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px">
-      <button class="chip" :class="{ active: csmFilter === '' }" @click="csmFilter = ''">{{ t('allCsm') }}</button>
-      <button
-        v-for="csm in csmList" :key="csm"
-        class="chip" :class="{ active: csmFilter === csm }"
-        @click="csmFilter = csm"
-      >{{ csm }}</button>
-    </div>
+    <!-- Right panel: Account detail -->
+    <div v-if="selectedAccount" class="side-panel" style="width: 400px; border-left: 1px solid var(--border); overflow: auto; background: var(--bg1); flex-shrink: 0;">
+      <!-- Header -->
+      <div style="padding: 16px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; position: sticky; top: 0; background: var(--bg1); z-index: 10;">
+        <div style="display: flex; align-items: center; gap: 11px; min-width: 0;">
+          <div style="width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; flex-shrink: 0; color: #fff;"
+            :style="{ background: riskColor(selectedAccount.risk) }">
+            {{ (selectedAccount.name || '?')[0] }}
+          </div>
+          <div style="min-width: 0;">
+            <div style="font-weight: 800; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ selectedAccount.name }}</div>
+            <div style="font-size: 12px; color: var(--muted);">{{ selectedAccount.industry || '—' }} · {{ selectedAccount.csm || t('unassigned') }}</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; flex-shrink: 0;">
+          <button @click="detailTab = 'edit'" style="background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 4px;" :title="t('edit')">✏️</button>
+          <button @click="removeAccount" style="background: none; border: none; color: var(--faint); cursor: pointer; font-size: 16px; padding: 4px;" :title="t('delete')">🗑</button>
+          <button @click="selectedAccount = null" style="background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 4px;">✕</button>
+        </div>
+      </div>
 
-    <!-- Accounts list -->
-    <div v-if="filteredAccounts.length" style="display: flex; flex-direction: column; gap: 8px">
-      <div
-        v-for="acc in filteredAccounts" :key="acc.id"
-        class="card card-lift"
-        style="display: flex; align-items: center; gap: 14px; padding: 14px 18px; cursor: pointer"
-        @click="selectedAccount = acc"
-      >
-        <div style="width: 38px; height: 38px; border-radius: 11px; background: var(--tealBg); border: 1px solid var(--tealBorder); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: var(--teal); font-family: 'JetBrains Mono', monospace; flex-shrink: 0">
-          {{ (acc.name || '?').substring(0, 2).toUpperCase() }}
+      <div style="padding: 0 18px;">
+        <!-- Tabs -->
+        <div class="tab-bar" style="margin: 14px 0;">
+          <div v-for="[key, label] in detailTabs" :key="key"
+            class="tab-item" :class="{ active: detailTab === key }"
+            @click="detailTab = key"
+            style="flex: 1; text-align: center; font-size: 12px;">
+            {{ label }}
+          </div>
         </div>
-        <div style="flex: 1; min-width: 0">
-          <div style="font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ acc.name }}</div>
-          <div style="font-size: 11px; color: var(--muted)">{{ acc.csm || t('unassigned') }}</div>
-        </div>
-        <HealthBar :val="acc.health" style="width: 80px; flex-shrink: 0" />
-        <RiskPill :risk="acc.risk" />
-        <span style="font-size: 13px; font-weight: 700; color: var(--teal); font-family: 'JetBrains Mono', monospace; white-space: nowrap">
-          {{ formatARR(acc.arr) }}
-        </span>
+
+        <!-- Overview tab -->
+        <template v-if="detailTab === 'overview'">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+            <div style="background: var(--surface); border-radius: 12px; padding: 12px; text-align: center;">
+              <div style="font-size: 15px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">{{ formatMRR(selectedAccount.mrr || selectedAccount.arr) }}</div>
+              <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">MRR</div>
+            </div>
+            <div style="background: var(--surface); border-radius: 12px; padding: 12px; text-align: center;">
+              <div style="font-size: 15px; font-weight: 900; font-family: 'JetBrains Mono', monospace;">{{ selectedAccount.health || 70 }}</div>
+              <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">Health</div>
+            </div>
+            <div style="background: var(--surface); border-radius: 12px; padding: 12px; text-align: center;">
+              <RiskPill :risk="selectedAccount.risk" />
+              <div style="font-size: 10px; color: var(--muted); margin-top: 5px;">Status</div>
+            </div>
+          </div>
+
+          <!-- Health bar -->
+          <div style="margin-bottom: 14px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 5px;">
+              <span>Health Score</span>
+              <span style="font-weight: 700; color: var(--text);">{{ selectedAccount.health || 70 }}/100</span>
+            </div>
+            <HealthBar :val="selectedAccount.health || 70" />
+          </div>
+
+          <!-- Renewal -->
+          <div style="margin-bottom: 14px; font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; padding: 10px 14px; background: var(--surface); border-radius: 10px;">
+            <span>{{ t('renewal') }}</span>
+            <span style="font-weight: 700;" :style="{ color: (selectedAccount.renewal || '').includes('−') ? 'var(--red)' : 'var(--green)' }">{{ selectedAccount.renewal || 'N/A' }}</span>
+          </div>
+
+          <!-- Issues/alerts -->
+          <div v-if="selectedAccount.issues?.length" class="card card-danger" style="margin-bottom: 12px; padding: 12px;">
+            <div style="font-weight: 800; font-size: 13px; color: var(--red); margin-bottom: 8px;">⚠ Alert signals</div>
+            <div v-for="(issue, i) in selectedAccount.issues" :key="i" style="display: flex; gap: 8px; padding: 5px 0; font-size: 12px; line-height: 1.4;">
+              <span style="color: var(--red); flex-shrink: 0;">→</span>
+              <span>{{ issue }}</span>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div v-if="selectedAccount.notes" style="background: var(--surface); border-radius: 12px; padding: 14px; font-size: 13px; color: var(--muted); margin-bottom: 16px;">
+            {{ selectedAccount.notes }}
+          </div>
+        </template>
+
+        <!-- Edit tab -->
+        <template v-if="detailTab === 'edit'">
+          <div style="padding-top: 4px; padding-bottom: 20px;">
+            <AppField :label="t('accNameLabel')" v-model="editForm.name" required />
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <AppField label="CSM" v-model="editForm.csm" />
+              <AppField label="MRR" v-model="editForm.arr" type="number" />
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <AppField label="Health (0-100)" v-model="editForm.health" type="number" />
+              <AppField :label="t('renewal')" v-model="editForm.renewal" />
+            </div>
+            <AppField label="Contact" v-model="editForm.contact" />
+            <AppField label="Email" v-model="editForm.contact_email" type="email" />
+            <AppField label="Notes" v-model="editForm.notes" type="textarea" />
+            <button class="btn-base" @click="saveEdit" :disabled="!editForm.name || saving"
+              style="width: 100%; padding: 11px; border-radius: 12px; font-size: 13px; background: var(--teal); color: #FFFFFF; margin-top: 8px;">
+              {{ saving ? t('saving') : t('saveAcc') }}
+            </button>
+          </div>
+        </template>
       </div>
     </div>
-    <EmptyState v-else-if="!portfolioStore.loading" icon="💼" :title="t('portfolioEmpty')" :action="t('newAccount')" @action="showAdd = true" />
 
     <!-- Add account modal -->
     <AppModal v-if="showAdd" :title="t('newAccount')" @close="showAdd = false">
       <AppField :label="t('accNameLabel')" v-model="newAcc.name" required />
-      <AppField label="CSM" v-model="newAcc.csm" placeholder="CSM name" />
-      <AppField label="ARR (MRR)" v-model="newAcc.arr" type="number" placeholder="0" />
-      <AppField label="Health (0-100)" v-model="newAcc.health" type="number" />
-      <div class="field-group">
-        <label class="field-label">Risk</label>
-        <select v-model="newAcc.risk" class="field-input">
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="critical">Critical</option>
-        </select>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <AppField label="CSM" v-model="newAcc.csm" placeholder="CSM name" />
+        <AppField label="MRR" v-model="newAcc.arr" type="number" placeholder="0" />
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <AppField label="Health (0-100)" v-model="newAcc.health" type="number" />
+        <AppField :label="t('renewal')" v-model="newAcc.renewal" />
       </div>
       <AppField label="Contact" v-model="newAcc.contact" />
       <AppField label="Email" v-model="newAcc.contact_email" type="email" />
@@ -80,73 +207,24 @@
 
     <!-- Import modal -->
     <AppModal v-if="showImport" :title="t('importPortfolio')" @close="showImport = false" maxWidth="600px">
-      <div style="text-align: center; padding: 40px 20px; border: 2px dashed var(--border); border-radius: 16px; cursor: pointer" @click="$refs.fileInput.click()">
+      <div class="import-drop-zone" @click="$refs.fileInput.click()">
         <input ref="fileInput" type="file" accept=".csv,.xlsx,.xls" style="display: none" @change="handleFileImport" />
-        <div style="font-size: 32px; margin-bottom: 12px">📁</div>
-        <div style="font-weight: 700">Drop your file here or click to browse</div>
-        <div style="font-size: 12px; color: var(--muted); margin-top: 6px">Supported: CSV, Excel (.xlsx, .xls)</div>
+        <div style="font-size: 32px; margin-bottom: 12px;">📁</div>
+        <div style="font-weight: 700;">Drop your file here or click to browse</div>
+        <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">Supported: CSV, Excel (.xlsx, .xls)</div>
       </div>
-    </AppModal>
-
-    <!-- Account detail/edit modal -->
-    <AppModal v-if="selectedAccount" :title="editing ? t('editAccount') : selectedAccount.name" @close="cancelEdit" maxWidth="600px">
-      <template v-if="!editing">
-        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 20px">
-          <HealthBar :val="selectedAccount.health" style="flex: 1" />
-          <RiskPill :risk="selectedAccount.risk" />
-        </div>
-        <div class="grid-2 mb-md">
-          <div><span style="font-size: 11px; color: var(--muted); text-transform: uppercase">CSM</span><div style="font-weight: 600">{{ selectedAccount.csm || t('unassigned') }}</div></div>
-          <div><span style="font-size: 11px; color: var(--muted); text-transform: uppercase">ARR</span><div style="font-weight: 600; color: var(--teal)">{{ formatARR(selectedAccount.arr) }}</div></div>
-          <div><span style="font-size: 11px; color: var(--muted); text-transform: uppercase">Contact</span><div style="font-weight: 600">{{ selectedAccount.contact || '-' }}</div></div>
-          <div><span style="font-size: 11px; color: var(--muted); text-transform: uppercase">Email</span><div style="font-weight: 600">{{ selectedAccount.contact_email || '-' }}</div></div>
-          <div><span style="font-size: 11px; color: var(--muted); text-transform: uppercase">Health</span><div style="font-weight: 600">{{ selectedAccount.health }}%</div></div>
-        </div>
-        <div v-if="selectedAccount.notes" style="background: var(--surface); border-radius: 12px; padding: 14px; font-size: 13px; color: var(--muted); margin-bottom: 16px">
-          {{ selectedAccount.notes }}
-        </div>
-        <div style="display: flex; gap: 8px; justify-content: flex-end">
-          <button class="btn btn-danger" @click="removeAccount">{{ t('delete') }}</button>
-          <button class="btn btn-primary" @click="startEdit">{{ t('edit') }}</button>
-          <button class="btn btn-secondary" @click="selectedAccount = null">{{ t('close') }}</button>
-        </div>
-      </template>
-      <template v-else>
-        <AppField :label="t('accNameLabel')" v-model="editForm.name" required />
-        <AppField label="CSM" v-model="editForm.csm" placeholder="CSM name" />
-        <AppField label="ARR (MRR)" v-model="editForm.arr" type="number" placeholder="0" />
-        <AppField label="Health (0-100)" v-model="editForm.health" type="number" />
-        <div class="field-group">
-          <label class="field-label">Risk</label>
-          <select v-model="editForm.risk" class="field-input">
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="critical">Critical</option>
-          </select>
-        </div>
-        <AppField label="Contact" v-model="editForm.contact" />
-        <AppField label="Email" v-model="editForm.contact_email" type="email" />
-        <AppField label="Notes" v-model="editForm.notes" type="textarea" />
-        <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px">
-          <button class="btn btn-secondary" @click="editing = false">{{ t('cancel') }}</button>
-          <button class="btn btn-primary" :disabled="!editForm.name || saving" @click="saveEdit">
-            {{ saving ? t('saving') : t('saveChanges') }}
-          </button>
-        </div>
-      </template>
     </AppModal>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { usePortfolioStore } from '../stores/portfolio'
 import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { useI18n } from '../i18n'
 import HealthBar from '../components/HealthBar.vue'
 import RiskPill from '../components/RiskPill.vue'
-import AppCard from '../components/AppCard.vue'
 import AppModal from '../components/AppModal.vue'
 import AppField from '../components/AppField.vue'
 import EmptyState from '../components/EmptyState.vue'
@@ -162,19 +240,53 @@ const csmFilter = ref('')
 const showAdd = ref(false)
 const showImport = ref(false)
 const selectedAccount = ref(null)
+const detailTab = ref('overview')
 const creating = ref(false)
-const editing = ref(false)
 const saving = ref(false)
 const editForm = ref({})
+const importMsg = ref('')
 
-const newAcc = ref({ name: '', csm: '', arr: 0, health: 0, risk: 'low', contact: '', contact_email: '', notes: '' })
+const newAcc = ref({ name: '', csm: '', arr: 0, health: 70, risk: 'low', contact: '', contact_email: '', notes: '', renewal: '' })
 
 onMounted(() => portfolioStore.fetchAccounts())
+
+// When selecting a new account, populate edit form and reset tab
+watch(selectedAccount, (acc) => {
+  if (acc) {
+    editForm.value = { ...acc }
+    detailTab.value = 'overview'
+  }
+})
+
+const detailTabs = computed(() => [
+  ['overview', '📊 ' + (prefsStore.lang === 'en' ? 'Overview' : prefsStore.lang === 'kr' ? '개요' : 'Aperçu')],
+  ['edit', '✏️ ' + t('edit')],
+])
+
+function riskColor(risk) {
+  if (risk === 'critical') return 'var(--red, #EB5757)'
+  if (risk === 'medium') return 'var(--amber, #E8A838)'
+  return 'var(--teal, #4DB6A0)'
+}
 
 const csmList = computed(() => {
   const csms = new Set(portfolioStore.accounts.map(a => a.csm).filter(Boolean))
   return [...csms].sort()
 })
+
+const filterCounts = computed(() => ({
+  all: portfolioStore.accounts.length,
+  critical: portfolioStore.accounts.filter(a => a.risk === 'critical').length,
+  medium: portfolioStore.accounts.filter(a => a.risk === 'medium').length,
+  low: portfolioStore.accounts.filter(a => a.risk === 'low').length,
+}))
+
+const filterOptions = computed(() => [
+  { value: 'all', label: t('allAccounts'), count: filterCounts.value.all },
+  { value: 'critical', label: t('filterCritical'), count: filterCounts.value.critical },
+  { value: 'medium', label: t('filterWatch'), count: filterCounts.value.medium },
+  { value: 'low', label: t('filterHealthy'), count: filterCounts.value.low },
+])
 
 const filteredAccounts = computed(() => {
   let list = portfolioStore.accounts
@@ -196,6 +308,14 @@ const currencySymbol = computed(() => {
   return '€'
 })
 
+function formatMRR(mrr) {
+  const v = parseFloat(mrr) || 0
+  const s = currencySymbol.value
+  if (v >= 10000) return `${(v / 1000).toFixed(0)}K${s}`
+  if (v >= 1000) return `${(v / 1000).toFixed(1)}K${s}`
+  return `${v}${s}`
+}
+
 function formatARR(mrr) {
   const v = parseFloat(mrr) || 0
   const a = v * 12
@@ -208,29 +328,30 @@ function formatARR(mrr) {
 async function createAccount() {
   if (!newAcc.value.name) return
   creating.value = true
-  await portfolioStore.createAccount(newAcc.value)
-  newAcc.value = { name: '', csm: '', arr: 0, health: 0, risk: 'low', contact: '', contact_email: '', notes: '' }
+  const h = parseInt(newAcc.value.health) || 70
+  await portfolioStore.createAccount({
+    ...newAcc.value,
+    health: h,
+    risk: h >= 70 ? 'low' : h >= 40 ? 'medium' : 'critical',
+  })
+  newAcc.value = { name: '', csm: '', arr: 0, health: 70, risk: 'low', contact: '', contact_email: '', notes: '', renewal: '' }
   showAdd.value = false
   creating.value = false
-}
-
-function startEdit() {
-  editForm.value = { ...selectedAccount.value }
-  editing.value = true
-}
-
-function cancelEdit() {
-  editing.value = false
-  selectedAccount.value = null
 }
 
 async function saveEdit() {
   if (!editForm.value.name) return
   saving.value = true
   try {
-    const updated = await portfolioStore.updateAccount(selectedAccount.value.id, editForm.value)
+    const h = parseInt(editForm.value.health) || 70
+    const payload = {
+      ...editForm.value,
+      health: h,
+      risk: h >= 70 ? 'low' : h >= 40 ? 'medium' : 'critical',
+    }
+    const updated = await portfolioStore.updateAccount(selectedAccount.value.id, payload)
     selectedAccount.value = updated
-    editing.value = false
+    detailTab.value = 'overview'
   } catch (e) {
     console.error('updateAccount error:', e)
   }
@@ -242,7 +363,6 @@ async function removeAccount() {
   if (!confirm(t('confirmDelete'))) return
   await portfolioStore.deleteAccount(selectedAccount.value.id)
   selectedAccount.value = null
-  editing.value = false
 }
 
 async function handleFileImport(e) {
@@ -250,6 +370,7 @@ async function handleFileImport(e) {
   if (!file) return
   const reader = new FileReader()
   reader.onload = async (event) => {
+    let total = 0, ok = 0
     try {
       const text = event.target.result
       const lines = text.split('\n').filter(l => l.trim())
@@ -259,24 +380,32 @@ async function handleFileImport(e) {
         const vals = line.split(',').map(v => v.trim())
         const obj = {}
         headers.forEach((h, i) => { obj[h] = vals[i] || '' })
+        const h = parseInt(obj.health || 70) || 70
         return {
           name: obj.name || obj.account || '',
           csm: obj.csm || '',
           arr: parseFloat(obj.arr || obj.mrr || 0) || 0,
-          health: parseInt(obj.health || 0) || 0,
-          risk: obj.risk || 'low',
+          health: h,
+          risk: h >= 70 ? 'low' : h >= 40 ? 'medium' : 'critical',
           contact: obj.contact || '',
           contact_email: obj.email || obj.contact_email || '',
           notes: obj.notes || '',
+          renewal: obj.renewal || '',
         }
       }).filter(a => a.name)
+      total = accounts.length
       for (const acc of accounts) {
-        await portfolioStore.createAccount(acc)
+        try {
+          await portfolioStore.createAccount(acc)
+          ok++
+        } catch {}
       }
     } catch (err) {
       console.error('Import error:', err)
     }
     showImport.value = false
+    importMsg.value = `✅ ${ok}/${total} accounts imported`
+    setTimeout(() => { importMsg.value = '' }, 5000)
   }
   reader.readAsText(file)
 }
