@@ -56,11 +56,13 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useI18n } from '../i18n'
 import AppField from '../components/AppField.vue'
 
 const authStore = useAuthStore()
+const router = useRouter()
 const { t } = useI18n()
 
 const isLogin = ref(true)
@@ -97,6 +99,7 @@ async function submit() {
       }
       await authStore.register(form)
     }
+    router.push({ name: 'dashboard' })
   } catch (e) {
     if (e.response?.status === 401) {
       error.value = t('errInvalidCreds')

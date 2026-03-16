@@ -1,18 +1,16 @@
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate, get_user_model
 from django.conf import settings
 
+from apps.core.permissions import IsCompanyMember
 from .serializers import (
     RegisterSerializer, LoginSerializer, UserSerializer,
     CompanySerializer, NotificationPreferencesSerializer,
 )
-from .models import Company, NotificationPreferences
-
-User = get_user_model()
+from .models import NotificationPreferences
+from .services import AuthService, AccountDeletionService
 
 
 @api_view(['POST'])
@@ -21,13 +19,10 @@ def register_view(request):
     serializer = RegisterSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     user = serializer.save()
-    refresh = RefreshToken.for_user(user)
+    tokens = AuthService.get_tokens(user)
     return Response({
         'user': UserSerializer(user).data,
-        'tokens': {
-            'access': str(refresh.access_token),
-            'refresh': str(refresh),
-        }
+        'tokens': tokens,
     }, status=status.HTTP_201_CREATED)
 
 
@@ -36,19 +31,16 @@ def register_view(request):
 def login_view(request):
     serializer = LoginSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    user = authenticate(
-        username=serializer.validated_data['email'],
+    user = AuthService.authenticate(
+        email=serializer.validated_data['email'],
         password=serializer.validated_data['password'],
     )
     if not user:
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-    refresh = RefreshToken.for_user(user)
+    tokens = AuthService.get_tokens(user)
     return Response({
         'user': UserSerializer(user).data,
-        'tokens': {
-            'access': str(refresh.access_token),
-            'refresh': str(refresh),
-        }
+        'tokens': tokens,
     })
 
 
@@ -64,11 +56,9 @@ def profile_view(request):
 
 
 @api_view(['GET', 'PATCH'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsCompanyMember])
 def company_view(request):
     company = request.user.company
-    if not company:
-        return Response({'error': 'No company'}, status=404)
     if request.method == 'GET':
         return Response(CompanySerializer(company).data)
     serializer = CompanySerializer(company, data=request.data, partial=True)
@@ -92,11 +82,7 @@ def notification_prefs_view(request):
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_account_view(request):
-    user = request.user
-    company = user.company
-    if company and company.users.count() == 1:
-        company.delete()
-    user.delete()
+    AccountDeletionService.delete_user(request.user)
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getTokens, setTokens, clearAuth } from '../composables/useStorage'
 
 const api = axios.create({
   baseURL: '/api',
@@ -6,7 +7,7 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  const tokens = JSON.parse(localStorage.getItem('scalyo_tokens') || '{}')
+  const tokens = getTokens()
   if (tokens.access) {
     config.headers.Authorization = `Bearer ${tokens.access}`
   }
@@ -19,18 +20,17 @@ api.interceptors.response.use(
     const original = error.config
     if (error.response?.status === 401 && !original._retry) {
       original._retry = true
-      const tokens = JSON.parse(localStorage.getItem('scalyo_tokens') || '{}')
+      const tokens = getTokens()
       if (tokens.refresh) {
         try {
           const { data } = await axios.post('/api/auth/token/refresh/', { refresh: tokens.refresh })
           const newTokens = { ...tokens, access: data.access }
           if (data.refresh) newTokens.refresh = data.refresh
-          localStorage.setItem('scalyo_tokens', JSON.stringify(newTokens))
+          setTokens(newTokens)
           original.headers.Authorization = `Bearer ${data.access}`
           return api(original)
         } catch {
-          localStorage.removeItem('scalyo_tokens')
-          localStorage.removeItem('scalyo_user')
+          clearAuth()
           window.location.reload()
         }
       }

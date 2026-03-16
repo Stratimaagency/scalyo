@@ -92,11 +92,11 @@
         <!-- Theme -->
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border)">
           <div>
-            <div style="font-weight: 700; font-size: 13px">{{ authStore.theme === 'dark' ? t('darkMode') : t('lightMode') }}</div>
+            <div style="font-weight: 700; font-size: 13px">{{ prefsStore.theme === 'dark' ? t('darkMode') : t('lightMode') }}</div>
             <div style="font-size: 12px; color: var(--muted)">{{ t('themeDesc') }}</div>
           </div>
           <label class="toggle-switch">
-            <input type="checkbox" :checked="authStore.theme === 'light'" @change="authStore.setTheme(authStore.theme === 'dark' ? 'light' : 'dark')" />
+            <input type="checkbox" :checked="authStore.theme === 'light'" @change="prefsStore.setTheme(prefsStore.theme === 'dark' ? 'light' : 'dark')" />
             <span class="toggle-slider"></span>
           </label>
         </div>
@@ -105,7 +105,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border)">
           <div style="font-weight: 700; font-size: 13px">{{ t('langLabel') }}</div>
           <div style="display: flex; gap: 6px">
-            <button v-for="l in ['fr', 'en', 'kr']" :key="l" class="chip" :class="{ active: authStore.lang === l }" @click="authStore.setLang(l)">
+            <button v-for="l in ['fr', 'en', 'kr']" :key="l" class="chip" :class="{ active: prefsStore.lang === l }" @click="prefsStore.setLang(l)">
               {{ l === 'fr' ? '🇫🇷 FR' : l === 'en' ? '🇬🇧 EN' : '🇰🇷 KR' }}
             </button>
           </div>
@@ -114,7 +114,7 @@
         <!-- Currency -->
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0">
           <div style="font-weight: 700; font-size: 13px">{{ t('currencyLabel') }}</div>
-          <select v-model="selectedCurrency" @change="authStore.setCurrency(selectedCurrency)" class="field-input" style="width: auto; padding: 6px 12px">
+          <select v-model="selectedCurrency" @change="prefsStore.setCurrency(selectedCurrency)" class="field-input" style="width: auto; padding: 6px 12px">
             <option v-for="c in currencies" :key="c.code" :value="c.code">{{ c.symbol }} {{ c.name }}</option>
           </select>
         </div>
@@ -125,20 +125,24 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { usePreferencesStore } from '../stores/preferences'
 import { useI18n } from '../i18n'
 import { authApi } from '../api'
 import AppCard from '../components/AppCard.vue'
 import AppField from '../components/AppField.vue'
 
 const authStore = useAuthStore()
+const prefsStore = usePreferencesStore()
+const router = useRouter()
 const { t } = useI18n()
 const tab = ref('profile')
 const saving = ref(false)
 
 const profile = reactive({ display_name: authStore.user?.display_name || '' })
 const companyName = ref(authStore.company?.name || '')
-const selectedCurrency = ref(authStore.currency)
+const selectedCurrency = ref(prefsStore.currency)
 
 const notifPrefs = reactive({ churn_alerts: true, weekly_report: true, wellbeing_alerts: true, renewal_alerts: true })
 
@@ -190,5 +194,6 @@ async function handleDeleteAccount() {
   if (!confirm(t('deleteAccountDesc'))) return
   await authApi.deleteAccount()
   authStore.logout()
+  router.push({ name: 'login' })
 }
 </script>

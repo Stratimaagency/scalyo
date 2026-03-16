@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import Company, NotificationPreferences
+from .services import AuthService
 
 User = get_user_model()
 
@@ -14,19 +15,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ['email', 'password', 'display_name', 'company_name', 'role']
 
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError('A user with this email already exists.')
+        return value
+
     def create(self, validated_data):
-        company_name = validated_data.pop('company_name')
-        company = Company.objects.create(name=company_name)
-        user = User.objects.create_user(
-            username=validated_data['email'],
-            email=validated_data['email'],
-            password=validated_data['password'],
-            display_name=validated_data.get('display_name', ''),
-            role=validated_data['role'],
-            company=company,
-        )
-        NotificationPreferences.objects.create(user=user)
-        return user
+        return AuthService.register(validated_data)
 
 
 class LoginSerializer(serializers.Serializer):
@@ -45,6 +40,7 @@ class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
 
 class NotificationPreferencesSerializer(serializers.ModelSerializer):
