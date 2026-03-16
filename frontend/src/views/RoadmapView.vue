@@ -2,16 +2,16 @@
   <div class="fade-in">
     <div class="flex-between mb-lg">
       <div>
-        <h3 style="font-weight: 800; margin-bottom: 4px">Roadmap</h3>
+        <h3 style="font-weight: 800; margin-bottom: 4px">{{ t('roadmap') }}</h3>
         <p style="font-size: 13px; color: var(--muted)">{{ roadmap.phase }}</p>
       </div>
-      <button class="btn btn-primary" @click="showAdd = true">+ Add step</button>
+      <button class="btn btn-primary" @click="showAdd = true">+ {{ t('addStep') }}</button>
     </div>
 
     <!-- Progress -->
     <AppCard class="mb-lg">
       <div class="flex-between mb-sm">
-        <span style="font-weight: 700">Overall Progress</span>
+        <span style="font-weight: 700">{{ t('overallProgress') }}</span>
         <span class="kpi-value" style="font-size: 20px; color: var(--teal)">{{ roadmap.progress }}%</span>
       </div>
       <HealthBar :val="roadmap.progress" />
@@ -35,11 +35,11 @@
       </AppCard>
     </div>
 
-    <EmptyState v-if="!roadmap.items?.length" icon="🗺️" title="No roadmap steps yet" action="+ Add step" @action="showAdd = true" />
+    <EmptyState v-if="!roadmap.items?.length" icon="🗺️" :title="t('noRoadmapSteps')" :action="'+ ' + t('addStep')" @action="showAdd = true" />
 
     <!-- Add step modal -->
-    <AppModal v-if="showAdd" title="Add Roadmap Step" @close="showAdd = false">
-      <AppField label="Step description" v-model="newStep" required @enter="addStep" />
+    <AppModal v-if="showAdd" :title="t('addStep')" @close="showAdd = false">
+      <AppField :label="t('stepDesc')" v-model="newStep" required @enter="addStep" />
       <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px">
         <button class="btn btn-secondary" @click="showAdd = false">{{ t('cancel') }}</button>
         <button class="btn btn-primary" @click="addStep">{{ t('add') }}</button>
@@ -59,7 +59,7 @@ import AppModal from '../components/AppModal.vue'
 import AppField from '../components/AppField.vue'
 
 const { t } = useI18n()
-const roadmap = reactive({ phase: 'Phase 1 — Launch', progress: 0, items: [] })
+const roadmap = reactive({ phase: '', progress: 0, items: [] })
 const showAdd = ref(false)
 const newStep = ref('')
 
@@ -67,6 +67,7 @@ onMounted(async () => {
   try {
     const { data } = await roadmapApi.get()
     Object.assign(roadmap, data)
+    if (!roadmap.phase) roadmap.phase = t('roadmapPhaseDefault')
     if (!Array.isArray(roadmap.items)) roadmap.items = []
   } catch {}
 })

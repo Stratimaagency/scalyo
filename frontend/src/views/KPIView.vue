@@ -3,7 +3,7 @@
     <div class="tab-bar mb-lg">
       <button class="tab-item" :class="{ active: tab === 'standard' }" @click="tab = 'standard'">📊 KPIs Standard</button>
       <button class="tab-item" :class="{ active: tab === 'custom' }" @click="tab = 'custom'">🎯 {{ t('kpiCustomTitle') }}</button>
-      <button class="tab-item" :class="{ active: tab === 'goals' }" @click="tab = 'goals'">🏆 {{ t('target') }}Goals</button>
+      <button class="tab-item" :class="{ active: tab === 'goals' }" @click="tab = 'goals'">🏆 {{ t('quarterlyGoals') }}</button>
     </div>
 
     <!-- Standard KPIs -->
@@ -15,11 +15,11 @@
         </div>
         <div class="grid-3 mb-md">
           <div class="field-group">
-            <label class="field-label">MRR (€)</label>
+            <label class="field-label">MRR ({{ currencySymbol }})</label>
             <input v-model.number="kpis.mrr" type="number" class="field-input" />
           </div>
           <div class="field-group">
-            <label class="field-label">Churned (€)</label>
+            <label class="field-label">Churned ({{ currencySymbol }})</label>
             <input v-model.number="kpis.churned" type="number" class="field-input" />
           </div>
           <div class="field-group">
@@ -46,7 +46,7 @@
 
       <!-- KPI Cards -->
       <div class="grid-4 mb-lg" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr))">
-        <KpiCard label="MRR" :value="fmtK(kpis.mrr) + '€'" icon="💰" color="var(--teal)" />
+        <KpiCard label="MRR" :value="fmtK(kpis.mrr) + currencySymbol" icon="💰" color="var(--teal)" />
         <KpiCard label="NPS" :value="kpis.nps" icon="📊" color="var(--blue)" />
         <KpiCard label="Renewal Rate" :value="kpis.renewalRate + '%'" icon="🔄" :color="kpis.renewalRate >= 85 ? 'var(--green)' : 'var(--amber)'" />
         <KpiCard label="CSAT" :value="kpis.csat + '/10'" icon="⭐" :color="kpis.csat >= 7 ? 'var(--green)' : 'var(--amber)'" />
@@ -83,14 +83,14 @@
     <!-- Goals -->
     <template v-if="tab === 'goals'">
       <AppCard class="mb-md">
-        <h3 style="font-weight: 800; margin-bottom: 14px">Quarterly Goals</h3>
+        <h3 style="font-weight: 800; margin-bottom: 14px">{{ t('quarterlyGoals') }}</h3>
         <div class="grid-2">
           <div class="field-group">
-            <label class="field-label">MRR Target (€)</label>
+            <label class="field-label">MRR Target ({{ currencySymbol }})</label>
             <input v-model.number="goals.mrr" type="number" class="field-input" />
           </div>
           <div class="field-group">
-            <label class="field-label">Max Churn (€)</label>
+            <label class="field-label">Max Churn ({{ currencySymbol }})</label>
             <input v-model.number="goals.churned" type="number" class="field-input" />
           </div>
           <div class="field-group">
@@ -113,7 +113,7 @@
       <AppField label="Name" v-model="newKpi.name" required />
       <AppField label="Value" v-model="newKpi.value" type="number" />
       <AppField label="Goal" v-model="newKpi.goal" type="number" />
-      <AppField label="Unit" v-model="newKpi.unit" placeholder="€, %, score..." />
+      <AppField label="Unit" v-model="newKpi.unit" :placeholder="currencySymbol + ', %, score...'" />
       <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px">
         <button class="btn btn-secondary" @click="showNewKpi = false">{{ t('cancel') }}</button>
         <button class="btn btn-primary" @click="addCustomKpi">{{ t('create') }}</button>
@@ -123,9 +123,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { kpiApi } from '../api'
 import { useI18n } from '../i18n'
+import { usePreferencesStore } from '../stores/preferences'
 import KpiCard from '../components/KpiCard.vue'
 import AppCard from '../components/AppCard.vue'
 import AppModal from '../components/AppModal.vue'
@@ -133,12 +134,21 @@ import AppField from '../components/AppField.vue'
 import EmptyState from '../components/EmptyState.vue'
 
 const { t } = useI18n()
+const prefsStore = usePreferencesStore()
+const currencySymbol = computed(() => {
+  const c = prefsStore.currency
+  if (c === 'USD') return '$'
+  if (c === 'GBP') return '£'
+  if (c === 'CHF') return 'CHF'
+  if (c === 'CAD') return 'CA$'
+  return '€'
+})
 const tab = ref('standard')
 const saving = ref(false)
 const showNewKpi = ref(false)
 const period = ref(new Date().toISOString().slice(0, 7))
-const kpis = reactive({ mrr: 0, churned: 0, nps: 40, renewalRate: 85, csat: 8, resolvedTickets: 0 })
-const goals = reactive({ mrr: 0, churned: 0, nps: 40, renewalRate: 85 })
+const kpis = reactive({ mrr: 0, churned: 0, nps: 0, renewalRate: 0, csat: 0, resolvedTickets: 0 })
+const goals = reactive({ mrr: 0, churned: 0, nps: 0, renewalRate: 0 })
 const customKpis = ref([])
 const newKpi = ref({ name: '', value: 0, goal: 0, unit: '', color: '#7EC8B8' })
 
