@@ -627,9 +627,9 @@ input:focus, select:focus, textarea:focus {
 .btn-base:disabled { opacity: 0.38; cursor: not-allowed; transform: none !important; filter: none !important; }
 
 /* Animations */
-@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes slideInR { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes slideInR { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
@@ -757,7 +757,23 @@ input:focus, select:focus, textarea:focus {
 [data-theme="light"] .kpi-form-field input,
 [data-theme="light"] .kpi-form-field select { color: var(--text); background: var(--input-bg); }
 
-/* === RESPONSIVE MOBILE === */
+/* === RESPONSIVE === */
+
+/* Small phones */
+@media (max-width: 374px) {
+  .topbar-area { padding: 8px 8px !important; }
+  .view-pad { padding: 10px 8px !important; }
+  .modal-box { padding: 16px; max-width: 100%; }
+  .kpi-value { font-size: 22px; }
+  .tab-item { padding: 5px 10px; font-size: 11px; }
+  .chip, .csm-chip, .quick-chip { padding: 4px 10px; font-size: 11px; }
+  .btn { padding: 8px 14px; font-size: 12px; }
+  .topbar-critical-badge { font-size: 10px; padding: 3px 8px; }
+  .topbar-online { padding: 3px 8px; }
+  .topbar-online-text { font-size: 10px; }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
   .sidebar-desktop { display: none !important; }
   .app-shell { flex-direction: column !important; }
@@ -766,10 +782,38 @@ input:focus, select:focus, textarea:focus {
   .bottom-nav { display: flex !important; }
   .view-pad { padding: 14px 12px !important; }
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .modal-box { max-width: 100%; border-radius: 12px; }
+  .kpi-form-grid { grid-template-columns: 1fr; }
+  .analysis-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; }
 }
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .sidebar-desktop { width: 180px; }
+  .nav-label { font-size: 12px; }
+  .view-pad { padding: 18px 18px; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Desktop */
 @media (min-width: 769px) {
   .bottom-nav { display: none !important; }
   .main-scroll { height: 100vh; }
+}
+
+/* Large screens / TV */
+@media (min-width: 1920px) {
+  .view-pad { padding: 28px 40px; max-width: 1600px; margin: 0 auto; }
+  .modal-box { max-width: 600px; }
+  .kpi-value { font-size: 30px; }
+}
+@media (min-width: 2560px) {
+  .view-pad { padding: 36px 60px; max-width: 2000px; }
+  .sidebar-desktop { width: 260px; }
+  .nav-btn { padding: 11px 14px; font-size: 14px; }
+  .topbar-area { padding: 14px 32px; }
 }
 
 /* Bottom nav */
