@@ -5036,8 +5036,8 @@ const PortfolioView = ({
     if (selected === id) setSelected(null);
     onRefresh();
   };
-  return /*#__PURE__*/React.createElement("div", {
-    className: "fade-in",
+  return /*#__PURE__*/React.createElement(React.Fragment, null,
+  /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       height: "100%",
@@ -5233,11 +5233,13 @@ const PortfolioView = ({
       onRefresh();
       setSelected(null);
     }
-  }), showImport && React.createElement(Portal, null, React.createElement(ImportModal, {
+  })),
+  showImport && React.createElement(Portal, null, React.createElement(ImportModal, {
     onClose: () => setShowImport(false),
     onImport: handleImportDone,
     companyId: companyId
-  })), showAdd && React.createElement(Portal, null, React.createElement(AddAccountModal, {
+  })),
+  showAdd && React.createElement(Portal, null, React.createElement(AddAccountModal, {
     onClose: () => setShowAdd(false),
     companyId: companyId,
     lang: lang,
