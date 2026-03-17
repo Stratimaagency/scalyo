@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scalyo - Le Customer Success, réinventé</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* Landing page colors (light theme, Notion-like) */
+:root {
+  --dk: #FFFFFF;
+  --dk2: #F7F6F3;
+  --dk3: #FFFFFF;
+  --dk4: #EDECE9;
+  --dk5: #D3D1CB;
+  --dt: #37352F;
+  --dt2: #6B6966;
+  --dt3: #9B9A97;
+  --dline: rgba(55,53,47,0.09);
+  --dline2: rgba(55,53,47,0.16);
+  --land-teal: #0F7B6C;
+  --land-teal2: rgba(15,123,108,0.08);
+  --f: 'Plus Jakarta Sans', 'Inter', -apple-system, system-ui, sans-serif;
+  --rad: 12px;
+  /* Icon colors for SVGs (light theme overrides) */
+  --teal: #0F7B6C;
+  --tealBg: rgba(15,123,108,0.08);
+  --red: #D4958A;
+  --redBg: rgba(212,149,138,0.08);
+  --amber: #D4BA6E;
+  --amberBg: rgba(212,186,110,0.12);
+  --green: #0F7B6C;
+  --greenBg: rgba(15,123,108,0.08);
+  --purple: #B8A8D4;
+  --purpleBg: rgba(184,168,212,0.12);
+  --blue: #8BA8C4;
+  --blueBg: rgba(139,168,196,0.12);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { min-height: 100vh; background: #fff; color: #37352F; font-family: var(--f); -webkit-font-smoothing: antialiased; }
+
+/* Nav */
+.landing-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 60px; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background 0.3s, border-bottom 0.3s;
+}
+.landing-nav.scrolled {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px) saturate(1.8);
+  border-bottom: 1px solid var(--dline);
+}
+.nav-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px; letter-spacing: -0.03em; color: var(--dt); }
+.nav-logo-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--land-teal); display: grid; place-items: center; font-size: 15px; font-weight: 900; color: #fff; flex-shrink: 0; }
+.nav-logo .accent { color: var(--land-teal); }
+.nav-links { display: flex; gap: 0; }
+.nav-links a { padding: 7px 14px; border-radius: 7px; font-size: 14px; font-weight: 500; color: var(--dt2); transition: color 0.15s, background 0.15s; text-decoration: none; }
+.nav-links a:hover { color: var(--dt); background: rgba(55,53,47,0.04); }
+.nav-right { display: flex; align-items: center; gap: 8px; }
+.n-ghost { padding: 7px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--dt2); border: 1px solid var(--dline2); transition: all 0.15s; text-decoration: none; cursor: pointer; }
+.n-ghost:hover { color: var(--dt); background: rgba(55,53,47,0.04); }
+.n-solid { padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; color: #fff; background: var(--land-teal); transition: all 0.2s; text-decoration: none; cursor: pointer; }
+.n-solid:hover { background: #0a6b5e; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,123,108,0.2); }
+
+/* Hero */
+.hero { background: #fff; padding: 140px 24px 100px; text-align: center; position: relative; overflow: hidden; }
+.hero-glow { position: absolute; left: 50%; top: 0; transform: translateX(-50%); width: min(900px, 100vw); height: 600px; background: radial-gradient(ellipse at 50% 0%, rgba(15,123,108,0.06) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+.hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
+.hero-badge { display: inline-flex; align-items: center; gap: 7px; padding: 5px 14px; border-radius: 100px; border: 1px solid var(--dline2); background: rgba(55,53,47,0.03); font-size: 13px; font-weight: 500; color: var(--dt2); margin-bottom: 32px; }
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--land-teal); box-shadow: 0 0 4px rgba(15,123,108,0.3); }
+.hero-h1 { font-size: clamp(42px, 6.5vw, 80px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; color: var(--dt); margin-bottom: 24px; }
+.hero-h1 .accent { color: var(--land-teal); }
+.hero-sub { font-size: clamp(16px, 2vw, 19px); font-weight: 400; color: var(--dt2); line-height: 1.65; max-width: 520px; margin: 0 auto 40px; }
+.hero-sub strong { color: var(--dt); font-weight: 500; }
+.hero-cta { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 56px; }
+.btn-hero-primary { display: flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 600; color: #fff; background: var(--land-teal); transition: all 0.2s; text-decoration: none; cursor: pointer; box-shadow: 0 1px 3px rgba(55,53,47,0.08); }
+.btn-hero-primary:hover { background: #0a6b5e; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15,123,108,0.15); }
+.btn-hero-secondary { padding: 14px 24px; border-radius: 10px; font-size: 15px; font-weight: 500; color: var(--dt2); border: 1px solid var(--dline2); transition: all 0.15s; background: rgba(55,53,47,0.03); text-decoration: none; cursor: pointer; }
+.btn-hero-secondary:hover { color: var(--dt); background: rgba(55,53,47,0.04); }
+.hero-social-proof { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; color: var(--dt3); flex-wrap: wrap; }
+.hsp-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--dk5); }
+
+/* Stats bar */
+.stats-bar { background: var(--dk2); border-top: 1px solid var(--dline); border-bottom: 1px solid var(--dline); }
+.stats-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); }
+.stat-cell { padding: 36px 32px; border-right: 1px solid var(--dline); }
+.stat-cell:last-child { border-right: none; }
+.stat-number { font-size: 48px; font-weight: 800; letter-spacing: -0.05em; line-height: 1; color: var(--land-teal); margin-bottom: 6px; }
+.stat-label { font-size: 14px; font-weight: 500; color: var(--dt); margin-bottom: 4px; }
+.stat-note { font-size: 12.5px; color: var(--dt3); line-height: 1.5; }
+
+/* Sections */
+.section { padding: 100px 24px; }
+.section-light { background: var(--dk2); color: var(--dt); }
+.section-dark { background: var(--dk); color: var(--dt); }
+.container { max-width: 1100px; margin: 0 auto; }
+.label { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; letter-spacing: -0.01em; color: var(--land-teal); margin-bottom: 14px; }
+.label-line { width: 16px; height: 1.5px; background: var(--land-teal); border-radius: 1px; }
+.h2-light, .h2-dark { font-size: clamp(30px, 3.8vw, 48px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.12; color: var(--dt); margin-bottom: 16px; }
+
+/* Feature panels */
+.feat-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; margin-bottom: 80px; }
+.feat-panel.flip { direction: rtl; }
+.feat-panel.flip > * { direction: ltr; }
+.feat-title { font-size: clamp(24px, 2.5vw, 34px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; color: var(--dt); margin-bottom: 14px; }
+.feat-body { font-size: 16px; color: var(--dt2); line-height: 1.7; margin-bottom: 24px; }
+.feat-points { display: flex; flex-direction: column; gap: 10px; }
+.feat-point { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--dt2); line-height: 1.55; }
+.fp-check { width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0; margin-top: 1px; background: var(--land-teal2); border: 1px solid rgba(15,123,108,0.2); display: grid; place-items: center; }
+.feat-visual { border-radius: 16px; overflow: hidden; border: 1px solid var(--dline2); box-shadow: 0 4px 16px rgba(55,53,47,0.06), 0 16px 32px rgba(55,53,47,0.04); background: var(--dk3); }
+.fv-pad { padding: 28px; }
+.fv-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.fv-title { font-size: 14px; font-weight: 600; letter-spacing: -0.02em; color: var(--dt); }
+.badge-live { padding: 3px 9px; border-radius: 100px; font-size: 11px; font-weight: 600; background: rgba(74,222,128,0.08); color: #4ADE80; border: 1px solid rgba(74,222,128,0.15); }
+.fv-placeholder { background: var(--dk4); border-radius: 8px; padding: 32px; text-align: center; color: var(--dt3); font-size: 13px; }
+
+/* Pricing */
+.pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 960px; }
+.pricing-card { background: #fff; border: 1px solid var(--dline2); border-radius: 16px; padding: 32px 28px; position: relative; transition: border-color 0.2s; }
+.pricing-card:hover { border-color: rgba(55,53,47,0.24); }
+.pricing-card.popular { border-color: var(--land-teal); box-shadow: 0 0 0 1px var(--land-teal); }
+.pricing-popular-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--land-teal); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 14px; border-radius: 100px; }
+.pricing-name { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.pricing-price { font-size: 42px; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 4px; }
+.pricing-period { font-size: 15px; font-weight: 400; color: var(--dt3); }
+.pricing-desc { font-size: 14px; color: var(--dt2); margin-bottom: 24px; }
+.pricing-features { list-style: none; margin-bottom: 24px; }
+.pricing-features li { padding: 6px 0; font-size: 14px; color: var(--dt2); display: flex; gap: 8px; align-items: center; }
+.pricing-check { color: var(--land-teal); font-weight: 700; font-size: 13px; display: flex; }
+.pricing-cta { display: block; text-align: center; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; border: 1px solid var(--dline2); color: var(--dt2); transition: all 0.15s; text-decoration: none; cursor: pointer; }
+.pricing-cta:hover { color: var(--dt); background: rgba(55,53,47,0.04); }
+.pricing-cta.primary { background: var(--land-teal); color: #fff; border-color: var(--land-teal); }
+.pricing-cta.primary:hover { background: #0a6b5e; }
+
+/* Footer */
+.landing-footer { text-align: center; padding: 40px 20px; color: var(--dt3); font-size: 13px; border-top: 1px solid var(--dline); }
+.footer-logo { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; color: var(--dt); font-weight: 700; font-size: 15px; letter-spacing: -0.03em; }
+
+/* SVG icon helper */
+.si { display: inline-block; vertical-align: middle; flex-shrink: 0; }
+
+/* Responsive */
+@media (max-width: 374px) {
+  .hero { padding: 110px 14px 60px; }
+  .hero-h1 { font-size: 28px; }
+  .hero-sub { font-size: 14px; }
+  .hero-cta { flex-direction: column; gap: 10px; }
+  .btn-hero-primary, .btn-hero-secondary { width: 100%; justify-content: center; text-align: center; }
+  .hero-social-proof { flex-direction: column; gap: 4px; font-size: 12px; }
+  .hsp-sep { display: none; }
+  .stats-inner { grid-template-columns: 1fr; }
+  .stat-cell { border-right: none; border-bottom: 1px solid var(--dline); padding: 24px 20px; }
+  .stat-cell:last-child { border-bottom: none; }
+  .stat-number { font-size: 36px; }
+  .section { padding: 60px 14px; }
+  .pricing-card { padding: 24px 20px; }
+  .pricing-price { font-size: 34px; }
+  .fv-pad { padding: 16px; }
+  .landing-nav { padding: 0 14px; }
+  .nav-right .n-ghost { display: none; }
+}
+@media (max-width: 768px) {
+  .hero { padding: 120px 20px 70px; }
+  .hero-h1 { font-size: 32px; }
+  .hero-badge { margin-bottom: 24px; }
+  .hero-cta { margin-bottom: 36px; }
+  .nav-links { display: none; }
+  .feat-panel { grid-template-columns: 1fr; gap: 32px; }
+  .feat-panel.flip { direction: ltr; }
+  .stats-inner { grid-template-columns: 1fr 1fr; }
+  .stat-cell { padding: 24px 20px; }
+  .stat-cell:nth-child(2) { border-right: none; }
+  .stat-number { font-size: 36px; }
+  .section { padding: 64px 20px; }
+  .pricing-card { padding: 28px 22px; }
+  .pricing-price { font-size: 36px; }
+  .landing-footer p { font-size: 12px; line-height: 1.7; }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+  .hero { padding: 130px 32px 80px; }
+  .feat-panel { gap: 40px; }
+  .fv-pad { padding: 20px; }
+  .stat-number { font-size: 40px; }
+  .stat-cell { padding: 28px 20px; }
+  .section { padding: 80px 32px; }
+}
+@media (min-width: 1920px) {
+  .hero-inner { max-width: 900px; }
+  .stats-inner { max-width: 1300px; }
+  .container { max-width: 1300px; }
+  .stat-number { font-size: 56px; }
+  .feat-panel { gap: 100px; }
+  .section { padding: 120px 40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="landing-nav" id="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">S</div>
+    <span>Scal<span class="accent">yo</span></span>
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#roi">ROI</a>
+  </div>
+  <div class="nav-right">
+    <a href="#" class="n-ghost">Log in</a>
+    <a href="#" class="n-solid">Start Free</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Customer Success Platform
+    </div>
+    <h1 class="hero-h1">
+      Le Customer Success,<br/><span class="accent">réinventé.</span>
+    </h1>
+    <p class="hero-sub">
+      Pilotez vos KPIs, protégez vos comptes,<br/>
+      <strong>prenez soin de votre équipe.</strong>
+    </p>
+    <div class="hero-cta">
+      <a href="#" class="btn-hero-primary">
+        Démarrer gratuitement
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5-5-5-5"/></svg>
+      </a>
+      <a href="#features" class="btn-hero-secondary">Découvrir</a>
+    </div>
+    <div class="hero-social-proof">
+      <span>14 jours gratuits</span>
+      <span class="hsp-sep"></span>
+      <span>Sans carte bancaire</span>
+      <span class="hsp-sep"></span>
+      <span>Données hébergées en Europe</span>
+    </div>
+  </div>
+</header>
+
+<!-- Stats bar -->
+<section class="stats-bar" id="roi">
+  <div class="stats-inner">
+    <div class="stat-cell">
+      <div class="stat-number">-35%</div>
+      <div class="stat-label">Churn réduit</div>
+      <div class="stat-note">En moyenne sur nos clients</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-number">+22%</div>
+      <div class="stat-label">ARR protégé</div>
+      <div class="stat-note">Grâce aux alertes proactives</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-number">4h</div>
+      <div class="stat-label">Gagnées par semaine</div>
+      <div class="stat-note">Par CSM en automatisation</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-number">98%</div>
+      <div class="stat-label">Satisfaction équipe</div>
+      <div class="stat-note">Score wellbeing moyen</div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="section section-light">
+  <div class="container">
+    <div class="label"><span class="label-line"></span>Fonctionnalités</div>
+    <h2 class="h2-light" style="margin-bottom: 56px">Tout ce dont votre équipe CS a besoin.</h2>
+
+    <!-- Feature 1: Dashboard -->
+    <div class="feat-panel">
+      <div class="feat-text">
+        <div style="margin-bottom: 12px">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" class="si">
+            <rect x="2" y="2" width="20" height="20" rx="4" fill="var(--tealBg)"/>
+            <rect x="5" y="11" width="3" height="8" rx="1.5" fill="var(--teal)"/>
+            <rect x="10.5" y="7" width="3" height="12" rx="1.5" fill="var(--purple)"/>
+            <rect x="16" y="4" width="3" height="15" rx="1.5" fill="var(--teal)" opacity="0.6"/>
+          </svg>
+        </div>
+        <h3 class="feat-title">Dashboard intelligent</h3>
+        <p class="feat-body">Vue d'ensemble de votre portefeuille avec KPIs en temps réel, alertes critiques et score de santé.</p>
+        <div class="feat-points">
+          <div class="feat-point">
+            <span class="fp-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Health Score automatique</span>
+          </div>
+          <div class="feat-point">
+            <span class="fp-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Alertes churn proactives</span>
+          </div>
+          <div class="feat-point">
+            <span class="fp-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>ARR à risque en un coup d'oeil</span>
+          </div>
+        </div>
+      </div>
+      <div class="feat-visual">
+        <div class="fv-pad">
+          <div class="fv-header">
+            <span class="fv-title">Dashboard</span>
+            <span class="badge-live">Live</span>
+          </div>
+          <div class="fv-placeholder">KPI cards, health scores, critical alerts...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 2: Portfolio (flipped) -->
+    <div class="feat-panel flip">
+      <div class="feat-text">
+        <div style="margin-bottom: 12px">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" class="si">
+            <rect x="2" y="7" width="20" height="14" rx="3" fill="var(--tealBg)" stroke="var(--teal)" stroke-width="1.5"/>
+            <path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2" stroke="var(--teal)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="2" y1="13" x2="22" y2="13" stroke="var(--teal)" stroke-width="1.5" opacity="0.4"/>
+            <circle cx="12" cy="13" r="2" fill="var(--teal)"/>
+          </svg>
+        </div>
+        <h3 class="feat-title">Portefeuille vivant</h3>
+        <p class="feat-body">Gérez tous vos comptes, assignations CSM, niveaux de risque et ARR en un seul endroit.</p>
+        <div class="feat-points">
+          <div class="feat-point">
+            <span class="fp-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Import CSV/Excel</span>
+          </div>
+          <div class="feat-point">
+            <span class="fp-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Todo list par compte</span>
+          </div>
+          <div class="feat-point">
+            <span class="fp-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Filtres CSM et risque</span>
+          </div>
+        </div>
+      </div>
+      <div class="feat-visual">
+        <div class="fv-pad">
+          <div class="fv-header">
+            <span class="fv-title">Portfolio</span>
+            <span class="badge-live">Live</span>
+          </div>
+          <div class="fv-placeholder">Account cards with health bars, risk pills...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 3: Wellbeing -->
+    <div class="feat-panel">
+      <div class="feat-text">
+        <div style="margin-bottom: 12px">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" class="si">
+            <path d="M12 21s-7-4.35-9-8.5C1 8.5 3.5 4 7.5 4c2.54 0 3.97 1.73 4.5 2.73C12.53 5.73 13.96 4 16.5 4 20.5 4 23 8.5 21 12.5c-2 4.15-9 8.5-9 8.5z" fill="var(--green)"/>
+            <path d="M12 21s-7-4.35-9-8.5C1 8.5 3.5 4 7.5 4c2.54 0 3.97 1.73 4.5 2.73" fill="var(--green)" opacity="0.7"/>
+          </svg>
+        </div>
+        <h3 class="feat-title">Bien-être équipe</h3>
+        <p class="feat-body">Surveillez la santé de votre équipe, le risque de burnout et l'équilibre de charge.</p>
+        <div class="feat-points">
+          <div class="feat-point">
+            <span class="fp-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Score bien-être global</span>
+          </div>
+          <div class="feat-point">
+            <span class="fp-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Détection burnout</span>
+          </div>
+          <div class="feat-point">
+            <span class="fp-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Charge par CSM</span>
+          </div>
+        </div>
+      </div>
+      <div class="feat-visual">
+        <div class="fv-pad">
+          <div class="fv-header">
+            <span class="fv-title">Wellbeing</span>
+            <span class="badge-live">Live</span>
+          </div>
+          <div class="fv-placeholder">Team scores, burnout indicators...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 4: Coach IA (flipped) -->
+    <div class="feat-panel flip">
+      <div class="feat-text">
+        <div style="margin-bottom: 12px">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" class="si">
+            <rect x="4" y="8" width="16" height="13" rx="3" fill="var(--tealBg)" stroke="var(--teal)" stroke-width="1.5"/>
+            <circle cx="12" cy="5" r="2" fill="var(--purple)"/>
+            <line x1="12" y1="7" x2="12" y2="8" stroke="var(--purple)" stroke-width="1.5"/>
+            <circle cx="9" cy="13" r="2" fill="var(--teal)"/>
+            <circle cx="15" cy="13" r="2" fill="var(--teal)"/>
+            <path d="M9 17.5h6" stroke="var(--teal)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="2" y1="14" x2="4" y2="14" stroke="var(--teal)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="20" y1="14" x2="22" y2="14" stroke="var(--teal)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="feat-title">Coach IA</h3>
+        <p class="feat-body">Conseils stratégiques CS propulsés par l'IA pour vos décisions quotidiennes.</p>
+        <div class="feat-points">
+          <div class="feat-point">
+            <span class="fp-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Expert CS francophone</span>
+          </div>
+          <div class="feat-point">
+            <span class="fp-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Réponses contextuelles</span>
+          </div>
+          <div class="feat-point">
+            <span class="fp-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Disponible 24/7</span>
+          </div>
+        </div>
+      </div>
+      <div class="feat-visual">
+        <div class="fv-pad">
+          <div class="fv-header">
+            <span class="fv-title">Coach IA</span>
+            <span class="badge-live">Live</span>
+          </div>
+          <div class="fv-placeholder">Chat interface with AI responses...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="section section-dark">
+  <div class="container">
+    <div class="label"><span class="label-line"></span>Tarification</div>
+    <h2 class="h2-dark" style="margin-bottom: 48px">Des équipes CS qui performent, des clients qui restent.</h2>
+
+    <div class="pricing-grid">
+      <!-- Starter -->
+      <div class="pricing-card">
+        <div class="pricing-name">Starter</div>
+        <div class="pricing-price">0€<span class="pricing-period">/mois</span></div>
+        <div class="pricing-desc">Pour commencer avec le CS structuré</div>
+        <ul class="pricing-features">
+          <li><span class="pricing-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--land-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span> 5 comptes clients</li>
+          <li><span class="pricing-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--land-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Dashboard & KPIs</li>
+          <li><span class="pricing-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--land-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Task Board</li>
+          <li><span class="pricing-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--land-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Email Studio</li>
+        </ul>
+        <a href="#" class="pricing-cta">Commencer</a>
+      </div>
+
+      <!-- Growth (Popular) -->
+      <div class="pricing-card popular">
+        <div class="pricing-popular-badge">Populaire</div>
+        <div class="pricing-name">Growth</div>
+        <div class="pricing-price">49€<span class="pricing-period">/mois</span></div>
+        <div class="pricing-desc">Pour les équipes CS en croissance</div>
+        <ul class="pricing-features">
+          <li><span class="pricing-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--land-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Comptes illimités</li>
+          <li><span class="pricing-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--land-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span> CSMs illimités</li>
+          <li><span class="pricing-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--land-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Coach IA</li>
+          <li><span class="pricing-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--land-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Bien-être équipe</li>
+          <li><span class="pricing-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--land-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Planning</li>
+        </ul>
+        <a href="#" class="pricing-cta primary">Démarrer maintenant</a>
+      </div>
+
+      <!-- Elite -->
+      <div class="pricing-card">
+        <div class="pricing-name">Elite</div>
+        <div class="pricing-price">149€<span class="pricing-period">/mois</span></div>
+        <div class="pricing-desc">Pour les organisations CS avancées</div>
+        <ul class="pricing-features">
+          <li><span class="pricing-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--land-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Tout dans Growth</li>
+          <li><span class="pricing-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--land-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Onboarding dédié</li>
+          <li><span class="pricing-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--land-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Support prioritaire</li>
+          <li><span class="pricing-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,6" stroke="var(--land-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Session coaching mensuelle</li>
+        </ul>
+        <a href="#" class="pricing-cta">Commencer</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="landing-footer">
+  <div class="footer-logo">
+    <div class="nav-logo-icon" style="width: 24px; height: 24px; font-size: 12px; border-radius: 6px;">S</div>
+    <span>Scalyo</span>
+  </div>
+  <p>Annulation à tout moment · Facturation sécurisée via Stripe · Données hébergées en Europe · RGPD</p>
+</footer>
+
+<script>
+// Nav scroll effect
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+});
+</script>
+</body>
+</html>
