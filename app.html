@@ -5240,16 +5240,17 @@ const PortfolioView = ({
     onImport: handleImportDone,
     companyId: companyId
   })),
-  showAdd && React.createElement(Portal, null, React.createElement(AddAccountModal, {
-    onClose: () => setShowAdd(false),
-    companyId: companyId,
-    lang: lang,
-    currency: currency,
-    onAdd: () => {
-      setShowAdd(false);
-      onRefresh();
-    }
-  })));
+  showAdd && ReactDOM.createPortal(React.createElement("div", {
+    style: {position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:99999,background:"rgba(0,0,0,0.5)",display:"flex",alignItems:"center",justifyContent:"center"},
+    onClick: () => setShowAdd(false)
+  }, React.createElement("div", {
+    style: {background:"white",color:"black",borderRadius:12,padding:32,maxWidth:500,width:"90%",textAlign:"center"},
+    onClick: e => e.stopPropagation()
+  },
+    React.createElement("h2", {style:{marginBottom:16}}, "TEST MODAL"),
+    React.createElement("p", null, "Si vous voyez ceci, le modal fonctionne !"),
+    React.createElement("button", {onClick: () => setShowAdd(false), style:{marginTop:16,padding:"10px 24px",borderRadius:8,border:"none",background:"#0B6E60",color:"white",cursor:"pointer",fontSize:14}}, "Fermer")
+  )), document.body));
 };
 
 // ROADMAP VIEW
