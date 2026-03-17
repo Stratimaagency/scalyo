@@ -95,7 +95,7 @@
           </div>
         </div>
         <div style="display: flex; gap: 6px; flex-shrink: 0;">
-          <button @click="detailTab = 'edit'" style="background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 4px;" :title="t('edit')">✏️</button>
+          <button @click.stop="startEdit" style="background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 4px;" :title="t('edit')">✏️</button>
           <button @click="removeAccount" style="background: none; border: none; color: var(--faint); cursor: pointer; font-size: 16px; padding: 4px;" :title="t('delete')">🗑</button>
           <button @click="selectedAccount = null" style="background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 4px;">✕</button>
         </div>
@@ -337,6 +337,13 @@ async function createAccount() {
   newAcc.value = { name: '', csm: '', arr: 0, health: 70, risk: 'low', contact: '', contact_email: '', notes: '', renewal: '' }
   showAdd.value = false
   creating.value = false
+}
+
+function startEdit() {
+  if (selectedAccount.value) {
+    editForm.value = { ...selectedAccount.value }
+  }
+  detailTab.value = 'edit'
 }
 
 async function saveEdit() {
