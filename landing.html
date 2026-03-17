@@ -59,6 +59,276 @@ img { display: block; max-width: 100%; }
 .rv { opacity: 1; transform: none; }
 .rv.in { opacity: 1; transform: none; }
 
+/* ═══════════════════════════════════════════════════
+   3D IMMERSIVE EFFECTS — Pop-out stats, floating emojis
+═══════════════════════════════════════════════════ */
+
+/* 3D floating animation for emojis */
+@keyframes float3d {
+  0%, 100% { transform: translateY(0) scale(1) rotateX(0deg); }
+  25% { transform: translateY(-8px) scale(1.05) rotateX(4deg); }
+  50% { transform: translateY(-14px) scale(1.08) rotateX(-2deg); }
+  75% { transform: translateY(-6px) scale(1.03) rotateX(3deg); }
+}
+@keyframes float3d-alt {
+  0%, 100% { transform: translateY(0) scale(1) rotateY(0deg); }
+  30% { transform: translateY(-10px) scale(1.06) rotateY(5deg); }
+  60% { transform: translateY(-16px) scale(1.1) rotateY(-3deg); }
+  80% { transform: translateY(-5px) scale(1.02) rotateY(2deg); }
+}
+@keyframes glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(77,182,160,.3)); }
+  50% { filter: drop-shadow(0 0 20px rgba(77,182,160,.6)) drop-shadow(0 0 40px rgba(77,182,160,.2)); }
+}
+@keyframes pop-in {
+  0% { transform: perspective(600px) translateZ(-80px) scale(0.85); opacity: 0; }
+  60% { transform: perspective(600px) translateZ(20px) scale(1.02); opacity: 1; }
+  100% { transform: perspective(600px) translateZ(0) scale(1); opacity: 1; }
+}
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Mega 3D emoji styling */
+.chip-icon {
+  font-size: 44px !important;
+  animation: float3d 4s ease-in-out infinite;
+  filter: drop-shadow(0 4px 2px rgba(0,0,0,.35)) drop-shadow(0 8px 6px rgba(0,0,0,.2)) drop-shadow(0 12px 12px rgba(0,0,0,.12)) drop-shadow(0 0 8px rgba(77,182,160,.15)) !important;
+  transform-style: preserve-3d;
+  transition: all .3s cubic-bezier(.16,1,.3,1);
+}
+.chip:nth-child(2) .chip-icon { animation-delay: .5s; }
+.chip:nth-child(3) .chip-icon { animation-delay: 1s; animation-name: float3d-alt; }
+.chip:nth-child(4) .chip-icon { animation-delay: 1.5s; }
+.chip:nth-child(5) .chip-icon { animation-delay: .3s; animation-name: float3d-alt; }
+.chip:nth-child(6) .chip-icon { animation-delay: .8s; }
+.chip:nth-child(7) .chip-icon { animation-delay: 1.2s; animation-name: float3d-alt; }
+.chip:nth-child(8) .chip-icon { animation-delay: 1.7s; }
+
+.chip:hover .chip-icon {
+  transform: scale(1.3) translateY(-10px) rotateX(10deg) !important;
+  filter: drop-shadow(0 6px 3px rgba(0,0,0,.4)) drop-shadow(0 12px 10px rgba(0,0,0,.25)) drop-shadow(0 20px 20px rgba(0,0,0,.15)) drop-shadow(0 0 16px rgba(77,182,160,.3)) !important;
+}
+
+/* Module tag emojis — 3D pop */
+.mod-tag-icon {
+  font-size: 32px !important;
+  filter: drop-shadow(0 3px 1px rgba(0,0,0,.3)) drop-shadow(0 6px 4px rgba(0,0,0,.18)) drop-shadow(0 10px 8px rgba(0,0,0,.1)) drop-shadow(0 0 6px rgba(77,182,160,.12)) !important;
+  animation: float3d 5s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+.mod-section:nth-child(2) .mod-tag-icon { animation-delay: .4s; }
+.mod-section:nth-child(3) .mod-tag-icon { animation-delay: .8s; animation-name: float3d-alt; }
+.mod-section:nth-child(4) .mod-tag-icon { animation-delay: 1.2s; }
+.mod-section:nth-child(5) .mod-tag-icon { animation-delay: .6s; animation-name: float3d-alt; }
+
+/* Resource list emojis */
+.res-icon {
+  font-size: 30px !important;
+  filter: drop-shadow(0 3px 1px rgba(0,0,0,.3)) drop-shadow(0 6px 4px rgba(0,0,0,.18)) drop-shadow(0 10px 8px rgba(0,0,0,.1)) !important;
+  animation: float3d 4.5s ease-in-out infinite;
+}
+.res-item:nth-child(2) .res-icon { animation-delay: .6s; animation-name: float3d-alt; }
+.res-item:nth-child(3) .res-icon { animation-delay: 1.2s; }
+.res-item:nth-child(4) .res-icon { animation-delay: .3s; animation-name: float3d-alt; }
+
+/* ── 3D STATS BAR — numbers that pop out ── */
+.stats-bar {
+  perspective: 1200px;
+  background: linear-gradient(180deg, var(--dk2) 0%, rgba(37,35,32,.95) 100%) !important;
+  border-top: 1px solid rgba(77,182,160,.15) !important;
+  border-bottom: 1px solid rgba(77,182,160,.15) !important;
+  overflow: visible !important;
+  position: relative;
+}
+.stats-bar::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(77,182,160,.06), transparent 70%);
+  pointer-events: none;
+}
+.stat-cell {
+  perspective: 800px;
+  transform-style: preserve-3d;
+  transition: all .4s cubic-bezier(.16,1,.3,1);
+  position: relative;
+}
+.stat-cell:hover {
+  transform: translateZ(30px) scale(1.04);
+  z-index: 10;
+}
+.stat-number {
+  font-size: 56px !important;
+  font-weight: 900 !important;
+  background: linear-gradient(135deg, #4DB6A0 0%, #7CE8D0 40%, #FFFFFF 50%, #7CE8D0 60%, #4DB6A0 100%) !important;
+  background-size: 200% auto;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: shimmer 4s linear infinite;
+  text-shadow: none;
+  position: relative;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 2px 4px rgba(77,182,160,.4));
+}
+.stat-cell::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 20%; right: 20%;
+  height: 20px;
+  background: radial-gradient(ellipse, rgba(77,182,160,.15), transparent 70%);
+  filter: blur(8px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .4s;
+}
+.stat-cell:hover::after { opacity: 1; }
+
+/* ── Stats grid (features section) — same 3D treatment ── */
+.stat-n {
+  font-size: clamp(36px, 5vw, 58px) !important;
+  font-weight: 900 !important;
+  background: linear-gradient(135deg, #4DB6A0, #7CE8D0 45%, #fff 50%, #7CE8D0 55%, #4DB6A0) !important;
+  background-size: 200% auto !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: shimmer 4s linear infinite;
+  filter: drop-shadow(0 2px 4px rgba(77,182,160,.35));
+  transform-style: preserve-3d;
+}
+
+/* ── 3D Feature visual cards ── */
+.feat-visual, .mod-visual .mv {
+  transform-style: preserve-3d;
+  transition: all .5s cubic-bezier(.16,1,.3,1) !important;
+}
+.feat-visual:hover {
+  transform: perspective(1000px) rotateY(-3deg) rotateX(2deg) translateZ(20px) !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3), 0 0 30px rgba(77,182,160,.08), 0 0 0 1px rgba(77,182,160,.15) !important;
+}
+.mv {
+  background: var(--bg2) !important;
+  border: 1px solid rgba(250,247,242,.08);
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: all .5s cubic-bezier(.16,1,.3,1) !important;
+}
+.mv:hover {
+  transform: perspective(1000px) rotateY(2deg) rotateX(-1deg) translateZ(15px) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,.25), 0 0 20px rgba(77,182,160,.06) !important;
+  border-color: rgba(77,182,160,.2);
+}
+
+/* ── 3D Plans/pricing cards ── */
+.plan {
+  transform-style: preserve-3d;
+  transition: all .4s cubic-bezier(.16,1,.3,1) !important;
+}
+.plan:hover {
+  transform: perspective(1000px) translateY(-8px) translateZ(20px) rotateX(2deg) !important;
+  box-shadow: 0 24px 64px rgba(0,0,0,.3), 0 0 0 1px rgba(77,182,160,.1) !important;
+}
+.plan.featured:hover {
+  transform: perspective(1000px) translateY(-12px) translateZ(30px) rotateX(2deg) !important;
+  box-shadow: 0 0 0 1px var(--teal), 0 24px 64px rgba(77,182,160,.15), 0 0 40px rgba(77,182,160,.08) !important;
+}
+
+/* ── 3D Testimonial cards ── */
+.testi {
+  transform-style: preserve-3d;
+  transition: all .4s cubic-bezier(.16,1,.3,1) !important;
+}
+.testi:hover {
+  transform: perspective(1000px) translateY(-6px) rotateX(2deg) translateZ(15px) !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,.2) !important;
+}
+
+/* ── 3D Hero section ── */
+.hero {
+  perspective: 1500px;
+}
+.hero-inner {
+  transform-style: preserve-3d;
+}
+.hero-h1 {
+  text-shadow: 0 4px 20px rgba(0,0,0,.3), 0 8px 40px rgba(0,0,0,.15);
+}
+.hero-h1 .accent {
+  text-shadow: 0 0 30px rgba(77,182,160,.3), 0 4px 20px rgba(77,182,160,.2);
+}
+.app-shell {
+  transform-style: preserve-3d;
+  transition: all .6s cubic-bezier(.16,1,.3,1);
+  box-shadow: 0 20px 60px rgba(0,0,0,.4), 0 40px 100px rgba(0,0,0,.2), 0 0 0 1px rgba(77,182,160,.08) !important;
+}
+.app-shell:hover {
+  transform: perspective(1200px) rotateX(2deg) rotateY(-1deg) translateZ(10px);
+  box-shadow: 0 30px 80px rgba(0,0,0,.45), 0 60px 120px rgba(0,0,0,.2), 0 0 40px rgba(77,182,160,.06) !important;
+}
+
+/* ── 3D Chips cards ── */
+.chip {
+  transform-style: preserve-3d;
+  transition: all .35s cubic-bezier(.16,1,.3,1) !important;
+  perspective: 600px;
+}
+.chip:hover, .chip.active {
+  transform: perspective(600px) translateY(-6px) translateZ(15px) rotateX(3deg) !important;
+  box-shadow: 0 16px 40px rgba(77,182,160,.15), 0 0 0 1px rgba(77,182,160,.25) !important;
+}
+
+/* ── 3D ROI result ── */
+.roi-big {
+  font-size: 80px !important;
+  background: linear-gradient(135deg, #4DB6A0, #7CE8D0 40%, #fff 50%, #7CE8D0 60%, #4DB6A0) !important;
+  background-size: 200% auto;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: shimmer 3.5s linear infinite;
+  filter: drop-shadow(0 4px 8px rgba(77,182,160,.4));
+  transform-style: preserve-3d;
+}
+
+/* ── 3D End CTA ── */
+.end-h2 {
+  text-shadow: 0 4px 20px rgba(0,0,0,.25);
+}
+.end-h2 em {
+  text-shadow: 0 0 30px rgba(77,182,160,.3), 0 0 60px rgba(77,182,160,.1);
+}
+
+/* ── 3D KPI cards in demo screenshot ── */
+.kpi {
+  transform-style: preserve-3d;
+  transition: all .35s cubic-bezier(.16,1,.3,1);
+}
+.kpi:hover {
+  transform: perspective(600px) translateZ(10px) translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.2);
+}
+
+/* ── Glowing borders on interactive elements ── */
+.btn-primary {
+  box-shadow: 0 1px 3px rgba(250,247,242,.08), 0 0 0 1px rgba(15,123,108,.2), 0 0 20px rgba(77,182,160,.1) !important;
+}
+.btn-primary:hover {
+  box-shadow: 0 8px 30px rgba(77,182,160,.25), 0 0 40px rgba(77,182,160,.1), 0 0 0 1px rgba(77,182,160,.3) !important;
+}
+
+/* ── FAQ 3D ── */
+.faq-item {
+  transition: all .3s;
+}
+.faq-item:hover {
+  transform: translateX(4px);
+}
+.faq-item.open {
+  transform: translateX(8px);
+}
+
 /* ────────────────────────────────────
    NAVIGATION
 ──────────────────────────────────── */
@@ -130,9 +400,10 @@ nav.scrolled {
 .hero-glow {
   position: absolute; left: 50%; top: 0;
   transform: translateX(-50%);
-  width: 900px; height: 600px;
-  background: radial-gradient(ellipse at 50% 0%, rgba(15,123,108,.06) 0%, transparent 60%);
+  width: 1200px; height: 800px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(77,182,160,.1) 0%, rgba(77,182,160,.04) 30%, transparent 65%);
   pointer-events: none; z-index: 0;
+  animation: glow-pulse 6s ease-in-out infinite;
 }
 .hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
 
@@ -598,9 +869,10 @@ input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(15,12
 }
 .end-glow {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
-  width: 800px; height: 400px;
-  background: radial-gradient(ellipse, rgba(15,123,108,.04) 0%, transparent 65%);
+  width: 1000px; height: 500px;
+  background: radial-gradient(ellipse, rgba(77,182,160,.08) 0%, rgba(77,182,160,.03) 35%, transparent 65%);
   pointer-events: none;
+  animation: glow-pulse 5s ease-in-out infinite;
 }
 .end-inner { position: relative; z-index: 1; }
 .end-h2 {
@@ -3662,6 +3934,119 @@ function applyModuleLang(l){
     ['tag','h2','body','p1','p2','p3','p4','p5','btn'].forEach(function(k){s('fl-m'+m+k,t['m'+m+k]);});
   }
 }
+
+/* ═══════════════════════════════════════════════════
+   3D INTERACTIVE PARALLAX — mouse-tracking depth effect
+═══════════════════════════════════════════════════ */
+(function(){
+  // Parallax on stats bar
+  var statsBar = document.querySelector('.stats-bar');
+  if(statsBar) {
+    statsBar.addEventListener('mousemove', function(e){
+      var rect = statsBar.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width - 0.5;
+      var y = (e.clientY - rect.top) / rect.height - 0.5;
+      var cells = statsBar.querySelectorAll('.stat-cell');
+      cells.forEach(function(cell, i){
+        var depth = 1 + (i % 2) * 0.5;
+        cell.style.transform = 'perspective(800px) rotateY(' + (x * 6 * depth) + 'deg) rotateX(' + (-y * 4 * depth) + 'deg) translateZ(' + (8 * depth) + 'px)';
+      });
+    });
+    statsBar.addEventListener('mouseleave', function(){
+      statsBar.querySelectorAll('.stat-cell').forEach(function(cell){
+        cell.style.transform = 'perspective(800px) rotateY(0) rotateX(0) translateZ(0)';
+      });
+    });
+  }
+
+  // Parallax on hero screenshot
+  var shell = document.querySelector('.app-shell');
+  if(shell) {
+    var hero = document.querySelector('.hero-screenshot');
+    hero && hero.addEventListener('mousemove', function(e){
+      var rect = hero.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width - 0.5;
+      var y = (e.clientY - rect.top) / rect.height - 0.5;
+      shell.style.transform = 'perspective(1200px) rotateY(' + (x * 5) + 'deg) rotateX(' + (-y * 3) + 'deg) translateZ(10px)';
+    });
+    hero && hero.addEventListener('mouseleave', function(){
+      shell.style.transform = 'perspective(1200px) rotateY(0) rotateX(0) translateZ(0)';
+    });
+  }
+
+  // Parallax on feature visual cards
+  document.querySelectorAll('.feat-visual').forEach(function(card){
+    card.addEventListener('mousemove', function(e){
+      var rect = card.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width - 0.5;
+      var y = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = 'perspective(1000px) rotateY(' + (x * 8) + 'deg) rotateX(' + (-y * 5) + 'deg) translateZ(20px)';
+      card.style.boxShadow = '0 20px 60px rgba(0,0,0,.3), 0 0 30px rgba(77,182,160,.08), ' + (x * -20) + 'px ' + (y * 20 + 20) + 'px 40px rgba(0,0,0,.15)';
+    });
+    card.addEventListener('mouseleave', function(){
+      card.style.transform = '';
+      card.style.boxShadow = '';
+    });
+  });
+
+  // Parallax on module demo cards (mv)
+  document.querySelectorAll('.mv').forEach(function(card){
+    card.addEventListener('mousemove', function(e){
+      var rect = card.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width - 0.5;
+      var y = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = 'perspective(1000px) rotateY(' + (x * 6) + 'deg) rotateX(' + (-y * 4) + 'deg) translateZ(15px)';
+    });
+    card.addEventListener('mouseleave', function(){
+      card.style.transform = '';
+    });
+  });
+
+  // Parallax on pricing plan cards
+  document.querySelectorAll('.plan').forEach(function(card){
+    card.addEventListener('mousemove', function(e){
+      var rect = card.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width - 0.5;
+      var y = (e.clientY - rect.top) / rect.height - 0.5;
+      var isFeatured = card.classList.contains('featured');
+      var mult = isFeatured ? 1.3 : 1;
+      card.style.transform = 'perspective(1000px) rotateY(' + (x * 6 * mult) + 'deg) rotateX(' + (-y * 4 * mult) + 'deg) translateY(-8px) translateZ(' + (20 * mult) + 'px)';
+    });
+    card.addEventListener('mouseleave', function(){
+      card.style.transform = '';
+    });
+  });
+
+  // Animate stat numbers counting up on scroll
+  var animated = false;
+  function animateStats(){
+    if(animated) return;
+    var sb = document.querySelector('.stats-bar');
+    if(!sb) return;
+    var rect = sb.getBoundingClientRect();
+    if(rect.top < window.innerHeight * 0.8) {
+      animated = true;
+      var targets = [
+        {el: sb.querySelectorAll('.stat-number')[0], text: '−34%'},
+        {el: sb.querySelectorAll('.stat-number')[1], text: '+18pts'},
+        {el: sb.querySelectorAll('.stat-number')[2], text: '6h'},
+        {el: sb.querySelectorAll('.stat-number')[3], text: '30j'}
+      ];
+      targets.forEach(function(t,i){
+        if(!t.el) return;
+        t.el.style.opacity = '0';
+        t.el.style.transform = 'perspective(600px) translateZ(-40px) scale(0.8)';
+        setTimeout(function(){
+          t.el.style.transition = 'all .6s cubic-bezier(.16,1,.3,1)';
+          t.el.style.opacity = '1';
+          t.el.style.transform = 'perspective(600px) translateZ(0) scale(1)';
+        }, i * 150 + 100);
+      });
+    }
+  }
+  window.addEventListener('scroll', animateStats);
+  animateStats();
+})();
 </script>
 
 <!-- ── MODAL SUPPORT ── -->
