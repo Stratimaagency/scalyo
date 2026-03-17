@@ -112,7 +112,7 @@ import EmptyState from '../components/EmptyState.vue'
 
 const { t } = useI18n()
 const tab = ref('overview')
-const wellbeing = ref({ score: 0, burnout: 'none', charge: 0, trend: '+0', alerts: [], team: [] })
+const wellbeing = ref({ score: 70, burnout: 'moderate', charge: 70, trend: '+0', alerts: [], team: [] })
 const novaMessages = ref([])
 const novaInput = ref('')
 const novaLoading = ref(false)

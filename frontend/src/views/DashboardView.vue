@@ -1,5 +1,5 @@
 <template>
-  <div class="fade-in" style="max-width: 1100px; padding: 6px 6px;">
+  <div class="fade-in" style="max-width: 1100px; padding: 26px 30px;">
     <!-- Header -->
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 26px;">
       <div>
@@ -49,7 +49,7 @@
         <div v-for="acc in criticalAccounts.slice(0, 3)" :key="acc.id"
           style="display: flex; align-items: center; justify-content: space-between; background: rgba(235,87,87,0.06); border-radius: 12px; padding: 10px 14px;">
           <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="avatar" :style="{ width: '32px', height: '32px', background: 'var(--red)', color: '#fff', fontSize: '13px' }">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0;">
               {{ (acc.name || '?')[0] }}
             </div>
             <div>
@@ -72,7 +72,7 @@
     <!-- Bottom grid: Roadmap + Wellbeing -->
     <div style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px;">
       <!-- Roadmap card -->
-      <div class="card" style="padding: 20px;">
+      <div class="card card-lift" style="padding: 20px;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
           <div>
             <div style="font-weight: 800; font-size: 15px; margin-bottom: 2px;">
@@ -91,8 +91,17 @@
           </div>
         </div>
         <HealthBar :val="roadmapProgress" />
-        <div v-if="!roadmapTotal" style="margin-top: 14px; display: flex; flex-direction: column; gap: 6px;">
-          <p style="font-size: 13px; color: var(--muted); text-align: center; padding: 8px;">
+        <!-- Roadmap items preview (up to 4) -->
+        <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 6px;">
+          <div v-for="(item, i) in roadmapItems.slice(0, 4)" :key="item.id || i"
+            style="display: flex; align-items: center; gap: 10px; padding: 8px 11px; border-radius: 9px; background: var(--surface);">
+            <span style="font-size: 15px; flex-shrink: 0;">{{ item.done ? '✅' : '⬜' }}</span>
+            <span style="font-size: 13px; flex: 1;"
+              :style="{ color: item.done ? 'var(--muted)' : 'var(--text)', textDecoration: item.done ? 'line-through' : 'none' }">
+              {{ item.text || item.label }}
+            </span>
+          </div>
+          <p v-if="!roadmapTotal" style="font-size: 13px; color: var(--muted); text-align: center; padding: 8px;">
             {{ t('noRoadmapItems') }}
           </p>
         </div>
@@ -127,9 +136,61 @@
             </div>
           </div>
         </div>
-        <p v-if="!wellbeing?.team?.length" style="font-size: 12px; color: var(--muted); text-align: center; padding: 8px 0;">
+        <!-- Team members preview (up to 3) -->
+        <div v-for="(m, i) in teamMembers.slice(0, 3)" :key="i"
+          style="display: flex; align-items: center; gap: 9px; margin-bottom: 9px;">
+          <div style="width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0;"
+            :style="{ background: (m.charge || 70) > 85 ? 'var(--red)' : (m.charge || 70) > 70 ? 'var(--amber)' : 'var(--teal)', color: '#fff' }">
+            {{ (m.name || '?')[0] }}
+          </div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <span style="font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ m.name }}</span>
+              <span style="font-size: 11px; font-weight: 700; flex-shrink: 0;"
+                :style="{ color: (m.charge || 70) > 85 ? 'var(--red)' : (m.charge || 70) > 70 ? 'var(--amber)' : 'var(--green)' }">
+                {{ m.charge || 70 }}%
+              </span>
+            </div>
+            <HealthBar :val="100 - (m.charge || 70)" size="sm" />
+          </div>
+        </div>
+        <p v-if="!teamMembers.length" style="font-size: 12px; color: var(--muted); text-align: center; padding: 8px 0;">
           {{ t('noTeamMembers') }}
         </p>
+      </div>
+    </div>
+
+    <!-- CSM Team View (manager only) -->
+    <div v-if="authStore.user?.role === 'manager' && csmStats.length >= 2" style="margin-top: 20px;">
+      <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.3px;">
+        {{ t('csmTeamView') }}
+      </h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px;">
+        <div v-for="s in csmStats" :key="s.csm"
+          style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px;">
+          <div style="font-weight: 800; font-size: 13px; margin-bottom: 8px;">{{ s.csm }}</div>
+          <div style="display: flex; flex-direction: column; gap: 5px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px;">
+              <span style="color: var(--muted);">💼 {{ t('accounts') }}</span>
+              <span style="font-weight: 700;">{{ s.count }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px;">
+              <span style="color: var(--muted);">💰 ARR</span>
+              <span style="font-weight: 700; color: var(--teal);">{{ fmtCurrency(s.arr) }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px;">
+              <span style="color: var(--muted);">💚 Health</span>
+              <span style="font-weight: 700;"
+                :style="{ color: s.health >= 70 ? 'var(--green)' : s.health >= 40 ? 'var(--amber)' : 'var(--red)' }">
+                {{ s.health }}/100
+              </span>
+            </div>
+            <div v-if="s.crit > 0" style="display: flex; justify-content: space-between; font-size: 12px;">
+              <span style="color: var(--muted);">🚨 {{ t('filterCritical') }}</span>
+              <span style="font-weight: 700; color: var(--red);">{{ s.crit }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -205,12 +266,14 @@ const todayFormatted = computed(() => {
   return new Date().toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 })
 
-// Roadmap computeds - bound to real data
+// Roadmap
 const roadmapProgress = computed(() => roadmap.value.progress)
 const roadmapPhase = computed(() => roadmap.value.phase || t('roadmapPhaseDefault'))
 const roadmapTotal = computed(() => roadmap.value.items.length)
 const roadmapDone = computed(() => roadmap.value.items.filter(i => i.done).length)
+const roadmapItems = computed(() => roadmap.value.items)
 
+// Portfolio
 const fmtARR = computed(() => {
   const total = accounts.value.reduce((s, a) => s + (parseFloat(a.mrr || a.arr) || 0), 0)
   return fmtCurrency(total * 12)
@@ -223,7 +286,7 @@ function fmtAccountARR(acc) {
 
 const avgHealth = computed(() => {
   if (!accounts.value.length) return 0
-  return Math.round(accounts.value.reduce((s, a) => s + (a.health || 0), 0) / accounts.value.length)
+  return Math.round(accounts.value.reduce((s, a) => s + (a.health || 70), 0) / accounts.value.length)
 })
 
 const healthColor = computed(() => avgHealth.value >= 70 ? 'var(--green)' : avgHealth.value >= 40 ? 'var(--amber)' : 'var(--red)')
@@ -246,8 +309,12 @@ const criticalSub = computed(() => {
   return t('noRisk')
 })
 
-// Wellbeing
-const wellbeingScore = computed(() => wellbeing.value?.score ?? 0)
+// Wellbeing - default to 70 as in reference
+const wellbeingScore = computed(() => wellbeing.value?.score || 70)
+const teamMembers = computed(() => {
+  const team = wellbeing.value?.team
+  return Array.isArray(team) ? team : []
+})
 
 const wellbeingScoreColor = computed(() => {
   const s = wellbeingScore.value
@@ -256,18 +323,30 @@ const wellbeingScoreColor = computed(() => {
   return 'var(--red)'
 })
 
-const burnoutLevel = computed(() => wellbeing.value?.burnout || 'none')
+const burnoutLevel = computed(() => wellbeing.value?.burnout || 'moderate')
 const burnoutColor = computed(() => {
   const b = burnoutLevel.value
-  if (b === 'low' || b === 'none') return 'var(--green)'
+  if (b === 'low') return 'var(--green)'
   if (b === 'high') return 'var(--red)'
   return 'var(--amber)'
 })
 const burnoutLabel = computed(() => {
   const b = burnoutLevel.value
   const key = b === 'low' ? 'burnoutLow' : b === 'high' ? 'burnoutHigh' : b === 'moderate' ? 'burnoutModerate' : 'burnoutNone'
-  const emoji = b === 'low' || b === 'none' ? ' 🟢' : b === 'high' ? ' 🔴' : ' 🟡'
+  const emoji = b === 'low' ? ' 🟢' : b === 'high' ? ' 🔴' : ' 🟡'
   return t(key) + emoji
+})
+
+// CSM team view (manager only)
+const csmStats = computed(() => {
+  const csms = [...new Set(accounts.value.map(a => a.csm).filter(Boolean))]
+  return csms.map(csm => {
+    const acc = accounts.value.filter(a => a.csm === csm)
+    const arr = acc.reduce((s, a) => s + (parseFloat(a.mrr || a.arr) || 0) * 12, 0)
+    const health = Math.round(acc.reduce((s, a) => s + (a.health || 70), 0) / acc.length)
+    const crit = acc.filter(a => a.risk === 'critical').length
+    return { csm, count: acc.length, arr, health, crit }
+  })
 })
 
 // Plan tag styling
