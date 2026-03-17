@@ -1,0 +1,43 @@
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import { portfolioApi } from '../api'
+
+export const usePortfolioStore = defineStore('portfolio', () => {
+  const accounts = ref([])
+  const loading = ref(false)
+
+  async function fetchAccounts(params = {}) {
+    loading.value = true
+    try {
+      const { data } = await portfolioApi.getAccounts(params)
+      accounts.value = data.results || data
+    } catch (e) {
+      console.error('fetchAccounts error:', e)
+    }
+    loading.value = false
+  }
+
+  async function createAccount(data) {
+    const res = await portfolioApi.createAccount(data)
+    accounts.value.push(res.data)
+    return res.data
+  }
+
+  async function updateAccount(id, data) {
+    const res = await portfolioApi.updateAccount(id, data)
+    const idx = accounts.value.findIndex(a => a.id === id)
+    if (idx >= 0) accounts.value[idx] = res.data
+    return res.data
+  }
+
+  async function deleteAccount(id) {
+    await portfolioApi.deleteAccount(id)
+    accounts.value = accounts.value.filter(a => a.id !== id)
+  }
+
+  async function importAccounts(data) {
+    return portfolioApi.importAccounts(data)
+  }
+
+  return { accounts, loading, fetchAccounts, createAccount, updateAccount, deleteAccount, importAccounts }
+})
