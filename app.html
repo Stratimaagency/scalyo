@@ -4401,7 +4401,8 @@ const AddAccountModal = ({
   onClose,
   onAdd,
   companyId,
-  lang="fr"
+  lang="fr",
+  currency="EUR"
 }) => {
   const DRAFT_KEY = "scalyo_draft_add_account";
   const [form, setForm] = useState(() => {
@@ -5243,6 +5244,7 @@ const PortfolioView = ({
     onClose: () => setShowAdd(false),
     companyId: companyId,
     lang: lang,
+    currency: currency,
     onAdd: () => {
       setShowAdd(false);
       onRefresh();
