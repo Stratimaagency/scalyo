@@ -4677,7 +4677,7 @@ const AccountDetailPanel = ({
     style: {
       margin: "14px 0"
     }
-  }, lang==="en"?[["overview","📊 Overview"],["todo","✅ Tasks"],["edit","✏️ Edit"]]:lang==="kr"?[["overview","📊 개요"],["todo","✅ 작업"],["edit","✏️ 편집"]]:[["overview",T("apercu",lang)],["todo","✅ Actions"],["edit",T("editBtn",lang)]].map(([t, l]) => /*#__PURE__*/React.createElement("div", {
+  }, (lang==="en"?[["overview","📊 Overview"],["todo","✅ Tasks"],["edit","✏️ Edit"]]:lang==="kr"?[["overview","📊 개요"],["todo","✅ 작업"],["edit","✏️ 편집"]]:[["overview",T("apercu",lang)],["todo","✅ Actions"],["edit",T("editBtn",lang)]]).map(([t, l]) => /*#__PURE__*/React.createElement("div", {
     key: t,
     className: `tab-item${tab === t ? " active" : ""}`,
     onClick: () => setTab(t),
@@ -5092,7 +5092,7 @@ const PortfolioView = ({
       marginBottom: 14,
       flexWrap: "wrap"
     }
-  }, lang==="en"?[["all","All"],["critical","Critical"],["medium","Watch"],["low","Healthy"]]:lang==="kr"?[["all","전체"],["critical","위험"],["medium","주의"],["low","정상"]]:[["all",T("all",lang)],["critical","Critiques"],["medium","Vigilance"],["low","Sains"]].map(([v, l]) => /*#__PURE__*/React.createElement("button", {
+  }, (lang==="en"?[["all","All"],["critical","Critical"],["medium","Watch"],["low","Healthy"]]:lang==="kr"?[["all","전체"],["critical","위험"],["medium","주의"],["low","정상"]]:[["all",T("all",lang)],["critical","Critiques"],["medium","Vigilance"],["low","Sains"]]).map(([v, l]) => /*#__PURE__*/React.createElement("button", {
     key: v,
     onClick: () => setFilter(v),
     className: "btn-base",
