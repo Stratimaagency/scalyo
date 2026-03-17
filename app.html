@@ -228,7 +228,28 @@ input:focus,select:focus,textarea:focus{border-color:rgba(35,131,226,0.5)!import
 }
 .bottom-nav-item svg { width: 20px; height: 20px; }
 /* ============================= */
+/* === 3D EMOJI EFFECT === */
+.e3d{filter:drop-shadow(0 1px 0 rgba(0,0,0,.2)) drop-shadow(0 2px 1px rgba(0,0,0,.14)) drop-shadow(0 4px 3px rgba(0,0,0,.1));transition:filter .2s,transform .2s}
+.e3d:hover{filter:drop-shadow(0 2px 1px rgba(0,0,0,.22)) drop-shadow(0 4px 3px rgba(0,0,0,.14)) drop-shadow(0 6px 6px rgba(0,0,0,.08));transform:scale(1.08)}
 </style>
+<script>
+// Auto-apply 3D class to emoji spans
+(function(){
+  const emojiRe=/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}]/u;
+  function tag(root){
+    root.querySelectorAll('span,div').forEach(el=>{
+      if(el.children.length===0 && el.textContent.length<=3 && emojiRe.test(el.textContent) && !el.classList.contains('e3d')){
+        el.classList.add('e3d');
+        const fs=window.getComputedStyle(el).fontSize;
+        if(fs){const n=parseFloat(fs);if(n>0)el.style.fontSize=(n*1.25)+'px';}
+      }
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>tag(document.body));
+  else tag(document.body);
+  new MutationObserver(muts=>{muts.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1)tag(n)}))}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
 </head>
 <body>
 <div id="root"><div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--bg)"><div style="width:44px;height:44px;background:var(--teal);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div><div style="width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin 1s linear infinite"></div><p style="color:var(--muted);font-size:14px" id="loading-text">Loading...</p><script>try{var l=localStorage.getItem("scalyo_lang");document.getElementById("loading-text").textContent=l==="kr"?"로딩 중...":l==="en"?"Loading...":"Chargement...";}catch(e){}</script></div></div>
