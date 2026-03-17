@@ -1105,11 +1105,15 @@ footer {
 .lm-submit:hover{background:#0fb8a7;}
 .lm-success{display:none;text-align:center;padding:20px;color:var(--teal);font-size:14px;}
 
-.mod-section{padding:72px 5%;border-top:1px solid rgba(250,247,242,.06);}
+.mod-section{padding:72px 5%;border-top:1px solid rgba(250,247,242,.06);display:none;opacity:0;transform:translateY(20px);animation:none;}
+.mod-section.active-mod{display:block;animation:modFadeIn .5s cubic-bezier(.16,1,.3,1) forwards;}
+@keyframes modFadeIn{0%{opacity:0;transform:translateY(24px) scale(.98);}100%{opacity:1;transform:translateY(0) scale(1);}}
 /* ── FEATURES MODULES ── */
 .chips-label{text-align:center;font-size:12px;font-weight:700;color:var(--dt3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:28px;}
 .chips-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:900px;margin:0 auto;}
-.chip{background:var(--bg2);border:1px solid rgba(250,247,242,.07);border-radius:14px;padding:16px 12px;text-align:center;cursor:default;transition:all .22s;}
+.chip{background:var(--bg2);border:1px solid rgba(250,247,242,.07);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;transition:all .22s;user-select:none;position:relative;overflow:hidden;}
+.chip.active::after{content:'';position:absolute;bottom:0;left:10%;right:10%;height:3px;background:var(--teal);border-radius:3px 3px 0 0;animation:chipBar .3s ease forwards;}
+@keyframes chipBar{0%{transform:scaleX(0);}100%{transform:scaleX(1);}}
 .chip:hover,.chip.active{border-color:var(--teal);background:rgba(18,205,184,.07);transform:translateY(-2px);box-shadow:0 4px 20px rgba(18,205,184,.12);}
 .chip:hover .chip-icon,.chip.active .chip-icon{filter:drop-shadow(0 2px 1px rgba(0,0,0,.2)) drop-shadow(0 4px 3px rgba(0,0,0,.12)) drop-shadow(0 6px 6px rgba(18,205,184,.15));transform:scale(1.1);}
 .chip-icon{font-size:32px;margin-bottom:8px;filter:drop-shadow(0 1px 0 rgba(0,0,0,.18)) drop-shadow(0 2px 1px rgba(0,0,0,.12)) drop-shadow(0 4px 3px rgba(0,0,0,.08));}
@@ -1537,8 +1541,10 @@ footer {
 </section>
 <!-- ── FEATURES DETAIL ── -->
 <div id="features-detail">
-<section class="chips-section">
-  <div class="chips-label" id="fl-chips-label">8 modules · 1 seule plateforme</div>
+<section class="chips-section" style="padding:80px 5% 40px;text-align:center;">
+  <div class="label" style="justify-content:center;margin-bottom:14px"><div class="label-line"></div><span id="fl-chips-badge" style="color:var(--teal);font-size:13px;font-weight:600;">Fonctionnalités</span><div class="label-line"></div></div>
+  <h2 class="h2-light" style="text-align:center;margin-bottom:8px" id="fl-chips-h2">Tout ce dont votre équipe CS a besoin.</h2>
+  <p class="sub-light" style="text-align:center;margin:0 auto 36px;max-width:520px" id="fl-chips-sub">8 modules intégrés en une seule plateforme. Cliquez pour explorer.</p>
   <div class="chips-grid">
     <div class="chip active"><div class="chip-icon">📋</div><div class="chip-label" id="fl-c1">Portefeuille</div></div>
     <div class="chip"><div class="chip-icon">📈</div><div class="chip-label" id="fl-c2">KPIs COPIL</div></div>
@@ -3934,6 +3940,59 @@ function applyModuleLang(l){
     ['tag','h2','body','p1','p2','p3','p4','p5','btn'].forEach(function(k){s('fl-m'+m+k,t['m'+m+k]);});
   }
 }
+
+/* ═══════════════════════════════════════════════════
+   CHIPS TAB NAVIGATION — click to show module
+═══════════════════════════════════════════════════ */
+(function(){
+  var chips = document.querySelectorAll('.chips-grid .chip');
+  var mods = document.querySelectorAll('.mod-section');
+  if(!chips.length || !mods.length) return;
+
+  // Show first module by default
+  mods[0].classList.add('active-mod');
+
+  chips.forEach(function(chip, i){
+    chip.addEventListener('click', function(){
+      // Update active chip
+      chips.forEach(function(c){ c.classList.remove('active'); });
+      chip.classList.add('active');
+
+      // Hide current module, show selected one
+      mods.forEach(function(m){ m.classList.remove('active-mod'); m.style.display='none'; });
+      if(mods[i]) {
+        // Small delay for reflow so animation replays
+        setTimeout(function(){
+          mods[i].classList.add('active-mod');
+        }, 10);
+      }
+    });
+  });
+
+  // Auto-cycle modules every 6s when not interacted with
+  var autoTimer = null;
+  var currentIdx = 0;
+  var userInteracted = false;
+
+  function autoSwitch(){
+    if(userInteracted) return;
+    currentIdx = (currentIdx + 1) % mods.length;
+    chips.forEach(function(c){ c.classList.remove('active'); });
+    chips[currentIdx].classList.add('active');
+    mods.forEach(function(m){ m.classList.remove('active-mod'); m.style.display='none'; });
+    setTimeout(function(){ mods[currentIdx].classList.add('active-mod'); }, 10);
+  }
+
+  autoTimer = setInterval(autoSwitch, 6000);
+
+  // Stop auto-cycle on user click
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      userInteracted = true;
+      if(autoTimer) clearInterval(autoTimer);
+    });
+  });
+})();
 
 /* ═══════════════════════════════════════════════════
    3D INTERACTIVE PARALLAX — mouse-tracking depth effect
