@@ -2,7 +2,7 @@
   <div class="fade-in" style="max-width: 600px; margin: 0 auto">
     <AppCard v-if="!sent">
       <div style="text-align: center; margin-bottom: 20px">
-        <div style="font-size: 32px; margin-bottom: 8px">💬</div>
+        <div style="margin-bottom: 8px"><ScalyoIcon name="chat" :size="36" /></div>
         <h3 style="font-weight: 800">{{ t('feedbackTitle') }}</h3>
       </div>
 
@@ -10,8 +10,8 @@
       <div class="field-group">
         <label class="field-label">{{ t('fbCat') }}</label>
         <div style="display: flex; gap: 6px; flex-wrap: wrap">
-          <button v-for="c in categories" :key="c.key" class="chip" :class="{ active: form.category === c.key }" @click="form.category = c.key">
-            {{ c.label }}
+          <button v-for="c in categories" :key="c.key" class="chip" :class="{ active: form.category === c.key }" @click="form.category = c.key" style="display: flex; align-items: center; gap: 4px;">
+            <ScalyoIcon :name="c.icon" :size="14" /> {{ c.label }}
           </button>
         </div>
       </div>
@@ -37,7 +37,7 @@
     </AppCard>
 
     <AppCard v-else style="text-align: center; padding: 40px">
-      <div style="font-size: 48px; margin-bottom: 16px">🎉</div>
+      <div style="margin-bottom: 16px"><ScalyoIcon name="party" :size="52" /></div>
       <h3 style="font-weight: 800; margin-bottom: 8px">{{ t('fbSent') }}</h3>
       <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px">{{ t('fbThanks') }}</p>
       <button class="btn btn-primary" @click="reset">{{ t('sendAnother') }}</button>
@@ -51,6 +51,7 @@ import { feedbackApi } from '../api'
 import { useI18n } from '../i18n'
 import AppCard from '../components/AppCard.vue'
 import AppField from '../components/AppField.vue'
+import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const { t } = useI18n()
 const sent = ref(false)
@@ -58,10 +59,10 @@ const submitting = ref(false)
 const form = reactive({ category: '', rating: 0, description: '' })
 
 const categories = [
-  { key: 'bug', label: '🐛 Bug' },
-  { key: 'feature', label: '💡 Feature' },
-  { key: 'improvement', label: '📈 Improvement' },
-  { key: 'other', label: '💬 Other' },
+  { key: 'bug', label: 'Bug', icon: 'bug' },
+  { key: 'feature', label: 'Feature', icon: 'lightbulb' },
+  { key: 'improvement', label: 'Improvement', icon: 'chart-up' },
+  { key: 'other', label: 'Other', icon: 'chat' },
 ]
 
 async function submit() {

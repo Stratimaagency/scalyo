@@ -3,7 +3,7 @@
     <!-- Desktop sidebar -->
     <aside class="sidebar-desktop">
       <div class="sidebar-logo">
-        <div class="logo-icon">⚡</div>
+        <div class="logo-icon"><ScalyoIcon name="bolt" :size="18" /></div>
         <span class="logo-text">scal<span class="logo-accent">yo</span></span>
       </div>
       <nav class="sidebar-nav">
@@ -14,7 +14,7 @@
           class="nav-btn"
           active-class="active"
         >
-          <span class="nav-icon">{{ item.icon }}</span>
+          <span class="nav-icon"><ScalyoIcon :name="item.icon" :size="18" /></span>
           <span class="nav-label">{{ item.label }}</span>
           <span
             v-if="item.key === 'portfolio' && criticalCount > 0"
@@ -36,7 +36,7 @@
         </div>
         <!-- Settings -->
         <router-link :to="{ name: 'settings' }" class="nav-btn" active-class="active">
-          <span class="nav-icon">⚙️</span>
+          <span class="nav-icon"><ScalyoIcon name="gear" :size="18" /></span>
           <span class="nav-label">{{ t('settings') }}</span>
           <span v-if="$route.name === 'settings'" class="nav-active-bar"></span>
         </router-link>
@@ -52,7 +52,7 @@
               · {{ authStore.user?.role === 'manager' ? 'Manager' : 'CSM' }}
             </div>
           </div>
-          <button class="sidebar-logout-btn" :title="t('close')" @click="logout">⏻</button>
+          <button class="sidebar-logout-btn" :title="t('close')" @click="logout"><ScalyoIcon name="power" :size="16" /></button>
         </div>
       </div>
     </aside>
@@ -71,7 +71,7 @@
             :to="{ name: 'portfolio' }"
             class="topbar-critical-badge"
           >
-            <span class="pulse">🚨</span>
+            <span class="pulse"><ScalyoIcon name="siren" :size="16" /></span>
             {{ criticalCount }} {{ criticalLabel }}
           </router-link>
           <div class="topbar-online">
@@ -96,7 +96,7 @@
         class="bottom-nav-item"
         active-class="active"
       >
-        <span style="font-size: 20px;">{{ item.icon }}</span>
+        <span style="font-size: 20px;"><ScalyoIcon :name="item.icon" :size="20" /></span>
         <span>{{ item.label }}</span>
       </router-link>
     </nav>
@@ -111,6 +111,7 @@ import { usePreferencesStore } from '../stores/preferences'
 import { usePortfolioStore } from '../stores/portfolio'
 import { useI18n } from '../i18n'
 import { useNavigation } from '../composables/useNavigation'
+import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()

@@ -14,7 +14,7 @@
     <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px">
       <button class="chip" :class="{ active: filterQ === 'all' }" @click="filterQ = 'all'">{{ t('taskAll') }}</button>
       <button v-for="q in quadrants" :key="q.key" class="chip" :class="{ active: filterQ === q.key }" @click="filterQ = q.key">
-        {{ q.icon }} {{ q.label }}
+        <ScalyoIcon :name="q.icon" :size="12" /> {{ q.label }}
       </button>
     </div>
 
@@ -40,7 +40,7 @@
             <div v-if="task.note" style="font-size: 11px; color: var(--muted); margin-bottom: 6px">{{ task.note }}</div>
             <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap">
               <span v-if="task.quadrant" class="tag" style="font-size: 10px; background: var(--surface); color: var(--muted); border: 1px solid var(--border)">
-                {{ quadrants.find(q => q.key === task.quadrant)?.icon }} {{ task.quadrant }}
+                <ScalyoIcon v-if="quadrants.find(q => q.key === task.quadrant)" :name="quadrants.find(q => q.key === task.quadrant).icon" :size="10" /> {{ task.quadrant }}
               </span>
               <span v-if="task.due" style="font-size: 10px; color: var(--muted)">{{ task.due }}</span>
               <span v-if="isOverdue(task)" style="font-size: 10px; color: var(--red); font-weight: 700">{{ t('overdue') }}</span>
@@ -64,7 +64,7 @@
       <div class="field-group">
         <label class="field-label">{{ t('taskQuadrant') }}</label>
         <select v-model="newTask.quadrant" class="field-input">
-          <option v-for="q in quadrants" :key="q.key" :value="q.key">{{ q.icon }} {{ q.label }}</option>
+          <option v-for="q in quadrants" :key="q.key" :value="q.key">{{ q.label }}</option>
         </select>
       </div>
       <AppField :label="t('taskDue')" v-model="newTask.due" type="date" />
@@ -98,6 +98,7 @@ import { taskApi } from '../api'
 import { useI18n } from '../i18n'
 import AppModal from '../components/AppModal.vue'
 import AppField from '../components/AppField.vue'
+import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const { t } = useI18n()
 const tasks = ref([])
@@ -107,10 +108,10 @@ const filterQ = ref('all')
 const dragTask = ref(null)
 
 const quadrants = [
-  { key: 'urgent-important', icon: '🔴', label: 'Urgent & Important' },
-  { key: 'not-urgent-important', icon: '🟡', label: 'Important' },
-  { key: 'urgent-not-important', icon: '🟠', label: 'Urgent' },
-  { key: 'not-urgent-not-important', icon: '🔵', label: 'Low priority' },
+  { key: 'urgent-important', icon: 'dot-red', label: 'Urgent & Important' },
+  { key: 'not-urgent-important', icon: 'dot-yellow', label: 'Important' },
+  { key: 'urgent-not-important', icon: 'dot-orange', label: 'Urgent' },
+  { key: 'not-urgent-not-important', icon: 'dot-blue', label: 'Low priority' },
 ]
 
 const columns = computed(() => [

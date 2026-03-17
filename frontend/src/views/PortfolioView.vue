@@ -4,7 +4,7 @@
     <div :style="{ width: selectedAccount ? '340px' : undefined, flex: selectedAccount ? undefined : 1, borderRight: '1px solid var(--border)', overflow: 'auto', padding: '20px 16px', flexShrink: 0, minWidth: '290px' }">
       <!-- Header -->
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-        <h2 style="font-size: 20px; font-weight: 900; letter-spacing: -0.5px;">💼 {{ t('portfolio') }}</h2>
+        <h2 style="font-size: 20px; font-weight: 900; letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px;"><ScalyoIcon name="briefcase" :size="22" /> {{ t('portfolio') }}</h2>
         <div style="display: flex; gap: 6px;">
           <button class="btn-base" @click="showAdd = true"
             style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--greenBg, var(--tealBg)); border: 1px solid var(--greenBorder, var(--tealBorder)); color: var(--green, var(--teal));">
@@ -12,7 +12,7 @@
           </button>
           <button class="btn-base" @click="showImport = true"
             style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--tealBg); border: 1px solid var(--tealBorder); color: var(--teal);">
-            ⬆ {{ t('importPortfolio') }}
+            <ScalyoIcon name="upload" :size="12" /> {{ t('importPortfolio') }}
           </button>
         </div>
       </div>
@@ -23,7 +23,7 @@
       </div>
 
       <!-- Search -->
-      <input v-model="search" :placeholder="'🔍 ' + t('searchAccount')"
+      <input v-model="search" :placeholder="t('searchAccount')"
         style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 9px 12px; color: var(--text); font-size: 13px; margin-bottom: 12px;" />
 
       <!-- Risk filters with counts -->
@@ -75,7 +75,7 @@
           </div>
         </div>
       </template>
-      <EmptyState v-else-if="!portfolioStore.loading" icon="📭"
+      <EmptyState v-else-if="!portfolioStore.loading" icon="mailbox"
         :title="portfolioStore.accounts.length === 0 ? t('portfolioEmpty') : t('noAccountMatch')"
         :action="'+ ' + t('newAccount')" @action="showAdd = true" />
     </div>
@@ -95,9 +95,9 @@
           </div>
         </div>
         <div style="display: flex; gap: 6px; flex-shrink: 0;">
-          <button @click.stop="startEdit" style="background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 4px;" :title="t('edit')">✏️</button>
-          <button @click="removeAccount" style="background: none; border: none; color: var(--faint); cursor: pointer; font-size: 16px; padding: 4px;" :title="t('delete')">🗑</button>
-          <button @click="selectedAccount = null" style="background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 4px;">✕</button>
+          <button @click.stop="startEdit" style="background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px;" :title="t('edit')"><ScalyoIcon name="pencil" :size="16" /></button>
+          <button @click="removeAccount" style="background: none; border: none; color: var(--faint); cursor: pointer; padding: 4px;" :title="t('delete')"><ScalyoIcon name="trash" :size="16" /></button>
+          <button @click="selectedAccount = null" style="background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px;"><ScalyoIcon name="close" :size="16" /></button>
         </div>
       </div>
 
@@ -146,7 +146,7 @@
 
           <!-- Issues/alerts -->
           <div v-if="selectedAccount.issues?.length" class="card card-danger" style="margin-bottom: 12px; padding: 12px;">
-            <div style="font-weight: 800; font-size: 13px; color: var(--red); margin-bottom: 8px;">⚠ Alert signals</div>
+            <div style="font-weight: 800; font-size: 13px; color: var(--red); margin-bottom: 8px; display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="warning" :size="14" /> Alert signals</div>
             <div v-for="(issue, i) in selectedAccount.issues" :key="i" style="display: flex; gap: 8px; padding: 5px 0; font-size: 12px; line-height: 1.4;">
               <span style="color: var(--red); flex-shrink: 0;">→</span>
               <span>{{ issue }}</span>
@@ -209,7 +209,7 @@
     <AppModal v-if="showImport" :title="t('importPortfolio')" @close="showImport = false" maxWidth="600px">
       <div class="import-drop-zone" @click="$refs.fileInput.click()">
         <input ref="fileInput" type="file" accept=".csv,.xlsx,.xls" style="display: none" @change="handleFileImport" />
-        <div style="font-size: 32px; margin-bottom: 12px;">📁</div>
+        <div style="margin-bottom: 12px;"><ScalyoIcon name="folder" :size="36" /></div>
         <div style="font-weight: 700;">Drop your file here or click to browse</div>
         <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">Supported: CSV, Excel (.xlsx, .xls)</div>
       </div>
@@ -228,6 +228,7 @@ import RiskPill from '../components/RiskPill.vue'
 import AppModal from '../components/AppModal.vue'
 import AppField from '../components/AppField.vue'
 import EmptyState from '../components/EmptyState.vue'
+import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const portfolioStore = usePortfolioStore()
 const authStore = useAuthStore()
@@ -259,8 +260,8 @@ watch(selectedAccount, (acc) => {
 })
 
 const detailTabs = computed(() => [
-  ['overview', '📊 ' + (prefsStore.lang === 'en' ? 'Overview' : prefsStore.lang === 'kr' ? '개요' : 'Aperçu')],
-  ['edit', '✏️ ' + t('edit')],
+  ['overview', (prefsStore.lang === 'en' ? 'Overview' : prefsStore.lang === 'kr' ? '개요' : 'Aperçu')],
+  ['edit', t('edit')],
 ])
 
 function riskColor(risk) {
@@ -411,7 +412,7 @@ async function handleFileImport(e) {
       console.error('Import error:', err)
     }
     showImport.value = false
-    importMsg.value = `✅ ${ok}/${total} accounts imported`
+    importMsg.value = `${ok}/${total} accounts imported`
     setTimeout(() => { importMsg.value = '' }, 5000)
   }
   reader.readAsText(file)

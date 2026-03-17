@@ -1,17 +1,17 @@
 <template>
   <div class="fade-in">
     <div class="tab-bar mb-lg">
-      <button class="tab-item" :class="{ active: tab === 'overview' }" @click="tab = 'overview'">💚 Overview</button>
-      <button class="tab-item" :class="{ active: tab === 'nova' }" @click="tab = 'nova'">🧘 Nova</button>
-      <button class="tab-item" :class="{ active: tab === 'team' }" @click="tab = 'team'">👥 {{ t('wbDetail') }}</button>
+      <button class="tab-item" :class="{ active: tab === 'overview' }" @click="tab = 'overview'" style="display: flex; align-items: center; gap: 5px;"><ScalyoIcon name="heart" :size="15" /> Overview</button>
+      <button class="tab-item" :class="{ active: tab === 'nova' }" @click="tab = 'nova'" style="display: flex; align-items: center; gap: 5px;"><ScalyoIcon name="meditation" :size="15" /> Nova</button>
+      <button class="tab-item" :class="{ active: tab === 'team' }" @click="tab = 'team'" style="display: flex; align-items: center; gap: 5px;"><ScalyoIcon name="people" :size="15" /> {{ t('wbDetail') }}</button>
     </div>
 
     <!-- Overview -->
     <template v-if="tab === 'overview'">
       <div class="grid-3 mb-lg" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
-        <KpiCard :label="t('wellbeingScore')" :value="wellbeing.score + '%'" icon="💚" :color="scoreColor" />
-        <KpiCard :label="t('workload')" :value="wellbeing.charge + '%'" icon="⚡" :color="wellbeing.charge > 85 ? 'var(--red)' : 'var(--green)'" />
-        <KpiCard :label="t('burnoutRisk')" :value="burnoutDisplay" icon="🔥" :color="burnoutColor" />
+        <KpiCard :label="t('wellbeingScore')" :value="wellbeing.score + '%'" icon="heart" :color="scoreColor" />
+        <KpiCard :label="t('workload')" :value="wellbeing.charge + '%'" icon="bolt" :color="wellbeing.charge > 85 ? 'var(--red)' : 'var(--green)'" />
+        <KpiCard :label="t('burnoutRisk')" :value="burnoutDisplay" icon="fire" :color="burnoutColor" />
       </div>
 
       <AppCard class="mb-md">
@@ -27,12 +27,12 @@
       <!-- Quick actions -->
       <div class="grid-2" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
         <AppCard class="card-lift" style="cursor: pointer" @click="tab = 'nova'">
-          <div style="font-size: 24px; margin-bottom: 8px">🧘</div>
+          <div style="margin-bottom: 8px"><ScalyoIcon name="meditation" :size="28" /></div>
           <div style="font-weight: 700; margin-bottom: 4px">{{ t('wbDecompress') }}</div>
           <div style="font-size: 12px; color: var(--muted)">{{ t('wbTalkSomeone') }}</div>
         </AppCard>
         <AppCard class="card-lift" style="cursor: pointer" @click="tab = 'team'">
-          <div style="font-size: 24px; margin-bottom: 8px">📊</div>
+          <div style="margin-bottom: 8px"><ScalyoIcon name="dashboard" :size="28" /></div>
           <div style="font-weight: 700; margin-bottom: 4px">{{ t('wbManage') }}</div>
           <div style="font-size: 12px; color: var(--muted)">{{ t('trackWorkload') }}</div>
         </AppCard>
@@ -43,7 +43,7 @@
     <template v-if="tab === 'nova'">
       <AppCard style="max-width: 700px; margin: 0 auto">
         <div style="text-align: center; margin-bottom: 20px">
-          <div style="font-size: 32px; margin-bottom: 8px">🧘</div>
+          <div style="margin-bottom: 8px"><ScalyoIcon name="meditation" :size="36" /></div>
           <h3 style="font-weight: 800">{{ t('novaTitle') }}</h3>
           <p style="font-size: 13px; color: var(--muted)">{{ t('novaDesc') }}</p>
         </div>
@@ -96,7 +96,7 @@
           </div>
         </AppCard>
       </div>
-      <EmptyState v-else icon="👥" :title="t('noTeamData')" :desc="t('noTeamDataDesc')" />
+      <EmptyState v-else icon="people" :title="t('noTeamData')" :desc="t('noTeamDataDesc')" />
     </template>
   </div>
 </template>
@@ -109,6 +109,7 @@ import KpiCard from '../components/KpiCard.vue'
 import AppCard from '../components/AppCard.vue'
 import HealthBar from '../components/HealthBar.vue'
 import EmptyState from '../components/EmptyState.vue'
+import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const { t } = useI18n()
 const tab = ref('overview')

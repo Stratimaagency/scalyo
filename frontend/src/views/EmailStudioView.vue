@@ -7,7 +7,7 @@
 
     <div v-if="!selectedTemplate" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px">
       <AppCard v-for="tpl in templates" :key="tpl.id" class="card-lift" style="cursor: pointer" @click="selectedTemplate = tpl">
-        <div style="font-size: 24px; margin-bottom: 10px">✉️</div>
+        <div style="margin-bottom: 10px"><ScalyoIcon name="envelope" :size="28" /></div>
         <div style="font-weight: 800; margin-bottom: 4px">{{ tpl.name }}</div>
         <div style="font-size: 12px; color: var(--muted)">{{ tpl.subject }}</div>
       </AppCard>
@@ -27,10 +27,10 @@
           <textarea v-model="selectedTemplate.body" class="field-input" rows="14" style="resize: vertical; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7"></textarea>
         </div>
         <div style="display: flex; gap: 8px; margin-top: 14px">
-          <button class="btn btn-primary" @click="copyTemplate">📋 Copy to clipboard</button>
+          <button class="btn btn-primary" @click="copyTemplate" style="display: flex; align-items: center; gap: 6px;"><ScalyoIcon name="clipboard" :size="14" /> Copy to clipboard</button>
           <button class="btn btn-secondary" @click="selectedTemplate = null">{{ t('close') }}</button>
         </div>
-        <div v-if="copied" style="margin-top: 8px; color: var(--green); font-size: 13px; font-weight: 600">✅ Copied!</div>
+        <div v-if="copied" style="margin-top: 8px; color: var(--green); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="check-circle" :size="14" /> Copied!</div>
       </AppCard>
     </div>
   </div>
@@ -41,6 +41,7 @@ import { ref, onMounted } from 'vue'
 import { emailStudioApi } from '../api'
 import { useI18n } from '../i18n'
 import AppCard from '../components/AppCard.vue'
+import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const { t, lang } = useI18n()
 const templates = ref([])

@@ -1,12 +1,14 @@
 <template>
   <div class="loader-screen">
-    <div class="loader-icon">⚡</div>
+    <div class="loader-icon"><ScalyoIcon name="bolt" :size="22" /></div>
     <div class="spin loader-spinner"></div>
     <p class="loader-text">{{ text }}</p>
   </div>
 </template>
 
 <script setup>
+import ScalyoIcon from './ScalyoIcon.vue'
+
 defineProps({ text: { type: String, default: 'Loading...' } })
 </script>
 

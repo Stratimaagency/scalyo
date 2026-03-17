@@ -35,7 +35,7 @@
       </AppCard>
     </div>
 
-    <EmptyState v-if="!roadmap.items?.length" icon="🗺️" :title="t('noRoadmapSteps')" :action="'+ ' + t('addStep')" @action="showAdd = true" />
+    <EmptyState v-if="!roadmap.items?.length" icon="map" :title="t('noRoadmapSteps')" :action="'+ ' + t('addStep')" @action="showAdd = true" />
 
     <!-- Add step modal -->
     <AppModal v-if="showAdd" :title="t('addStep')" @close="showAdd = false">

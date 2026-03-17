@@ -2,7 +2,7 @@
   <div class="fade-in" style="max-width: 700px; margin: 0 auto">
     <AppCard>
       <div style="text-align: center; margin-bottom: 20px">
-        <div style="font-size: 32px; margin-bottom: 8px">🤖</div>
+        <div style="margin-bottom: 8px"><ScalyoIcon name="robot" :size="36" /></div>
         <h3 style="font-weight: 800">{{ t('coachTitle') }}</h3>
         <p style="font-size: 13px; color: var(--muted)">{{ t('coachStatus') }}</p>
       </div>
@@ -49,6 +49,7 @@ import { ref, nextTick } from 'vue'
 import { coachApi } from '../api'
 import { useI18n } from '../i18n'
 import AppCard from '../components/AppCard.vue'
+import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const { t, lang } = useI18n()
 const messages = ref([])

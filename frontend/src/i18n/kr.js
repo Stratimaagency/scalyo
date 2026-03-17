@@ -12,7 +12,7 @@ export default {
   tips: 'CS 가이드',
   roadmap: '로드맵',
   save: '저장',
-  saved: '✓ 저장됨',
+  saved: '저장됨',
   saving: '저장 중...',
   cancel: '취소',
   close: '닫기',
@@ -72,7 +72,7 @@ export default {
   taskDrop: '여기에 업무를 놓으세요',
   taskAll: '전체',
   taskDone: '완료',
-  overdue: '⚠ 지연',
+  overdue: '지연',
   managerTips: '매니저 가이드',
   csmTips: 'CSM 가이드',
   tipsTitle: 'CS 지식 베이스',
@@ -240,5 +240,5 @@ export default {
   daySun: '일',
   // KPI
   quarterlyGoals: '분기 목표',
-  csmTeamView: '👥 CSM 팀 보기',
+  csmTeamView: 'CSM 팀 보기',
 }

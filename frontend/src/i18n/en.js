@@ -11,7 +11,7 @@ export default {
   email: 'Email Studio',
   tips: 'CS Guide',
   save: 'Save',
-  saved: '✓ Saved',
+  saved: 'Saved',
   saving: 'Saving...',
   cancel: 'Cancel',
   close: 'Close',
@@ -71,7 +71,7 @@ export default {
   taskDrop: 'Drop tasks here',
   taskAll: 'All',
   taskDone: 'Done',
-  overdue: '⚠ Overdue',
+  overdue: 'Overdue',
   managerTips: 'Manager Guide',
   csmTips: 'Transverse CSM Guide',
   tipsTitle: 'CS Knowledge Base',
@@ -240,5 +240,5 @@ export default {
   daySun: 'Sun',
   // KPI
   quarterlyGoals: 'Quarterly Goals',
-  csmTeamView: '👥 CSM team view',
+  csmTeamView: 'CSM team view',
 }

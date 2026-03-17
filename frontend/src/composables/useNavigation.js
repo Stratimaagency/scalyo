@@ -3,18 +3,18 @@ import { useI18n } from '../i18n'
 import { useAuthStore } from '../stores/auth'
 
 const ALL_NAV_ITEMS = [
-  { key: 'dashboard', icon: '📊', role: 'all' },
-  { key: 'portfolio', icon: '💼', role: 'all' },
-  { key: 'kpis', icon: '📈', role: 'all' },
-  { key: 'planning', icon: '📅', role: 'all' },
-  { key: 'tasks', icon: '✅', role: 'all' },
-  { key: 'wellbeing', icon: '💚', role: 'all' },
-  { key: 'coach', icon: '🤖', role: 'all' },
-  { key: 'resources', icon: '📚', role: 'manager' },
-  { key: 'email-studio', icon: '✉️', role: 'all' },
-  { key: 'roadmap', icon: '🗺️', role: 'manager' },
-  { key: 'tips', icon: '💡', role: 'all' },
-  { key: 'settings', icon: '⚙️', role: 'all' },
+  { key: 'dashboard', icon: 'dashboard', role: 'all' },
+  { key: 'portfolio', icon: 'briefcase', role: 'all' },
+  { key: 'kpis', icon: 'chart-up', role: 'all' },
+  { key: 'planning', icon: 'calendar', role: 'all' },
+  { key: 'tasks', icon: 'check-circle', role: 'all' },
+  { key: 'wellbeing', icon: 'heart', role: 'all' },
+  { key: 'coach', icon: 'robot', role: 'all' },
+  { key: 'resources', icon: 'books', role: 'manager' },
+  { key: 'email-studio', icon: 'envelope', role: 'all' },
+  { key: 'roadmap', icon: 'map', role: 'manager' },
+  { key: 'tips', icon: 'lightbulb', role: 'all' },
+  { key: 'settings', icon: 'gear', role: 'all' },
 ]
 
 const LABEL_KEYS = {

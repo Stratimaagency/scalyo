@@ -68,12 +68,12 @@
 
         <div v-for="(feat, i) in featurePanels" :key="i" :class="['feat-panel', { flip: i % 2 !== 0 }]" style="margin-bottom: 80px">
           <div class="feat-text">
-            <div style="font-size: 28px; margin-bottom: 12px">{{ feat.icon }}</div>
+            <div style="margin-bottom: 12px"><ScalyoIcon :name="feat.icon" :size="32" /></div>
             <h3 class="feat-title">{{ feat.title }}</h3>
             <p class="feat-body">{{ feat.body }}</p>
             <div class="feat-points">
               <div v-for="point in feat.points" :key="point" class="feat-point">
-                <span class="fp-check">✓</span>
+                <span class="fp-check"><ScalyoIcon name="check" :size="10" /></span>
                 <span>{{ point }}</span>
               </div>
             </div>
@@ -107,7 +107,7 @@
             <div class="pricing-desc">{{ plan.desc }}</div>
             <ul class="pricing-features">
               <li v-for="f in plan.features" :key="f">
-                <span class="pricing-check">✓</span> {{ f }}
+                <span class="pricing-check"><ScalyoIcon name="check" :size="12" /></span> {{ f }}
               </li>
             </ul>
             <router-link to="/login" class="pricing-cta" :class="{ primary: plan.popular }">
@@ -131,6 +131,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const scrolled = ref(false)
 function handleScroll() { scrolled.value = window.scrollY > 20; }
@@ -146,22 +147,22 @@ const stats = [
 
 const featurePanels = [
   {
-    icon: '📊', title: 'Dashboard intelligent', body: 'Vue d\'ensemble de votre portefeuille avec KPIs en temps réel, alertes critiques et score de santé.',
+    icon: 'dashboard', title: 'Dashboard intelligent', body: 'Vue d\'ensemble de votre portefeuille avec KPIs en temps réel, alertes critiques et score de santé.',
     points: ['Health Score automatique', 'Alertes churn proactives', 'ARR à risque en un coup d\'oeil'],
     widgetTitle: 'Dashboard', widgetPreview: 'KPI cards, health scores, critical alerts...'
   },
   {
-    icon: '💼', title: 'Portefeuille vivant', body: 'Gérez tous vos comptes, assignations CSM, niveaux de risque et ARR en un seul endroit.',
+    icon: 'briefcase', title: 'Portefeuille vivant', body: 'Gérez tous vos comptes, assignations CSM, niveaux de risque et ARR en un seul endroit.',
     points: ['Import CSV/Excel', 'Todo list par compte', 'Filtres CSM et risque'],
     widgetTitle: 'Portfolio', widgetPreview: 'Account cards with health bars, risk pills...'
   },
   {
-    icon: '💚', title: 'Bien-être équipe', body: 'Surveillez la santé de votre équipe, le risque de burnout et l\'équilibre de charge.',
+    icon: 'heart', title: 'Bien-être équipe', body: 'Surveillez la santé de votre équipe, le risque de burnout et l\'équilibre de charge.',
     points: ['Score bien-être global', 'Détection burnout', 'Charge par CSM'],
     widgetTitle: 'Wellbeing', widgetPreview: 'Team scores, burnout indicators...'
   },
   {
-    icon: '🤖', title: 'Coach IA', body: 'Conseils stratégiques CS propulsés par l\'IA pour vos décisions quotidiennes.',
+    icon: 'robot', title: 'Coach IA', body: 'Conseils stratégiques CS propulsés par l\'IA pour vos décisions quotidiennes.',
     points: ['Expert CS francophone', 'Réponses contextuelles', 'Disponible 24/7'],
     widgetTitle: 'Coach IA', widgetPreview: 'Chat interface with AI responses...'
   },

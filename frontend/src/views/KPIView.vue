@@ -1,9 +1,9 @@
 <template>
   <div class="fade-in">
     <div class="tab-bar mb-lg">
-      <button class="tab-item" :class="{ active: tab === 'standard' }" @click="tab = 'standard'">📊 KPIs Standard</button>
-      <button class="tab-item" :class="{ active: tab === 'custom' }" @click="tab = 'custom'">🎯 {{ t('kpiCustomTitle') }}</button>
-      <button class="tab-item" :class="{ active: tab === 'goals' }" @click="tab = 'goals'">🏆 {{ t('quarterlyGoals') }}</button>
+      <button class="tab-item" :class="{ active: tab === 'standard' }" @click="tab = 'standard'" style="display: flex; align-items: center; gap: 5px;"><ScalyoIcon name="dashboard" :size="15" /> KPIs Standard</button>
+      <button class="tab-item" :class="{ active: tab === 'custom' }" @click="tab = 'custom'" style="display: flex; align-items: center; gap: 5px;"><ScalyoIcon name="target" :size="15" /> {{ t('kpiCustomTitle') }}</button>
+      <button class="tab-item" :class="{ active: tab === 'goals' }" @click="tab = 'goals'" style="display: flex; align-items: center; gap: 5px;"><ScalyoIcon name="trophy" :size="15" /> {{ t('quarterlyGoals') }}</button>
     </div>
 
     <!-- Standard KPIs -->
@@ -46,10 +46,10 @@
 
       <!-- KPI Cards -->
       <div class="grid-4 mb-lg" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr))">
-        <KpiCard label="MRR" :value="fmtK(kpis.mrr) + currencySymbol" icon="💰" color="var(--teal)" />
-        <KpiCard label="NPS" :value="kpis.nps" icon="📊" color="var(--blue)" />
-        <KpiCard label="Renewal Rate" :value="kpis.renewalRate + '%'" icon="🔄" :color="kpis.renewalRate >= 85 ? 'var(--green)' : 'var(--amber)'" />
-        <KpiCard label="CSAT" :value="kpis.csat + '/10'" icon="⭐" :color="kpis.csat >= 7 ? 'var(--green)' : 'var(--amber)'" />
+        <KpiCard label="MRR" :value="fmtK(kpis.mrr) + currencySymbol" icon="money" color="var(--teal)" />
+        <KpiCard label="NPS" :value="kpis.nps" icon="survey" color="var(--blue)" />
+        <KpiCard label="Renewal Rate" :value="kpis.renewalRate + '%'" icon="refresh" :color="kpis.renewalRate >= 85 ? 'var(--green)' : 'var(--amber)'" />
+        <KpiCard label="CSAT" :value="kpis.csat + '/10'" icon="star" :color="kpis.csat >= 7 ? 'var(--green)' : 'var(--amber)'" />
       </div>
     </template>
 
@@ -77,7 +77,7 @@
           </div>
         </AppCard>
       </div>
-      <EmptyState v-else icon="🎯" :title="t('kpiNoCustom')" :action="t('kpiNewBtn')" @action="showNewKpi = true" />
+      <EmptyState v-else icon="target" :title="t('kpiNoCustom')" :action="t('kpiNewBtn')" @action="showNewKpi = true" />
     </template>
 
     <!-- Goals -->
@@ -132,6 +132,7 @@ import AppCard from '../components/AppCard.vue'
 import AppModal from '../components/AppModal.vue'
 import AppField from '../components/AppField.vue'
 import EmptyState from '../components/EmptyState.vue'
+import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const { t } = useI18n()
 const prefsStore = usePreferencesStore()

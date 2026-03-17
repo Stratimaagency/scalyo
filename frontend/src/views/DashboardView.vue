@@ -4,7 +4,7 @@
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 26px;">
       <div>
         <h1 style="font-size: 24px; font-weight: 900; letter-spacing: -0.6px; margin-bottom: 5px;">
-          {{ t('overview') }} 👋
+          {{ t('overview') }} <ScalyoIcon name="wave" :size="24" style="margin-left: 4px" />
         </h1>
         <p style="color: var(--muted); font-size: 13px;">{{ company?.name }} · {{ todayFormatted }}</p>
       </div>
@@ -20,22 +20,22 @@
 
     <!-- KPI Cards -->
     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
-      <KpiCard :label="t('portfolioARR')" :value="fmtARR" icon="💰" color="var(--teal)"
+      <KpiCard :label="t('portfolioARR')" :value="fmtARR" icon="money" color="var(--teal)"
         :sub="accounts.length + ' ' + t('activeAccounts')" />
-      <KpiCard :label="t('avgHealth')" :value="avgHealth + '/100'" icon="💚" :color="healthColor"
+      <KpiCard :label="t('avgHealth')" :value="avgHealth + '/100'" icon="heart" :color="healthColor"
         :sub="healthSub" />
-      <KpiCard :label="t('criticalAccounts')" :value="String(criticalCount)" icon="🚨"
+      <KpiCard :label="t('criticalAccounts')" :value="String(criticalCount)" icon="siren"
         :color="criticalCount === 0 ? 'var(--green)' : 'var(--red)'"
         :sub="criticalSub" />
       <KpiCard :label="t('roadmap90')" :value="roadmapProgress + '%'"
-        icon="🗺" color="var(--teal)" :sub="roadmapDone + '/' + roadmapTotal + ' ' + t('steps')" />
+        icon="map" color="var(--teal)" :sub="roadmapDone + '/' + roadmapTotal + ' ' + t('steps')" />
     </div>
 
     <!-- Critical accounts alert -->
     <div v-if="criticalAccounts.length > 0" class="card card-danger" style="margin-bottom: 18px; padding: 18px;">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 20px;">🚨</span>
+          <ScalyoIcon name="siren" :size="20" />
           <span style="font-weight: 800; font-size: 15px; color: var(--red);">
             {{ criticalAccounts.length }} {{ criticalAccounts.length > 1 ? t('accountsCriticalAlert') : t('accountCriticalAlert') }}
           </span>
@@ -76,7 +76,7 @@
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
           <div>
             <div style="font-weight: 800; font-size: 15px; margin-bottom: 2px;">
-              🗺️ {{ t('roadmap90Title') }}
+              <ScalyoIcon name="map" :size="18" style="margin-right: 4px" /> {{ t('roadmap90Title') }}
             </div>
             <div style="font-size: 12px; color: var(--muted);">{{ roadmapPhase }}</div>
           </div>
@@ -95,7 +95,7 @@
         <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 6px;">
           <div v-for="(item, i) in roadmapItems.slice(0, 4)" :key="item.id || i"
             style="display: flex; align-items: center; gap: 10px; padding: 8px 11px; border-radius: 9px; background: var(--surface);">
-            <span style="font-size: 15px; flex-shrink: 0;">{{ item.done ? '✅' : '⬜' }}</span>
+            <ScalyoIcon :name="item.done ? 'check-circle' : 'square'" :size="16" style="flex-shrink: 0" />
             <span style="font-size: 13px; flex: 1;"
               :style="{ color: item.done ? 'var(--muted)' : 'var(--text)', textDecoration: item.done ? 'line-through' : 'none' }">
               {{ item.text || item.label }}
@@ -111,7 +111,7 @@
       <div class="card" style="padding: 20px;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
           <div style="font-weight: 800; font-size: 15px;">
-            💚 {{ t('teamWellbeing') }}
+            <ScalyoIcon name="heart" :size="18" style="margin-right: 4px" /> {{ t('teamWellbeing') }}
           </div>
           <router-link :to="{ name: 'wellbeing' }" class="btn-base"
             style="font-size: 11px; padding: 5px 12px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); text-decoration: none;">
@@ -162,8 +162,8 @@
 
     <!-- CSM Team View (manager only) -->
     <div v-if="authStore.user?.role === 'manager' && csmStats.length >= 2" style="margin-top: 20px;">
-      <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.3px;">
-        {{ t('csmTeamView') }}
+      <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.3px; display: flex; align-items: center; gap: 6px;">
+        <ScalyoIcon name="people" :size="18" /> {{ t('csmTeamView') }}
       </h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px;">
         <div v-for="s in csmStats" :key="s.csm"
@@ -171,22 +171,22 @@
           <div style="font-weight: 800; font-size: 13px; margin-bottom: 8px;">{{ s.csm }}</div>
           <div style="display: flex; flex-direction: column; gap: 5px;">
             <div style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: var(--muted);">💼 {{ t('accounts') }}</span>
+              <span style="color: var(--muted); display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="briefcase" :size="13" /> {{ t('accounts') }}</span>
               <span style="font-weight: 700;">{{ s.count }}</span>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: var(--muted);">💰 ARR</span>
+              <span style="color: var(--muted); display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="money" :size="13" /> ARR</span>
               <span style="font-weight: 700; color: var(--teal);">{{ fmtCurrency(s.arr) }}</span>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: var(--muted);">💚 Health</span>
+              <span style="color: var(--muted); display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="heart" :size="13" /> Health</span>
               <span style="font-weight: 700;"
                 :style="{ color: s.health >= 70 ? 'var(--green)' : s.health >= 40 ? 'var(--amber)' : 'var(--red)' }">
                 {{ s.health }}/100
               </span>
             </div>
             <div v-if="s.crit > 0" style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: var(--muted);">🚨 {{ t('filterCritical') }}</span>
+              <span style="color: var(--muted); display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="siren" :size="13" /> {{ t('filterCritical') }}</span>
               <span style="font-weight: 700; color: var(--red);">{{ s.crit }}</span>
             </div>
           </div>
@@ -197,11 +197,11 @@
     <!-- No risk message -->
     <div v-if="!criticalAccounts.length && accounts.length" class="card" style="margin-top: 14px; border-color: var(--greenBorder);">
       <div style="text-align: center; padding: 20px; font-weight: 700; color: var(--green);">
-        ✅ {{ t('noRisk') }}
+        <ScalyoIcon name="check-circle" :size="18" style="margin-right: 4px" /> {{ t('noRisk') }}
       </div>
     </div>
 
-    <EmptyState v-if="!accounts.length" icon="🚀" :title="t('portfolioEmpty')" :action="t('viewPortfolio')" />
+    <EmptyState v-if="!accounts.length" icon="rocket" :title="t('portfolioEmpty')" :action="t('viewPortfolio')" />
   </div>
 </template>
 
@@ -215,6 +215,7 @@ import { wellbeingApi, roadmapApi } from '../api'
 import KpiCard from '../components/KpiCard.vue'
 import HealthBar from '../components/HealthBar.vue'
 import EmptyState from '../components/EmptyState.vue'
+import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const authStore = useAuthStore()
 const portfolioStore = usePortfolioStore()
@@ -333,8 +334,7 @@ const burnoutColor = computed(() => {
 const burnoutLabel = computed(() => {
   const b = burnoutLevel.value
   const key = b === 'low' ? 'burnoutLow' : b === 'high' ? 'burnoutHigh' : b === 'moderate' ? 'burnoutModerate' : 'burnoutNone'
-  const emoji = b === 'low' ? ' 🟢' : b === 'high' ? ' 🔴' : ' 🟡'
-  return t(key) + emoji
+  return t(key)
 })
 
 // CSM team view (manager only)

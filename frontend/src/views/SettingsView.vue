@@ -58,7 +58,7 @@
             {{ plan.price }}{{ t('perMonth') }}
           </div>
           <ul style="list-style: none; font-size: 12px; color: var(--muted); margin-bottom: 14px">
-            <li v-for="f in plan.features" :key="f" style="padding: 3px 0">✓ {{ f }}</li>
+            <li v-for="f in plan.features" :key="f" style="padding: 3px 0; display: flex; align-items: center; gap: 6px;"><ScalyoIcon name="check" :size="12" /> {{ f }}</li>
           </ul>
           <button class="btn" :class="plan.name === authStore.company?.plan ? 'btn-secondary' : 'btn-primary'" style="width: 100%; justify-content: center">
             {{ plan.name === authStore.company?.plan ? t('currentPlan') : t('upgradePlan') }}
@@ -132,6 +132,7 @@ import { useI18n } from '../i18n'
 import { authApi } from '../api'
 import AppCard from '../components/AppCard.vue'
 import AppField from '../components/AppField.vue'
+import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()

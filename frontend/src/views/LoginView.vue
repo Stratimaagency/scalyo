@@ -2,7 +2,7 @@
   <div class="login-screen">
     <div class="login-card">
       <div class="login-logo">
-        <div class="logo-icon" style="width: 48px; height: 48px; font-size: 24px">⚡</div>
+        <div class="logo-icon" style="width: 48px; height: 48px"><ScalyoIcon name="bolt" :size="24" /></div>
         <div style="font-size: 28px; font-weight: 900; letter-spacing: -1px">
           scal<span style="color: var(--teal)">yo</span>
         </div>
@@ -60,6 +60,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useI18n } from '../i18n'
 import AppField from '../components/AppField.vue'
+import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
