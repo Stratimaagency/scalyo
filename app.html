@@ -5019,7 +5019,8 @@ const PortfolioView = ({
       overflow: "auto",
       padding: "20px 16px",
       flexShrink: 0,
-      minWidth: 290
+      minWidth: 290,
+      transition: "width .2s ease, flex .2s ease"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -5173,7 +5174,7 @@ const PortfolioView = ({
       fontSize: 11,
       color: C.muted
     }
-  }, a.csm || (lang==="en"?"Unassigned":(lang==="en" ? "Unassigned" : lang==="kr" ? "미배정" : T("unassigned",lang))), " \xB7 ", fmtMRR(a.mrr || 0, currency)))), /*#__PURE__*/React.createElement("div", {
+  }, a.csm || (lang==="en" ? "Unassigned" : lang==="kr" ? "미배정" : T("unassigned",lang)), " \xB7 ", fmtMRR(a.mrr || 0, currency)))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -8638,7 +8639,8 @@ const ResourcesView = ({
 }) => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedResource, setSelectedResource] = useState(null);
-  const categories = lang==="en" ? ["all", "Playbook", "Template", "Guide", "Training", "Coaching", "Process"] : lang==="kr" ? ["all", "Playbook", "Template", "가이드", "교육", "코칭", "프로세스"] : ["all", "Playbook", "Template", "Guide", "Formation", "Coaching", "Process"];
+  const categoryKeys = ["all", "Playbook", "Template", "Guide", "Training", "Coaching", "Process"];
+  const categoryLabels = lang==="en" ? {all:"All",Playbook:"Playbook",Template:"Template",Guide:"Guide",Training:"Training",Coaching:"Coaching",Process:"Process"} : lang==="kr" ? {all:"전체",Playbook:"Playbook",Template:"Template",Guide:"가이드",Training:"교육",Coaching:"코칭",Process:"프로세스"} : {all:T("all",lang),Playbook:"Playbook",Template:"Template",Guide:"Guide",Training:"Formation",Coaching:"Coaching",Process:"Process"};
   const items = [{
     emoji: "🚀",
     type: "Playbook",
@@ -8683,7 +8685,7 @@ const ResourcesView = ({
     locked: false
   }, {
     emoji: "🎓",
-    type: "Formation",
+    type: "Training",
     color: C.purple,
     key: "CS Masterclass — 6 Modules", title: lang==="en" ? "CS Masterclass — 6 Modules" : lang==="kr" ? "CS 마스터클래스 — 6개 모듈" : "CS Masterclass — 6 Modules",
     desc: lang==="en"?"Certified CS training. For managers and CSMs.":lang==="kr"?"CS 인증 교육. 매니저와 CSM을 위한 과정.":"Formation certifiante 100% francophone. Manager et CSM.",
@@ -8697,7 +8699,7 @@ const ResourcesView = ({
     locked: plan === "Starter"
   }, {
     emoji: "📞",
-    type: lang==="en" ? "Coaching" : lang==="kr" ? "코칭" : "Coaching",
+    type: "Coaching",
     color: C.amber,
     key: "Monthly 1h Coaching Session",
     title: lang==="en"?"Monthly 1h Coaching Session":lang==="kr"?"월간 1시간 코칭 세션":"Session Coaching Mensuelle 1h",
@@ -8900,7 +8902,7 @@ const ResourcesView = ({
       marginBottom: 20,
       flexWrap: "wrap"
     }
-  }, categories.map(c => /*#__PURE__*/React.createElement("button", {
+  }, categoryKeys.map(c => /*#__PURE__*/React.createElement("button", {
     key: c,
     onClick: () => setActiveCategory(c),
     className: "btn-base",
@@ -8912,7 +8914,7 @@ const ResourcesView = ({
       border: `1px solid ${activeCategory === c ? C.tealBorder : C.border}`,
       color: activeCategory === c ? C.teal : C.muted
     }
-  }, c === "all" ? (lang==="en" ? "All" : lang==="kr" ? "전체" : T("all",lang)) : c))), /*#__PURE__*/React.createElement("div", {
+  }, categoryLabels[c] || c))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fill,minmax(270px,1fr))",
@@ -8979,7 +8981,7 @@ const ResourcesView = ({
   }, /*#__PURE__*/React.createElement(Tag, {
     color: r.color,
     size: "xs"
-  }, r.type), r.locked && /*#__PURE__*/React.createElement(Tag, {
+  }, categoryLabels[r.type] || r.type), r.locked && /*#__PURE__*/React.createElement(Tag, {
     color: C.amber,
     size: "xs"
   }, "Premium"))), /*#__PURE__*/React.createElement("div", {
@@ -8998,10 +9000,10 @@ const ResourcesView = ({
   }, r.desc), !r.locked && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
-      color: (lang==="en"||lang==="kr"?RESOURCE_CONTENT_EN:RESOURCE_CONTENT)[r.key||r.title]||RESOURCE_CONTENT[r.key||r.title] ? C.teal : C.muted,
+      color: (RC[r.key||r.title]||RESOURCE_CONTENT[r.key||r.title]) ? C.teal : C.muted,
       fontWeight: 700
     }
-  }, (lang==="en"?RESOURCE_CONTENT_EN:RESOURCE_CONTENT)[r.key||r.title]||RESOURCE_CONTENT[r.key||r.title] ? (lang==="en" ? "→ Read full content" : lang==="kr" ? "→ 전체 내용 읽기" : "→ Lire le contenu complet") : (lang==="en" ? "→ Access now" : lang==="kr" ? "→ 지금 접속" : T("resAccess",lang)))))));
+  }, (RC[r.key||r.title]||RESOURCE_CONTENT[r.key||r.title]) ? (lang==="en" ? "→ Read full content" : lang==="kr" ? "→ 전체 내용 읽기" : "→ Lire le contenu complet") : (lang==="en" ? "→ Access now" : lang==="kr" ? "→ 지금 접속" : T("resAccess",lang)))))));
 };
 
 // ══════════════════════════════════════════════════
