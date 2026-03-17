@@ -93,10 +93,10 @@ input:checked+.toggle-slider::before{transform:translateX(20px)}
 .btn-base:hover:not(:disabled){filter:brightness(1.08)}
 .btn-base:active:not(:disabled){transform:translateY(0);filter:brightness(0.95)}
 .btn-base:disabled{opacity:.38;cursor:not-allowed;transform:none!important;filter:none!important}
-.fade-in{animation:fadeIn .45s ease forwards}
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.fade-in{animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideInR{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
-@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
@@ -430,6 +430,9 @@ const {
   useRef,
   useMemo
 } = React;
+
+// ── Portal: renders children into document.body to escape overflow/transform parents ──
+const Portal = ({children}) => ReactDOM.createPortal(children, document.body);
 
 // ── Lang fallback (prevents ReferenceError in any scope) ──
 var lang = (function(){ try { return localStorage.getItem("scalyo_lang")||"fr"; } catch(e){ return "fr"; } })();
@@ -5230,11 +5233,11 @@ const PortfolioView = ({
       onRefresh();
       setSelected(null);
     }
-  }), showImport && /*#__PURE__*/React.createElement(ImportModal, {
+  }), showImport && React.createElement(Portal, null, React.createElement(ImportModal, {
     onClose: () => setShowImport(false),
     onImport: handleImportDone,
     companyId: companyId
-  }), showAdd && /*#__PURE__*/React.createElement(AddAccountModal, {
+  })), showAdd && React.createElement(Portal, null, React.createElement(AddAccountModal, {
     onClose: () => setShowAdd(false),
     companyId: companyId,
     lang: lang,
@@ -5242,7 +5245,7 @@ const PortfolioView = ({
       setShowAdd(false);
       onRefresh();
     }
-  }));
+  })));
 };
 
 // ROADMAP VIEW
