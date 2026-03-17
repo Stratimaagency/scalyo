@@ -434,6 +434,23 @@ const {
 // ── Portal: renders children into document.body to escape overflow/transform parents ──
 const Portal = ({children}) => ReactDOM.createPortal(children, document.body);
 
+// ── ErrorBoundary: catches render errors and shows them instead of blank screen ──
+class ModalErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { hasError: false, error: null }; }
+  static getDerivedStateFromError(error) { return { hasError: true, error }; }
+  render() {
+    if (this.state.hasError) {
+      return React.createElement("div", {
+        style: {position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:99999,background:"rgba(0,0,0,0.5)",display:"flex",alignItems:"center",justifyContent:"center"}
+      }, React.createElement("div", {
+        style: {background:"#fff",color:"#c00",borderRadius:12,padding:32,maxWidth:500,width:"90%"}
+      }, React.createElement("h2", null, "Erreur Modal"), React.createElement("pre", {style:{whiteSpace:"pre-wrap",fontSize:12}}, String(this.state.error)),
+         React.createElement("button", {onClick: () => { this.setState({hasError:false,error:null}); if(this.props.onClose) this.props.onClose(); }, style:{marginTop:12,padding:"8px 16px",borderRadius:8,border:"none",background:"#c00",color:"#fff",cursor:"pointer"}}, "Fermer")));
+    }
+    return this.props.children;
+  }
+}
+
 // ── Lang fallback (prevents ReferenceError in any scope) ──
 var lang = (function(){ try { return localStorage.getItem("scalyo_lang")||"fr"; } catch(e){ return "fr"; } })();
 // ────────────────────────────────────────────────────────
@@ -5240,17 +5257,16 @@ const PortfolioView = ({
     onImport: handleImportDone,
     companyId: companyId
   })),
-  showAdd && ReactDOM.createPortal(React.createElement("div", {
-    style: {position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:99999,background:"rgba(0,0,0,0.5)",display:"flex",alignItems:"center",justifyContent:"center"},
-    onClick: () => setShowAdd(false)
-  }, React.createElement("div", {
-    style: {background:"white",color:"black",borderRadius:12,padding:32,maxWidth:500,width:"90%",textAlign:"center"},
-    onClick: e => e.stopPropagation()
-  },
-    React.createElement("h2", {style:{marginBottom:16}}, "TEST MODAL"),
-    React.createElement("p", null, "Si vous voyez ceci, le modal fonctionne !"),
-    React.createElement("button", {onClick: () => setShowAdd(false), style:{marginTop:16,padding:"10px 24px",borderRadius:8,border:"none",background:"#0B6E60",color:"white",cursor:"pointer",fontSize:14}}, "Fermer")
-  )), document.body));
+  showAdd && ReactDOM.createPortal(
+    React.createElement(ModalErrorBoundary, {onClose: () => setShowAdd(false)},
+      React.createElement(AddAccountModal, {
+        onClose: () => setShowAdd(false),
+        companyId: companyId,
+        lang: lang,
+        currency: currency,
+        onAdd: () => { setShowAdd(false); onRefresh(); }
+      })
+    ), document.body));
 };
 
 // ROADMAP VIEW
