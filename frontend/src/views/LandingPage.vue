@@ -143,19 +143,36 @@
     <section id="integrations" class="section section-dark">
       <div class="container" style="text-align: center;">
         <div class="label" style="justify-content: center;"><span class="label-line"></span>Intégrations</div>
-        <h2 class="h2-dark" style="margin-bottom: 16px">Connectez vos outils existants.</h2>
-        <p style="color: var(--dt2); font-size: 16px; max-width: 560px; margin: 0 auto 40px; line-height: 1.7;">
-          Scalyo s'intègre progressivement avec les CRM et outils que vous utilisez déjà. Import CSV disponible dès maintenant.
+        <h2 class="h2-dark" style="margin-bottom: 16px">Connectez tous vos outils en un clic.</h2>
+        <p style="color: var(--dt2); font-size: 16px; max-width: 600px; margin: 0 auto 32px; line-height: 1.7;">
+          CRM, email, chat, visio, gestion de projets — Scalyo se connecte nativement aux outils que votre équipe utilise déjà.
         </p>
+
+        <!-- Category tabs -->
+        <div class="integ-cats">
+          <button
+            v-for="cat in integCategories"
+            :key="cat.key"
+            class="integ-cat-btn"
+            :class="{ active: activeLandingCat === cat.key }"
+            @click="activeLandingCat = cat.key"
+          >
+            <span>{{ cat.icon }}</span> {{ cat.label }}
+          </button>
+        </div>
+
         <div class="integrations-grid">
-          <div v-for="integ in integrations" :key="integ.name" class="integration-card" :class="{ available: integ.available }">
+          <div v-for="integ in filteredLandingIntegrations" :key="integ.name" class="integration-card available">
             <div class="integration-icon">{{ integ.icon }}</div>
             <div class="integration-name">{{ integ.name }}</div>
-            <div class="integration-status" :class="{ live: integ.available }">
-              {{ integ.available ? 'Disponible' : 'Bientôt' }}
-            </div>
+            <div class="integration-tag">{{ integ.tag }}</div>
+            <div class="integration-status live">Disponible</div>
           </div>
         </div>
+
+        <p style="color: var(--dt3); font-size: 13px; margin-top: 24px;">
+          + Zendesk, Segment, Freshdesk, Notion, WhatsApp, Crisp et bien d'autres à venir.
+        </p>
       </div>
     </section>
 
@@ -189,7 +206,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const scrolled = ref(false)
@@ -245,20 +262,48 @@ const testimonials = [
   },
 ]
 
-const integrations = [
-  { name: 'Gmail', icon: '📧', available: true },
-  { name: 'Outlook', icon: '📬', available: true },
-  { name: 'HubSpot CRM', icon: '🟠', available: true },
-  { name: 'Salesforce', icon: '☁️', available: true },
-  { name: 'Slack', icon: '💜', available: true },
-  { name: 'Teams', icon: '🟦', available: true },
-  { name: 'Jira', icon: '🔷', available: true },
-  { name: 'Zoom', icon: '📹', available: true },
-  { name: 'Google Meet', icon: '🎥', available: true },
-  { name: 'Calendly', icon: '📅', available: true },
-  { name: 'Intercom', icon: '💬', available: true },
-  { name: 'Stripe', icon: '💳', available: true },
+const activeLandingCat = ref('all')
+
+const integCategories = [
+  { key: 'all', icon: '🔌', label: 'Tout' },
+  { key: 'crm', icon: '🏢', label: 'CRM' },
+  { key: 'email', icon: '📧', label: 'Email' },
+  { key: 'chat', icon: '💬', label: 'Chat' },
+  { key: 'meeting', icon: '📅', label: 'Réunions' },
+  { key: 'project', icon: '📋', label: 'Projets' },
+  { key: 'data', icon: '📊', label: 'Données' },
 ]
+
+const integrations = [
+  // CRM
+  { name: 'HubSpot CRM', icon: '🟠', cat: 'crm', tag: 'Contacts & Deals' },
+  { name: 'Salesforce', icon: '☁️', cat: 'crm', tag: 'Comptes & Opps' },
+  { name: 'Pipedrive', icon: '🟢', cat: 'crm', tag: 'Deals & Contacts' },
+  // Email
+  { name: 'Gmail', icon: '📧', cat: 'email', tag: 'Boîte de réception' },
+  { name: 'Outlook 365', icon: '📬', cat: 'email', tag: 'Mail & Calendrier' },
+  { name: 'IMAP / SMTP', icon: '📨', cat: 'email', tag: 'Tout fournisseur' },
+  // Chat
+  { name: 'Slack', icon: '💜', cat: 'chat', tag: 'Alertes & Commandes' },
+  { name: 'Microsoft Teams', icon: '🟦', cat: 'chat', tag: 'Bot & Notifications' },
+  { name: 'Intercom', icon: '💬', cat: 'chat', tag: 'Conversations' },
+  // Meeting
+  { name: 'Google Meet', icon: '🎥', cat: 'meeting', tag: 'Visio & Calendrier' },
+  { name: 'Zoom', icon: '📹', cat: 'meeting', tag: 'Planification & Enregistrement' },
+  { name: 'Calendly', icon: '📅', cat: 'meeting', tag: 'Prise de RDV' },
+  // Project
+  { name: 'Jira', icon: '🔷', cat: 'project', tag: 'Tickets & Sync' },
+  { name: 'Asana', icon: '🔶', cat: 'project', tag: 'Projets & Tâches' },
+  // Data
+  { name: 'Import CSV', icon: '📄', cat: 'data', tag: 'Import 1-clic' },
+  { name: 'Import Excel', icon: '📊', cat: 'data', tag: 'Multi-feuilles' },
+  { name: 'Stripe', icon: '💳', cat: 'data', tag: 'Facturation & MRR' },
+]
+
+const filteredLandingIntegrations = computed(() => {
+  if (activeLandingCat.value === 'all') return integrations
+  return integrations.filter(i => i.cat === activeLandingCat.value)
+})
 
 const methodology = [
   {
@@ -431,13 +476,18 @@ const plans = [
 .testimonial-role { font-size: 12px; color: var(--dt3); }
 
 /* Integrations */
-.integrations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 14px; max-width: 700px; margin: 0 auto; }
+.integ-cats { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+.integ-cat-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 100px; font-size: 13px; font-weight: 600; background: #fff; border: 1px solid var(--dline2); color: var(--dt2); cursor: pointer; transition: all 0.15s; }
+.integ-cat-btn:hover { border-color: var(--land-teal); color: var(--dt); }
+.integ-cat-btn.active { background: var(--land-teal); border-color: var(--land-teal); color: #fff; }
+.integrations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; max-width: 860px; margin: 0 auto; }
 .integration-card { background: #fff; border: 1px solid var(--dline2); border-radius: 12px; padding: 20px 16px; text-align: center; transition: all 0.2s; }
-.integration-card:hover { border-color: rgba(55,53,47,0.24); }
+.integration-card:hover { border-color: rgba(55,53,47,0.24); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
 .integration-card.available { border-color: rgba(15,123,108,0.3); }
 .integration-icon { font-size: 28px; margin-bottom: 8px; }
-.integration-name { font-size: 13px; font-weight: 600; color: var(--dt); margin-bottom: 6px; }
-.integration-status { font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 100px; display: inline-block; background: rgba(55,53,47,0.06); color: var(--dt3); }
+.integration-name { font-size: 13px; font-weight: 700; color: var(--dt); margin-bottom: 4px; }
+.integration-tag { font-size: 11px; color: var(--dt3); margin-bottom: 8px; }
+.integration-status { font-size: 10px; font-weight: 600; padding: 2px 10px; border-radius: 100px; display: inline-block; background: rgba(55,53,47,0.06); color: var(--dt3); }
 .integration-status.live { background: rgba(15,123,108,0.08); color: var(--land-teal); }
 
 /* Methodology */
@@ -466,6 +516,8 @@ const plans = [
   .fv-pad { padding: 16px; }
   .landing-nav { padding: 0 14px; }
   .nav-right .n-ghost { display: none; }
+  .integ-cats { gap: 4px; }
+  .integ-cat-btn { padding: 6px 10px; font-size: 11px; }
   .integrations-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .h2-light, .h2-dark { font-size: 22px; }
 }
@@ -494,7 +546,9 @@ const plans = [
   .pricing-price { font-size: 36px; }
   .testimonials-grid { grid-template-columns: 1fr; }
   .methodology-grid { grid-template-columns: 1fr; }
-  .integrations-grid { grid-template-columns: repeat(2, 1fr); }
+  .integ-cats { gap: 6px; }
+  .integ-cat-btn { padding: 7px 12px; font-size: 12px; }
+  .integrations-grid { grid-template-columns: repeat(3, 1fr); }
   .landing-footer p { font-size: 12px; line-height: 1.7; padding: 0 12px; }
   .h2-light, .h2-dark { font-size: 26px; }
 }
