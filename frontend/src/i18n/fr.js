@@ -386,4 +386,31 @@ export default {
   // Health score
   healthMethodTitle: 'Comment fonctionne le Health Score',
   healthMethodDesc: 'Le Health Score de chaque compte est basé sur les données que vous renseignez : activité récente, risques déclarés, proximité du renouvellement et issues ouvertes. Il se met à jour automatiquement à chaque modification.',
+  // Quotes
+  quotes: 'Devis',
+  quotesTitle: 'Devis & Propositions',
+  quotesDesc: 'Gérez vos propositions commerciales et suivez votre taux de conversion.',
+  quotesNew: '+ Nouveau devis',
+  quotesEdit: 'Modifier le devis',
+  quotesDraft: 'Brouillon',
+  quotesSent: 'Envoyé',
+  quotesWon: 'Gagné',
+  quotesLost: 'Perdu',
+  quotesTotal: 'Total devis',
+  quotesConversion: 'Taux de conversion',
+  quotesWonTotal: 'Montant gagné',
+  quotesEmpty: 'Aucun devis pour le moment.',
+  quotesDuplicate: 'Dupliquer',
+  quotesFieldTitle: 'Titre du devis',
+  quotesFieldClient: 'Client',
+  quotesFieldAmount: 'Montant (€)',
+  quotesFieldStatus: 'Statut',
+  quotesFieldNotes: 'Notes',
+  // Trial
+  trialBanner: 'Période d\'essai',
+  trialDaysLeft: 'jours restants',
+  // Delete confirmation
+  deleteAccountType: 'Tapez SUPPRIMER pour confirmer la suppression définitive :',
+  // Missing nav/general
+  myCompany: 'Mon entreprise',
 }

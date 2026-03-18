@@ -19,6 +19,10 @@
         {{ error }}
       </div>
 
+      <div v-if="successMsg" style="padding: 10px 14px; background: var(--greenBg); border: 1px solid var(--greenBorder); border-radius: 10px; color: var(--green); font-size: 13px; margin-bottom: 14px">
+        {{ successMsg }}
+      </div>
+
       <template v-if="!isLogin">
         <AppField :label="t('displayName')" v-model="form.display_name" :placeholder="t('namePlaceholder')" />
         <AppField :label="t('companyNameLabel')" v-model="form.company_name" :placeholder="t('companyPlaceholder')" />
@@ -35,14 +39,34 @@
       </template>
 
       <AppField :label="t('emailPro')" v-model="form.email" type="email" placeholder="you@company.com" />
-      <AppField label="Password" v-model="form.password" type="password" placeholder="••••••••" @enter="submit" />
+
+      <!-- Password with visibility toggle -->
+      <div class="field-group">
+        <label class="field-label">Password</label>
+        <div style="position: relative;">
+          <input
+            class="field-input"
+            :type="showPassword ? 'text' : 'password'"
+            v-model="form.password"
+            placeholder="••••••••"
+            @keyup.enter="submit"
+            style="padding-right: 40px;"
+          />
+          <button
+            type="button"
+            @click="showPassword = !showPassword"
+            style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px; padding: 4px; opacity: 0.6;"
+            :title="showPassword ? 'Hide' : 'Show'"
+          >{{ showPassword ? '🙈' : '👁️' }}</button>
+        </div>
+      </div>
 
       <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; margin-top: 8px" :disabled="submitting" @click="submit">
         {{ submitting ? t('saving') : (isLogin ? t('loginBtn') : t('registerBtn')) }}
       </button>
 
       <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--muted)">
-        <span style="cursor: pointer; color: var(--teal); font-weight: 600" @click="isLogin = !isLogin">
+        <span style="cursor: pointer; color: var(--teal); font-weight: 600" @click="isLogin = !isLogin; error = ''; successMsg = ''">
           {{ isLogin ? t('switchToRegister') : t('switchToLogin') }}
         </span>
       </p>
@@ -69,6 +93,8 @@ const { t } = useI18n()
 const isLogin = ref(true)
 const submitting = ref(false)
 const error = ref('')
+const successMsg = ref('')
+const showPassword = ref(false)
 
 const form = reactive({
   email: '',
@@ -80,6 +106,7 @@ const form = reactive({
 
 async function submit() {
   error.value = ''
+  successMsg.value = ''
   if (!form.email || !form.password) {
     error.value = t('errEmailPass')
     return
@@ -104,6 +131,15 @@ async function submit() {
   } catch (e) {
     if (e.response?.status === 401) {
       error.value = t('errInvalidCreds')
+    } else if (e.response?.status === 400) {
+      const data = e.response?.data
+      if (data?.error) {
+        error.value = data.error
+      } else if (data?.email) {
+        error.value = Array.isArray(data.email) ? data.email[0] : data.email
+      } else {
+        error.value = t('errCreation')
+      }
     } else {
       error.value = e.response?.data?.error || t('errNetwork')
     }
@@ -119,15 +155,16 @@ async function submit() {
   align-items: center;
   justify-content: center;
   background: var(--bg);
+  background-image: radial-gradient(ellipse 90% 60% at 50% -5%, rgba(77,182,160,0.06), transparent);
   padding: 20px;
 }
 .login-card {
   width: 100%;
-  max-width: 400px;
+  max-width: 440px;
   background: var(--bg1);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 36px 32px;
+  border-radius: 22px;
+  padding: 40px 36px;
 }
 .login-logo {
   display: flex;

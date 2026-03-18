@@ -386,4 +386,31 @@ export default {
   // Health score
   healthMethodTitle: 'How the Health Score works',
   healthMethodDesc: 'Each account Health Score is based on data you provide: recent activity, declared risks, renewal proximity, and open issues. It updates automatically with each change.',
+  // Quotes
+  quotes: 'Quotes',
+  quotesTitle: 'Quotes & Proposals',
+  quotesDesc: 'Manage your sales proposals and track your conversion rate.',
+  quotesNew: '+ New quote',
+  quotesEdit: 'Edit quote',
+  quotesDraft: 'Draft',
+  quotesSent: 'Sent',
+  quotesWon: 'Won',
+  quotesLost: 'Lost',
+  quotesTotal: 'Total quotes',
+  quotesConversion: 'Conversion rate',
+  quotesWonTotal: 'Total won',
+  quotesEmpty: 'No quotes yet.',
+  quotesDuplicate: 'Duplicate',
+  quotesFieldTitle: 'Quote title',
+  quotesFieldClient: 'Client',
+  quotesFieldAmount: 'Amount',
+  quotesFieldStatus: 'Status',
+  quotesFieldNotes: 'Notes',
+  // Trial
+  trialBanner: 'Trial period',
+  trialDaysLeft: 'days left',
+  // Delete confirmation
+  deleteAccountType: 'Type DELETE to confirm permanent deletion:',
+  // Missing nav/general
+  myCompany: 'My company',
 }
