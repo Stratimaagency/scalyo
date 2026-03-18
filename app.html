@@ -4077,7 +4077,19 @@ const DashboardView = ({
         ))
       )
     );
-  })()
+  })(),
+  accounts.length > 0 && /*#__PURE__*/React.createElement("div",{style:{marginTop:14,background:C.surface,border:`1px solid ${C.border}`,borderRadius:6,padding:"18px"}},
+    /*#__PURE__*/React.createElement("details",null,
+      /*#__PURE__*/React.createElement("summary",{style:{cursor:"pointer",fontWeight:700,fontSize:13,display:"flex",alignItems:"center",gap:6,userSelect:"none"}},
+        "💡 ",lang==="en"?"How health scores work":"Comment fonctionnent les scores de santé"
+      ),
+      /*#__PURE__*/React.createElement("p",{style:{fontSize:12,color:C.muted,lineHeight:1.7,marginTop:10}},
+        lang==="en"
+          ?"Health scores are calculated from: the health score you assign (0-100), the number of open issues, renewal proximity, and risk level. Each factor is visible and adjustable. No black box."
+          :"Les scores de santé sont calculés à partir de : le health score que vous assignez (0-100), le nombre d'issues ouvertes, la proximité du renouvellement et le niveau de risque. Chaque facteur est visible et ajustable. Pas de boîte noire."
+      )
+    )
+  )
 );
 };
 
@@ -5033,7 +5045,7 @@ const PortfolioView = ({
   session,
   plan="Starter"
 }) => {
-  const MAX_ACCOUNTS = plan === "Starter" ? 5 : Infinity;
+  const MAX_ACCOUNTS = plan === "Starter" ? 10 : Infinity;
   const atLimit = plan === "Starter" && accounts.length >= MAX_ACCOUNTS;
   const [selected, setSelected] = useState(null);
   const [filter, _setFilter] = useState(() => { try { return localStorage.getItem("scalyo_pf_filter") || "all"; } catch(e) { return "all"; } });
@@ -9552,6 +9564,106 @@ Customer Success Manager`
 [담당자 이름]`
 }];
 
+// ══════════════════════════════════════════════════
+// INTEGRATIONS VIEW — connecteurs CRM, Email, Chat, Meeting, Projects
+// ══════════════════════════════════════════════════
+const IntegrationsView = ({lang="fr"}) => {
+  const [activeCat, setActiveCat] = useState("all");
+  const cats = [
+    {key:"all",icon:"🔌",label:lang==="en"?"All":"Tout"},
+    {key:"crm",icon:"🏢",label:"CRM"},
+    {key:"email",icon:"📧",label:"Email"},
+    {key:"chat",icon:"💬",label:"Chat"},
+    {key:"meeting",icon:"📅",label:lang==="en"?"Meetings":"Réunions"},
+    {key:"project",icon:"📋",label:lang==="en"?"Projects":"Projets"},
+    {key:"data",icon:"📊",label:lang==="en"?"Data":"Données"},
+  ];
+  const integs = [
+    {name:"HubSpot CRM",icon:"🟠",cat:"crm",tag:"Contacts & Deals",available:true},
+    {name:"Salesforce",icon:"☁️",cat:"crm",tag:lang==="en"?"Accounts & Opps":"Comptes & Opps",available:true},
+    {name:"Pipedrive",icon:"🟢",cat:"crm",tag:"Deals & Contacts",available:true},
+    {name:"Gmail",icon:"📧",cat:"email",tag:lang==="en"?"Inbox":"Boîte de réception",available:true},
+    {name:"Outlook 365",icon:"📬",cat:"email",tag:"Mail & Calendrier",available:true},
+    {name:"IMAP / SMTP",icon:"📨",cat:"email",tag:lang==="en"?"Any provider":"Tout fournisseur",available:true},
+    {name:"Slack",icon:"💜",cat:"chat",tag:lang==="en"?"Alerts & Commands":"Alertes & Commandes",available:true},
+    {name:"Microsoft Teams",icon:"🟦",cat:"chat",tag:"Bot & Notifications",available:true},
+    {name:"Intercom",icon:"💬",cat:"chat",tag:"Conversations",available:true},
+    {name:"Google Meet",icon:"🎥",cat:"meeting",tag:"Visio & Calendrier",available:true},
+    {name:"Zoom",icon:"📹",cat:"meeting",tag:lang==="en"?"Schedule & Record":"Planification & Enregistrement",available:true},
+    {name:"Calendly",icon:"📅",cat:"meeting",tag:lang==="en"?"Booking":"Prise de RDV",available:true},
+    {name:"Jira",icon:"🔷",cat:"project",tag:"Tickets & Sync",available:true},
+    {name:"Asana",icon:"🔶",cat:"project",tag:lang==="en"?"Projects & Tasks":"Projets & Tâches",available:true},
+    {name:"Import CSV",icon:"📄",cat:"data",tag:"Import 1-clic",available:true},
+    {name:"Import Excel",icon:"📊",cat:"data",tag:"Multi-feuilles",available:true},
+    {name:"Stripe",icon:"💳",cat:"data",tag:"Facturation & MRR",available:true},
+    {name:"Zendesk",icon:"🟡",cat:"chat",tag:"Tickets",available:false},
+    {name:"Segment",icon:"🟣",cat:"data",tag:"Events",available:false},
+    {name:"Freshdesk",icon:"🟢",cat:"chat",tag:"Tickets",available:false},
+    {name:"Notion",icon:"⬛",cat:"project",tag:"Docs & Tasks",available:false},
+    {name:"WhatsApp",icon:"💚",cat:"chat",tag:"Messages",available:false},
+    {name:"Crisp",icon:"🔵",cat:"chat",tag:"Live Chat",available:false},
+  ];
+  const filtered = activeCat==="all"?integs:integs.filter(i=>i.cat===activeCat);
+  const available = filtered.filter(i=>i.available);
+  const coming = filtered.filter(i=>!i.available);
+  return /*#__PURE__*/React.createElement("div",{className:"fade-in",style:{padding:"26px 30px",maxWidth:1100}},
+    /*#__PURE__*/React.createElement("div",{style:{marginBottom:20}},
+      /*#__PURE__*/React.createElement("h1",{style:{fontSize:24,fontWeight:900,letterSpacing:"-0.6px",marginBottom:5}},lang==="en"?"Integrations":"Intégrations"),
+      /*#__PURE__*/React.createElement("p",{style:{color:C.muted,fontSize:13}},lang==="en"?"Connect all your tools in one click.":"Connectez tous vos outils en un clic.")
+    ),
+    /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:6,flexWrap:"wrap",marginBottom:20}},
+      cats.map(c=>/*#__PURE__*/React.createElement("button",{
+        key:c.key,
+        onClick:()=>setActiveCat(c.key),
+        className:"csm-chip"+(activeCat===c.key?" active":""),
+        style:{display:"flex",alignItems:"center",gap:6,cursor:"pointer"}
+      },/*#__PURE__*/React.createElement("span",null,c.icon)," ",c.label,
+        /*#__PURE__*/React.createElement("span",{style:{fontSize:10,fontWeight:700,background:activeCat===c.key?C.teal:C.border,color:activeCat===c.key?"#fff":C.muted,padding:"1px 6px",borderRadius:100,marginLeft:4}},
+          (c.key==="all"?integs:integs.filter(i=>i.cat===c.key)).length
+        )
+      ))
+    ),
+    available.length>0 && /*#__PURE__*/React.createElement("div",{style:{marginBottom:24}},
+      /*#__PURE__*/React.createElement("h3",{style:{fontSize:14,fontWeight:700,marginBottom:12,display:"flex",alignItems:"center",gap:6}},
+        /*#__PURE__*/React.createElement("span",{style:{width:8,height:8,borderRadius:"50%",background:C.green}}),
+        lang==="en"?"Available":"Disponibles"
+      ),
+      /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}},
+        available.map(i=>/*#__PURE__*/React.createElement("div",{
+          key:i.name,
+          className:"card-lift",
+          style:{background:C.surface,border:`1px solid ${C.tealBorder}`,borderRadius:12,padding:"20px 16px",textAlign:"center",transition:"all .2s"}
+        },
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:28,marginBottom:8}},i.icon),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:700,marginBottom:4}},i.name),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:C.muted,marginBottom:8}},i.tag),
+          /*#__PURE__*/React.createElement("span",{style:{fontSize:10,fontWeight:600,padding:"2px 10px",borderRadius:100,background:C.tealBg,color:C.teal}},lang==="en"?"Available":"Disponible")
+        ))
+      )
+    ),
+    coming.length>0 && /*#__PURE__*/React.createElement("div",{style:{marginBottom:24}},
+      /*#__PURE__*/React.createElement("h3",{style:{fontSize:14,fontWeight:700,marginBottom:12,display:"flex",alignItems:"center",gap:6}},
+        /*#__PURE__*/React.createElement("span",{style:{width:8,height:8,borderRadius:"50%",background:C.amber}}),
+        lang==="en"?"Coming soon":"Bientôt disponible"
+      ),
+      /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}},
+        coming.map(i=>/*#__PURE__*/React.createElement("div",{
+          key:i.name,
+          style:{background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"20px 16px",textAlign:"center",opacity:0.7}
+        },
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:28,marginBottom:8}},i.icon),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:700,marginBottom:4}},i.name),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:C.muted,marginBottom:8}},i.tag),
+          /*#__PURE__*/React.createElement("span",{style:{fontSize:10,fontWeight:600,padding:"2px 10px",borderRadius:100,background:C.surface,border:`1px solid ${C.border}`,color:C.muted}},lang==="en"?"Planned":"Prévu")
+        ))
+      )
+    ),
+    /*#__PURE__*/React.createElement("p",{style:{fontSize:13,color:C.muted,marginTop:12,textAlign:"center"}},
+      "+ Zendesk, Segment, Freshdesk, Notion, WhatsApp, Crisp ",lang==="en"?"and more coming soon.":"et bien d'autres à venir."
+    )
+  );
+};
+
 const EmailStudioView = ({
   plan, lang="fr"
 }) => {
@@ -14034,6 +14146,10 @@ const NAV_MANAGER = (lang) => [{
   id: "email",
   label: T("email",lang),
   icon: "✉️"
+}, {
+  id: "integrations",
+  label: lang==="en" ? "Integrations" : lang==="kr" ? "통합" : "Intégrations",
+  icon: "🔌"
 }];
 const NAV_CSM = (lang) => [{
   id: "dashboard",
@@ -14075,6 +14191,10 @@ const NAV_CSM = (lang) => [{
   id: "quotes",
   label: T("quotes",lang),
   icon: "📄"
+}, {
+  id: "integrations",
+  label: lang==="en" ? "Integrations" : lang==="kr" ? "통합" : "Intégrations",
+  icon: "🔌"
 }];
 
 // ── COACHING REMINDER BANNER (Elite Manager only, 1 fois/mois)
@@ -14743,6 +14863,8 @@ const App = () => {
         return /*#__PURE__*/React.createElement(TipsView, {role:role, lang:lang});
       case "quotes":
         return /*#__PURE__*/React.createElement(QuotesView, {lang:lang, currency:currency, companyId:company?.id});
+      case "integrations":
+        return /*#__PURE__*/React.createElement(IntegrationsView, {lang:lang});
       default:
         return /*#__PURE__*/React.createElement(DashboardView, {
           company: company,
