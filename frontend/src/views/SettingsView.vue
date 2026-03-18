@@ -155,11 +155,11 @@ const currencies = [
   { code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar' },
 ]
 
-const plans = [
-  { name: 'Starter', price: '0€', features: ['5 client accounts', 'Dashboard & KPIs', 'Task Board', 'Email Studio'] },
-  { name: 'Growth', price: '49€', features: ['Unlimited accounts', 'Unlimited CSMs', 'AI Coach', 'Team wellbeing', 'Planning'] },
-  { name: 'Elite', price: '149€', features: ['Everything in Growth', 'Dedicated onboarding', 'Priority support', 'Monthly coaching session'] },
-]
+const plans = computed(() => [
+  { name: 'Starter', price: '0€', features: [t('starter10Accounts'), t('starterDashKpi'), t('starterTaskBoard'), t('starterCoachLimited'), t('starterWellbeing'), t('starterEmailStudio')] },
+  { name: 'Growth', price: '49€', features: [t('growthUnlimitedAccounts'), t('growthUnlimitedCsms'), t('growthCoachUnlimited'), t('growthWellbeingAdvanced'), t('growthPlanning'), t('growthEmailFull'), t('growthImportCsv')] },
+  { name: 'Elite', price: '149€', features: [t('eliteAll'), t('eliteCrmIntegrations'), t('eliteOnboarding'), t('elitePrioritySupport'), t('eliteCoachingSession')] },
+])
 
 const notifItems = computed(() => [
   { key: 'churn_alerts', label: t('churnAlertLabel'), desc: t('churnAlertDesc') },

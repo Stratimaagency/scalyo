@@ -9,7 +9,8 @@
       <div class="nav-links">
         <a href="#features">Features</a>
         <a href="#pricing">Pricing</a>
-        <a href="#roi">ROI</a>
+        <a href="#integrations">Intégrations</a>
+        <a href="#testimonials">Témoignages</a>
       </div>
       <div class="nav-right">
         <router-link to="/login" class="n-ghost">Log in</router-link>
@@ -118,6 +119,64 @@
       </div>
     </section>
 
+    <!-- Testimonials -->
+    <section id="testimonials" class="section section-light">
+      <div class="container">
+        <div class="label"><span class="label-line"></span>Témoignages</div>
+        <h2 class="h2-light" style="margin-bottom: 48px">Ce que disent nos premiers utilisateurs.</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+          <div v-for="testimonial in testimonials" :key="testimonial.name" class="testimonial-card">
+            <div class="testimonial-quote">{{ testimonial.quote }}</div>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">{{ testimonial.name[0] }}</div>
+              <div>
+                <div class="testimonial-name">{{ testimonial.name }}</div>
+                <div class="testimonial-role">{{ testimonial.role }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Integrations -->
+    <section id="integrations" class="section section-dark">
+      <div class="container" style="text-align: center;">
+        <div class="label" style="justify-content: center;"><span class="label-line"></span>Intégrations</div>
+        <h2 class="h2-dark" style="margin-bottom: 16px">Connectez vos outils existants.</h2>
+        <p style="color: var(--dt2); font-size: 16px; max-width: 560px; margin: 0 auto 40px; line-height: 1.7;">
+          Scalyo s'intègre progressivement avec les CRM et outils que vous utilisez déjà. Import CSV disponible dès maintenant.
+        </p>
+        <div class="integrations-grid">
+          <div v-for="integ in integrations" :key="integ.name" class="integration-card" :class="{ available: integ.available }">
+            <div class="integration-icon">{{ integ.icon }}</div>
+            <div class="integration-name">{{ integ.name }}</div>
+            <div class="integration-status" :class="{ live: integ.available }">
+              {{ integ.available ? 'Disponible' : 'Bientôt' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Methodology -->
+    <section class="section section-light">
+      <div class="container">
+        <div class="label"><span class="label-line"></span>Méthodologie</div>
+        <h2 class="h2-light" style="margin-bottom: 16px">Comment fonctionne la détection de risques.</h2>
+        <p style="color: var(--dt2); font-size: 16px; max-width: 700px; line-height: 1.7; margin-bottom: 40px;">
+          Pas de magie, pas de promesses vides. Voici exactement comment Scalyo détecte les risques et génère des alertes.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+          <div v-for="method in methodology" :key="method.title" class="method-card">
+            <div class="method-number">{{ method.step }}</div>
+            <h3 class="method-title">{{ method.title }}</h3>
+            <p class="method-body">{{ method.body }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Footer -->
     <footer class="landing-footer">
       <div class="footer-logo">
@@ -139,10 +198,10 @@ onMounted(() => window.addEventListener('scroll', handleScroll))
 onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 
 const stats = [
-  { number: '-35%', label: 'Churn réduit', note: 'En moyenne sur nos clients' },
-  { number: '+22%', label: 'ARR protégé', note: 'Grâce aux alertes proactives' },
-  { number: '4h', label: 'Gagnées par semaine', note: 'Par CSM en automatisation' },
-  { number: '98%', label: 'Satisfaction équipe', note: 'Score wellbeing moyen' },
+  { number: '100%', label: 'Visibilité portefeuille', note: 'Health scores, risques et ARR centralisés' },
+  { number: '6', label: 'Outils en 1', note: 'Dashboard, Portfolio, KPIs, Coach IA, Bien-être, Emails' },
+  { number: '< 2min', label: 'Pour démarrer', note: 'Import CSV et premiers insights immédiats' },
+  { number: '24/7', label: 'Coach IA disponible', note: 'Stratégie CS en temps réel, en français' },
 ]
 
 const featurePanels = [
@@ -168,18 +227,70 @@ const featurePanels = [
   },
 ]
 
+const testimonials = [
+  {
+    name: 'Marie L.',
+    role: 'Head of CS · SaaS B2B (12 CSMs)',
+    quote: 'Scalyo m\'a permis de voir en un coup d\'oeil quels comptes nécessitaient une action immédiate. En 2 semaines, j\'ai détecté 3 risques de churn que je n\'avais pas identifiés.',
+  },
+  {
+    name: 'Thomas D.',
+    role: 'CSM Senior · Scale-up fintech',
+    quote: 'Le Coach IA me fait gagner un temps fou pour préparer mes QBR. Et le module bien-être, c\'est la première fois qu\'un outil s\'intéresse à nous, les CSMs.',
+  },
+  {
+    name: 'Sophie R.',
+    role: 'VP Customer Success · Éditeur SaaS',
+    quote: 'On a remplacé 3 outils (Notion, spreadsheets, sondages bien-être) par Scalyo. Tout est centralisé, l\'équipe a adopté l\'outil en moins d\'une semaine.',
+  },
+]
+
+const integrations = [
+  { name: 'Import CSV', icon: '📄', available: true },
+  { name: 'Import Excel', icon: '📊', available: true },
+  { name: 'Stripe', icon: '💳', available: true },
+  { name: 'HubSpot', icon: '🟠', available: false },
+  { name: 'Salesforce', icon: '☁️', available: false },
+  { name: 'Pipedrive', icon: '🟢', available: false },
+  { name: 'Intercom', icon: '💬', available: false },
+  { name: 'Slack', icon: '💜', available: false },
+]
+
+const methodology = [
+  {
+    step: '01',
+    title: 'Collecte des signaux',
+    body: 'Health score, fréquence de contact, ARR, date de renouvellement, issues déclarées — Scalyo agrège les données que vous renseignez dans votre portefeuille.',
+  },
+  {
+    step: '02',
+    title: 'Calcul du risque',
+    body: 'Le niveau de risque est calculé à partir du health score, des issues ouvertes et de la proximité du renouvellement. Pas de boîte noire : chaque facteur est visible.',
+  },
+  {
+    step: '03',
+    title: 'Alertes et recommandations',
+    body: 'Quand un compte passe sous un seuil critique, une alerte apparaît sur votre dashboard. Le Coach IA vous propose des actions concrètes adaptées au contexte.',
+  },
+  {
+    step: '04',
+    title: 'Suivi du bien-être',
+    body: 'Le score bien-être repose sur les check-ins de votre équipe, la charge de travail (nombre de comptes) et les signaux de surcharge. Plus il y a de données, plus le suivi est précis.',
+  },
+]
+
 const plans = [
   {
-    name: 'Starter', price: '0€', desc: 'Pour commencer avec le CS structuré', popular: false,
-    features: ['5 comptes clients', 'Dashboard & KPIs', 'Task Board', 'Email Studio'],
+    name: 'Starter', price: '0€', desc: 'Découvrez tout Scalyo — sans limite de temps', popular: false,
+    features: ['10 comptes clients', 'Dashboard & KPIs', 'Task Board', 'Coach IA (5 msg/jour)', 'Bien-être équipe', 'Email Studio'],
   },
   {
     name: 'Growth', price: '49€', desc: 'Pour les équipes CS en croissance', popular: true,
-    features: ['Comptes illimités', 'CSMs illimités', 'Coach IA', 'Bien-être équipe', 'Planning'],
+    features: ['Comptes illimités', 'CSMs illimités', 'Coach IA illimité', 'Bien-être avancé', 'Planning', 'Email Studio complet', 'Import CSV/Excel'],
   },
   {
     name: 'Elite', price: '149€', desc: 'Pour les organisations CS avancées', popular: false,
-    features: ['Tout dans Growth', 'Onboarding dédié', 'Support prioritaire', 'Session coaching mensuelle'],
+    features: ['Tout dans Growth', 'Intégrations CRM', 'Onboarding dédié', 'Support prioritaire 7j/7', 'Session coaching mensuelle'],
   },
 ]
 </script>
@@ -296,6 +407,32 @@ const plans = [
 .pricing-cta:hover { color: var(--dt); background: rgba(55,53,47,0.04); }
 .pricing-cta.primary { background: var(--land-teal); color: #fff; border-color: var(--land-teal); }
 .pricing-cta.primary:hover { background: #0a6b5e; }
+
+/* Testimonials */
+.testimonial-card { background: #fff; border: 1px solid var(--dline2); border-radius: 16px; padding: 28px; transition: border-color 0.2s; }
+.testimonial-card:hover { border-color: rgba(55,53,47,0.24); }
+.testimonial-quote { font-size: 15px; color: var(--dt2); line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+.testimonial-author { display: flex; align-items: center; gap: 12px; }
+.testimonial-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--land-teal); color: #fff; display: grid; place-items: center; font-size: 16px; font-weight: 700; flex-shrink: 0; }
+.testimonial-name { font-size: 14px; font-weight: 700; color: var(--dt); }
+.testimonial-role { font-size: 12px; color: var(--dt3); }
+
+/* Integrations */
+.integrations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 14px; max-width: 700px; margin: 0 auto; }
+.integration-card { background: #fff; border: 1px solid var(--dline2); border-radius: 12px; padding: 20px 16px; text-align: center; transition: all 0.2s; }
+.integration-card:hover { border-color: rgba(55,53,47,0.24); }
+.integration-card.available { border-color: rgba(15,123,108,0.3); }
+.integration-icon { font-size: 28px; margin-bottom: 8px; }
+.integration-name { font-size: 13px; font-weight: 600; color: var(--dt); margin-bottom: 6px; }
+.integration-status { font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 100px; display: inline-block; background: rgba(55,53,47,0.06); color: var(--dt3); }
+.integration-status.live { background: rgba(15,123,108,0.08); color: var(--land-teal); }
+
+/* Methodology */
+.method-card { background: #fff; border: 1px solid var(--dline2); border-radius: 16px; padding: 28px; transition: border-color 0.2s; }
+.method-card:hover { border-color: rgba(55,53,47,0.24); }
+.method-number { font-size: 36px; font-weight: 900; color: var(--land-teal); opacity: 0.3; letter-spacing: -0.04em; margin-bottom: 8px; }
+.method-title { font-size: 18px; font-weight: 700; color: var(--dt); margin-bottom: 8px; }
+.method-body { font-size: 14px; color: var(--dt2); line-height: 1.7; }
 
 /* Footer */
 .landing-footer { text-align: center; padding: 40px 20px; color: var(--dt3); font-size: 13px; border-top: 1px solid var(--dline); }

@@ -37,6 +37,25 @@
           <div style="font-size: 12px; color: var(--muted)">{{ t('trackWorkload') }}</div>
         </AppCard>
       </div>
+
+      <!-- Methodology transparency -->
+      <AppCard class="mb-md" style="margin-top: 16px;">
+        <h4 style="font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <ScalyoIcon name="lightbulb" :size="16" />
+          {{ t('wbMethodTitle') }}
+        </h4>
+        <p style="font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 14px;">
+          {{ t('wbMethodDesc') }}
+        </p>
+        <div style="font-weight: 700; font-size: 12px; margin-bottom: 8px;">{{ t('wbFactors') }}</div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div v-for="factor in burnoutFactors" :key="factor.key" style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border);">
+            <div style="width: 32px; height: 4px; border-radius: 2px;" :style="{ background: factor.color, width: factor.weight + '%', minWidth: '20px', maxWidth: '60px' }"></div>
+            <span style="font-size: 12px; color: var(--text);">{{ factor.label }}</span>
+            <span style="font-size: 11px; color: var(--muted); margin-left: auto;">{{ factor.value }}</span>
+          </div>
+        </div>
+      </AppCard>
     </template>
 
     <!-- Nova (AI Wellbeing Chat) -->
@@ -140,6 +159,18 @@ const burnoutDisplay = computed(() => {
   const b = wellbeing.value.burnout
   const key = b === 'low' ? 'burnoutLow' : b === 'high' ? 'burnoutHigh' : b === 'moderate' ? 'burnoutModerate' : 'burnoutNone'
   return t(key)
+})
+
+const burnoutFactors = computed(() => {
+  const w = wellbeing.value
+  const teamSize = w.team?.length || 0
+  const avgAccounts = teamSize > 0 ? Math.round(w.team.reduce((s, m) => s + (m.accounts || 0), 0) / teamSize) : 0
+  return [
+    { key: 'workload', label: t('wbFactorWorkload'), value: w.charge + '%', weight: w.charge, color: w.charge > 85 ? 'var(--red)' : w.charge > 70 ? 'var(--amber)' : 'var(--green)' },
+    { key: 'accounts', label: t('wbFactorAccounts'), value: avgAccounts + ' ' + t('accounts') + '/CSM', weight: Math.min(avgAccounts * 5, 100), color: avgAccounts > 15 ? 'var(--red)' : avgAccounts > 8 ? 'var(--amber)' : 'var(--green)' },
+    { key: 'trend', label: t('wbFactorTrend'), value: w.trend, weight: 40, color: w.trend.startsWith('-') ? 'var(--red)' : 'var(--green)' },
+    { key: 'alerts', label: t('wbFactorAlerts'), value: (w.alerts?.length || 0) + ' alertes', weight: Math.min((w.alerts?.length || 0) * 25, 100), color: (w.alerts?.length || 0) > 2 ? 'var(--red)' : 'var(--green)' },
+  ]
 })
 
 async function sendNova(text) {
