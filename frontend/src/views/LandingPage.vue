@@ -246,14 +246,18 @@ const testimonials = [
 ]
 
 const integrations = [
-  { name: 'Import CSV', icon: '📄', available: true },
-  { name: 'Import Excel', icon: '📊', available: true },
+  { name: 'Gmail', icon: '📧', available: true },
+  { name: 'Outlook', icon: '📬', available: true },
+  { name: 'HubSpot CRM', icon: '🟠', available: true },
+  { name: 'Salesforce', icon: '☁️', available: true },
+  { name: 'Slack', icon: '💜', available: true },
+  { name: 'Teams', icon: '🟦', available: true },
+  { name: 'Jira', icon: '🔷', available: true },
+  { name: 'Zoom', icon: '📹', available: true },
+  { name: 'Google Meet', icon: '🎥', available: true },
+  { name: 'Calendly', icon: '📅', available: true },
+  { name: 'Intercom', icon: '💬', available: true },
   { name: 'Stripe', icon: '💳', available: true },
-  { name: 'HubSpot', icon: '🟠', available: false },
-  { name: 'Salesforce', icon: '☁️', available: false },
-  { name: 'Pipedrive', icon: '🟢', available: false },
-  { name: 'Intercom', icon: '💬', available: false },
-  { name: 'Slack', icon: '💜', available: false },
 ]
 
 const methodology = [
