@@ -100,7 +100,7 @@
         <div class="label"><span class="label-line"></span>Tarification</div>
         <h2 class="h2-dark" style="margin-bottom: 48px">Des équipes CS qui performent, des clients qui restent.</h2>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 960px;">
+        <div class="pricing-grid">
           <div v-for="plan in plans" :key="plan.name" class="pricing-card" :class="{ popular: plan.popular }">
             <div v-if="plan.popular" class="pricing-popular-badge">Populaire</div>
             <div class="pricing-name">{{ plan.name }}</div>
@@ -124,7 +124,7 @@
       <div class="container">
         <div class="label"><span class="label-line"></span>Témoignages</div>
         <h2 class="h2-light" style="margin-bottom: 48px">Ce que disent nos premiers utilisateurs.</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        <div class="testimonials-grid">
           <div v-for="testimonial in testimonials" :key="testimonial.name" class="testimonial-card">
             <div class="testimonial-quote">{{ testimonial.quote }}</div>
             <div class="testimonial-author">
@@ -167,7 +167,7 @@
         <p style="color: var(--dt2); font-size: 16px; max-width: 700px; line-height: 1.7; margin-bottom: 40px;">
           Pas de magie, pas de promesses vides. Voici exactement comment Scalyo détecte les risques et génère des alertes.
         </p>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+        <div class="methodology-grid">
           <div v-for="method in methodology" :key="method.title" class="method-card">
             <div class="method-number">{{ method.step }}</div>
             <h3 class="method-title">{{ method.title }}</h3>
@@ -391,6 +391,15 @@ const plans = [
 .fv-badge { padding: 3px 9px; border-radius: 100px; font-size: 11px; font-weight: 600; }
 .badge-live { background: rgba(74,222,128,0.08); color: #4ADE80; border: 1px solid rgba(74,222,128,0.15); }
 
+/* Pricing grid */
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 960px; }
+
+/* Testimonials grid */
+.testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+/* Methodology grid */
+.methodology-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+
 /* Pricing */
 .pricing-card { background: #fff; border: 1px solid var(--dline2); border-radius: 16px; padding: 32px 28px; position: relative; transition: border-color 0.2s; }
 .pricing-card:hover { border-color: rgba(55,53,47,0.24); }
@@ -441,30 +450,33 @@ const plans = [
 /* Small phones */
 @media (max-width: 374px) {
   .hero { padding: 110px 14px 60px; }
-  .hero-h1 { font-size: 28px; }
+  .hero-h1 { font-size: 26px; }
   .hero-sub { font-size: 14px; }
-  .hero-cta { flex-direction: column; gap: 10px; }
-  .btn-hero-primary, .btn-hero-secondary { width: 100%; justify-content: center; text-align: center; }
-  .hero-social-proof { flex-direction: column; gap: 4px; font-size: 12px; }
-  .hsp-sep { display: none; }
   .stats-inner { grid-template-columns: 1fr; }
   .stat-cell { border-right: none; border-bottom: 1px solid var(--dline); padding: 24px 20px; }
   .stat-cell:last-child { border-bottom: none; }
-  .stat-number { font-size: 36px; }
+  .stat-number { font-size: 32px; }
   .section { padding: 60px 14px; }
   .pricing-card { padding: 24px 20px; }
   .pricing-price { font-size: 34px; }
   .fv-pad { padding: 16px; }
   .landing-nav { padding: 0 14px; }
   .nav-right .n-ghost { display: none; }
+  .integrations-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .h2-light, .h2-dark { font-size: 22px; }
 }
 
 /* Mobile */
 @media (max-width: 768px) {
   .hero { padding: 120px 20px 70px; }
   .hero-h1 { font-size: 32px; }
+  .hero-h1 br { display: none; }
+  .hero-sub br { display: none; }
   .hero-badge { margin-bottom: 24px; }
-  .hero-cta { margin-bottom: 36px; }
+  .hero-cta { margin-bottom: 36px; flex-direction: column; gap: 10px; }
+  .btn-hero-primary, .btn-hero-secondary { width: 100%; justify-content: center; text-align: center; }
+  .hero-social-proof { flex-direction: column; gap: 4px; }
+  .hsp-sep { display: none; }
   .nav-links { display: none; }
   .feat-panel { grid-template-columns: 1fr; gap: 32px; }
   .feat-panel.flip { direction: ltr; }
@@ -473,9 +485,14 @@ const plans = [
   .stat-cell:nth-child(2) { border-right: none; }
   .stat-number { font-size: 36px; }
   .section { padding: 64px 20px; }
+  .pricing-grid { grid-template-columns: 1fr; }
   .pricing-card { padding: 28px 22px; }
   .pricing-price { font-size: 36px; }
-  .landing-footer p { font-size: 12px; line-height: 1.7; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .methodology-grid { grid-template-columns: 1fr; }
+  .integrations-grid { grid-template-columns: repeat(2, 1fr); }
+  .landing-footer p { font-size: 12px; line-height: 1.7; padding: 0 12px; }
+  .h2-light, .h2-dark { font-size: 26px; }
 }
 
 /* Tablet */
@@ -486,6 +503,8 @@ const plans = [
   .stat-number { font-size: 40px; }
   .stat-cell { padding: 28px 20px; }
   .section { padding: 80px 32px; }
+  .pricing-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* Large screens / TV */
