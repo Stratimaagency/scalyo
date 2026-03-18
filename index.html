@@ -682,6 +682,12 @@ footer {
 .vs-check { color: var(--teal); font-weight: 700; font-size: 16px; }
 .vs-cross { color: #D4432F; font-size: 14px; }
 .vs-partial { color: #D4930F; font-size: 13px; font-weight: 500; }
+.sell-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+.sell-card { background: var(--dk3); border: 1px solid var(--dline2); border-radius: 14px; padding: 24px 20px; text-align: left; transition: all .3s cubic-bezier(.16,1,.3,1); transform-style: preserve-3d; }
+.sell-card:hover { transform: perspective(600px) translateY(-6px) translateZ(10px); border-color: rgba(77,182,160,.25); box-shadow: 0 12px 32px rgba(0,0,0,.2), 0 0 0 1px rgba(77,182,160,.1); }
+.sell-icon { font-size: 28px; margin-bottom: 12px; filter: drop-shadow(0 2px 1px rgba(0,0,0,.2)) drop-shadow(0 4px 3px rgba(0,0,0,.1)); }
+.sell-label { font-size: 15px; font-weight: 700; color: var(--dt); margin-bottom: 8px; letter-spacing: -.02em; }
+.sell-desc { font-size: 13px; color: var(--dt2); line-height: 1.6; }
 .vs-highlights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 28px; }
 .vs-hl-card { background: rgba(15,123,108,.04); border: 1px solid rgba(15,123,108,.15); border-radius: 12px; padding: 20px; text-align: center; }
 .vs-hl-number { font-size: 28px; font-weight: 800; color: var(--teal); letter-spacing: -.04em; margin-bottom: 4px; }
@@ -701,6 +707,7 @@ footer {
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .stats-inner { grid-template-columns: 1fr 1fr; }
   .integrations-grid { grid-template-columns: repeat(3, 1fr); }
+  .sell-grid { grid-template-columns: repeat(2, 1fr); }
   .vs-highlights { gap: 10px; }
   .stat-cell { border-right: none; border-bottom: 1px solid var(--dline); }
   .stat-cell:nth-child(odd) { border-right: 1px solid var(--dline); }
@@ -781,8 +788,11 @@ footer {
   .integrations-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .integ-cats { gap: 6px; }
   .integ-cat-btn { padding: 7px 12px; font-size: 12px; }
+  .sell-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .sell-card { padding: 18px 14px; }
+  .sell-label { font-size: 14px; }
+  .sell-desc { font-size: 12px; }
   .vs-highlights { grid-template-columns: 1fr; }
-  .vs-table thead th, .vs-table tbody td { padding: 10px 8px; font-size: 12px; }
   .vs-title { font-size: 20px; }
 
   /* END CTA */
@@ -810,7 +820,7 @@ footer {
   .wb-grid { grid-template-columns: 1fr; }
   .roi-big { font-size: 48px; }
   .integrations-grid { grid-template-columns: repeat(2, 1fr); }
-  .vs-table thead th, .vs-table tbody td { padding: 8px 6px; font-size: 11px; }
+  .sell-grid { grid-template-columns: 1fr; }
 }
 /* HAMBURGER + MOBILE MENU */
 .hamburger {
@@ -1870,93 +1880,66 @@ footer {
       <span data-i18n="integ_more">+ Zendesk, Segment, Freshdesk, Notion, WhatsApp, Crisp et bien d'autres à venir.</span>
     </p>
 
-    <!-- Competitive advantage block -->
+    <!-- Arguments de vente -->
     <div class="vs-block">
-      <div class="vs-title" data-i18n="vs_title">Pourquoi Scalyo surpasse la concurrence</div>
-      <p class="vs-subtitle" data-i18n="vs_subtitle">Les plateformes CS traditionnelles facturent les intégrations en supplément, limitent les connecteurs ou imposent des outils tiers. Scalyo inclut tout, nativement.</p>
+      <div class="vs-title" data-i18n="sell_title">Pourquoi choisir Scalyo ?</div>
+      <p class="vs-subtitle" data-i18n="sell_subtitle">8 raisons concrètes pour lesquelles les équipes CS les plus performantes choisissent Scalyo.</p>
 
-      <table class="vs-table">
-        <thead>
-          <tr>
-            <th data-i18n="vs_criteria">Critère</th>
-            <th class="vs-scalyo">Scalyo</th>
-            <th>Gainsight</th>
-            <th>Totango</th>
-            <th>ChurnZero</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td data-i18n="vs_native">Intégrations natives incluses</td>
-            <td class="vs-scalyo"><span class="vs-check">&#10003; 17+</span></td>
-            <td><span class="vs-partial" data-i18n="vs_paid">Payantes</span></td>
-            <td><span class="vs-partial" data-i18n="vs_limited">Limitées</span></td>
-            <td><span class="vs-partial" data-i18n="vs_limited">Limitées</span></td>
-          </tr>
-          <tr>
-            <td data-i18n="vs_setup">Setup en 5 minutes</td>
-            <td class="vs-scalyo"><span class="vs-check">&#10003;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-          </tr>
-          <tr>
-            <td data-i18n="vs_no_zapier">Sans Zapier ni middleware</td>
-            <td class="vs-scalyo"><span class="vs-check">&#10003;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-            <td><span class="vs-partial" data-i18n="vs_partial">Partiel</span></td>
-          </tr>
-          <tr>
-            <td data-i18n="vs_eu">Données hébergées en Europe</td>
-            <td class="vs-scalyo"><span class="vs-check">&#10003;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-          </tr>
-          <tr>
-            <td data-i18n="vs_no_cost">Pas de coût par connecteur</td>
-            <td class="vs-scalyo"><span class="vs-check">&#10003;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-            <td><span class="vs-partial" data-i18n="vs_depends">Selon plan</span></td>
-            <td><span class="vs-partial" data-i18n="vs_depends">Selon plan</span></td>
-          </tr>
-          <tr>
-            <td data-i18n="vs_coach">Coach IA intégré</td>
-            <td class="vs-scalyo"><span class="vs-check">&#10003;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-          </tr>
-          <tr>
-            <td data-i18n="vs_wellbeing">Bien-être équipe inclus</td>
-            <td class="vs-scalyo"><span class="vs-check">&#10003;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-          </tr>
-          <tr>
-            <td data-i18n="vs_pricing">Tarif transparent (pas de devis)</td>
-            <td class="vs-scalyo"><span class="vs-check">&#10003;</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-            <td><span class="vs-partial" data-i18n="vs_partial">Partiel</span></td>
-            <td><span class="vs-cross">&#10007;</span></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="sell-grid">
+        <div class="sell-card">
+          <div class="sell-icon">🔗</div>
+          <div class="sell-label" data-i18n="sell_1_label">17+ intégrations natives</div>
+          <div class="sell-desc" data-i18n="sell_1_desc">Connectez votre CRM, email, chat et visio en un clic. Tout est inclus, sans surcoût ni middleware.</div>
+        </div>
+        <div class="sell-card">
+          <div class="sell-icon">⚡</div>
+          <div class="sell-label" data-i18n="sell_2_label">Opérationnel en 5 minutes</div>
+          <div class="sell-desc" data-i18n="sell_2_desc">Pas de consultant, pas de code, pas de semaines de déploiement. Votre équipe est productive dès le premier jour.</div>
+        </div>
+        <div class="sell-card">
+          <div class="sell-icon">🇪🇺</div>
+          <div class="sell-label" data-i18n="sell_3_label">Données 100% européennes</div>
+          <div class="sell-desc" data-i18n="sell_3_desc">Hébergement Supabase en Irlande, chiffrement AES-256, RGPD natif. Vos données ne quittent jamais l'UE.</div>
+        </div>
+        <div class="sell-card">
+          <div class="sell-icon">🤖</div>
+          <div class="sell-label" data-i18n="sell_4_label">Coach IA intégré</div>
+          <div class="sell-desc" data-i18n="sell_4_desc">Un expert Customer Success disponible 24h/24. Conseils actionnables, scripts d'appels, templates d'emails.</div>
+        </div>
+        <div class="sell-card">
+          <div class="sell-icon">💚</div>
+          <div class="sell-label" data-i18n="sell_5_label">Bien-être équipe inclus</div>
+          <div class="sell-desc" data-i18n="sell_5_desc">Suivi du moral, alertes burnout précoces, charge de travail. Prenez soin de vos CSMs, pas seulement de vos clients.</div>
+        </div>
+        <div class="sell-card">
+          <div class="sell-icon">💰</div>
+          <div class="sell-label" data-i18n="sell_6_label">Tarif transparent, bloqué à vie</div>
+          <div class="sell-desc" data-i18n="sell_6_desc">Pas de devis, pas de mauvaise surprise. Prix affiché = prix payé. Les early adopters gardent leur tarif pour toujours.</div>
+        </div>
+        <div class="sell-card">
+          <div class="sell-icon">📊</div>
+          <div class="sell-label" data-i18n="sell_7_label">Tout-en-un : 8 modules intégrés</div>
+          <div class="sell-desc" data-i18n="sell_7_desc">Portfolio, KPIs, bien-être, Coach IA, Email Studio, Planning, Tasks, Ressources — une seule plateforme au lieu de cinq.</div>
+        </div>
+        <div class="sell-card">
+          <div class="sell-icon">🇫🇷</div>
+          <div class="sell-label" data-i18n="sell_8_label">Support francophone 7j/7</div>
+          <div class="sell-desc" data-i18n="sell_8_desc">Une équipe qui parle votre langue, disponible 7 jours sur 7. Pas de chatbot, de vraies personnes.</div>
+        </div>
+      </div>
 
       <div class="vs-highlights">
         <div class="vs-hl-card">
           <div class="vs-hl-number">0 €</div>
-          <div class="vs-hl-text" data-i18n="vs_hl1">par intégration<br/>Tout est inclus dans votre plan</div>
+          <div class="vs-hl-text" data-i18n="sell_hl1">par intégration<br/>Tout est inclus dans votre plan</div>
         </div>
         <div class="vs-hl-card">
           <div class="vs-hl-number">5 min</div>
-          <div class="vs-hl-text" data-i18n="vs_hl2">pour tout connecter<br/>Pas de consultant, pas de code</div>
+          <div class="vs-hl-text" data-i18n="sell_hl2">pour tout connecter<br/>Pas de consultant, pas de code</div>
         </div>
         <div class="vs-hl-card">
           <div class="vs-hl-number">100%</div>
-          <div class="vs-hl-text" data-i18n="vs_hl3">natif, sans middleware<br/>Vos données restent en Europe</div>
+          <div class="vs-hl-text" data-i18n="sell_hl3">natif, sans middleware<br/>Vos données restent en Europe</div>
         </div>
       </div>
     </div>
@@ -2440,6 +2423,45 @@ const L = {
     fl_c8: "Ressources",
     fl_s1s: "En 90 jours d’utilisation",
     fl_s4l: "d’avance sur le churn",
+    // Intégrations
+    integ_tag: "Intégrations",
+    integ_h2: "Connectez tous vos outils en un clic.",
+    integ_sub: "CRM, email, chat, visio, gestion de projets — Scalyo se connecte nativement aux outils que votre équipe utilise déjà.",
+    integ_all: "Tout",
+    integ_meetings: "Réunions",
+    integ_projects: "Projets",
+    integ_data: "Données",
+    integ_available: "Disponible",
+    integ_sf_tag: "Comptes & Opps",
+    integ_gmail_tag: "Boîte de réception",
+    integ_imap_tag: "Tout fournisseur",
+    integ_slack_tag: "Alertes & Commandes",
+    integ_zoom_tag: "Planification & Enregistrement",
+    integ_calendly_tag: "Prise de RDV",
+    integ_asana_tag: "Projets & Tâches",
+    integ_more: "+ Zendesk, Segment, Freshdesk, Notion, WhatsApp, Crisp et bien d’autres à venir.",
+    // Arguments de vente
+    sell_title: "Pourquoi choisir Scalyo ?",
+    sell_subtitle: "8 raisons concrètes pour lesquelles les équipes CS les plus performantes choisissent Scalyo.",
+    sell_1_label: "17+ intégrations natives",
+    sell_1_desc: "Connectez votre CRM, email, chat et visio en un clic. Tout est inclus, sans surcoût ni middleware.",
+    sell_2_label: "Opérationnel en 5 minutes",
+    sell_2_desc: "Pas de consultant, pas de code, pas de semaines de déploiement. Votre équipe est productive dès le premier jour.",
+    sell_3_label: "Données 100% européennes",
+    sell_3_desc: "Hébergement Supabase en Irlande, chiffrement AES-256, RGPD natif. Vos données ne quittent jamais l’UE.",
+    sell_4_label: "Coach IA intégré",
+    sell_4_desc: "Un expert Customer Success disponible 24h/24. Conseils actionnables, scripts d’appels, templates d’emails.",
+    sell_5_label: "Bien-être équipe inclus",
+    sell_5_desc: "Suivi du moral, alertes burnout précoces, charge de travail. Prenez soin de vos CSMs, pas seulement de vos clients.",
+    sell_6_label: "Tarif transparent, bloqué à vie",
+    sell_6_desc: "Pas de devis, pas de mauvaise surprise. Prix affiché = prix payé. Les early adopters gardent leur tarif pour toujours.",
+    sell_7_label: "Tout-en-un : 8 modules intégrés",
+    sell_7_desc: "Portfolio, KPIs, bien-être, Coach IA, Email Studio, Planning, Tasks, Ressources — une seule plateforme au lieu de cinq.",
+    sell_8_label: "Support francophone 7j/7",
+    sell_8_desc: "Une équipe qui parle votre langue, disponible 7 jours sur 7. Pas de chatbot, de vraies personnes.",
+    sell_hl1: "par intégration<br/>Tout est inclus dans votre plan",
+    sell_hl2: "pour tout connecter<br/>Pas de consultant, pas de code",
+    sell_hl3: "natif, sans middleware<br/>Vos données restent en Europe",
   },
 
   en: {
@@ -2753,6 +2775,45 @@ const L = {
     fl_c8: "Resources",
     fl_s1s: "Within 90 days of use",
     fl_s4l: "ahead of churn",
+    // Integrations
+    integ_tag: "Integrations",
+    integ_h2: "Connect all your tools in one click.",
+    integ_sub: "CRM, email, chat, video, project management — Scalyo natively connects to the tools your team already uses.",
+    integ_all: "All",
+    integ_meetings: "Meetings",
+    integ_projects: "Projects",
+    integ_data: "Data",
+    integ_available: "Available",
+    integ_sf_tag: "Accounts & Opps",
+    integ_gmail_tag: "Inbox",
+    integ_imap_tag: "Any provider",
+    integ_slack_tag: "Alerts & Commands",
+    integ_zoom_tag: "Scheduling & Recording",
+    integ_calendly_tag: "Booking",
+    integ_asana_tag: "Projects & Tasks",
+    integ_more: "+ Zendesk, Segment, Freshdesk, Notion, WhatsApp, Crisp and many more coming soon.",
+    // Sales arguments
+    sell_title: "Why choose Scalyo?",
+    sell_subtitle: "8 concrete reasons why the most successful CS teams choose Scalyo.",
+    sell_1_label: "17+ native integrations",
+    sell_1_desc: "Connect your CRM, email, chat and video in one click. Everything is included, no extra cost or middleware.",
+    sell_2_label: "Up and running in 5 minutes",
+    sell_2_desc: "No consultants, no code, no weeks of deployment. Your team is productive from day one.",
+    sell_3_label: "100% European data",
+    sell_3_desc: "Supabase hosting in Ireland, AES-256 encryption, native GDPR. Your data never leaves the EU.",
+    sell_4_label: "Built-in AI Coach",
+    sell_4_desc: "A Customer Success expert available 24/7. Actionable advice, call scripts, email templates.",
+    sell_5_label: "Team wellbeing included",
+    sell_5_desc: "Mood tracking, early burnout alerts, workload monitoring. Take care of your CSMs, not just your clients.",
+    sell_6_label: "Transparent pricing, locked for life",
+    sell_6_desc: "No quotes, no surprises. The listed price is the price you pay. Early adopters keep their rate forever.",
+    sell_7_label: "All-in-one: 8 integrated modules",
+    sell_7_desc: "Portfolio, KPIs, Wellbeing, AI Coach, Email Studio, Planning, Tasks, Resources — one platform instead of five.",
+    sell_8_label: "7-day-a-week support",
+    sell_8_desc: "A real team, available 7 days a week. No chatbot — real people who understand Customer Success.",
+    sell_hl1: "per integration<br/>Everything is included in your plan",
+    sell_hl2: "to connect everything<br/>No consultant, no code",
+    sell_hl3: "native, no middleware<br/>Your data stays in Europe",
   },
 
   kr: {
@@ -3073,6 +3134,45 @@ const L = {
     fl_c8: "리소스",
     fl_s1s: "사용 90일 이내",
     fl_s4l: "이탈 선행 감지",
+    // 통합
+    integ_tag: "통합",
+    integ_h2: "모든 도구를 한 번에 연결하세요.",
+    integ_sub: "CRM, 이메일, 채팅, 화상회의, 프로젝트 관리 — Scalyo는 팀이 이미 사용하는 도구에 기본 연결됩니다.",
+    integ_all: "전체",
+    integ_meetings: "회의",
+    integ_projects: "프로젝트",
+    integ_data: "데이터",
+    integ_available: "사용 가능",
+    integ_sf_tag: "계정 & 기회",
+    integ_gmail_tag: "받은편지함",
+    integ_imap_tag: "모든 제공업체",
+    integ_slack_tag: "알림 & 명령",
+    integ_zoom_tag: "일정 & 녹화",
+    integ_calendly_tag: "예약",
+    integ_asana_tag: "프로젝트 & 작업",
+    integ_more: "+ Zendesk, Segment, Freshdesk, Notion, WhatsApp, Crisp 등 곧 추가됩니다.",
+    // 판매 포인트
+    sell_title: "왜 Scalyo를 선택해야 하나요?",
+    sell_subtitle: "가장 성공적인 CS 팀이 Scalyo를 선택하는 8가지 구체적인 이유.",
+    sell_1_label: "17개 이상의 기본 통합",
+    sell_1_desc: "CRM, 이메일, 채팅, 화상회의를 한 번에 연결하세요. 추가 비용이나 미들웨어 없이 모두 포함됩니다.",
+    sell_2_label: "5분 만에 시작",
+    sell_2_desc: "컨설턴트 불필요, 코드 불필요, 몇 주간의 배포 불필요. 팀이 첫날부터 생산적으로 일합니다.",
+    sell_3_label: "100% 유럽 데이터",
+    sell_3_desc: "아일랜드 Supabase 호스팅, AES-256 암호화, 기본 GDPR. 데이터가 EU를 떠나지 않습니다.",
+    sell_4_label: "내장 AI 코치",
+    sell_4_desc: "24시간 이용 가능한 Customer Success 전문가. 실행 가능한 조언, 통화 스크립트, 이메일 템플릿.",
+    sell_5_label: "팀 웰빙 포함",
+    sell_5_desc: "기분 추적, 조기 번아웃 알림, 업무량 모니터링. 고객뿐 아니라 CSM도 케어하세요.",
+    sell_6_label: "투명한 가격, 평생 고정",
+    sell_6_desc: "견적 불필요, 놀라운 비용 없음. 표시된 가격이 지불 가격입니다. 얼리 어답터는 영원히 요금을 유지합니다.",
+    sell_7_label: "올인원: 8개 통합 모듈",
+    sell_7_desc: "포트폴리오, KPI, 웰빙, AI 코치, 이메일 스튜디오, 플래닝, 태스크, 리소스 — 5개 대신 하나의 플랫폼.",
+    sell_8_label: "주 7일 지원",
+    sell_8_desc: "주 7일 이용 가능한 실제 팀. 챗봇이 아닌, Customer Success를 이해하는 실제 사람들.",
+    sell_hl1: "통합당<br/>모든 것이 플랜에 포함됩니다",
+    sell_hl2: "모든 것을 연결하는 데<br/>컨설턴트 불필요, 코드 불필요",
+    sell_hl3: "기본, 미들웨어 없음<br/>데이터는 유럽에 보관됩니다",
   }
 };
 
