@@ -1148,6 +1148,16 @@ onUnmounted(() => {
   --teal2: rgba(15,123,108,0.08);
   --teal3: rgba(15,123,108,0.04);
 
+  /* semantic colors */
+  --red: #F87171;
+  --amber: #FBBF24;
+  --blue: #60A5FA;
+  --green: #4ADE80;
+
+  /* card backgrounds */
+  --bg2: var(--dk3);
+  --bg3: var(--dk4);
+
   --f: 'Plus Jakarta Sans', -apple-system, system-ui, sans-serif;
   --rad: 12px;
 }
