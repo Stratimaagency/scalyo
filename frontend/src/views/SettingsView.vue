@@ -7,10 +7,11 @@
 
     <div class="tab-bar mb-lg">
       <button class="tab-item" :class="{ active: tab === 'profile' }" @click="tab = 'profile'">{{ t('tabProfile') }}</button>
-      <button class="tab-item" :class="{ active: tab === 'team' }" @click="tab = 'team'">{{ t('tabTeam') }}</button>
-      <button class="tab-item" :class="{ active: tab === 'billing' }" @click="tab = 'billing'">{{ t('tabBilling') }}</button>
+      <button v-if="isManager" class="tab-item" :class="{ active: tab === 'team' }" @click="tab = 'team'">{{ t('tabTeam') }}</button>
+      <button v-if="isManager" class="tab-item" :class="{ active: tab === 'billing' }" @click="tab = 'billing'">{{ t('tabBilling') }}</button>
       <button class="tab-item" :class="{ active: tab === 'notifications' }" @click="tab = 'notifications'">{{ t('tabNotifs') }}</button>
       <button class="tab-item" :class="{ active: tab === 'appearance' }" @click="tab = 'appearance'">{{ t('tabAppearance') }}</button>
+      <button class="tab-item" :class="{ active: tab === 'danger' }" @click="tab = 'danger'" style="color: var(--red)">⚠️ {{ t('deleteAccount') }}</button>
     </div>
 
     <!-- Profile -->
@@ -26,29 +27,10 @@
         <AppField :label="t('companyNameLabel')" v-model="companyName" :placeholder="t('companyPlaceholder')" />
         <button class="btn btn-primary" @click="saveCompany" :disabled="saving">{{ saving ? t('saving') : t('save') }}</button>
       </AppCard>
-      <!-- Delete account -->
-      <AppCard :danger="true">
-        <h4 style="font-weight: 800; margin-bottom: 8px; color: var(--red)">{{ t('deleteAccount') }}</h4>
-        <p style="font-size: 13px; color: var(--muted); margin-bottom: 14px">{{ t('deleteAccountDesc') }}</p>
-        <div v-if="showDeleteConfirm" style="margin-bottom: 14px;">
-          <p style="font-size: 13px; color: var(--red); margin-bottom: 8px; font-weight: 600;">
-            {{ t('deleteAccountType') }}
-          </p>
-          <input v-model="deleteConfirmText" class="field-input" style="margin-bottom: 8px;"
-            :placeholder="deleteWord" />
-          <div style="display: flex; gap: 8px;">
-            <button class="btn btn-danger" :disabled="deleteConfirmText !== deleteWord" @click="confirmDeleteAccount">
-              {{ t('confirm') }}
-            </button>
-            <button class="btn btn-secondary" @click="showDeleteConfirm = false; deleteConfirmText = ''">{{ t('cancel') }}</button>
-          </div>
-        </div>
-        <button v-else class="btn btn-danger" @click="showDeleteConfirm = true">{{ t('deleteAccount') }}</button>
-      </AppCard>
     </template>
 
-    <!-- Team -->
-    <template v-if="tab === 'team'">
+    <!-- Team (manager only) -->
+    <template v-if="tab === 'team' && isManager">
       <AppCard>
         <h4 style="font-weight: 800; margin-bottom: 14px">{{ t('teamSectionTitle') }}</h4>
         <p style="font-size: 13px; color: var(--muted); margin-bottom: 14px">{{ t('teamMgmtDesc') }}</p>
@@ -56,8 +38,8 @@
       </AppCard>
     </template>
 
-    <!-- Billing -->
-    <template v-if="tab === 'billing'">
+    <!-- Billing (manager only) -->
+    <template v-if="tab === 'billing' && isManager">
       <!-- Trial banner -->
       <div v-if="trialDaysLeft > 0" class="card" style="padding: 18px; margin-bottom: 16px; border-color: var(--tealBorder); background: var(--tealBg);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -149,6 +131,41 @@
           </select>
         </div>
       </AppCard>
+
+      <!-- AI features indicator -->
+      <AppCard class="mb-md">
+        <div style="display: flex; align-items: center; gap: 14px">
+          <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--green); flex-shrink: 0; box-shadow: 0 0 8px rgba(74,222,128,.5)"></div>
+          <div>
+            <div style="font-weight: 700; font-size: 14px; margin-bottom: 2px">{{ aiFeaturesLabel }}</div>
+            <div style="font-size: 12px; color: var(--muted)">{{ aiCoachDesc }}</div>
+          </div>
+        </div>
+      </AppCard>
+    </template>
+
+    <!-- Danger zone -->
+    <template v-if="tab === 'danger'">
+      <AppCard :danger="true">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px">
+          <span style="font-size: 24px">⚠️</span>
+          <h4 style="font-weight: 900; font-size: 17px; color: var(--red)">{{ t('deleteAccount') }}</h4>
+        </div>
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.7; max-width: 500px">{{ t('deleteAccountDesc') }}</p>
+        <div style="margin-bottom: 18px">
+          <label style="font-size: 11px; font-weight: 700; color: var(--red); text-transform: uppercase; display: block; margin-bottom: 8px; letter-spacing: .08em">
+            {{ t('deleteAccountType') }}
+          </label>
+          <input v-model="deleteConfirmText" class="field-input" style="margin-bottom: 8px; border-color: var(--red)"
+            :placeholder="deleteWord" />
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center">
+          <button class="btn btn-secondary" @click="tab = 'profile'; deleteConfirmText = ''">{{ t('cancel') }}</button>
+          <button class="btn btn-danger" :disabled="deleteConfirmText !== deleteWord" @click="confirmDeleteAccount">
+            {{ t('deleteAccount') }}
+          </button>
+        </div>
+      </AppCard>
     </template>
   </div>
 </template>
@@ -170,6 +187,7 @@ const router = useRouter()
 const { t } = useI18n()
 const tab = ref('profile')
 const saving = ref(false)
+const isManager = computed(() => authStore.user?.role === 'manager')
 
 const profile = reactive({ display_name: authStore.user?.display_name || '' })
 const companyName = ref(authStore.company?.name || '')
@@ -191,6 +209,11 @@ const currencies = [
   { code: 'GBP', symbol: '£', name: 'British Pound' },
   { code: 'CHF', symbol: 'CHF', name: 'Swiss Franc' },
   { code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar' },
+  { code: 'MAD', symbol: 'DH', name: 'Dirham marocain' },
+  { code: 'XOF', symbol: 'CFA', name: 'Franc CFA' },
+  { code: 'AED', symbol: 'AED', name: 'Dirham UAE' },
+  { code: 'SAR', symbol: 'SAR', name: 'Riyal saoudien' },
+  { code: 'KRW', symbol: '₩', name: 'Won coréen' },
 ]
 
 const plans = computed(() => [
@@ -233,7 +256,17 @@ async function saveNotifPrefs() {
   await authApi.updateNotificationPrefs({ ...notifPrefs })
 }
 
-const showDeleteConfirm = ref(false)
+const aiFeaturesLabel = computed(() =>
+  prefsStore.lang === 'en' ? 'AI features active' : prefsStore.lang === 'kr' ? 'AI 기능 활성화' : 'Fonctions IA actives'
+)
+const aiCoachDesc = computed(() =>
+  prefsStore.lang === 'en'
+    ? 'CS Coach and Nova Wellbeing are powered by DeepSeek — no configuration needed.'
+    : prefsStore.lang === 'kr'
+    ? 'CS 코치와 Nova 웰빙은 DeepSeek으로 구동됩니다 — 별도 설정이 필요 없습니다.'
+    : 'Le Coach CS et Nova Bien-être sont propulsés par DeepSeek — aucune configuration requise.'
+)
+
 const deleteConfirmText = ref('')
 const deleteWord = computed(() => prefsStore.lang === 'fr' ? 'SUPPRIMER' : prefsStore.lang === 'kr' ? '삭제' : 'DELETE')
 
