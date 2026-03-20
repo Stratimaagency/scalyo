@@ -14,9 +14,10 @@ class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = [
-            'id', 'name', 'csm', 'arr', 'health', 'risk', 'plan',
+            'id', 'name', 'csm', 'mrr', 'arr', 'industry', 'usage',
+            'health', 'risk', 'plan',
             'contact', 'contact_email', 'issues', 'notes',
-            'onboarding_date', 'renewal_date', 'todos',
+            'onboarding_date', 'renewal_date', 'renewal', 'todos',
             'created_at', 'updated_at',
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
@@ -37,8 +38,9 @@ class AccountListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = [
-            'id', 'name', 'csm', 'arr', 'health', 'risk', 'plan',
-            'contact', 'issues', 'created_at',
+            'id', 'name', 'csm', 'mrr', 'arr', 'industry', 'usage',
+            'health', 'risk', 'plan',
+            'contact', 'renewal', 'issues', 'created_at',
         ]
 
 
@@ -46,12 +48,16 @@ class ImportAccountRowSerializer(serializers.Serializer):
     """Validates each row in a bulk import."""
     name = serializers.CharField(max_length=255)
     csm = serializers.CharField(max_length=255, required=False, default='')
+    mrr = serializers.DecimalField(max_digits=12, decimal_places=2, required=False, default=0)
     arr = serializers.DecimalField(max_digits=12, decimal_places=2, required=False, default=0)
+    industry = serializers.CharField(max_length=100, required=False, default='')
+    usage = serializers.IntegerField(min_value=0, max_value=100, required=False, default=70)
     health = serializers.IntegerField(min_value=0, max_value=100, required=False, default=70)
     risk = serializers.ChoiceField(choices=Account.RISK_CHOICES, required=False, default='low')
     plan = serializers.CharField(max_length=50, required=False, default='')
     contact = serializers.CharField(max_length=255, required=False, default='')
     contact_email = serializers.EmailField(required=False, default='')
+    renewal = serializers.CharField(max_length=50, required=False, default='')
     notes = serializers.CharField(required=False, default='')
 
 
