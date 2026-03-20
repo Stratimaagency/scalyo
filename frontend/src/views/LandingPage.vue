@@ -940,9 +940,7 @@ function setLang(l) {
   lang.value = l
   try { localStorage.setItem('scalyo_lang', l) } catch(e) {}
   document.documentElement.lang = l === 'kr' ? 'ko' : l
-  nextTick(() => {
-    calcROI()
-  })
+  nextTick(() => {})
 }
 
 // ── NAV SCROLL ──
@@ -1012,6 +1010,8 @@ function filterInteg(cat) {
 const sellIcons = ['🔗', '⚡', '🇪🇺', '🤖', '💚', '🏷️', '🧩', '🇫🇷']
 
 // ── ROI CALCULATOR ──
+const roi = reactive({ csm: 5, acc: 30, arr: 10000, churn: 10 })
+
 function fmt(n) {
   if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M€'
   if (n >= 1e4) return Math.round(n / 1e3) + 'K€'
@@ -1019,48 +1019,26 @@ function fmt(n) {
   return n + '€'
 }
 
-function syncRange(el) {
-  if (!el) return
-  const pct = ((+el.value - +el.min) / (+el.max - +el.min) * 100).toFixed(1)
-  el.style.setProperty('--pct', pct + '%')
+function rangeStyle(value, min, max) {
+  const pct = ((value - min) / (max - min) * 100).toFixed(1)
+  return `--pct: ${pct}%`
 }
 
-function calcROI() {
-  const r1 = document.getElementById('r1')
-  const r2 = document.getElementById('r2')
-  const r3 = document.getElementById('r3')
-  const r4 = document.getElementById('r4')
-  if (!r1) return
-  const csm = +r1.value, acc = +r2.value, arr = +r3.value, ch = +r4.value
-  const v1 = document.getElementById('v1')
-  const v2 = document.getElementById('v2')
-  const v3 = document.getElementById('v3')
-  const v4 = document.getElementById('v4')
-  if (v1) v1.textContent = csm
-  if (v2) v2.textContent = acc
-  if (v3) v3.textContent = (arr >= 1000 ? Math.round(arr / 1000) + 'K' : arr) + '€'
-  if (v4) v4.textContent = ch + '%'
-  ;[r1, r2, r3, r4].forEach(syncRange)
-  const total = csm * acc * arr
-  const cost = Math.round(total * ch / 100)
+const roiComputed = computed(() => {
+  const total = roi.csm * roi.acc * roi.arr
+  const cost = Math.round(total * roi.churn / 100)
   const rec = Math.round(cost * 0.3)
-  const sub = csm <= 1 ? 97 * 12 : csm <= 10 ? 297 * 12 : 697 * 12
-  const rmain = document.getElementById('rmain')
-  const rarr = document.getElementById('rarr')
-  const rcost = document.getElementById('rcost')
-  const rtime = document.getElementById('rtime')
-  const rmult = document.getElementById('rmult')
-  const rplan = document.getElementById('rplan')
-  if (rmain) rmain.textContent = fmt(rec)
-  if (rarr) rarr.textContent = fmt(total)
-  if (rcost) rcost.textContent = fmt(cost)
-  if (rtime) rtime.textContent = (csm * 6) + 'h'
-  if (rmult) rmult.textContent = sub > 0 ? (Math.round(rec / sub * 10) / 10) + '×' : '—'
-  if (rplan) {
-    const planKey = csm <= 1 ? 'roi_plan_starter' : csm <= 10 ? 'roi_plan_growth' : 'roi_plan_elite'
-    rplan.textContent = t(planKey)
+  const sub = roi.csm <= 1 ? 97 * 12 : roi.csm <= 10 ? 297 * 12 : 697 * 12
+  const planKey = roi.csm <= 1 ? 'roi_plan_starter' : roi.csm <= 10 ? 'roi_plan_growth' : 'roi_plan_elite'
+  return {
+    main: fmt(rec),
+    arr: fmt(total),
+    cost: fmt(cost),
+    time: (roi.csm * 6) + 'h',
+    mult: sub > 0 ? (Math.round(rec / sub * 10) / 10) + '×' : '—',
+    plan: t(planKey),
   }
-}
+})
 
 // ── MODALS ──
 const modalSupport = ref(false)
@@ -1125,16 +1103,9 @@ onMounted(() => {
     }
   }
 
-  // ROI range inputs
-  ;['r1', 'r2', 'r3', 'r4'].forEach(id => {
-    const el = document.getElementById(id)
-    if (el) el.addEventListener('input', calcROI)
-  })
-
   // Apply language
   nextTick(() => {
     setLang(lang.value)
-    calcROI()
   })
 })
 
