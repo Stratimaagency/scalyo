@@ -13,4 +13,5 @@ urlpatterns = [
     path('api/coach/', include('apps.coach.urls')),
     path('api/feedback/', include('apps.feedback.urls')),
     path('api/email-studio/', include('apps.email_studio.urls')),
+    path('api/billing/', include('apps.billing.urls')),
 ]

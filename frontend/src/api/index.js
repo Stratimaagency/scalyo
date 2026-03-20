@@ -74,4 +74,12 @@ export const feedbackApi = {
 export const emailStudioApi = {
   getTemplates: (lang) => api.get('/email-studio/templates/', { params: { lang } }),
   getTemplate: (id, lang) => api.get(`/email-studio/templates/${id}/`, { params: { lang } }),
+  sendEmail: (data) => api.post('/email-studio/send/', data),
+}
+
+// Billing
+export const billingApi = {
+  createCheckout: (plan) => api.post('/billing/checkout/', { plan }),
+  openPortal: () => api.post('/billing/portal/'),
+  getStatus: () => api.get('/billing/status/'),
 }

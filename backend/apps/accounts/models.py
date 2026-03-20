@@ -33,6 +33,9 @@ class Company(models.Model):
     nps = models.IntegerField(default=0)
     color = models.CharField(max_length=20, default='#7EC8B8')
     logo = models.CharField(max_length=10, blank=True, default='')
+    stripe_customer_id = models.CharField(max_length=255, blank=True, default='')
+    stripe_subscription_id = models.CharField(max_length=255, blank=True, default='')
+    subscription_status = models.CharField(max_length=20, blank=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
