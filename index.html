@@ -13,37 +13,33 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* main palette — Dark */
-  --dk: #1C1A17;
-  --dk2: #252320;
-  --dk3: #1C1A17;
-  --dk4: #2D2B27;
-  --dk5: #3A3835;
-  --dt:  #E8E4DC;
-  --dt2: #A8A49C;
-  --dt3: #787470;
-  --dline: rgba(250,247,242,0.08);
-  --dline2: rgba(250,247,242,0.14);
+  /* main palette — Notion white */
+  --dk: #FFFFFF;
+  --dk2: #F7F6F3;
+  --dk3: #FFFFFF;
+  --dk4: #EDECE9;
+  --dk5: #D3D1CB;
+  --dt:  #37352F;
+  --dt2: #6B6966;
+  --dt3: #9B9A97;
+  --dline: rgba(55,53,47,0.09);
+  --dline2: rgba(55,53,47,0.16);
 
-  /* testimonials — slightly lighter dark */
-  --lk: #252320;
-  --lk2: #2D2B27;
-  --lk3: #3A3835;
-  --lk4: #4A4845;
-  --lt:  #E8E4DC;
-  --lt2: #A8A49C;
-  --lt3: #787470;
-  --lline: rgba(250,247,242,0.08);
-  --lline2: rgba(250,247,242,0.14);
+  /* light (testimonials) */
+  --lk: #FFFFFF;
+  --lk2: #F7F6F3;
+  --lk3: #EDECE9;
+  --lk4: #D3D1CB;
+  --lt:  #37352F;
+  --lt2: #6B6966;
+  --lt3: #9B9A97;
+  --lline: rgba(55,53,47,0.09);
+  --lline2: rgba(55,53,47,0.16);
 
-  /* brand — Teal (lighter for dark bg) */
-  --teal: #4DB6A0;
-  --teal2: rgba(77,182,160,0.10);
-  --teal3: rgba(77,182,160,0.05);
-
-  /* surfaces */
-  --bg2: #252320;
-  --bg3: #2D2B27;
+  /* brand — Notion teal */
+  --teal: #0F7B6C;
+  --teal2: rgba(15,123,108,0.08);
+  --teal3: rgba(15,123,108,0.04);
 
   --f: 'Plus Jakarta Sans', -apple-system, system-ui, sans-serif;
   --rad: 12px;
@@ -59,276 +55,6 @@ img { display: block; max-width: 100%; }
 .rv { opacity: 1; transform: none; }
 .rv.in { opacity: 1; transform: none; }
 
-/* ═══════════════════════════════════════════════════
-   3D IMMERSIVE EFFECTS — Pop-out stats, floating emojis
-═══════════════════════════════════════════════════ */
-
-/* 3D floating animation for emojis */
-@keyframes float3d {
-  0%, 100% { transform: translateY(0) scale(1) rotateX(0deg); }
-  25% { transform: translateY(-8px) scale(1.05) rotateX(4deg); }
-  50% { transform: translateY(-14px) scale(1.08) rotateX(-2deg); }
-  75% { transform: translateY(-6px) scale(1.03) rotateX(3deg); }
-}
-@keyframes float3d-alt {
-  0%, 100% { transform: translateY(0) scale(1) rotateY(0deg); }
-  30% { transform: translateY(-10px) scale(1.06) rotateY(5deg); }
-  60% { transform: translateY(-16px) scale(1.1) rotateY(-3deg); }
-  80% { transform: translateY(-5px) scale(1.02) rotateY(2deg); }
-}
-@keyframes glow-pulse {
-  0%, 100% { filter: drop-shadow(0 0 6px rgba(77,182,160,.3)); }
-  50% { filter: drop-shadow(0 0 20px rgba(77,182,160,.6)) drop-shadow(0 0 40px rgba(77,182,160,.2)); }
-}
-@keyframes pop-in {
-  0% { transform: perspective(600px) translateZ(-80px) scale(0.85); opacity: 0; }
-  60% { transform: perspective(600px) translateZ(20px) scale(1.02); opacity: 1; }
-  100% { transform: perspective(600px) translateZ(0) scale(1); opacity: 1; }
-}
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-/* Mega 3D emoji styling */
-.chip-icon {
-  font-size: 44px !important;
-  animation: float3d 4s ease-in-out infinite;
-  filter: drop-shadow(0 4px 2px rgba(0,0,0,.35)) drop-shadow(0 8px 6px rgba(0,0,0,.2)) drop-shadow(0 12px 12px rgba(0,0,0,.12)) drop-shadow(0 0 8px rgba(77,182,160,.15)) !important;
-  transform-style: preserve-3d;
-  transition: all .3s cubic-bezier(.16,1,.3,1);
-}
-.chip:nth-child(2) .chip-icon { animation-delay: .5s; }
-.chip:nth-child(3) .chip-icon { animation-delay: 1s; animation-name: float3d-alt; }
-.chip:nth-child(4) .chip-icon { animation-delay: 1.5s; }
-.chip:nth-child(5) .chip-icon { animation-delay: .3s; animation-name: float3d-alt; }
-.chip:nth-child(6) .chip-icon { animation-delay: .8s; }
-.chip:nth-child(7) .chip-icon { animation-delay: 1.2s; animation-name: float3d-alt; }
-.chip:nth-child(8) .chip-icon { animation-delay: 1.7s; }
-
-.chip:hover .chip-icon {
-  transform: scale(1.3) translateY(-10px) rotateX(10deg) !important;
-  filter: drop-shadow(0 6px 3px rgba(0,0,0,.4)) drop-shadow(0 12px 10px rgba(0,0,0,.25)) drop-shadow(0 20px 20px rgba(0,0,0,.15)) drop-shadow(0 0 16px rgba(77,182,160,.3)) !important;
-}
-
-/* Module tag emojis — 3D pop */
-.mod-tag-icon {
-  font-size: 32px !important;
-  filter: drop-shadow(0 3px 1px rgba(0,0,0,.3)) drop-shadow(0 6px 4px rgba(0,0,0,.18)) drop-shadow(0 10px 8px rgba(0,0,0,.1)) drop-shadow(0 0 6px rgba(77,182,160,.12)) !important;
-  animation: float3d 5s ease-in-out infinite;
-  transform-style: preserve-3d;
-}
-.mod-section:nth-child(2) .mod-tag-icon { animation-delay: .4s; }
-.mod-section:nth-child(3) .mod-tag-icon { animation-delay: .8s; animation-name: float3d-alt; }
-.mod-section:nth-child(4) .mod-tag-icon { animation-delay: 1.2s; }
-.mod-section:nth-child(5) .mod-tag-icon { animation-delay: .6s; animation-name: float3d-alt; }
-
-/* Resource list emojis */
-.res-icon {
-  font-size: 30px !important;
-  filter: drop-shadow(0 3px 1px rgba(0,0,0,.3)) drop-shadow(0 6px 4px rgba(0,0,0,.18)) drop-shadow(0 10px 8px rgba(0,0,0,.1)) !important;
-  animation: float3d 4.5s ease-in-out infinite;
-}
-.res-item:nth-child(2) .res-icon { animation-delay: .6s; animation-name: float3d-alt; }
-.res-item:nth-child(3) .res-icon { animation-delay: 1.2s; }
-.res-item:nth-child(4) .res-icon { animation-delay: .3s; animation-name: float3d-alt; }
-
-/* ── 3D STATS BAR — numbers that pop out ── */
-.stats-bar {
-  perspective: 1200px;
-  background: linear-gradient(180deg, var(--dk2) 0%, rgba(37,35,32,.95) 100%) !important;
-  border-top: 1px solid rgba(77,182,160,.15) !important;
-  border-bottom: 1px solid rgba(77,182,160,.15) !important;
-  overflow: visible !important;
-  position: relative;
-}
-.stats-bar::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 50%, rgba(77,182,160,.06), transparent 70%);
-  pointer-events: none;
-}
-.stat-cell {
-  perspective: 800px;
-  transform-style: preserve-3d;
-  transition: all .4s cubic-bezier(.16,1,.3,1);
-  position: relative;
-}
-.stat-cell:hover {
-  transform: translateZ(30px) scale(1.04);
-  z-index: 10;
-}
-.stat-number {
-  font-size: 56px !important;
-  font-weight: 900 !important;
-  background: linear-gradient(135deg, #4DB6A0 0%, #7CE8D0 40%, #FFFFFF 50%, #7CE8D0 60%, #4DB6A0 100%) !important;
-  background-size: 200% auto;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  animation: shimmer 4s linear infinite;
-  text-shadow: none;
-  position: relative;
-  transform-style: preserve-3d;
-  filter: drop-shadow(0 2px 4px rgba(77,182,160,.4));
-}
-.stat-cell::after {
-  content: '';
-  position: absolute;
-  bottom: -4px; left: 20%; right: 20%;
-  height: 20px;
-  background: radial-gradient(ellipse, rgba(77,182,160,.15), transparent 70%);
-  filter: blur(8px);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity .4s;
-}
-.stat-cell:hover::after { opacity: 1; }
-
-/* ── Stats grid (features section) — same 3D treatment ── */
-.stat-n {
-  font-size: clamp(36px, 5vw, 58px) !important;
-  font-weight: 900 !important;
-  background: linear-gradient(135deg, #4DB6A0, #7CE8D0 45%, #fff 50%, #7CE8D0 55%, #4DB6A0) !important;
-  background-size: 200% auto !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  animation: shimmer 4s linear infinite;
-  filter: drop-shadow(0 2px 4px rgba(77,182,160,.35));
-  transform-style: preserve-3d;
-}
-
-/* ── 3D Feature visual cards ── */
-.feat-visual, .mod-visual .mv {
-  transform-style: preserve-3d;
-  transition: all .5s cubic-bezier(.16,1,.3,1) !important;
-}
-.feat-visual:hover {
-  transform: perspective(1000px) rotateY(-3deg) rotateX(2deg) translateZ(20px) !important;
-  box-shadow: 0 20px 60px rgba(0,0,0,.3), 0 0 30px rgba(77,182,160,.08), 0 0 0 1px rgba(77,182,160,.15) !important;
-}
-.mv {
-  background: var(--bg2) !important;
-  border: 1px solid rgba(250,247,242,.08);
-  border-radius: 14px;
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-  transform-style: preserve-3d;
-  transition: all .5s cubic-bezier(.16,1,.3,1) !important;
-}
-.mv:hover {
-  transform: perspective(1000px) rotateY(2deg) rotateX(-1deg) translateZ(15px) !important;
-  box-shadow: 0 16px 48px rgba(0,0,0,.25), 0 0 20px rgba(77,182,160,.06) !important;
-  border-color: rgba(77,182,160,.2);
-}
-
-/* ── 3D Plans/pricing cards ── */
-.plan {
-  transform-style: preserve-3d;
-  transition: all .4s cubic-bezier(.16,1,.3,1) !important;
-}
-.plan:hover {
-  transform: perspective(1000px) translateY(-8px) translateZ(20px) rotateX(2deg) !important;
-  box-shadow: 0 24px 64px rgba(0,0,0,.3), 0 0 0 1px rgba(77,182,160,.1) !important;
-}
-.plan.featured:hover {
-  transform: perspective(1000px) translateY(-12px) translateZ(30px) rotateX(2deg) !important;
-  box-shadow: 0 0 0 1px var(--teal), 0 24px 64px rgba(77,182,160,.15), 0 0 40px rgba(77,182,160,.08) !important;
-}
-
-/* ── 3D Testimonial cards ── */
-.testi {
-  transform-style: preserve-3d;
-  transition: all .4s cubic-bezier(.16,1,.3,1) !important;
-}
-.testi:hover {
-  transform: perspective(1000px) translateY(-6px) rotateX(2deg) translateZ(15px) !important;
-  box-shadow: 0 20px 50px rgba(0,0,0,.2) !important;
-}
-
-/* ── 3D Hero section ── */
-.hero {
-  perspective: 1500px;
-}
-.hero-inner {
-  transform-style: preserve-3d;
-}
-.hero-h1 {
-  text-shadow: 0 4px 20px rgba(0,0,0,.3), 0 8px 40px rgba(0,0,0,.15);
-}
-.hero-h1 .accent {
-  text-shadow: 0 0 30px rgba(77,182,160,.3), 0 4px 20px rgba(77,182,160,.2);
-}
-.app-shell {
-  transform-style: preserve-3d;
-  transition: all .6s cubic-bezier(.16,1,.3,1);
-  box-shadow: 0 20px 60px rgba(0,0,0,.4), 0 40px 100px rgba(0,0,0,.2), 0 0 0 1px rgba(77,182,160,.08) !important;
-}
-.app-shell:hover {
-  transform: perspective(1200px) rotateX(2deg) rotateY(-1deg) translateZ(10px);
-  box-shadow: 0 30px 80px rgba(0,0,0,.45), 0 60px 120px rgba(0,0,0,.2), 0 0 40px rgba(77,182,160,.06) !important;
-}
-
-/* ── 3D Chips cards ── */
-.chip {
-  transform-style: preserve-3d;
-  transition: all .35s cubic-bezier(.16,1,.3,1) !important;
-  perspective: 600px;
-}
-.chip:hover, .chip.active {
-  transform: perspective(600px) translateY(-6px) translateZ(15px) rotateX(3deg) !important;
-  box-shadow: 0 16px 40px rgba(77,182,160,.15), 0 0 0 1px rgba(77,182,160,.25) !important;
-}
-
-/* ── 3D ROI result ── */
-.roi-big {
-  font-size: 80px !important;
-  background: linear-gradient(135deg, #4DB6A0, #7CE8D0 40%, #fff 50%, #7CE8D0 60%, #4DB6A0) !important;
-  background-size: 200% auto;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  animation: shimmer 3.5s linear infinite;
-  filter: drop-shadow(0 4px 8px rgba(77,182,160,.4));
-  transform-style: preserve-3d;
-}
-
-/* ── 3D End CTA ── */
-.end-h2 {
-  text-shadow: 0 4px 20px rgba(0,0,0,.25);
-}
-.end-h2 em {
-  text-shadow: 0 0 30px rgba(77,182,160,.3), 0 0 60px rgba(77,182,160,.1);
-}
-
-/* ── 3D KPI cards in demo screenshot ── */
-.kpi {
-  transform-style: preserve-3d;
-  transition: all .35s cubic-bezier(.16,1,.3,1);
-}
-.kpi:hover {
-  transform: perspective(600px) translateZ(10px) translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.2);
-}
-
-/* ── Glowing borders on interactive elements ── */
-.btn-primary {
-  box-shadow: 0 1px 3px rgba(250,247,242,.08), 0 0 0 1px rgba(15,123,108,.2), 0 0 20px rgba(77,182,160,.1) !important;
-}
-.btn-primary:hover {
-  box-shadow: 0 8px 30px rgba(77,182,160,.25), 0 0 40px rgba(77,182,160,.1), 0 0 0 1px rgba(77,182,160,.3) !important;
-}
-
-/* ── FAQ 3D ── */
-.faq-item {
-  transition: all .3s;
-}
-.faq-item:hover {
-  transform: translateX(4px);
-}
-.faq-item.open {
-  transform: translateX(8px);
-}
-
 /* ────────────────────────────────────
    NAVIGATION
 ──────────────────────────────────── */
@@ -339,7 +65,7 @@ nav {
   transition: background .3s, border-bottom .3s;
 }
 nav.scrolled {
-  background: rgba(28,26,23,.85);
+  background: rgba(255,255,255,.85);
   backdrop-filter: blur(20px) saturate(1.8);
   -webkit-backdrop-filter: blur(20px) saturate(1.8);
   border-bottom: 1px solid var(--dline);
@@ -353,7 +79,7 @@ nav.scrolled {
   width: 30px; height: 30px; border-radius: 8px;
   background: var(--teal); display: grid; place-items: center;
   font-size: 15px; font-weight: 900; color: #fff; flex-shrink: 0;
-  box-shadow: 0 0 0 1px rgba(250,247,242,.09);
+  box-shadow: 0 0 0 1px rgba(55,53,47,.09);
 }
 .nav-logo span { color: var(--teal); }
 .nav-links { display: flex; gap: 0; }
@@ -362,20 +88,20 @@ nav.scrolled {
   font-size: 14px; font-weight: 500; color: var(--dt2);
   transition: color .15s, background .15s;
 }
-.nav-links a:hover { color: var(--dt); background: rgba(250,247,242,.04); }
+.nav-links a:hover { color: var(--dt); background: rgba(55,53,47,.04); }
 .nav-right { display: flex; align-items: center; gap: 8px; }
 .n-ghost {
   padding: 7px 16px; border-radius: 8px;
   font-size: 14px; font-weight: 500; color: var(--dt2);
   border: 1px solid var(--dline2); transition: all .15s;
 }
-.n-ghost:hover { color: var(--dt); background: rgba(250,247,242,.04); }
+.n-ghost:hover { color: var(--dt); background: rgba(55,53,47,.04); }
 .n-solid {
   padding: 8px 18px; border-radius: 8px;
   font-size: 14px; font-weight: 600; color: #fff;
   background: var(--teal);
   transition: all .2s;
-  box-shadow: 0 1px 2px rgba(250,247,242,.08);
+  box-shadow: 0 1px 2px rgba(55,53,47,.08);
 }
 .n-solid:hover { background: #0a6b5e; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,123,108,.2); }
 
@@ -400,10 +126,9 @@ nav.scrolled {
 .hero-glow {
   position: absolute; left: 50%; top: 0;
   transform: translateX(-50%);
-  width: 1200px; height: 800px;
-  background: radial-gradient(ellipse at 50% 0%, rgba(77,182,160,.1) 0%, rgba(77,182,160,.04) 30%, transparent 65%);
+  width: 900px; height: 600px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(15,123,108,.06) 0%, transparent 60%);
   pointer-events: none; z-index: 0;
-  animation: glow-pulse 6s ease-in-out infinite;
 }
 .hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
 
@@ -411,7 +136,7 @@ nav.scrolled {
   display: inline-flex; align-items: center; gap: 7px;
   padding: 5px 14px; border-radius: 100px;
   border: 1px solid var(--dline2);
-  background: rgba(250,247,242,.03);
+  background: rgba(55,53,47,.03);
   font-size: 13px; font-weight: 500; color: var(--dt2);
   margin-bottom: 32px;
   backdrop-filter: blur(8px);
@@ -448,7 +173,7 @@ nav.scrolled {
   font-size: 15px; font-weight: 600; color: #fff;
   background: var(--teal);
   transition: all .2s cubic-bezier(.16,1,.3,1);
-  box-shadow: 0 1px 3px rgba(250,247,242,.08), 0 0 0 1px rgba(15,123,108,.2);
+  box-shadow: 0 1px 3px rgba(55,53,47,.08), 0 0 0 1px rgba(15,123,108,.2);
 }
 .btn-primary:hover { background: #0a6b5e; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15,123,108,.15); }
 .btn-primary svg { transition: transform .2s; }
@@ -457,9 +182,9 @@ nav.scrolled {
   padding: 14px 24px; border-radius: 10px;
   font-size: 15px; font-weight: 500; color: var(--dt2);
   border: 1px solid var(--dline2);
-  transition: all .15s; background: rgba(250,247,242,.03);
+  transition: all .15s; background: rgba(55,53,47,.03);
 }
-.btn-secondary:hover { color: var(--dt); background: rgba(250,247,242,.04); border-color: rgba(250,247,242,.20); }
+.btn-secondary:hover { color: var(--dt); background: rgba(55,53,47,.04); border-color: rgba(55,53,47,.20); }
 
 .hero-social-proof {
   display: flex; align-items: center; justify-content: center;
@@ -482,7 +207,7 @@ nav.scrolled {
 .app-shell {
   border-radius: 16px; overflow: hidden;
   border: 1px solid var(--dline2);
-  box-shadow: 0 16px 48px rgba(250,247,242,.08), 0 0 0 1px var(--dline);
+  box-shadow: 0 16px 48px rgba(55,53,47,.08), 0 0 0 1px var(--dline);
 }
 .app-topbar {
   height: 44px; background: var(--dk2); border-bottom: 1px solid var(--dline);
@@ -646,12 +371,12 @@ nav.scrolled {
 .feat-visual {
   border-radius: 16px; overflow: hidden;
   border: 1px solid var(--dline2);
-  box-shadow: 0 4px 16px rgba(250,247,242,.06), 0 16px 32px rgba(250,247,242,.04);
+  box-shadow: 0 4px 16px rgba(55,53,47,.06), 0 16px 32px rgba(55,53,47,.04);
   background: var(--dk3);
 }
 .feat-visual.dark-card {
   border-color: var(--dline2);
-  box-shadow: 0 4px 16px rgba(250,247,242,.06), 0 16px 32px rgba(250,247,242,.04);
+  box-shadow: 0 4px 16px rgba(55,53,47,.06), 0 16px 32px rgba(55,53,47,.04);
   background: var(--dk2);
 }
 .fv-pad { padding: 28px; }
@@ -729,10 +454,10 @@ input[type=range] {
 input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
   background: #fff; border: 2px solid var(--teal); cursor: pointer;
-  box-shadow: 0 0 0 3px rgba(15,123,108,.08), 0 1px 4px rgba(250,247,242,.10);
+  box-shadow: 0 0 0 3px rgba(15,123,108,.08), 0 1px 4px rgba(55,53,47,.10);
   transition: box-shadow .2s;
 }
-input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(15,123,108,.08), 0 1px 6px rgba(250,247,242,.10); }
+input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(15,123,108,.08), 0 1px 6px rgba(55,53,47,.10); }
 
 .roi-result { }
 .roi-big {
@@ -783,7 +508,7 @@ input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(15,12
   background: var(--dk3); border: 1px solid var(--dline2);
   position: relative; transition: box-shadow .2s, transform .25s;
 }
-.plan:hover { box-shadow: 0 4px 16px rgba(250,247,242,.06); transform: translateY(-3px); }
+.plan:hover { box-shadow: 0 4px 16px rgba(55,53,47,.06); transform: translateY(-3px); }
 .plan.featured {
   border-color: var(--teal);
   background: var(--dk2);
@@ -824,11 +549,11 @@ input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(15,12
 .testimonials { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
 .testi {
   padding: 28px; border-radius: 14px;
-  background: var(--lk); border: 1px solid var(--lline2);
+  background: white; border: 1px solid var(--lline2);
   transition: box-shadow .2s, transform .2s;
   color: var(--lt);
 }
-.testi:hover { box-shadow: 0 4px 16px rgba(250,247,242,.06); transform: translateY(-3px); }
+.testi:hover { box-shadow: 0 4px 16px rgba(55,53,47,.06); transform: translateY(-3px); }
 .testi-stars { display: flex; gap: 3px; margin-bottom: 14px; }
 .star { font-size: 13px; color: #FBBF24; }
 .testi-quote { font-size: 14.5px; color: var(--lt); line-height: 1.7; margin-bottom: 20px; }
@@ -842,8 +567,8 @@ input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(15,12
    FAQ
 ──────────────────────────────────── */
 .faq-list { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 0; }
-.faq-item { border-bottom: 1px solid rgba(250,247,242,0.09); }
-.faq-item:first-child { border-top: 1px solid rgba(250,247,242,0.09); }
+.faq-item { border-bottom: 1px solid rgba(55,53,47,0.09); }
+.faq-item:first-child { border-top: 1px solid rgba(55,53,47,0.09); }
 .faq-q {
   width: 100%; background: none; border: none; color: var(--dt);
   font-size: 17px; font-weight: 600; text-align: left;
@@ -869,10 +594,9 @@ input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(15,12
 }
 .end-glow {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
-  width: 1000px; height: 500px;
-  background: radial-gradient(ellipse, rgba(77,182,160,.08) 0%, rgba(77,182,160,.03) 35%, transparent 65%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(15,123,108,.04) 0%, transparent 65%);
   pointer-events: none;
-  animation: glow-pulse 5s ease-in-out infinite;
 }
 .end-inner { position: relative; z-index: 1; }
 .end-h2 {
@@ -913,6 +637,63 @@ footer {
 }
 
 /* ────────────────────────────────────
+   INTEGRATIONS
+──────────────────────────────────── */
+.integ-cats { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+.integ-cat-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 100px;
+  font-size: 13px; font-weight: 600; font-family: var(--f);
+  background: var(--dk3); border: 1px solid var(--dline2);
+  color: var(--dt2); cursor: pointer; transition: all .15s;
+}
+.integ-cat-btn:hover { border-color: var(--teal); color: var(--dt); }
+.integ-cat-btn.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+.integrations-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px; max-width: 860px; margin: 0 auto;
+}
+.integration-card {
+  background: var(--dk3); border: 1px solid var(--dline2);
+  border-radius: 12px; padding: 20px 16px; text-align: center;
+  transition: all .2s;
+}
+.integration-card:hover { border-color: rgba(55,53,47,.24); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+.integration-card.available { border-color: rgba(15,123,108,.3); }
+.integration-icon { font-size: 28px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; }
+.integration-icon img { width: 32px; height: 32px; object-fit: contain; }
+.integration-name { font-size: 13px; font-weight: 700; color: var(--dt); margin-bottom: 4px; }
+.integration-tag { font-size: 11px; color: var(--dt3); margin-bottom: 8px; }
+.integration-status { font-size: 10px; font-weight: 600; padding: 2px 10px; border-radius: 100px; display: inline-block; }
+.integration-status.live { background: rgba(15,123,108,.08); color: var(--teal); }
+
+/* Competitive advantage */
+.vs-block { margin-top: 64px; max-width: 900px; margin-left: auto; margin-right: auto; }
+.vs-title { font-size: clamp(22px, 2.5vw, 30px); font-weight: 800; letter-spacing: -.03em; color: var(--dt); margin-bottom: 8px; text-align: center; }
+.vs-subtitle { font-size: 15px; color: var(--dt2); text-align: center; margin-bottom: 32px; line-height: 1.7; }
+.vs-table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 16px; overflow: hidden; border: 1px solid var(--dline2); background: var(--dk3); }
+.vs-table thead th { padding: 16px 20px; font-size: 13px; font-weight: 700; text-align: center; background: var(--dk2); border-bottom: 1px solid var(--dline); color: var(--dt); }
+.vs-table thead th:first-child { text-align: left; }
+.vs-table thead th.vs-scalyo { background: rgba(15,123,108,.08); color: var(--teal); }
+.vs-table tbody td { padding: 14px 20px; font-size: 14px; text-align: center; border-bottom: 1px solid var(--dline); color: var(--dt2); }
+.vs-table tbody td:first-child { text-align: left; font-weight: 600; color: var(--dt); }
+.vs-table tbody td.vs-scalyo { background: rgba(15,123,108,.03); }
+.vs-table tbody tr:last-child td { border-bottom: none; }
+.vs-check { color: var(--teal); font-weight: 700; font-size: 16px; }
+.vs-cross { color: #D4432F; font-size: 14px; }
+.vs-partial { color: #D4930F; font-size: 13px; font-weight: 500; }
+.sell-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+.sell-card { background: var(--dk3); border: 1px solid var(--dline2); border-radius: 14px; padding: 24px 20px; text-align: left; transition: all .3s cubic-bezier(.16,1,.3,1); transform-style: preserve-3d; }
+.sell-card:hover { transform: perspective(600px) translateY(-6px) translateZ(10px); border-color: rgba(77,182,160,.25); box-shadow: 0 12px 32px rgba(0,0,0,.2), 0 0 0 1px rgba(77,182,160,.1); }
+.sell-icon { font-size: 28px; margin-bottom: 12px; filter: drop-shadow(0 2px 1px rgba(0,0,0,.2)) drop-shadow(0 4px 3px rgba(0,0,0,.1)); }
+.sell-label { font-size: 15px; font-weight: 700; color: var(--dt); margin-bottom: 8px; letter-spacing: -.02em; }
+.sell-desc { font-size: 13px; color: var(--dt2); line-height: 1.6; }
+.vs-highlights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 28px; }
+.vs-hl-card { background: rgba(15,123,108,.04); border: 1px solid rgba(15,123,108,.15); border-radius: 12px; padding: 20px; text-align: center; }
+.vs-hl-number { font-size: 28px; font-weight: 800; color: var(--teal); letter-spacing: -.04em; margin-bottom: 4px; }
+.vs-hl-text { font-size: 13px; color: var(--dt2); line-height: 1.5; }
+
+/* ────────────────────────────────────
    RESPONSIVE
 ──────────────────────────────────── */
 /* ═══════════════════════════════════
@@ -925,6 +706,9 @@ footer {
   .plans { grid-template-columns: 1fr 1fr; gap: 14px; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .stats-inner { grid-template-columns: 1fr 1fr; }
+  .integrations-grid { grid-template-columns: repeat(3, 1fr); }
+  .sell-grid { grid-template-columns: repeat(2, 1fr); }
+  .vs-highlights { gap: 10px; }
   .stat-cell { border-right: none; border-bottom: 1px solid var(--dline); }
   .stat-cell:nth-child(odd) { border-right: 1px solid var(--dline); }
 }
@@ -1000,6 +784,17 @@ footer {
   .plan-btn { padding: 13px; font-size: 14px; }
   .plan-footnote { font-size: 11px; }
 
+  /* INTEGRATIONS */
+  .integrations-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .integ-cats { gap: 6px; }
+  .integ-cat-btn { padding: 7px 12px; font-size: 12px; }
+  .sell-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .sell-card { padding: 18px 14px; }
+  .sell-label { font-size: 14px; }
+  .sell-desc { font-size: 12px; }
+  .vs-highlights { grid-template-columns: 1fr; }
+  .vs-title { font-size: 20px; }
+
   /* END CTA */
   .end-cta { padding: 80px 20px; text-align: center; }
   .end-h2 { font-size: clamp(28px, 8vw, 44px); }
@@ -1024,6 +819,8 @@ footer {
   .plan-price-main { font-size: 38px; }
   .wb-grid { grid-template-columns: 1fr; }
   .roi-big { font-size: 48px; }
+  .integrations-grid { grid-template-columns: repeat(2, 1fr); }
+  .sell-grid { grid-template-columns: 1fr; }
 }
 /* HAMBURGER + MOBILE MENU */
 .hamburger {
@@ -1044,7 +841,7 @@ footer {
   display: none; position: fixed; top: 56px; left: 0; right: 0;
   background: var(--dk); border-bottom: 1px solid var(--dline2);
   flex-direction: column; padding: 16px 20px 24px; gap: 4px;
-  z-index: 99; box-shadow: 0 4px 16px rgba(250,247,242,.08);
+  z-index: 99; box-shadow: 0 4px 16px rgba(55,53,47,.08);
 }
 .mobile-menu a {
   padding: 13px 0; font-size: 16px; font-weight: 500;
@@ -1071,18 +868,18 @@ footer {
   font-size:13px; font-weight:600; padding:4px 9px; border-radius:7px;
   color:var(--dt3); transition:all .15s; letter-spacing:.01em;
 }
-.lang-sw button:hover { background:rgba(250,247,242,.04); color:var(--dt); }
+.lang-sw button:hover { background:rgba(55,53,47,.04); color:var(--dt); }
 .lang-sw button.active { background:rgba(15,123,108,.13); color:var(--teal); border-color:rgba(15,123,108,.3); }
 @media(max-width:640px){ .lang-sw { display:none; } }
 
 /* ── MODALES LÉGALES ── */
-.lm-overlay{position:fixed;inset:0;background:rgba(250,247,242,.5);backdrop-filter:blur(6px);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;}
+.lm-overlay{position:fixed;inset:0;background:rgba(55,53,47,.5);backdrop-filter:blur(6px);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;}
 .lm-overlay.open{display:flex;}
-.lm-box{background:var(--dk2);border:1px solid rgba(250,247,242,.12);border-radius:18px;width:100%;max-width:640px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;}
+.lm-box{background:#FFFFFF;border:1px solid rgba(55,53,47,.12);border-radius:18px;width:100%;max-width:640px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;}
 .lm-head{padding:24px 28px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .lm-head h3{font-size:18px;font-weight:700;color:var(--dt);margin:0;}
-.lm-close{background:none;border:1px solid rgba(250,247,242,.12);color:rgba(250,247,242,.5);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.lm-close:hover{background:rgba(250,247,242,.04);color:var(--dt);}
+.lm-close{background:none;border:1px solid rgba(55,53,47,.12);color:rgba(55,53,47,.5);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.lm-close:hover{background:rgba(55,53,47,.04);color:var(--dt);}
 .lm-body{padding:20px 28px 28px;overflow-y:auto;flex:1;}
 .lm-body p,.lm-body li{font-size:14px;color:var(--dt2);line-height:1.7;}
 .lm-body h4{font-size:13px;font-weight:700;color:var(--teal);margin:20px 0 6px;text-transform:uppercase;letter-spacing:.06em;}
@@ -1096,7 +893,7 @@ footer {
 .lm-email-info span{font-size:13px;color:var(--dt3);}
 .lm-contact-form{margin-top:20px;}
 .lm-contact-form label{display:block;font-size:12px;font-weight:600;color:var(--dt3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;}
-.lm-contact-form input,.lm-contact-form textarea{width:100%;background:var(--dk2);border:1px solid rgba(250,247,242,.12);border-radius:8px;color:var(--dt);font-size:14px;padding:10px 14px;font-family:var(--f);transition:border .15s;box-sizing:border-box;}
+.lm-contact-form input,.lm-contact-form textarea{width:100%;background:var(--dk2);border:1px solid rgba(55,53,47,.12);border-radius:8px;color:var(--dt);font-size:14px;padding:10px 14px;font-family:var(--f);transition:border .15s;box-sizing:border-box;}
 .lm-contact-form input:focus,.lm-contact-form textarea:focus{outline:none;border-color:rgba(18,205,184,.4);}
 .lm-contact-form textarea{resize:vertical;min-height:100px;}
 .lm-contact-form .lm-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
@@ -1105,18 +902,13 @@ footer {
 .lm-submit:hover{background:#0fb8a7;}
 .lm-success{display:none;text-align:center;padding:20px;color:var(--teal);font-size:14px;}
 
-.mod-section{padding:72px 5%;border-top:1px solid rgba(250,247,242,.06);display:none;opacity:0;transform:translateY(20px);animation:none;}
-.mod-section.active-mod{display:block;animation:modFadeIn .5s cubic-bezier(.16,1,.3,1) forwards;}
-@keyframes modFadeIn{0%{opacity:0;transform:translateY(24px) scale(.98);}100%{opacity:1;transform:translateY(0) scale(1);}}
+.mod-section{padding:72px 5%;border-top:1px solid rgba(55,53,47,.06);}
 /* ── FEATURES MODULES ── */
 .chips-label{text-align:center;font-size:12px;font-weight:700;color:var(--dt3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:28px;}
 .chips-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:900px;margin:0 auto;}
-.chip{background:var(--bg2);border:1px solid rgba(250,247,242,.07);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;transition:all .22s;user-select:none;position:relative;overflow:hidden;}
-.chip.active::after{content:'';position:absolute;bottom:0;left:10%;right:10%;height:3px;background:var(--teal);border-radius:3px 3px 0 0;animation:chipBar .3s ease forwards;}
-@keyframes chipBar{0%{transform:scaleX(0);}100%{transform:scaleX(1);}}
+.chip{background:var(--bg2);border:1px solid rgba(55,53,47,.07);border-radius:14px;padding:16px 12px;text-align:center;cursor:default;transition:all .22s;}
 .chip:hover,.chip.active{border-color:var(--teal);background:rgba(18,205,184,.07);transform:translateY(-2px);box-shadow:0 4px 20px rgba(18,205,184,.12);}
-.chip:hover .chip-icon,.chip.active .chip-icon{filter:drop-shadow(0 2px 1px rgba(0,0,0,.2)) drop-shadow(0 4px 3px rgba(0,0,0,.12)) drop-shadow(0 6px 6px rgba(18,205,184,.15));transform:scale(1.1);}
-.chip-icon{font-size:32px;margin-bottom:8px;filter:drop-shadow(0 1px 0 rgba(0,0,0,.18)) drop-shadow(0 2px 1px rgba(0,0,0,.12)) drop-shadow(0 4px 3px rgba(0,0,0,.08));}
+.chip-icon{font-size:26px;margin-bottom:8px;}
 .chip-label{font-size:12px;font-weight:700;color:var(--dt2);}
 .chip.active .chip-label{color:var(--teal);}
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;max-width:860px;margin:0 auto;text-align:center;}
@@ -1128,7 +920,7 @@ footer {
 .mod-text{flex:1;min-width:280px;}
 .mod-visual{flex:1;min-width:280px;}
 .mod-tag{display:inline-flex;align-items:center;gap:8px;margin-bottom:18px;}
-.mod-tag-icon{font-size:22px;filter:drop-shadow(0 1px 0 rgba(0,0,0,.15)) drop-shadow(0 2px 2px rgba(0,0,0,.1)) drop-shadow(0 4px 3px rgba(0,0,0,.06));}
+.mod-tag-icon{font-size:18px;}
 .mod-tag-label{font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.08em;}
 .mod-h2{font-size:clamp(24px,3.5vw,38px);font-weight:900;letter-spacing:-.025em;line-height:1.2;margin-bottom:14px;}
 .mod-body{font-size:15px;color:var(--dt2);line-height:1.7;margin-bottom:22px;}
@@ -1144,7 +936,7 @@ footer {
 .ba{background:rgba(245,158,11,.1);color:var(--amber);}
 .br{background:rgba(239,68,68,.1);color:var(--red);}
 .hr-name{font-size:12px;font-weight:600;min-width:110px;}
-.hr-bar{flex:1;height:5px;background:rgba(250,247,242,.04);border-radius:100px;overflow:hidden;}
+.hr-bar{flex:1;height:5px;background:rgba(55,53,47,.04);border-radius:100px;overflow:hidden;}
 .hr-fill{height:100%;border-radius:100px;}
 .hr-val{font-size:11px;font-weight:700;min-width:26px;text-align:right;}
 .kpi-c{background:var(--bg3);border-radius:11px;padding:13px;}
@@ -1160,7 +952,7 @@ footer {
 .msg-u{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.18);align-self:flex-end;}
 .msg-a{background:rgba(18,205,184,.06);border:1px solid rgba(18,205,184,.14);color:var(--dt2);}
 .msg-tag{font-size:10px;font-weight:700;color:var(--teal);margin-bottom:3px;}
-.ep-row{border-bottom:1px solid rgba(250,247,242,.06);padding:5px 0;display:flex;gap:8px;}
+.ep-row{border-bottom:1px solid rgba(55,53,47,.06);padding:5px 0;display:flex;gap:8px;}
 .ep-lbl{color:var(--dt3);min-width:44px;font-size:10px;}
 .cal-c{background:var(--bg3);border-radius:8px;padding:8px;font-size:11px;min-height:52px;}
 .cal-ev{background:rgba(18,205,184,.07);border:1px solid rgba(18,205,184,.15);}
@@ -1174,7 +966,7 @@ footer {
 .tc-b{border-color:var(--blue);background:rgba(59,130,246,.05);}
 .res-item{display:flex;align-items:center;gap:12px;padding:11px;background:var(--bg3);border-radius:10px;transition:all .18s;cursor:pointer;}
 .res-item:hover{background:rgba(18,205,184,.06);border-color:rgba(18,205,184,.2);}
-.res-icon{font-size:22px;flex-shrink:0;filter:drop-shadow(0 1px 0 rgba(0,0,0,.15)) drop-shadow(0 2px 2px rgba(0,0,0,.1)) drop-shadow(0 3px 3px rgba(0,0,0,.06));}
+.res-icon{font-size:20px;flex-shrink:0;}
 .res-info strong{display:block;font-size:13px;font-weight:700;}
 .res-info span{font-size:11px;color:var(--dt3);}
 .res-dl{margin-left:auto;font-size:11px;color:var(--teal);font-weight:700;}
@@ -1182,7 +974,7 @@ footer {
 .cta-h2{font-size:clamp(26px,4.5vw,46px);font-weight:900;letter-spacing:-.025em;margin-bottom:14px;}
 .cta-sub{font-size:16px;color:var(--dt2);max-width:480px;margin:0 auto 36px;line-height:1.6;}
 .plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:840px;margin:0 auto 24px;}
-.plan-card{background:var(--bg2);border:1px solid rgba(250,247,242,.09);border-radius:18px;padding:26px;text-align:left;position:relative;transition:all .2s;}
+.plan-card{background:var(--bg2);border:1px solid rgba(55,53,47,.09);border-radius:18px;padding:26px;text-align:left;position:relative;transition:all .2s;}
 .plan-card.featured{border-color:var(--teal);background:rgba(18,205,184,.04);}
 .plan-card:hover{transform:translateY(-2px);}
 .plan-pop{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--teal);color:#07090F;font-size:10px;font-weight:800;padding:4px 14px;border-radius:100px;white-space:nowrap;}
@@ -1193,8 +985,8 @@ footer {
 .plan-btn{display:block;text-align:center;padding:11px;border-radius:10px;font-size:13px;font-weight:700;transition:all .2s;}
 .plan-btn-p{background:var(--teal);color:#07090F;}
 .plan-btn-p:hover{background:#0fb8a7;}
-.plan-btn-o{border:1px solid rgba(250,247,242,.14);color:var(--dt2);}
-.plan-btn-o:hover{border-color:rgba(250,247,242,.25);color:var(--dt);}
+.plan-btn-o{border:1px solid rgba(55,53,47,.14);color:var(--dt2);}
+.plan-btn-o:hover{border-color:rgba(55,53,47,.25);color:var(--dt);}
 .plan-note{font-size:12px;color:var(--dt3);}
 .plan-note strong{color:var(--teal);}
 .rv.visible{animation:fadeUp .6s ease forwards;}
@@ -1368,7 +1160,7 @@ footer {
           <div class="kpi-grid">
             <div class="kpi"><div class="kpi-lbl">NRR</div><div class="kpi-val c-teal">112%</div><div class="kpi-delta c-green">↑ +4 pts vs M-1</div></div>
             <div class="kpi"><div class="kpi-lbl" data-i18n="demo_mrr">MRR sécurisé</div><div class="kpi-val">284K€</div><div class="kpi-delta c-green">+12K ce mois</div></div>
-            <div class="kpi"><div class="kpi-lbl" data-i18n="demo_churn">Risques churn</div><div class="kpi-val c-amber">3</div><div class="kpi-delta c-amber" data-i18n="demo_action">🔔 Action requise</div></div>
+            <div class="kpi"><div class="kpi-lbl" data-i18n="demo_churn">Risques churn</div><div class="kpi-val c-amber">3</div><div class="kpi-delta c-amber" data-i18n="demo_action">⚠ Action requise</div></div>
             <div class="kpi"><div class="kpi-lbl" data-i18n="demo_wellbeing_kpi"><span data-i18n="feat_wb">Bien-être équipe</span></div><div class="kpi-val c-blue">7.8<span style="font-size:13px;color:var(--dt3)">/10</span></div><div class="kpi-delta c-green">En forme</div></div>
           </div>
           <div class="app-row2">
@@ -1541,15 +1333,13 @@ footer {
 </section>
 <!-- ── FEATURES DETAIL ── -->
 <div id="features-detail">
-<section class="chips-section" style="padding:80px 5% 40px;text-align:center;">
-  <div class="label" style="justify-content:center;margin-bottom:14px"><div class="label-line"></div><span id="fl-chips-badge" style="color:var(--teal);font-size:13px;font-weight:600;">Fonctionnalités</span><div class="label-line"></div></div>
-  <h2 class="h2-light" style="text-align:center;margin-bottom:8px" id="fl-chips-h2">Tout ce dont votre équipe CS a besoin.</h2>
-  <p class="sub-light" style="text-align:center;margin:0 auto 36px;max-width:520px" id="fl-chips-sub">8 modules intégrés en une seule plateforme. Cliquez pour explorer.</p>
+<section class="chips-section">
+  <div class="chips-label" id="fl-chips-label">8 modules · 1 seule plateforme</div>
   <div class="chips-grid">
-    <div class="chip active"><div class="chip-icon">📋</div><div class="chip-label" id="fl-c1">Portefeuille</div></div>
-    <div class="chip"><div class="chip-icon">📈</div><div class="chip-label" id="fl-c2">KPIs COPIL</div></div>
+    <div class="chip active"><div class="chip-icon">🎯</div><div class="chip-label" id="fl-c1">Portefeuille</div></div>
+    <div class="chip"><div class="chip-icon">📊</div><div class="chip-label" id="fl-c2">KPIs COPIL</div></div>
     <div class="chip"><div class="chip-icon">💚</div><div class="chip-label" id="fl-c3">Bien-être</div></div>
-    <div class="chip"><div class="chip-icon">💡</div><div class="chip-label" id="fl-c4">Coach IA</div></div>
+    <div class="chip"><div class="chip-icon">🤖</div><div class="chip-label" id="fl-c4">Coach IA</div></div>
     <div class="chip"><div class="chip-icon">✉️</div><div class="chip-label" id="fl-c5">Email Studio</div></div>
     <div class="chip"><div class="chip-icon">📅</div><div class="chip-label" id="fl-c6">Planning</div></div>
     <div class="chip"><div class="chip-icon">✅</div><div class="chip-label" id="fl-c7">Task Board</div></div>
@@ -1569,7 +1359,7 @@ footer {
 <section class="mod-section" id="m1">
   <div class="mod-inner">
     <div class="mod-text rv">
-      <div class="mod-tag"><span class="mod-tag-icon">📋</span><span class="mod-tag-label" id="fl-m1tag">Portefeuille clients</span></div>
+      <div class="mod-tag"><span class="mod-tag-icon">🎯</span><span class="mod-tag-label" id="fl-m1tag">Portefeuille clients</span></div>
       <h2 class="mod-h2" id="fl-m1h2">Chaque compte sous<br/>contrôle. En temps réel.</h2>
       <p class="mod-body" id="fl-m1body">Health scores dynamiques, alertes prédictives et playbooks intégrés. Vos CSMs savent exactement quel compte nécessite une action — et laquelle.</p>
       <ul class="mod-list">
@@ -1584,12 +1374,12 @@ footer {
     <div class="mod-visual rv d2">
       <div class="mv">
         <div class="mv-head"><span id="d-m1-head" data-i18n="d_m1_head">Portefeuille — Vue CSM</span> <span class="badge ba" id="d-m1-alerts" data-i18n="d_m1_alerts">3 alertes</span></div>
-        <div class="hr"><div class="hr-name" style="font-size:12px">Leroy Finance</div><div class="hr-bar"><div class="hr-fill" style="width:25%;background:var(--red)"></div></div><div class="hr-val" style="color:var(--red)">2.5</div><span class="badge br" id="d-m1-crit" data-i18n="d_m1_crit">🔴 Critique</span></div>
+        <div class="hr"><div class="hr-name" style="font-size:12px">Leroy Finance</div><div class="hr-bar"><div class="hr-fill" style="width:25%;background:var(--red)"></div></div><div class="hr-val" style="color:var(--red)">2.5</div><span class="badge br" id="d-m1-crit" data-i18n="d_m1_crit">⚠ Critique</span></div>
         <div class="hr"><div class="hr-name" style="font-size:12px">Acme Corp</div><div class="hr-bar"><div class="hr-fill" style="width:62%;background:var(--amber)"></div></div><div class="hr-val" style="color:var(--amber)">6.2</div><span class="badge ba" id="d-m1-watch" data-i18n="d_m1_watch">Watch</span></div>
         <div class="hr"><div class="hr-name" style="font-size:12px">TechVision SAS</div><div class="hr-bar"><div class="hr-fill" style="width:87%;background:var(--teal)"></div></div><div class="hr-val" style="color:var(--teal)">8.7</div><span class="badge bg" id="d-m1-s1" data-i18n="d_m1_s1">✓ Stable</span></div>
         <div class="hr"><div class="hr-name" style="font-size:12px">BioMed Group</div><div class="hr-bar"><div class="hr-fill" style="width:91%;background:var(--teal)"></div></div><div class="hr-val" style="color:var(--teal)">9.1</div><span class="badge bg" id="d-m1-s2" data-i18n="d_m1_s2">✓ Stable</span></div>
-        <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(250,247,242,.06)">
-          <div style="font-size:10px;color:var(--dt3);text-transform:uppercase;font-weight:700;letter-spacing:.06em;margin-bottom:8px" id="d-m1-reco" data-i18n="d_m1_reco">💡 Recommandation IA</div>
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(55,53,47,.06)">
+          <div style="font-size:10px;color:var(--dt3);text-transform:uppercase;font-weight:700;letter-spacing:.06em;margin-bottom:8px" id="d-m1-reco" data-i18n="d_m1_reco">🤖 Recommandation IA</div>
           <div style="background:rgba(18,205,184,.06);border:1px solid rgba(18,205,184,.14);border-radius:9px;padding:11px;font-size:12px;color:var(--dt2)" id="d-m1-ai" data-i18n="d_m1_ai">Usage −40% ce mois. Initier un call de 30 min avec Leroy Finance avant le 15.</div>
         </div>
       </div>
@@ -1599,7 +1389,7 @@ footer {
 <section class="mod-section" id="m2">
   <div class="mod-inner">
     <div class="mod-text rv">
-      <div class="mod-tag"><span class="mod-tag-icon">📈</span><span class="mod-tag-label" id="fl-m2tag">KPIs COPIL</span></div>
+      <div class="mod-tag"><span class="mod-tag-icon">📊</span><span class="mod-tag-label" id="fl-m2tag">KPIs COPIL</span></div>
       <h2 class="mod-h2" id="fl-m2h2">Vos comités pilotage<br/>prêts en 5 minutes.</h2>
       <p class="mod-body" id="fl-m2body">Centralisez NRR, churn rate, MRR sécurisé, CSAT et tous vos indicateurs. Le rapport COPIL se génère automatiquement chaque semaine.</p>
       <ul class="mod-list">
@@ -1656,7 +1446,7 @@ footer {
           <div class="wb-c"><div class="wb-n" style="color:var(--red)">1</div><div class="wb-l" id="d-m3-alrt" data-i18n="d_m3_alrt">En alerte</div></div>
         </div>
         <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);border-radius:9px;padding:11px;margin-bottom:12px">
-          <div style="font-size:10px;font-weight:700;color:var(--amber);margin-bottom:3px" id="d-m3-burn" id="demo-burnout-lbl" data-i18n="demo_burnout">⚠️ Alerte burnout précoce</div>
+          <div style="font-size:10px;font-weight:700;color:var(--amber);margin-bottom:3px" id="d-m3-burn" id="demo-burnout-lbl" data-i18n="demo_burnout">⚠ Alerte burnout précoce</div>
           <div style="font-size:12px;color:var(--dt2)" id="d-m3-sara" data-i18n="d_m3_sara">Sarah M. — Charge 9.1/10 depuis 3 semaines. Check-in recommandé avant vendredi.</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center">
@@ -1670,7 +1460,7 @@ footer {
 <section class="mod-section" id="m4">
   <div class="mod-inner">
     <div class="mod-text rv">
-      <div class="mod-tag"><span class="mod-tag-icon">💡</span><span class="mod-tag-label" id="fl-m4tag">Coach IA Customer Success</span></div>
+      <div class="mod-tag"><span class="mod-tag-icon">🤖</span><span class="mod-tag-label" id="fl-m4tag">Coach IA Customer Success</span></div>
       <h2 class="mod-h2" id="fl-m4h2">Un expert CS disponible<br/>à 3h du matin.</h2>
       <p class="mod-body" id="fl-m4body">Posez n'importe quelle question sur la rétention, un QBR, un compte difficile. Réponses instantanées, contextuelles, actionnables.</p>
       <ul class="mod-list">
@@ -1687,9 +1477,9 @@ footer {
         <div class="mv-head"><span id="demo-coach-head" data-i18n="demo_coach_head">Coach IA CS</span> <span class="badge bg" id="demo-coach-online" data-i18n="demo_coach_online">● En ligne</span></div>
         <div class="msgs">
           <div class="msg msg-u" id="demo-coach-q1" data-i18n="demo_coach_q1">Mon client Leroy Finance veut ne pas renouveler. J'ai un call demain, que faire ?</div>
-          <div class="msg msg-a"><div class="msg-tag" id="demo-coach-tag1" data-i18n="demo_coach_tag1">💡 Coach CS</div><span id="demo-coach-a1" data-i18n="demo_coach_a1">Analysez les 3 derniers mois : usage, tickets, dernière interaction. Identifiez <strong>la vraie friction</strong>. Ouvrez avec : <em>"Qu'est-ce qui vous rendrait 100% satisfait ?"</em></span></div>
+          <div class="msg msg-a"><div class="msg-tag" id="demo-coach-tag1" data-i18n="demo_coach_tag1">🤖 Coach CS</div><span id="demo-coach-a1" data-i18n="demo_coach_a1">Analysez les 3 derniers mois : usage, tickets, dernière interaction. Identifiez <strong>la vraie friction</strong>. Ouvrez avec : <em>"Qu'est-ce qui vous rendrait 100% satisfait ?"</em></span></div>
           <div class="msg msg-u" id="demo-coach-q2" data-i18n="demo_coach_q2">Il demande une remise de 20%</div>
-          <div class="msg msg-a"><div class="msg-tag" id="demo-coach-tag2" data-i18n="demo_coach_tag2">💡 Coach CS</div><span id="demo-coach-a2" data-i18n="demo_coach_a2">Ne cédez pas immédiatement. Proposez : plan annuel (même économie), onboarding renforcé, ou accès fonctionnalités Growth...</span></div>
+          <div class="msg msg-a"><div class="msg-tag" id="demo-coach-tag2" data-i18n="demo_coach_tag2">🤖 Coach CS</div><span id="demo-coach-a2" data-i18n="demo_coach_a2">Ne cédez pas immédiatement. Proposez : plan annuel (même économie), onboarding renforcé, ou accès fonctionnalités Growth...</span></div>
         </div>
       </div>
     </div>
@@ -1715,11 +1505,11 @@ footer {
         <div class="mv-head"><span id="demo-email-head" data-i18n="demo_email_head">Email Studio</span> <span class="badge bg" id="demo-ai-badge" data-i18n="demo_ai_badge">✓ Généré par IA</span></div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
           <span id="demo-tag-checkin" data-i18n="demo_tag_checkin" style="font-size:11px;background:rgba(18,205,184,.1);border:1px solid rgba(18,205,184,.2);color:var(--teal);padding:4px 10px;border-radius:100px">Check-in mensuel</span>
-          <span id="demo-tag-churn" data-i18n="demo_tag_churn" style="font-size:11px;background:rgba(250,247,242,.04);border:1px solid rgba(250,247,242,.09);color:var(--dt3);padding:4px 10px;border-radius:100px">Alerte churn</span>
-          <span style="font-size:11px;background:rgba(250,247,242,.04);border:1px solid rgba(250,247,242,.09);color:var(--dt3);padding:4px 10px;border-radius:100px">QBR</span>
+          <span id="demo-tag-churn" data-i18n="demo_tag_churn" style="font-size:11px;background:rgba(55,53,47,.04);border:1px solid rgba(55,53,47,.09);color:var(--dt3);padding:4px 10px;border-radius:100px">Alerte churn</span>
+          <span style="font-size:11px;background:rgba(55,53,47,.04);border:1px solid rgba(55,53,47,.09);color:var(--dt3);padding:4px 10px;border-radius:100px">QBR</span>
         </div>
         <div class="ep">
-          <div class="ep-row"><div class="ep-lbl" id="demo-email-to" data-i18n="demo_email_to">À :</div><div>support@scalyo.app</div></div>
+          <div class="ep-row"><div class="ep-lbl" id="demo-email-to" data-i18n="demo_email_to">À :</div><div><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ea878b9889c48e9f9a85849eaa868f988593c78c83848b84898fc48c98">[email&#160;protected]</a></div></div>
           <div class="ep-row"><div class="ep-lbl" id="d-m5-lbl" data-i18n="d_m5_lbl">Objet :</div><div style="font-weight:600" id="d-m5-subj" data-i18n="d_m5_subj">Point mensuel Scalyo — Janvier 2025</div></div>
           <div style="margin-top:10px;padding-top:10px" id="d-m5-body">Bonjour Marc,<br/><br/>J'espère que janvier s'est bien passé. Ce mois : 3 alertes résolues, NRR stable à 108%.<br/><br/>Prochain RDV : QBR le 28 février à 14h.<br/><br/><span style="color:var(--teal)">Sophie · Customer Success Scalyo</span></div>
         </div>
@@ -1746,15 +1536,15 @@ footer {
       <div class="mv">
         <div class="mv-head"><span id="d-m6-head" data-i18n="d_m6_head">Planning CS — Février 2025</span> <span class="badge bg" id="d-m6-ev" data-i18n="d_m6_ev">12 événements</span></div>
         <div class="cal">
-          <div class="cal-c cal-ev"><div class="cal-title">🤝 QBR Leroy</div><div class="cal-sub">14h · 1h</div></div>
+          <div class="cal-c cal-ev"><div class="cal-title">📊 QBR Leroy</div><div class="cal-sub">14h · 1h</div></div>
           <div class="cal-c"></div>
-          <div class="cal-c cal-ev cal-td"><div class="cal-title" style="color:var(--blue)">🌱 Onboarding</div><div class="cal-sub">10h · Acme</div></div>
-          <div class="cal-c cal-ev"><div class="cal-title" id="d-m6-ret" data-i18n="d_m6_ret">💬 Rétention</div><div class="cal-sub">15h30</div></div>
+          <div class="cal-c cal-ev cal-td"><div class="cal-title" style="color:var(--blue)">🚀 Onboarding</div><div class="cal-sub">10h · Acme</div></div>
+          <div class="cal-c cal-ev"><div class="cal-title" id="d-m6-ret" data-i18n="d_m6_ret">📞 Rétention</div><div class="cal-sub">15h30</div></div>
           <div class="cal-c"></div>
           <div class="cal-c"></div>
-          <div class="cal-c cal-ev"><div class="cal-title">🤝 QBR TechV.</div><div class="cal-sub">11h · 1h30</div></div>
+          <div class="cal-c cal-ev"><div class="cal-title">📊 QBR TechV.</div><div class="cal-sub">11h · 1h30</div></div>
           <div class="cal-c"></div>
-          <div class="cal-c cal-ev"><div class="cal-title" style="color:var(--amber)">👋 Follow-up</div><div class="cal-sub">16h · Leroy</div></div>
+          <div class="cal-c cal-ev"><div class="cal-title" style="color:var(--amber)">⚠ Follow-up</div><div class="cal-sub">16h · Leroy</div></div>
           <div class="cal-c"></div>
         </div>
         <div style="margin-top:10px;display:flex;gap:12px;flex-wrap:wrap">
@@ -1792,7 +1582,7 @@ footer {
           </div>
           <div>
             <div class="task-col-h" id="demo-col-2">En cours</div>
-            <div class="task-card tc-a"><strong style="font-size:11px">Playbook Leroy</strong><br/><span style="font-size:10px;color:var(--amber)" id="demo-card-late">⏰ En retard</span></div>
+            <div class="task-card tc-a"><strong style="font-size:11px">Playbook Leroy</strong><br/><span style="font-size:10px;color:var(--amber)" id="demo-card-late">⚠ En retard</span></div>
             <div class="task-card tc-t"><strong style="font-size:11px">Analyse usage Acme</strong><br/><span style="font-size:10px;color:var(--dt3)">Sophie</span></div>
           </div>
           <div>
@@ -1824,10 +1614,10 @@ footer {
       <div class="mv">
         <div class="mv-head"><span id="demo-lib-title">Bibliothèque CS</span> <span class="badge bg" id="demo-lib-badge">18 ressources</span></div>
         <div class="res-list">
-          <a href="/app.html" class="res-item" style="text-decoration:none;color:inherit;"><div class="res-icon">📘</div><div class="res-info"><strong id="demo-guide1" data-i18n="demo_guide1">Guide : Réduire le churn en 30 jours</strong><span>PDF · 24 pages · Jan. 2025</span></div><div class="res-dl">↓</div></a>
-          <a href="/app.html" class="res-item" style="text-decoration:none;color:inherit;"><div class="res-icon">✨</div><div class="res-info"><strong>Template QBR SaaS B2B</strong><span>XLSX + Google Slides</span></div><div class="res-dl">↓</div></a>
-          <a href="/app.html" class="res-item" style="text-decoration:none;color:inherit;"><div class="res-icon">💬</div><div class="res-info"><strong id="demo-script1" data-i18n="demo_script1">Script appel rétention</strong><span id="demo-pdf1" data-i18n="demo_pdf1">PDF · 3 scénarios</span></div><div class="res-dl">↓</div></a>
-          <a href="/app.html" class="res-item res-new" style="text-decoration:none;color:inherit;"><div class="res-icon">🚀</div><div class="res-info"><strong style="color:var(--teal)" id="demo-pb-new">Nouveau : Playbook Expansion</strong><span id="demo-pb-sub">Upsell strategies · Fév. 2025</span></div><div class="res-dl">↓</div></a>
+          <a href="/app.html" class="res-item" style="text-decoration:none;color:inherit;"><div class="res-icon">📖</div><div class="res-info"><strong id="demo-guide1" data-i18n="demo_guide1">Guide : Réduire le churn en 30 jours</strong><span>PDF · 24 pages · Jan. 2025</span></div><div class="res-dl">↓</div></a>
+          <a href="/app.html" class="res-item" style="text-decoration:none;color:inherit;"><div class="res-icon">📊</div><div class="res-info"><strong>Template QBR SaaS B2B</strong><span>XLSX + Google Slides</span></div><div class="res-dl">↓</div></a>
+          <a href="/app.html" class="res-item" style="text-decoration:none;color:inherit;"><div class="res-icon">📞</div><div class="res-info"><strong id="demo-script1" data-i18n="demo_script1">Script appel rétention</strong><span id="demo-pdf1" data-i18n="demo_pdf1">PDF · 3 scénarios</span></div><div class="res-dl">↓</div></a>
+          <a href="/app.html" class="res-item res-new" style="text-decoration:none;color:inherit;"><div class="res-icon">🎯</div><div class="res-info"><strong style="color:var(--teal)" id="demo-pb-new">Nouveau : Playbook Expansion</strong><span id="demo-pb-sub">Upsell strategies · Fév. 2025</span></div><div class="res-dl">↓</div></a>
         </div>
       </div>
     </div>
@@ -1955,6 +1745,207 @@ footer {
 </section>
 
 
+<!-- INTEGRATIONS -->
+<section class="section section-light" id="integrations">
+  <div class="container" style="text-align: center;">
+    <div class="label" style="justify-content: center;"><div class="label-line"></div><span data-i18n="integ_tag">Intégrations</span><div class="label-line"></div></div>
+    <h2 class="h2-light" style="margin-bottom: 16px"><span data-i18n="integ_h2">Connectez tous vos outils en un clic.</span></h2>
+    <p style="color: var(--dt2); font-size: 16px; max-width: 600px; margin: 0 auto 32px; line-height: 1.7;">
+      <span data-i18n="integ_sub">CRM, email, chat, visio, gestion de projets — Scalyo se connecte nativement aux outils que votre équipe utilise déjà.</span>
+    </p>
+
+    <!-- Category tabs -->
+    <div class="integ-cats" id="integ-cats">
+      <button class="integ-cat-btn active" data-cat="all"><span>🔌</span> <span data-i18n="integ_all">Tout</span></button>
+      <button class="integ-cat-btn" data-cat="crm"><span>🏢</span> CRM</button>
+      <button class="integ-cat-btn" data-cat="email"><span>📧</span> Email</button>
+      <button class="integ-cat-btn" data-cat="chat"><span>💬</span> Chat</button>
+      <button class="integ-cat-btn" data-cat="meeting"><span>📅</span> <span data-i18n="integ_meetings">Réunions</span></button>
+      <button class="integ-cat-btn" data-cat="project"><span>📋</span> <span data-i18n="integ_projects">Projets</span></button>
+      <button class="integ-cat-btn" data-cat="data"><span>📊</span> <span data-i18n="integ_data">Données</span></button>
+    </div>
+
+    <div class="integrations-grid" id="integrations-grid">
+      <!-- CRM -->
+      <div class="integration-card available" data-cat="crm">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23FF7A59' d='M267.5 78.7V44.3c15.1-7.2 25.6-22.6 25.6-40.3C293.1 1.8 291.3 0 289 0h-32c-2.2 0-4 1.8-4 4v.1c0 11.1-9 20.1-20.1 20.1-11.1 0-20.1-9-20.1-20.1V4c0-2.2-1.8-4-4-4h-32c-2.2 0-4 1.8-4 4c0 17.7 10.5 33.1 25.6 40.3v34.4C143.1 87.3 96 141 96 205.8c0 36.5 14.5 69.6 38 93.8l-53.4 53.4c-3 3-4.2 7.3-3.2 11.4s4.2 7.3 8.1 8.7l.6.2c6.6 2.3 13.8.4 18.5-4.8l50.2-55.6c24 17.5 53.5 27.8 85.2 27.8s61.2-10.3 85.2-27.8l50.2 55.6c4.7 5.2 11.9 7.1 18.5 4.8l.6-.2c3.9-1.4 6.9-4.6 8.1-8.7s-.2-8.4-3.2-11.4L346 299.6c23.5-24.2 38-57.3 38-93.8 0-64.8-47.1-118.5-108.5-127.1zM240 304c-54.2 0-98.2-44-98.2-98.2s44-98.2 98.2-98.2 98.2 44 98.2 98.2S294.2 304 240 304z'/%3E%3C/svg%3E" alt="HubSpot"/></div>
+        <div class="integration-name">HubSpot CRM</div>
+        <div class="integration-tag">Contacts &amp; Deals</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="crm">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%2300A1E0' d='M20 8c3.2 0 6.1 1.3 8.2 3.3C30 9.9 32.5 9 35.2 9c6.2 0 11.2 5.1 11.2 11.3 0 .5 0 1-.1 1.5C47.9 23.2 49 25.3 49 27.7c0 3.9-3 7.1-6.8 7.3H12.5C7.3 35 3 30.6 3 25.3c0-4.2 2.7-7.7 6.5-9C10.3 11.9 14.7 8 20 8z'/%3E%3C/svg%3E" alt="Salesforce"/></div>
+        <div class="integration-name">Salesforce</div>
+        <div class="integration-tag" data-i18n="integ_sf_tag">Comptes &amp; Opps</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="crm">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%2325C16F'/%3E%3Cpath fill='%23fff' d='M16 7c-2.8 0-5 2.2-5 5v8c0 2.8 2.2 5 5 5s5-2.2 5-5v-8c0-2.8-2.2-5-5-5zm2 13c0 1.1-.9 2-2 2s-2-.9-2-2v-8c0-1.1.9-2 2-2s2 .9 2 2v8z'/%3E%3C/svg%3E" alt="Pipedrive"/></div>
+        <div class="integration-name">Pipedrive</div>
+        <div class="integration-tag">Deals &amp; Contacts</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <!-- Email -->
+      <div class="integration-card available" data-cat="email">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%234285F4' d='M6 10v28h10V23l8 6 8-6v15h10V10L34 22 24 14 14 22z'/%3E%3Cpath fill='%2334A853' d='M6 10l18 14v-4L6 8z'/%3E%3Cpath fill='%23FBBC04' d='M42 10L24 24v-4l18-12z'/%3E%3Cpath fill='%23EA4335' d='M6 10h6l12 10 12-10h6v2L24 24 6 12z'/%3E%3C/svg%3E" alt="Gmail"/></div>
+        <div class="integration-name">Gmail</div>
+        <div class="integration-tag" data-i18n="integ_gmail_tag">Boîte de réception</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="email">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%230078D4' d='M28 7v10h14V7zM28 20v11h14V20zM28 34v7h14v-7zM5 7l20 3v28L5 41z'/%3E%3Cellipse fill='%23fff' cx='15' cy='24' rx='6' ry='7'/%3E%3Cellipse fill='%230078D4' cx='15' cy='24' rx='4' ry='5'/%3E%3C/svg%3E" alt="Outlook"/></div>
+        <div class="integration-name">Outlook 365</div>
+        <div class="integration-tag">Mail &amp; Calendrier</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="email">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='4' y='10' width='40' height='28' rx='4' fill='%236B7280'/%3E%3Cpath fill='none' stroke='%23fff' stroke-width='2' d='M4 14l20 12 20-12'/%3E%3C/svg%3E" alt="IMAP"/></div>
+        <div class="integration-name">IMAP / SMTP</div>
+        <div class="integration-tag" data-i18n="integ_imap_tag">Tout fournisseur</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <!-- Chat -->
+      <div class="integration-card available" data-cat="chat">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23E01E5A' d='M13 28a3 3 0 1 1-3-3h3v3zm1.5 0a3 3 0 1 1 6 0v7.5a3 3 0 1 1-6 0V28z'/%3E%3Cpath fill='%2336C5F0' d='M20 13a3 3 0 1 1 3-3v3h-3zm0 1.5a3 3 0 1 1 0 6h-7.5a3 3 0 1 1 0-6H20z'/%3E%3Cpath fill='%232EB67D' d='M35 20a3 3 0 1 1 3 3h-3v-3zm-1.5 0a3 3 0 1 1-6 0v-7.5a3 3 0 1 1 6 0V20z'/%3E%3Cpath fill='%23ECB22E' d='M28 35a3 3 0 1 1-3 3v-3h3zm0-1.5a3 3 0 1 1 0-6h7.5a3 3 0 1 1 0 6H28z'/%3E%3C/svg%3E" alt="Slack"/></div>
+        <div class="integration-name">Slack</div>
+        <div class="integration-tag" data-i18n="integ_slack_tag">Alertes &amp; Commandes</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="chat">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%235B5FC7' d='M34 16a5 5 0 100-10 5 5 0 000 10zM41 18h-8c-1.7 0-3 1.3-3 3v10c0 1.7 1.3 3 3 3h8c1.7 0 3-1.3 3-3V21c0-1.7-1.3-3-3-3z'/%3E%3Cpath fill='%237B83EB' d='M24 14a6 6 0 100-12 6 6 0 000 12zM33 17H11c-1.7 0-3 1.3-3 3v13c0 5 4 9 9 9h10c5 0 9-4 9-9V20c0-1.7-1.3-3-3-3z'/%3E%3C/svg%3E" alt="Teams"/></div>
+        <div class="integration-name">Microsoft Teams</div>
+        <div class="integration-tag">Bot &amp; Notifications</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="chat">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='6' y='6' width='36' height='36' rx='8' fill='%23286EFA'/%3E%3Cpath stroke='%23fff' stroke-width='2.5' stroke-linecap='round' fill='none' d='M16 18v8M21 16v12M26 16v12M31 18v8M14 32s3 3 10 3 10-3 10-3'/%3E%3C/svg%3E" alt="Intercom"/></div>
+        <div class="integration-name">Intercom</div>
+        <div class="integration-tag">Conversations</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <!-- Meeting -->
+      <div class="integration-card available" data-cat="meeting">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%230F9D58' d='M8 12h20v24H8z'/%3E%3Cpath fill='%234285F4' d='M28 18l12-8v28l-12-8z'/%3E%3Cpath fill='%23FBBC04' d='M28 24l12-14h-12z'/%3E%3Cpath fill='%23EA4335' d='M28 24l12 14h-12z'/%3E%3C/svg%3E" alt="Google Meet"/></div>
+        <div class="integration-name">Google Meet</div>
+        <div class="integration-tag">Visio &amp; Calendrier</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="meeting">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='2' y='8' width='44' height='32' rx='8' fill='%232D8CFF'/%3E%3Cpath fill='%23fff' d='M10 16h16v12c0 1.1-.9 2-2 2H10V16zM30 20l8-4v16l-8-4V20z'/%3E%3C/svg%3E" alt="Zoom"/></div>
+        <div class="integration-name">Zoom</div>
+        <div class="integration-tag" data-i18n="integ_zoom_tag">Planification &amp; Enregistrement</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="meeting">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='6' y='8' width='36' height='34' rx='6' fill='%23006BFF'/%3E%3Crect x='6' y='8' width='36' height='10' rx='6' fill='%23004FC4'/%3E%3Ccircle cx='24' cy='30' r='6' fill='%23fff'/%3E%3Crect x='14' y='6' width='3' height='6' rx='1.5' fill='%23fff'/%3E%3Crect x='31' y='6' width='3' height='6' rx='1.5' fill='%23fff'/%3E%3C/svg%3E" alt="Calendly"/></div>
+        <div class="integration-name">Calendly</div>
+        <div class="integration-tag" data-i18n="integ_calendly_tag">Prise de RDV</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <!-- Project -->
+      <div class="integration-card available" data-cat="project">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%230052CC' d='M43.5 23.2L25.8 5.5 24 3.7 8.7 19 3 24.7c-.7.7-.7 1.9 0 2.6L15.3 39.7 24 48.4l15.3-15.3.5-.5 3.7-3.7c.7-.7.7-1.9 0-2.7zM24 30.9l-6.9-6.9L24 17.1l6.9 6.9L24 30.9z'/%3E%3C/svg%3E" alt="Jira"/></div>
+        <div class="integration-name">Jira</div>
+        <div class="integration-tag">Tickets &amp; Sync</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="project">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='12' r='8' fill='%23F06A6A'/%3E%3Ccircle cx='12' cy='32' r='8' fill='%23F06A6A'/%3E%3Ccircle cx='36' cy='32' r='8' fill='%23F06A6A'/%3E%3C/svg%3E" alt="Asana"/></div>
+        <div class="integration-name">Asana</div>
+        <div class="integration-tag" data-i18n="integ_asana_tag">Projets &amp; Tâches</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <!-- Data -->
+      <div class="integration-card available" data-cat="data">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%236B7280' d='M12 4h16l12 12v24c0 2.2-1.8 4-4 4H12c-2.2 0-4-1.8-4-4V8c0-2.2 1.8-4 4-4z'/%3E%3Cpath fill='%23fff' opacity='.5' d='M28 4l12 12h-8c-2.2 0-4-1.8-4-4V4z'/%3E%3Ctext x='24' y='35' text-anchor='middle' fill='%23fff' font-size='11' font-weight='700' font-family='sans-serif'%3ECSV%3C/text%3E%3C/svg%3E" alt="CSV"/></div>
+        <div class="integration-name">Import CSV</div>
+        <div class="integration-tag">Import 1-clic</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="data">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%2316A34A' d='M12 4h16l12 12v24c0 2.2-1.8 4-4 4H12c-2.2 0-4-1.8-4-4V8c0-2.2 1.8-4 4-4z'/%3E%3Cpath fill='%23fff' opacity='.5' d='M28 4l12 12h-8c-2.2 0-4-1.8-4-4V4z'/%3E%3Ctext x='24' y='35' text-anchor='middle' fill='%23fff' font-size='9' font-weight='700' font-family='sans-serif'%3EXLSX%3C/text%3E%3C/svg%3E" alt="Excel"/></div>
+        <div class="integration-name">Import Excel</div>
+        <div class="integration-tag">Multi-feuilles</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="data">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='8' fill='%236366F1'/%3E%3Cpath fill='%23fff' d='M22.5 19.5c0-1.5 1.2-2.1 3.2-2.1 2.9 0 6.5 0.9 9.4 2.4V12c-3.1-1.3-6.3-1.8-9.4-1.8-7.7 0-12.8 4-12.8 10.7 0 10.4 14.3 8.7 14.3 13.2 0 1.8-1.5 2.3-3.7 2.3-3.2 0-7.3-1.3-10.5-3.1v7.9c3.6 1.5 7.2 2.2 10.5 2.2 7.9 0 13.3-3.9 13.3-10.7-.1-11.2-14.3-9.2-14.3-13.2z'/%3E%3C/svg%3E" alt="Stripe"/></div>
+        <div class="integration-name">Stripe</div>
+        <div class="integration-tag">Facturation &amp; MRR</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+    </div>
+
+    <p style="color: var(--dt3); font-size: 13px; margin-top: 24px;">
+      <span data-i18n="integ_more">+ Zendesk, Segment, Freshdesk, Notion, WhatsApp, Crisp et bien d'autres à venir.</span>
+    </p>
+
+    <!-- Arguments de vente -->
+    <div class="vs-block">
+      <div class="vs-title" data-i18n="sell_title">Pourquoi choisir Scalyo ?</div>
+      <p class="vs-subtitle" data-i18n="sell_subtitle">8 raisons concrètes pour lesquelles les équipes CS les plus performantes choisissent Scalyo.</p>
+
+      <div class="sell-grid">
+        <div class="sell-card">
+          <div class="sell-icon">🔗</div>
+          <div class="sell-label" data-i18n="sell_1_label">17+ intégrations natives</div>
+          <div class="sell-desc" data-i18n="sell_1_desc">Connectez votre CRM, email, chat et visio en un clic. Tout est inclus, sans surcoût ni middleware.</div>
+        </div>
+        <div class="sell-card">
+          <div class="sell-icon">⚡</div>
+          <div class="sell-label" data-i18n="sell_2_label">Opérationnel en 5 minutes</div>
+          <div class="sell-desc" data-i18n="sell_2_desc">Pas de consultant, pas de code, pas de semaines de déploiement. Votre équipe est productive dès le premier jour.</div>
+        </div>
+        <div class="sell-card">
+          <div class="sell-icon">🇪🇺</div>
+          <div class="sell-label" data-i18n="sell_3_label">Données 100% européennes</div>
+          <div class="sell-desc" data-i18n="sell_3_desc">Hébergement Supabase en Irlande, chiffrement AES-256, RGPD natif. Vos données ne quittent jamais l'UE.</div>
+        </div>
+        <div class="sell-card">
+          <div class="sell-icon">🤖</div>
+          <div class="sell-label" data-i18n="sell_4_label">Coach IA intégré</div>
+          <div class="sell-desc" data-i18n="sell_4_desc">Un expert Customer Success disponible 24h/24. Conseils actionnables, scripts d'appels, templates d'emails.</div>
+        </div>
+        <div class="sell-card">
+          <div class="sell-icon">💚</div>
+          <div class="sell-label" data-i18n="sell_5_label">Bien-être équipe inclus</div>
+          <div class="sell-desc" data-i18n="sell_5_desc">Suivi du moral, alertes burnout précoces, charge de travail. Prenez soin de vos CSMs, pas seulement de vos clients.</div>
+        </div>
+        <div class="sell-card">
+          <div class="sell-icon">💰</div>
+          <div class="sell-label" data-i18n="sell_6_label">Tarif transparent, bloqué à vie</div>
+          <div class="sell-desc" data-i18n="sell_6_desc">Pas de devis, pas de mauvaise surprise. Prix affiché = prix payé. Les early adopters gardent leur tarif pour toujours.</div>
+        </div>
+        <div class="sell-card">
+          <div class="sell-icon">📊</div>
+          <div class="sell-label" data-i18n="sell_7_label">Tout-en-un : 8 modules intégrés</div>
+          <div class="sell-desc" data-i18n="sell_7_desc">Portfolio, KPIs, bien-être, Coach IA, Email Studio, Planning, Tasks, Ressources — une seule plateforme au lieu de cinq.</div>
+        </div>
+        <div class="sell-card">
+          <div class="sell-icon">🇫🇷</div>
+          <div class="sell-label" data-i18n="sell_8_label">Support francophone 7j/7</div>
+          <div class="sell-desc" data-i18n="sell_8_desc">Une équipe qui parle votre langue, disponible 7 jours sur 7. Pas de chatbot, de vraies personnes.</div>
+        </div>
+      </div>
+
+      <div class="vs-highlights">
+        <div class="vs-hl-card">
+          <div class="vs-hl-number">0 €</div>
+          <div class="vs-hl-text" data-i18n="sell_hl1">par intégration<br/>Tout est inclus dans votre plan</div>
+        </div>
+        <div class="vs-hl-card">
+          <div class="vs-hl-number">5 min</div>
+          <div class="vs-hl-text" data-i18n="sell_hl2">pour tout connecter<br/>Pas de consultant, pas de code</div>
+        </div>
+        <div class="vs-hl-card">
+          <div class="vs-hl-number">100%</div>
+          <div class="vs-hl-text" data-i18n="sell_hl3">natif, sans middleware<br/>Vos données restent en Europe</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- FAQ -->
 <section class="section section-dark" id="faq">
   <div class="container">
@@ -2020,7 +2011,7 @@ footer {
           <span class="faq-icon">+</span>
         </button>
         <div class="faq-a">
-          <p>Oui, le support est 100% francophone. Vous pouvez nous contacter par email à <a href="mailto:support@scalyo.app" style="color:var(--teal)">support@scalyo.app</a>. Les clients Elite bénéficient en plus d'une session de coaching mensuelle 1h avec une consultante CS dédiée.</p>
+          <p>Oui, le support est 100% francophone. Vous pouvez nous contacter par email à <a href="/cdn-cgi/l/email-protection#1871767e77586b7b7974617736796868" style="color:var(--teal)"><span class="__cf_email__" data-cfemail="88e1e6eee7c8fbebe9e4f1e7a6e9f8f8">[email&#160;protected]</span></a>. Les clients Elite bénéficient en plus d'une session de coaching mensuelle 1h avec une consultante CS dédiée.</p>
         </div>
       </div>
 
@@ -2060,9 +2051,9 @@ footer {
         Démarrer gratuitement
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
-      <a href="mailto:support@scalyo.app" class="btn-secondary">support@scalyo.app</a>
+      <a href="/cdn-cgi/l/email-protection#573e393138172434363b2e3879362727" class="btn-secondary"><span class="__cf_email__" data-cfemail="d9b0b7bfb699aabab8b5a0b6f7b8a9a9">[email&#160;protected]</span></a>
     </div>
-    <div class="end-note"><a href="mailto:support@scalyo.app" style="color:var(--teal)">support@scalyo.app</a> · Support en français 7j/7</div>
+    <div class="end-note"><a href="/cdn-cgi/l/email-protection#234a4d454c635040424f5a4c0d425353" style="color:var(--teal)"><span class="__cf_email__" data-cfemail="026b6c646d427161636e7b6d2c637272">[email&#160;protected]</span></a> · Support en français 7j/7</div>
   </div>
 </section>
 
@@ -2104,7 +2095,7 @@ footer {
   </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* ═══════════════════════════════════════════════════
    SCALYO LANDING — I18N ENGINE v2 (FR / EN / KR)
    Approche: IDs et classes, zéro data-i18n conflit
@@ -2130,7 +2121,7 @@ const L = {
     demo_sidebar_menu:"Menu",
     demo_portfolio:"Portefeuille", demo_wellbeing:"Bien-être", demo_coach:"Coach IA",
     demo_mrr:"MRR sécurisé", demo_churn:"Risques churn",
-    demo_wellbeing_kpi:"Bien-être équipe", demo_action:"🔔 Action requise",
+    demo_wellbeing_kpi:"Bien-être équipe", demo_action:"⚠ Action requise",
     demo_nrr:"NRR — 6 derniers mois", demo_priority:"Comptes prioritaires",
     demo_updated:"Mars 2025 · Mis à jour à l'instant",
     tag_critical:"Critique", tag_risk:"À risque", tag_stable:"Stable",
@@ -2259,18 +2250,18 @@ const L = {
     wb_updated: "Mis à jour", coach_online: "En ligne", pb_ongoing: "En cours",
     d_m1_head: "Portefeuille — Vue CSM",
     d_m1_alerts: "3 alertes",
-    d_m1_crit: "🔴 Critique",
+    d_m1_crit: "⚠ Critique",
     d_m1_watch: "Watch",
     d_m1_s1: "✓ Stable",
     d_m1_s2: "✓ Stable",
-    d_m1_reco: "🧠 Recommandation IA",
+    d_m1_reco: "🤖 Recommandation IA",
     d_m1_ai: "Utilisation −40% ce mois. Planifier appel 30 min avec Leroy Finance avant le 15.",
     d_m3_head: "Bien-être équipe — Cette semaine",
     d_m3_badge: "1 alerte",
     d_m3_avg: "Score moyen",
     d_m3_load: "Charge perçue",
     d_m3_alrt: "En alerte",
-    d_m3_burn: "🌡️ Alerte burnout précoce",
+    d_m3_burn: "⚠ Alerte burnout précoce",
     d_m3_sara: "Sarah M. — Charge 9.1/10 depuis 3 sem. Check-in avant vendredi.",
     d_m3_trnd: "Tendance stable →",
     d_wb_title: "Bien-être équipe — Cette semaine",
@@ -2287,7 +2278,7 @@ const L = {
     demo_col_1: "À faire",
     demo_col_2: "En cours",
     demo_col_3: "Terminé",
-    demo_card_late: "⏰ En retard",
+    demo_card_late: "⚠ En retard",
     demo_done_1: "Terminé · 10 fév",
     demo_done_2: "Terminé · 8 fév",
     demo_tb_head: "Task Board — Sprint 4",
@@ -2369,7 +2360,7 @@ const L = {
     coach_ai: 'Avant l\'appel, analysez les 3 derniers mois d\'utilisation pour identifier la friction principale.',
     demo_copil: 'COPIL — Février 2025',
     demo_mrr_sec: 'MRR Sécurisé',
-    demo_burnout: '⚠️ Alerte burnout précoce',
+    demo_burnout: '⚠ Alerte burnout précoce',
     demo_ai_badge: '✓ Généré par IA',
     demo_guide1: 'Guide : Réduire le churn en 30 jours',
     demo_script1: 'Script appel rétention',
@@ -2384,10 +2375,10 @@ const L = {
     demo_coach_head: 'Coach IA CS',
     demo_coach_online: '● En ligne',
     demo_coach_q1: 'Mon client Leroy Finance veut ne pas renouveler. J\'ai un call demain, que faire ?',
-    demo_coach_tag1: '💡 Coach CS',
+    demo_coach_tag1: '🤖 Coach CS',
     demo_coach_a1: 'Analysez les 3 derniers mois : usage, tickets, dernière interaction. Ouvrez avec : \"Qu\'est-ce qui vous rendrait 100% satisfait ?\"',
     demo_coach_q2: 'Il demande une remise de 20%',
-    demo_coach_tag2: '💡 Coach CS',
+    demo_coach_tag2: '🤖 Coach CS',
     demo_coach_a2: 'Ne cédez pas immédiatement. Proposez : plan annuel (même économie), onboarding renforcé, ou accès fonctionnalités Growth...',
     price_locked2: 'prix de lancement bloqués à vie',
     fl_m1tag: "Portefeuille clients",
@@ -2402,7 +2393,7 @@ const L = {
     fl_m3p1: "Check-in hebdomadaire anonyme (mood + charge)",
     fl_m3p2: "Alerte burnout 3 semaines avant les signes visibles",
     fl_m3btn: "Activer le module →",
-    demo_burnout_lbl: "🌡️ Alerte burnout précoce",
+    demo_burnout_lbl: "⚠ Alerte burnout précoce",
     fl_m4tag: "Coach IA Customer Success",
     fl_m4h2: "Un expert CS disponible 24h/24.",
     fl_m4p3: "Plans d’action churn, expansion, onboarding",
@@ -2432,6 +2423,45 @@ const L = {
     fl_c8: "Ressources",
     fl_s1s: "En 90 jours d’utilisation",
     fl_s4l: "d’avance sur le churn",
+    // Intégrations
+    integ_tag: "Intégrations",
+    integ_h2: "Connectez tous vos outils en un clic.",
+    integ_sub: "CRM, email, chat, visio, gestion de projets — Scalyo se connecte nativement aux outils que votre équipe utilise déjà.",
+    integ_all: "Tout",
+    integ_meetings: "Réunions",
+    integ_projects: "Projets",
+    integ_data: "Données",
+    integ_available: "Disponible",
+    integ_sf_tag: "Comptes & Opps",
+    integ_gmail_tag: "Boîte de réception",
+    integ_imap_tag: "Tout fournisseur",
+    integ_slack_tag: "Alertes & Commandes",
+    integ_zoom_tag: "Planification & Enregistrement",
+    integ_calendly_tag: "Prise de RDV",
+    integ_asana_tag: "Projets & Tâches",
+    integ_more: "+ Zendesk, Segment, Freshdesk, Notion, WhatsApp, Crisp et bien d’autres à venir.",
+    // Arguments de vente
+    sell_title: "Pourquoi choisir Scalyo ?",
+    sell_subtitle: "8 raisons concrètes pour lesquelles les équipes CS les plus performantes choisissent Scalyo.",
+    sell_1_label: "17+ intégrations natives",
+    sell_1_desc: "Connectez votre CRM, email, chat et visio en un clic. Tout est inclus, sans surcoût ni middleware.",
+    sell_2_label: "Opérationnel en 5 minutes",
+    sell_2_desc: "Pas de consultant, pas de code, pas de semaines de déploiement. Votre équipe est productive dès le premier jour.",
+    sell_3_label: "Données 100% européennes",
+    sell_3_desc: "Hébergement Supabase en Irlande, chiffrement AES-256, RGPD natif. Vos données ne quittent jamais l’UE.",
+    sell_4_label: "Coach IA intégré",
+    sell_4_desc: "Un expert Customer Success disponible 24h/24. Conseils actionnables, scripts d’appels, templates d’emails.",
+    sell_5_label: "Bien-être équipe inclus",
+    sell_5_desc: "Suivi du moral, alertes burnout précoces, charge de travail. Prenez soin de vos CSMs, pas seulement de vos clients.",
+    sell_6_label: "Tarif transparent, bloqué à vie",
+    sell_6_desc: "Pas de devis, pas de mauvaise surprise. Prix affiché = prix payé. Les early adopters gardent leur tarif pour toujours.",
+    sell_7_label: "Tout-en-un : 8 modules intégrés",
+    sell_7_desc: "Portfolio, KPIs, bien-être, Coach IA, Email Studio, Planning, Tasks, Ressources — une seule plateforme au lieu de cinq.",
+    sell_8_label: "Support francophone 7j/7",
+    sell_8_desc: "Une équipe qui parle votre langue, disponible 7 jours sur 7. Pas de chatbot, de vraies personnes.",
+    sell_hl1: "par intégration<br/>Tout est inclus dans votre plan",
+    sell_hl2: "pour tout connecter<br/>Pas de consultant, pas de code",
+    sell_hl3: "natif, sans middleware<br/>Vos données restent en Europe",
   },
 
   en: {
@@ -2450,7 +2480,7 @@ const L = {
     demo_sidebar_menu:"Menu",
     demo_portfolio:"Portfolio", demo_wellbeing:"Wellbeing", demo_coach:"AI Coach",
     demo_mrr:"Secured MRR", demo_churn:"Churn risks",
-    demo_wellbeing_kpi:"Team wellbeing", demo_action:"🔔 Action required",
+    demo_wellbeing_kpi:"Team wellbeing", demo_action:"⚠ Action required",
     demo_nrr:"NRR — Last 6 months", demo_priority:"Priority accounts",
     demo_updated:"March 2025 · Just updated",
     tag_critical:"Critical", tag_risk:"At risk", tag_stable:"Stable",
@@ -2573,7 +2603,7 @@ const L = {
     demo_col_1:'To Do',
     demo_col_2:'In Progress',
     demo_col_3:'Done',
-    demo_card_late:'⏰ Late',
+    demo_card_late:'⚠ Late',
     demo_done_1:'Done · Feb 10',
     demo_done_2:'Done · Feb 8',
     demo_copil_period:'COPIL — February 2025',
@@ -2587,11 +2617,11 @@ const L = {
   
     d_m1_head:'Portfolio — CSM View',
     d_m1_alerts:'3 alerts',
-    d_m1_crit:'🔴 Critical',
+    d_m1_crit:'⚠ Critical',
     d_m1_watch:'Watch',
     d_m1_s1:'✓ Stable',
     d_m1_s2:'✓ Stable',
-    d_m1_reco:'💡 AI Recommendation',
+    d_m1_reco:'🤖 AI Recommendation',
     d_m1_ai:'Usage −40% this month. Schedule a 30-min call with Leroy Finance before the 15th.',
     d_wb_title:'Team Wellbeing — This week',
     d_wb_upd:'Updated',
@@ -2603,7 +2633,7 @@ const L = {
     d_m3_avg:'Avg. score',
     d_m3_load:'Perceived load',
     d_m3_alrt:'On alert',
-    d_m3_burn:'🌡️ Early burnout alert',
+    d_m3_burn:'⚠ Early burnout alert',
     d_m3_sara:'Sarah M. — Load 9.1/10 for 3 weeks. Check-in recommended before Friday.',
     d_m3_trnd:'Stable trend →',
     d_m5_lbl:'Subject:',
@@ -2682,7 +2712,7 @@ const L = {
     coach_ai: 'Before the call, analyze the last 3 months of usage to identify the main friction point.',
     demo_copil: 'COPIL — February 2025',
     demo_mrr_sec: 'Secured MRR',
-    demo_burnout: '🌡️ Early burnout alert',
+    demo_burnout: '⚠ Early burnout alert',
     demo_ai_badge: '✓ AI generated',
     demo_guide1: 'Guide: Reduce churn in 30 days',
     demo_script1: 'Retention call script',
@@ -2697,10 +2727,10 @@ const L = {
     demo_coach_head: 'CS AI Coach',
     demo_coach_online: '● Online',
     demo_coach_q1: 'My client Leroy Finance is considering not renewing. I have a call tomorrow, what should I do?',
-    demo_coach_tag1: '💡 CS Coach',
+    demo_coach_tag1: '🤖 CS Coach',
     demo_coach_a1: 'Analyze the last 3 months: usage, tickets, last interaction. Open with: "What would make you 100% satisfied?"',
     demo_coach_q2: "They're asking for a 20% discount",
-    demo_coach_tag2: '💡 CS Coach',
+    demo_coach_tag2: '🤖 CS Coach',
     demo_coach_a2: "Don't give in immediately. Propose: annual plan (same savings), reinforced onboarding, or access to Growth features...",
     price_locked2: 'launch prices locked for life',
     fl_m1tag: "Client Portfolio",
@@ -2715,7 +2745,7 @@ const L = {
     fl_m3p1: "Anonymous weekly check-in (mood + workload)",
     fl_m3p2: "Burnout alert 3 weeks before visible signs",
     fl_m3btn: "Enable the module →",
-    demo_burnout_lbl: "⚠️ Early burnout alert",
+    demo_burnout_lbl: "⚠ Early burnout alert",
     fl_m4tag: "AI Customer Success Coach",
     fl_m4h2: "A CS expert available 24/7.",
     fl_m4p3: "Action plans: churn, expansion, onboarding",
@@ -2745,6 +2775,45 @@ const L = {
     fl_c8: "Resources",
     fl_s1s: "Within 90 days of use",
     fl_s4l: "ahead of churn",
+    // Integrations
+    integ_tag: "Integrations",
+    integ_h2: "Connect all your tools in one click.",
+    integ_sub: "CRM, email, chat, video, project management — Scalyo natively connects to the tools your team already uses.",
+    integ_all: "All",
+    integ_meetings: "Meetings",
+    integ_projects: "Projects",
+    integ_data: "Data",
+    integ_available: "Available",
+    integ_sf_tag: "Accounts & Opps",
+    integ_gmail_tag: "Inbox",
+    integ_imap_tag: "Any provider",
+    integ_slack_tag: "Alerts & Commands",
+    integ_zoom_tag: "Scheduling & Recording",
+    integ_calendly_tag: "Booking",
+    integ_asana_tag: "Projects & Tasks",
+    integ_more: "+ Zendesk, Segment, Freshdesk, Notion, WhatsApp, Crisp and many more coming soon.",
+    // Sales arguments
+    sell_title: "Why choose Scalyo?",
+    sell_subtitle: "8 concrete reasons why the most successful CS teams choose Scalyo.",
+    sell_1_label: "17+ native integrations",
+    sell_1_desc: "Connect your CRM, email, chat and video in one click. Everything is included, no extra cost or middleware.",
+    sell_2_label: "Up and running in 5 minutes",
+    sell_2_desc: "No consultants, no code, no weeks of deployment. Your team is productive from day one.",
+    sell_3_label: "100% European data",
+    sell_3_desc: "Supabase hosting in Ireland, AES-256 encryption, native GDPR. Your data never leaves the EU.",
+    sell_4_label: "Built-in AI Coach",
+    sell_4_desc: "A Customer Success expert available 24/7. Actionable advice, call scripts, email templates.",
+    sell_5_label: "Team wellbeing included",
+    sell_5_desc: "Mood tracking, early burnout alerts, workload monitoring. Take care of your CSMs, not just your clients.",
+    sell_6_label: "Transparent pricing, locked for life",
+    sell_6_desc: "No quotes, no surprises. The listed price is the price you pay. Early adopters keep their rate forever.",
+    sell_7_label: "All-in-one: 8 integrated modules",
+    sell_7_desc: "Portfolio, KPIs, Wellbeing, AI Coach, Email Studio, Planning, Tasks, Resources — one platform instead of five.",
+    sell_8_label: "7-day-a-week support",
+    sell_8_desc: "A real team, available 7 days a week. No chatbot — real people who understand Customer Success.",
+    sell_hl1: "per integration<br/>Everything is included in your plan",
+    sell_hl2: "to connect everything<br/>No consultant, no code",
+    sell_hl3: "native, no middleware<br/>Your data stays in Europe",
   },
 
   kr: {
@@ -2763,7 +2832,7 @@ const L = {
     demo_sidebar_menu:"메뉴",
     demo_portfolio:"포트폴리오", demo_wellbeing:"웰빙", demo_coach:"AI 코치",
     demo_mrr:"확보된 MRR", demo_churn:"이탈 위험",
-    demo_wellbeing_kpi:"팀 웰빙", demo_action:"🔔 조치 필요",
+    demo_wellbeing_kpi:"팀 웰빙", demo_action:"⚠ 조치 필요",
     demo_nrr:"NRR — 최근 6개월", demo_priority:"우선순위 계정",
     demo_updated:"2025년 3월 · 방금 업데이트",
     tag_critical:"위험", tag_risk:"위험 감지", tag_stable:"안정",
@@ -2893,7 +2962,7 @@ const L = {
     demo_col_1:'할 일',
     demo_col_2:'진행 중',
     demo_col_3:'완료',
-    demo_card_late:'⏰ 지연',
+    demo_card_late:'⚠ 지연',
     demo_done_1:'완료 · 10 2월',
     demo_done_2:'완료 · 8 2월',
     demo_copil_period:'COPIL — 2025년 2월',
@@ -2907,11 +2976,11 @@ const L = {
   
     d_m1_head:'포트폴리오 — CSM 뷰',
     d_m1_alerts:'3개 알림',
-    d_m1_crit:'🔴 위험',
+    d_m1_crit:'⚠ 위험',
     d_m1_watch:'주시',
     d_m1_s1:'✓ 안정',
     d_m1_s2:'✓ 안정',
-    d_m1_reco:'💡 AI 추천',
+    d_m1_reco:'🤖 AI 추천',
     d_m1_ai:'이번 달 사용량 −40%. 15일 이전 Leroy Finance와 30분 통화 예약 권장.',
     d_wb_title:'팀 웰빙 — 이번 주',
     d_wb_upd:'업데이트됨',
@@ -2923,7 +2992,7 @@ const L = {
     d_m3_avg:'평균 점수',
     d_m3_load:'체감 부하',
     d_m3_alrt:'알림 발생',
-    d_m3_burn:'⚠️ 초기 번아웃 경보',
+    d_m3_burn:'⚠ 초기 번아웃 경보',
     d_m3_sara:'Sarah M. — 3주간 부하 9.1/10. 금요일 이전 체크인 권장.',
     d_m3_trnd:'안정 추세 →',
     d_m5_lbl:'제목 :',
@@ -3002,7 +3071,7 @@ const L = {
     coach_ai: '통화 전에, 주요 마찰 요인을 파악하기 위해 최근 3개월 사용 현황을 분석하세요.',
     demo_copil: 'COPIL — 2025년 2월',
     demo_mrr_sec: '보안 MRR',
-    demo_burnout: '⚠️ 조기 번아웃 알림',
+    demo_burnout: '⚠ 조기 번아웃 알림',
     demo_ai_badge: '✓ AI 생성됨',
     demo_guide1: '가이드: 30일 만에 이탈률 감소',
     demo_script1: '리텐션 통화 스크립트',
@@ -3017,10 +3086,10 @@ const L = {
     demo_coach_head: 'CS AI 코치',
     demo_coach_online: '● 온라인',
     demo_coach_q1: '고객 Leroy Finance가 갱신을 거부하려 합니다. 내일 통화가 있는데 어떻게 해야 하나요?',
-    demo_coach_tag1: '💡 CS 코치',
+    demo_coach_tag1: '🤖 CS 코치',
     demo_coach_a1: '최근 3개월 사용 현황, 티켓, 마지막 상호작용을 분석하세요. \"100% 만족하시려면 무엇이 필요한가요?\"로 시작하세요.',
     demo_coach_q2: '20% 할인을 요구합니다',
-    demo_coach_tag2: '💡 CS 코치',
+    demo_coach_tag2: '🤖 CS 코치',
     demo_coach_a2: '즉시 양보하지 마세요. 연간 플랜(동일 절감), 강화된 온보딩, Growth 기능 접근권을 제안하세요...',
     price_locked2: '평생 고정 출시 가격',
     fl_m1tag: "고객 포트폴리오",
@@ -3035,7 +3104,7 @@ const L = {
     fl_m3p1: "익명 주간 체크인 (기분 + 업무량)",
     fl_m3p2: "징후 3주 전 번아웃 알림",
     fl_m3btn: "모듈 활성화 →",
-    demo_burnout_lbl: "⚠️ 조기 번아웃 알림",
+    demo_burnout_lbl: "⚠ 조기 번아웃 알림",
     fl_m4tag: "AI Customer Success 코치",
     fl_m4h2: "24시간 이용 가능한 CS 전문가.",
     fl_m4p3: "이탈, 확장, 온보딩 실행 계획",
@@ -3065,6 +3134,45 @@ const L = {
     fl_c8: "리소스",
     fl_s1s: "사용 90일 이내",
     fl_s4l: "이탈 선행 감지",
+    // 통합
+    integ_tag: "통합",
+    integ_h2: "모든 도구를 한 번에 연결하세요.",
+    integ_sub: "CRM, 이메일, 채팅, 화상회의, 프로젝트 관리 — Scalyo는 팀이 이미 사용하는 도구에 기본 연결됩니다.",
+    integ_all: "전체",
+    integ_meetings: "회의",
+    integ_projects: "프로젝트",
+    integ_data: "데이터",
+    integ_available: "사용 가능",
+    integ_sf_tag: "계정 & 기회",
+    integ_gmail_tag: "받은편지함",
+    integ_imap_tag: "모든 제공업체",
+    integ_slack_tag: "알림 & 명령",
+    integ_zoom_tag: "일정 & 녹화",
+    integ_calendly_tag: "예약",
+    integ_asana_tag: "프로젝트 & 작업",
+    integ_more: "+ Zendesk, Segment, Freshdesk, Notion, WhatsApp, Crisp 등 곧 추가됩니다.",
+    // 판매 포인트
+    sell_title: "왜 Scalyo를 선택해야 하나요?",
+    sell_subtitle: "가장 성공적인 CS 팀이 Scalyo를 선택하는 8가지 구체적인 이유.",
+    sell_1_label: "17개 이상의 기본 통합",
+    sell_1_desc: "CRM, 이메일, 채팅, 화상회의를 한 번에 연결하세요. 추가 비용이나 미들웨어 없이 모두 포함됩니다.",
+    sell_2_label: "5분 만에 시작",
+    sell_2_desc: "컨설턴트 불필요, 코드 불필요, 몇 주간의 배포 불필요. 팀이 첫날부터 생산적으로 일합니다.",
+    sell_3_label: "100% 유럽 데이터",
+    sell_3_desc: "아일랜드 Supabase 호스팅, AES-256 암호화, 기본 GDPR. 데이터가 EU를 떠나지 않습니다.",
+    sell_4_label: "내장 AI 코치",
+    sell_4_desc: "24시간 이용 가능한 Customer Success 전문가. 실행 가능한 조언, 통화 스크립트, 이메일 템플릿.",
+    sell_5_label: "팀 웰빙 포함",
+    sell_5_desc: "기분 추적, 조기 번아웃 알림, 업무량 모니터링. 고객뿐 아니라 CSM도 케어하세요.",
+    sell_6_label: "투명한 가격, 평생 고정",
+    sell_6_desc: "견적 불필요, 놀라운 비용 없음. 표시된 가격이 지불 가격입니다. 얼리 어답터는 영원히 요금을 유지합니다.",
+    sell_7_label: "올인원: 8개 통합 모듈",
+    sell_7_desc: "포트폴리오, KPI, 웰빙, AI 코치, 이메일 스튜디오, 플래닝, 태스크, 리소스 — 5개 대신 하나의 플랫폼.",
+    sell_8_label: "주 7일 지원",
+    sell_8_desc: "주 7일 이용 가능한 실제 팀. 챗봇이 아닌, Customer Success를 이해하는 실제 사람들.",
+    sell_hl1: "통합당<br/>모든 것이 플랜에 포함됩니다",
+    sell_hl2: "모든 것을 연결하는 데<br/>컨설턴트 불필요, 코드 불필요",
+    sell_hl3: "기본, 미들웨어 없음<br/>데이터는 유럽에 보관됩니다",
   }
 };
 
@@ -3757,6 +3865,21 @@ window.addEventListener('scroll', function(){
 });
 
 /* ── FAQ ── */
+/* ── INTEGRATION FILTERING ── */
+var integCats = document.getElementById('integ-cats');
+if (integCats) {
+  integCats.addEventListener('click', function(e) {
+    var btn = e.target.closest('.integ-cat-btn');
+    if (!btn) return;
+    var cat = btn.dataset.cat;
+    document.querySelectorAll('.integ-cat-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelectorAll('.integration-card').forEach(function(card) {
+      card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+    });
+  });
+}
+
 function toggleFaq(btn) {
   var item = btn.closest('.faq-item');
   var isOpen = item.classList.contains('open');
@@ -3868,7 +3991,7 @@ en:{
     "demo_col_1": "To Do",
     "demo_col_2": "In Progress",
     "demo_col_3": "Done",
-    "demo_card_late": "⏰ Late",
+    "demo_card_late": "⚠ Late",
     "demo_done_1": "Done · Feb 10",
     "demo_done_2": "Done · Feb 8",
     "demo_copil_period": "COPIL — February 2025",
@@ -3909,7 +4032,7 @@ kr:{
     "demo_col_1": "할 일",
     "demo_col_2": "진행 중",
     "demo_col_3": "완료",
-    "demo_card_late": "⏰ 지연",
+    "demo_card_late": "⚠ 지연",
     "demo_done_1": "완료 · 10 2월",
     "demo_done_2": "완료 · 8 2월",
     "demo_copil_period": "COPIL — 2025년 2월",
@@ -3940,172 +4063,6 @@ function applyModuleLang(l){
     ['tag','h2','body','p1','p2','p3','p4','p5','btn'].forEach(function(k){s('fl-m'+m+k,t['m'+m+k]);});
   }
 }
-
-/* ═══════════════════════════════════════════════════
-   CHIPS TAB NAVIGATION — click to show module
-═══════════════════════════════════════════════════ */
-(function(){
-  var chips = document.querySelectorAll('.chips-grid .chip');
-  var mods = document.querySelectorAll('.mod-section');
-  if(!chips.length || !mods.length) return;
-
-  // Show first module by default
-  mods[0].classList.add('active-mod');
-
-  chips.forEach(function(chip, i){
-    chip.addEventListener('click', function(){
-      // Update active chip
-      chips.forEach(function(c){ c.classList.remove('active'); });
-      chip.classList.add('active');
-
-      // Hide current module, show selected one
-      mods.forEach(function(m){ m.classList.remove('active-mod'); m.style.display='none'; });
-      if(mods[i]) {
-        // Small delay for reflow so animation replays
-        setTimeout(function(){
-          mods[i].classList.add('active-mod');
-        }, 10);
-      }
-    });
-  });
-
-  // Auto-cycle modules every 6s when not interacted with
-  var autoTimer = null;
-  var currentIdx = 0;
-  var userInteracted = false;
-
-  function autoSwitch(){
-    if(userInteracted) return;
-    currentIdx = (currentIdx + 1) % mods.length;
-    chips.forEach(function(c){ c.classList.remove('active'); });
-    chips[currentIdx].classList.add('active');
-    mods.forEach(function(m){ m.classList.remove('active-mod'); m.style.display='none'; });
-    setTimeout(function(){ mods[currentIdx].classList.add('active-mod'); }, 10);
-  }
-
-  autoTimer = setInterval(autoSwitch, 6000);
-
-  // Stop auto-cycle on user click
-  chips.forEach(function(chip){
-    chip.addEventListener('click', function(){
-      userInteracted = true;
-      if(autoTimer) clearInterval(autoTimer);
-    });
-  });
-})();
-
-/* ═══════════════════════════════════════════════════
-   3D INTERACTIVE PARALLAX — mouse-tracking depth effect
-═══════════════════════════════════════════════════ */
-(function(){
-  // Parallax on stats bar
-  var statsBar = document.querySelector('.stats-bar');
-  if(statsBar) {
-    statsBar.addEventListener('mousemove', function(e){
-      var rect = statsBar.getBoundingClientRect();
-      var x = (e.clientX - rect.left) / rect.width - 0.5;
-      var y = (e.clientY - rect.top) / rect.height - 0.5;
-      var cells = statsBar.querySelectorAll('.stat-cell');
-      cells.forEach(function(cell, i){
-        var depth = 1 + (i % 2) * 0.5;
-        cell.style.transform = 'perspective(800px) rotateY(' + (x * 6 * depth) + 'deg) rotateX(' + (-y * 4 * depth) + 'deg) translateZ(' + (8 * depth) + 'px)';
-      });
-    });
-    statsBar.addEventListener('mouseleave', function(){
-      statsBar.querySelectorAll('.stat-cell').forEach(function(cell){
-        cell.style.transform = 'perspective(800px) rotateY(0) rotateX(0) translateZ(0)';
-      });
-    });
-  }
-
-  // Parallax on hero screenshot
-  var shell = document.querySelector('.app-shell');
-  if(shell) {
-    var hero = document.querySelector('.hero-screenshot');
-    hero && hero.addEventListener('mousemove', function(e){
-      var rect = hero.getBoundingClientRect();
-      var x = (e.clientX - rect.left) / rect.width - 0.5;
-      var y = (e.clientY - rect.top) / rect.height - 0.5;
-      shell.style.transform = 'perspective(1200px) rotateY(' + (x * 5) + 'deg) rotateX(' + (-y * 3) + 'deg) translateZ(10px)';
-    });
-    hero && hero.addEventListener('mouseleave', function(){
-      shell.style.transform = 'perspective(1200px) rotateY(0) rotateX(0) translateZ(0)';
-    });
-  }
-
-  // Parallax on feature visual cards
-  document.querySelectorAll('.feat-visual').forEach(function(card){
-    card.addEventListener('mousemove', function(e){
-      var rect = card.getBoundingClientRect();
-      var x = (e.clientX - rect.left) / rect.width - 0.5;
-      var y = (e.clientY - rect.top) / rect.height - 0.5;
-      card.style.transform = 'perspective(1000px) rotateY(' + (x * 8) + 'deg) rotateX(' + (-y * 5) + 'deg) translateZ(20px)';
-      card.style.boxShadow = '0 20px 60px rgba(0,0,0,.3), 0 0 30px rgba(77,182,160,.08), ' + (x * -20) + 'px ' + (y * 20 + 20) + 'px 40px rgba(0,0,0,.15)';
-    });
-    card.addEventListener('mouseleave', function(){
-      card.style.transform = '';
-      card.style.boxShadow = '';
-    });
-  });
-
-  // Parallax on module demo cards (mv)
-  document.querySelectorAll('.mv').forEach(function(card){
-    card.addEventListener('mousemove', function(e){
-      var rect = card.getBoundingClientRect();
-      var x = (e.clientX - rect.left) / rect.width - 0.5;
-      var y = (e.clientY - rect.top) / rect.height - 0.5;
-      card.style.transform = 'perspective(1000px) rotateY(' + (x * 6) + 'deg) rotateX(' + (-y * 4) + 'deg) translateZ(15px)';
-    });
-    card.addEventListener('mouseleave', function(){
-      card.style.transform = '';
-    });
-  });
-
-  // Parallax on pricing plan cards
-  document.querySelectorAll('.plan').forEach(function(card){
-    card.addEventListener('mousemove', function(e){
-      var rect = card.getBoundingClientRect();
-      var x = (e.clientX - rect.left) / rect.width - 0.5;
-      var y = (e.clientY - rect.top) / rect.height - 0.5;
-      var isFeatured = card.classList.contains('featured');
-      var mult = isFeatured ? 1.3 : 1;
-      card.style.transform = 'perspective(1000px) rotateY(' + (x * 6 * mult) + 'deg) rotateX(' + (-y * 4 * mult) + 'deg) translateY(-8px) translateZ(' + (20 * mult) + 'px)';
-    });
-    card.addEventListener('mouseleave', function(){
-      card.style.transform = '';
-    });
-  });
-
-  // Animate stat numbers counting up on scroll
-  var animated = false;
-  function animateStats(){
-    if(animated) return;
-    var sb = document.querySelector('.stats-bar');
-    if(!sb) return;
-    var rect = sb.getBoundingClientRect();
-    if(rect.top < window.innerHeight * 0.8) {
-      animated = true;
-      var targets = [
-        {el: sb.querySelectorAll('.stat-number')[0], text: '−34%'},
-        {el: sb.querySelectorAll('.stat-number')[1], text: '+18pts'},
-        {el: sb.querySelectorAll('.stat-number')[2], text: '6h'},
-        {el: sb.querySelectorAll('.stat-number')[3], text: '30j'}
-      ];
-      targets.forEach(function(t,i){
-        if(!t.el) return;
-        t.el.style.opacity = '0';
-        t.el.style.transform = 'perspective(600px) translateZ(-40px) scale(0.8)';
-        setTimeout(function(){
-          t.el.style.transition = 'all .6s cubic-bezier(.16,1,.3,1)';
-          t.el.style.opacity = '1';
-          t.el.style.transform = 'perspective(600px) translateZ(0) scale(1)';
-        }, i * 150 + 100);
-      });
-    }
-  }
-  window.addEventListener('scroll', animateStats);
-  animateStats();
-})();
 </script>
 
 <!-- ── MODAL SUPPORT ── -->
@@ -4117,10 +4074,10 @@ function applyModuleLang(l){
     </div>
     <div class="lm-body">
       <p id="ms-desc">Notre équipe est disponible pour vous aider. Envoyez-nous un email ou utilisez le formulaire ci-dessous.</p>
-      <a href="mailto:support@scalyo.app" class="lm-email-link">
+      <a href="/cdn-cgi/l/email-protection#61080f070e211202000d180e4f001111" class="lm-email-link">
         <div class="lm-email-icon">✉️</div>
         <div class="lm-email-info">
-          <strong>support@scalyo.app</strong>
+          <strong><span class="__cf_email__" data-cfemail="7b12151d143b08181a170214551a0b0b">[email&#160;protected]</span></strong>
           <span id="ms-email-sub">Réponse en moins de 24h · Équipe francophone</span>
         </div>
       </a>

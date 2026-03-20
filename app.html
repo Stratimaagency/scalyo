@@ -4077,7 +4077,19 @@ const DashboardView = ({
         ))
       )
     );
-  })()
+  })(),
+  accounts.length > 0 && /*#__PURE__*/React.createElement("div",{style:{marginTop:14,background:C.surface,border:`1px solid ${C.border}`,borderRadius:6,padding:"18px"}},
+    /*#__PURE__*/React.createElement("details",null,
+      /*#__PURE__*/React.createElement("summary",{style:{cursor:"pointer",fontWeight:700,fontSize:13,display:"flex",alignItems:"center",gap:6,userSelect:"none"}},
+        "💡 ",lang==="en"?"How health scores work":"Comment fonctionnent les scores de santé"
+      ),
+      /*#__PURE__*/React.createElement("p",{style:{fontSize:12,color:C.muted,lineHeight:1.7,marginTop:10}},
+        lang==="en"
+          ?"Health scores are calculated from: the health score you assign (0-100), the number of open issues, renewal proximity, and risk level. Each factor is visible and adjustable. No black box."
+          :"Les scores de santé sont calculés à partir de : le health score que vous assignez (0-100), le nombre d'issues ouvertes, la proximité du renouvellement et le niveau de risque. Chaque facteur est visible et ajustable. Pas de boîte noire."
+      )
+    )
+  )
 );
 };
 
@@ -5033,7 +5045,7 @@ const PortfolioView = ({
   session,
   plan="Starter"
 }) => {
-  const MAX_ACCOUNTS = plan === "Starter" ? 5 : Infinity;
+  const MAX_ACCOUNTS = plan === "Starter" ? 10 : Infinity;
   const atLimit = plan === "Starter" && accounts.length >= MAX_ACCOUNTS;
   const [selected, setSelected] = useState(null);
   const [filter, _setFilter] = useState(() => { try { return localStorage.getItem("scalyo_pf_filter") || "all"; } catch(e) { return "all"; } });
@@ -9552,6 +9564,322 @@ Customer Success Manager`
 [담당자 이름]`
 }];
 
+// ══════════════════════════════════════════════════
+// INTEGRATIONS VIEW — connecteurs CRM, Email, Chat, Meeting, Projects
+// ══════════════════════════════════════════════════
+
+// Brand SVG logos as inline data URIs
+const BRAND_LOGOS = {
+  hubspot: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23FF7A59' d='M267.5 78.7V44.3c15.1-7.2 25.6-22.6 25.6-40.3C293.1 1.8 291.3 0 289 0h-32c-2.2 0-4 1.8-4 4v.1c0 11.1-9 20.1-20.1 20.1-11.1 0-20.1-9-20.1-20.1V4c0-2.2-1.8-4-4-4h-32c-2.2 0-4 1.8-4 4c0 17.7 10.5 33.1 25.6 40.3v34.4C143.1 87.3 96 141 96 205.8c0 36.5 14.5 69.6 38 93.8l-53.4 53.4c-3 3-4.2 7.3-3.2 11.4s4.2 7.3 8.1 8.7l.6.2c6.6 2.3 13.8.4 18.5-4.8l50.2-55.6c24 17.5 53.5 27.8 85.2 27.8s61.2-10.3 85.2-27.8l50.2 55.6c4.7 5.2 11.9 7.1 18.5 4.8l.6-.2c3.9-1.4 6.9-4.6 8.1-8.7s-.2-8.4-3.2-11.4L346 299.6c23.5-24.2 38-57.3 38-93.8 0-64.8-47.1-118.5-108.5-127.1zM240 304c-54.2 0-98.2-44-98.2-98.2s44-98.2 98.2-98.2 98.2 44 98.2 98.2S294.2 304 240 304z'/%3E%3C/svg%3E",
+  salesforce: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%2300A1E0' d='M20 8c3.2 0 6.1 1.3 8.2 3.3C30 9.9 32.5 9 35.2 9c6.2 0 11.2 5.1 11.2 11.3 0 .5 0 1-.1 1.5C47.9 23.2 49 25.3 49 27.7c0 3.9-3 7.1-6.8 7.3H12.5C7.3 35 3 30.6 3 25.3c0-4.2 2.7-7.7 6.5-9C10.3 11.9 14.7 8 20 8z'/%3E%3C/svg%3E",
+  pipedrive: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%2325C16F'/%3E%3Cpath fill='%23fff' d='M16 7c-2.8 0-5 2.2-5 5v8c0 2.8 2.2 5 5 5s5-2.2 5-5v-8c0-2.8-2.2-5-5-5zm2 13c0 1.1-.9 2-2 2s-2-.9-2-2v-8c0-1.1.9-2 2-2s2 .9 2 2v8z'/%3E%3C/svg%3E",
+  gmail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%234285F4' d='M6 10v28h10V23l8 6 8-6v15h10V10L34 22 24 14 14 22z'/%3E%3Cpath fill='%2334A853' d='M6 10l18 14v-4L6 8z'/%3E%3Cpath fill='%23FBBC04' d='M42 10L24 24v-4l18-12z'/%3E%3Cpath fill='%23EA4335' d='M6 10h6l12 10 12-10h6v2L24 24 6 12z'/%3E%3C/svg%3E",
+  outlook: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%230078D4' d='M28 7v10h14V7zM28 20v11h14V20zM28 34v7h14v-7zM5 7l20 3v28L5 41z'/%3E%3Cellipse fill='%23fff' cx='15' cy='24' rx='6' ry='7'/%3E%3Cellipse fill='%230078D4' cx='15' cy='24' rx='4' ry='5'/%3E%3C/svg%3E",
+  imap: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='4' y='10' width='40' height='28' rx='4' fill='%236B7280'/%3E%3Cpath fill='%23fff' d='M4 14l20 12 20-12' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E",
+  slack: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23E01E5A' d='M13 28a3 3 0 1 1-3-3h3v3zm1.5 0a3 3 0 1 1 6 0v7.5a3 3 0 1 1-6 0V28z'/%3E%3Cpath fill='%2336C5F0' d='M20 13a3 3 0 1 1 3-3v3h-3zm0 1.5a3 3 0 1 1 0 6h-7.5a3 3 0 1 1 0-6H20z'/%3E%3Cpath fill='%232EB67D' d='M35 20a3 3 0 1 1 3 3h-3v-3zm-1.5 0a3 3 0 1 1-6 0v-7.5a3 3 0 1 1 6 0V20z'/%3E%3Cpath fill='%23ECB22E' d='M28 35a3 3 0 1 1-3 3v-3h3zm0-1.5a3 3 0 1 1 0-6h7.5a3 3 0 1 1 0 6H28z'/%3E%3C/svg%3E",
+  teams: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%235B5FC7' d='M34 16a5 5 0 100-10 5 5 0 000 10zM41 18h-8c-1.7 0-3 1.3-3 3v10c0 1.7 1.3 3 3 3h8c1.7 0 3-1.3 3-3V21c0-1.7-1.3-3-3-3z'/%3E%3Cpath fill='%237B83EB' d='M24 14a6 6 0 100-12 6 6 0 000 12zM33 17H11c-1.7 0-3 1.3-3 3v13c0 5 4 9 9 9h10c5 0 9-4 9-9V20c0-1.7-1.3-3-3-3z'/%3E%3C/svg%3E",
+  intercom: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='6' y='6' width='36' height='36' rx='8' fill='%23286EFA'/%3E%3Cpath fill='%23fff' d='M16 18v8M21 16v12M26 16v12M31 18v8M14 32s3 3 10 3 10-3 10-3'/%3E%3Cpath stroke='%23fff' stroke-width='2.5' stroke-linecap='round' d='M16 18v8M21 16v12M26 16v12M31 18v8M14 32s3 3 10 3 10-3 10-3'/%3E%3C/svg%3E",
+  googlemeet: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%230F9D58' d='M8 12h20v24H8z'/%3E%3Cpath fill='%234285F4' d='M28 18l12-8v28l-12-8z'/%3E%3Cpath fill='%23FBBC04' d='M28 24l12-14h-12z'/%3E%3Cpath fill='%23EA4335' d='M28 24l12 14h-12z'/%3E%3C/svg%3E",
+  zoom: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='2' y='8' width='44' height='32' rx='8' fill='%232D8CFF'/%3E%3Cpath fill='%23fff' d='M10 16h16v12c0 1.1-.9 2-2 2H10V16zM30 20l8-4v16l-8-4V20z'/%3E%3C/svg%3E",
+  calendly: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='6' y='8' width='36' height='34' rx='6' fill='%23006BFF'/%3E%3Crect x='6' y='8' width='36' height='10' rx='6' fill='%23004FC4'/%3E%3Ccircle cx='24' cy='30' r='6' fill='%23fff'/%3E%3Crect x='14' y='6' width='3' height='6' rx='1.5' fill='%23fff'/%3E%3Crect x='31' y='6' width='3' height='6' rx='1.5' fill='%23fff'/%3E%3C/svg%3E",
+  jira: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%230052CC' d='M43.5 23.2L25.8 5.5 24 3.7 8.7 19 3 24.7c-.7.7-.7 1.9 0 2.6L15.3 39.7 24 48.4l15.3-15.3.5-.5 3.7-3.7c.7-.7.7-1.9 0-2.7zM24 30.9l-6.9-6.9L24 17.1l6.9 6.9L24 30.9z'/%3E%3C/svg%3E",
+  asana: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='12' r='8' fill='%23F06A6A'/%3E%3Ccircle cx='12' cy='32' r='8' fill='%23F06A6A'/%3E%3Ccircle cx='36' cy='32' r='8' fill='%23F06A6A'/%3E%3C/svg%3E",
+  csv: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%236B7280' d='M12 4h16l12 12v24c0 2.2-1.8 4-4 4H12c-2.2 0-4-1.8-4-4V8c0-2.2 1.8-4 4-4z'/%3E%3Cpath fill='%23fff' opacity='.5' d='M28 4l12 12h-8c-2.2 0-4-1.8-4-4V4z'/%3E%3Ctext x='24' y='35' text-anchor='middle' fill='%23fff' font-size='11' font-weight='700' font-family='sans-serif'>CSV%3C/text%3E%3C/svg%3E",
+  excel: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%2316A34A' d='M12 4h16l12 12v24c0 2.2-1.8 4-4 4H12c-2.2 0-4-1.8-4-4V8c0-2.2 1.8-4 4-4z'/%3E%3Cpath fill='%23fff' opacity='.5' d='M28 4l12 12h-8c-2.2 0-4-1.8-4-4V4z'/%3E%3Ctext x='24' y='35' text-anchor='middle' fill='%23fff' font-size='9' font-weight='700' font-family='sans-serif'>XLSX%3C/text%3E%3C/svg%3E",
+  stripe: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='8' fill='%236366F1'/%3E%3Cpath fill='%23fff' d='M22.5 19.5c0-1.5 1.2-2.1 3.2-2.1 2.9 0 6.5 0.9 9.4 2.4V12c-3.1-1.3-6.3-1.8-9.4-1.8-7.7 0-12.8 4-12.8 10.7 0 10.4 14.3 8.7 14.3 13.2 0 1.8-1.5 2.3-3.7 2.3-3.2 0-7.3-1.3-10.5-3.1v7.9c3.6 1.5 7.2 2.2 10.5 2.2 7.9 0 13.3-3.9 13.3-10.7-.1-11.2-14.3-9.2-14.3-13.2z'/%3E%3C/svg%3E",
+  zendesk: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%2303363D' d='M22 16v22H6L22 16zM26 10c0 4.4-3.6 8-8 8V10h8zM26 16l16 22H26V16zM34 10c0 4.4 3.6 8 8 8V10h-8z'/%3E%3C/svg%3E",
+  segment: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='20' fill='%2352BD94'/%3E%3Cpath stroke='%23fff' stroke-width='3' stroke-linecap='round' d='M14 24h20M14 17h20M14 31h20'/%3E%3C/svg%3E",
+  freshdesk: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='6' y='6' width='36' height='36' rx='8' fill='%232CA01C'/%3E%3Cpath fill='%23fff' d='M24 14c-5.5 0-10 4.5-10 10v6h4v-6c0-3.3 2.7-6 6-6s6 2.7 6 6v6h4v-6c0-5.5-4.5-10-10-10zM18 34a3 3 0 106 0 3 3 0 10-6 0zM28 34a3 3 0 106 0 3 3 0 10-6 0z'/%3E%3C/svg%3E",
+  notion: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='6' y='6' width='36' height='36' rx='4' fill='%23000' stroke='%23333' stroke-width='1'/%3E%3Cpath fill='%23fff' d='M14 13h11l8 10V13h3v22h-3L22 25v10h-3V13h-5v22h-3V16c0-1.7 1.3-3 3-3z'/%3E%3C/svg%3E",
+  whatsapp: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='20' fill='%2325D366'/%3E%3Cpath fill='%23fff' d='M34.6 13.4C31.8 10.6 28 9 24 9c-8.3 0-15 6.7-15 15 0 2.6.7 5.2 2 7.5L9 39l7.7-2c2.2 1.2 4.6 1.8 7.1 1.8h0c8.3 0 15-6.7 15-15 .1-4-1.5-7.8-4.2-10.4zM24 36.2c-2.2 0-4.4-.6-6.3-1.7l-.5-.3-4.6 1.2 1.2-4.5-.3-.5c-1.3-2-1.9-4.3-1.9-6.6 0-6.9 5.6-12.5 12.5-12.5 3.3 0 6.5 1.3 8.8 3.7 2.4 2.4 3.7 5.5 3.7 8.8-.1 6.9-5.7 12.4-12.6 12.4z'/%3E%3Cpath fill='%23fff' d='M31 27.3c-.4-.2-2.2-1.1-2.5-1.2-.3-.1-.6-.2-.8.2s-1 1.2-1.2 1.5c-.2.3-.4.3-.8.1-2.2-1.1-3.7-2-5.2-4.5-.4-.7.4-.6 1.1-2.1.1-.3.1-.5 0-.7-.1-.2-.8-2-1.1-2.7-.3-.7-.6-.6-.8-.6h-.7c-.2 0-.6.1-1 .5S16.5 19.2 16.5 21s1.3 3.5 1.5 3.7c.2.3 2.5 3.9 6.2 5.4 2.3 1 3.2 1.1 4.4.9.7-.1 2.2-.9 2.5-1.8s.3-1.6.2-1.8c-.1-.1-.4-.3-.8-.4z'/%3E%3C/svg%3E",
+  crisp: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='20' fill='%231972F5'/%3E%3Cpath fill='%23fff' d='M14 20c0-5.5 4.5-10 10-10s10 4.5 10 10v4c0 5.5-4.5 10-10 10s-10-4.5-10-10v-4zm6 2a2 2 0 104 0 2 2 0 10-4 0zm8 0a2 2 0 104 0 2 2 0 10-4 0z'/%3E%3C/svg%3E",
+};
+
+const IntegrationsView = ({lang="fr"}) => {
+  const [activeCat, setActiveCat] = useState("all");
+  const [connectModal, setConnectModal] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [connectSuccess, setConnectSuccess] = useState(false);
+  const [votedKeys, setVotedKeys] = useState({});
+  const [configForm, setConfigForm] = useState({provider:"",email:"",syncIncoming:true,syncOutgoing:false,apiKey:"",syncFreq:"daily",autoSync:true,webhookUrl:"",channel:"",notifChurn:true,notifWellbeing:true,notifRenewal:true,meetingEmail:"",autoCreateMeeting:false,syncCalendar:true,projectKey:"",syncTasks:true});
+  const updateConfig = (key,val) => setConfigForm(prev=>({...prev,[key]:val}));
+
+  const T = (fr,en) => lang==="en"?en:fr;
+  const cats = [
+    {key:"all",icon:"🔌",label:T("Tout","All")},
+    {key:"crm",icon:"🏢",label:"CRM"},
+    {key:"email",icon:"📧",label:"Email"},
+    {key:"chat",icon:"💬",label:"Chat"},
+    {key:"meeting",icon:"📅",label:T("Réunions","Meetings")},
+    {key:"project",icon:"📋",label:T("Projets","Projects")},
+    {key:"data",icon:"📊",label:T("Données","Data")},
+  ];
+  const integs = [
+    {key:"csv",name:"Import CSV",logo:BRAND_LOGOS.csv,cat:"data",color:"#6B7280",desc:T("Importez vos comptes depuis un fichier CSV en un clic.","Import your accounts from a CSV file in one click."),features:[T("Import 1-clic","One-click import"),T("Mapping colonnes","Column mapping")],configType:"import",available:true},
+    {key:"excel",name:"Import Excel",logo:BRAND_LOGOS.excel,cat:"data",color:"#16A34A",desc:T("Importez des classeurs Excel multi-feuilles.","Import multi-sheet Excel workbooks."),features:["XLSX",T("Multi-feuilles","Multi-sheet")],configType:"import",available:true},
+    {key:"stripe",name:"Stripe",logo:BRAND_LOGOS.stripe,cat:"data",color:"#6366F1",desc:T("Synchronisez facturation et MRR automatiquement.","Sync billing and MRR automatically."),features:[T("Facturation","Billing"),"MRR"],configType:"crm",available:true},
+    {key:"gmail",name:"Gmail",logo:BRAND_LOGOS.gmail,cat:"email",color:"#EA4335",desc:T("Connectez votre boîte Gmail pour un suivi automatique.","Connect your Gmail inbox for automatic tracking."),features:[T("Boîte de réception","Inbox"),T("Auto-log","Auto-log"),T("Templates","Templates")],configType:"email",available:true},
+    {key:"outlook",name:"Outlook / Office 365",logo:BRAND_LOGOS.outlook,cat:"email",color:"#0078D4",desc:T("Intégrez Outlook et Office 365 mail et calendrier.","Integrate Outlook and Office 365 mail and calendar."),features:[T("Boîte de réception","Inbox"),T("Calendrier","Calendar"),T("Contacts","Contacts")],configType:"email",available:true},
+    {key:"imap",name:"IMAP / SMTP",logo:BRAND_LOGOS.imap,cat:"email",color:"#6B7280",desc:T("Connectez n'importe quel fournisseur email via IMAP.","Connect any email provider via IMAP."),features:[T("Tout fournisseur","Any provider"),"SSL/TLS"],configType:"email",available:true},
+    {key:"hubspot",name:"HubSpot CRM",logo:BRAND_LOGOS.hubspot,cat:"crm",color:"#FF7A59",desc:T("Synchronisez contacts, deals et activités HubSpot.","Sync HubSpot contacts, deals and activities."),features:["Contacts","Deals",T("Sync auto","Auto sync")],configType:"crm",available:true},
+    {key:"salesforce",name:"Salesforce",logo:BRAND_LOGOS.salesforce,cat:"crm",color:"#00A1E0",desc:T("Connectez Salesforce pour une vue 360° de vos comptes.","Connect Salesforce for a 360° view of your accounts."),features:[T("Comptes","Accounts"),T("Opportunités","Opportunities"),T("Bi-directionnel","Bi-directional")],configType:"crm",available:true},
+    {key:"pipedrive",name:"Pipedrive",logo:BRAND_LOGOS.pipedrive,cat:"crm",color:"#25C16F",desc:T("Synchronisez vos deals et contacts Pipedrive.","Sync your Pipedrive deals and contacts."),features:["Deals","Contacts",T("Activités","Activities")],configType:"crm",available:true},
+    {key:"slack",name:"Slack",logo:BRAND_LOGOS.slack,cat:"chat",color:"#4A154B",desc:T("Recevez des alertes et commandes directement dans Slack.","Get alerts and commands directly in Slack."),features:[T("Alertes","Alerts"),T("Commandes","Commands"),T("Canaux","Channels")],configType:"chat",available:true},
+    {key:"teams",name:"Microsoft Teams",logo:BRAND_LOGOS.teams,cat:"chat",color:"#5B5FC7",desc:T("Intégrez Teams pour les notifications et le bot.","Integrate Teams for notifications and bot."),features:[T("Alertes","Alerts"),"Bot",T("Canaux","Channels")],configType:"chat",available:true},
+    {key:"intercom",name:"Intercom",logo:BRAND_LOGOS.intercom,cat:"chat",color:"#286EFA",desc:T("Connectez les conversations Intercom à vos comptes.","Connect Intercom conversations to your accounts."),features:[T("Conversations","Conversations"),T("Santé","Health data"),T("Auto-tag","Auto-tag")],configType:"chat",available:true},
+    {key:"googlemeet",name:"Google Meet",logo:BRAND_LOGOS.googlemeet,cat:"meeting",color:"#0F9D58",desc:T("Créez des liens Meet automatiquement pour vos RDV.","Automatically create Meet links for your meetings."),features:[T("Lien auto","Auto-link"),T("Sync calendrier","Calendar sync"),T("1-clic","One-click")],configType:"meeting",available:true},
+    {key:"zoom",name:"Zoom",logo:BRAND_LOGOS.zoom,cat:"meeting",color:"#2D8CFF",desc:T("Planifiez et enregistrez vos meetings Zoom.","Schedule and record your Zoom meetings."),features:[T("Lien auto","Auto-link"),T("Enregistrement","Recording"),T("Planning","Schedule")],configType:"meeting",available:true},
+    {key:"calendly",name:"Calendly",logo:BRAND_LOGOS.calendly,cat:"meeting",color:"#006BFF",desc:T("Gérez la prise de RDV et les rappels automatiques.","Manage booking and automatic reminders."),features:[T("Prise de RDV","Booking"),T("Assignation auto","Auto-assign"),T("Rappels","Reminders")],configType:"meeting",available:true},
+    {key:"jira",name:"Jira",logo:BRAND_LOGOS.jira,cat:"project",color:"#0052CC",desc:T("Synchronisez tickets et tâches Jira bi-directionnellement.","Sync Jira tickets and tasks bi-directionally."),features:["Tickets",T("Sync tâches","Task sync"),T("Bi-directionnel","Bi-directional")],configType:"project",available:true},
+    {key:"asana",name:"Asana",logo:BRAND_LOGOS.asana,cat:"project",color:"#F06A6A",desc:T("Connectez vos projets et tâches Asana.","Connect your Asana projects and tasks."),features:[T("Projets","Projects"),T("Sync tâches","Task sync"),"Timeline"],configType:"project",available:true},
+    {key:"zendesk",name:"Zendesk",logo:BRAND_LOGOS.zendesk,cat:"chat",color:"#03363D",desc:T("Synchronisez les tickets Zendesk avec vos comptes.","Sync Zendesk tickets with your accounts."),features:["Tickets",T("Santé","Health data")],configType:"crm",available:false},
+    {key:"segment",name:"Segment",logo:BRAND_LOGOS.segment,cat:"data",color:"#52BD94",desc:T("Centralisez vos événements utilisateur via Segment.","Centralize your user events via Segment."),features:[T("Événements","Events"),T("Santé","Health data")],configType:"crm",available:false},
+    {key:"freshdesk",name:"Freshdesk",logo:BRAND_LOGOS.freshdesk,cat:"chat",color:"#2CA01C",desc:T("Synchronisez les tickets Freshdesk automatiquement.","Sync Freshdesk tickets automatically."),features:["Tickets",T("Sync auto","Auto sync")],configType:"crm",available:false},
+    {key:"notion",name:"Notion",logo:BRAND_LOGOS.notion,cat:"project",color:"#000000",desc:T("Connectez vos docs et tâches Notion.","Connect your Notion docs and tasks."),features:["Docs",T("Sync tâches","Task sync")],configType:"project",available:false},
+    {key:"whatsapp",name:"WhatsApp Business",logo:BRAND_LOGOS.whatsapp,cat:"chat",color:"#25D366",desc:T("Centralisez les messages WhatsApp Business.","Centralize WhatsApp Business messages."),features:["Messages",T("Auto-log","Auto-log")],configType:"chat",available:false},
+    {key:"crisp",name:"Crisp",logo:BRAND_LOGOS.crisp,cat:"chat",color:"#1972F5",desc:T("Intégrez le live chat Crisp à vos comptes.","Integrate Crisp live chat with your accounts."),features:["Live Chat",T("Conversations","Conversations")],configType:"chat",available:false},
+  ];
+
+  const filtered = activeCat==="all"?integs:integs.filter(i=>i.cat===activeCat);
+  const available = filtered.filter(i=>i.available);
+  const coming = filtered.filter(i=>!i.available);
+
+  const openConnect = (integ) => { setConnectSuccess(false); setConnectModal(integ); setConfigForm({provider:"",email:"",syncIncoming:true,syncOutgoing:false,apiKey:"",syncFreq:"daily",autoSync:true,webhookUrl:"",channel:"",notifChurn:true,notifWellbeing:true,notifRenewal:true,meetingEmail:"",autoCreateMeeting:false,syncCalendar:true,projectKey:"",syncTasks:true}); };
+  const saveConnection = () => { setSaving(true); setTimeout(()=>{ setSaving(false); setConnectSuccess(true); setTimeout(()=>setConnectModal(null),1500); },1200); };
+  const voteInteg = (key) => setVotedKeys(prev=>({...prev,[key]:true}));
+
+  const LogoImg = ({src,size=32}) => React.createElement("img",{src,style:{width:size,height:size,objectFit:"contain"},alt:""});
+
+  const Toggle = ({on,onClick}) => React.createElement("button",{
+    onClick,
+    style:{width:40,height:22,borderRadius:11,background:on?C.teal:C.border,border:"none",position:"relative",cursor:"pointer",transition:"background .2s"}
+  },React.createElement("span",{style:{position:"absolute",top:3,left:on?21:3,width:16,height:16,borderRadius:"50%",background:"#fff",transition:"left .2s"}}));
+
+  // Render config fields based on integration type
+  const renderConfig = () => {
+    if(!connectModal) return null;
+    const ct = connectModal.configType;
+    if(ct==="email") return React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
+      React.createElement("label",{style:{fontSize:12,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:"0.04em",marginTop:4}},T("Fournisseur email","Email provider")),
+      React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}},
+        [{k:"gmail",n:"Gmail",l:BRAND_LOGOS.gmail},{k:"outlook",n:"Outlook",l:BRAND_LOGOS.outlook},{k:"imap",n:"IMAP",l:BRAND_LOGOS.imap}].map(p=>
+          React.createElement("button",{key:p.k,onClick:()=>updateConfig("provider",p.k),style:{display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:"12px 8px",borderRadius:10,background:configForm.provider===p.k?C.tealBg:C.surface,border:`1px solid ${configForm.provider===p.k?C.teal:C.border}`,cursor:"pointer",color:C.text,transition:"all .15s"}},
+            React.createElement(LogoImg,{src:p.l,size:24}),
+            React.createElement("span",{style:{fontSize:12,fontWeight:600}},p.n)
+          )
+        )
+      ),
+      React.createElement("label",{style:{fontSize:12,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:"0.04em",marginTop:4}},T("Adresse email","Email address")),
+      React.createElement("input",{value:configForm.email,onChange:e=>updateConfig("email",e.target.value),type:"email",placeholder:"team@company.com",style:{width:"100%",padding:"10px 14px",borderRadius:8,background:C.surface,border:`1px solid ${C.border}`,color:C.text,fontSize:14,fontFamily:"inherit"}}),
+      React.createElement("label",{style:{fontSize:12,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:"0.04em",marginTop:4}},T("Synchronisation","Sync")),
+      React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 0"}},
+        React.createElement("span",{style:{fontSize:13}},T("Emails entrants","Incoming")),
+        React.createElement(Toggle,{on:configForm.syncIncoming,onClick:()=>updateConfig("syncIncoming",!configForm.syncIncoming)})
+      ),
+      React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 0"}},
+        React.createElement("span",{style:{fontSize:13}},T("Emails sortants","Outgoing")),
+        React.createElement(Toggle,{on:configForm.syncOutgoing,onClick:()=>updateConfig("syncOutgoing",!configForm.syncOutgoing)})
+      )
+    );
+    if(ct==="crm") return React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
+      React.createElement("label",{style:{fontSize:12,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:"0.04em",marginTop:4}},T("Clé API","API Key")),
+      React.createElement("input",{value:configForm.apiKey,onChange:e=>updateConfig("apiKey",e.target.value),placeholder:"sk-xxxxxxxx",style:{width:"100%",padding:"10px 14px",borderRadius:8,background:C.surface,border:`1px solid ${C.border}`,color:C.text,fontSize:14,fontFamily:"inherit"}}),
+      React.createElement("label",{style:{fontSize:12,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:"0.04em",marginTop:4}},T("Fréquence de sync","Sync frequency")),
+      React.createElement("select",{value:configForm.syncFreq,onChange:e=>updateConfig("syncFreq",e.target.value),style:{width:"100%",padding:"10px 14px",borderRadius:8,background:C.surface,border:`1px solid ${C.border}`,color:C.text,fontSize:14,fontFamily:"inherit"}},
+        React.createElement("option",{value:"realtime"},T("Temps réel","Realtime")),
+        React.createElement("option",{value:"hourly"},T("Toutes les heures","Hourly")),
+        React.createElement("option",{value:"daily"},T("Quotidien","Daily"))
+      ),
+      React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 0"}},
+        React.createElement("span",{style:{fontSize:13}},T("Sync automatique","Auto sync")),
+        React.createElement(Toggle,{on:configForm.autoSync,onClick:()=>updateConfig("autoSync",!configForm.autoSync)})
+      )
+    );
+    if(ct==="chat") return React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
+      React.createElement("label",{style:{fontSize:12,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:"0.04em",marginTop:4}},T("URL Webhook","Webhook URL")),
+      React.createElement("input",{value:configForm.webhookUrl,onChange:e=>updateConfig("webhookUrl",e.target.value),placeholder:"https://hooks.slack.com/...",style:{width:"100%",padding:"10px 14px",borderRadius:8,background:C.surface,border:`1px solid ${C.border}`,color:C.text,fontSize:14,fontFamily:"inherit"}}),
+      React.createElement("label",{style:{fontSize:12,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:"0.04em",marginTop:4}},T("Canal","Channel")),
+      React.createElement("input",{value:configForm.channel,onChange:e=>updateConfig("channel",e.target.value),placeholder:"#customer-success",style:{width:"100%",padding:"10px 14px",borderRadius:8,background:C.surface,border:`1px solid ${C.border}`,color:C.text,fontSize:14,fontFamily:"inherit"}}),
+      React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 0"}},
+        React.createElement("span",{style:{fontSize:13}},T("Alertes churn","Churn alerts")),
+        React.createElement(Toggle,{on:configForm.notifChurn,onClick:()=>updateConfig("notifChurn",!configForm.notifChurn)})
+      ),
+      React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 0"}},
+        React.createElement("span",{style:{fontSize:13}},T("Alertes bien-être","Wellbeing alerts")),
+        React.createElement(Toggle,{on:configForm.notifWellbeing,onClick:()=>updateConfig("notifWellbeing",!configForm.notifWellbeing)})
+      ),
+      React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 0"}},
+        React.createElement("span",{style:{fontSize:13}},T("Alertes renouvellement","Renewal alerts")),
+        React.createElement(Toggle,{on:configForm.notifRenewal,onClick:()=>updateConfig("notifRenewal",!configForm.notifRenewal)})
+      )
+    );
+    if(ct==="meeting") return React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
+      React.createElement("label",{style:{fontSize:12,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:"0.04em",marginTop:4}},T("Compte meeting","Meeting account")),
+      React.createElement("input",{value:configForm.meetingEmail,onChange:e=>updateConfig("meetingEmail",e.target.value),type:"email",placeholder:"team@company.com",style:{width:"100%",padding:"10px 14px",borderRadius:8,background:C.surface,border:`1px solid ${C.border}`,color:C.text,fontSize:14,fontFamily:"inherit"}}),
+      React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 0"}},
+        React.createElement("span",{style:{fontSize:13}},T("Créer meeting auto","Auto create meeting")),
+        React.createElement(Toggle,{on:configForm.autoCreateMeeting,onClick:()=>updateConfig("autoCreateMeeting",!configForm.autoCreateMeeting)})
+      ),
+      React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 0"}},
+        React.createElement("span",{style:{fontSize:13}},T("Sync calendrier","Sync calendar")),
+        React.createElement(Toggle,{on:configForm.syncCalendar,onClick:()=>updateConfig("syncCalendar",!configForm.syncCalendar)})
+      )
+    );
+    if(ct==="project") return React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
+      React.createElement("label",{style:{fontSize:12,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:"0.04em",marginTop:4}},T("Clé API","API Key")),
+      React.createElement("input",{value:configForm.apiKey,onChange:e=>updateConfig("apiKey",e.target.value),placeholder:"sk-xxxxxxxx",style:{width:"100%",padding:"10px 14px",borderRadius:8,background:C.surface,border:`1px solid ${C.border}`,color:C.text,fontSize:14,fontFamily:"inherit"}}),
+      React.createElement("label",{style:{fontSize:12,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:"0.04em",marginTop:4}},T("Clé projet","Project key")),
+      React.createElement("input",{value:configForm.projectKey,onChange:e=>updateConfig("projectKey",e.target.value),placeholder:"CS-BOARD",style:{width:"100%",padding:"10px 14px",borderRadius:8,background:C.surface,border:`1px solid ${C.border}`,color:C.text,fontSize:14,fontFamily:"inherit"}}),
+      React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 0"}},
+        React.createElement("span",{style:{fontSize:13}},T("Sync tâches","Sync tasks")),
+        React.createElement(Toggle,{on:configForm.syncTasks,onClick:()=>updateConfig("syncTasks",!configForm.syncTasks)})
+      )
+    );
+    // default (import etc)
+    return React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
+      React.createElement("label",{style:{fontSize:12,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:"0.04em",marginTop:4}},T("Clé API","API Key")),
+      React.createElement("input",{value:configForm.apiKey,onChange:e=>updateConfig("apiKey",e.target.value),placeholder:"sk-xxxxxxxx",style:{width:"100%",padding:"10px 14px",borderRadius:8,background:C.surface,border:`1px solid ${C.border}`,color:C.text,fontSize:14,fontFamily:"inherit"}})
+    );
+  };
+
+  return React.createElement("div",{className:"fade-in",style:{padding:"26px 30px",maxWidth:1100}},
+    // Header
+    React.createElement("div",{style:{marginBottom:20}},
+      React.createElement("h1",{style:{fontSize:24,fontWeight:900,letterSpacing:"-0.6px",marginBottom:5}},T("Intégrations","Integrations")),
+      React.createElement("p",{style:{color:C.muted,fontSize:13}},T("Connectez tous vos outils en un clic.","Connect all your tools in one click."))
+    ),
+    // Category tabs
+    React.createElement("div",{style:{display:"flex",gap:6,flexWrap:"wrap",marginBottom:20}},
+      cats.map(c=>React.createElement("button",{
+        key:c.key,
+        onClick:()=>setActiveCat(c.key),
+        className:"csm-chip"+(activeCat===c.key?" active":""),
+        style:{display:"flex",alignItems:"center",gap:6,cursor:"pointer"}
+      },React.createElement("span",null,c.icon)," ",c.label,
+        React.createElement("span",{style:{fontSize:10,fontWeight:700,background:activeCat===c.key?C.teal:C.border,color:activeCat===c.key?"#fff":C.muted,padding:"1px 6px",borderRadius:100,marginLeft:4}},
+          (c.key==="all"?integs:integs.filter(i=>i.cat===c.key)).length
+        )
+      ))
+    ),
+    // Available integrations
+    available.length>0 && React.createElement("div",{style:{marginBottom:24}},
+      React.createElement("h3",{style:{fontSize:14,fontWeight:700,marginBottom:12,display:"flex",alignItems:"center",gap:6}},
+        React.createElement("span",{style:{width:8,height:8,borderRadius:"50%",background:C.green}}),
+        T("Disponibles","Available")
+      ),
+      React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}},
+        available.map(i=>React.createElement("div",{
+          key:i.key,
+          className:"card-lift",
+          style:{background:C.surface,border:`1px solid ${C.tealBorder}`,borderRadius:12,padding:"20px 16px",transition:"all .2s",cursor:"pointer"},
+          onClick:()=>openConnect(i)
+        },
+          // Header with logo
+          React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:10}},
+            React.createElement("div",{style:{width:44,height:44,borderRadius:12,display:"grid",placeItems:"center",flexShrink:0,background:i.color+"15",border:`1px solid ${i.color}30`}},
+              React.createElement(LogoImg,{src:i.logo,size:26})
+            ),
+            React.createElement("div",null,
+              React.createElement("div",{style:{fontWeight:700,fontSize:14}},i.name),
+              React.createElement("span",{style:{fontSize:10,fontWeight:600,padding:"2px 8px",borderRadius:100,background:C.tealBg,color:C.teal}},T("Disponible","Available"))
+            )
+          ),
+          // Description
+          React.createElement("p",{style:{fontSize:12,color:C.muted,lineHeight:1.6,marginBottom:10}},i.desc),
+          // Feature tags
+          React.createElement("div",{style:{display:"flex",flexWrap:"wrap",gap:4,marginBottom:12}},
+            i.features.map(f=>React.createElement("span",{key:f,style:{fontSize:10,fontWeight:600,padding:"2px 8px",borderRadius:100,background:C.surface,border:`1px solid ${C.border}`,color:C.muted}},f))
+          ),
+          // Connect button
+          React.createElement("button",{
+            className:"btn-primary",
+            onClick:(e)=>{e.stopPropagation();openConnect(i);},
+            style:{fontSize:12,padding:"8px 16px",width:"100%",display:"flex",alignItems:"center",justifyContent:"center",gap:6,borderRadius:8,background:C.teal,color:"#fff",border:"none",fontWeight:600,cursor:"pointer",fontFamily:"inherit"}
+          },"⚡ ",T("Connecter","Connect"))
+        ))
+      )
+    ),
+    // Coming soon
+    coming.length>0 && React.createElement("div",{style:{marginBottom:24}},
+      React.createElement("h3",{style:{fontSize:14,fontWeight:700,marginBottom:12,display:"flex",alignItems:"center",gap:6}},
+        React.createElement("span",{style:{width:8,height:8,borderRadius:"50%",background:C.amber}}),
+        T("Bientôt disponible","Coming soon")
+      ),
+      React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}},
+        coming.map(i=>React.createElement("div",{
+          key:i.key,
+          style:{background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"20px 16px",opacity:0.8}
+        },
+          React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:10}},
+            React.createElement("div",{style:{width:44,height:44,borderRadius:12,display:"grid",placeItems:"center",flexShrink:0,background:C.surface,border:`1px solid ${C.border}`,opacity:0.6}},
+              React.createElement(LogoImg,{src:i.logo,size:26})
+            ),
+            React.createElement("div",null,
+              React.createElement("div",{style:{fontWeight:700,fontSize:14}},i.name),
+              React.createElement("span",{style:{fontSize:10,fontWeight:600,padding:"2px 8px",borderRadius:100,background:C.surface,border:`1px solid ${C.border}`,color:C.muted}},T("Prévu","Planned"))
+            )
+          ),
+          React.createElement("p",{style:{fontSize:12,color:C.muted,lineHeight:1.6,marginBottom:10}},i.desc),
+          React.createElement("div",{style:{display:"flex",flexWrap:"wrap",gap:4,marginBottom:12}},
+            i.features.map(f=>React.createElement("span",{key:f,style:{fontSize:10,fontWeight:600,padding:"2px 8px",borderRadius:100,background:C.surface,border:`1px solid ${C.border}`,color:C.muted}},f))
+          ),
+          votedKeys[i.key]
+            ? React.createElement("span",{style:{fontSize:11,color:C.teal,fontWeight:600,display:"block",textAlign:"center"}},"✓ "+T("Vote enregistré","Vote recorded"))
+            : React.createElement("button",{
+                onClick:()=>voteInteg(i.key),
+                style:{fontSize:11,padding:"6px 14px",width:"100%",borderRadius:8,background:"transparent",border:`1px solid ${C.border}`,color:C.muted,cursor:"pointer",fontWeight:600,fontFamily:"inherit",transition:"all .15s"}
+              },T("👍 Voter pour cette intégration","👍 Vote for this integration"))
+        ))
+      )
+    ),
+    // Request integration card
+    React.createElement("div",{style:{background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,textAlign:"center",padding:20,marginTop:8}},
+      React.createElement("div",{style:{fontSize:28,marginBottom:8}},"⚡"),
+      React.createElement("h4",{style:{fontWeight:800,marginBottom:6}},T("Besoin d'une autre intégration ?","Need another integration?")),
+      React.createElement("p",{style:{fontSize:13,color:C.muted,marginBottom:14}},T("Dites-nous quel outil vous utilisez et nous l'ajouterons en priorité.","Tell us which tool you use and we'll add it as a priority.")),
+      React.createElement("span",{style:{fontSize:13,color:C.teal,fontWeight:600,cursor:"pointer"}},T("💬 Demander une intégration","💬 Request an integration"))
+    ),
+    // Connect Modal
+    connectModal && React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(4px)",display:"grid",placeItems:"center",zIndex:9999},onClick:()=>setConnectModal(null)},
+      React.createElement("div",{style:{background:C.bg,borderRadius:16,padding:28,width:"100%",maxWidth:480,maxHeight:"85vh",overflow:"auto",boxShadow:"0 25px 50px rgba(0,0,0,0.25)"},onClick:e=>e.stopPropagation()},
+        // Modal header
+        React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}},
+          React.createElement("h3",{style:{fontSize:16,fontWeight:800}},T("Connecter ","Connect ")+connectModal.name),
+          React.createElement("button",{onClick:()=>setConnectModal(null),style:{background:"none",border:"none",fontSize:20,cursor:"pointer",color:C.muted,padding:4}},"✕")
+        ),
+        // Integration info
+        React.createElement("div",{style:{display:"flex",alignItems:"center",gap:14,marginBottom:20}},
+          React.createElement("div",{style:{width:48,height:48,borderRadius:12,display:"grid",placeItems:"center",background:connectModal.color+"15",border:`1px solid ${connectModal.color}30`}},
+            React.createElement(LogoImg,{src:connectModal.logo,size:30})
+          ),
+          React.createElement("div",null,
+            React.createElement("div",{style:{fontWeight:700,fontSize:16}},connectModal.name),
+            React.createElement("p",{style:{fontSize:13,color:C.muted}},connectModal.desc)
+          )
+        ),
+        // Config form
+        renderConfig(),
+        // Action buttons
+        React.createElement("div",{style:{display:"flex",gap:8,marginTop:20}},
+          React.createElement("button",{
+            onClick:saveConnection,
+            disabled:saving,
+            style:{flex:1,padding:"10px 16px",borderRadius:8,background:C.teal,color:"#fff",border:"none",fontWeight:600,fontSize:14,cursor:saving?"wait":"pointer",fontFamily:"inherit",opacity:saving?0.7:1}
+          },saving?T("Connexion...","Connecting..."):T("💾 Enregistrer la connexion","💾 Save connection")),
+          React.createElement("button",{
+            onClick:()=>setConnectModal(null),
+            style:{padding:"10px 16px",borderRadius:8,background:"transparent",border:`1px solid ${C.border}`,color:C.muted,fontWeight:600,fontSize:14,cursor:"pointer",fontFamily:"inherit"}
+          },T("Annuler","Cancel"))
+        ),
+        // Success message
+        connectSuccess && React.createElement("div",{style:{marginTop:12,padding:10,borderRadius:8,background:C.greenBg||"rgba(74,222,128,0.1)",border:`1px solid ${C.greenBorder||"rgba(74,222,128,0.3)"}`,color:C.green,fontSize:13,fontWeight:600,textAlign:"center"}},
+          "✓ "+T("Connexion réussie !","Connection successful!")
+        )
+      )
+    )
+  );
+};
+
 const EmailStudioView = ({
   plan, lang="fr"
 }) => {
@@ -14034,6 +14362,10 @@ const NAV_MANAGER = (lang) => [{
   id: "email",
   label: T("email",lang),
   icon: "✉️"
+}, {
+  id: "integrations",
+  label: lang==="en" ? "Integrations" : lang==="kr" ? "통합" : "Intégrations",
+  icon: "🔌"
 }];
 const NAV_CSM = (lang) => [{
   id: "dashboard",
@@ -14075,6 +14407,10 @@ const NAV_CSM = (lang) => [{
   id: "quotes",
   label: T("quotes",lang),
   icon: "📄"
+}, {
+  id: "integrations",
+  label: lang==="en" ? "Integrations" : lang==="kr" ? "통합" : "Intégrations",
+  icon: "🔌"
 }];
 
 // ── COACHING REMINDER BANNER (Elite Manager only, 1 fois/mois)
@@ -14743,6 +15079,8 @@ const App = () => {
         return /*#__PURE__*/React.createElement(TipsView, {role:role, lang:lang});
       case "quotes":
         return /*#__PURE__*/React.createElement(QuotesView, {lang:lang, currency:currency, companyId:company?.id});
+      case "integrations":
+        return /*#__PURE__*/React.createElement(IntegrationsView, {lang:lang});
       default:
         return /*#__PURE__*/React.createElement(DashboardView, {
           company: company,

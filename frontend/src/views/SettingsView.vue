@@ -7,10 +7,11 @@
 
     <div class="tab-bar mb-lg">
       <button class="tab-item" :class="{ active: tab === 'profile' }" @click="tab = 'profile'">{{ t('tabProfile') }}</button>
-      <button class="tab-item" :class="{ active: tab === 'team' }" @click="tab = 'team'">{{ t('tabTeam') }}</button>
-      <button class="tab-item" :class="{ active: tab === 'billing' }" @click="tab = 'billing'">{{ t('tabBilling') }}</button>
+      <button v-if="isManager" class="tab-item" :class="{ active: tab === 'team' }" @click="tab = 'team'">{{ t('tabTeam') }}</button>
+      <button v-if="isManager" class="tab-item" :class="{ active: tab === 'billing' }" @click="tab = 'billing'">{{ t('tabBilling') }}</button>
       <button class="tab-item" :class="{ active: tab === 'notifications' }" @click="tab = 'notifications'">{{ t('tabNotifs') }}</button>
       <button class="tab-item" :class="{ active: tab === 'appearance' }" @click="tab = 'appearance'">{{ t('tabAppearance') }}</button>
+      <button class="tab-item" :class="{ active: tab === 'danger' }" @click="tab = 'danger'" style="color: var(--red)">⚠️ {{ t('deleteAccount') }}</button>
     </div>
 
     <!-- Profile -->
@@ -26,16 +27,10 @@
         <AppField :label="t('companyNameLabel')" v-model="companyName" :placeholder="t('companyPlaceholder')" />
         <button class="btn btn-primary" @click="saveCompany" :disabled="saving">{{ saving ? t('saving') : t('save') }}</button>
       </AppCard>
-      <!-- Delete account -->
-      <AppCard :danger="true">
-        <h4 style="font-weight: 800; margin-bottom: 8px; color: var(--red)">{{ t('deleteAccount') }}</h4>
-        <p style="font-size: 13px; color: var(--muted); margin-bottom: 14px">{{ t('deleteAccountDesc') }}</p>
-        <button class="btn btn-danger" @click="handleDeleteAccount">{{ t('deleteAccount') }}</button>
-      </AppCard>
     </template>
 
-    <!-- Team -->
-    <template v-if="tab === 'team'">
+    <!-- Team (manager only) -->
+    <template v-if="tab === 'team' && isManager">
       <AppCard>
         <h4 style="font-weight: 800; margin-bottom: 14px">{{ t('teamSectionTitle') }}</h4>
         <p style="font-size: 13px; color: var(--muted); margin-bottom: 14px">{{ t('teamMgmtDesc') }}</p>
@@ -43,8 +38,20 @@
       </AppCard>
     </template>
 
-    <!-- Billing -->
-    <template v-if="tab === 'billing'">
+    <!-- Billing (manager only) -->
+    <template v-if="tab === 'billing' && isManager">
+      <!-- Trial banner -->
+      <div v-if="trialDaysLeft > 0" class="card" style="padding: 18px; margin-bottom: 16px; border-color: var(--tealBorder); background: var(--tealBg);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <div style="font-weight: 800; font-size: 14px; color: var(--teal);">
+            <ScalyoIcon name="clock" :size="16" style="margin-right: 4px;" /> {{ t('trialBanner') }}
+          </div>
+          <span style="font-size: 13px; font-weight: 700; color: var(--teal);">{{ trialDaysLeft }} {{ t('trialDaysLeft') }}</span>
+        </div>
+        <div style="background: var(--surface); border-radius: 6px; height: 6px; overflow: hidden;">
+          <div style="height: 100%; border-radius: 6px; background: var(--teal); transition: width .3s;" :style="{ width: ((14 - trialDaysLeft) / 14 * 100) + '%' }"></div>
+        </div>
+      </div>
       <AppCard class="mb-md">
         <h4 style="font-weight: 800; margin-bottom: 14px">{{ t('currentSubscription') }}</h4>
         <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 16px">
@@ -60,7 +67,12 @@
           <ul style="list-style: none; font-size: 12px; color: var(--muted); margin-bottom: 14px">
             <li v-for="f in plan.features" :key="f" style="padding: 3px 0; display: flex; align-items: center; gap: 6px;"><ScalyoIcon name="check" :size="12" /> {{ f }}</li>
           </ul>
-          <button class="btn" :class="plan.name === authStore.company?.plan ? 'btn-secondary' : 'btn-primary'" style="width: 100%; justify-content: center">
+          <a v-if="plan.name !== authStore.company?.plan && stripeUrls[plan.name.toLowerCase()]"
+            :href="stripeUrls[plan.name.toLowerCase()]" target="_blank"
+            class="btn btn-primary" style="width: 100%; justify-content: center; text-decoration: none;">
+            {{ t('upgradePlan') }}
+          </a>
+          <button v-else class="btn" :class="plan.name === authStore.company?.plan ? 'btn-secondary' : 'btn-primary'" style="width: 100%; justify-content: center" disabled>
             {{ plan.name === authStore.company?.plan ? t('currentPlan') : t('upgradePlan') }}
           </button>
         </AppCard>
@@ -119,6 +131,41 @@
           </select>
         </div>
       </AppCard>
+
+      <!-- AI features indicator -->
+      <AppCard class="mb-md">
+        <div style="display: flex; align-items: center; gap: 14px">
+          <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--green); flex-shrink: 0; box-shadow: 0 0 8px rgba(74,222,128,.5)"></div>
+          <div>
+            <div style="font-weight: 700; font-size: 14px; margin-bottom: 2px">{{ aiFeaturesLabel }}</div>
+            <div style="font-size: 12px; color: var(--muted)">{{ aiCoachDesc }}</div>
+          </div>
+        </div>
+      </AppCard>
+    </template>
+
+    <!-- Danger zone -->
+    <template v-if="tab === 'danger'">
+      <AppCard :danger="true">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px">
+          <span style="font-size: 24px">⚠️</span>
+          <h4 style="font-weight: 900; font-size: 17px; color: var(--red)">{{ t('deleteAccount') }}</h4>
+        </div>
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.7; max-width: 500px">{{ t('deleteAccountDesc') }}</p>
+        <div style="margin-bottom: 18px">
+          <label style="font-size: 11px; font-weight: 700; color: var(--red); text-transform: uppercase; display: block; margin-bottom: 8px; letter-spacing: .08em">
+            {{ t('deleteAccountType') }}
+          </label>
+          <input v-model="deleteConfirmText" class="field-input" style="margin-bottom: 8px; border-color: var(--red)"
+            :placeholder="deleteWord" />
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center">
+          <button class="btn btn-secondary" @click="tab = 'profile'; deleteConfirmText = ''">{{ t('cancel') }}</button>
+          <button class="btn btn-danger" :disabled="deleteConfirmText !== deleteWord" @click="confirmDeleteAccount">
+            {{ t('deleteAccount') }}
+          </button>
+        </div>
+      </AppCard>
     </template>
   </div>
 </template>
@@ -140,12 +187,21 @@ const router = useRouter()
 const { t } = useI18n()
 const tab = ref('profile')
 const saving = ref(false)
+const isManager = computed(() => authStore.user?.role === 'manager')
 
 const profile = reactive({ display_name: authStore.user?.display_name || '' })
 const companyName = ref(authStore.company?.name || '')
 const selectedCurrency = ref(prefsStore.currency)
 
 const notifPrefs = reactive({ churn_alerts: true, weekly_report: true, wellbeing_alerts: true, renewal_alerts: true })
+const stripeUrls = ref({})
+
+const trialDaysLeft = computed(() => {
+  const created = authStore.company?.created_at
+  if (!created) return 14
+  const diff = 14 - Math.floor((Date.now() - new Date(created).getTime()) / 86400000)
+  return Math.max(0, diff)
+})
 
 const currencies = [
   { code: 'EUR', symbol: '€', name: 'Euro' },
@@ -153,13 +209,18 @@ const currencies = [
   { code: 'GBP', symbol: '£', name: 'British Pound' },
   { code: 'CHF', symbol: 'CHF', name: 'Swiss Franc' },
   { code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar' },
+  { code: 'MAD', symbol: 'DH', name: 'Dirham marocain' },
+  { code: 'XOF', symbol: 'CFA', name: 'Franc CFA' },
+  { code: 'AED', symbol: 'AED', name: 'Dirham UAE' },
+  { code: 'SAR', symbol: 'SAR', name: 'Riyal saoudien' },
+  { code: 'KRW', symbol: '₩', name: 'Won coréen' },
 ]
 
-const plans = [
-  { name: 'Starter', price: '0€', features: ['5 client accounts', 'Dashboard & KPIs', 'Task Board', 'Email Studio'] },
-  { name: 'Growth', price: '49€', features: ['Unlimited accounts', 'Unlimited CSMs', 'AI Coach', 'Team wellbeing', 'Planning'] },
-  { name: 'Elite', price: '149€', features: ['Everything in Growth', 'Dedicated onboarding', 'Priority support', 'Monthly coaching session'] },
-]
+const plans = computed(() => [
+  { name: 'Starter', price: '97€', features: [t('starter10Accounts'), t('starterDashKpi'), t('starterTaskBoard'), t('starterCoachLimited'), t('starterWellbeing'), t('starterEmailStudio')] },
+  { name: 'Growth', price: '297€', features: [t('growthUnlimitedAccounts'), t('growthUnlimitedCsms'), t('growthCoachUnlimited'), t('growthWellbeingAdvanced'), t('growthPlanning'), t('growthEmailFull'), t('growthImportCsv')] },
+  { name: 'Elite', price: '697€', features: [t('eliteAll'), t('eliteCrmIntegrations'), t('eliteOnboarding'), t('elitePrioritySupport'), t('eliteCoachingSession')] },
+])
 
 const notifItems = computed(() => [
   { key: 'churn_alerts', label: t('churnAlertLabel'), desc: t('churnAlertDesc') },
@@ -172,6 +233,10 @@ onMounted(async () => {
   try {
     const { data } = await authApi.getNotificationPrefs()
     Object.assign(notifPrefs, data)
+  } catch {}
+  try {
+    const { data } = await authApi.getStripeUrls()
+    stripeUrls.value = data
   } catch {}
 })
 
@@ -191,8 +256,22 @@ async function saveNotifPrefs() {
   await authApi.updateNotificationPrefs({ ...notifPrefs })
 }
 
-async function handleDeleteAccount() {
-  if (!confirm(t('deleteAccountDesc'))) return
+const aiFeaturesLabel = computed(() =>
+  prefsStore.lang === 'en' ? 'AI features active' : prefsStore.lang === 'kr' ? 'AI 기능 활성화' : 'Fonctions IA actives'
+)
+const aiCoachDesc = computed(() =>
+  prefsStore.lang === 'en'
+    ? 'CS Coach and Nova Wellbeing are powered by DeepSeek — no configuration needed.'
+    : prefsStore.lang === 'kr'
+    ? 'CS 코치와 Nova 웰빙은 DeepSeek으로 구동됩니다 — 별도 설정이 필요 없습니다.'
+    : 'Le Coach CS et Nova Bien-être sont propulsés par DeepSeek — aucune configuration requise.'
+)
+
+const deleteConfirmText = ref('')
+const deleteWord = computed(() => prefsStore.lang === 'fr' ? 'SUPPRIMER' : prefsStore.lang === 'kr' ? '삭제' : 'DELETE')
+
+async function confirmDeleteAccount() {
+  if (deleteConfirmText.value !== deleteWord.value) return
   await authApi.deleteAccount()
   authStore.logout()
   router.push({ name: 'login' })

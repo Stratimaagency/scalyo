@@ -356,6 +356,26 @@
       <circle cx="12" cy="12" r="10" :fill="c.blue" opacity="0.15" />
     </template>
 
+    <!-- Document / File -->
+    <template v-if="name === 'document'">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" :fill="c.tealBg" :stroke="c.teal" stroke-width="1.5" />
+      <polyline points="14,2 14,8 20,8" :stroke="c.teal" stroke-width="1.5" stroke-linecap="round" fill="none" />
+      <line x1="8" y1="13" x2="16" y2="13" :stroke="c.teal" stroke-width="1.5" stroke-linecap="round" opacity="0.5" />
+      <line x1="8" y1="17" x2="14" y2="17" :stroke="c.teal" stroke-width="1.5" stroke-linecap="round" opacity="0.3" />
+    </template>
+
+    <!-- Copy / Duplicate -->
+    <template v-if="name === 'copy'">
+      <rect x="8" y="8" width="12" height="14" rx="2" :fill="c.tealBg" :stroke="c.teal" stroke-width="1.5" />
+      <path d="M16 8V4a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h2" :stroke="c.teal" stroke-width="1.5" fill="none" />
+    </template>
+
+    <!-- Clock -->
+    <template v-if="name === 'clock'">
+      <circle cx="12" cy="12" r="10" :fill="c.tealBg" :stroke="c.teal" stroke-width="1.5" />
+      <polyline points="12,6 12,12 16,14" :stroke="c.teal" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    </template>
+
     <!-- NPS/Survey chart -->
     <template v-if="name === 'survey'">
       <rect x="2" y="2" width="20" height="20" rx="4" :fill="c.blueBg" />

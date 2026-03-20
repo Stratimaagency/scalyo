@@ -2,7 +2,7 @@ import axios from 'axios'
 import { getTokens, setTokens, clearAuth } from '../composables/useStorage'
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: { 'Content-Type': 'application/json' },
 })
 
@@ -23,7 +23,8 @@ api.interceptors.response.use(
       const tokens = getTokens()
       if (tokens.refresh) {
         try {
-          const { data } = await axios.post('/api/auth/token/refresh/', { refresh: tokens.refresh })
+          const refreshUrl = (import.meta.env.VITE_API_URL || '/api') + '/auth/token/refresh/'
+          const { data } = await axios.post(refreshUrl, { refresh: tokens.refresh })
           const newTokens = { ...tokens, access: data.access }
           if (data.refresh) newTokens.refresh = data.refresh
           setTokens(newTokens)

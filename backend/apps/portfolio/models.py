@@ -12,7 +12,10 @@ class Account(models.Model):
     )
     name = models.CharField(max_length=255)
     csm = models.CharField(max_length=255, blank=True, default='')
+    mrr = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     arr = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    industry = models.CharField(max_length=100, blank=True, default='')
+    usage = models.IntegerField(default=70)
     health = models.IntegerField(default=70)
     risk = models.CharField(max_length=10, choices=RISK_CHOICES, default='low')
     plan = models.CharField(max_length=50, blank=True, default='')
@@ -22,6 +25,7 @@ class Account(models.Model):
     notes = models.TextField(blank=True, default='')
     onboarding_date = models.DateField(null=True, blank=True)
     renewal_date = models.DateField(null=True, blank=True)
+    renewal = models.CharField(max_length=50, blank=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

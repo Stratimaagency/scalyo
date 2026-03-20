@@ -100,3 +100,69 @@ class EmailStudioViewTests(TestCase):
     def test_template_detail_not_found(self):
         resp = self.client.get('/api/email-studio/templates/nonexistent/')
         self.assertEqual(resp.status_code, 404)
+
+
+class SendEmailViewTests(TestCase):
+    """Tests for the email sending endpoint."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = AuthService.register({
+            'email': 'sender@test.com', 'password': 'pass1234',
+            'display_name': 'Sender', 'role': 'csm', 'company_name': 'Send Corp',
+        })
+        self.client.force_authenticate(user=self.user)
+
+    def test_send_email_with_template(self):
+        resp = self.client.post('/api/email-studio/send/', {
+            'to': 'client@example.com',
+            'template_id': 'welcome',
+            'lang': 'en',
+        }, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.data['status'], 'sent')
+
+    def test_send_email_custom(self):
+        resp = self.client.post('/api/email-studio/send/', {
+            'to': 'client@example.com',
+            'subject': 'Hello',
+            'body': 'World',
+        }, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+    def test_send_email_missing_recipient(self):
+        resp = self.client.post('/api/email-studio/send/', {
+            'subject': 'Hello',
+            'body': 'World',
+        }, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_send_email_missing_content(self):
+        resp = self.client.post('/api/email-studio/send/', {
+            'to': 'client@example.com',
+        }, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_send_email_invalid_template(self):
+        resp = self.client.post('/api/email-studio/send/', {
+            'to': 'client@example.com',
+            'template_id': 'nonexistent',
+        }, format='json')
+        self.assertEqual(resp.status_code, 404)
+
+    def test_send_email_replaces_placeholders(self):
+        resp = self.client.post('/api/email-studio/send/', {
+            'to': 'client@example.com',
+            'template_id': 'welcome',
+            'lang': 'en',
+        }, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+    def test_unauthenticated(self):
+        client = APIClient()
+        resp = client.post('/api/email-studio/send/', {
+            'to': 'client@example.com',
+            'subject': 'Hello',
+            'body': 'World',
+        }, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)

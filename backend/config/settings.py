@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'apps.coach',
     'apps.feedback',
     'apps.email_studio',
+    'apps.billing',
 ]
 
 MIDDLEWARE = [
@@ -132,7 +133,22 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # External services
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET', '')
+STRIPE_STARTER_PRICE_ID = os.getenv('STRIPE_STARTER_PRICE_ID', '')
+STRIPE_GROWTH_PRICE_ID = os.getenv('STRIPE_GROWTH_PRICE_ID', '')
+STRIPE_ELITE_PRICE_ID = os.getenv('STRIPE_ELITE_PRICE_ID', '')
 STRIPE_STARTER_URL = os.getenv('STRIPE_STARTER_URL', '')
 STRIPE_GROWTH_URL = os.getenv('STRIPE_GROWTH_URL', '')
 STRIPE_ELITE_URL = os.getenv('STRIPE_ELITE_URL', '')
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
 ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY', '')
+
+# Email configuration
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.sendgrid.net')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() in ('true', '1')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@scalyo.io')

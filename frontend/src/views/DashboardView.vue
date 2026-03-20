@@ -201,6 +201,19 @@
       </div>
     </div>
 
+    <!-- Health score methodology -->
+    <div v-if="accounts.length" class="card" style="margin-top: 14px; padding: 18px;">
+      <details>
+        <summary style="cursor: pointer; font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 6px; user-select: none;">
+          <ScalyoIcon name="lightbulb" :size="16" />
+          {{ t('healthMethodTitle') }}
+        </summary>
+        <p style="font-size: 12px; color: var(--muted); line-height: 1.7; margin-top: 10px;">
+          {{ t('healthMethodDesc') }}
+        </p>
+      </details>
+    </div>
+
     <EmptyState v-if="!accounts.length" icon="rocket" :title="t('portfolioEmpty')" :action="t('viewPortfolio')" />
   </div>
 </template>

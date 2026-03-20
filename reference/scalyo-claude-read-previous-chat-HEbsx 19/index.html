@@ -637,6 +637,57 @@ footer {
 }
 
 /* ────────────────────────────────────
+   INTEGRATIONS
+──────────────────────────────────── */
+.integ-cats { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+.integ-cat-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 100px;
+  font-size: 13px; font-weight: 600; font-family: var(--f);
+  background: var(--dk3); border: 1px solid var(--dline2);
+  color: var(--dt2); cursor: pointer; transition: all .15s;
+}
+.integ-cat-btn:hover { border-color: var(--teal); color: var(--dt); }
+.integ-cat-btn.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+.integrations-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px; max-width: 860px; margin: 0 auto;
+}
+.integration-card {
+  background: var(--dk3); border: 1px solid var(--dline2);
+  border-radius: 12px; padding: 20px 16px; text-align: center;
+  transition: all .2s;
+}
+.integration-card:hover { border-color: rgba(55,53,47,.24); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+.integration-card.available { border-color: rgba(15,123,108,.3); }
+.integration-icon { font-size: 28px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; }
+.integration-icon img { width: 32px; height: 32px; object-fit: contain; }
+.integration-name { font-size: 13px; font-weight: 700; color: var(--dt); margin-bottom: 4px; }
+.integration-tag { font-size: 11px; color: var(--dt3); margin-bottom: 8px; }
+.integration-status { font-size: 10px; font-weight: 600; padding: 2px 10px; border-radius: 100px; display: inline-block; }
+.integration-status.live { background: rgba(15,123,108,.08); color: var(--teal); }
+
+/* Competitive advantage */
+.vs-block { margin-top: 64px; max-width: 900px; margin-left: auto; margin-right: auto; }
+.vs-title { font-size: clamp(22px, 2.5vw, 30px); font-weight: 800; letter-spacing: -.03em; color: var(--dt); margin-bottom: 8px; text-align: center; }
+.vs-subtitle { font-size: 15px; color: var(--dt2); text-align: center; margin-bottom: 32px; line-height: 1.7; }
+.vs-table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 16px; overflow: hidden; border: 1px solid var(--dline2); background: var(--dk3); }
+.vs-table thead th { padding: 16px 20px; font-size: 13px; font-weight: 700; text-align: center; background: var(--dk2); border-bottom: 1px solid var(--dline); color: var(--dt); }
+.vs-table thead th:first-child { text-align: left; }
+.vs-table thead th.vs-scalyo { background: rgba(15,123,108,.08); color: var(--teal); }
+.vs-table tbody td { padding: 14px 20px; font-size: 14px; text-align: center; border-bottom: 1px solid var(--dline); color: var(--dt2); }
+.vs-table tbody td:first-child { text-align: left; font-weight: 600; color: var(--dt); }
+.vs-table tbody td.vs-scalyo { background: rgba(15,123,108,.03); }
+.vs-table tbody tr:last-child td { border-bottom: none; }
+.vs-check { color: var(--teal); font-weight: 700; font-size: 16px; }
+.vs-cross { color: #D4432F; font-size: 14px; }
+.vs-partial { color: #D4930F; font-size: 13px; font-weight: 500; }
+.vs-highlights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 28px; }
+.vs-hl-card { background: rgba(15,123,108,.04); border: 1px solid rgba(15,123,108,.15); border-radius: 12px; padding: 20px; text-align: center; }
+.vs-hl-number { font-size: 28px; font-weight: 800; color: var(--teal); letter-spacing: -.04em; margin-bottom: 4px; }
+.vs-hl-text { font-size: 13px; color: var(--dt2); line-height: 1.5; }
+
+/* ────────────────────────────────────
    RESPONSIVE
 ──────────────────────────────────── */
 /* ═══════════════════════════════════
@@ -649,6 +700,8 @@ footer {
   .plans { grid-template-columns: 1fr 1fr; gap: 14px; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .stats-inner { grid-template-columns: 1fr 1fr; }
+  .integrations-grid { grid-template-columns: repeat(3, 1fr); }
+  .vs-highlights { gap: 10px; }
   .stat-cell { border-right: none; border-bottom: 1px solid var(--dline); }
   .stat-cell:nth-child(odd) { border-right: 1px solid var(--dline); }
 }
@@ -724,6 +777,14 @@ footer {
   .plan-btn { padding: 13px; font-size: 14px; }
   .plan-footnote { font-size: 11px; }
 
+  /* INTEGRATIONS */
+  .integrations-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .integ-cats { gap: 6px; }
+  .integ-cat-btn { padding: 7px 12px; font-size: 12px; }
+  .vs-highlights { grid-template-columns: 1fr; }
+  .vs-table thead th, .vs-table tbody td { padding: 10px 8px; font-size: 12px; }
+  .vs-title { font-size: 20px; }
+
   /* END CTA */
   .end-cta { padding: 80px 20px; text-align: center; }
   .end-h2 { font-size: clamp(28px, 8vw, 44px); }
@@ -748,6 +809,8 @@ footer {
   .plan-price-main { font-size: 38px; }
   .wb-grid { grid-template-columns: 1fr; }
   .roi-big { font-size: 48px; }
+  .integrations-grid { grid-template-columns: repeat(2, 1fr); }
+  .vs-table thead th, .vs-table tbody td { padding: 8px 6px; font-size: 11px; }
 }
 /* HAMBURGER + MOBILE MENU */
 .hamburger {
@@ -1671,6 +1734,234 @@ footer {
   </div>
 </section>
 
+
+<!-- INTEGRATIONS -->
+<section class="section section-light" id="integrations">
+  <div class="container" style="text-align: center;">
+    <div class="label" style="justify-content: center;"><div class="label-line"></div><span data-i18n="integ_tag">Intégrations</span><div class="label-line"></div></div>
+    <h2 class="h2-light" style="margin-bottom: 16px"><span data-i18n="integ_h2">Connectez tous vos outils en un clic.</span></h2>
+    <p style="color: var(--dt2); font-size: 16px; max-width: 600px; margin: 0 auto 32px; line-height: 1.7;">
+      <span data-i18n="integ_sub">CRM, email, chat, visio, gestion de projets — Scalyo se connecte nativement aux outils que votre équipe utilise déjà.</span>
+    </p>
+
+    <!-- Category tabs -->
+    <div class="integ-cats" id="integ-cats">
+      <button class="integ-cat-btn active" data-cat="all"><span>🔌</span> <span data-i18n="integ_all">Tout</span></button>
+      <button class="integ-cat-btn" data-cat="crm"><span>🏢</span> CRM</button>
+      <button class="integ-cat-btn" data-cat="email"><span>📧</span> Email</button>
+      <button class="integ-cat-btn" data-cat="chat"><span>💬</span> Chat</button>
+      <button class="integ-cat-btn" data-cat="meeting"><span>📅</span> <span data-i18n="integ_meetings">Réunions</span></button>
+      <button class="integ-cat-btn" data-cat="project"><span>📋</span> <span data-i18n="integ_projects">Projets</span></button>
+      <button class="integ-cat-btn" data-cat="data"><span>📊</span> <span data-i18n="integ_data">Données</span></button>
+    </div>
+
+    <div class="integrations-grid" id="integrations-grid">
+      <!-- CRM -->
+      <div class="integration-card available" data-cat="crm">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23FF7A59' d='M267.5 78.7V44.3c15.1-7.2 25.6-22.6 25.6-40.3C293.1 1.8 291.3 0 289 0h-32c-2.2 0-4 1.8-4 4v.1c0 11.1-9 20.1-20.1 20.1-11.1 0-20.1-9-20.1-20.1V4c0-2.2-1.8-4-4-4h-32c-2.2 0-4 1.8-4 4c0 17.7 10.5 33.1 25.6 40.3v34.4C143.1 87.3 96 141 96 205.8c0 36.5 14.5 69.6 38 93.8l-53.4 53.4c-3 3-4.2 7.3-3.2 11.4s4.2 7.3 8.1 8.7l.6.2c6.6 2.3 13.8.4 18.5-4.8l50.2-55.6c24 17.5 53.5 27.8 85.2 27.8s61.2-10.3 85.2-27.8l50.2 55.6c4.7 5.2 11.9 7.1 18.5 4.8l.6-.2c3.9-1.4 6.9-4.6 8.1-8.7s-.2-8.4-3.2-11.4L346 299.6c23.5-24.2 38-57.3 38-93.8 0-64.8-47.1-118.5-108.5-127.1zM240 304c-54.2 0-98.2-44-98.2-98.2s44-98.2 98.2-98.2 98.2 44 98.2 98.2S294.2 304 240 304z'/%3E%3C/svg%3E" alt="HubSpot"/></div>
+        <div class="integration-name">HubSpot CRM</div>
+        <div class="integration-tag">Contacts &amp; Deals</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="crm">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%2300A1E0' d='M20 8c3.2 0 6.1 1.3 8.2 3.3C30 9.9 32.5 9 35.2 9c6.2 0 11.2 5.1 11.2 11.3 0 .5 0 1-.1 1.5C47.9 23.2 49 25.3 49 27.7c0 3.9-3 7.1-6.8 7.3H12.5C7.3 35 3 30.6 3 25.3c0-4.2 2.7-7.7 6.5-9C10.3 11.9 14.7 8 20 8z'/%3E%3C/svg%3E" alt="Salesforce"/></div>
+        <div class="integration-name">Salesforce</div>
+        <div class="integration-tag" data-i18n="integ_sf_tag">Comptes &amp; Opps</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="crm">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%2325C16F'/%3E%3Cpath fill='%23fff' d='M16 7c-2.8 0-5 2.2-5 5v8c0 2.8 2.2 5 5 5s5-2.2 5-5v-8c0-2.8-2.2-5-5-5zm2 13c0 1.1-.9 2-2 2s-2-.9-2-2v-8c0-1.1.9-2 2-2s2 .9 2 2v8z'/%3E%3C/svg%3E" alt="Pipedrive"/></div>
+        <div class="integration-name">Pipedrive</div>
+        <div class="integration-tag">Deals &amp; Contacts</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <!-- Email -->
+      <div class="integration-card available" data-cat="email">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%234285F4' d='M6 10v28h10V23l8 6 8-6v15h10V10L34 22 24 14 14 22z'/%3E%3Cpath fill='%2334A853' d='M6 10l18 14v-4L6 8z'/%3E%3Cpath fill='%23FBBC04' d='M42 10L24 24v-4l18-12z'/%3E%3Cpath fill='%23EA4335' d='M6 10h6l12 10 12-10h6v2L24 24 6 12z'/%3E%3C/svg%3E" alt="Gmail"/></div>
+        <div class="integration-name">Gmail</div>
+        <div class="integration-tag" data-i18n="integ_gmail_tag">Boîte de réception</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="email">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%230078D4' d='M28 7v10h14V7zM28 20v11h14V20zM28 34v7h14v-7zM5 7l20 3v28L5 41z'/%3E%3Cellipse fill='%23fff' cx='15' cy='24' rx='6' ry='7'/%3E%3Cellipse fill='%230078D4' cx='15' cy='24' rx='4' ry='5'/%3E%3C/svg%3E" alt="Outlook"/></div>
+        <div class="integration-name">Outlook 365</div>
+        <div class="integration-tag">Mail &amp; Calendrier</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="email">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='4' y='10' width='40' height='28' rx='4' fill='%236B7280'/%3E%3Cpath fill='none' stroke='%23fff' stroke-width='2' d='M4 14l20 12 20-12'/%3E%3C/svg%3E" alt="IMAP"/></div>
+        <div class="integration-name">IMAP / SMTP</div>
+        <div class="integration-tag" data-i18n="integ_imap_tag">Tout fournisseur</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <!-- Chat -->
+      <div class="integration-card available" data-cat="chat">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23E01E5A' d='M13 28a3 3 0 1 1-3-3h3v3zm1.5 0a3 3 0 1 1 6 0v7.5a3 3 0 1 1-6 0V28z'/%3E%3Cpath fill='%2336C5F0' d='M20 13a3 3 0 1 1 3-3v3h-3zm0 1.5a3 3 0 1 1 0 6h-7.5a3 3 0 1 1 0-6H20z'/%3E%3Cpath fill='%232EB67D' d='M35 20a3 3 0 1 1 3 3h-3v-3zm-1.5 0a3 3 0 1 1-6 0v-7.5a3 3 0 1 1 6 0V20z'/%3E%3Cpath fill='%23ECB22E' d='M28 35a3 3 0 1 1-3 3v-3h3zm0-1.5a3 3 0 1 1 0-6h7.5a3 3 0 1 1 0 6H28z'/%3E%3C/svg%3E" alt="Slack"/></div>
+        <div class="integration-name">Slack</div>
+        <div class="integration-tag" data-i18n="integ_slack_tag">Alertes &amp; Commandes</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="chat">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%235B5FC7' d='M34 16a5 5 0 100-10 5 5 0 000 10zM41 18h-8c-1.7 0-3 1.3-3 3v10c0 1.7 1.3 3 3 3h8c1.7 0 3-1.3 3-3V21c0-1.7-1.3-3-3-3z'/%3E%3Cpath fill='%237B83EB' d='M24 14a6 6 0 100-12 6 6 0 000 12zM33 17H11c-1.7 0-3 1.3-3 3v13c0 5 4 9 9 9h10c5 0 9-4 9-9V20c0-1.7-1.3-3-3-3z'/%3E%3C/svg%3E" alt="Teams"/></div>
+        <div class="integration-name">Microsoft Teams</div>
+        <div class="integration-tag">Bot &amp; Notifications</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="chat">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='6' y='6' width='36' height='36' rx='8' fill='%23286EFA'/%3E%3Cpath stroke='%23fff' stroke-width='2.5' stroke-linecap='round' fill='none' d='M16 18v8M21 16v12M26 16v12M31 18v8M14 32s3 3 10 3 10-3 10-3'/%3E%3C/svg%3E" alt="Intercom"/></div>
+        <div class="integration-name">Intercom</div>
+        <div class="integration-tag">Conversations</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <!-- Meeting -->
+      <div class="integration-card available" data-cat="meeting">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%230F9D58' d='M8 12h20v24H8z'/%3E%3Cpath fill='%234285F4' d='M28 18l12-8v28l-12-8z'/%3E%3Cpath fill='%23FBBC04' d='M28 24l12-14h-12z'/%3E%3Cpath fill='%23EA4335' d='M28 24l12 14h-12z'/%3E%3C/svg%3E" alt="Google Meet"/></div>
+        <div class="integration-name">Google Meet</div>
+        <div class="integration-tag">Visio &amp; Calendrier</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="meeting">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='2' y='8' width='44' height='32' rx='8' fill='%232D8CFF'/%3E%3Cpath fill='%23fff' d='M10 16h16v12c0 1.1-.9 2-2 2H10V16zM30 20l8-4v16l-8-4V20z'/%3E%3C/svg%3E" alt="Zoom"/></div>
+        <div class="integration-name">Zoom</div>
+        <div class="integration-tag" data-i18n="integ_zoom_tag">Planification &amp; Enregistrement</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="meeting">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='6' y='8' width='36' height='34' rx='6' fill='%23006BFF'/%3E%3Crect x='6' y='8' width='36' height='10' rx='6' fill='%23004FC4'/%3E%3Ccircle cx='24' cy='30' r='6' fill='%23fff'/%3E%3Crect x='14' y='6' width='3' height='6' rx='1.5' fill='%23fff'/%3E%3Crect x='31' y='6' width='3' height='6' rx='1.5' fill='%23fff'/%3E%3C/svg%3E" alt="Calendly"/></div>
+        <div class="integration-name">Calendly</div>
+        <div class="integration-tag" data-i18n="integ_calendly_tag">Prise de RDV</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <!-- Project -->
+      <div class="integration-card available" data-cat="project">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%230052CC' d='M43.5 23.2L25.8 5.5 24 3.7 8.7 19 3 24.7c-.7.7-.7 1.9 0 2.6L15.3 39.7 24 48.4l15.3-15.3.5-.5 3.7-3.7c.7-.7.7-1.9 0-2.7zM24 30.9l-6.9-6.9L24 17.1l6.9 6.9L24 30.9z'/%3E%3C/svg%3E" alt="Jira"/></div>
+        <div class="integration-name">Jira</div>
+        <div class="integration-tag">Tickets &amp; Sync</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="project">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='12' r='8' fill='%23F06A6A'/%3E%3Ccircle cx='12' cy='32' r='8' fill='%23F06A6A'/%3E%3Ccircle cx='36' cy='32' r='8' fill='%23F06A6A'/%3E%3C/svg%3E" alt="Asana"/></div>
+        <div class="integration-name">Asana</div>
+        <div class="integration-tag" data-i18n="integ_asana_tag">Projets &amp; Tâches</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <!-- Data -->
+      <div class="integration-card available" data-cat="data">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%236B7280' d='M12 4h16l12 12v24c0 2.2-1.8 4-4 4H12c-2.2 0-4-1.8-4-4V8c0-2.2 1.8-4 4-4z'/%3E%3Cpath fill='%23fff' opacity='.5' d='M28 4l12 12h-8c-2.2 0-4-1.8-4-4V4z'/%3E%3Ctext x='24' y='35' text-anchor='middle' fill='%23fff' font-size='11' font-weight='700' font-family='sans-serif'%3ECSV%3C/text%3E%3C/svg%3E" alt="CSV"/></div>
+        <div class="integration-name">Import CSV</div>
+        <div class="integration-tag">Import 1-clic</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="data">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%2316A34A' d='M12 4h16l12 12v24c0 2.2-1.8 4-4 4H12c-2.2 0-4-1.8-4-4V8c0-2.2 1.8-4 4-4z'/%3E%3Cpath fill='%23fff' opacity='.5' d='M28 4l12 12h-8c-2.2 0-4-1.8-4-4V4z'/%3E%3Ctext x='24' y='35' text-anchor='middle' fill='%23fff' font-size='9' font-weight='700' font-family='sans-serif'%3EXLSX%3C/text%3E%3C/svg%3E" alt="Excel"/></div>
+        <div class="integration-name">Import Excel</div>
+        <div class="integration-tag">Multi-feuilles</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+      <div class="integration-card available" data-cat="data">
+        <div class="integration-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='8' fill='%236366F1'/%3E%3Cpath fill='%23fff' d='M22.5 19.5c0-1.5 1.2-2.1 3.2-2.1 2.9 0 6.5 0.9 9.4 2.4V12c-3.1-1.3-6.3-1.8-9.4-1.8-7.7 0-12.8 4-12.8 10.7 0 10.4 14.3 8.7 14.3 13.2 0 1.8-1.5 2.3-3.7 2.3-3.2 0-7.3-1.3-10.5-3.1v7.9c3.6 1.5 7.2 2.2 10.5 2.2 7.9 0 13.3-3.9 13.3-10.7-.1-11.2-14.3-9.2-14.3-13.2z'/%3E%3C/svg%3E" alt="Stripe"/></div>
+        <div class="integration-name">Stripe</div>
+        <div class="integration-tag">Facturation &amp; MRR</div>
+        <div class="integration-status live"><span data-i18n="integ_available">Disponible</span></div>
+      </div>
+    </div>
+
+    <p style="color: var(--dt3); font-size: 13px; margin-top: 24px;">
+      <span data-i18n="integ_more">+ Zendesk, Segment, Freshdesk, Notion, WhatsApp, Crisp et bien d'autres à venir.</span>
+    </p>
+
+    <!-- Competitive advantage block -->
+    <div class="vs-block">
+      <div class="vs-title" data-i18n="vs_title">Pourquoi Scalyo surpasse la concurrence</div>
+      <p class="vs-subtitle" data-i18n="vs_subtitle">Les plateformes CS traditionnelles facturent les intégrations en supplément, limitent les connecteurs ou imposent des outils tiers. Scalyo inclut tout, nativement.</p>
+
+      <table class="vs-table">
+        <thead>
+          <tr>
+            <th data-i18n="vs_criteria">Critère</th>
+            <th class="vs-scalyo">Scalyo</th>
+            <th>Gainsight</th>
+            <th>Totango</th>
+            <th>ChurnZero</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-i18n="vs_native">Intégrations natives incluses</td>
+            <td class="vs-scalyo"><span class="vs-check">&#10003; 17+</span></td>
+            <td><span class="vs-partial" data-i18n="vs_paid">Payantes</span></td>
+            <td><span class="vs-partial" data-i18n="vs_limited">Limitées</span></td>
+            <td><span class="vs-partial" data-i18n="vs_limited">Limitées</span></td>
+          </tr>
+          <tr>
+            <td data-i18n="vs_setup">Setup en 5 minutes</td>
+            <td class="vs-scalyo"><span class="vs-check">&#10003;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td data-i18n="vs_no_zapier">Sans Zapier ni middleware</td>
+            <td class="vs-scalyo"><span class="vs-check">&#10003;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+            <td><span class="vs-partial" data-i18n="vs_partial">Partiel</span></td>
+          </tr>
+          <tr>
+            <td data-i18n="vs_eu">Données hébergées en Europe</td>
+            <td class="vs-scalyo"><span class="vs-check">&#10003;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td data-i18n="vs_no_cost">Pas de coût par connecteur</td>
+            <td class="vs-scalyo"><span class="vs-check">&#10003;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+            <td><span class="vs-partial" data-i18n="vs_depends">Selon plan</span></td>
+            <td><span class="vs-partial" data-i18n="vs_depends">Selon plan</span></td>
+          </tr>
+          <tr>
+            <td data-i18n="vs_coach">Coach IA intégré</td>
+            <td class="vs-scalyo"><span class="vs-check">&#10003;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td data-i18n="vs_wellbeing">Bien-être équipe inclus</td>
+            <td class="vs-scalyo"><span class="vs-check">&#10003;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td data-i18n="vs_pricing">Tarif transparent (pas de devis)</td>
+            <td class="vs-scalyo"><span class="vs-check">&#10003;</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+            <td><span class="vs-partial" data-i18n="vs_partial">Partiel</span></td>
+            <td><span class="vs-cross">&#10007;</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="vs-highlights">
+        <div class="vs-hl-card">
+          <div class="vs-hl-number">0 €</div>
+          <div class="vs-hl-text" data-i18n="vs_hl1">par intégration<br/>Tout est inclus dans votre plan</div>
+        </div>
+        <div class="vs-hl-card">
+          <div class="vs-hl-number">5 min</div>
+          <div class="vs-hl-text" data-i18n="vs_hl2">pour tout connecter<br/>Pas de consultant, pas de code</div>
+        </div>
+        <div class="vs-hl-card">
+          <div class="vs-hl-number">100%</div>
+          <div class="vs-hl-text" data-i18n="vs_hl3">natif, sans middleware<br/>Vos données restent en Europe</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- FAQ -->
 <section class="section section-dark" id="faq">
@@ -3474,6 +3765,21 @@ window.addEventListener('scroll', function(){
 });
 
 /* ── FAQ ── */
+/* ── INTEGRATION FILTERING ── */
+var integCats = document.getElementById('integ-cats');
+if (integCats) {
+  integCats.addEventListener('click', function(e) {
+    var btn = e.target.closest('.integ-cat-btn');
+    if (!btn) return;
+    var cat = btn.dataset.cat;
+    document.querySelectorAll('.integ-cat-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelectorAll('.integration-card').forEach(function(card) {
+      card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+    });
+  });
+}
+
 function toggleFaq(btn) {
   var item = btn.closest('.faq-item');
   var isOpen = item.classList.contains('open');
