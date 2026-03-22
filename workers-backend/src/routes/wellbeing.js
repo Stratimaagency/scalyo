@@ -1,0 +1,69 @@
+import { Hono } from 'hono'
+import { authMiddleware, companyRequired } from '../middleware/auth.js'
+
+const wellbeing = new Hono()
+wellbeing.use('/*', authMiddleware(), companyRequired())
+
+function parseWellbeing(row) {
+  return {
+    id: row.id,
+    score: row.score,
+    burnout: row.burnout,
+    charge: row.charge,
+    trend: row.trend,
+    alerts: JSON.parse(row.alerts || '[]'),
+    team: JSON.parse(row.team || '[]'),
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  }
+}
+
+// GET /api/wellbeing/
+wellbeing.get('/', async (c) => {
+  const { company_id } = c.get('user')
+  let row = await c.env.DB.prepare(
+    'SELECT * FROM wellbeing WHERE company_id = ?'
+  ).bind(company_id).first()
+
+  if (!row) {
+    row = await c.env.DB.prepare(
+      'INSERT INTO wellbeing (company_id) VALUES (?) RETURNING *'
+    ).bind(company_id).first()
+  }
+
+  return c.json(parseWellbeing(row))
+})
+
+// PATCH /api/wellbeing/update/
+wellbeing.patch('/update/', async (c) => {
+  const { company_id } = c.get('user')
+  const data = await c.req.json()
+
+  // Ensure exists
+  await c.env.DB.prepare(
+    'INSERT OR IGNORE INTO wellbeing (company_id) VALUES (?)'
+  ).bind(company_id).run()
+
+  const sets = []
+  const values = []
+
+  for (const key of ['score', 'burnout', 'charge', 'trend']) {
+    if (data[key] !== undefined) { sets.push(`${key} = ?`); values.push(data[key]) }
+  }
+  for (const key of ['alerts', 'team']) {
+    if (data[key] !== undefined) { sets.push(`${key} = ?`); values.push(JSON.stringify(data[key])) }
+  }
+
+  if (sets.length === 0) return c.json({ error: 'No valid fields' }, 400)
+
+  sets.push("updated_at = datetime('now')")
+  values.push(company_id)
+
+  const row = await c.env.DB.prepare(
+    `UPDATE wellbeing SET ${sets.join(', ')} WHERE company_id = ? RETURNING *`
+  ).bind(...values).first()
+
+  return c.json(parseWellbeing(row))
+})
+
+export default wellbeing
