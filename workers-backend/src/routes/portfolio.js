@@ -86,7 +86,7 @@ portfolio.get('/accounts/:id', async (c) => {
 
   // Get todos
   const { results: todos } = await c.env.DB.prepare(
-    'SELECT id, text, done, created_at FROM account_todos WHERE account_id = ? ORDER BY created_at DESC'
+    'SELECT id, type, label, text, done, date, notes, created_at FROM account_todos WHERE account_id = ? ORDER BY created_at DESC'
   ).bind(id).all()
 
   return c.json({
@@ -190,7 +190,7 @@ portfolio.get('/accounts/:account_pk/todos/', async (c) => {
   const accountId = c.req.param('account_pk')
 
   const { results } = await c.env.DB.prepare(
-    'SELECT id, text, done, created_at FROM account_todos WHERE account_id = ? AND company_id = ? ORDER BY created_at DESC'
+    'SELECT id, type, label, text, done, date, notes, created_at FROM account_todos WHERE account_id = ? AND company_id = ? ORDER BY created_at DESC'
   ).bind(accountId, company_id).all()
 
   return c.json(results.map(t => ({ ...t, done: !!t.done })))
@@ -200,13 +200,22 @@ portfolio.get('/accounts/:account_pk/todos/', async (c) => {
 portfolio.post('/accounts/:account_pk/todos/', async (c) => {
   const { company_id } = c.get('user')
   const accountId = c.req.param('account_pk')
-  const { text } = await c.req.json()
+  const data = await c.req.json()
 
-  if (!text) return c.json({ error: 'text is required' }, 400)
+  const label = data.label || data.text || ''
+  if (!label) return c.json({ error: 'label or text is required' }, 400)
 
   const todo = await c.env.DB.prepare(
-    'INSERT INTO account_todos (account_id, company_id, text) VALUES (?, ?, ?) RETURNING id, text, done, created_at'
-  ).bind(accountId, company_id, text).first()
+    'INSERT INTO account_todos (account_id, company_id, type, label, text, done, date, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING *'
+  ).bind(
+    accountId, company_id,
+    data.type || '',
+    label,
+    label,
+    data.done ? 1 : 0,
+    data.date || '',
+    data.notes || ''
+  ).first()
 
   return c.json({ ...todo, done: !!todo.done }, 201)
 })
@@ -221,14 +230,18 @@ portfolio.patch('/accounts/:account_pk/todos/:id', async (c) => {
   const values = []
 
   if (data.text !== undefined) { sets.push('text = ?'); values.push(data.text) }
+  if (data.label !== undefined) { sets.push('label = ?'); values.push(data.label); sets.push('text = ?'); values.push(data.label) }
   if (data.done !== undefined) { sets.push('done = ?'); values.push(data.done ? 1 : 0) }
+  if (data.type !== undefined) { sets.push('type = ?'); values.push(data.type) }
+  if (data.date !== undefined) { sets.push('date = ?'); values.push(data.date) }
+  if (data.notes !== undefined) { sets.push('notes = ?'); values.push(data.notes) }
 
   if (sets.length === 0) return c.json({ error: 'No valid fields' }, 400)
 
   values.push(todoId, company_id)
 
   const todo = await c.env.DB.prepare(
-    `UPDATE account_todos SET ${sets.join(', ')} WHERE id = ? AND company_id = ? RETURNING id, text, done, created_at`
+    `UPDATE account_todos SET ${sets.join(', ')} WHERE id = ? AND company_id = ? RETURNING *`
   ).bind(...values).first()
 
   if (!todo) return c.json({ error: 'Not found' }, 404)

@@ -25,10 +25,11 @@ api.interceptors.response.use(
         try {
           const refreshUrl = (import.meta.env.VITE_API_URL || '/api') + '/auth/token/refresh/'
           const { data } = await axios.post(refreshUrl, { refresh: tokens.refresh })
-          const newTokens = { ...tokens, access: data.access }
-          if (data.refresh) newTokens.refresh = data.refresh
+          const refreshed = data.tokens || data
+          const newTokens = { ...tokens, access: refreshed.access }
+          if (refreshed.refresh) newTokens.refresh = refreshed.refresh
           setTokens(newTokens)
-          original.headers.Authorization = `Bearer ${data.access}`
+          original.headers.Authorization = `Bearer ${refreshed.access}`
           return api(original)
         } catch {
           clearAuth()

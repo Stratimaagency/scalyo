@@ -77,8 +77,12 @@ CREATE TABLE IF NOT EXISTS account_todos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   account_id INTEGER NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
   company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-  text TEXT NOT NULL,
+  type TEXT DEFAULT '',
+  label TEXT NOT NULL DEFAULT '',
+  text TEXT NOT NULL DEFAULT '',
   done INTEGER DEFAULT 0,
+  date TEXT DEFAULT '',
+  notes TEXT DEFAULT '',
   created_at TEXT DEFAULT (datetime('now'))
 );
 
