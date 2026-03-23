@@ -79,46 +79,99 @@
         <div class="app-sidebar">
           <div class="sb-logo">
             <div class="sb-logo-dot"></div>
-            <span class="sb-logo-txt">Scalyo</span>
+            <span class="sb-logo-txt">scal<span style="color:var(--teal)">yo</span></span>
           </div>
-          <div class="sb-section">{{ t('demo_menu') }}</div>
           <div class="sb-item active"><span class="sb-icon">&#x25A6;</span><span>{{ t('demo_dashboard') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x25CE;</span><span>{{ t('demo_portfolio') }}</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x1F4BC;</span><span>{{ t('demo_portfolio') }}</span></div>
           <div class="sb-item"><span class="sb-icon">&#x2197;</span>KPIs</div>
-          <div class="sb-item"><span class="sb-icon">&#x2661;</span><span>{{ t('feat_wb') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x25C8;</span><span>{{ t('feat_coach') }}</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x1F4C5;</span>Planning</div>
           <div class="sb-item"><span class="sb-icon">&#x2611;</span>Tasks</div>
+          <div class="sb-item"><span class="sb-icon">&#x2661;</span><span>{{ t('feat_wb') }}</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x1F916;</span><span>Coach IA</span></div>
           <div class="sb-item"><span class="sb-icon">&#x2709;</span><span>{{ t('feat_email') }}</span></div>
         </div>
         <div class="app-main">
           <div class="app-header">
-            <div class="app-title">Portefeuille clients</div>
-            <div class="app-subtitle"><div class="status-dot"></div>{{ t('demo_updated') }}</div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div class="app-title">{{ t('demo_overview') }} &#x1F44B;</div>
+                <div class="app-subtitle">La Fabrique · {{ t('demo_today') }}</div>
+              </div>
+              <div style="display:flex;gap:6px;">
+                <span style="font-size:10px;padding:3px 9px;border-radius:100px;background:rgba(13,148,136,.08);color:var(--teal);border:1px solid rgba(13,148,136,.15);font-weight:600;">Growth</span>
+                <span style="font-size:10px;padding:3px 9px;border-radius:100px;background:rgba(168,85,247,.08);color:#A855F7;border:1px solid rgba(168,85,247,.15);font-weight:600;">Manager</span>
+              </div>
+            </div>
           </div>
           <div class="kpi-grid">
-            <div class="kpi"><div class="kpi-lbl">NRR</div><div class="kpi-val c-teal">112%</div><div class="kpi-delta c-green">&#x2191; +4 pts vs M-1</div></div>
-            <div class="kpi"><div class="kpi-lbl">{{ t('demo_mrr') }}</div><div class="kpi-val">284K&euro;</div><div class="kpi-delta c-green">+12K ce mois</div></div>
-            <div class="kpi"><div class="kpi-lbl">{{ t('demo_churn') }}</div><div class="kpi-val c-amber">3</div><div class="kpi-delta c-amber">{{ t('demo_action') }}</div></div>
-            <div class="kpi"><div class="kpi-lbl">{{ t('demo_wellbeing_kpi') }}</div><div class="kpi-val c-blue">7.8<span style="font-size:13px;color:var(--dt3)">/10</span></div><div class="kpi-delta c-green">En forme</div></div>
+            <div class="kpi"><div class="kpi-lbl">{{ t('demo_arr') }}</div><div class="kpi-val c-teal">3.4M&euro;</div><div class="kpi-delta c-green">12 {{ t('demo_active_acc') }}</div></div>
+            <div class="kpi"><div class="kpi-lbl">{{ t('demo_avg_health') }}</div><div class="kpi-val">74<span style="font-size:13px;color:var(--dt3)">/100</span></div><div class="kpi-delta c-green">{{ t('demo_healthy') }}</div></div>
+            <div class="kpi"><div class="kpi-lbl">{{ t('demo_critical') }}</div><div class="kpi-val c-red" style="color:var(--red)">2</div><div class="kpi-delta" style="color:var(--red)">480K&euro; ARR {{ t('demo_at_risk') }}</div></div>
+            <div class="kpi"><div class="kpi-lbl">{{ t('demo_roadmap') }}</div><div class="kpi-val c-teal">67%</div><div class="kpi-delta c-green">4/6 {{ t('demo_steps') }}</div></div>
           </div>
-          <div class="app-row2">
+          <!-- Critical alert -->
+          <div style="background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.12);border-radius:10px;padding:12px;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--red);">&#x1F6A8; 2 {{ t('demo_critical_alert') }}</div>
+              <span style="font-size:10px;padding:3px 10px;border-radius:100px;background:rgba(248,113,113,.08);color:var(--red);border:1px solid rgba(248,113,113,.15);">{{ t('demo_see_portfolio') }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(248,113,113,.04);border-radius:8px;padding:8px 10px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">L</div>
+                  <div><div style="font-size:11px;font-weight:700;color:var(--dt);">Leroy Finance</div><div style="font-size:10px;color:var(--dt3);">NPS en baisse</div></div>
+                </div>
+                <div style="text-align:right;"><div style="font-size:10px;font-weight:700;color:var(--red);">240K&euro;</div><div style="font-size:9px;color:var(--dt3);">Renouvellement Avr.</div></div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(248,113,113,.04);border-radius:8px;padding:8px 10px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">A</div>
+                  <div><div style="font-size:11px;font-weight:700;color:var(--dt);">Acme Corp</div><div style="font-size:10px;color:var(--dt3);">Usage en chute</div></div>
+                </div>
+                <div style="text-align:right;"><div style="font-size:10px;font-weight:700;color:var(--red);">240K&euro;</div><div style="font-size:9px;color:var(--dt3);">Renouvellement Mai</div></div>
+              </div>
+            </div>
+          </div>
+          <!-- Bottom: Roadmap + Wellbeing -->
+          <div class="app-row2" style="grid-template-columns:1.6fr 1fr;">
             <div class="app-card">
-              <div class="card-lbl">{{ t('demo_nrr') }}</div>
-              <div class="chart-wrap">
-                <div class="bar" style="height:40%;background:var(--dk4)"></div>
-                <div class="bar" style="height:55%;background:var(--dk4)"></div>
-                <div class="bar" style="height:48%;background:var(--dk4)"></div>
-                <div class="bar" style="height:70%;background:var(--dk4)"></div>
-                <div class="bar" style="height:64%;background:var(--dk4)"></div>
-                <div class="bar" style="height:92%;background:linear-gradient(to top,var(--teal),rgba(13,148,136,.25))"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <div><div style="font-size:12px;font-weight:700;color:var(--dt);">&#x1F5FA; {{ t('demo_roadmap_title') }}</div><div style="font-size:10px;color:var(--dt3);">{{ t('demo_roadmap_phase') }}</div></div>
+                <div style="font-size:20px;font-weight:900;color:var(--teal);font-family:'JetBrains Mono',monospace;">67%</div>
+              </div>
+              <div style="height:4px;background:var(--dk5);border-radius:2px;overflow:hidden;margin-bottom:10px;"><div style="width:67%;height:100%;background:var(--teal);border-radius:2px;"></div></div>
+              <div style="display:flex;flex-direction:column;gap:5px;">
+                <div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:var(--dk4);border-radius:6px;font-size:10px;color:var(--dt3);"><span style="color:var(--teal);">&#x2713;</span><span style="text-decoration:line-through;">{{ t('demo_rd1') }}</span></div>
+                <div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:var(--dk4);border-radius:6px;font-size:10px;color:var(--dt3);"><span style="color:var(--teal);">&#x2713;</span><span style="text-decoration:line-through;">{{ t('demo_rd2') }}</span></div>
+                <div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:rgba(13,148,136,.06);border:1px solid rgba(13,148,136,.12);border-radius:6px;font-size:10px;color:var(--dt);font-weight:500;">&#x25A1; {{ t('demo_rd3') }}</div>
+                <div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:var(--dk4);border-radius:6px;font-size:10px;color:var(--dt3);opacity:.5;">&#x25A1; {{ t('demo_rd4') }}</div>
               </div>
             </div>
             <div class="app-card">
-              <div class="card-lbl">{{ t('demo_priority') }}</div>
-              <div class="accounts-list">
-                <div class="account"><span class="acc-name">Leroy Finance</span><span class="acc-tag tag-red">{{ t('tag_critical') }}</span></div>
-                <div class="account"><span class="acc-name">TechPilot SAS</span><span class="acc-tag tag-amber">{{ t('tag_risk') }}</span></div>
-                <div class="account"><span class="acc-name">NexFlow Pro</span><span class="acc-tag tag-green">{{ t('tag_stable') }}</span></div>
+              <div style="font-size:12px;font-weight:700;color:var(--dt);margin-bottom:10px;">&#x2661; {{ t('demo_wb_title') }}</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+                <div style="text-align:center;background:var(--dk4);border-radius:8px;padding:10px;">
+                  <div style="font-size:22px;font-weight:900;color:var(--teal);font-family:'JetBrains Mono',monospace;">7.2</div>
+                  <div style="font-size:9px;color:var(--dt3);margin-top:2px;">Score</div>
+                </div>
+                <div style="text-align:center;background:var(--dk4);border-radius:8px;padding:10px;">
+                  <div style="font-size:12px;font-weight:800;color:var(--amber);">{{ t('demo_burnout_mod') }}</div>
+                  <div style="font-size:9px;color:var(--dt3);margin-top:2px;">{{ t('demo_burnout_risk') }}</div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <div style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;">S</div>
+                  <div style="flex:1;"><div style="display:flex;justify-content:space-between;font-size:10px;"><span style="font-weight:700;">Sophie</span><span style="color:var(--green);font-weight:700;">65%</span></div><div style="height:3px;background:var(--dk5);border-radius:2px;margin-top:3px;overflow:hidden;"><div style="width:35%;height:100%;background:var(--green);border-radius:2px;"></div></div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <div style="width:22px;height:22px;border-radius:50%;background:var(--amber);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;">T</div>
+                  <div style="flex:1;"><div style="display:flex;justify-content:space-between;font-size:10px;"><span style="font-weight:700;">Thomas</span><span style="color:var(--amber);font-weight:700;">78%</span></div><div style="height:3px;background:var(--dk5);border-radius:2px;margin-top:3px;overflow:hidden;"><div style="width:22%;height:100%;background:var(--amber);border-radius:2px;"></div></div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <div style="width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;">M</div>
+                  <div style="flex:1;"><div style="display:flex;justify-content:space-between;font-size:10px;"><span style="font-weight:700;">Marie</span><span style="color:var(--red);font-weight:700;">89%</span></div><div style="height:3px;background:var(--dk5);border-radius:2px;margin-top:3px;overflow:hidden;"><div style="width:11%;height:100%;background:var(--red);border-radius:2px;"></div></div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -1090,9 +1143,37 @@ function submitContact() {
   }, 5000)
 }
 
+// ── SCROLL REVEAL ──
+let revealObserver = null
+
+function initScrollReveal() {
+  revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible')
+        revealObserver.unobserve(entry.target)
+      }
+    })
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' })
+
+  document.querySelectorAll('.rv').forEach(el => {
+    revealObserver.observe(el)
+  })
+}
+
+// ── PARALLAX GLOW ──
+function onParallax() {
+  const glow = document.querySelector('.hero-glow')
+  if (glow) {
+    const y = window.scrollY
+    glow.style.transform = `translateX(-50%) translateY(${y * 0.15}px)`
+  }
+}
+
 // ── INIT ──
 onMounted(() => {
   window.addEventListener('scroll', onScroll)
+  window.addEventListener('scroll', onParallax, { passive: true })
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllModals() })
 
   // Auto-detect Korean browser
@@ -1107,10 +1188,17 @@ onMounted(() => {
   nextTick(() => {
     setLang(lang.value)
   })
+
+  // Init scroll reveal after DOM is ready
+  nextTick(() => {
+    initScrollReveal()
+  })
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
+  window.removeEventListener('scroll', onParallax)
+  if (revealObserver) revealObserver.disconnect()
 })
 
 </script>
@@ -1174,8 +1262,12 @@ img { display: block; max-width: 100%; }
 ::selection { background: rgba(13,148,136,0.2); color: var(--teal); }
 
 /* ── REVEAL ── */
-.rv { opacity: 1; transform: none; }
-.rv.in { opacity: 1; transform: none; }
+.rv { opacity: 0; transform: translateY(32px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+.rv.d1 { transition-delay: .1s; }
+.rv.d2 { transition-delay: .2s; }
+.rv.d3 { transition-delay: .3s; }
+.rv.d4 { transition-delay: .4s; }
+.rv.visible { opacity: 1; transform: none; }
 
 /* ────────────────────────────────────
    NAVIGATION
@@ -1228,7 +1320,8 @@ nav.scrolled {
   position: relative; overflow: hidden;
 }
 .n-solid::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,.1) 0%, transparent 50%); pointer-events: none; }
-.n-solid:hover { background: linear-gradient(135deg, #0b7d73, #0D9488); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(13,148,136,.3); }
+.n-solid:hover { background: linear-gradient(135deg, #0b7d73, #0D9488); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(13,148,136,.3), 0 0 24px rgba(13,148,136,.15); }
+.n-solid:active { transform: translateY(0) scale(.96); transition-duration: .08s; }
 
 /* ────────────────────────────────────
    HERO — dark, centered, Stripe/Notion
@@ -1333,6 +1426,8 @@ nav.scrolled {
 .btn-primary:hover { background: linear-gradient(135deg, #0b7d73, #0D9488); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(13,148,136,.25), 0 0 0 1px rgba(13,148,136,.4); }
 .btn-primary svg { transition: transform .2s; }
 .btn-primary:hover svg { transform: translateX(3px); }
+.btn-primary:active { transform: translateY(0) scale(.97); transition-duration: .08s; }
+.btn-secondary:active { transform: scale(.97); transition-duration: .08s; }
 .btn-secondary {
   padding: 14px 24px; border-radius: 10px;
   font-size: 15px; font-weight: 500; color: var(--dt2);
@@ -1365,11 +1460,16 @@ nav.scrolled {
   border-radius: 20px; overflow: hidden;
   border: 1px solid rgba(13,148,136,.12);
   box-shadow: 0 20px 60px rgba(0,0,0,.5), 0 8px 24px rgba(0,0,0,.25), 0 0 0 1px rgba(13,148,136,.08), 0 0 80px rgba(13,148,136,.06);
-  transition: all .5s cubic-bezier(.16,1,.3,1);
+  transition: all .6s cubic-bezier(.16,1,.3,1);
+  animation: heroScreenshotIn 1.2s cubic-bezier(.16,1,.3,1) .5s both;
+}
+@keyframes heroScreenshotIn {
+  from { opacity: 0; transform: translateY(60px) scale(.96) perspective(1200px) rotateX(4deg); }
+  to { opacity: 1; transform: none; }
 }
 .app-shell:hover {
   box-shadow: 0 28px 72px rgba(0,0,0,.5), 0 12px 32px rgba(0,0,0,.3), 0 0 100px rgba(13,148,136,.1);
-  transform: translateY(-4px);
+  transform: translateY(-4px) scale(1.005);
 }
 .app-topbar {
   height: 44px; background: linear-gradient(180deg, var(--dk3), var(--dk2)); border-bottom: 1px solid var(--dline);
@@ -1429,7 +1529,14 @@ nav.scrolled {
 .app-card { background: var(--dk3); border: 1px solid var(--dline); border-radius: 10px; padding: 16px; }
 .card-lbl { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--dt3); margin-bottom: 14px; }
 .chart-wrap { display: flex; align-items: flex-end; gap: 6px; height: 60px; }
-.bar { border-radius: 3px 3px 0 0; flex: 1; min-width: 0; }
+.bar { border-radius: 3px 3px 0 0; flex: 1; min-width: 0; animation: barGrow .8s cubic-bezier(.16,1,.3,1) both; transform-origin: bottom; }
+.bar:nth-child(1) { animation-delay: .6s; }
+.bar:nth-child(2) { animation-delay: .7s; }
+.bar:nth-child(3) { animation-delay: .8s; }
+.bar:nth-child(4) { animation-delay: .9s; }
+.bar:nth-child(5) { animation-delay: 1s; }
+.bar:nth-child(6) { animation-delay: 1.1s; }
+@keyframes barGrow { from { transform: scaleY(0); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
 .accounts-list { display: flex; flex-direction: column; gap: 7px; }
 .account {
   display: flex; align-items: center; justify-content: space-between;
@@ -1581,7 +1688,8 @@ nav.scrolled {
 .wb-score { font-size: 36px; font-weight: 700; letter-spacing: -.04em; line-height: 1; margin-bottom: 4px; }
 .wb-sub { font-size: 11px; color: var(--dt3); }
 .wb-bar { height: 4px; border-radius: 2px; background: var(--dk5); margin-top: 10px; overflow: hidden; }
-.wb-fill { height: 100%; border-radius: 2px; }
+.wb-fill { height: 100%; border-radius: 2px; animation: fillGrow 1.2s cubic-bezier(.16,1,.3,1) .4s both; transform-origin: left; }
+@keyframes fillGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 /* playbook widget */
 .playbook-list { display: flex; flex-direction: column; gap: 8px; }
@@ -1771,8 +1879,8 @@ input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(13,14
 .faq-q:hover { color: var(--teal); }
 .faq-icon { font-size: 22px; font-weight: 300; color: var(--teal); flex-shrink: 0; transition: transform .3s; }
 .faq-item.open .faq-icon { transform: rotate(45deg); }
-.faq-a { display: none; padding-bottom: 24px; }
-.faq-item.open .faq-a { display: block; }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height .4s cubic-bezier(.16,1,.3,1), padding .4s ease; padding-bottom: 0; }
+.faq-item.open .faq-a { display: block; max-height: 300px; padding-bottom: 24px; }
 .faq-a p { color: var(--dt2); font-size: 15px; line-height: 1.7; margin: 0; }
 
 /* ────────────────────────────────────
@@ -2207,10 +2315,7 @@ footer {
 .plan-btn-o:hover{border-color:var(--teal);color:var(--dt);}
 .plan-note{font-size:12px;color:var(--dt3);}
 .plan-note strong{color:var(--teal);}
-.rv.visible{animation:fadeUp .6s ease forwards;}
-.d1{animation-delay:.1s;}
-.d2{animation-delay:.2s;}
-.d3{animation-delay:.3s;}
+/* delays handled in .rv rules above */
 @media(max-width:900px){.mod-inner{flex-direction:column!important;gap:28px;}
 .chips-grid{grid-template-columns:repeat(4,1fr);}
 .stats-grid{grid-template-columns:1fr 1fr;gap:20px;}
