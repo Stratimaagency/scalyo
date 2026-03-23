@@ -74,7 +74,7 @@ portfolio.post('/accounts/', async (c) => {
 })
 
 // GET /api/portfolio/accounts/:id/
-portfolio.get('/accounts/:id', async (c) => {
+portfolio.get('/accounts/:id/', async (c) => {
   const { company_id } = c.get('user')
   const id = c.req.param('id')
 
@@ -97,7 +97,7 @@ portfolio.get('/accounts/:id', async (c) => {
 })
 
 // PATCH /api/portfolio/accounts/:id/
-portfolio.patch('/accounts/:id', async (c) => {
+portfolio.patch('/accounts/:id/', async (c) => {
   const { company_id } = c.get('user')
   const id = c.req.param('id')
   const data = await c.req.json()
@@ -133,7 +133,7 @@ portfolio.patch('/accounts/:id', async (c) => {
 })
 
 // DELETE /api/portfolio/accounts/:id/
-portfolio.delete('/accounts/:id', async (c) => {
+portfolio.delete('/accounts/:id/', async (c) => {
   const { company_id } = c.get('user')
   const id = c.req.param('id')
 
@@ -220,8 +220,8 @@ portfolio.post('/accounts/:account_pk/todos/', async (c) => {
   return c.json({ ...todo, done: !!todo.done }, 201)
 })
 
-// PATCH /api/portfolio/accounts/:account_pk/todos/:id
-portfolio.patch('/accounts/:account_pk/todos/:id', async (c) => {
+// PATCH /api/portfolio/accounts/:account_pk/todos/:id/
+portfolio.patch('/accounts/:account_pk/todos/:id/', async (c) => {
   const { company_id } = c.get('user')
   const todoId = c.req.param('id')
   const data = await c.req.json()
@@ -252,8 +252,8 @@ portfolio.patch('/accounts/:account_pk/todos/:id', async (c) => {
   return c.json({ ...todo, done: !!todo.done })
 })
 
-// DELETE /api/portfolio/accounts/:account_pk/todos/:id
-portfolio.delete('/accounts/:account_pk/todos/:id', async (c) => {
+// DELETE /api/portfolio/accounts/:account_pk/todos/:id/
+portfolio.delete('/accounts/:account_pk/todos/:id/', async (c) => {
   const { company_id } = c.get('user')
   const todoId = c.req.param('id')
 
