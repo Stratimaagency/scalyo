@@ -606,14 +606,21 @@ async function syncIntegration(integ) {
 // Start OAuth flow
 async function startOAuth(integKey) {
   oauthLoading.value = true
+  connectError.value = ''
   try {
     const provider = OAUTH_KEYS[integKey]
+    console.log('[OAuth] Starting flow for provider:', provider)
     const res = await integrationsApi.getOAuthUrl(provider)
+    console.log('[OAuth] Response:', res)
     const data = res.data || res
     if (data.authUrl) {
       window.location.href = data.authUrl
+    } else {
+      connectError.value = 'No auth URL returned from server'
+      oauthLoading.value = false
     }
   } catch (err) {
+    console.error('[OAuth] Error:', err)
     connectError.value = err.response?.data?.error || err.message || 'OAuth failed'
     oauthLoading.value = false
   }
