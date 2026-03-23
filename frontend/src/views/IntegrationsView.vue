@@ -5,6 +5,12 @@
       <p style="font-size: 13px; color: var(--muted)">{{ t('integrationsDesc') }}</p>
     </div>
 
+    <!-- Load error banner -->
+    <div v-if="loadError" class="integ-error-banner mb-lg">
+      {{ loadError }}
+      <button class="integ-error-retry" @click="loadConnectedIntegrations">{{ t('retry') }}</button>
+    </div>
+
     <!-- Category filter tabs -->
     <div class="integ-tabs mb-lg">
       <button
@@ -56,15 +62,28 @@
           <div class="integ-card-features">
             <span v-for="feat in integ.features" :key="feat" class="integ-feature-tag">{{ feat }}</span>
           </div>
-          <div v-if="connectedKeys.has(integ.key)" style="display: flex; gap: 6px;">
-            <button class="btn btn-secondary integ-connect-btn" style="flex: 1;" @click="openConnectModal(integ)">
-              {{ t('edit') }}
+          <!-- Sync status for connected integrations -->
+          <div v-if="connectedKeys.has(integ.key) && syncStatus[integ.key]" class="integ-sync-status" :class="'integ-sync-' + syncStatus[integ.key].syncStatus">
+            <span v-if="syncStatus[integ.key].syncStatus === 'success'">{{ t('integSyncOk') }}</span>
+            <span v-else-if="syncStatus[integ.key].syncStatus === 'error'">{{ t('integSyncError') }}</span>
+            <span v-if="syncStatus[integ.key].lastSyncAt" style="font-size: 10px; opacity: 0.7;">{{ formatDate(syncStatus[integ.key].lastSyncAt) }}</span>
+          </div>
+
+          <div v-if="connectedKeys.has(integ.key)" style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button class="btn btn-secondary integ-connect-btn" style="flex: 1;" @click="testIntegration(integ)" :disabled="testing === integ.key">
+              {{ testing === integ.key ? t('integTesting') : t('integTest') }}
             </button>
-            <button class="btn btn-secondary integ-connect-btn" style="color: var(--red);" @click="disconnectIntegration(integ)">
-              {{ t('delete') }}
+            <button class="btn btn-primary integ-connect-btn" style="flex: 1;" @click="syncIntegration(integ)" :disabled="syncing === integ.key">
+              {{ syncing === integ.key ? t('integSyncing') : t('integSync') }}
+            </button>
+            <button class="btn btn-secondary integ-connect-btn" style="flex: 0;" @click="openConnectModal(integ)">
+              <ScalyoIcon name="settings" :size="12" />
+            </button>
+            <button class="btn btn-secondary integ-connect-btn" style="flex: 0; color: var(--red);" @click="disconnectIntegration(integ)">
+              <ScalyoIcon name="x" :size="12" />
             </button>
           </div>
-          <button v-else class="btn btn-primary integ-connect-btn" @click="openConnectModal(integ)">
+          <button v-else class="btn btn-primary integ-connect-btn" @click="handleConnect(integ)">
             <ScalyoIcon name="bolt" :size="12" /> {{ t('integConnect') }}
           </button>
         </AppCard>
@@ -132,7 +151,41 @@
         </div>
 
         <!-- Config fields based on integration type -->
-        <div v-if="connectModal.configType === 'email'" class="integ-config">
+
+        <!-- OAuth integrations (Gmail, Outlook, Google Meet) -->
+        <div v-if="isOAuthIntegration(connectModal.key)" class="integ-config">
+          <div v-if="oauthEmail" class="integ-oauth-connected">
+            <span style="color: var(--green); font-weight: 700;">{{ t('integOAuthConnected') }}</span>
+            <span style="font-size: 13px;">{{ oauthEmail }}</span>
+          </div>
+          <button v-else class="btn btn-primary integ-connect-btn" @click="startOAuth(connectModal.key)" :disabled="oauthLoading">
+            {{ oauthLoading ? t('integOAuthRedirecting') : t('integOAuthAuthorize') }}
+          </button>
+          <div v-if="connectModal.configType === 'email'">
+            <label class="integ-label" style="margin-top: 12px;">{{ t('integEmailSync') }}</label>
+            <div class="integ-toggle-row">
+              <span style="font-size: 13px;">{{ t('integEmailIncoming') }}</span>
+              <button class="integ-toggle" :class="{ on: configForm.syncIncoming }" @click="configForm.syncIncoming = !configForm.syncIncoming"></button>
+            </div>
+            <div class="integ-toggle-row">
+              <span style="font-size: 13px;">{{ t('integEmailOutgoing') }}</span>
+              <button class="integ-toggle" :class="{ on: configForm.syncOutgoing }" @click="configForm.syncOutgoing = !configForm.syncOutgoing"></button>
+            </div>
+          </div>
+          <div v-if="connectModal.configType === 'meeting'">
+            <div class="integ-toggle-row" style="margin-top: 12px;">
+              <span style="font-size: 13px;">{{ t('integAutoCreateMeeting') }}</span>
+              <button class="integ-toggle" :class="{ on: configForm.autoCreateMeeting }" @click="configForm.autoCreateMeeting = !configForm.autoCreateMeeting"></button>
+            </div>
+            <div class="integ-toggle-row">
+              <span style="font-size: 13px;">{{ t('integSyncCalendar') }}</span>
+              <button class="integ-toggle" :class="{ on: configForm.syncCalendar }" @click="configForm.syncCalendar = !configForm.syncCalendar"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- IMAP manual email -->
+        <div v-else-if="connectModal.configType === 'email'" class="integ-config">
           <label class="integ-label">{{ t('integEmailProvider') }}</label>
           <div class="integ-provider-grid">
             <button
@@ -162,6 +215,10 @@
         <div v-else-if="connectModal.configType === 'crm'" class="integ-config">
           <label class="integ-label">{{ t('integApiKey') }}</label>
           <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="sk-xxxxxxxx" />
+          <div v-if="connectModal.key === 'salesforce'">
+            <label class="integ-label">{{ t('integInstanceUrl') }}</label>
+            <input v-model="configForm.instanceUrl" type="url" class="integ-input" placeholder="https://yourorg.salesforce.com" />
+          </div>
           <label class="integ-label">{{ t('integSyncFreq') }}</label>
           <select v-model="configForm.syncFreq" class="integ-input">
             <option value="realtime">{{ t('integRealtime') }}</option>
@@ -194,8 +251,9 @@
         </div>
 
         <div v-else-if="connectModal.configType === 'meeting'" class="integ-config">
-          <label class="integ-label">{{ t('integMeetingAccount') }}</label>
-          <input v-model="configForm.meetingEmail" type="email" class="integ-input" placeholder="team@company.com" />
+          <label class="integ-label">{{ connectModal.key === 'calendly' ? t('integApiKey') : t('integMeetingAccount') }}</label>
+          <input v-if="connectModal.key === 'calendly'" v-model="configForm.apiKey" type="text" class="integ-input" placeholder="Personal access token" />
+          <input v-else v-model="configForm.meetingEmail" type="email" class="integ-input" placeholder="team@company.com" />
           <div class="integ-toggle-row">
             <span style="font-size: 13px;">{{ t('integAutoCreateMeeting') }}</span>
             <button class="integ-toggle" :class="{ on: configForm.autoCreateMeeting }" @click="configForm.autoCreateMeeting = !configForm.autoCreateMeeting"></button>
@@ -208,7 +266,12 @@
 
         <div v-else-if="connectModal.configType === 'project'" class="integ-config">
           <label class="integ-label">{{ t('integApiKey') }}</label>
-          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="sk-xxxxxxxx" />
+          <input v-model="configForm.apiKey" type="text" class="integ-input" :placeholder="connectModal.key === 'jira' ? 'email@domain.com:api_token' : 'sk-xxxxxxxx'" />
+          <div v-if="connectModal.key === 'jira'">
+            <label class="integ-label">{{ t('integJiraDomain') }}</label>
+            <input v-model="configForm.domain" type="text" class="integ-input" placeholder="yourcompany" />
+            <span style="font-size: 11px; color: var(--muted);">yourcompany.atlassian.net</span>
+          </div>
           <label class="integ-label">{{ t('integProjectKey') }}</label>
           <input v-model="configForm.projectKey" type="text" class="integ-input" placeholder="CS-BOARD" />
           <div class="integ-toggle-row">
@@ -217,18 +280,30 @@
           </div>
         </div>
 
+        <div v-else-if="connectModal.configType === 'import'" class="integ-config">
+          <p style="font-size: 13px; color: var(--muted); line-height: 1.6;">
+            {{ t('integImportDesc') }}
+          </p>
+          <router-link :to="{ name: 'portfolio' }" class="btn btn-primary integ-connect-btn" style="text-decoration: none;" @click="connectModal = null">
+            {{ t('integImportGoToPortfolio') }}
+          </router-link>
+        </div>
+
         <div v-else class="integ-config">
           <label class="integ-label">{{ t('integApiKey') }}</label>
           <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="sk-xxxxxxxx" />
         </div>
 
-        <div style="display: flex; gap: 8px; margin-top: 20px;">
+        <div v-if="connectModal.configType !== 'import'" style="display: flex; gap: 8px; margin-top: 20px;">
           <button class="btn btn-primary" style="flex: 1;" @click="saveConnection" :disabled="saving">
             {{ saving ? t('saving') : t('integSaveConnect') }}
           </button>
           <button class="btn btn-secondary" @click="connectModal = null">{{ t('cancel') }}</button>
         </div>
 
+        <div v-if="connectError" class="integ-error">
+          {{ connectError }}
+        </div>
         <div v-if="connectSuccess" class="integ-success">
           {{ t('integConnectSuccess') }}
         </div>
@@ -239,6 +314,7 @@
 
 <script setup>
 import { ref, computed, reactive, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useI18n } from '../i18n'
 import { integrationsApi } from '../api'
 import AppCard from '../components/AppCard.vue'
@@ -246,12 +322,22 @@ import AppModal from '../components/AppModal.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const { t } = useI18n()
+const route = useRoute()
 
 const activeCategory = ref('all')
 const connectModal = ref(null)
 const saving = ref(false)
 const connectSuccess = ref(false)
 const connectedKeys = ref(new Set())
+const testing = ref(null)
+const syncing = ref(null)
+const syncStatus = ref({})
+const oauthLoading = ref(false)
+const oauthEmail = ref('')
+
+// OAuth integrations map
+const OAUTH_KEYS = { gmail: 'google', outlook: 'microsoft', 'google-meet': 'google' }
+function isOAuthIntegration(key) { return key in OAUTH_KEYS }
 
 const configForm = reactive({
   provider: '',
@@ -271,6 +357,8 @@ const configForm = reactive({
   syncCalendar: true,
   projectKey: '',
   syncTasks: true,
+  instanceUrl: '',
+  domain: '',
 })
 
 const emailProviders = [
@@ -349,12 +437,19 @@ function getCategoryCount(key) {
 
 function openConnectModal(integ) {
   connectSuccess.value = false
-  // Pre-fill form if already connected
+  connectError.value = ''
+  oauthLoading.value = false
+  // Always reset first, then apply existing config if editing
+  resetForm()
   const existingConfig = connectedConfigs.value[integ.key]
   if (existingConfig) {
     Object.assign(configForm, existingConfig)
+  }
+  // Set OAuth email if already connected
+  if (isOAuthIntegration(integ.key) && existingConfig?.email) {
+    oauthEmail.value = existingConfig.email
   } else {
-    resetForm()
+    oauthEmail.value = ''
   }
   connectModal.value = integ
 }
@@ -366,7 +461,7 @@ function resetForm() {
     webhookUrl: '', channel: '',
     notifChurn: true, notifWellbeing: true, notifRenewal: true,
     meetingEmail: '', autoCreateMeeting: false, syncCalendar: true,
-    projectKey: '', syncTasks: true,
+    projectKey: '', syncTasks: true, instanceUrl: '', domain: '',
   })
 }
 
@@ -377,34 +472,76 @@ function voteIntegration(integ) {
 // Store configs from server
 const connectedConfigs = ref({})
 
+const loadError = ref('')
+
 async function loadConnectedIntegrations() {
+  loadError.value = ''
   try {
     const res = await integrationsApi.list()
     const data = res.data || res
     const keys = new Set()
     const configs = {}
+    const syncs = {}
     for (const item of data) {
       keys.add(item.integration_key)
       configs[item.integration_key] = item.config || {}
+      if (item.syncStatus) {
+        syncs[item.integration_key] = {
+          syncStatus: item.syncStatus,
+          syncDetails: item.syncDetails || {},
+          lastSyncAt: item.lastSyncAt,
+        }
+      }
     }
     connectedKeys.value = keys
     connectedConfigs.value = configs
-  } catch {
-    // silently fail on first load
+    syncStatus.value = syncs
+  } catch (err) {
+    loadError.value = err.response?.data?.error || err.message || 'Failed to load integrations'
   }
 }
 
+
+function validateConfig(type, integKey) {
+  // OAuth integrations are validated by the OAuth flow, not the form
+  if (isOAuthIntegration(integKey)) return true
+  switch (type) {
+    case 'email':
+      return configForm.provider && configForm.email
+    case 'crm':
+      return configForm.apiKey
+    case 'chat':
+      return configForm.webhookUrl
+    case 'meeting':
+      return configForm.apiKey || configForm.meetingEmail
+    case 'project':
+      return configForm.apiKey && configForm.projectKey
+    default:
+      return configForm.apiKey
+  }
+}
+
+const connectError = ref('')
+
 async function saveConnection() {
+  connectError.value = ''
+
+  if (!validateConfig(connectModal.value.configType, connectModal.value.key)) {
+    connectError.value = t('integErrorRequired')
+    return
+  }
+
   saving.value = true
   try {
-    const config = { ...configForm }
+    const config = getConfigForType(connectModal.value.configType, connectModal.value.key)
     await integrationsApi.connect(connectModal.value.key, config)
     connectedKeys.value = new Set([...connectedKeys.value, connectModal.value.key])
     connectedConfigs.value[connectModal.value.key] = config
     connectSuccess.value = true
     setTimeout(() => { connectModal.value = null }, 1200)
-  } catch {
-    // handle error silently
+  } catch (err) {
+    const msg = err.response?.data?.error || err.message || 'Unknown error'
+    connectError.value = t('integErrorConnect') + ' ' + msg
   } finally {
     saving.value = false
   }
@@ -417,12 +554,122 @@ async function disconnectIntegration(integ) {
     newKeys.delete(integ.key)
     connectedKeys.value = newKeys
     delete connectedConfigs.value[integ.key]
-  } catch {
-    // handle error silently
+  } catch (err) {
+    loadError.value = err.response?.data?.error || err.message || 'Failed to disconnect'
   }
 }
 
-onMounted(loadConnectedIntegrations)
+// Handle connect: OAuth redirect or open modal
+function handleConnect(integ) {
+  if (isOAuthIntegration(integ.key)) {
+    openConnectModal(integ)
+  } else {
+    openConnectModal(integ)
+  }
+}
+
+// Test an integration connection
+async function testIntegration(integ) {
+  testing.value = integ.key
+  loadError.value = ''
+  try {
+    const config = connectedConfigs.value[integ.key] || {}
+    const res = await integrationsApi.test(integ.key, config)
+    const data = res.data || res
+    loadError.value = ''
+    // Show brief success in syncStatus
+    syncStatus.value[integ.key] = { syncStatus: 'success', lastSyncAt: new Date().toISOString(), syncDetails: { message: data.message } }
+  } catch (err) {
+    const msg = err.response?.data?.error || err.message || 'Test failed'
+    syncStatus.value[integ.key] = { syncStatus: 'error', lastSyncAt: new Date().toISOString(), syncDetails: { error: msg } }
+  } finally {
+    testing.value = null
+  }
+}
+
+// Sync data from integration
+async function syncIntegration(integ) {
+  syncing.value = integ.key
+  loadError.value = ''
+  try {
+    const res = await integrationsApi.sync(integ.key)
+    const data = res.data || res
+    syncStatus.value[integ.key] = { syncStatus: 'success', lastSyncAt: new Date().toISOString(), syncDetails: data }
+  } catch (err) {
+    const msg = err.response?.data?.error || err.message || 'Sync failed'
+    syncStatus.value[integ.key] = { syncStatus: 'error', lastSyncAt: new Date().toISOString(), syncDetails: { error: msg } }
+  } finally {
+    syncing.value = null
+  }
+}
+
+// Start OAuth flow
+async function startOAuth(integKey) {
+  oauthLoading.value = true
+  connectError.value = ''
+  try {
+    const provider = OAUTH_KEYS[integKey]
+    console.log('[OAuth] Starting flow for provider:', provider)
+    const res = await integrationsApi.getOAuthUrl(provider)
+    console.log('[OAuth] Response:', res)
+    const data = res.data || res
+    if (data.authUrl) {
+      window.location.href = data.authUrl
+    } else {
+      connectError.value = 'No auth URL returned from server'
+      oauthLoading.value = false
+    }
+  } catch (err) {
+    console.error('[OAuth] Error:', err)
+    connectError.value = err.response?.data?.error || err.message || 'OAuth failed'
+    oauthLoading.value = false
+  }
+}
+
+// Handle OAuth return (query params)
+function handleOAuthReturn() {
+  const params = route.query
+  if (params.oauth === 'success') {
+    oauthEmail.value = params.email || ''
+    // Refresh integrations list
+    loadConnectedIntegrations()
+  } else if (params.oauth === 'error') {
+    loadError.value = params.message || 'OAuth failed'
+  }
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+function getConfigForType(type, integKey) {
+  if (isOAuthIntegration(integKey)) {
+    if (type === 'email') return { syncIncoming: configForm.syncIncoming, syncOutgoing: configForm.syncOutgoing }
+    if (type === 'meeting') return { autoCreateMeeting: configForm.autoCreateMeeting, syncCalendar: configForm.syncCalendar }
+    return {}
+  }
+  switch (type) {
+    case 'email':
+      return { provider: configForm.provider, email: configForm.email, syncIncoming: configForm.syncIncoming, syncOutgoing: configForm.syncOutgoing }
+    case 'crm':
+      return { apiKey: configForm.apiKey, syncFreq: configForm.syncFreq, autoSync: configForm.autoSync, ...(configForm.instanceUrl ? { instanceUrl: configForm.instanceUrl } : {}) }
+    case 'chat':
+      return { webhookUrl: configForm.webhookUrl, channel: configForm.channel, notifChurn: configForm.notifChurn, notifWellbeing: configForm.notifWellbeing, notifRenewal: configForm.notifRenewal }
+    case 'meeting':
+      return { ...(configForm.apiKey ? { apiKey: configForm.apiKey } : {}), meetingEmail: configForm.meetingEmail, autoCreateMeeting: configForm.autoCreateMeeting, syncCalendar: configForm.syncCalendar }
+    case 'project':
+      return { apiKey: configForm.apiKey, projectKey: configForm.projectKey, syncTasks: configForm.syncTasks, ...(configForm.domain ? { domain: configForm.domain } : {}) }
+    default:
+      return { apiKey: configForm.apiKey }
+  }
+}
+
+onMounted(() => {
+  loadConnectedIntegrations()
+  handleOAuthReturn()
+})
 </script>
 
 <style scoped>
@@ -547,6 +794,35 @@ onMounted(loadConnectedIntegrations)
 .integ-toggle.on { background: var(--teal); }
 .integ-toggle.on::after { transform: translateX(18px); }
 
+.integ-sync-status {
+  font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px;
+  margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
+}
+.integ-sync-success { background: var(--greenBg, #f0fdf4); color: var(--green); border: 1px solid var(--greenBorder, #bbf7d0); }
+.integ-sync-error { background: var(--redBg, #fef2f2); color: var(--red); border: 1px solid var(--redBorder, #fecaca); }
+
+.integ-oauth-connected {
+  padding: 12px; border-radius: 8px;
+  background: var(--greenBg, #f0fdf4); border: 1px solid var(--greenBorder, #bbf7d0);
+  display: flex; flex-direction: column; gap: 4px; text-align: center;
+}
+
+.integ-error {
+  margin-top: 12px; padding: 10px; border-radius: 8px;
+  background: var(--redBg, #fef2f2); border: 1px solid var(--redBorder, #fecaca);
+  color: var(--red); font-size: 13px; font-weight: 600; text-align: center;
+}
+.integ-error-banner {
+  padding: 12px 16px; border-radius: 10px;
+  background: var(--redBg, #fef2f2); border: 1px solid var(--redBorder, #fecaca);
+  color: var(--red); font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.integ-error-retry {
+  background: none; border: 1px solid var(--red); color: var(--red);
+  padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
+  cursor: pointer;
+}
 .integ-success {
   margin-top: 12px; padding: 10px; border-radius: 8px;
   background: var(--greenBg); border: 1px solid var(--greenBorder);
