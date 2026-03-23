@@ -5,6 +5,12 @@
       <p style="font-size: 13px; color: var(--muted)">{{ t('integrationsDesc') }}</p>
     </div>
 
+    <!-- Load error banner -->
+    <div v-if="loadError" class="integ-error-banner mb-lg">
+      {{ loadError }}
+      <button class="integ-error-retry" @click="loadConnectedIntegrations">{{ t('retry') }}</button>
+    </div>
+
     <!-- Category filter tabs -->
     <div class="integ-tabs mb-lg">
       <button
@@ -229,6 +235,9 @@
           <button class="btn btn-secondary" @click="connectModal = null">{{ t('cancel') }}</button>
         </div>
 
+        <div v-if="connectError" class="integ-error">
+          {{ connectError }}
+        </div>
         <div v-if="connectSuccess" class="integ-success">
           {{ t('integConnectSuccess') }}
         </div>
@@ -349,6 +358,7 @@ function getCategoryCount(key) {
 
 function openConnectModal(integ) {
   connectSuccess.value = false
+  connectError.value = ''
   // Pre-fill form if already connected
   const existingConfig = connectedConfigs.value[integ.key]
   if (existingConfig) {
@@ -377,7 +387,10 @@ function voteIntegration(integ) {
 // Store configs from server
 const connectedConfigs = ref({})
 
+const loadError = ref('')
+
 async function loadConnectedIntegrations() {
+  loadError.value = ''
   try {
     const res = await integrationsApi.list()
     const data = res.data || res
@@ -389,22 +402,66 @@ async function loadConnectedIntegrations() {
     }
     connectedKeys.value = keys
     connectedConfigs.value = configs
-  } catch {
-    // silently fail on first load
+  } catch (err) {
+    loadError.value = err.response?.data?.error || err.message || 'Failed to load integrations'
   }
 }
 
+function getConfigForType(type) {
+  switch (type) {
+    case 'email':
+      return { provider: configForm.provider, email: configForm.email, syncIncoming: configForm.syncIncoming, syncOutgoing: configForm.syncOutgoing }
+    case 'crm':
+      return { apiKey: configForm.apiKey, syncFreq: configForm.syncFreq, autoSync: configForm.autoSync }
+    case 'chat':
+      return { webhookUrl: configForm.webhookUrl, channel: configForm.channel, notifChurn: configForm.notifChurn, notifWellbeing: configForm.notifWellbeing, notifRenewal: configForm.notifRenewal }
+    case 'meeting':
+      return { meetingEmail: configForm.meetingEmail, autoCreateMeeting: configForm.autoCreateMeeting, syncCalendar: configForm.syncCalendar }
+    case 'project':
+      return { apiKey: configForm.apiKey, projectKey: configForm.projectKey, syncTasks: configForm.syncTasks }
+    default:
+      return { apiKey: configForm.apiKey }
+  }
+}
+
+function validateConfig(type) {
+  switch (type) {
+    case 'email':
+      return configForm.provider && configForm.email
+    case 'crm':
+      return configForm.apiKey
+    case 'chat':
+      return configForm.webhookUrl
+    case 'meeting':
+      return configForm.meetingEmail
+    case 'project':
+      return configForm.apiKey && configForm.projectKey
+    default:
+      return configForm.apiKey
+  }
+}
+
+const connectError = ref('')
+
 async function saveConnection() {
+  connectError.value = ''
+
+  if (!validateConfig(connectModal.value.configType)) {
+    connectError.value = t('integErrorRequired')
+    return
+  }
+
   saving.value = true
   try {
-    const config = { ...configForm }
+    const config = getConfigForType(connectModal.value.configType)
     await integrationsApi.connect(connectModal.value.key, config)
     connectedKeys.value = new Set([...connectedKeys.value, connectModal.value.key])
     connectedConfigs.value[connectModal.value.key] = config
     connectSuccess.value = true
     setTimeout(() => { connectModal.value = null }, 1200)
-  } catch {
-    // handle error silently
+  } catch (err) {
+    const msg = err.response?.data?.error || err.message || 'Unknown error'
+    connectError.value = t('integErrorConnect') + ' ' + msg
   } finally {
     saving.value = false
   }
@@ -417,8 +474,8 @@ async function disconnectIntegration(integ) {
     newKeys.delete(integ.key)
     connectedKeys.value = newKeys
     delete connectedConfigs.value[integ.key]
-  } catch {
-    // handle error silently
+  } catch (err) {
+    loadError.value = err.response?.data?.error || err.message || 'Failed to disconnect'
   }
 }
 
@@ -547,6 +604,22 @@ onMounted(loadConnectedIntegrations)
 .integ-toggle.on { background: var(--teal); }
 .integ-toggle.on::after { transform: translateX(18px); }
 
+.integ-error {
+  margin-top: 12px; padding: 10px; border-radius: 8px;
+  background: var(--redBg, #fef2f2); border: 1px solid var(--redBorder, #fecaca);
+  color: var(--red); font-size: 13px; font-weight: 600; text-align: center;
+}
+.integ-error-banner {
+  padding: 12px 16px; border-radius: 10px;
+  background: var(--redBg, #fef2f2); border: 1px solid var(--redBorder, #fecaca);
+  color: var(--red); font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.integ-error-retry {
+  background: none; border: 1px solid var(--red); color: var(--red);
+  padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
+  cursor: pointer;
+}
 .integ-success {
   margin-top: 12px; padding: 10px; border-radius: 8px;
   background: var(--greenBg); border: 1px solid var(--greenBorder);

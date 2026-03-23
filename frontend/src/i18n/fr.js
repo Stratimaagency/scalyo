@@ -306,6 +306,9 @@ export default {
   integConnectTitle: 'Connecter',
   integSaveConnect: 'Sauvegarder la connexion',
   integConnectSuccess: 'Connexion établie avec succès !',
+  integErrorRequired: 'Veuillez remplir tous les champs obligatoires.',
+  integErrorConnect: 'Échec de la connexion :',
+  retry: 'Réessayer',
   integNoResults: 'Aucune intégration dans cette catégorie.',
   // Integration config
   integEmailProvider: 'Fournisseur email',
