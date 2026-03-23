@@ -12,6 +12,7 @@ import coach from './routes/coach.js'
 import emailStudio from './routes/email-studio.js'
 import billing from './routes/billing.js'
 import feedback from './routes/feedback.js'
+import integrations from './routes/integrations.js'
 
 const app = new Hono()
 
@@ -33,6 +34,7 @@ app.route('/api/coach', coach)
 app.route('/api/email-studio', emailStudio)
 app.route('/api/billing', billing)
 app.route('/api/feedback', feedback)
+app.route('/api/integrations', integrations)
 
 // 404 fallback
 app.notFound((c) => c.json({ error: 'Not found' }, 404))

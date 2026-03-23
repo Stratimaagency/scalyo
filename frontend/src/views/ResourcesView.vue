@@ -67,6 +67,16 @@ const resources = [
   { id: 10, icon: 'star', titleKey: 'resTrainingNewCsm', descKey: 'resDescTraining', category: 'training', categoryKey: 'resCatTraining', contentKey: 'resContentTraining' },
   { id: 11, icon: 'calendar', titleKey: 'resRenewalProcess', descKey: 'resDescRenewal', category: 'process', categoryKey: 'resCatProcess', contentKey: 'resContentRenewal' },
   { id: 12, icon: 'trending-up', titleKey: 'resExpansionPlaybook', descKey: 'resDescExpansion', category: 'playbook', categoryKey: 'resCatPlaybook', contentKey: 'resContentExpansion' },
+  { id: 13, icon: 'phone', titleKey: 'resRetentionScripts', descKey: 'resDescRetention', category: 'template', categoryKey: 'resCatTemplate', contentKey: 'resContentRetention' },
+  { id: 14, icon: 'bolt', titleKey: 'resPlaybookSaas', descKey: 'resDescSaas', category: 'playbook', categoryKey: 'resCatPlaybook', contentKey: 'resContentSaas' },
+  { id: 15, icon: 'shield', titleKey: 'resPlaybookFintech', descKey: 'resDescFintech', category: 'playbook', categoryKey: 'resCatPlaybook', contentKey: 'resContentFintech' },
+  { id: 16, icon: 'building', titleKey: 'resPlaybookServices', descKey: 'resDescServices', category: 'playbook', categoryKey: 'resCatPlaybook', contentKey: 'resContentServices' },
+  { id: 17, icon: 'trending-up', titleKey: 'resRoiCalculator', descKey: 'resDescRoi', category: 'framework', categoryKey: 'resCatGuide', contentKey: 'resContentRoi' },
+  { id: 18, icon: 'clipboard', titleKey: 'resQbrDeck', descKey: 'resDescQbrDeck', category: 'template', categoryKey: 'resCatTemplate', contentKey: 'resContentQbrDeck' },
+  { id: 19, icon: 'check', titleKey: 'resFirstDayChecklist', descKey: 'resDescFirstDay', category: 'training', categoryKey: 'resCatTraining', contentKey: 'resContentFirstDay' },
+  { id: 20, icon: 'warning', titleKey: 'resChurnReduction', descKey: 'resDescChurnReduction', category: 'playbook', categoryKey: 'resCatPlaybook', contentKey: 'resContentChurnReduction' },
+  { id: 21, icon: 'flag', titleKey: 'resEscalationProcess', descKey: 'resDescEscalation', category: 'process', categoryKey: 'resCatProcess', contentKey: 'resContentEscalation' },
+  { id: 22, icon: 'star', titleKey: 'resAdvocacyProgram', descKey: 'resDescAdvocacy', category: 'playbook', categoryKey: 'resCatPlaybook', contentKey: 'resContentAdvocacy' },
 ]
 
 const filteredResources = computed(() => {
