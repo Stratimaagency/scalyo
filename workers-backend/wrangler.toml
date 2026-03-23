@@ -1,0 +1,14 @@
+name = "scalyo-api"
+main = "src/index.js"
+compatibility_date = "2024-09-01"
+
+[vars]
+FRONTEND_URL = "https://scalyo.app"
+STRIPE_STARTER_URL = ""
+STRIPE_GROWTH_URL = ""
+STRIPE_ELITE_URL = ""
+
+[[d1_databases]]
+binding = "DB"
+database_name = "scalyo-db"
+database_id = "79e02869-b288-4255-b654-95e74f601fe2"
