@@ -259,7 +259,7 @@
               </div>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-              <AppField :label="mrrLabel" v-model="editForm.arr" type="number" />
+              <AppField :label="mrrLabel" v-model="editForm.mrr" type="number" />
               <AppField label="Health (0-100)" v-model="editForm.health" type="number" />
             </div>
             <AppField :label="t('renewal')" v-model="editForm.renewal" />
@@ -299,7 +299,7 @@
         </div>
       </div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <AppField :label="mrrLabel" v-model="newAcc.arr" type="number" placeholder="0" />
+        <AppField :label="mrrLabel" v-model="newAcc.mrr" type="number" placeholder="0" />
         <AppField label="Health (0-100)" v-model="newAcc.health" type="number" />
       </div>
       <AppField :label="t('renewal')" v-model="newAcc.renewal" />
@@ -422,7 +422,7 @@ const freeTasks = ref([])
 const DRAFT_ADD_KEY = 'scalyo_draft_add_account'
 const DRAFT_EDIT_KEY = 'scalyo_draft_edit_account'
 
-const defaultNewAcc = () => ({ name: '', csm: '', arr: 0, health: 70, risk: 'low', industry: '', contact: '', contact_email: '', notes: '', renewal: '' })
+const defaultNewAcc = () => ({ name: '', csm: '', mrr: 0, health: 70, risk: 'low', industry: '', contact: '', contact_email: '', notes: '', renewal: '' })
 const newAcc = ref(defaultNewAcc())
 
 // ─── Industry sectors ───
@@ -560,7 +560,10 @@ function selectAccount(acc) {
 watch(selectedAccount, (acc) => {
   if (acc) {
     const draft = restoreEditDraft(acc.id)
-    editForm.value = draft || { ...acc }
+    const base = { ...acc }
+    // Ensure mrr is populated for edit form (legacy accounts may only have arr)
+    if (!base.mrr && base.arr) base.mrr = base.arr / 12
+    editForm.value = draft || base
     detailTab.value = 'overview'
     editError.value = ''
     loadAccountTodos(acc.id)
@@ -648,8 +651,11 @@ async function createAccount() {
   addError.value = ''
   try {
     const h = parseInt(newAcc.value.health) || 70
+    const mrr = parseFloat(newAcc.value.mrr) || 0
     await portfolioStore.createAccount({
       ...newAcc.value,
+      mrr,
+      arr: mrr * 12,
       health: h,
       risk: computeRisk(h),
     })
@@ -657,7 +663,7 @@ async function createAccount() {
     clearAddDraft()
     showAdd.value = false
   } catch (e) {
-    addError.value = e?.response?.data?.detail || t('errUnexpected') || 'An unexpected error occurred'
+    addError.value = e?.response?.data?.error || e?.response?.data?.detail || t('errUnexpected') || 'An unexpected error occurred'
     console.error('createAccount error:', e)
   }
   creating.value = false
@@ -681,8 +687,11 @@ async function saveEdit() {
   editError.value = ''
   try {
     const h = parseInt(editForm.value.health) || 70
+    const mrr = parseFloat(editForm.value.mrr) || 0
     const payload = {
       ...editForm.value,
+      mrr,
+      arr: mrr * 12,
       health: h,
       risk: computeRisk(h),
     }
@@ -691,7 +700,7 @@ async function saveEdit() {
     clearEditDraft()
     detailTab.value = 'overview'
   } catch (e) {
-    editError.value = e?.response?.data?.detail || t('errUnexpected') || 'An unexpected error occurred'
+    editError.value = e?.response?.data?.error || e?.response?.data?.detail || t('errUnexpected') || 'An unexpected error occurred'
     console.error('updateAccount error:', e)
   }
   saving.value = false
@@ -847,10 +856,13 @@ async function runImport() {
   for (const row of rows) {
     try {
       const h = parseInt(row.health || '70') || 70
+      const importMrr = parseFloat(row.mrr || '0') || 0
+      const importArr = parseFloat(row.arr || '0') || (importMrr * 12)
       await portfolioStore.createAccount({
         name: row.name || row.account || '',
         csm: row.csm || '',
-        arr: parseFloat(row.arr || row.mrr || '0') || 0,
+        mrr: importMrr,
+        arr: importArr,
         health: h,
         risk: computeRisk(h),
         industry: row.industry || '',
