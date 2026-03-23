@@ -9,6 +9,33 @@ const PLAN_PRICE_MAP = {
   Elite: 'STRIPE_ELITE_PRICE_ID',
 }
 
+async function sendTransactionalEmail(env, { to, subject, body }) {
+  const from = env.FROM_EMAIL || 'noreply@scalyo.app'
+  const payload = {
+    personalizations: [{ to: [{ email: to }] }],
+    from: { email: from, name: 'Scalyo' },
+    subject,
+    content: [{ type: 'text/html', value: body }],
+  }
+
+  if (env.SENDGRID_API_KEY) {
+    await fetch('https://api.sendgrid.com/v3/mail/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${env.SENDGRID_API_KEY}`,
+      },
+      body: JSON.stringify(payload),
+    })
+  } else {
+    await fetch('https://api.mailchannels.net/tx/v1/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+  }
+}
+
 function getStripe(env) {
   // We use fetch-based Stripe API calls (no SDK needed in Workers)
   const apiKey = env.STRIPE_SECRET_KEY
@@ -190,6 +217,33 @@ billing.post('/webhook/', async (c) => {
         `UPDATE companies SET plan = ?, stripe_subscription_id = ?, subscription_status = 'active', updated_at = datetime('now')
          WHERE id = ?`
       ).bind(plan || 'Starter', subscriptionId || '', parseInt(companyId)).run()
+
+      // Send subscription confirmation email
+      const customerEmail = obj.customer_details?.email || obj.customer_email
+      if (customerEmail) {
+        const selectedPlan = plan || 'Starter'
+        try {
+          await sendTransactionalEmail(c.env, {
+            to: customerEmail,
+            subject: `Bienvenue sur Scalyo — Plan ${selectedPlan} activé !`,
+            body: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #2563eb;">Bienvenue sur Scalyo ! 🎉</h2>
+                <p>Votre abonnement <strong>${selectedPlan}</strong> est maintenant actif.</p>
+                <p>Vous pouvez dès maintenant profiter de toutes les fonctionnalités de votre plan.</p>
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
+                <p style="font-size: 14px; color: #6b7280;">
+                  Gérez votre abonnement à tout moment depuis vos <a href="https://app.scalyo.app/settings">paramètres</a>.
+                </p>
+                <p style="font-size: 14px; color: #6b7280;">L'équipe Scalyo</p>
+              </div>
+            `,
+          })
+        } catch (e) {
+          // Don't fail the webhook if email fails
+          console.error('Failed to send subscription confirmation email:', e)
+        }
+      }
     }
   } else if (eventType === 'customer.subscription.updated') {
     const subId = obj.id

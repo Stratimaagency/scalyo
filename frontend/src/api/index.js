@@ -83,3 +83,10 @@ export const billingApi = {
   openPortal: () => api.post('/billing/portal/'),
   getStatus: () => api.get('/billing/status/'),
 }
+
+// Integrations
+export const integrationsApi = {
+  list: () => api.get('/integrations/'),
+  connect: (integration_key, config) => api.post('/integrations/', { integration_key, config }),
+  disconnect: (key) => api.delete(`/integrations/${key}/`),
+}

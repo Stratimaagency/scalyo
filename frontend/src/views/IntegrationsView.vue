@@ -20,6 +20,20 @@
       </button>
     </div>
 
+    <!-- Connected integrations summary -->
+    <div v-if="connectedKeys.size > 0 && activeCategory === 'all'" class="integ-connected-summary mb-lg">
+      <h4 class="integ-section-title">
+        <span class="integ-dot integ-dot-teal"></span>
+        {{ t('integConnected') }} ({{ connectedKeys.size }})
+      </h4>
+      <div class="integ-connected-chips">
+        <span v-for="integ in connectedIntegrations" :key="integ.key" class="integ-connected-chip">
+          <span>{{ integ.icon }}</span> {{ integ.name }}
+          <button class="integ-disconnect-x" @click.stop="disconnectIntegration(integ)" title="Disconnect">&times;</button>
+        </span>
+      </div>
+    </div>
+
     <!-- Available integrations -->
     <div v-if="filteredAvailable.length" class="mb-lg">
       <h4 class="integ-section-title">
@@ -34,14 +48,23 @@
             </div>
             <div>
               <div style="font-weight: 700; font-size: 14px;">{{ integ.name }}</div>
-              <span class="tag risk-low" style="font-size: 10px; padding: 2px 8px;">{{ t('integrationsActive') }}</span>
+              <span v-if="connectedKeys.has(integ.key)" class="tag risk-low" style="font-size: 10px; padding: 2px 8px;">{{ t('integConnected') }}</span>
+              <span v-else class="tag" style="font-size: 10px; padding: 2px 8px; background: var(--surface); border: 1px solid var(--border);">{{ t('integrationsActive') }}</span>
             </div>
           </div>
           <p class="integ-card-desc">{{ integ.desc }}</p>
           <div class="integ-card-features">
             <span v-for="feat in integ.features" :key="feat" class="integ-feature-tag">{{ feat }}</span>
           </div>
-          <button class="btn btn-primary integ-connect-btn" @click="openConnectModal(integ)">
+          <div v-if="connectedKeys.has(integ.key)" style="display: flex; gap: 6px;">
+            <button class="btn btn-secondary integ-connect-btn" style="flex: 1;" @click="openConnectModal(integ)">
+              {{ t('edit') }}
+            </button>
+            <button class="btn btn-secondary integ-connect-btn" style="color: var(--red);" @click="disconnectIntegration(integ)">
+              {{ t('delete') }}
+            </button>
+          </div>
+          <button v-else class="btn btn-primary integ-connect-btn" @click="openConnectModal(integ)">
             <ScalyoIcon name="bolt" :size="12" /> {{ t('integConnect') }}
           </button>
         </AppCard>
@@ -200,7 +223,7 @@
         </div>
 
         <div style="display: flex; gap: 8px; margin-top: 20px;">
-          <button class="btn btn-primary" style="flex: 1;" @click="saveConnection">
+          <button class="btn btn-primary" style="flex: 1;" @click="saveConnection" :disabled="saving">
             {{ saving ? t('saving') : t('integSaveConnect') }}
           </button>
           <button class="btn btn-secondary" @click="connectModal = null">{{ t('cancel') }}</button>
@@ -215,8 +238,9 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, onMounted } from 'vue'
 import { useI18n } from '../i18n'
+import { integrationsApi } from '../api'
 import AppCard from '../components/AppCard.vue'
 import AppModal from '../components/AppModal.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
@@ -227,6 +251,7 @@ const activeCategory = ref('all')
 const connectModal = ref(null)
 const saving = ref(false)
 const connectSuccess = ref(false)
+const connectedKeys = ref(new Set())
 
 const configForm = reactive({
   provider: '',
@@ -305,6 +330,7 @@ const integrationsList = ref([
 
 const availableIntegrations = computed(() => integrationsList.value.filter(i => i.available))
 const comingSoonIntegrations = computed(() => integrationsList.value.filter(i => !i.available))
+const connectedIntegrations = computed(() => integrationsList.value.filter(i => connectedKeys.value.has(i.key)))
 
 const filteredAvailable = computed(() => {
   if (activeCategory.value === 'all') return availableIntegrations.value
@@ -323,21 +349,80 @@ function getCategoryCount(key) {
 
 function openConnectModal(integ) {
   connectSuccess.value = false
+  // Pre-fill form if already connected
+  const existingConfig = connectedConfigs.value[integ.key]
+  if (existingConfig) {
+    Object.assign(configForm, existingConfig)
+  } else {
+    resetForm()
+  }
   connectModal.value = integ
+}
+
+function resetForm() {
+  Object.assign(configForm, {
+    provider: '', email: '', syncIncoming: true, syncOutgoing: false,
+    apiKey: '', syncFreq: 'daily', autoSync: true,
+    webhookUrl: '', channel: '',
+    notifChurn: true, notifWellbeing: true, notifRenewal: true,
+    meetingEmail: '', autoCreateMeeting: false, syncCalendar: true,
+    projectKey: '', syncTasks: true,
+  })
 }
 
 function voteIntegration(integ) {
   integ.voted = true
 }
 
-function saveConnection() {
-  saving.value = true
-  setTimeout(() => {
-    saving.value = false
-    connectSuccess.value = true
-    setTimeout(() => { connectModal.value = null }, 1500)
-  }, 1200)
+// Store configs from server
+const connectedConfigs = ref({})
+
+async function loadConnectedIntegrations() {
+  try {
+    const res = await integrationsApi.list()
+    const data = res.data || res
+    const keys = new Set()
+    const configs = {}
+    for (const item of data) {
+      keys.add(item.integration_key)
+      configs[item.integration_key] = item.config || {}
+    }
+    connectedKeys.value = keys
+    connectedConfigs.value = configs
+  } catch {
+    // silently fail on first load
+  }
 }
+
+async function saveConnection() {
+  saving.value = true
+  try {
+    const config = { ...configForm }
+    await integrationsApi.connect(connectModal.value.key, config)
+    connectedKeys.value = new Set([...connectedKeys.value, connectModal.value.key])
+    connectedConfigs.value[connectModal.value.key] = config
+    connectSuccess.value = true
+    setTimeout(() => { connectModal.value = null }, 1200)
+  } catch {
+    // handle error silently
+  } finally {
+    saving.value = false
+  }
+}
+
+async function disconnectIntegration(integ) {
+  try {
+    await integrationsApi.disconnect(integ.key)
+    const newKeys = new Set(connectedKeys.value)
+    newKeys.delete(integ.key)
+    connectedKeys.value = newKeys
+    delete connectedConfigs.value[integ.key]
+  } catch {
+    // handle error silently
+  }
+}
+
+onMounted(loadConnectedIntegrations)
 </script>
 
 <style scoped>
@@ -369,6 +454,28 @@ function saveConnection() {
 .integ-dot { width: 8px; height: 8px; border-radius: 50%; }
 .integ-dot-green { background: var(--green); }
 .integ-dot-amber { background: var(--amber); }
+.integ-dot-teal { background: var(--teal); }
+
+.integ-connected-summary {
+  padding: 14px;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.integ-connected-chips {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.integ-connected-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 100px;
+  background: var(--tealBg); border: 1px solid var(--teal);
+  color: var(--teal); font-size: 12px; font-weight: 600;
+}
+.integ-disconnect-x {
+  background: none; border: none; color: var(--muted);
+  font-size: 16px; cursor: pointer; padding: 0 0 0 4px; line-height: 1;
+}
+.integ-disconnect-x:hover { color: var(--red); }
 
 .integ-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px;
