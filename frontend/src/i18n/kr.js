@@ -329,6 +329,8 @@ export default {
   integSyncCalendar: '캘린더 동기화',
   integProjectKey: '프로젝트 키',
   integSyncTasks: '업무 동기화',
+  integImportDesc: '포트폴리오 페이지에서 직접 데이터를 가져올 수 있습니다. 아래를 클릭하세요.',
+  integImportGoToPortfolio: '포트폴리오로 이동',
   // Integration descriptions
   integDescCsv: 'CSV 파일에서 고객 포트폴리오를 한 번에 가져옵니다.',
   integDescExcel: 'Excel(.xlsx) 파일에서 데이터를 가져옵니다.',

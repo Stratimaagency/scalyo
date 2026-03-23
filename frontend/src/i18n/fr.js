@@ -332,6 +332,8 @@ export default {
   integSyncCalendar: 'Synchroniser avec le calendrier',
   integProjectKey: 'Clé du projet',
   integSyncTasks: 'Synchroniser les tâches',
+  integImportDesc: 'Importez vos données directement depuis la page Portfolio. Cliquez ci-dessous pour y accéder.',
+  integImportGoToPortfolio: 'Aller au Portfolio',
   // Integration descriptions
   integDescCsv: 'Importez votre portefeuille client depuis un fichier CSV en un clic.',
   integDescExcel: 'Importez vos données depuis des fichiers Excel (.xlsx).',

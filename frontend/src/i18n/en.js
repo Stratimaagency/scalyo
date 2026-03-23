@@ -332,6 +332,8 @@ export default {
   integSyncCalendar: 'Sync with calendar',
   integProjectKey: 'Project key',
   integSyncTasks: 'Sync tasks',
+  integImportDesc: 'Import your data directly from your Portfolio page. Click below to go there.',
+  integImportGoToPortfolio: 'Go to Portfolio',
   // Integration descriptions
   integDescCsv: 'Import your client portfolio from a CSV file in one click.',
   integDescExcel: 'Import your data from Excel (.xlsx) files.',

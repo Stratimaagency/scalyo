@@ -223,12 +223,21 @@
           </div>
         </div>
 
+        <div v-else-if="connectModal.configType === 'import'" class="integ-config">
+          <p style="font-size: 13px; color: var(--muted); line-height: 1.6;">
+            {{ t('integImportDesc') }}
+          </p>
+          <router-link :to="{ name: 'portfolio' }" class="btn btn-primary integ-connect-btn" style="text-decoration: none;" @click="connectModal = null">
+            {{ t('integImportGoToPortfolio') }}
+          </router-link>
+        </div>
+
         <div v-else class="integ-config">
           <label class="integ-label">{{ t('integApiKey') }}</label>
           <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="sk-xxxxxxxx" />
         </div>
 
-        <div style="display: flex; gap: 8px; margin-top: 20px;">
+        <div v-if="connectModal.configType !== 'import'" style="display: flex; gap: 8px; margin-top: 20px;">
           <button class="btn btn-primary" style="flex: 1;" @click="saveConnection" :disabled="saving">
             {{ saving ? t('saving') : t('integSaveConnect') }}
           </button>
@@ -359,12 +368,11 @@ function getCategoryCount(key) {
 function openConnectModal(integ) {
   connectSuccess.value = false
   connectError.value = ''
-  // Pre-fill form if already connected
+  // Always reset first, then apply existing config if editing
+  resetForm()
   const existingConfig = connectedConfigs.value[integ.key]
   if (existingConfig) {
     Object.assign(configForm, existingConfig)
-  } else {
-    resetForm()
   }
   connectModal.value = integ
 }

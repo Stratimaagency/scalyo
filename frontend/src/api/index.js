@@ -88,5 +88,5 @@ export const billingApi = {
 export const integrationsApi = {
   list: () => api.get('/integrations/'),
   connect: (integration_key, config) => api.post('/integrations/', { integration_key, config }),
-  disconnect: (key) => api.delete(`/integrations/${key}/`),
+  disconnect: (key) => api.delete(`/integrations/${key}`),
 }
