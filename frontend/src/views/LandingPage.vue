@@ -79,46 +79,99 @@
         <div class="app-sidebar">
           <div class="sb-logo">
             <div class="sb-logo-dot"></div>
-            <span class="sb-logo-txt">Scalyo</span>
+            <span class="sb-logo-txt">scal<span style="color:var(--teal)">yo</span></span>
           </div>
-          <div class="sb-section">{{ t('demo_menu') }}</div>
           <div class="sb-item active"><span class="sb-icon">&#x25A6;</span><span>{{ t('demo_dashboard') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x25CE;</span><span>{{ t('demo_portfolio') }}</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x1F4BC;</span><span>{{ t('demo_portfolio') }}</span></div>
           <div class="sb-item"><span class="sb-icon">&#x2197;</span>KPIs</div>
-          <div class="sb-item"><span class="sb-icon">&#x2661;</span><span>{{ t('feat_wb') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x25C8;</span><span>{{ t('feat_coach') }}</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x1F4C5;</span>Planning</div>
           <div class="sb-item"><span class="sb-icon">&#x2611;</span>Tasks</div>
+          <div class="sb-item"><span class="sb-icon">&#x2661;</span><span>{{ t('feat_wb') }}</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x1F916;</span><span>Coach IA</span></div>
           <div class="sb-item"><span class="sb-icon">&#x2709;</span><span>{{ t('feat_email') }}</span></div>
         </div>
         <div class="app-main">
           <div class="app-header">
-            <div class="app-title">Portefeuille clients</div>
-            <div class="app-subtitle"><div class="status-dot"></div>{{ t('demo_updated') }}</div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div class="app-title">{{ t('demo_overview') }} &#x1F44B;</div>
+                <div class="app-subtitle">La Fabrique · {{ t('demo_today') }}</div>
+              </div>
+              <div style="display:flex;gap:6px;">
+                <span style="font-size:10px;padding:3px 9px;border-radius:100px;background:rgba(13,148,136,.08);color:var(--teal);border:1px solid rgba(13,148,136,.15);font-weight:600;">Growth</span>
+                <span style="font-size:10px;padding:3px 9px;border-radius:100px;background:rgba(168,85,247,.08);color:#A855F7;border:1px solid rgba(168,85,247,.15);font-weight:600;">Manager</span>
+              </div>
+            </div>
           </div>
           <div class="kpi-grid">
-            <div class="kpi"><div class="kpi-lbl">NRR</div><div class="kpi-val c-teal">112%</div><div class="kpi-delta c-green">&#x2191; +4 pts vs M-1</div></div>
-            <div class="kpi"><div class="kpi-lbl">{{ t('demo_mrr') }}</div><div class="kpi-val">284K&euro;</div><div class="kpi-delta c-green">+12K ce mois</div></div>
-            <div class="kpi"><div class="kpi-lbl">{{ t('demo_churn') }}</div><div class="kpi-val c-amber">3</div><div class="kpi-delta c-amber">{{ t('demo_action') }}</div></div>
-            <div class="kpi"><div class="kpi-lbl">{{ t('demo_wellbeing_kpi') }}</div><div class="kpi-val c-blue">7.8<span style="font-size:13px;color:var(--dt3)">/10</span></div><div class="kpi-delta c-green">En forme</div></div>
+            <div class="kpi"><div class="kpi-lbl">{{ t('demo_arr') }}</div><div class="kpi-val c-teal">3.4M&euro;</div><div class="kpi-delta c-green">12 {{ t('demo_active_acc') }}</div></div>
+            <div class="kpi"><div class="kpi-lbl">{{ t('demo_avg_health') }}</div><div class="kpi-val">74<span style="font-size:13px;color:var(--dt3)">/100</span></div><div class="kpi-delta c-green">{{ t('demo_healthy') }}</div></div>
+            <div class="kpi"><div class="kpi-lbl">{{ t('demo_critical') }}</div><div class="kpi-val c-red" style="color:var(--red)">2</div><div class="kpi-delta" style="color:var(--red)">480K&euro; ARR {{ t('demo_at_risk') }}</div></div>
+            <div class="kpi"><div class="kpi-lbl">{{ t('demo_roadmap') }}</div><div class="kpi-val c-teal">67%</div><div class="kpi-delta c-green">4/6 {{ t('demo_steps') }}</div></div>
           </div>
-          <div class="app-row2">
+          <!-- Critical alert -->
+          <div style="background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.12);border-radius:10px;padding:12px;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--red);">&#x1F6A8; 2 {{ t('demo_critical_alert') }}</div>
+              <span style="font-size:10px;padding:3px 10px;border-radius:100px;background:rgba(248,113,113,.08);color:var(--red);border:1px solid rgba(248,113,113,.15);">{{ t('demo_see_portfolio') }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(248,113,113,.04);border-radius:8px;padding:8px 10px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">L</div>
+                  <div><div style="font-size:11px;font-weight:700;color:var(--dt);">Leroy Finance</div><div style="font-size:10px;color:var(--dt3);">NPS en baisse</div></div>
+                </div>
+                <div style="text-align:right;"><div style="font-size:10px;font-weight:700;color:var(--red);">240K&euro;</div><div style="font-size:9px;color:var(--dt3);">Renouvellement Avr.</div></div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(248,113,113,.04);border-radius:8px;padding:8px 10px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">A</div>
+                  <div><div style="font-size:11px;font-weight:700;color:var(--dt);">Acme Corp</div><div style="font-size:10px;color:var(--dt3);">Usage en chute</div></div>
+                </div>
+                <div style="text-align:right;"><div style="font-size:10px;font-weight:700;color:var(--red);">240K&euro;</div><div style="font-size:9px;color:var(--dt3);">Renouvellement Mai</div></div>
+              </div>
+            </div>
+          </div>
+          <!-- Bottom: Roadmap + Wellbeing -->
+          <div class="app-row2" style="grid-template-columns:1.6fr 1fr;">
             <div class="app-card">
-              <div class="card-lbl">{{ t('demo_nrr') }}</div>
-              <div class="chart-wrap">
-                <div class="bar" style="height:40%;background:var(--dk4)"></div>
-                <div class="bar" style="height:55%;background:var(--dk4)"></div>
-                <div class="bar" style="height:48%;background:var(--dk4)"></div>
-                <div class="bar" style="height:70%;background:var(--dk4)"></div>
-                <div class="bar" style="height:64%;background:var(--dk4)"></div>
-                <div class="bar" style="height:92%;background:linear-gradient(to top,var(--teal),rgba(13,148,136,.25))"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <div><div style="font-size:12px;font-weight:700;color:var(--dt);">&#x1F5FA; {{ t('demo_roadmap_title') }}</div><div style="font-size:10px;color:var(--dt3);">{{ t('demo_roadmap_phase') }}</div></div>
+                <div style="font-size:20px;font-weight:900;color:var(--teal);font-family:'JetBrains Mono',monospace;">67%</div>
+              </div>
+              <div style="height:4px;background:var(--dk5);border-radius:2px;overflow:hidden;margin-bottom:10px;"><div style="width:67%;height:100%;background:var(--teal);border-radius:2px;"></div></div>
+              <div style="display:flex;flex-direction:column;gap:5px;">
+                <div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:var(--dk4);border-radius:6px;font-size:10px;color:var(--dt3);"><span style="color:var(--teal);">&#x2713;</span><span style="text-decoration:line-through;">{{ t('demo_rd1') }}</span></div>
+                <div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:var(--dk4);border-radius:6px;font-size:10px;color:var(--dt3);"><span style="color:var(--teal);">&#x2713;</span><span style="text-decoration:line-through;">{{ t('demo_rd2') }}</span></div>
+                <div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:rgba(13,148,136,.06);border:1px solid rgba(13,148,136,.12);border-radius:6px;font-size:10px;color:var(--dt);font-weight:500;">&#x25A1; {{ t('demo_rd3') }}</div>
+                <div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:var(--dk4);border-radius:6px;font-size:10px;color:var(--dt3);opacity:.5;">&#x25A1; {{ t('demo_rd4') }}</div>
               </div>
             </div>
             <div class="app-card">
-              <div class="card-lbl">{{ t('demo_priority') }}</div>
-              <div class="accounts-list">
-                <div class="account"><span class="acc-name">Leroy Finance</span><span class="acc-tag tag-red">{{ t('tag_critical') }}</span></div>
-                <div class="account"><span class="acc-name">TechPilot SAS</span><span class="acc-tag tag-amber">{{ t('tag_risk') }}</span></div>
-                <div class="account"><span class="acc-name">NexFlow Pro</span><span class="acc-tag tag-green">{{ t('tag_stable') }}</span></div>
+              <div style="font-size:12px;font-weight:700;color:var(--dt);margin-bottom:10px;">&#x2661; {{ t('demo_wb_title') }}</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+                <div style="text-align:center;background:var(--dk4);border-radius:8px;padding:10px;">
+                  <div style="font-size:22px;font-weight:900;color:var(--teal);font-family:'JetBrains Mono',monospace;">7.2</div>
+                  <div style="font-size:9px;color:var(--dt3);margin-top:2px;">Score</div>
+                </div>
+                <div style="text-align:center;background:var(--dk4);border-radius:8px;padding:10px;">
+                  <div style="font-size:12px;font-weight:800;color:var(--amber);">{{ t('demo_burnout_mod') }}</div>
+                  <div style="font-size:9px;color:var(--dt3);margin-top:2px;">{{ t('demo_burnout_risk') }}</div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <div style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;">S</div>
+                  <div style="flex:1;"><div style="display:flex;justify-content:space-between;font-size:10px;"><span style="font-weight:700;">Sophie</span><span style="color:var(--green);font-weight:700;">65%</span></div><div style="height:3px;background:var(--dk5);border-radius:2px;margin-top:3px;overflow:hidden;"><div style="width:35%;height:100%;background:var(--green);border-radius:2px;"></div></div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <div style="width:22px;height:22px;border-radius:50%;background:var(--amber);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;">T</div>
+                  <div style="flex:1;"><div style="display:flex;justify-content:space-between;font-size:10px;"><span style="font-weight:700;">Thomas</span><span style="color:var(--amber);font-weight:700;">78%</span></div><div style="height:3px;background:var(--dk5);border-radius:2px;margin-top:3px;overflow:hidden;"><div style="width:22%;height:100%;background:var(--amber);border-radius:2px;"></div></div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <div style="width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;">M</div>
+                  <div style="flex:1;"><div style="display:flex;justify-content:space-between;font-size:10px;"><span style="font-weight:700;">Marie</span><span style="color:var(--red);font-weight:700;">89%</span></div><div style="height:3px;background:var(--dk5);border-radius:2px;margin-top:3px;overflow:hidden;"><div style="width:11%;height:100%;background:var(--red);border-radius:2px;"></div></div></div>
+                </div>
               </div>
             </div>
           </div>
