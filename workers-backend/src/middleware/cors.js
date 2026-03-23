@@ -21,6 +21,9 @@ export function corsMiddleware() {
   }
 }
 
+// Export for use in error handler
+export { corsHeaders }
+
 function corsHeaders(c) {
   const frontendUrl = c.env?.FRONTEND_URL || 'https://scalyo.io'
   const allowedOrigins = [frontendUrl, 'http://localhost:5173', 'http://localhost:4173']

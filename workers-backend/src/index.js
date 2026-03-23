@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { corsMiddleware } from './middleware/cors.js'
+import { corsMiddleware, corsHeaders } from './middleware/cors.js'
 
 import auth from './routes/auth.js'
 import portfolio from './routes/portfolio.js'
@@ -37,10 +37,11 @@ app.route('/api/feedback', feedback)
 // 404 fallback
 app.notFound((c) => c.json({ error: 'Not found' }, 404))
 
-// Error handler
+// Error handler — include CORS headers so browser doesn't block the response
 app.onError((err, c) => {
   console.error('Unhandled error:', err)
-  return c.json({ error: 'Internal server error' }, 500)
+  const headers = corsHeaders(c)
+  return c.json({ error: 'Internal server error' }, 500, headers)
 })
 
 export default app
