@@ -291,7 +291,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import * as Vue from 'vue'
+const { ref, reactive, computed, onMounted } = Vue
 import { taskApi } from '../api'
 import { useI18n } from '../i18n'
 import { usePortfolioStore } from '../stores/portfolio'
@@ -565,7 +566,7 @@ function saveTask() {
 
   const idx = tasks.value.findIndex(t => t.id === taskData.id)
   if (idx >= 0) {
-    tasks.value[idx] = taskData
+    tasks.value.splice(idx, 1, taskData)
   } else {
     tasks.value.push(taskData)
   }
@@ -600,7 +601,7 @@ const TaskCard = {
   },
   emits: ['toggle', 'delete', 'edit', 'move'],
   setup(props, { emit }) {
-    const { ref, computed } = require('vue')
+    const { ref, computed } = Vue
     const hover = ref(false)
 
     const TASK_COLORS = [

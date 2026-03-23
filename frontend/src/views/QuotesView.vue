@@ -158,7 +158,7 @@ function saveQuote() {
   if (editingQuote.value) {
     const idx = quotes.value.findIndex(q => q.id === editingQuote.value.id)
     if (idx >= 0) {
-      quotes.value[idx] = { ...quotes.value[idx], ...qForm }
+      quotes.value.splice(idx, 1, { ...quotes.value[idx], ...qForm })
     }
   } else {
     quotes.value.unshift({ id: Date.now(), ...qForm, date: now })

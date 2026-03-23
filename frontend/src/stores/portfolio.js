@@ -26,7 +26,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   async function updateAccount(id, data) {
     const res = await portfolioApi.updateAccount(id, data)
     const idx = accounts.value.findIndex(a => a.id === id)
-    if (idx >= 0) accounts.value[idx] = res.data
+    if (idx >= 0) accounts.value.splice(idx, 1, res.data)
     return res.data
   }
 

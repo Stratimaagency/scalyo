@@ -13,9 +13,17 @@
 </template>
 
 <script setup>
+import { onMounted, onUnmounted } from 'vue'
+
 defineProps({
   title: String,
   maxWidth: { type: String, default: '520px' },
 })
-defineEmits(['close'])
+const emit = defineEmits(['close'])
+
+function onEscape(e) {
+  if (e.key === 'Escape') emit('close')
+}
+onMounted(() => document.addEventListener('keydown', onEscape))
+onUnmounted(() => document.removeEventListener('keydown', onEscape))
 </script>

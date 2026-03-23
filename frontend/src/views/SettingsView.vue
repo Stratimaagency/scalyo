@@ -242,18 +242,30 @@ onMounted(async () => {
 
 async function saveProfile() {
   saving.value = true
-  await authStore.updateProfile({ display_name: profile.display_name })
+  try {
+    await authStore.updateProfile({ display_name: profile.display_name })
+  } catch (e) {
+    console.error('saveProfile error:', e)
+  }
   saving.value = false
 }
 
 async function saveCompany() {
   saving.value = true
-  await authStore.updateCompany({ name: companyName.value })
+  try {
+    await authStore.updateCompany({ name: companyName.value })
+  } catch (e) {
+    console.error('saveCompany error:', e)
+  }
   saving.value = false
 }
 
 async function saveNotifPrefs() {
-  await authApi.updateNotificationPrefs({ ...notifPrefs })
+  try {
+    await authApi.updateNotificationPrefs({ ...notifPrefs })
+  } catch (e) {
+    console.error('saveNotifPrefs error:', e)
+  }
 }
 
 const aiFeaturesLabel = computed(() =>
@@ -272,8 +284,12 @@ const deleteWord = computed(() => prefsStore.lang === 'fr' ? 'SUPPRIMER' : prefs
 
 async function confirmDeleteAccount() {
   if (deleteConfirmText.value !== deleteWord.value) return
-  await authApi.deleteAccount()
-  authStore.logout()
-  router.push({ name: 'login' })
+  try {
+    await authApi.deleteAccount()
+    authStore.logout()
+    router.push({ name: 'login' })
+  } catch (e) {
+    console.error('deleteAccount error:', e)
+  }
 }
 </script>
