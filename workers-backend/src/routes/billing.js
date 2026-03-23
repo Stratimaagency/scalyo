@@ -29,9 +29,9 @@ function getStripe(env) {
 }
 
 // --- Protected routes ---
-billing.use('/checkout', authMiddleware(), companyRequired())
-billing.use('/portal', authMiddleware(), companyRequired())
-billing.use('/status', authMiddleware(), companyRequired())
+billing.use('/checkout/*', authMiddleware(), companyRequired())
+billing.use('/portal/*', authMiddleware(), companyRequired())
+billing.use('/status/*', authMiddleware(), companyRequired())
 
 // POST /api/billing/checkout/
 billing.post('/checkout/', async (c) => {
@@ -147,7 +147,14 @@ billing.post('/webhook/', async (c) => {
       const mac = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(payload))
       const computed = [...new Uint8Array(mac)].map(b => b.toString(16).padStart(2, '0')).join('')
 
-      if (computed !== expectedSig) return c.body(null, 400)
+      // Constant-time comparison
+      const a = new TextEncoder().encode(computed)
+      const b = new TextEncoder().encode(expectedSig)
+      if (a.byteLength !== b.byteLength) return c.body(null, 400)
+      const hmacKey = await crypto.subtle.importKey('raw', a, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify'])
+      const sig2 = await crypto.subtle.sign('HMAC', hmacKey, b)
+      const isValid = await crypto.subtle.verify('HMAC', hmacKey, sig2, b)
+      if (!isValid) return c.body(null, 400)
 
       event = JSON.parse(body)
     } catch {

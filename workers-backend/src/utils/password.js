@@ -51,5 +51,11 @@ export async function verifyPassword(password, stored) {
     key,
     KEY_LENGTH * 8
   )
-  return bufferToHex(derived) === hashHex
+  // Constant-time comparison to prevent timing attacks
+  const a = new TextEncoder().encode(bufferToHex(derived))
+  const b = new TextEncoder().encode(hashHex)
+  if (a.byteLength !== b.byteLength) return false
+  const hmacKey = await crypto.subtle.importKey('raw', a, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify'])
+  const sig = await crypto.subtle.sign('HMAC', hmacKey, b)
+  return await crypto.subtle.verify('HMAC', hmacKey, sig, b)
 }

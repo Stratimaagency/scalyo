@@ -229,8 +229,12 @@ portfolio.patch('/accounts/:account_pk/todos/:id', async (c) => {
   const sets = []
   const values = []
 
-  if (data.text !== undefined) { sets.push('text = ?'); values.push(data.text) }
-  if (data.label !== undefined) { sets.push('label = ?'); values.push(data.label); sets.push('text = ?'); values.push(data.label) }
+  if (data.label !== undefined) {
+    sets.push('label = ?'); values.push(data.label)
+    sets.push('text = ?'); values.push(data.label)
+  } else if (data.text !== undefined) {
+    sets.push('text = ?'); values.push(data.text)
+  }
   if (data.done !== undefined) { sets.push('done = ?'); values.push(data.done ? 1 : 0) }
   if (data.type !== undefined) { sets.push('type = ?'); values.push(data.type) }
   if (data.date !== undefined) { sets.push('date = ?'); values.push(data.date) }

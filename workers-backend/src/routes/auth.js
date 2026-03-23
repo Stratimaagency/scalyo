@@ -121,6 +121,7 @@ auth.use('/*', authMiddleware())
 auth.get('/profile/', async (c) => {
   const { id } = c.get('user')
   const user = await c.env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first()
+  if (!user) return c.json({ error: 'User not found' }, 404)
   return c.json(serializeUser(user))
 })
 

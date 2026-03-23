@@ -22,9 +22,12 @@ export function corsMiddleware() {
 }
 
 function corsHeaders(c) {
-  const origin = c.req.header('Origin') || '*'
+  const frontendUrl = c.env?.FRONTEND_URL || 'https://scalyo.io'
+  const allowedOrigins = [frontendUrl, 'http://localhost:5173', 'http://localhost:4173']
+  const origin = c.req.header('Origin')
+  const allowedOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0]
   return {
-    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Max-Age': '86400',
