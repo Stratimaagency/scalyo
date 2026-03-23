@@ -25,7 +25,7 @@ export function corsMiddleware() {
 export { corsHeaders }
 
 function corsHeaders(c) {
-  const frontendUrl = c.env?.FRONTEND_URL || 'https://scalyo.io'
+  const frontendUrl = c.env?.FRONTEND_URL || 'https://scalyo.app'
   const allowedOrigins = [frontendUrl, 'http://localhost:5173', 'http://localhost:4173']
   const origin = c.req.header('Origin')
   // Allow *.scalyo.pages.dev (Cloudflare Pages preview URLs)

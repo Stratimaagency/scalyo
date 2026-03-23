@@ -3,7 +3,7 @@ main = "src/index.js"
 compatibility_date = "2024-09-01"
 
 [vars]
-FRONTEND_URL = "https://scalyo.io"
+FRONTEND_URL = "https://scalyo.app"
 STRIPE_STARTER_URL = ""
 STRIPE_GROWTH_URL = ""
 STRIPE_ELITE_URL = ""
