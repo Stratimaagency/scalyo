@@ -150,6 +150,10 @@
           </div>
         </div>
 
+        <div v-if="connectError" class="integ-error" style="margin-bottom: 12px;">
+          {{ connectError }}
+        </div>
+
         <!-- Config fields based on integration type -->
 
         <!-- OAuth integrations (Gmail, Outlook, Google Meet) -->
@@ -609,19 +613,22 @@ async function startOAuth(integKey) {
   connectError.value = ''
   try {
     const provider = OAUTH_KEYS[integKey]
-    console.log('[OAuth] Starting flow for provider:', provider)
+    if (!provider) {
+      connectError.value = `No OAuth provider for: ${integKey}`
+      oauthLoading.value = false
+      return
+    }
     const res = await integrationsApi.getOAuthUrl(provider)
-    console.log('[OAuth] Response:', res)
     const data = res.data || res
     if (data.authUrl) {
       window.location.href = data.authUrl
     } else {
-      connectError.value = 'No auth URL returned from server'
+      connectError.value = data.error || 'No auth URL returned from server'
       oauthLoading.value = false
     }
   } catch (err) {
     console.error('[OAuth] Error:', err)
-    connectError.value = err.response?.data?.error || err.message || 'OAuth failed'
+    connectError.value = err.response?.data?.error || err.message || 'OAuth authorization failed'
     oauthLoading.value = false
   }
 }

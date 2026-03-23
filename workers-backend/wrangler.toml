@@ -4,7 +4,7 @@ compatibility_date = "2024-09-01"
 
 [vars]
 FRONTEND_URL = "https://scalyo.app"
-APP_URL = "https://api.scalyo.app"
+APP_URL = "https://scalyo-api.stratimaagency.workers.dev"
 STRIPE_STARTER_URL = ""
 STRIPE_GROWTH_URL = ""
 STRIPE_ELITE_URL = ""

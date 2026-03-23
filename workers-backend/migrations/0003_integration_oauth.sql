@@ -21,9 +21,7 @@ ALTER TABLE accounts ADD COLUMN source TEXT DEFAULT 'manual';
 
 CREATE INDEX IF NOT EXISTS idx_accounts_external ON accounts(company_id, external_id);
 
--- Add external_id and source to tasks for sync dedup
-ALTER TABLE tasks ADD COLUMN external_id TEXT;
-ALTER TABLE tasks ADD COLUMN source TEXT DEFAULT 'manual';
+-- Note: tasks are stored as JSON in task_boards.tasks, no ALTER needed
 
 -- Sync log to track last sync per integration
 CREATE TABLE IF NOT EXISTS integration_sync_log (
