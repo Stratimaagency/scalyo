@@ -28,10 +28,10 @@ function getStripe(env) {
   }
 }
 
-// --- Protected routes ---
-billing.use('/checkout/*', authMiddleware(), companyRequired())
-billing.use('/portal/*', authMiddleware(), companyRequired())
-billing.use('/status/*', authMiddleware(), companyRequired())
+// --- Protected routes (webhook excluded below) ---
+billing.use('/checkout/', authMiddleware(), companyRequired())
+billing.use('/portal/', authMiddleware(), companyRequired())
+billing.use('/status/', authMiddleware(), companyRequired())
 
 // POST /api/billing/checkout/
 billing.post('/checkout/', async (c) => {
@@ -49,6 +49,7 @@ billing.post('/checkout/', async (c) => {
 
   // Get or create customer
   const company = await db.prepare('SELECT * FROM companies WHERE id = ?').bind(user.company_id).first()
+  if (!company) return c.json({ error: 'Company not found' }, 404)
   let customerId = company.stripe_customer_id
 
   if (!customerId) {
@@ -86,6 +87,7 @@ billing.post('/portal/', async (c) => {
     'SELECT * FROM companies WHERE id = ?'
   ).bind(user.company_id).first()
 
+  if (!company) return c.json({ error: 'Company not found' }, 404)
   if (!company.stripe_customer_id) {
     return c.json({ error: 'No Stripe customer for this company' }, 400)
   }
@@ -106,6 +108,8 @@ billing.get('/status/', async (c) => {
   const company = await c.env.DB.prepare(
     'SELECT * FROM companies WHERE id = ?'
   ).bind(user.company_id).first()
+
+  if (!company) return c.json({ error: 'Company not found' }, 404)
 
   return c.json({
     plan: company.plan,
@@ -147,14 +151,19 @@ billing.post('/webhook/', async (c) => {
       const mac = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(payload))
       const computed = [...new Uint8Array(mac)].map(b => b.toString(16).padStart(2, '0')).join('')
 
-      // Constant-time comparison
-      const a = new TextEncoder().encode(computed)
-      const b = new TextEncoder().encode(expectedSig)
-      if (a.byteLength !== b.byteLength) return c.body(null, 400)
-      const hmacKey = await crypto.subtle.importKey('raw', a, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify'])
-      const sig2 = await crypto.subtle.sign('HMAC', hmacKey, b)
-      const isValid = await crypto.subtle.verify('HMAC', hmacKey, sig2, b)
-      if (!isValid) return c.body(null, 400)
+      // Constant-time comparison using double HMAC
+      if (computed.length !== expectedSig.length) return c.body(null, 400)
+      const cmpKey = await crypto.subtle.importKey(
+        'raw', crypto.getRandomValues(new Uint8Array(32)),
+        { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+      )
+      const mac1 = await crypto.subtle.sign('HMAC', cmpKey, new TextEncoder().encode(computed))
+      const mac2 = await crypto.subtle.sign('HMAC', cmpKey, new TextEncoder().encode(expectedSig))
+      const arr1 = new Uint8Array(mac1)
+      const arr2 = new Uint8Array(mac2)
+      let diff = 0
+      for (let i = 0; i < arr1.length; i++) diff |= arr1[i] ^ arr2[i]
+      if (diff !== 0) return c.body(null, 400)
 
       event = JSON.parse(body)
     } catch {

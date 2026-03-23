@@ -73,7 +73,7 @@
             <div class="kpi-value" :style="{ color: kpi.color || 'var(--teal)' }">{{ kpi.value }}</div>
           </div>
           <div v-if="kpi.goal" style="font-size: 11px; color: var(--muted); margin-top: 6px">
-            {{ t('target') }}{{ kpi.goal }} ({{ Math.round((kpi.value / kpi.goal) * 100) }}% {{ t('reached') }})
+            {{ t('target') }}{{ kpi.goal }} ({{ kpi.goal ? Math.round((kpi.value / kpi.goal) * 100) : 0 }}% {{ t('reached') }})
           </div>
         </AppCard>
       </div>
@@ -173,20 +173,32 @@ function fmtK(v) {
 
 async function saveMonthly() {
   saving.value = true
-  await kpiApi.saveMonthly({ period: period.value, kpis: { ...kpis }, goals: { ...goals } })
+  try {
+    await kpiApi.saveMonthly({ period: period.value, kpis: { ...kpis }, goals: { ...goals } })
+  } catch (e) {
+    console.error('saveMonthly error:', e)
+  }
   saving.value = false
 }
 
 async function saveGoals() {
   saving.value = true
-  await kpiApi.saveGoals({ goals: { ...goals } })
+  try {
+    await kpiApi.saveGoals({ goals: { ...goals } })
+  } catch (e) {
+    console.error('saveGoals error:', e)
+  }
   saving.value = false
 }
 
 async function addCustomKpi() {
-  customKpis.value.push({ ...newKpi.value })
-  await kpiApi.saveCustom({ custom_kpis: customKpis.value })
-  newKpi.value = { name: '', value: 0, goal: 0, unit: '', color: '#7EC8B8' }
-  showNewKpi.value = false
+  try {
+    customKpis.value.push({ ...newKpi.value })
+    await kpiApi.saveCustom({ custom_kpis: customKpis.value })
+    newKpi.value = { name: '', value: 0, goal: 0, unit: '', color: '#7EC8B8' }
+    showNewKpi.value = false
+  } catch (e) {
+    console.error('addCustomKpi error:', e)
+  }
 }
 </script>

@@ -61,21 +61,26 @@ coach.post('/stream/', async (c) => {
     return c.json({ error: 'ANTHROPIC_API_KEY is not configured.' }, 500)
   }
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': c.env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      system: systemPrompt,
-      messages: messages || [],
-      stream: true,
-    }),
-  })
+  let response
+  try {
+    response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': c.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        max_tokens: MAX_TOKENS,
+        system: systemPrompt,
+        messages: messages || [],
+        stream: true,
+      }),
+    })
+  } catch (e) {
+    return c.json({ error: e.message }, 500)
+  }
 
   if (!response.ok) {
     const err = await response.text()
@@ -125,11 +130,20 @@ coach.post('/stream/', async (c) => {
     }
   })()
 
+  // Build CORS headers manually since we bypass Hono's response pipeline
+  const frontendUrl = c.env?.FRONTEND_URL || 'https://scalyo.app'
+  const allowedOrigins = [frontendUrl, 'http://localhost:5173', 'http://localhost:4173']
+  const origin = c.req.header('Origin')
+  const isAllowed = allowedOrigins.includes(origin) || (origin && origin.endsWith('.scalyo.pages.dev'))
+  const allowedOrigin = isAllowed ? origin : allowedOrigins[0]
+
   return new Response(readable, {
     headers: {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
       'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': allowedOrigin,
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     },
   })
 })

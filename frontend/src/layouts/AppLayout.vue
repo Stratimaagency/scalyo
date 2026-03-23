@@ -184,7 +184,6 @@ function logout() {
 .nav-badge-critical {
   background: var(--red);
   color: #fff;
-  fontSize: 10px;
   font-weight: 800;
   width: 18px;
   height: 18px;

@@ -98,7 +98,7 @@ emailStudio.get('/templates/', async (c) => {
 })
 
 // GET /api/email-studio/templates/:id/
-emailStudio.get('/templates/:id', async (c) => {
+emailStudio.get('/templates/:id/', async (c) => {
   const id = c.req.param('id')
   const lang = c.req.query('lang') || 'fr'
   const tpl = TEMPLATES.find(t => t.id === id)
@@ -171,7 +171,7 @@ emailStudio.post('/send/', async (c) => {
   } else {
     // MailChannels send (free on Workers)
     try {
-      await fetch('https://api.mailchannels.net/tx/v1/send', {
+      const res = await fetch('https://api.mailchannels.net/tx/v1/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -181,6 +181,10 @@ emailStudio.post('/send/', async (c) => {
           content: [{ type: 'text/plain', value: body }],
         }),
       })
+      if (!res.ok) {
+        const err = await res.text()
+        return c.json({ error: `Failed to send email: ${err}` }, 500)
+      }
     } catch (e) {
       return c.json({ error: `Failed to send email: ${e.message}` }, 500)
     }

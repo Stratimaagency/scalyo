@@ -462,7 +462,11 @@ function deleteEvent(id) {
 }
 
 async function saveAll() {
-  await planningApi.saveEvents(events.value)
+  try {
+    await planningApi.saveEvents(events.value)
+  } catch (e) {
+    console.error('saveAll error:', e)
+  }
 }
 
 // Calendar export helpers
