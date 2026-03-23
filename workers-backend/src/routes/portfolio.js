@@ -47,6 +47,10 @@ portfolio.post('/accounts/', async (c) => {
   const { company_id } = c.get('user')
   const data = await c.req.json()
 
+  if (!data.name || !data.name.trim()) {
+    return c.json({ error: 'Account name is required' }, 400)
+  }
+
   const account = await c.env.DB.prepare(
     `INSERT INTO accounts (company_id, name, csm, mrr, arr, industry, usage, health, risk, plan, contact, contact_email, issues, notes, onboarding_date, renewal_date, renewal)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
@@ -86,8 +90,8 @@ portfolio.get('/accounts/:id/', async (c) => {
 
   // Get todos
   const { results: todos } = await c.env.DB.prepare(
-    'SELECT id, type, label, text, done, date, notes, created_at FROM account_todos WHERE account_id = ? ORDER BY created_at DESC'
-  ).bind(id).all()
+    'SELECT id, type, label, text, done, date, notes, created_at FROM account_todos WHERE account_id = ? AND company_id = ? ORDER BY created_at DESC'
+  ).bind(id, company_id).all()
 
   return c.json({
     ...account,

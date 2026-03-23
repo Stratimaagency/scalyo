@@ -47,6 +47,9 @@ wellbeing.patch('/update/', async (c) => {
   const sets = []
   const values = []
 
+  if (data.burnout !== undefined && !['none', 'low', 'moderate', 'high'].includes(data.burnout)) {
+    return c.json({ error: 'burnout must be none, low, moderate, or high' }, 400)
+  }
   for (const key of ['score', 'burnout', 'charge', 'trend']) {
     if (data[key] !== undefined) { sets.push(`${key} = ?`); values.push(data[key]) }
   }

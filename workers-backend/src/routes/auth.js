@@ -56,6 +56,10 @@ auth.post('/register/', async (c) => {
     'INSERT INTO companies (name) VALUES (?) RETURNING id'
   ).bind(company_name).first()
 
+  if (!companyResult) {
+    return c.json({ error: 'Failed to create company' }, 500)
+  }
+
   // Create user
   const passwordHash = await hashPassword(password)
   const validRole = ['manager', 'csm'].includes(role) ? role : 'csm'
@@ -163,7 +167,7 @@ auth.get('/company/', companyRequired(), async (c) => {
 auth.patch('/company/', companyRequired(), async (c) => {
   const { company_id } = c.get('user')
   const data = await c.req.json()
-  const allowed = ['name', 'plan', 'arr', 'churn', 'nps', 'color', 'logo']
+  const allowed = ['name', 'arr', 'churn', 'nps', 'color', 'logo']
   const sets = []
   const values = []
 
