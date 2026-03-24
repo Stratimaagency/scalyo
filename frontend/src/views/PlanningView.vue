@@ -48,7 +48,7 @@
         </div>
         <!-- Time slots -->
         <div v-for="h in hours" :key="'h' + h" style="display: grid; grid-template-columns: 60px repeat(7, 1fr); border-bottom: 1px solid var(--border)">
-          <div style="font-size: 10px; color: var(--muted); padding: 6px 8px 0 0; text-align: right; padding-top: 4px"></div>
+          <div style="font-size: 10px; color: var(--muted); padding: 6px 8px 0 0; text-align: right; padding-top: 4px">{{ h }}:00</div>
           <div v-for="(d, i) in weekDays" :key="'ws' + h + '-' + i"
             @click="openAddEvent(toDateStr(d))"
             @mouseenter="$event.currentTarget.style.background = 'rgba(77,182,160,0.08)'"
@@ -215,13 +215,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, reactive } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { planningApi } from '../api'
 import { useI18n } from '../i18n'
 import { usePreferencesStore } from '../stores/preferences'
 import { usePortfolioStore } from '../stores/portfolio'
 import AppModal from '../components/AppModal.vue'
-import AppField from '../components/AppField.vue'
 
 const { t } = useI18n()
 const prefsStore = usePreferencesStore()
@@ -264,8 +263,8 @@ const inputStyleNoMb = {
 
 const events = ref([])
 const view = ref('week')
-const today = new Date()
-const todayStr = today.toISOString().slice(0, 10)
+const today = ref(new Date())
+const todayStr = computed(() => localDateStr(today.value))
 const currentDate = ref(new Date())
 const showAddEvent = ref(false)
 const selectedDate = ref(null)
@@ -304,11 +303,17 @@ const monthNames = computed(() => {
   return ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
 })
 
+// Date helpers — local timezone safe
+function localDateStr(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0')
+}
+
 // Week helpers
 function startOfWeek(d) {
   const dt = new Date(d)
   const day = dt.getDay()
-  dt.setDate(dt.getDate() - day + 1)
+  const diff = day === 0 ? -6 : 1 - day
+  dt.setDate(dt.getDate() + diff)
   dt.setHours(0, 0, 0, 0)
   return dt
 }
@@ -341,14 +346,18 @@ const monthDays = computed(() => {
 const headerTitle = computed(() => {
   if (view.value === 'week') {
     const wd = weekDays.value
-    return `${wd[0].getDate()} – ${wd[6].getDate()} ${monthNames.value[wd[0].getMonth()]} ${wd[0].getFullYear()}`
+    const d0 = wd[0], d6 = wd[6]
+    if (d0.getMonth() === d6.getMonth()) {
+      return `${d0.getDate()} – ${d6.getDate()} ${monthNames.value[d0.getMonth()]} ${d0.getFullYear()}`
+    }
+    return `${d0.getDate()} ${monthNames.value[d0.getMonth()]} – ${d6.getDate()} ${monthNames.value[d6.getMonth()]} ${d6.getFullYear()}`
   }
   return `${monthNames.value[month.value]} ${year.value}`
 })
 
 // Helpers
 function isTodayDate(d) {
-  return d && d.toDateString() === today.toDateString()
+  return d && d.toDateString() === today.value.toDateString()
 }
 
 function isCurrentMonth(d) {
@@ -356,12 +365,12 @@ function isCurrentMonth(d) {
 }
 
 function toDateStr(d) {
-  return d.toISOString().slice(0, 10)
+  return localDateStr(d)
 }
 
 function getEventsForDay(d) {
   if (!d) return []
-  const ds = d.toISOString().slice(0, 10)
+  const ds = localDateStr(d)
   return events.value.filter(e => e.date === ds)
 }
 
