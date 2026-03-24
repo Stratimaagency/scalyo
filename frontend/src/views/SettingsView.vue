@@ -31,11 +31,76 @@
 
     <!-- Team (manager only) -->
     <template v-if="tab === 'team' && isManager">
-      <AppCard>
-        <h4 style="font-weight: 800; margin-bottom: 14px">{{ t('teamSectionTitle') }}</h4>
-        <p style="font-size: 13px; color: var(--muted); margin-bottom: 14px">{{ t('teamMgmtDesc') }}</p>
-        <button class="btn btn-primary">{{ t('inviteCSM') }}</button>
+      <!-- Plan usage -->
+      <AppCard class="mb-md" v-if="teamLimits">
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 120px;">
+            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">Managers</div>
+            <div style="font-size: 20px; font-weight: 800;">{{ teamUsage.managers }}<span style="color: var(--muted); font-size: 13px;">/{{ teamLimits.managers === -1 ? '∞' : teamLimits.managers }}</span></div>
+          </div>
+          <div style="flex: 1; min-width: 120px;">
+            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">CSMs</div>
+            <div style="font-size: 20px; font-weight: 800;">{{ teamUsage.csms }}<span style="color: var(--muted); font-size: 13px;">/{{ teamLimits.csms === -1 ? '∞' : teamLimits.csms }}</span></div>
+          </div>
+          <div style="flex: 1; min-width: 120px;">
+            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">{{ t('demo_active_acc') || 'Comptes' }}</div>
+            <div style="font-size: 20px; font-weight: 800;">{{ teamUsage.accounts }}<span style="color: var(--muted); font-size: 13px;">/{{ teamLimits.accounts === -1 ? '∞' : teamLimits.accounts }}</span></div>
+          </div>
+        </div>
       </AppCard>
+
+      <!-- Team members list -->
+      <AppCard class="mb-md">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h4 style="font-weight: 800;">{{ t('teamSectionTitle') }}</h4>
+          <button class="btn btn-primary" @click="showInviteModal = true" style="font-size: 13px; padding: 8px 16px;">{{ t('inviteCSM') }}</button>
+        </div>
+
+        <div v-if="teamLoading" style="padding: 20px; text-align: center; color: var(--muted);">Chargement...</div>
+        <div v-else-if="teamMembers.length === 0" style="padding: 20px; text-align: center; color: var(--muted);">Aucun membre</div>
+        <div v-else>
+          <div v-for="m in teamMembers" :key="m.id" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: #fff;"
+                :style="{ background: m.role === 'manager' ? 'var(--teal)' : 'var(--purple, #a78bfa)' }">
+                {{ (m.display_name || m.email).charAt(0).toUpperCase() }}
+              </div>
+              <div>
+                <div style="font-weight: 700; font-size: 13px;">{{ m.display_name || m.email }}</div>
+                <div style="font-size: 11px; color: var(--muted);">{{ m.email }}</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="tag" :class="m.role === 'manager' ? 'risk-low' : 'risk-medium'" style="font-size: 11px; padding: 3px 10px;">{{ m.role === 'manager' ? 'Manager' : 'CSM' }}</span>
+              <button v-if="m.id !== authStore.user?.id" class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px; color: var(--red);" @click="removeMember(m)">Supprimer</button>
+            </div>
+          </div>
+        </div>
+      </AppCard>
+
+      <!-- Invite modal -->
+      <div v-if="showInviteModal" class="modal-overlay" @click.self="showInviteModal = false">
+        <div class="modal-content" style="max-width: 440px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h4 style="font-weight: 800;">{{ t('inviteCSM') }}</h4>
+            <button @click="showInviteModal = false" style="background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer;">&times;</button>
+          </div>
+          <div v-if="inviteError" style="background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 12px; color: var(--red);">{{ inviteError }}</div>
+          <AppField label="Email" v-model="inviteForm.email" placeholder="csm@example.com" />
+          <AppField label="Nom" v-model="inviteForm.display_name" placeholder="Prénom Nom" />
+          <div style="margin-bottom: 12px;">
+            <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">Rôle</label>
+            <div style="display: flex; gap: 8px;">
+              <button class="chip" :class="{ active: inviteForm.role === 'csm' }" @click="inviteForm.role = 'csm'">CSM</button>
+              <button class="chip" :class="{ active: inviteForm.role === 'manager' }" @click="inviteForm.role = 'manager'">Manager</button>
+            </div>
+          </div>
+          <AppField label="Mot de passe" v-model="inviteForm.password" placeholder="Min. 8 caractères" type="password" />
+          <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 8px;" @click="inviteMember" :disabled="inviting">
+            {{ inviting ? 'Création...' : 'Créer le membre' }}
+          </button>
+        </div>
+      </div>
     </template>
 
     <!-- Billing (manager only) -->
@@ -176,7 +241,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { useI18n } from '../i18n'
-import { authApi } from '../api'
+import { authApi, teamApi } from '../api'
 import AppCard from '../components/AppCard.vue'
 import AppField from '../components/AppField.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
@@ -195,6 +260,16 @@ const selectedCurrency = ref(prefsStore.currency)
 
 const notifPrefs = reactive({ churn_alerts: true, weekly_report: true, wellbeing_alerts: true, renewal_alerts: true })
 const stripeUrls = ref({})
+
+// Team management
+const teamMembers = ref([])
+const teamLimits = ref(null)
+const teamUsage = ref({ managers: 0, csms: 0, accounts: 0 })
+const teamLoading = ref(false)
+const showInviteModal = ref(false)
+const inviteForm = reactive({ email: '', display_name: '', role: 'csm', password: '' })
+const inviteError = ref('')
+const inviting = ref(false)
 
 const trialDaysLeft = computed(() => {
   const created = authStore.company?.created_at
@@ -238,7 +313,49 @@ onMounted(async () => {
     const { data } = await authApi.getStripeUrls()
     stripeUrls.value = data
   } catch {}
+  if (isManager.value) loadTeam()
 })
+
+async function loadTeam() {
+  teamLoading.value = true
+  try {
+    const [teamRes, limitsRes] = await Promise.all([teamApi.list(), teamApi.limits()])
+    teamMembers.value = teamRes.data.members || []
+    teamLimits.value = limitsRes.data.limits || null
+    teamUsage.value = limitsRes.data.usage || { managers: 0, csms: 0, accounts: 0 }
+  } catch (e) {
+    console.error('loadTeam error:', e)
+  }
+  teamLoading.value = false
+}
+
+async function inviteMember() {
+  inviteError.value = ''
+  if (!inviteForm.email || !inviteForm.password) {
+    inviteError.value = 'Email et mot de passe requis'
+    return
+  }
+  inviting.value = true
+  try {
+    await teamApi.invite({ ...inviteForm })
+    showInviteModal.value = false
+    Object.assign(inviteForm, { email: '', display_name: '', role: 'csm', password: '' })
+    await loadTeam()
+  } catch (e) {
+    inviteError.value = e.response?.data?.error || 'Erreur lors de la création'
+  }
+  inviting.value = false
+}
+
+async function removeMember(member) {
+  if (!confirm(`Supprimer ${member.display_name || member.email} de l'équipe ?`)) return
+  try {
+    await teamApi.remove(member.id)
+    await loadTeam()
+  } catch (e) {
+    console.error('removeMember error:', e)
+  }
+}
 
 async function saveProfile() {
   saving.value = true

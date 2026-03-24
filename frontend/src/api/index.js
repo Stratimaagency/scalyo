@@ -14,6 +14,14 @@ export const authApi = {
   getStripeUrls: () => api.get('/auth/stripe-urls/'),
 }
 
+// Team
+export const teamApi = {
+  list: () => api.get('/team/'),
+  invite: (data) => api.post('/team/', data),
+  remove: (id) => api.delete(`/team/${id}`),
+  limits: () => api.get('/team/limits'),
+}
+
 // Portfolio
 export const portfolioApi = {
   getAccounts: (params) => api.get('/portfolio/accounts/', { params }),

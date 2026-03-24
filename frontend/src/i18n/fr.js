@@ -412,7 +412,7 @@ export default {
   integFeatMessages: 'Messages',
   integFeatLiveChat: 'Chat en direct',
   // Pricing plan features
-  starter10Accounts: '10 comptes clients',
+  starter10Accounts: '6 comptes clients · 1 Manager + 2 CSMs',
   starterDashKpi: 'Dashboard & KPIs',
   starterTaskBoard: 'Task Board',
   starterCoachLimited: 'Coach IA (5 msg/jour)',

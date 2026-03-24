@@ -42,6 +42,9 @@ portfolio.get('/accounts/', async (c) => {
   return c.json(accounts)
 })
 
+// Plan limits for accounts
+const ACCOUNT_LIMITS = { Starter: 6, Growth: -1, Elite: -1 }
+
 // POST /api/portfolio/accounts/
 portfolio.post('/accounts/', async (c) => {
   const { company_id } = c.get('user')
@@ -49,6 +52,17 @@ portfolio.post('/accounts/', async (c) => {
 
   if (!data.name || !data.name.trim()) {
     return c.json({ error: 'Account name is required' }, 400)
+  }
+
+  // Check plan account limit
+  const company = await c.env.DB.prepare('SELECT plan FROM companies WHERE id = ?').bind(company_id).first()
+  const plan = company?.plan || 'Starter'
+  const limit = ACCOUNT_LIMITS[plan] ?? 6
+  if (limit > 0) {
+    const count = await c.env.DB.prepare('SELECT COUNT(*) as cnt FROM accounts WHERE company_id = ?').bind(company_id).first()
+    if ((count?.cnt || 0) >= limit) {
+      return c.json({ error: `Plan ${plan}: max ${limit} accounts. Upgrade to add more.` }, 400)
+    }
   }
 
   const account = await c.env.DB.prepare(
