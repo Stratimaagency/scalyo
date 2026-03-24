@@ -70,10 +70,14 @@
               <div style="font-weight: 700">{{ kpi.name }}</div>
               <div style="font-size: 12px; color: var(--muted)">{{ kpi.unit || '' }}</div>
             </div>
-            <div class="kpi-value" :style="{ color: kpi.color || 'var(--teal)' }">{{ kpi.value }}</div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div class="kpi-value" :style="{ color: kpi.color || 'var(--teal)' }">{{ kpi.value }}</div>
+              <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 8px;" @click="editCustomKpi(i)">{{ t('edit') }}</button>
+              <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 8px; color: var(--red);" @click="deleteCustomKpi(i)">{{ t('delete') }}</button>
+            </div>
           </div>
-          <div v-if="kpi.goal" style="font-size: 11px; color: var(--muted); margin-top: 6px">
-            {{ t('target') }}{{ kpi.goal }} ({{ kpi.goal ? Math.round((kpi.value / kpi.goal) * 100) : 0 }}% {{ t('reached') }})
+          <div v-if="kpi.goal && kpi.goal > 0" style="font-size: 11px; color: var(--muted); margin-top: 6px">
+            {{ t('target') }}{{ kpi.goal }} ({{ Math.round((kpi.value / kpi.goal) * 100) }}% {{ t('reached') }})
           </div>
         </AppCard>
       </div>
@@ -191,14 +195,38 @@ async function saveGoals() {
   saving.value = false
 }
 
+const editingKpiIdx = ref(null)
+
 async function addCustomKpi() {
   try {
-    customKpis.value.push({ ...newKpi.value })
+    if (editingKpiIdx.value !== null) {
+      customKpis.value.splice(editingKpiIdx.value, 1, { ...newKpi.value })
+      editingKpiIdx.value = null
+    } else {
+      customKpis.value.push({ ...newKpi.value })
+    }
     await kpiApi.saveCustom({ custom_kpis: customKpis.value })
     newKpi.value = { name: '', value: 0, goal: 0, unit: '', color: '#7EC8B8' }
     showNewKpi.value = false
   } catch (e) {
     console.error('addCustomKpi error:', e)
+  }
+}
+
+function editCustomKpi(idx) {
+  const kpi = customKpis.value[idx]
+  Object.assign(newKpi.value, kpi)
+  editingKpiIdx.value = idx
+  showNewKpi.value = true
+}
+
+async function deleteCustomKpi(idx) {
+  if (!confirm(t('delete') + ' ?')) return
+  try {
+    customKpis.value.splice(idx, 1)
+    await kpiApi.saveCustom({ custom_kpis: customKpis.value })
+  } catch (e) {
+    console.error('deleteCustomKpi error:', e)
   }
 }
 </script>

@@ -126,8 +126,11 @@ const conversionRate = computed(() => {
 
 function fmtAmount(v) {
   const c = prefsStore.currency
-  const s = c === 'USD' ? '$' : c === 'GBP' ? '£' : c === 'CHF' ? 'CHF ' : '€'
-  return `${Number(v || 0).toLocaleString()}${s}`
+  const n = Number(v || 0).toLocaleString()
+  if (c === 'USD') return `$${n}`
+  if (c === 'GBP') return `£${n}`
+  if (c === 'CHF') return `CHF ${n}`
+  return `${n}€`
 }
 
 function statusLabel(s) {
@@ -154,6 +157,8 @@ function statusIcon(s) {
 }
 
 function saveQuote() {
+  if (!qForm.title.trim()) return
+  if (!qForm.client.trim()) return
   const now = new Date().toISOString().slice(0, 10)
   if (editingQuote.value) {
     const idx = quotes.value.findIndex(q => q.id === editingQuote.value.id)
@@ -178,6 +183,7 @@ function duplicateQuote(q) {
 }
 
 function removeQuote(id) {
+  if (!confirm(t('delete') + ' ?')) return
   quotes.value = quotes.value.filter(q => q.id !== id)
   persist()
 }

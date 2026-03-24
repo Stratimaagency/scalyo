@@ -62,7 +62,7 @@ auth.post('/register/', async (c) => {
 
   // Create user
   const passwordHash = await hashPassword(password)
-  const validRole = ['manager', 'csm'].includes(role) ? role : 'csm'
+  const validRole = ['manager', 'csm'].includes(role) ? role : 'manager'
   const userResult = await db.prepare(
     `INSERT INTO users (email, password_hash, display_name, role, company_id)
      VALUES (?, ?, ?, ?, ?) RETURNING *`

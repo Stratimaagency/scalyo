@@ -56,8 +56,8 @@
           <button class="btn btn-primary" @click="showInviteModal = true" style="font-size: 13px; padding: 8px 16px;">{{ t('inviteCSM') }}</button>
         </div>
 
-        <div v-if="teamLoading" style="padding: 20px; text-align: center; color: var(--muted);">Chargement...</div>
-        <div v-else-if="teamMembers.length === 0" style="padding: 20px; text-align: center; color: var(--muted);">Aucun membre</div>
+        <div v-if="teamLoading" style="padding: 20px; text-align: center; color: var(--muted);">{{ t('teamLoading') }}</div>
+        <div v-else-if="teamMembers.length === 0" style="padding: 20px; text-align: center; color: var(--muted);">{{ t('noTeamMembers') }}</div>
         <div v-else>
           <div v-for="m in teamMembers" :key="m.id" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border);">
             <div style="display: flex; align-items: center; gap: 12px;">
@@ -72,7 +72,7 @@
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
               <span class="tag" :class="m.role === 'manager' ? 'risk-low' : 'risk-medium'" style="font-size: 11px; padding: 3px 10px;">{{ m.role === 'manager' ? 'Manager' : 'CSM' }}</span>
-              <button v-if="m.id !== authStore.user?.id" class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px; color: var(--red);" @click="removeMember(m)">Supprimer</button>
+              <button v-if="m.id !== authStore.user?.id" class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px; color: var(--red);" @click="removeMember(m)">{{ t('teamRemoveBtn') }}</button>
             </div>
           </div>
         </div>
@@ -87,17 +87,17 @@
           </div>
           <div v-if="inviteError" style="background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 12px; color: var(--red);">{{ inviteError }}</div>
           <AppField label="Email" v-model="inviteForm.email" placeholder="csm@example.com" />
-          <AppField label="Nom" v-model="inviteForm.display_name" placeholder="Prénom Nom" />
+          <AppField :label="t('displayName')" v-model="inviteForm.display_name" :placeholder="t('teamNamePlaceholder')" />
           <div style="margin-bottom: 12px;">
-            <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">Rôle</label>
+            <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">{{ t('teamRoleLabel') }}</label>
             <div style="display: flex; gap: 8px;">
               <button class="chip" :class="{ active: inviteForm.role === 'csm' }" @click="inviteForm.role = 'csm'">CSM</button>
               <button class="chip" :class="{ active: inviteForm.role === 'manager' }" @click="inviteForm.role = 'manager'">Manager</button>
             </div>
           </div>
-          <AppField label="Mot de passe" v-model="inviteForm.password" placeholder="Min. 8 caractères" type="password" />
+          <AppField :label="t('password') || 'Password'" v-model="inviteForm.password" :placeholder="t('teamPasswordHint')" type="password" />
           <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 8px;" @click="inviteMember" :disabled="inviting">
-            {{ inviting ? 'Création...' : 'Créer le membre' }}
+            {{ inviting ? t('teamCreating') : t('teamCreateBtn') }}
           </button>
         </div>
       </div>
@@ -332,7 +332,7 @@ async function loadTeam() {
 async function inviteMember() {
   inviteError.value = ''
   if (!inviteForm.email || !inviteForm.password) {
-    inviteError.value = 'Email et mot de passe requis'
+    inviteError.value = t('teamEmailPwdRequired')
     return
   }
   inviting.value = true
@@ -342,13 +342,13 @@ async function inviteMember() {
     Object.assign(inviteForm, { email: '', display_name: '', role: 'csm', password: '' })
     await loadTeam()
   } catch (e) {
-    inviteError.value = e.response?.data?.error || 'Erreur lors de la création'
+    inviteError.value = e.response?.data?.error || t('teamInviteError')
   }
   inviting.value = false
 }
 
 async function removeMember(member) {
-  if (!confirm(`Supprimer ${member.display_name || member.email} de l'équipe ?`)) return
+  if (!confirm(t('teamRemoveConfirm'))) return
   try {
     await teamApi.remove(member.id)
     await loadTeam()

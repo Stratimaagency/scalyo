@@ -214,7 +214,7 @@
       </details>
     </div>
 
-    <EmptyState v-if="!accounts.length" icon="rocket" :title="t('portfolioEmpty')" :action="t('viewPortfolio')" />
+    <EmptyState v-if="!accounts.length" icon="rocket" :title="t('portfolioEmpty')" :action="t('viewPortfolio')" @action="$router.push({ name: 'portfolio' })" />
   </div>
 </template>
 
@@ -252,9 +252,11 @@ const currencySymbol = computed(() => {
 
 function fmtCurrency(value) {
   const s = currencySymbol.value
-  if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M${s}`
-  if (value >= 1000) return `${(value / 1000).toFixed(0)}K${s}`
-  return `${value}${s}`
+  const before = ['$', '£', 'CA$'].includes(s)
+  const fmt = (n) => before ? `${s}${n}` : `${n}${s}`
+  if (value >= 1000000) return fmt(`${(value / 1000000).toFixed(1)}M`)
+  if (value >= 1000) return fmt(`${(value / 1000).toFixed(0)}K`)
+  return fmt(value)
 }
 
 onMounted(async () => {
@@ -337,7 +339,7 @@ const wellbeingScoreColor = computed(() => {
   return 'var(--red)'
 })
 
-const burnoutLevel = computed(() => wellbeing.value?.burnout || 'moderate')
+const burnoutLevel = computed(() => wellbeing.value?.burnout || 'none')
 const burnoutColor = computed(() => {
   const b = burnoutLevel.value
   if (b === 'low') return 'var(--green)'
