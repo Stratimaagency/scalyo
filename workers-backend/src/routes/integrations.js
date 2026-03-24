@@ -207,6 +207,21 @@ integrations.get('/oauth/authorize/:provider', async (c) => {
     const { company_id, id: userId } = c.get('user')
     const provider = c.req.param('provider')
 
+    if (!c.env.JWT_SECRET) {
+      console.error('OAuth authorize: JWT_SECRET is not configured')
+      return c.json({ error: 'Server configuration error: JWT_SECRET missing' }, 500)
+    }
+
+    if (provider === 'google' && (!c.env.GOOGLE_CLIENT_ID || !c.env.GOOGLE_CLIENT_SECRET)) {
+      console.error('OAuth authorize: Google OAuth credentials not configured')
+      return c.json({ error: 'Google OAuth not configured on server' }, 500)
+    }
+
+    if (provider === 'microsoft' && (!c.env.MICROSOFT_CLIENT_ID || !c.env.MICROSOFT_CLIENT_SECRET)) {
+      console.error('OAuth authorize: Microsoft OAuth credentials not configured')
+      return c.json({ error: 'Microsoft OAuth not configured on server' }, 500)
+    }
+
     // Create a signed state token to prevent CSRF
     const state = await signJwt({ company_id, userId, provider }, c.env.JWT_SECRET, 600)
 
@@ -221,8 +236,8 @@ integrations.get('/oauth/authorize/:provider', async (c) => {
 
     return c.json({ authUrl })
   } catch (err) {
-    console.error('OAuth authorize error:', err)
-    return c.json({ error: 'Failed to start OAuth flow' }, 500)
+    console.error('OAuth authorize error:', err.message, err.stack)
+    return c.json({ error: `OAuth flow error: ${err.message}` }, 500)
   }
 })
 
@@ -240,9 +255,11 @@ integrations.delete('/:key', async (c) => {
     if (isOAuth(key)) {
       const provider = getOAuthProvider(key)
       // Only delete OAuth token if no other integration uses this provider
+      const keysForProvider = getKeysForProvider(provider)
+      const placeholders = keysForProvider.map(() => '?').join(', ')
       const otherUses = await c.env.DB.prepare(
-        "SELECT COUNT(*) as cnt FROM integrations WHERE company_id = ? AND integration_key IN (SELECT key FROM json_each(?) )"
-      ).bind(company_id, JSON.stringify(getKeysForProvider(provider))).first()
+        `SELECT COUNT(*) as cnt FROM integrations WHERE company_id = ? AND integration_key IN (${placeholders})`
+      ).bind(company_id, ...keysForProvider).first()
 
       if (!otherUses || otherUses.cnt === 0) {
         await c.env.DB.prepare(
