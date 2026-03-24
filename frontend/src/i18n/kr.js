@@ -409,7 +409,7 @@ export default {
   integFeatMessages: '메시지',
   integFeatLiveChat: '라이브 채팅',
   // Pricing plan features
-  starter10Accounts: '10개 고객 계정',
+  starter10Accounts: '6개 고객 계정 · 매니저 1명 + CSM 2명',
   starterDashKpi: '대시보드 & KPI',
   starterTaskBoard: '업무 보드',
   starterCoachLimited: 'AI 코치 (5건/일)',

@@ -26,9 +26,9 @@
       </div>
 
       <!-- Starter plan limit alert -->
-      <div v-if="isStarterPlan && portfolioStore.accounts.length >= 10"
+      <div v-if="isStarterPlan && portfolioStore.accounts.length >= 6"
         style="margin-bottom: 10px; padding: 9px 12px; background: var(--amberBg, #fef3cd); border: 1px solid var(--amberBorder, #ffc107); border-radius: 9px; font-size: 12px; color: var(--amber, #856404);">
-        <ScalyoIcon name="warning" :size="12" /> Starter plan: max 10 accounts. Upgrade to add more.
+        <ScalyoIcon name="warning" :size="12" /> Starter plan: max 6 accounts. Upgrade to add more.
       </div>
 
       <!-- Import success message -->
@@ -633,7 +633,7 @@ function computeRisk(health) {
 
 // ─── Add modal ───
 function openAddModal() {
-  if (isStarterPlan.value && portfolioStore.accounts.length >= 10) return
+  if (isStarterPlan.value && portfolioStore.accounts.length >= 6) return
   addError.value = ''
   showAdd.value = true
 }
