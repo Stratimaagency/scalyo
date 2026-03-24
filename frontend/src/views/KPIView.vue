@@ -24,19 +24,19 @@
           </div>
           <div class="field-group">
             <label class="field-label">NPS</label>
-            <input v-model.number="kpis.nps" type="number" class="field-input" />
+            <input v-model.number="kpis.nps" type="number" class="field-input" min="-100" max="100" />
           </div>
           <div class="field-group">
             <label class="field-label">Renewal Rate (%)</label>
-            <input v-model.number="kpis.renewalRate" type="number" class="field-input" />
+            <input v-model.number="kpis.renewalRate" type="number" class="field-input" min="0" max="100" />
           </div>
           <div class="field-group">
             <label class="field-label">CSAT (/10)</label>
-            <input v-model.number="kpis.csat" type="number" class="field-input" />
+            <input v-model.number="kpis.csat" type="number" class="field-input" min="0" max="10" step="0.1" />
           </div>
           <div class="field-group">
             <label class="field-label">Resolved Tickets</label>
-            <input v-model.number="kpis.resolvedTickets" type="number" class="field-input" />
+            <input v-model.number="kpis.resolvedTickets" type="number" class="field-input" min="0" />
           </div>
         </div>
         <button class="btn btn-primary" @click="saveMonthly" :disabled="saving">
@@ -46,9 +46,9 @@
 
       <!-- KPI Cards -->
       <div class="grid-4 mb-lg" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr))">
-        <KpiCard label="MRR" :value="fmtK(kpis.mrr) + currencySymbol" icon="money" color="var(--teal)" />
+        <KpiCard label="MRR" :value="fmtKpiCurrency(kpis.mrr)" icon="money" color="var(--teal)" />
         <KpiCard label="NPS" :value="kpis.nps" icon="survey" color="var(--blue)" />
-        <KpiCard label="Renewal Rate" :value="kpis.renewalRate + '%'" icon="refresh" :color="kpis.renewalRate >= 85 ? 'var(--green)' : 'var(--amber)'" />
+        <KpiCard :label="t('renewalRate') || 'Renewal Rate'" :value="kpis.renewalRate + '%'" icon="refresh" :color="kpis.renewalRate >= 85 ? 'var(--green)' : 'var(--amber)'" />
         <KpiCard label="CSAT" :value="kpis.csat + '/10'" icon="star" :color="kpis.csat >= 7 ? 'var(--green)' : 'var(--amber)'" />
       </div>
     </template>
@@ -113,11 +113,11 @@
     </template>
 
     <!-- New KPI Modal -->
-    <AppModal v-if="showNewKpi" title="New KPI" @close="showNewKpi = false">
-      <AppField label="Name" v-model="newKpi.name" required />
-      <AppField label="Value" v-model="newKpi.value" type="number" />
-      <AppField label="Goal" v-model="newKpi.goal" type="number" />
-      <AppField label="Unit" v-model="newKpi.unit" :placeholder="currencySymbol + ', %, score...'" />
+    <AppModal v-if="showNewKpi" :title="editingKpiIdx !== null ? t('edit') : t('kpiNewBtn')" @close="showNewKpi = false; editingKpiIdx = null">
+      <AppField :label="t('name') || 'Name'" v-model="newKpi.name" required />
+      <AppField :label="t('value') || 'Value'" v-model="newKpi.value" type="number" />
+      <AppField :label="t('target') || 'Goal'" v-model="newKpi.goal" type="number" />
+      <AppField :label="t('unit') || 'Unit'" v-model="newKpi.unit" :placeholder="currencySymbol + ', %, score...'" />
       <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px">
         <button class="btn btn-secondary" @click="showNewKpi = false">{{ t('cancel') }}</button>
         <button class="btn btn-primary" @click="addCustomKpi">{{ t('create') }}</button>
@@ -175,6 +175,13 @@ function fmtK(v) {
   return v
 }
 
+function fmtKpiCurrency(v) {
+  const s = currencySymbol.value
+  const before = ['$', '£', 'CA$'].includes(s)
+  const n = fmtK(v)
+  return before ? `${s}${n}` : `${n}${s}`
+}
+
 async function saveMonthly() {
   saving.value = true
   try {
@@ -198,6 +205,8 @@ async function saveGoals() {
 const editingKpiIdx = ref(null)
 
 async function addCustomKpi() {
+  if (!newKpi.value.name.trim()) return
+  const backup = [...customKpis.value.map(k => ({ ...k }))]
   try {
     if (editingKpiIdx.value !== null) {
       customKpis.value.splice(editingKpiIdx.value, 1, { ...newKpi.value })
@@ -209,6 +218,7 @@ async function addCustomKpi() {
     newKpi.value = { name: '', value: 0, goal: 0, unit: '', color: '#7EC8B8' }
     showNewKpi.value = false
   } catch (e) {
+    customKpis.value = backup
     console.error('addCustomKpi error:', e)
   }
 }
@@ -222,10 +232,12 @@ function editCustomKpi(idx) {
 
 async function deleteCustomKpi(idx) {
   if (!confirm(t('delete') + ' ?')) return
+  const backup = [...customKpis.value.map(k => ({ ...k }))]
   try {
     customKpis.value.splice(idx, 1)
     await kpiApi.saveCustom({ custom_kpis: customKpis.value })
   } catch (e) {
+    customKpis.value = backup
     console.error('deleteCustomKpi error:', e)
   }
 }

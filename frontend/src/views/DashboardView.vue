@@ -264,7 +264,9 @@ onMounted(async () => {
   try {
     const { data } = await wellbeingApi.get()
     wellbeing.value = data
-  } catch {}
+  } catch (e) {
+    console.warn('Dashboard: wellbeing load failed', e.message)
+  }
   try {
     const { data } = await roadmapApi.get()
     if (data) {
@@ -274,7 +276,9 @@ onMounted(async () => {
         items: Array.isArray(data.items) ? data.items : [],
       }
     }
-  } catch {}
+  } catch (e) {
+    console.warn('Dashboard: roadmap load failed', e.message)
+  }
 })
 
 const todayFormatted = computed(() => {
