@@ -78,36 +78,65 @@
       <div class="app-layout">
         <div class="app-sidebar">
           <div class="sb-logo">
-            <div class="sb-logo-dot"></div>
+            <div class="sb-logo-circle"></div>
             <span class="sb-logo-txt">scal<span style="color:var(--teal)">yo</span></span>
           </div>
           <div class="sb-item active"><span class="sb-icon">&#x25A6;</span><span>{{ t('demo_dashboard') }}</span></div>
           <div class="sb-item"><span class="sb-icon">&#x1F4BC;</span><span>{{ t('demo_portfolio') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x2197;</span>KPIs</div>
+          <div class="sb-item"><span class="sb-icon">&#x2197;</span>KPIs COPIL</div>
           <div class="sb-item"><span class="sb-icon">&#x1F4C5;</span>Planning</div>
-          <div class="sb-item"><span class="sb-icon">&#x2611;</span>Tasks</div>
-          <div class="sb-item"><span class="sb-icon">&#x2661;</span><span>{{ t('feat_wb') }}</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x2611;</span>Task Board</div>
+          <div class="sb-item"><span class="sb-icon">&#x1F49A;</span><span>{{ t('feat_wb') }}</span></div>
           <div class="sb-item"><span class="sb-icon">&#x1F916;</span><span>Coach IA</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x1F4CA;</span><span>Ressources</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x1F4DD;</span><span>Devis</span></div>
           <div class="sb-item"><span class="sb-icon">&#x2709;</span><span>{{ t('feat_email') }}</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x1F517;</span><span>Intégrations</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x1F5FA;</span><span>Roadmap</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x1F4CD;</span><span>Guide CS</span></div>
+          <div class="sb-bottom">
+            <div class="sb-langs">
+              <span class="sb-lang active">🇫🇷 FR</span>
+              <span class="sb-lang">🇬🇧 EN</span>
+              <span class="sb-lang">🇰🇷 KR</span>
+            </div>
+            <div class="sb-item"><span class="sb-icon">&#x2699;</span><span>Paramètres</span></div>
+            <div class="sb-profile">
+              <div class="sb-avatar">C</div>
+              <div><div style="font-size:10px;font-weight:600;color:var(--dt);">la fabrique</div><div style="font-size:9px;color:var(--dt3);">Starter · Manager</div></div>
+            </div>
+          </div>
         </div>
         <div class="app-main">
+          <div class="app-breadcrumb">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:7px;height:7px;border-radius:50%;background:var(--teal);"></div>
+              <span style="font-size:11px;font-weight:600;color:var(--dt);">la fabrique</span>
+              <span style="font-size:11px;color:var(--dt3);">·</span>
+              <span style="font-size:11px;color:var(--dt3);">Manager CS</span>
+            </div>
+            <div class="breadcrumb-online">
+              <div style="width:6px;height:6px;border-radius:50%;background:#22C55E;"></div>
+              <span style="font-size:10px;color:var(--teal);">{{ t('demo_live') }}</span>
+            </div>
+          </div>
           <div class="app-header">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;">
               <div>
                 <div class="app-title">{{ t('demo_overview') }} &#x1F44B;</div>
-                <div class="app-subtitle">La Fabrique · {{ t('demo_today') }}</div>
+                <div class="app-subtitle">la fabrique · {{ t('demo_today') }}</div>
               </div>
               <div style="display:flex;gap:6px;">
-                <span style="font-size:10px;padding:3px 9px;border-radius:100px;background:rgba(13,148,136,.08);color:var(--teal);border:1px solid rgba(13,148,136,.15);font-weight:600;">Growth</span>
-                <span style="font-size:10px;padding:3px 9px;border-radius:100px;background:rgba(168,85,247,.08);color:#A855F7;border:1px solid rgba(168,85,247,.15);font-weight:600;">Manager</span>
+                <span style="font-size:10px;padding:3px 9px;border-radius:100px;background:rgba(13,148,136,.08);color:var(--teal);border:1px solid rgba(13,148,136,.15);font-weight:600;">Starter</span>
+                <span style="font-size:10px;padding:3px 9px;border-radius:100px;background:rgba(168,85,247,.08);color:#A855F7;border:1px solid rgba(168,85,247,.15);font-weight:600;">Manager CS</span>
               </div>
             </div>
           </div>
           <div class="kpi-grid">
-            <div class="kpi"><div class="kpi-lbl">{{ t('demo_arr') }}</div><div class="kpi-val c-teal">3.4M&euro;</div><div class="kpi-delta c-green">12 {{ t('demo_active_acc') }}</div></div>
-            <div class="kpi"><div class="kpi-lbl">{{ t('demo_avg_health') }}</div><div class="kpi-val">74<span style="font-size:13px;color:var(--dt3)">/100</span></div><div class="kpi-delta c-green">{{ t('demo_healthy') }}</div></div>
-            <div class="kpi"><div class="kpi-lbl">{{ t('demo_critical') }}</div><div class="kpi-val c-red" style="color:var(--red)">2</div><div class="kpi-delta" style="color:var(--red)">480K&euro; ARR {{ t('demo_at_risk') }}</div></div>
-            <div class="kpi"><div class="kpi-lbl">{{ t('demo_roadmap') }}</div><div class="kpi-val c-teal">67%</div><div class="kpi-delta c-green">4/6 {{ t('demo_steps') }}</div></div>
+            <div class="kpi"><div class="kpi-top"><div class="kpi-lbl">{{ t('demo_arr') }}</div><div class="kpi-ico" style="background:rgba(13,148,136,.1);color:var(--teal);">💰</div></div><div class="kpi-val c-teal">3.4M&euro;</div><div class="kpi-delta c-green">12 {{ t('demo_active_acc') }}</div></div>
+            <div class="kpi"><div class="kpi-top"><div class="kpi-lbl">{{ t('demo_avg_health') }}</div><div class="kpi-ico" style="background:rgba(34,197,94,.1);color:var(--green);">💚</div></div><div class="kpi-val">74<span style="font-size:13px;color:var(--dt3)">/100</span></div><div class="kpi-delta c-green">{{ t('demo_healthy') }}</div></div>
+            <div class="kpi"><div class="kpi-top"><div class="kpi-lbl">{{ t('demo_critical') }}</div><div class="kpi-ico" style="background:rgba(248,113,113,.1);color:var(--red);">⚠️</div></div><div class="kpi-val c-red" style="color:var(--red)">2</div><div class="kpi-delta" style="color:var(--red)">480K&euro; ARR {{ t('demo_at_risk') }}</div></div>
+            <div class="kpi"><div class="kpi-top"><div class="kpi-lbl">{{ t('demo_roadmap') }}</div><div class="kpi-ico" style="background:rgba(13,148,136,.1);color:var(--teal);">🗺</div></div><div class="kpi-val c-teal">67%</div><div class="kpi-delta c-green">4/6 {{ t('demo_steps') }}</div></div>
           </div>
           <!-- Critical alert -->
           <div style="background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.12);border-radius:10px;padding:12px;margin-bottom:12px;">
@@ -1487,15 +1516,25 @@ nav.scrolled {
 .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; animation: pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-.app-layout { display: flex; min-height: 420px; background: var(--dk2); }
+.app-layout { display: flex; min-height: 480px; background: var(--dk2); }
+.app-breadcrumb {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; margin-bottom: 8px;
+  background: var(--dk3); border-bottom: 1px solid var(--dline); border-radius: 0;
+  margin: -20px -20px 16px -20px; padding: 10px 20px;
+}
+.breadcrumb-online { display: flex; align-items: center; gap: 5px; }
+.kpi-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.kpi-ico { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
 .app-sidebar {
-  flex-shrink: 0;
+  width: 130px; flex-shrink: 0;
   background: var(--dk3); border-right: 1px solid var(--dline);
   padding: 10px 6px;
+  display: flex; flex-direction: column;
 }
 .sb-logo { display: flex; align-items: center; gap: 6px; padding: 4px 6px; margin-bottom: 12px; }
-.sb-logo-dot { width: 14px; height: 14px; border-radius: 4px; background: var(--teal); flex-shrink: 0; }
-.sb-logo-txt { font-size: 11px; font-weight: 700; letter-spacing: -.025em; color: var(--dt); }
+.sb-logo-circle { width: 20px; height: 20px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+.sb-logo-txt { font-size: 12px; font-weight: 700; letter-spacing: -.025em; color: var(--dt); }
 .sb-item {
   display: flex; align-items: center; gap: 6px;
   padding: 5px 6px; border-radius: 5px;
@@ -1504,6 +1543,12 @@ nav.scrolled {
 }
 .sb-item.active { background: var(--teal2); color: var(--teal); font-weight: 500; }
 .sb-icon { width: 12px; text-align: center; flex-shrink: 0; font-size: 11px; }
+.sb-bottom { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--dline); }
+.sb-langs { display: flex; gap: 4px; padding: 4px 6px; margin-bottom: 4px; }
+.sb-lang { font-size: 9px; color: var(--dt3); padding: 2px 5px; border-radius: 4px; cursor: default; }
+.sb-lang.active { background: rgba(13,148,136,.1); color: var(--teal); font-weight: 600; }
+.sb-profile { display: flex; align-items: center; gap: 6px; padding: 6px; margin-top: 4px; }
+.sb-avatar { width: 22px; height: 22px; border-radius: 50%; background: var(--teal); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; }
 
 .app-main { flex: 1; padding: 20px; overflow: hidden; background: var(--dk2); }
 .app-header { margin-bottom: 20px; }
@@ -1516,7 +1561,7 @@ nav.scrolled {
   transition: all .2s;
 }
 .kpi:hover { border-color: var(--dline2); background: var(--dk4); }
-.kpi-lbl { font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--dt3); margin-bottom: 8px; }
+.kpi-lbl { font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--dt3); }
 .kpi-val { font-size: 26px; font-weight: 700; letter-spacing: -.04em; line-height: 1; margin-bottom: 6px; color: var(--dt); }
 .kpi-delta { font-size: 11px; font-weight: 500; }
 .c-teal { color: var(--teal); }
