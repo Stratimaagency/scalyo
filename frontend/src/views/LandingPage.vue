@@ -1487,23 +1487,23 @@ nav.scrolled {
 .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; animation: pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-.app-layout { display: flex; background: var(--dk3); min-height: 420px; }
+.app-layout { display: flex; min-height: 420px; background: var(--dk2); }
 .app-sidebar {
-  width: 160px; flex-shrink: 0;
+  flex-shrink: 0;
   background: var(--dk3); border-right: 1px solid var(--dline);
-  padding: 12px 8px;
+  padding: 10px 6px;
 }
-.sb-logo { display: flex; align-items: center; gap: 7px; padding: 6px 8px; margin-bottom: 16px; }
-.sb-logo-dot { width: 16px; height: 16px; border-radius: 5px; background: var(--teal); flex-shrink: 0; }
-.sb-logo-txt { font-size: 12px; font-weight: 700; letter-spacing: -.025em; color: var(--dt); }
+.sb-logo { display: flex; align-items: center; gap: 6px; padding: 4px 6px; margin-bottom: 12px; }
+.sb-logo-dot { width: 14px; height: 14px; border-radius: 4px; background: var(--teal); flex-shrink: 0; }
+.sb-logo-txt { font-size: 11px; font-weight: 700; letter-spacing: -.025em; color: var(--dt); }
 .sb-item {
-  display: flex; align-items: center; gap: 7px;
-  padding: 6px 8px; border-radius: 6px;
-  font-size: 11.5px; color: var(--dt3);
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 6px; border-radius: 5px;
+  font-size: 10.5px; color: var(--dt3); white-space: nowrap;
   cursor: default; margin-bottom: 1px;
 }
 .sb-item.active { background: var(--teal2); color: var(--teal); font-weight: 500; }
-.sb-icon { width: 13px; text-align: center; flex-shrink: 0; font-size: 12px; }
+.sb-icon { width: 12px; text-align: center; flex-shrink: 0; font-size: 11px; }
 
 .app-main { flex: 1; padding: 20px; overflow: hidden; background: var(--dk2); }
 .app-header { margin-bottom: 20px; }
