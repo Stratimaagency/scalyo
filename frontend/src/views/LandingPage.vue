@@ -66,134 +66,207 @@
   <div class="hero-screenshot rv d3">
     <div class="screenshot-glow"></div>
     <div class="app-shell">
+      <!-- Browser chrome -->
       <div class="app-topbar">
-        <div class="topbar-dots">
-          <div class="td" style="background:#FF5F57"></div>
-          <div class="td" style="background:#FEBC2E"></div>
-          <div class="td" style="background:#28C840"></div>
+        <div class="topbar-dots"><div class="td" style="background:#FF5F57"></div><div class="td" style="background:#FEBC2E"></div><div class="td" style="background:#28C840"></div></div>
+        <div class="topbar-url">app.scalyo.app</div>
+        <div class="topbar-actions">
+          <div class="topbar-action-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          </div>
+          <div class="topbar-action-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </div>
         </div>
-        <div class="topbar-url">&#x1F512; app.scalyo.app</div>
-        <div class="topbar-status"><div class="status-dot"></div>{{ t('demo_live') }}</div>
       </div>
+      <!-- App layout -->
       <div class="app-layout">
-        <div class="app-sidebar">
-          <div class="sb-logo">
-            <div class="sb-logo-circle"></div>
-            <span class="sb-logo-txt">scal<span style="color:var(--teal)">yo</span></span>
-          </div>
-          <div class="sb-item active"><span class="sb-icon">&#x25A6;</span><span>{{ t('demo_dashboard') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x1F4BC;</span><span>{{ t('demo_portfolio') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x2197;</span>KPIs</div>
-          <div class="sb-item"><span class="sb-icon">&#x1F4C5;</span>Planning</div>
-          <div class="sb-item"><span class="sb-icon">&#x2611;</span>Tasks</div>
-          <div class="sb-item"><span class="sb-icon">&#x1F49A;</span><span>{{ t('feat_wb') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x1F916;</span>Coach IA</div>
-          <div class="sb-item"><span class="sb-icon">&#x2709;</span><span>{{ t('feat_email') }}</span></div>
-          <div class="sb-bottom">
-            <div class="sb-profile">
-              <div class="sb-avatar">C</div>
-              <div><div style="font-size:10px;font-weight:600;color:var(--dt);">la fabrique</div><div style="font-size:9px;color:var(--dt3);">Starter</div></div>
+        <!-- Sidebar -->
+        <nav class="app-sidebar">
+          <div class="sb-brand">
+            <div class="sb-logo-mark"><span>S</span></div>
+            <div class="sb-brand-text">
+              <span class="sb-brand-name">Scalyo</span>
+              <span class="sb-brand-plan">Starter</span>
             </div>
           </div>
-        </div>
-        <div class="app-main">
-          <div class="app-breadcrumb">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <div style="width:7px;height:7px;border-radius:50%;background:var(--teal);"></div>
-              <span style="font-size:11px;font-weight:600;color:var(--dt);">la fabrique</span>
-              <span style="font-size:11px;color:var(--dt3);">·</span>
-              <span style="font-size:11px;color:var(--dt3);">Manager CS</span>
-            </div>
-            <div class="breadcrumb-online">
-              <div style="width:6px;height:6px;border-radius:50%;background:#22C55E;"></div>
-              <span style="font-size:10px;color:var(--teal);">{{ t('demo_live') }}</span>
+          <div class="sb-section">
+            <div class="sb-nav active"><span class="sb-ico">&#9632;</span>{{ t('demo_dashboard') }}</div>
+            <div class="sb-nav"><span class="sb-ico">&#9830;</span>{{ t('demo_portfolio') }}</div>
+            <div class="sb-nav"><span class="sb-ico">&#9650;</span>KPIs</div>
+            <div class="sb-nav"><span class="sb-ico">&#9632;</span>Planning</div>
+            <div class="sb-nav"><span class="sb-ico">&#10003;</span>Tasks</div>
+          </div>
+          <div class="sb-divider"></div>
+          <div class="sb-section">
+            <div class="sb-nav"><span class="sb-ico">&#9829;</span>{{ t('feat_wb') }}</div>
+            <div class="sb-nav"><span class="sb-ico">&#9733;</span>Coach IA</div>
+            <div class="sb-nav"><span class="sb-ico">&#9993;</span>{{ t('feat_email') }}</div>
+          </div>
+          <div class="sb-user">
+            <div class="sb-user-avatar">CF</div>
+            <div class="sb-user-info">
+              <span class="sb-user-name">la fabrique</span>
+              <span class="sb-user-role">Manager CS</span>
             </div>
           </div>
-          <div class="app-header">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-              <div>
-                <div class="app-title">{{ t('demo_overview') }} &#x1F44B;</div>
-                <div class="app-subtitle">la fabrique · {{ t('demo_today') }}</div>
-              </div>
-              <div style="display:flex;gap:6px;">
-                <span style="font-size:10px;padding:3px 9px;border-radius:100px;background:rgba(13,148,136,.08);color:var(--teal);border:1px solid rgba(13,148,136,.15);font-weight:600;">Starter</span>
-                <span style="font-size:10px;padding:3px 9px;border-radius:100px;background:rgba(168,85,247,.08);color:#A855F7;border:1px solid rgba(168,85,247,.15);font-weight:600;">Manager CS</span>
-              </div>
+        </nav>
+        <!-- Main content -->
+        <main class="app-main">
+          <!-- Top bar inside main -->
+          <div class="main-topbar">
+            <div class="main-topbar-left">
+              <span class="main-page-title">{{ t('demo_overview') }}</span>
+              <span class="main-page-date">{{ t('demo_today') }}</span>
             </div>
-          </div>
-          <div class="kpi-grid">
-            <div class="kpi"><div class="kpi-top"><div class="kpi-lbl">{{ t('demo_arr') }}</div><div class="kpi-ico" style="background:rgba(13,148,136,.1);color:var(--teal);">💰</div></div><div class="kpi-val c-teal">3.4M&euro;</div><div class="kpi-delta c-green">12 {{ t('demo_active_acc') }}</div></div>
-            <div class="kpi"><div class="kpi-top"><div class="kpi-lbl">{{ t('demo_avg_health') }}</div><div class="kpi-ico" style="background:rgba(34,197,94,.1);color:var(--green);">💚</div></div><div class="kpi-val">74<span style="font-size:13px;color:var(--dt3)">/100</span></div><div class="kpi-delta c-green">{{ t('demo_healthy') }}</div></div>
-            <div class="kpi"><div class="kpi-top"><div class="kpi-lbl">{{ t('demo_critical') }}</div><div class="kpi-ico" style="background:rgba(248,113,113,.1);color:var(--red);">⚠️</div></div><div class="kpi-val c-red" style="color:var(--red)">2</div><div class="kpi-delta" style="color:var(--red)">480K&euro; ARR {{ t('demo_at_risk') }}</div></div>
-            <div class="kpi"><div class="kpi-top"><div class="kpi-lbl">{{ t('demo_roadmap') }}</div><div class="kpi-ico" style="background:rgba(13,148,136,.1);color:var(--teal);">🗺</div></div><div class="kpi-val c-teal">67%</div><div class="kpi-delta c-green">4/6 {{ t('demo_steps') }}</div></div>
-          </div>
-          <!-- Critical alert -->
-          <div style="background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.12);border-radius:10px;padding:12px;margin-bottom:12px;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-              <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--red);">&#x1F6A8; 2 {{ t('demo_critical_alert') }}</div>
-              <span style="font-size:10px;padding:3px 10px;border-radius:100px;background:rgba(248,113,113,.08);color:var(--red);border:1px solid rgba(248,113,113,.15);">{{ t('demo_see_portfolio') }}</span>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:6px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(248,113,113,.04);border-radius:8px;padding:8px 10px;">
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <div style="width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">L</div>
-                  <div><div style="font-size:11px;font-weight:700;color:var(--dt);">Leroy Finance</div><div style="font-size:10px;color:var(--dt3);">NPS en baisse</div></div>
-                </div>
-                <div style="text-align:right;"><div style="font-size:10px;font-weight:700;color:var(--red);">240K&euro;</div><div style="font-size:9px;color:var(--dt3);">Renouvellement Avr.</div></div>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(248,113,113,.04);border-radius:8px;padding:8px 10px;">
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <div style="width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">A</div>
-                  <div><div style="font-size:11px;font-weight:700;color:var(--dt);">Acme Corp</div><div style="font-size:10px;color:var(--dt3);">Usage en chute</div></div>
-                </div>
-                <div style="text-align:right;"><div style="font-size:10px;font-weight:700;color:var(--red);">240K&euro;</div><div style="font-size:9px;color:var(--dt3);">Renouvellement Mai</div></div>
+            <div class="main-topbar-right">
+              <div class="main-badge badge-teal">Starter</div>
+              <div class="main-badge badge-purple">Manager CS</div>
+              <div class="main-notif">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span class="notif-dot"></span>
               </div>
             </div>
           </div>
-          <!-- Bottom: Roadmap + Wellbeing -->
-          <div class="app-row2" style="grid-template-columns:1.6fr 1fr;">
-            <div class="app-card">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                <div><div style="font-size:12px;font-weight:700;color:var(--dt);">&#x1F5FA; {{ t('demo_roadmap_title') }}</div><div style="font-size:10px;color:var(--dt3);">{{ t('demo_roadmap_phase') }}</div></div>
-                <div style="font-size:20px;font-weight:900;color:var(--teal);font-family:'JetBrains Mono',monospace;">67%</div>
+          <!-- KPI cards row -->
+          <div class="kpi-row">
+            <div class="kpi-card">
+              <div class="kpi-header"><span class="kpi-label">{{ t('demo_arr') }}</span><span class="kpi-icon kpi-icon-teal">&#8364;</span></div>
+              <div class="kpi-value kpi-teal">3.4M&euro;</div>
+              <div class="kpi-sub"><span class="kpi-trend kpi-up">+12%</span> 12 {{ t('demo_active_acc') }}</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-header"><span class="kpi-label">{{ t('demo_avg_health') }}</span><span class="kpi-icon kpi-icon-green">&#9829;</span></div>
+              <div class="kpi-value">74<span class="kpi-unit">/100</span></div>
+              <div class="kpi-sub"><span class="kpi-trend kpi-up">+3</span> {{ t('demo_healthy') }}</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-header"><span class="kpi-label">{{ t('demo_critical') }}</span><span class="kpi-icon kpi-icon-red">!</span></div>
+              <div class="kpi-value kpi-red">2</div>
+              <div class="kpi-sub"><span class="kpi-trend kpi-down">480K&euro;</span> ARR {{ t('demo_at_risk') }}</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-header"><span class="kpi-label">NPS</span><span class="kpi-icon kpi-icon-blue">&#9734;</span></div>
+              <div class="kpi-value kpi-blue">+42</div>
+              <div class="kpi-sub"><span class="kpi-trend kpi-up">+5pts</span> vs dernier trimestre</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-header"><span class="kpi-label">{{ t('demo_roadmap') }}</span><span class="kpi-icon kpi-icon-teal">&#9654;</span></div>
+              <div class="kpi-value kpi-teal">67%</div>
+              <div class="kpi-sub">4/6 {{ t('demo_steps') }}</div>
+            </div>
+          </div>
+          <!-- Content grid -->
+          <div class="content-grid">
+            <!-- Left: Alerts + Chart -->
+            <div class="content-left">
+              <!-- Alerts -->
+              <div class="alert-card">
+                <div class="alert-header">
+                  <span class="alert-title">&#x1F6A8; {{ t('demo_critical_alert') }}</span>
+                  <span class="alert-action">{{ t('demo_see_portfolio') }} &#8594;</span>
+                </div>
+                <div class="alert-row">
+                  <div class="alert-avatar alert-avatar-red">L</div>
+                  <div class="alert-info">
+                    <span class="alert-name">Leroy Finance</span>
+                    <span class="alert-reason">NPS en baisse &middot; Usage -34%</span>
+                  </div>
+                  <div class="alert-meta">
+                    <span class="alert-amount">240K&euro;</span>
+                    <span class="alert-date">Renouvellement Avr.</span>
+                  </div>
+                </div>
+                <div class="alert-row">
+                  <div class="alert-avatar alert-avatar-orange">A</div>
+                  <div class="alert-info">
+                    <span class="alert-name">Acme Corp</span>
+                    <span class="alert-reason">Usage en chute &middot; 3 tickets ouverts</span>
+                  </div>
+                  <div class="alert-meta">
+                    <span class="alert-amount">240K&euro;</span>
+                    <span class="alert-date">Renouvellement Mai</span>
+                  </div>
+                </div>
               </div>
-              <div style="height:4px;background:var(--dk5);border-radius:2px;overflow:hidden;margin-bottom:10px;"><div style="width:67%;height:100%;background:var(--teal);border-radius:2px;"></div></div>
-              <div style="display:flex;flex-direction:column;gap:5px;">
-                <div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:var(--dk4);border-radius:6px;font-size:10px;color:var(--dt3);"><span style="color:var(--teal);">&#x2713;</span><span style="text-decoration:line-through;">{{ t('demo_rd1') }}</span></div>
-                <div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:var(--dk4);border-radius:6px;font-size:10px;color:var(--dt3);"><span style="color:var(--teal);">&#x2713;</span><span style="text-decoration:line-through;">{{ t('demo_rd2') }}</span></div>
-                <div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:rgba(13,148,136,.06);border:1px solid rgba(13,148,136,.12);border-radius:6px;font-size:10px;color:var(--dt);font-weight:500;">&#x25A1; {{ t('demo_rd3') }}</div>
-                <div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:var(--dk4);border-radius:6px;font-size:10px;color:var(--dt3);opacity:.5;">&#x25A1; {{ t('demo_rd4') }}</div>
+              <!-- Fake chart -->
+              <div class="chart-card">
+                <div class="chart-header">
+                  <span class="chart-title">ARR evolution</span>
+                  <div class="chart-tabs">
+                    <span class="chart-tab">6M</span>
+                    <span class="chart-tab active">12M</span>
+                    <span class="chart-tab">YTD</span>
+                  </div>
+                </div>
+                <div class="chart-area">
+                  <svg viewBox="0 0 480 120" class="chart-svg">
+                    <defs>
+                      <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="rgba(13,148,136,.3)"/>
+                        <stop offset="100%" stop-color="rgba(13,148,136,0)"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M0,95 C40,90 80,85 120,78 C160,71 200,60 240,50 C280,40 320,35 360,28 C400,21 440,15 480,10" fill="none" stroke="var(--teal)" stroke-width="2.5"/>
+                    <path d="M0,95 C40,90 80,85 120,78 C160,71 200,60 240,50 C280,40 320,35 360,28 C400,21 440,15 480,10 L480,120 L0,120 Z" fill="url(#chartGrad)"/>
+                    <circle cx="480" cy="10" r="4" fill="var(--teal)"/>
+                    <circle cx="480" cy="10" r="8" fill="rgba(13,148,136,.2)"/>
+                  </svg>
+                  <div class="chart-labels">
+                    <span>Avr</span><span>Mai</span><span>Juin</span><span>Juil</span><span>Aout</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Fev</span><span>Mar</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="app-card">
-              <div style="font-size:12px;font-weight:700;color:var(--dt);margin-bottom:10px;">&#x2661; {{ t('demo_wb_title') }}</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
-                <div style="text-align:center;background:var(--dk4);border-radius:8px;padding:10px;">
-                  <div style="font-size:22px;font-weight:900;color:var(--teal);font-family:'JetBrains Mono',monospace;">7.2</div>
-                  <div style="font-size:9px;color:var(--dt3);margin-top:2px;">Score</div>
+            <!-- Right: Roadmap + Wellbeing -->
+            <div class="content-right">
+              <!-- Roadmap -->
+              <div class="roadmap-card">
+                <div class="roadmap-header">
+                  <div>
+                    <span class="roadmap-title">{{ t('demo_roadmap_title') }}</span>
+                    <span class="roadmap-phase">{{ t('demo_roadmap_phase') }}</span>
+                  </div>
+                  <div class="roadmap-pct">67%</div>
                 </div>
-                <div style="text-align:center;background:var(--dk4);border-radius:8px;padding:10px;">
-                  <div style="font-size:12px;font-weight:800;color:var(--amber);">{{ t('demo_burnout_mod') }}</div>
-                  <div style="font-size:9px;color:var(--dt3);margin-top:2px;">{{ t('demo_burnout_risk') }}</div>
+                <div class="roadmap-bar"><div class="roadmap-fill" style="width:67%"></div></div>
+                <div class="roadmap-items">
+                  <div class="roadmap-item done"><span class="ri-check">&#10003;</span>{{ t('demo_rd1') }}</div>
+                  <div class="roadmap-item done"><span class="ri-check">&#10003;</span>{{ t('demo_rd2') }}</div>
+                  <div class="roadmap-item current"><span class="ri-dot"></span>{{ t('demo_rd3') }}</div>
+                  <div class="roadmap-item pending"><span class="ri-dot pending-dot"></span>{{ t('demo_rd4') }}</div>
                 </div>
               </div>
-              <div style="display:flex;flex-direction:column;gap:6px;">
-                <div style="display:flex;align-items:center;gap:7px;">
-                  <div style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;">S</div>
-                  <div style="flex:1;"><div style="display:flex;justify-content:space-between;font-size:10px;"><span style="font-weight:700;">Sophie</span><span style="color:var(--green);font-weight:700;">65%</span></div><div style="height:3px;background:var(--dk5);border-radius:2px;margin-top:3px;overflow:hidden;"><div style="width:35%;height:100%;background:var(--green);border-radius:2px;"></div></div></div>
+              <!-- Wellbeing -->
+              <div class="wb-card">
+                <div class="wb-header">
+                  <span class="wb-title">{{ t('demo_wb_title') }}</span>
+                  <div class="wb-score-badge">7.2</div>
                 </div>
-                <div style="display:flex;align-items:center;gap:7px;">
-                  <div style="width:22px;height:22px;border-radius:50%;background:var(--amber);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;">T</div>
-                  <div style="flex:1;"><div style="display:flex;justify-content:space-between;font-size:10px;"><span style="font-weight:700;">Thomas</span><span style="color:var(--amber);font-weight:700;">78%</span></div><div style="height:3px;background:var(--dk5);border-radius:2px;margin-top:3px;overflow:hidden;"><div style="width:22%;height:100%;background:var(--amber);border-radius:2px;"></div></div></div>
-                </div>
-                <div style="display:flex;align-items:center;gap:7px;">
-                  <div style="width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;">M</div>
-                  <div style="flex:1;"><div style="display:flex;justify-content:space-between;font-size:10px;"><span style="font-weight:700;">Marie</span><span style="color:var(--red);font-weight:700;">89%</span></div><div style="height:3px;background:var(--dk5);border-radius:2px;margin-top:3px;overflow:hidden;"><div style="width:11%;height:100%;background:var(--red);border-radius:2px;"></div></div></div>
+                <div class="wb-members">
+                  <div class="wb-member">
+                    <div class="wb-m-avatar" style="background:var(--teal)">S</div>
+                    <span class="wb-m-name">Sophie</span>
+                    <div class="wb-m-bar"><div class="wb-m-fill" style="width:65%;background:var(--green)"></div></div>
+                    <span class="wb-m-val" style="color:var(--green)">65%</span>
+                  </div>
+                  <div class="wb-member">
+                    <div class="wb-m-avatar" style="background:var(--amber)">T</div>
+                    <span class="wb-m-name">Thomas</span>
+                    <div class="wb-m-bar"><div class="wb-m-fill" style="width:78%;background:var(--amber)"></div></div>
+                    <span class="wb-m-val" style="color:var(--amber)">78%</span>
+                  </div>
+                  <div class="wb-member">
+                    <div class="wb-m-avatar" style="background:var(--red)">M</div>
+                    <span class="wb-m-name">Marie</span>
+                    <div class="wb-m-bar"><div class="wb-m-fill" style="width:89%;background:var(--red)"></div></div>
+                    <span class="wb-m-val" style="color:var(--red)">89%</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   </div>
@@ -1462,124 +1535,247 @@ nav.scrolled {
 }
 .hsp-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--dk5); }
 
-/* PRODUCT SCREENSHOT — hero bottom */
+/* PRODUCT SCREENSHOT — hero bottom — full width */
 .hero-screenshot {
-  max-width: 960px; margin: 80px auto 0;
-  padding: 0 24px;
+  max-width: 1320px; margin: 80px auto 0;
+  padding: 0 32px;
   position: relative;
 }
 .screenshot-glow {
-  position: absolute; bottom: -60px; left: 50%; transform: translateX(-50%);
-  width: 90%; height: 300px;
-  background: radial-gradient(ellipse, rgba(13,148,136,.15), rgba(13,148,136,.04) 50%, transparent 75%);
-  pointer-events: none; filter: blur(8px);
+  position: absolute; bottom: -80px; left: 50%; transform: translateX(-50%);
+  width: 80%; height: 400px;
+  background: radial-gradient(ellipse, rgba(13,148,136,.18), rgba(13,148,136,.05) 50%, transparent 75%);
+  pointer-events: none; filter: blur(12px);
 }
 .app-shell {
-  border-radius: 20px; overflow: hidden;
-  border: 1px solid rgba(13,148,136,.12);
-  box-shadow: 0 20px 60px rgba(0,0,0,.5), 0 8px 24px rgba(0,0,0,.25), 0 0 0 1px rgba(13,148,136,.08), 0 0 80px rgba(13,148,136,.06);
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid rgba(13,148,136,.15);
+  box-shadow: 0 25px 80px rgba(0,0,0,.6), 0 8px 32px rgba(0,0,0,.3), 0 0 0 1px rgba(13,148,136,.1), 0 0 120px rgba(13,148,136,.08);
   transition: all .6s cubic-bezier(.16,1,.3,1);
   animation: heroScreenshotIn 1.2s cubic-bezier(.16,1,.3,1) .5s both;
+  background: #0c1117;
 }
 @keyframes heroScreenshotIn {
-  from { opacity: 0; transform: translateY(60px) scale(.96) perspective(1200px) rotateX(4deg); }
+  from { opacity: 0; transform: translateY(60px) scale(.97) perspective(1200px) rotateX(3deg); }
   to { opacity: 1; transform: none; }
 }
 .app-shell:hover {
-  box-shadow: 0 28px 72px rgba(0,0,0,.5), 0 12px 32px rgba(0,0,0,.3), 0 0 100px rgba(13,148,136,.1);
-  transform: translateY(-4px) scale(1.005);
+  box-shadow: 0 32px 90px rgba(0,0,0,.6), 0 16px 40px rgba(0,0,0,.35), 0 0 120px rgba(13,148,136,.12);
+  transform: translateY(-4px) scale(1.003);
 }
+/* Browser chrome */
 .app-topbar {
-  height: 44px; background: linear-gradient(180deg, var(--dk3), var(--dk2)); border-bottom: 1px solid var(--dline);
-  display: flex; align-items: center; padding: 0 16px; gap: 8px;
+  height: 48px; background: #161b22; border-bottom: 1px solid rgba(255,255,255,.06);
+  display: flex; align-items: center; padding: 0 16px; gap: 12px;
 }
-.topbar-dots { display: flex; gap: 6px; }
-.td { width: 11px; height: 11px; border-radius: 50%; }
+.topbar-dots { display: flex; gap: 7px; }
+.td { width: 12px; height: 12px; border-radius: 50%; }
 .topbar-url {
-  flex: 1; height: 26px;
-  background: var(--dk3); border-radius: 6px; border: 1px solid var(--dline);
-  display: flex; align-items: center; padding: 0 10px; gap: 6px;
-  font-size: 11.5px; color: var(--dt3); max-width: 320px; margin: 0 auto;
+  flex: 1; height: 30px;
+  background: rgba(255,255,255,.04); border-radius: 8px; border: 1px solid rgba(255,255,255,.06);
+  display: flex; align-items: center; justify-content: center; padding: 0 14px;
+  font-size: 12px; color: rgba(255,255,255,.4); max-width: 280px; margin: 0 auto;
+  letter-spacing: .01em;
 }
-.topbar-status { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--dt3); }
-.status-dot { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-
-.app-layout { display: flex; min-height: 480px; background: var(--dk2); gap: 0; }
-.app-breadcrumb {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 12px; margin-bottom: 8px;
-  background: var(--dk3); border-bottom: 1px solid var(--dline); border-radius: 0;
-  margin: -20px -20px 16px -20px; padding: 10px 20px;
+.topbar-actions { display: flex; gap: 6px; }
+.topbar-action-btn {
+  width: 28px; height: 28px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.3); transition: all .15s;
 }
-.breadcrumb-online { display: flex; align-items: center; gap: 5px; }
-.kpi-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-.kpi-ico { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+.topbar-action-btn:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.5); }
+/* App layout */
+.app-layout { display: flex; min-height: 540px; background: #0d1117; }
+/* Sidebar */
 .app-sidebar {
-  width: 130px; flex-shrink: 0;
-  background: var(--dk3); border-right: 1px solid var(--dline);
-  padding: 10px 6px;
-  display: flex; flex-direction: column;
+  width: 200px; flex-shrink: 0;
+  background: #0d1117; border-right: 1px solid rgba(255,255,255,.06);
+  padding: 0; display: flex; flex-direction: column;
 }
-.sb-logo { display: flex; align-items: center; gap: 6px; padding: 4px 6px; margin-bottom: 12px; }
-.sb-logo-circle { width: 20px; height: 20px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
-.sb-logo-txt { font-size: 12px; font-weight: 700; letter-spacing: -.025em; color: var(--dt); }
-.sb-item {
-  display: flex; align-items: center; gap: 6px;
-  padding: 5px 6px; border-radius: 5px;
-  font-size: 10.5px; color: var(--dt3); white-space: nowrap;
-  cursor: default; margin-bottom: 1px;
+.sb-brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 16px 12px; border-bottom: 1px solid rgba(255,255,255,.06);
 }
-.sb-item.active { background: var(--teal2); color: var(--teal); font-weight: 500; }
-.sb-icon { width: 12px; text-align: center; flex-shrink: 0; font-size: 11px; }
-.sb-bottom { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--dline); }
-.sb-langs { display: flex; gap: 4px; padding: 4px 6px; margin-bottom: 4px; }
-.sb-lang { font-size: 9px; color: var(--dt3); padding: 2px 5px; border-radius: 4px; cursor: default; }
-.sb-lang.active { background: rgba(13,148,136,.1); color: var(--teal); font-weight: 600; }
-.sb-profile { display: flex; align-items: center; gap: 6px; padding: 6px; margin-top: 4px; }
-.sb-avatar { width: 22px; height: 22px; border-radius: 50%; background: var(--teal); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; }
-
-.app-main { flex: 1; padding: 20px; overflow: hidden; background: var(--dk2); }
-.app-header { margin-bottom: 20px; }
-.app-title { font-size: 17px; font-weight: 700; letter-spacing: -.025em; color: var(--dt); margin-bottom: 2px; }
-.app-subtitle { font-size: 12px; color: var(--dt3); display: flex; align-items: center; gap: 5px; }
-.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 16px; }
-.kpi {
-  background: var(--dk3); border: 1px solid var(--dline);
-  border-radius: 10px; padding: 14px 16px;
+.sb-logo-mark {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--teal), #0ea5e9);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: #fff;
+}
+.sb-brand-text { display: flex; flex-direction: column; }
+.sb-brand-name { font-size: 14px; font-weight: 700; color: #f0f6fc; letter-spacing: -.02em; }
+.sb-brand-plan { font-size: 10px; color: var(--teal); font-weight: 600; letter-spacing: .03em; text-transform: uppercase; }
+.sb-section { padding: 8px 8px 0; }
+.sb-nav {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: 8px;
+  font-size: 13px; color: rgba(255,255,255,.45); white-space: nowrap;
+  cursor: default; margin-bottom: 2px; transition: all .15s;
+}
+.sb-nav.active { background: rgba(13,148,136,.12); color: var(--teal); font-weight: 600; }
+.sb-ico { width: 16px; text-align: center; font-size: 10px; flex-shrink: 0; }
+.sb-divider { height: 1px; background: rgba(255,255,255,.06); margin: 8px 16px; }
+.sb-user {
+  margin-top: auto; padding: 12px 16px;
+  border-top: 1px solid rgba(255,255,255,.06);
+  display: flex; align-items: center; gap: 10px;
+}
+.sb-user-avatar {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--teal), #14b8a6);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; flex-shrink: 0;
+}
+.sb-user-info { display: flex; flex-direction: column; }
+.sb-user-name { font-size: 12px; font-weight: 600; color: #f0f6fc; }
+.sb-user-role { font-size: 10px; color: rgba(255,255,255,.35); }
+/* Main content */
+.app-main { flex: 1; padding: 0; overflow: hidden; background: #0d1117; }
+.main-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px; border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.main-topbar-left { display: flex; align-items: baseline; gap: 10px; }
+.main-page-title { font-size: 16px; font-weight: 700; color: #f0f6fc; }
+.main-page-date { font-size: 12px; color: rgba(255,255,255,.35); }
+.main-topbar-right { display: flex; align-items: center; gap: 8px; }
+.main-badge {
+  font-size: 11px; padding: 4px 10px; border-radius: 100px; font-weight: 600;
+}
+.badge-teal { background: rgba(13,148,136,.1); color: var(--teal); border: 1px solid rgba(13,148,136,.2); }
+.badge-purple { background: rgba(168,85,247,.1); color: #a78bfa; border: 1px solid rgba(168,85,247,.2); }
+.main-notif { position: relative; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.4); background: rgba(255,255,255,.04); }
+.notif-dot { position: absolute; top: 6px; right: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--red); }
+/* KPI row */
+.kpi-row {
+  display: grid; grid-template-columns: repeat(5,1fr); gap: 12px;
+  padding: 20px 24px 0;
+}
+.kpi-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 12px; padding: 16px 18px;
   transition: all .2s;
 }
-.kpi:hover { border-color: var(--dline2); background: var(--dk4); }
-.kpi-lbl { font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--dt3); }
-.kpi-val { font-size: 26px; font-weight: 700; letter-spacing: -.04em; line-height: 1; margin-bottom: 6px; color: var(--dt); }
-.kpi-delta { font-size: 11px; font-weight: 500; }
-.c-teal { color: var(--teal); }
-.c-blue { color: #60A5FA; }
-.c-green { color: #4ADE80; }
-.c-amber { color: #FBBF24; }
-.app-row2 { display: grid; grid-template-columns: 3fr 2fr; gap: 10px; }
-.app-card { background: var(--dk3); border: 1px solid var(--dline); border-radius: 10px; padding: 16px; }
-.card-lbl { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--dt3); margin-bottom: 14px; }
-.chart-wrap { display: flex; align-items: flex-end; gap: 6px; height: 60px; }
-.bar { border-radius: 3px 3px 0 0; flex: 1; min-width: 0; animation: barGrow .8s cubic-bezier(.16,1,.3,1) both; transform-origin: bottom; }
-.bar:nth-child(1) { animation-delay: .6s; }
-.bar:nth-child(2) { animation-delay: .7s; }
-.bar:nth-child(3) { animation-delay: .8s; }
-.bar:nth-child(4) { animation-delay: .9s; }
-.bar:nth-child(5) { animation-delay: 1s; }
-.bar:nth-child(6) { animation-delay: 1.1s; }
-@keyframes barGrow { from { transform: scaleY(0); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
-.accounts-list { display: flex; flex-direction: column; gap: 7px; }
-.account {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 10px; border-radius: 7px;
-  background: var(--dk3); border: 1px solid var(--dline);
+.kpi-card:hover { border-color: rgba(13,148,136,.2); background: rgba(255,255,255,.05); }
+.kpi-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: rgba(255,255,255,.4); }
+.kpi-icon { width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.kpi-icon-teal { background: rgba(13,148,136,.12); color: var(--teal); }
+.kpi-icon-green { background: rgba(34,197,94,.12); color: #22c55e; }
+.kpi-icon-red { background: rgba(248,113,113,.12); color: #f87171; }
+.kpi-icon-blue { background: rgba(96,165,250,.12); color: #60a5fa; }
+.kpi-value { font-size: 28px; font-weight: 800; letter-spacing: -.04em; line-height: 1; margin-bottom: 6px; color: #f0f6fc; font-family: 'JetBrains Mono', monospace; }
+.kpi-unit { font-size: 14px; color: rgba(255,255,255,.3); font-weight: 500; }
+.kpi-teal { color: var(--teal); }
+.kpi-red { color: #f87171; }
+.kpi-blue { color: #60a5fa; }
+.kpi-sub { font-size: 11px; color: rgba(255,255,255,.35); }
+.kpi-trend { font-weight: 700; margin-right: 4px; }
+.kpi-up { color: #22c55e; }
+.kpi-down { color: #f87171; }
+/* Content grid */
+.content-grid {
+  display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px;
+  padding: 16px 24px 24px;
 }
-.acc-name { font-size: 12px; font-weight: 500; color: var(--dt); }
-.acc-tag { padding: 2px 8px; border-radius: 100px; font-size: 10px; font-weight: 600; }
-.tag-red { background: rgba(248,113,113,.08); color: #F87171; border: 1px solid rgba(248,113,113,.15); }
-.tag-amber { background: rgba(251,191,36,.08); color: #FBBF24; border: 1px solid rgba(251,191,36,.15); }
-.tag-green { background: rgba(74,222,128,.07); color: #4ADE80; border: 1px solid rgba(74,222,128,.12); }
+.content-left { display: flex; flex-direction: column; gap: 16px; }
+.content-right { display: flex; flex-direction: column; gap: 16px; }
+/* Alert card */
+.alert-card {
+  background: rgba(248,113,113,.04); border: 1px solid rgba(248,113,113,.1);
+  border-radius: 12px; padding: 16px;
+}
+.alert-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.alert-title { font-size: 13px; font-weight: 700; color: #f87171; }
+.alert-action { font-size: 11px; color: rgba(248,113,113,.7); font-weight: 500; cursor: pointer; }
+.alert-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: 10px;
+  background: rgba(248,113,113,.04); margin-bottom: 8px;
+}
+.alert-row:last-child { margin-bottom: 0; }
+.alert-avatar {
+  width: 32px; height: 32px; border-radius: 10px;
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; flex-shrink: 0;
+}
+.alert-avatar-red { background: linear-gradient(135deg, #ef4444, #f87171); }
+.alert-avatar-orange { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+.alert-info { flex: 1; min-width: 0; }
+.alert-name { display: block; font-size: 12px; font-weight: 700; color: #f0f6fc; }
+.alert-reason { display: block; font-size: 10px; color: rgba(255,255,255,.35); margin-top: 2px; }
+.alert-meta { text-align: right; flex-shrink: 0; }
+.alert-amount { display: block; font-size: 12px; font-weight: 700; color: #f87171; }
+.alert-date { display: block; font-size: 10px; color: rgba(255,255,255,.3); }
+/* Chart card */
+.chart-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 12px; padding: 16px; flex: 1;
+}
+.chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.chart-title { font-size: 13px; font-weight: 700; color: #f0f6fc; }
+.chart-tabs { display: flex; gap: 4px; }
+.chart-tab {
+  font-size: 10px; padding: 4px 10px; border-radius: 6px;
+  color: rgba(255,255,255,.35); font-weight: 600; cursor: default;
+}
+.chart-tab.active { background: rgba(13,148,136,.12); color: var(--teal); }
+.chart-area { position: relative; }
+.chart-svg { width: 100%; height: auto; display: block; }
+.chart-labels {
+  display: flex; justify-content: space-between;
+  font-size: 9px; color: rgba(255,255,255,.2); padding-top: 6px;
+}
+/* Roadmap card */
+.roadmap-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 12px; padding: 16px;
+}
+.roadmap-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+.roadmap-title { display: block; font-size: 13px; font-weight: 700; color: #f0f6fc; }
+.roadmap-phase { display: block; font-size: 10px; color: rgba(255,255,255,.35); margin-top: 2px; }
+.roadmap-pct { font-size: 24px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace; }
+.roadmap-bar { height: 5px; background: rgba(255,255,255,.06); border-radius: 3px; overflow: hidden; margin-bottom: 14px; }
+.roadmap-fill { height: 100%; background: linear-gradient(90deg, var(--teal), #14b8a6); border-radius: 3px; }
+.roadmap-items { display: flex; flex-direction: column; gap: 6px; }
+.roadmap-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 8px;
+  font-size: 12px; color: rgba(255,255,255,.35);
+}
+.roadmap-item.done { background: rgba(255,255,255,.03); }
+.roadmap-item.done span:last-child { text-decoration: line-through; }
+.ri-check { color: var(--teal); font-size: 11px; font-weight: 700; width: 16px; text-align: center; }
+.roadmap-item.current {
+  background: rgba(13,148,136,.08); border: 1px solid rgba(13,148,136,.15);
+  color: #f0f6fc; font-weight: 600;
+}
+.ri-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+.pending-dot { background: rgba(255,255,255,.15); }
+.roadmap-item.pending { opacity: .5; }
+/* Wellbeing card */
+.wb-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 12px; padding: 16px; flex: 1;
+}
+.wb-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.wb-title { font-size: 13px; font-weight: 700; color: #f0f6fc; }
+.wb-score-badge {
+  font-size: 18px; font-weight: 900; color: var(--teal);
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(13,148,136,.1); padding: 4px 12px; border-radius: 8px;
+}
+.wb-members { display: flex; flex-direction: column; gap: 10px; }
+.wb-member { display: flex; align-items: center; gap: 10px; }
+.wb-m-avatar {
+  width: 26px; height: 26px; border-radius: 8px;
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.wb-m-name { font-size: 12px; font-weight: 600; color: #f0f6fc; width: 60px; }
+.wb-m-bar { flex: 1; height: 4px; background: rgba(255,255,255,.06); border-radius: 2px; overflow: hidden; }
+.wb-m-fill { height: 100%; border-radius: 2px; }
+.wb-m-val { font-size: 12px; font-weight: 700; width: 36px; text-align: right; }
 
 /* ────────────────────────────────────
    ALL SECTIONS — full dark
@@ -2080,7 +2276,10 @@ footer {
   .btn-secondary { justify-content: center; padding: 14px 20px; font-size: 15px; }
   .hero-social-proof { flex-wrap: wrap; justify-content: center; gap: 10px; font-size: 12px; }
   .hsp-sep { display: none; }
-  .hero-screenshot { margin-top: 40px; border-radius: 12px; }
+  .hero-screenshot { margin-top: 40px; padding: 0 16px; }
+  .app-sidebar { width: 160px; }
+  .kpi-row { grid-template-columns: repeat(3,1fr); }
+  .content-grid { grid-template-columns: 1fr; }
 
   /* SECTIONS */
   .section { padding: 64px 20px; }
@@ -2360,8 +2559,13 @@ footer {
 @media (max-width: 480px) {
   /* Hero inner */
   .hero-inner { max-width: 100%; padding: 0 4px; }
-  .hero-screenshot { width: 100%; overflow: hidden; }
+  .hero-screenshot { width: 100%; overflow: hidden; padding: 0 8px; }
   .hero-screenshot img, .hero-screenshot > * { max-width: 100%; }
+  .app-sidebar { display: none; }
+  .kpi-row { grid-template-columns: repeat(2,1fr); }
+  .main-topbar { padding: 10px 14px; }
+  .kpi-row { padding: 12px 14px 0; }
+  .content-grid { padding: 12px 14px 14px; grid-template-columns: 1fr; }
 
   /* Containers */
   .container, .container-narrow { max-width: 100%; padding: 0 16px; }
