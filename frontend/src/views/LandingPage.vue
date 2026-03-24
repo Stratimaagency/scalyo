@@ -76,37 +76,6 @@
         <div class="topbar-status"><div class="status-dot"></div>{{ t('demo_live') }}</div>
       </div>
       <div class="app-layout">
-        <div class="app-sidebar">
-          <div class="sb-logo">
-            <div class="sb-logo-circle"></div>
-            <span class="sb-logo-txt">scal<span style="color:var(--teal)">yo</span></span>
-          </div>
-          <div class="sb-item active"><span class="sb-icon">&#x25A6;</span><span>{{ t('demo_dashboard') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x1F4BC;</span><span>{{ t('demo_portfolio') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x2197;</span>KPIs COPIL</div>
-          <div class="sb-item"><span class="sb-icon">&#x1F4C5;</span>Planning</div>
-          <div class="sb-item"><span class="sb-icon">&#x2611;</span>Task Board</div>
-          <div class="sb-item"><span class="sb-icon">&#x1F49A;</span><span>{{ t('feat_wb') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x1F916;</span><span>Coach IA</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x1F4CA;</span><span>Ressources</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x1F4DD;</span><span>Devis</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x2709;</span><span>{{ t('feat_email') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x1F517;</span><span>Intégrations</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x1F5FA;</span><span>Roadmap</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x1F4CD;</span><span>Guide CS</span></div>
-          <div class="sb-bottom">
-            <div class="sb-langs">
-              <span class="sb-lang active">🇫🇷 FR</span>
-              <span class="sb-lang">🇬🇧 EN</span>
-              <span class="sb-lang">🇰🇷 KR</span>
-            </div>
-            <div class="sb-item"><span class="sb-icon">&#x2699;</span><span>Paramètres</span></div>
-            <div class="sb-profile">
-              <div class="sb-avatar">C</div>
-              <div><div style="font-size:10px;font-weight:600;color:var(--dt);">la fabrique</div><div style="font-size:9px;color:var(--dt3);">Starter · Manager</div></div>
-            </div>
-          </div>
-        </div>
         <div class="app-main">
           <div class="app-breadcrumb">
             <div style="display:flex;align-items:center;gap:8px;">
