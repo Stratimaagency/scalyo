@@ -51,7 +51,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !isAuthenticated) {
     return next({ name: 'login' })
   }
-  if (to.meta.guest && isAuthenticated) {
+  if (to.meta.guest && isAuthenticated && to.name !== 'landing') {
     return next({ name: 'dashboard' })
   }
   next()
