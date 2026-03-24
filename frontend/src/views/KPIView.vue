@@ -164,7 +164,7 @@ onMounted(async () => {
     rows.forEach(row => {
       if (row.period === '__custom__') customKpis.value = row.custom_kpis || []
       else if (row.period === '__goals__') Object.assign(goals, row.goals || {})
-      else if (row.kpis) Object.assign(kpis, row.kpis)
+      else if (row.period === period.value && row.kpis) Object.assign(kpis, row.kpis)
     })
   } catch {}
 })
@@ -178,7 +178,7 @@ function fmtK(v) {
 async function saveMonthly() {
   saving.value = true
   try {
-    await kpiApi.saveMonthly({ period: period.value, kpis: { ...kpis }, goals: { ...goals } })
+    await kpiApi.saveMonthly({ period: period.value, kpis: { ...kpis } })
   } catch (e) {
     console.error('saveMonthly error:', e)
   }

@@ -28,19 +28,19 @@ kpis.get('/', async (c) => {
 // POST /api/kpis/monthly/
 kpis.post('/monthly/', async (c) => {
   const { company_id } = c.get('user')
-  const { period, kpis: kpisData, goals } = await c.req.json()
+  const { period, kpis: kpisData } = await c.req.json()
 
   if (!period || period.startsWith('__')) {
     return c.json({ error: 'Invalid period' }, 400)
   }
 
   const row = await c.env.DB.prepare(
-    `INSERT INTO kpi_data (company_id, period, kpis, goals, updated_at)
-     VALUES (?, ?, ?, ?, datetime('now'))
+    `INSERT INTO kpi_data (company_id, period, kpis, updated_at)
+     VALUES (?, ?, ?, datetime('now'))
      ON CONFLICT(company_id, period) DO UPDATE SET
-       kpis = excluded.kpis, goals = excluded.goals, updated_at = datetime('now')
+       kpis = excluded.kpis, updated_at = datetime('now')
      RETURNING *`
-  ).bind(company_id, period, JSON.stringify(kpisData || {}), JSON.stringify(goals || {})).first()
+  ).bind(company_id, period, JSON.stringify(kpisData || {})).first()
 
   return c.json(parseKpiRow(row))
 })

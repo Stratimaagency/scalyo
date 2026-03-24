@@ -318,7 +318,8 @@
     <!-- Import modal -->
     <AppModal v-if="showImport" :title="t('importPortfolio')" @close="showImport = false" maxWidth="600px">
       <!-- File drop zone -->
-      <div v-if="!importFile" class="import-drop-zone" @click="$refs.fileInput.click()">
+      <div v-if="!importFile" class="import-drop-zone" @click="$refs.fileInput.click()"
+        @dragover.prevent @dragenter.prevent @drop.prevent="handleDrop">
         <input ref="fileInput" type="file" accept=".csv" style="display: none" @change="handleFileSelect" />
         <div style="margin-bottom: 12px;"><ScalyoIcon name="folder" :size="36" /></div>
         <div style="font-weight: 700;">{{ t('importDropTitle') || 'Drop your CSV file here or click to browse' }}</div>
@@ -808,6 +809,14 @@ async function saveTodos() {
 function handleFileSelect(e) {
   const file = e.target.files[0]
   if (!file) return
+  importFile.value = file
+  parseImportFile(file)
+}
+
+function handleDrop(e) {
+  const file = e.dataTransfer?.files?.[0]
+  if (!file) return
+  if (!file.name.endsWith('.csv')) return
   importFile.value = file
   parseImportFile(file)
 }
