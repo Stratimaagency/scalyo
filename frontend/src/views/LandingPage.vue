@@ -76,6 +76,26 @@
         <div class="topbar-status"><div class="status-dot"></div>{{ t('demo_live') }}</div>
       </div>
       <div class="app-layout">
+        <div class="app-sidebar">
+          <div class="sb-logo">
+            <div class="sb-logo-circle"></div>
+            <span class="sb-logo-txt">scal<span style="color:var(--teal)">yo</span></span>
+          </div>
+          <div class="sb-item active"><span class="sb-icon">&#x25A6;</span><span>{{ t('demo_dashboard') }}</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x1F4BC;</span><span>{{ t('demo_portfolio') }}</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x2197;</span>KPIs</div>
+          <div class="sb-item"><span class="sb-icon">&#x1F4C5;</span>Planning</div>
+          <div class="sb-item"><span class="sb-icon">&#x2611;</span>Tasks</div>
+          <div class="sb-item"><span class="sb-icon">&#x1F49A;</span><span>{{ t('feat_wb') }}</span></div>
+          <div class="sb-item"><span class="sb-icon">&#x1F916;</span>Coach IA</div>
+          <div class="sb-item"><span class="sb-icon">&#x2709;</span><span>{{ t('feat_email') }}</span></div>
+          <div class="sb-bottom">
+            <div class="sb-profile">
+              <div class="sb-avatar">C</div>
+              <div><div style="font-size:10px;font-weight:600;color:var(--dt);">la fabrique</div><div style="font-size:9px;color:var(--dt3);">Starter</div></div>
+            </div>
+          </div>
+        </div>
         <div class="app-main">
           <div class="app-breadcrumb">
             <div style="display:flex;align-items:center;gap:8px;">
@@ -1444,7 +1464,7 @@ nav.scrolled {
 
 /* PRODUCT SCREENSHOT — hero bottom */
 .hero-screenshot {
-  max-width: 1080px; margin: 80px auto 0;
+  max-width: 960px; margin: 80px auto 0;
   padding: 0 24px;
   position: relative;
 }
@@ -1485,7 +1505,7 @@ nav.scrolled {
 .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; animation: pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-.app-layout { display: flex; min-height: 480px; background: var(--dk2); }
+.app-layout { display: flex; min-height: 480px; background: var(--dk2); gap: 0; }
 .app-breadcrumb {
   display: flex; align-items: center; justify-content: space-between;
   padding: 8px 12px; margin-bottom: 8px;
