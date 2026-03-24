@@ -801,9 +801,9 @@
           <li><div class="pf-yes">&#x2713;</div>{{ t('feat_dash') }}</li>
           <li><div class="pf-yes">&#x2713;</div>{{ t('feat_tasks') }}</li>
           <li><div class="pf-yes">&#x2713;</div>{{ t('feat_res') }}</li>
-          <li class="na"><div class="pf-no">&mdash;</div>{{ t('feat_wb') }}</li>
-          <li class="na"><div class="pf-no">&mdash;</div>{{ t('feat_coach') }}</li>
-          <li class="na"><div class="pf-no">&mdash;</div>{{ t('feat_email') }}</li>
+          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_wb') }}</li>
+          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_coach') }}</li>
+          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_email') }}</li>
         </ul>
         <a href="https://buy.stripe.com/bJebJ1amncpL7mBekAdfG01" target="_blank" class="plan-btn pb-outline">{{ t('cta_trial') }}</a>
       </div>
