@@ -76,20 +76,6 @@
         <div class="topbar-status"><div class="status-dot"></div>{{ t('demo_live') }}</div>
       </div>
       <div class="app-layout">
-        <div class="app-sidebar">
-          <div class="sb-logo">
-            <div class="sb-logo-dot"></div>
-            <span class="sb-logo-txt">scal<span style="color:var(--teal)">yo</span></span>
-          </div>
-          <div class="sb-item active"><span class="sb-icon">&#x25A6;</span><span>{{ t('demo_dashboard') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x1F4BC;</span><span>{{ t('demo_portfolio') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x2197;</span>KPIs</div>
-          <div class="sb-item"><span class="sb-icon">&#x1F4C5;</span>Planning</div>
-          <div class="sb-item"><span class="sb-icon">&#x2611;</span>Tasks</div>
-          <div class="sb-item"><span class="sb-icon">&#x2661;</span><span>{{ t('feat_wb') }}</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x1F916;</span><span>Coach IA</span></div>
-          <div class="sb-item"><span class="sb-icon">&#x2709;</span><span>{{ t('feat_email') }}</span></div>
-        </div>
         <div class="app-main">
           <div class="app-header">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;">
@@ -1487,27 +1473,9 @@ nav.scrolled {
 .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; animation: pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-.app-layout { display: flex; background: var(--dk2); min-height: 420px; }
-.app-sidebar {
-  width: 200px; flex-shrink: 0;
-  background: var(--dk3); border-right: 1px solid var(--dline);
-  padding: 16px 10px;
-}
-.sb-logo { display: flex; align-items: center; gap: 7px; padding: 6px 8px; margin-bottom: 20px; }
-.sb-logo-dot { width: 18px; height: 18px; border-radius: 5px; background: var(--teal); flex-shrink: 0; }
-.sb-logo-txt { font-size: 13px; font-weight: 700; letter-spacing: -.025em; color: var(--dt); }
-.sb-section { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--dt3); padding: 6px 10px 4px; margin-top: 8px; }
-.sb-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 7px 10px; border-radius: 6px;
-  font-size: 12.5px; color: var(--dt3);
-  cursor: default; margin-bottom: 1px; transition: all .15s;
-}
-.sb-item:hover { background: var(--dk3); color: var(--dt2); }
-.sb-item.active { background: var(--teal2); color: var(--teal); font-weight: 500; }
-.sb-icon { width: 14px; text-align: center; flex-shrink: 0; font-size: 13px; }
+.app-layout { background: var(--dk2); min-height: 420px; }
 
-.app-main { flex: 1; padding: 24px; overflow: hidden; }
+.app-main { padding: 24px; overflow: hidden; }
 .app-header { margin-bottom: 20px; }
 .app-title { font-size: 17px; font-weight: 700; letter-spacing: -.025em; color: var(--dt); margin-bottom: 2px; }
 .app-subtitle { font-size: 12px; color: var(--dt3); display: flex; align-items: center; gap: 5px; }
