@@ -9,8 +9,8 @@ export function useChat(apiFn) {
   const input = ref('')
   const sending = ref(false)
 
-  async function send() {
-    const text = input.value.trim()
+  async function send(directText) {
+    const text = (directText || input.value).trim()
     if (!text || sending.value) return
 
     messages.value.push({ role: 'user', content: text })

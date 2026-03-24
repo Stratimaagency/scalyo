@@ -43,8 +43,13 @@ coach.post('/chat/', async (c) => {
       return c.json({ error: data.error?.message || 'AI request failed' }, response.status)
     }
 
+    const text = data.content?.[0]?.text
+    if (!text) {
+      return c.json({ error: 'No response from AI' }, 502)
+    }
+
     return c.json({
-      content: data.content[0].text,
+      content: text,
       role: 'assistant',
     })
   } catch (e) {

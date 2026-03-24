@@ -318,17 +318,18 @@
     <!-- Import modal -->
     <AppModal v-if="showImport" :title="t('importPortfolio')" @close="showImport = false" maxWidth="600px">
       <!-- File drop zone -->
-      <div v-if="!importFile" class="import-drop-zone" @click="$refs.fileInput.click()">
-        <input ref="fileInput" type="file" accept=".csv,.xlsx,.xls" style="display: none" @change="handleFileSelect" />
+      <div v-if="!importFile" class="import-drop-zone" @click="$refs.fileInput.click()"
+        @dragover.prevent @dragenter.prevent @drop.prevent="handleDrop">
+        <input ref="fileInput" type="file" accept=".csv" style="display: none" @change="handleFileSelect" />
         <div style="margin-bottom: 12px;"><ScalyoIcon name="folder" :size="36" /></div>
-        <div style="font-weight: 700;">Drop your file here or click to browse</div>
-        <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">Supported: CSV, Excel (.xlsx, .xls)</div>
+        <div style="font-weight: 700;">{{ t('importDropTitle') || 'Drop your CSV file here or click to browse' }}</div>
+        <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">{{ t('importDropHint') || 'Supported: CSV' }}</div>
       </div>
 
       <!-- Column mapping preview -->
       <template v-if="importFile && importPreview.length && !importRunning">
         <div style="margin-bottom: 12px;">
-          <div style="font-weight: 700; font-size: 13px; margin-bottom: 8px;">Column mapping preview</div>
+          <div style="font-weight: 700; font-size: 13px; margin-bottom: 8px;">{{ t('importPreviewTitle') || 'Column mapping preview' }}</div>
           <div style="background: var(--surface); border-radius: 10px; padding: 12px; font-size: 12px; overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse;">
               <thead>
@@ -348,18 +349,18 @@
             </table>
           </div>
           <div style="font-size: 11px; color: var(--muted); margin-top: 6px;">
-            {{ importPreview.length }} rows detected. Showing first {{ Math.min(3, importPreview.length) }}.
+            {{ importPreview.length }} {{ t('importRowsDetected') || 'rows detected' }}.
           </div>
         </div>
         <div style="display: flex; gap: 8px;">
           <button class="btn btn-secondary" @click="resetImport" style="flex: 1;">{{ t('cancel') }}</button>
-          <button class="btn btn-primary" @click="runImport" style="flex: 2;">Import {{ importPreview.length }} accounts</button>
+          <button class="btn btn-primary" @click="runImport" style="flex: 2;">{{ t('importBtn') || 'Import' }} {{ importPreview.length }} {{ t('accounts') || 'accounts' }}</button>
         </div>
       </template>
 
       <!-- Import progress -->
       <div v-if="importRunning" style="padding: 20px 0; text-align: center;">
-        <div style="font-weight: 700; font-size: 14px; margin-bottom: 12px;">Importing...</div>
+        <div style="font-weight: 700; font-size: 14px; margin-bottom: 12px;">{{ t('importing') || 'Importing...' }}</div>
         <div style="background: var(--surface); border-radius: 8px; height: 8px; overflow: hidden; margin-bottom: 8px;">
           <div style="height: 100%; background: var(--teal); border-radius: 8px; transition: width .3s;" :style="{ width: importProgress + '%' }"></div>
         </div>
@@ -812,6 +813,14 @@ function handleFileSelect(e) {
   parseImportFile(file)
 }
 
+function handleDrop(e) {
+  const file = e.dataTransfer?.files?.[0]
+  if (!file) return
+  if (!file.name.endsWith('.csv')) return
+  importFile.value = file
+  parseImportFile(file)
+}
+
 function parseImportFile(file) {
   const reader = new FileReader()
   reader.onload = (event) => {
@@ -846,6 +855,17 @@ function resetImport() {
 }
 
 async function runImport() {
+  // Check plan limit before importing
+  if (isStarterPlan.value) {
+    const currentCount = portfolioStore.accounts.length
+    const maxAccounts = 6
+    if (currentCount >= maxAccounts) {
+      importMsg.value = 'Starter plan: max 6 accounts reached. Upgrade to import more.'
+      setTimeout(() => { importMsg.value = '' }, 5000)
+      return
+    }
+  }
+
   importRunning.value = true
   const rows = importPreview.value
   importTotal.value = rows.length
@@ -879,6 +899,7 @@ async function runImport() {
 
   showImport.value = false
   resetImport()
+  await portfolioStore.fetchAccounts()
   importMsg.value = `${ok}/${rows.length} accounts imported`
   setTimeout(() => { importMsg.value = '' }, 5000)
 }

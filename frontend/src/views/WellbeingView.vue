@@ -211,8 +211,9 @@
           <h3 style="font-weight: 800; margin-bottom: 6px">{{ t('wbBookSession') }}</h3>
           <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px">{{ t('wbBookHow') }}</p>
           <button
-            class="btn-primary"
+            class="btn btn-primary"
             style="padding: 10px 24px; border-radius: 10px; font-weight: 700; font-size: 13px"
+            @click="novaInput = t('wbBookSession'); sendNova(t('wbBookSession'))"
           >
             {{ t('wbBookSession') }} →
           </button>
@@ -348,7 +349,7 @@ const novaInput = ref('')
 // ── Wellbeing data (editable) ──
 const wbData = ref({
   score: 70,
-  burnout: 'moderate',
+  burnout: 'none',
   charge: 70,
   trend: '+0',
   alerts: [],
@@ -362,13 +363,17 @@ onMounted(async () => {
   } catch { /* silent */ }
 })
 
+let saveTimer = null
 async function saveWellbeing(updates) {
   Object.assign(wbData.value, updates)
-  try {
-    await wellbeingApi.update(wbData.value)
-  } catch (e) {
-    console.error('saveWellbeing error:', e)
-  }
+  clearTimeout(saveTimer)
+  saveTimer = setTimeout(async () => {
+    try {
+      await wellbeingApi.update(wbData.value)
+    } catch (e) {
+      console.error('saveWellbeing error:', e)
+    }
+  }, 400)
 }
 
 // ── Computed team (parse if string) ──
@@ -420,25 +425,8 @@ const quickChips = computed(() => [
 async function sendNova(text) {
   const msg = typeof text === 'string' ? text.trim() : novaInput.value.trim()
   if (!msg || sending.value) return
-
-  // Set input into the composable and send
-  const { input } = useChat(() => {}) // not used, we call chatSend directly
-  // Directly push the message and call API
-  messages.value.push({ role: 'user', content: msg })
   novaInput.value = ''
-  sending.value = true
-
-  try {
-    const { data } = await coachApi.chat(
-      messages.value.map(m => ({ role: m.role, content: m.content })),
-      'nova'
-    )
-    messages.value.push({ role: 'assistant', content: data.content })
-  } catch {
-    messages.value.push({ role: 'assistant', content: t('novaDown') })
-  }
-
-  sending.value = false
+  await chatSend(msg)
   await nextTick()
   bottomRef.value?.scrollIntoView({ behavior: 'smooth' })
 }

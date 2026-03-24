@@ -73,7 +73,7 @@ portfolio.post('/accounts/', async (c) => {
     data.name || '',
     data.csm || '',
     data.mrr || 0,
-    data.arr || 0,
+    data.arr || ((data.mrr || 0) * 12),
     data.industry || '',
     data.usage ?? 70,
     data.health ?? 70,
@@ -129,6 +129,12 @@ portfolio.patch('/accounts/:id/', async (c) => {
       sets.push(`${key} = ?`)
       values.push(data[key])
     }
+  }
+
+  // Auto-sync arr when mrr changes
+  if (data.mrr !== undefined && data.arr === undefined) {
+    sets.push('arr = ?')
+    values.push((parseFloat(data.mrr) || 0) * 12)
   }
 
   if (data.issues !== undefined) {
