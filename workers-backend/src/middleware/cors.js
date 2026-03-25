@@ -13,6 +13,10 @@ export function corsMiddleware() {
 
     await next()
 
+    // Prevent browser from caching API responses
+    c.res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+    c.res.headers.set('Pragma', 'no-cache')
+
     // Add CORS headers to response
     const headers = corsHeaders(c)
     for (const [key, value] of Object.entries(headers)) {

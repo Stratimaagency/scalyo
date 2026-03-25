@@ -83,10 +83,8 @@ team.get('/', async (c) => {
 
 // POST /api/team/ — invite (create) a new team member
 team.post('/', async (c) => {
-  console.log('=== POST /team/ HANDLER ENTERED ===', c.req.method, c.req.url)
   try {
     const user = c.get('user')
-    console.log('=== POST /team/ user:', JSON.stringify(user))
     if (user.role !== 'manager') {
       return c.json({ error: 'Only managers can invite team members' }, 403)
     }
@@ -159,8 +157,8 @@ team.post('/', async (c) => {
 
     return c.json(newUser, 201)
   } catch (err) {
-    console.error('POST /team error:', err.message, err.stack)
-    return c.json({ error: 'Failed to create team member: ' + err.message }, 500)
+    console.error('POST /team error:', err)
+    return c.json({ error: 'Failed to create team member' }, 500)
   }
 })
 

@@ -22,10 +22,7 @@ const app = new Hono()
 app.use('*', corsMiddleware())
 
 // Health check
-app.get('/', (c) => c.json({ status: 'ok', service: 'scalyo-api', version: 'v3-debug' }))
-
-// Debug: test if direct route works (bypass subrouter)
-app.get('/api/team-test', (c) => c.json({ debug: 'direct route works', version: 'v3-debug' }))
+app.get('/', (c) => c.json({ status: 'ok', service: 'scalyo-api' }))
 
 // Mount all routes
 app.route('/api/auth', auth)
@@ -44,10 +41,7 @@ app.route('/api/oauth', oauth)
 app.route('/api/team', team)
 
 // 404 fallback
-app.notFound((c) => {
-  console.error('404 NOT FOUND:', c.req.method, c.req.url, c.req.path)
-  return c.json({ error: 'Not found' }, 404)
-})
+app.notFound((c) => c.json({ error: 'Not found' }, 404))
 
 // Error handler — include CORS headers so browser doesn't block the response
 app.onError((err, c) => {
