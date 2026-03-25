@@ -127,8 +127,8 @@ team.post('/', async (c) => {
 
     const passwordHash = await hashPassword(password)
     const newUser = await c.env.DB.prepare(
-      `INSERT INTO users (email, password_hash, display_name, role, company_id)
-       VALUES (?, ?, ?, ?, ?) RETURNING id, email, display_name, role, created_at`
+      `INSERT INTO users (email, password_hash, display_name, role, company_id, must_change_password)
+       VALUES (?, ?, ?, ?, ?, 1) RETURNING id, email, display_name, role, created_at`
     ).bind(email, passwordHash, display_name || '', validRole, user.company_id).first()
 
     // Create notification preferences
