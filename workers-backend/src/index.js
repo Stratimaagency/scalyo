@@ -22,7 +22,10 @@ const app = new Hono()
 app.use('*', corsMiddleware())
 
 // Health check
-app.get('/', (c) => c.json({ status: 'ok', service: 'scalyo-api' }))
+app.get('/', (c) => c.json({ status: 'ok', service: 'scalyo-api', version: 'v3-debug' }))
+
+// Debug: test if direct route works (bypass subrouter)
+app.get('/api/team-test', (c) => c.json({ debug: 'direct route works', version: 'v3-debug' }))
 
 // Mount all routes
 app.route('/api/auth', auth)

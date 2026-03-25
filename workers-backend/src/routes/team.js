@@ -3,7 +3,7 @@ import { authMiddleware, companyRequired } from '../middleware/auth.js'
 import { hashPassword } from '../utils/password.js'
 
 const team = new Hono()
-team.use('/*', authMiddleware(), companyRequired())
+team.use('*', authMiddleware(), companyRequired())
 
 async function sendInviteEmail(env, { to, displayName, inviterName, companyName, tempPassword }) {
   const from = env.FROM_EMAIL || 'noreply@scalyo.app'
