@@ -19,6 +19,20 @@ function parseWellbeing(row) {
 }
 
 // GET /api/wellbeing/
+wellbeing.get('', async (c) => {
+  const { company_id } = c.get('user')
+  let row = await c.env.DB.prepare(
+    'SELECT * FROM wellbeing WHERE company_id = ?'
+  ).bind(company_id).first()
+
+  if (!row) {
+    row = await c.env.DB.prepare(
+      'INSERT INTO wellbeing (company_id) VALUES (?) RETURNING *'
+    ).bind(company_id).first()
+  }
+
+  return c.json(parseWellbeing(row))
+})
 wellbeing.get('/', async (c) => {
   const { company_id } = c.get('user')
   let row = await c.env.DB.prepare(
