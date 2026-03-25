@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 
 const routes = [
   {
@@ -54,6 +55,17 @@ router.beforeEach((to, from, next) => {
   if (to.meta.guest && isAuthenticated && to.name !== 'landing') {
     return next({ name: 'dashboard' })
   }
+
+  // Force password change: redirect to settings if must_change_password
+  if (to.meta.requiresAuth && isAuthenticated && to.name !== 'settings') {
+    try {
+      const authStore = useAuthStore()
+      if (authStore.user?.must_change_password) {
+        return next({ name: 'settings' })
+      }
+    } catch {}
+  }
+
   next()
 })
 

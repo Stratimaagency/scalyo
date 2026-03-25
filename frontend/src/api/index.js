@@ -12,6 +12,7 @@ export const authApi = {
   updateNotificationPrefs: (data) => api.patch('/auth/notifications/', data),
   deleteAccount: () => api.delete('/auth/delete-account/'),
   getStripeUrls: () => api.get('/auth/stripe-urls/'),
+  changePassword: (data) => api.post('/auth/change-password/', data),
 }
 
 // Team

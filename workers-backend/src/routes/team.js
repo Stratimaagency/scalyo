@@ -5,6 +5,56 @@ import { hashPassword } from '../utils/password.js'
 const team = new Hono()
 team.use('/*', authMiddleware(), companyRequired())
 
+async function sendInviteEmail(env, { to, displayName, inviterName, companyName, tempPassword }) {
+  const from = env.FROM_EMAIL || 'noreply@scalyo.app'
+  const loginUrl = env.APP_URL || 'https://scalyo.app/login'
+  const body = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <span style="font-size: 28px; font-weight: 900; letter-spacing: -1px;">scal<span style="color: #4DB6A0;">yo</span></span>
+      </div>
+      <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Bienvenue sur Scalyo !</h2>
+      <p style="color: #666; font-size: 14px; line-height: 1.6;">
+        ${inviterName} vous a invité(e) à rejoindre <strong>${companyName}</strong> sur Scalyo.
+      </p>
+      <div style="background: #f4f4f5; border-radius: 10px; padding: 16px; margin: 20px 0;">
+        <p style="margin: 0 0 8px; font-size: 13px; color: #666;">Vos identifiants :</p>
+        <p style="margin: 0 0 4px; font-size: 14px;"><strong>Email :</strong> ${to}</p>
+        <p style="margin: 0; font-size: 14px;"><strong>Mot de passe temporaire :</strong> ${tempPassword}</p>
+      </div>
+      <p style="color: #e74c3c; font-size: 13px; font-weight: 600;">Vous devrez changer votre mot de passe à la première connexion.</p>
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="${loginUrl}" style="display: inline-block; background: #4DB6A0; color: #fff; padding: 12px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px;">Se connecter</a>
+      </div>
+      <p style="color: #999; font-size: 11px; text-align: center;">Cet email a été envoyé automatiquement par Scalyo.</p>
+    </div>
+  `
+  const payload = {
+    personalizations: [{ to: [{ email: to }] }],
+    from: { email: from, name: 'Scalyo' },
+    subject: `${inviterName} vous invite sur Scalyo`,
+    content: [{ type: 'text/html', value: body }],
+  }
+
+  try {
+    if (env.SENDGRID_API_KEY) {
+      await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${env.SENDGRID_API_KEY}` },
+        body: JSON.stringify(payload),
+      })
+    } else {
+      await fetch('https://api.mailchannels.net/tx/v1/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+    }
+  } catch (err) {
+    console.error('sendInviteEmail error:', err)
+  }
+}
+
 // Plan limits
 const PLAN_LIMITS = {
   Starter: { managers: 1, csms: 2, accounts: 6 },
@@ -77,12 +127,22 @@ team.post('/', async (c) => {
 
     const passwordHash = await hashPassword(password)
     const newUser = await c.env.DB.prepare(
-      `INSERT INTO users (email, password_hash, display_name, role, company_id)
-       VALUES (?, ?, ?, ?, ?) RETURNING id, email, display_name, role, created_at`
+      `INSERT INTO users (email, password_hash, display_name, role, company_id, must_change_password)
+       VALUES (?, ?, ?, ?, ?, 1) RETURNING id, email, display_name, role, created_at`
     ).bind(email, passwordHash, display_name || '', validRole, user.company_id).first()
 
     // Create notification preferences
     await c.env.DB.prepare('INSERT INTO notification_preferences (user_id) VALUES (?)').bind(newUser.id).run()
+
+    // Send invitation email
+    const company = await c.env.DB.prepare('SELECT name FROM companies WHERE id = ?').bind(user.company_id).first()
+    c.executionCtx.waitUntil(sendInviteEmail(c.env, {
+      to: email,
+      displayName: display_name || email,
+      inviterName: user.display_name || user.email,
+      companyName: company?.name || 'votre entreprise',
+      tempPassword: password,
+    }))
 
     return c.json(newUser, 201)
   } catch (err) {
