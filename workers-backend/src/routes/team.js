@@ -126,10 +126,21 @@ team.post('/', async (c) => {
     }
 
     const passwordHash = await hashPassword(password)
-    const newUser = await c.env.DB.prepare(
-      `INSERT INTO users (email, password_hash, display_name, role, company_id, must_change_password)
-       VALUES (?, ?, ?, ?, ?, 1) RETURNING id, email, display_name, role, created_at`
-    ).bind(email, passwordHash, display_name || '', validRole, user.company_id).first()
+
+    // Try with must_change_password first, fallback without if column doesn't exist
+    let newUser
+    try {
+      newUser = await c.env.DB.prepare(
+        `INSERT INTO users (email, password_hash, display_name, role, company_id, must_change_password)
+         VALUES (?, ?, ?, ?, ?, 1) RETURNING id, email, display_name, role, created_at`
+      ).bind(email, passwordHash, display_name || '', validRole, user.company_id).first()
+    } catch (dbErr) {
+      console.error('INSERT with must_change_password failed, retrying without:', dbErr.message)
+      newUser = await c.env.DB.prepare(
+        `INSERT INTO users (email, password_hash, display_name, role, company_id)
+         VALUES (?, ?, ?, ?, ?) RETURNING id, email, display_name, role, created_at`
+      ).bind(email, passwordHash, display_name || '', validRole, user.company_id).first()
+    }
 
     // Create notification preferences
     await c.env.DB.prepare('INSERT INTO notification_preferences (user_id) VALUES (?)').bind(newUser.id).run()
@@ -146,8 +157,8 @@ team.post('/', async (c) => {
 
     return c.json(newUser, 201)
   } catch (err) {
-    console.error('POST /team error:', err)
-    return c.json({ error: 'Failed to create team member' }, 500)
+    console.error('POST /team error:', err.message, err.stack)
+    return c.json({ error: 'Failed to create team member: ' + err.message }, 500)
   }
 })
 
