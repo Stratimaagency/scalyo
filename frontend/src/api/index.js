@@ -21,6 +21,8 @@ export const teamApi = {
   invite: (data) => api.post('/team/', data),
   remove: (id) => api.delete(`/team/${id}`),
   limits: () => api.get('/team/limits'),
+  getCsmAccounts: (id) => api.get(`/team/${id}/accounts`),
+  setCsmAccounts: (id, account_ids) => api.put(`/team/${id}/accounts`, { account_ids }),
 }
 
 // Portfolio

@@ -6,7 +6,8 @@ portfolio.use('/*', authMiddleware(), companyRequired())
 
 // GET /api/portfolio/accounts/
 portfolio.get('/accounts/', async (c) => {
-  const { company_id } = c.get('user')
+  const user = c.get('user')
+  const { company_id } = user
   const db = c.env.DB
 
   const search = c.req.query('search')
@@ -15,6 +16,12 @@ portfolio.get('/accounts/', async (c) => {
 
   let query = 'SELECT * FROM accounts WHERE company_id = ?'
   const params = [company_id]
+
+  // CSMs only see their assigned accounts
+  if (user.role === 'csm') {
+    query += ' AND assigned_csm_id = ?'
+    params.push(user.id)
+  }
 
   if (search) {
     query += ' AND name LIKE ?'
@@ -93,12 +100,17 @@ portfolio.post('/accounts/', async (c) => {
 
 // GET /api/portfolio/accounts/:id/
 portfolio.get('/accounts/:id/', async (c) => {
-  const { company_id } = c.get('user')
+  const user = c.get('user')
+  const { company_id } = user
   const id = c.req.param('id')
 
-  const account = await c.env.DB.prepare(
-    'SELECT * FROM accounts WHERE id = ? AND company_id = ?'
-  ).bind(id, company_id).first()
+  let q = 'SELECT * FROM accounts WHERE id = ? AND company_id = ?'
+  const p = [id, company_id]
+  if (user.role === 'csm') {
+    q += ' AND assigned_csm_id = ?'
+    p.push(user.id)
+  }
+  const account = await c.env.DB.prepare(q).bind(...p).first()
 
   if (!account) return c.json({ error: 'Not found' }, 404)
 

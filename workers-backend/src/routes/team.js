@@ -226,6 +226,67 @@ async function getLimits(c) {
   }
 }
 
+// GET /api/team/:id/accounts — list accounts assigned to a CSM
+async function getCsmAccounts(c) {
+  try {
+    const user = c.get('user')
+    if (user.role !== 'manager') {
+      return c.json({ error: 'Only managers can view CSM assignments' }, 403)
+    }
+    const csmId = parseInt(c.req.param('id'), 10)
+    if (isNaN(csmId)) return c.json({ error: 'Invalid member ID' }, 400)
+
+    const { results } = await c.env.DB.prepare(
+      'SELECT id, name FROM accounts WHERE company_id = ? AND assigned_csm_id = ?'
+    ).bind(user.company_id, csmId).all()
+
+    return c.json({ accounts: results || [] })
+  } catch (err) {
+    console.error('GET /team/:id/accounts error:', err)
+    return c.json({ error: 'Failed to load CSM accounts' }, 500)
+  }
+}
+
+// PUT /api/team/:id/accounts — set accounts assigned to a CSM (replaces all)
+async function setCsmAccounts(c) {
+  try {
+    const user = c.get('user')
+    if (user.role !== 'manager') {
+      return c.json({ error: 'Only managers can assign accounts' }, 403)
+    }
+    const csmId = parseInt(c.req.param('id'), 10)
+    if (isNaN(csmId)) return c.json({ error: 'Invalid member ID' }, 400)
+
+    // Verify CSM exists and belongs to company
+    const csm = await c.env.DB.prepare(
+      'SELECT id FROM users WHERE id = ? AND company_id = ?'
+    ).bind(csmId, user.company_id).first()
+    if (!csm) return c.json({ error: 'CSM not found' }, 404)
+
+    const { account_ids } = await c.req.json()
+    if (!Array.isArray(account_ids)) {
+      return c.json({ error: 'account_ids must be an array' }, 400)
+    }
+
+    // Unassign all accounts currently assigned to this CSM
+    await c.env.DB.prepare(
+      'UPDATE accounts SET assigned_csm_id = NULL WHERE company_id = ? AND assigned_csm_id = ?'
+    ).bind(user.company_id, csmId).run()
+
+    // Assign selected accounts
+    for (const accId of account_ids) {
+      await c.env.DB.prepare(
+        'UPDATE accounts SET assigned_csm_id = ? WHERE id = ? AND company_id = ?'
+      ).bind(csmId, accId, user.company_id).run()
+    }
+
+    return c.json({ assigned: account_ids.length })
+  } catch (err) {
+    console.error('PUT /team/:id/accounts error:', err)
+    return c.json({ error: 'Failed to assign accounts' }, 500)
+  }
+}
+
 // Register team routes directly on the app (no sub-router)
 export function registerTeamRoutes(app) {
   const auth = authMiddleware()
@@ -237,4 +298,6 @@ export function registerTeamRoutes(app) {
   app.post('/api/team/', auth, company, inviteMember)
   app.delete('/api/team/:id', auth, company, removeMember)
   app.get('/api/team/limits', auth, company, getLimits)
+  app.get('/api/team/:id/accounts', auth, company, getCsmAccounts)
+  app.put('/api/team/:id/accounts', auth, company, setCsmAccounts)
 }
