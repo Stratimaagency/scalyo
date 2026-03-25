@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick, onMounted, watch } from 'vue'
+import { ref, computed, nextTick, onMounted, onUnmounted, watch } from 'vue'
 import { coachApi } from '../api'
 import { useI18n } from '../i18n'
 import { useAuthStore } from '../stores/auth'
@@ -169,17 +169,26 @@ function displayedText(index) {
   return msg.content
 }
 
+let typewriterTimer = null
+
 function typewriterEffect(index, text) {
+  if (typewriterTimer) clearTimeout(typewriterTimer)
   typingProgress.value[index] = 0
   const step = () => {
     if (typingProgress.value[index] < text.length) {
       typingProgress.value[index] += Math.min(3, text.length - typingProgress.value[index])
       if (chatContainer.value) chatContainer.value.scrollTop = chatContainer.value.scrollHeight
-      setTimeout(step, 8)
+      typewriterTimer = setTimeout(step, 8)
+    } else {
+      typewriterTimer = null
     }
   }
   step()
 }
+
+onUnmounted(() => {
+  if (typewriterTimer) clearTimeout(typewriterTimer)
+})
 
 // Find KB answer
 function findKBAnswer(text) {
