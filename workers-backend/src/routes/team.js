@@ -1,11 +1,5 @@
-import { Hono } from 'hono'
 import { authMiddleware, companyRequired } from '../middleware/auth.js'
 import { hashPassword } from '../utils/password.js'
-
-const team = new Hono()
-
-const auth = authMiddleware()
-const company = companyRequired()
 
 async function sendInviteEmail(env, { to, displayName, inviterName, companyName, tempPassword }) {
   const from = env.FROM_EMAIL || 'noreply@scalyo.app'
@@ -64,7 +58,7 @@ const PLAN_LIMITS = {
   Elite: { managers: 5, csms: -1, accounts: -1 },
 }
 
-// GET /api/team/ and /api/team — list team members
+// GET /api/team — list team members
 async function listMembers(c) {
   try {
     const { company_id } = c.get('user')
@@ -83,7 +77,7 @@ async function listMembers(c) {
   }
 }
 
-// POST /api/team/ and /api/team — invite (create) a new team member
+// POST /api/team — invite (create) a new team member
 async function inviteMember(c) {
   try {
     const user = c.get('user')
@@ -144,7 +138,7 @@ async function inviteMember(c) {
       ).bind(email, passwordHash, display_name || '', validRole, user.company_id).first()
     }
 
-    // Create notification preferences (non-blocking — user is already created)
+    // Create notification preferences (non-blocking)
     try {
       await c.env.DB.prepare('INSERT OR IGNORE INTO notification_preferences (user_id) VALUES (?)').bind(newUser.id).run()
     } catch (npErr) {
@@ -172,14 +166,8 @@ async function inviteMember(c) {
   }
 }
 
-// Register both with and without trailing slash to avoid Hono subrouter path issues
-team.get('/', auth, company, listMembers)
-team.get('', auth, company, listMembers)
-team.post('/', auth, company, inviteMember)
-team.post('', auth, company, inviteMember)
-
 // DELETE /api/team/:id — remove a team member
-team.delete('/:id', auth, company, async (c) => {
+async function removeMember(c) {
   try {
     const user = c.get('user')
     if (user.role !== 'manager') {
@@ -207,10 +195,10 @@ team.delete('/:id', auth, company, async (c) => {
     console.error('DELETE /team error:', err)
     return c.json({ error: 'Failed to remove team member' }, 500)
   }
-})
+}
 
 // GET /api/team/limits — get current plan limits and usage
-team.get('/limits', auth, company, async (c) => {
+async function getLimits(c) {
   try {
     const { company_id } = c.get('user')
     const companyRow = await c.env.DB.prepare('SELECT plan FROM companies WHERE id = ?').bind(company_id).first()
@@ -236,6 +224,17 @@ team.get('/limits', auth, company, async (c) => {
     console.error('GET /team/limits error:', err)
     return c.json({ error: 'Failed to load limits' }, 500)
   }
-})
+}
 
-export default team
+// Register team routes directly on the app (no sub-router)
+export function registerTeamRoutes(app) {
+  const auth = authMiddleware()
+  const company = companyRequired()
+
+  app.get('/api/team', auth, company, listMembers)
+  app.get('/api/team/', auth, company, listMembers)
+  app.post('/api/team', auth, company, inviteMember)
+  app.post('/api/team/', auth, company, inviteMember)
+  app.delete('/api/team/:id', auth, company, removeMember)
+  app.get('/api/team/limits', auth, company, getLimits)
+}
