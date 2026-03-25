@@ -99,7 +99,8 @@ team.delete('/:id', async (c) => {
       return c.json({ error: 'Only managers can remove team members' }, 403)
     }
 
-    const memberId = parseInt(c.req.param('id'))
+    const memberId = parseInt(c.req.param('id'), 10)
+    if (isNaN(memberId)) return c.json({ error: 'Invalid member ID' }, 400)
     if (memberId === user.id) {
       return c.json({ error: 'You cannot remove yourself' }, 400)
     }

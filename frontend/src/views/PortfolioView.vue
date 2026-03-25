@@ -795,21 +795,23 @@ function removeFreeTask(idx) {
 }
 
 async function saveTodos() {
-  if (!selectedAccount.value) return
+  if (!selectedAccount.value || savingTodos.value) return
   savingTodos.value = true
   const accId = selectedAccount.value.id
   try {
-    for (const task of freeTasks.value) {
+    const promises = freeTasks.value.map(task => {
       if (task.id) {
-        await portfolioApi.updateTodo(accId, task.id, {
+        return portfolioApi.updateTodo(accId, task.id, {
           type: 'free', label: task.label, done: task.done, date: task.date, notes: task.notes,
         })
       } else if (task.label) {
-        await portfolioApi.createTodo(accId, {
+        return portfolioApi.createTodo(accId, {
           type: 'free', label: task.label, done: task.done, date: task.date, notes: task.notes,
         })
       }
-    }
+      return null
+    }).filter(Boolean)
+    await Promise.all(promises)
     await loadAccountTodos(accId)
   } catch (e) {
     console.error('saveTodos error:', e)

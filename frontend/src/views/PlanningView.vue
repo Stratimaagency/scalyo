@@ -478,11 +478,12 @@ async function saveAll() {
   }
 }
 
-// Calendar export helpers
+// Calendar export helpers — use floating local time (no Z suffix)
 function toICSDate(dateStr, timeStr) {
   if (!dateStr) return ''
-  const d = new Date(`${dateStr}T${timeStr || '00:00'}:00`)
-  return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
+  const [y, m, d] = dateStr.split('-')
+  const [h, mi] = (timeStr || '00:00').split(':')
+  return y + m + d + 'T' + h + mi + '00'
 }
 
 function buildGoogleLink(ev) {

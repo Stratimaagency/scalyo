@@ -136,7 +136,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import { useI18n } from '../i18n'
 
 const { t, lang } = useI18n()
@@ -695,14 +695,18 @@ function selectTemplate(tpl) {
   copied.value = false
 }
 
+let copyTimer = null
 function copyTemplate() {
   const prefix = lang.value === 'en' ? 'Subject' : lang.value === 'kr' ? '제목' : 'Objet'
   const text = `${prefix} : ${editSubject.value}\n\n${editBody.value}`
   navigator.clipboard.writeText(text).then(() => {
     copied.value = true
-    setTimeout(() => { copied.value = false }, 2000)
+    clearTimeout(copyTimer)
+    copyTimer = setTimeout(() => { copied.value = false }, 2000)
   })
 }
+
+onUnmounted(() => { clearTimeout(copyTimer) })
 
 // ── Watch language changes ────────────────────────
 watch(lang, () => {

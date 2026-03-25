@@ -45,8 +45,11 @@ app.notFound((c) => c.json({ error: 'Not found' }, 404))
 
 // Error handler — include CORS headers so browser doesn't block the response
 app.onError((err, c) => {
-  console.error('Unhandled error:', err)
   const headers = corsHeaders(c)
+  if (err instanceof SyntaxError && err.message?.includes('JSON')) {
+    return c.json({ error: 'Invalid JSON request body' }, 400, headers)
+  }
+  console.error('Unhandled error:', err)
   return c.json({ error: 'Internal server error' }, 500, headers)
 })
 
