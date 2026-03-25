@@ -81,7 +81,7 @@
             </div>
             <div style="min-width: 0;">
               <div style="font-weight: 700; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ acc.name }}</div>
-              <div style="font-size: 11px; color: var(--muted);">{{ acc.csm || t('unassigned') }} · {{ fmtMRR(acc.mrr || acc.arr) }}</div>
+              <div style="font-size: 11px; color: var(--muted);">{{ acc.csm || t('unassigned') }} · {{ fmtMRR(acc.mrr ?? acc.arr) }}</div>
             </div>
           </div>
           <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
@@ -137,7 +137,7 @@
         <template v-if="detailTab === 'overview'">
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px;">
             <div style="background: var(--surface); border-radius: 12px; padding: 12px; text-align: center;">
-              <div style="font-size: 15px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">{{ fmtMRR(selectedAccount.mrr || selectedAccount.arr) }}</div>
+              <div style="font-size: 15px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">{{ fmtMRR(selectedAccount.mrr ?? selectedAccount.arr) }}</div>
               <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">MRR</div>
             </div>
             <div style="background: var(--surface); border-radius: 12px; padding: 12px; text-align: center;">
@@ -727,13 +727,14 @@ async function saveEdit() {
       arr: mrr * 12,
       health: h,
       risk: computeRisk(h),
+      usage: editForm.value.usage ?? 70,
       renewal: editForm.value.renewal,
       contact: editForm.value.contact,
       contact_email: editForm.value.contact_email,
       notes: editForm.value.notes,
     }
-    clearEditDraft()
     const updated = await portfolioStore.updateAccount(selectedAccount.value.id, payload)
+    clearEditDraft()
     selectedAccount.value = updated
     detailTab.value = 'overview'
   } catch (e) {
@@ -759,7 +760,7 @@ async function loadAccountTodos(accountId) {
     accountTodos.value = todos.filter(t => t.type && t.type !== 'free')
     freeTasks.value = todos.filter(t => t.type === 'free').map(t => ({
       id: t.id,
-      label: t.label || t.title || '',
+      label: t.label || t.text || '',
       done: t.done || false,
       date: t.date || '',
       notes: t.notes || '',
