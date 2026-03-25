@@ -144,18 +144,26 @@ async function inviteMember(c) {
       ).bind(email, passwordHash, display_name || '', validRole, user.company_id).first()
     }
 
-    // Create notification preferences
-    await c.env.DB.prepare('INSERT INTO notification_preferences (user_id) VALUES (?)').bind(newUser.id).run()
+    // Create notification preferences (non-blocking — user is already created)
+    try {
+      await c.env.DB.prepare('INSERT OR IGNORE INTO notification_preferences (user_id) VALUES (?)').bind(newUser.id).run()
+    } catch (npErr) {
+      console.error('notification_preferences insert failed (non-fatal):', npErr.message)
+    }
 
-    // Send invitation email
-    const companyInfo = await c.env.DB.prepare('SELECT name FROM companies WHERE id = ?').bind(user.company_id).first()
-    c.executionCtx.waitUntil(sendInviteEmail(c.env, {
-      to: email,
-      displayName: display_name || email,
-      inviterName: user.display_name || user.email,
-      companyName: companyInfo?.name || 'votre entreprise',
-      tempPassword: password,
-    }))
+    // Send invitation email (non-blocking)
+    try {
+      const companyInfo = await c.env.DB.prepare('SELECT name FROM companies WHERE id = ?').bind(user.company_id).first()
+      c.executionCtx.waitUntil(sendInviteEmail(c.env, {
+        to: email,
+        displayName: display_name || email,
+        inviterName: user.display_name || user.email,
+        companyName: companyInfo?.name || 'votre entreprise',
+        tempPassword: password,
+      }))
+    } catch (emailErr) {
+      console.error('sendInviteEmail error (non-fatal):', emailErr.message)
+    }
 
     return c.json(newUser, 201)
   } catch (err) {
