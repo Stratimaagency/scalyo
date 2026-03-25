@@ -6,7 +6,7 @@ import portfolio from './routes/portfolio.js'
 import kpis from './routes/kpis.js'
 import tasks from './routes/tasks.js'
 import planning from './routes/planning.js'
-import wellbeing from './routes/wellbeing.js'
+import { registerWellbeingRoutes } from './routes/wellbeing.js'
 import roadmap from './routes/roadmap.js'
 import coach from './routes/coach.js'
 import emailStudio from './routes/email-studio.js'
@@ -30,7 +30,7 @@ app.route('/api/portfolio', portfolio)
 app.route('/api/kpis', kpis)
 app.route('/api/tasks', tasks)
 app.route('/api/planning', planning)
-app.route('/api/wellbeing', wellbeing)
+registerWellbeingRoutes(app)
 app.route('/api/roadmap', roadmap)
 app.route('/api/coach', coach)
 app.route('/api/email-studio', emailStudio)
