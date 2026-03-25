@@ -120,6 +120,8 @@ portfolio.patch('/accounts/:id/', async (c) => {
   const id = c.req.param('id')
   const data = await c.req.json()
 
+  console.log('PATCH /accounts/:id/ → id:', id, 'company_id:', company_id, 'payload keys:', Object.keys(data))
+
   const allowed = ['name', 'csm', 'mrr', 'arr', 'industry', 'usage', 'health', 'risk', 'plan', 'contact', 'contact_email', 'notes', 'onboarding_date', 'renewal_date', 'renewal']
   const sets = []
   const values = []
@@ -147,13 +149,24 @@ portfolio.patch('/accounts/:id/', async (c) => {
   sets.push("updated_at = datetime('now')")
   values.push(id, company_id)
 
-  const account = await c.env.DB.prepare(
-    `UPDATE accounts SET ${sets.join(', ')} WHERE id = ? AND company_id = ? RETURNING *`
-  ).bind(...values).first()
+  const sql = `UPDATE accounts SET ${sets.join(', ')} WHERE id = ? AND company_id = ?`
+  console.log('PATCH SQL:', sql, 'values:', JSON.stringify(values))
 
-  if (!account) return c.json({ error: 'Not found' }, 404)
+  try {
+    const account = await c.env.DB.prepare(sql + ' RETURNING *').bind(...values).first()
 
-  return c.json({ ...account, issues: JSON.parse(account.issues || '[]') })
+    if (!account) {
+      // Debug: check if account exists at all
+      const exists = await c.env.DB.prepare('SELECT id, company_id FROM accounts WHERE id = ?').bind(id).first()
+      console.error('PATCH 404 → account exists:', JSON.stringify(exists), 'user company_id:', company_id)
+      return c.json({ error: 'Not found' }, 404)
+    }
+
+    return c.json({ ...account, issues: JSON.parse(account.issues || '[]') })
+  } catch (err) {
+    console.error('PATCH DB error:', err.message)
+    return c.json({ error: 'Database error: ' + err.message }, 500)
+  }
 })
 
 // DELETE /api/portfolio/accounts/:id/
