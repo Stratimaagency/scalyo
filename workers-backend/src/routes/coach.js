@@ -9,7 +9,8 @@ const SYSTEM_PROMPTS = {
   nova: "Tu es Nova, assistante bien-être dédiée aux équipes Customer Success. Tu aides les CSMs à gérer le stress, la charge mentale, les conflits, l'épuisement professionnel. Tu es empathique, bienveillante et professionnelle. Tout est confidentiel. Réponds dans la langue de l'utilisateur.",
 }
 
-const MODEL = 'claude-sonnet-4-20250514'
+const DEEPSEEK_URL = 'https://api.deepseek.com/chat/completions'
+const MODEL = 'deepseek-chat'
 const MAX_TOKENS = 1024
 
 // POST /api/coach/chat/
@@ -17,23 +18,24 @@ coach.post('/chat/', async (c) => {
   const { messages, mode = 'coach' } = await c.req.json()
   const systemPrompt = SYSTEM_PROMPTS[mode] || SYSTEM_PROMPTS.coach
 
-  if (!c.env.ANTHROPIC_API_KEY) {
-    return c.json({ error: 'ANTHROPIC_API_KEY is not configured.' }, 500)
+  if (!c.env.DEEPSEEK_API_KEY) {
+    return c.json({ error: 'DEEPSEEK_API_KEY is not configured.' }, 500)
   }
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch(DEEPSEEK_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': c.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${c.env.DEEPSEEK_API_KEY}`,
       },
       body: JSON.stringify({
         model: MODEL,
         max_tokens: MAX_TOKENS,
-        system: systemPrompt,
-        messages: messages || [],
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...(messages || []),
+        ],
       }),
     })
 
@@ -43,7 +45,7 @@ coach.post('/chat/', async (c) => {
       return c.json({ error: data.error?.message || 'AI request failed' }, response.status)
     }
 
-    const text = data.content?.[0]?.text
+    const text = data.choices?.[0]?.message?.content
     if (!text) {
       return c.json({ error: 'No response from AI' }, 502)
     }
@@ -62,24 +64,25 @@ coach.post('/stream/', async (c) => {
   const { messages, mode = 'coach' } = await c.req.json()
   const systemPrompt = SYSTEM_PROMPTS[mode] || SYSTEM_PROMPTS.coach
 
-  if (!c.env.ANTHROPIC_API_KEY) {
-    return c.json({ error: 'ANTHROPIC_API_KEY is not configured.' }, 500)
+  if (!c.env.DEEPSEEK_API_KEY) {
+    return c.json({ error: 'DEEPSEEK_API_KEY is not configured.' }, 500)
   }
 
   let response
   try {
-    response = await fetch('https://api.anthropic.com/v1/messages', {
+    response = await fetch(DEEPSEEK_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': c.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${c.env.DEEPSEEK_API_KEY}`,
       },
       body: JSON.stringify({
         model: MODEL,
         max_tokens: MAX_TOKENS,
-        system: systemPrompt,
-        messages: messages || [],
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...(messages || []),
+        ],
         stream: true,
       }),
     })
@@ -92,7 +95,6 @@ coach.post('/stream/', async (c) => {
     return c.json({ error: err }, response.status)
   }
 
-  // Transform Anthropic SSE to our SSE format
   const { readable, writable } = new TransformStream()
   const writer = writable.getWriter()
   const encoder = new TextEncoder()
@@ -118,10 +120,11 @@ coach.post('/stream/', async (c) => {
 
           try {
             const event = JSON.parse(payload)
-            if (event.type === 'content_block_delta' && event.delta?.text) {
-              await writer.write(encoder.encode(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`))
+            const delta = event.choices?.[0]?.delta?.content
+            if (delta) {
+              await writer.write(encoder.encode(`data: ${JSON.stringify({ text: delta })}\n\n`))
             }
-            if (event.type === 'message_stop') {
+            if (event.choices?.[0]?.finish_reason === 'stop') {
               await writer.write(encoder.encode('data: [DONE]\n\n'))
             }
           } catch {}
@@ -135,7 +138,6 @@ coach.post('/stream/', async (c) => {
     }
   })()
 
-  // Build CORS headers manually since we bypass Hono's response pipeline
   const frontendUrl = c.env?.FRONTEND_URL || 'https://scalyo.app'
   const allowedOrigins = [frontendUrl, 'http://localhost:5173', 'http://localhost:4173']
   const origin = c.req.header('Origin')
