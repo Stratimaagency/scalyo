@@ -6,7 +6,7 @@
     <input
       v-if="type !== 'textarea'"
       :value="modelValue"
-      @input="$emit('update:modelValue', $event.target.value)"
+      @input="$emit('update:modelValue', type === 'number' ? (+$event.target.value || 0) : $event.target.value)"
       :type="type"
       :placeholder="placeholder"
       :disabled="disabled"

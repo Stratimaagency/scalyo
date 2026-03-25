@@ -471,6 +471,10 @@ function resetForm() {
 
 function voteIntegration(integ) {
   integ.voted = true
+  try {
+    const votes = JSON.parse(localStorage.getItem('scalyo_integ_votes') || '[]')
+    if (!votes.includes(integ.key)) { votes.push(integ.key); localStorage.setItem('scalyo_integ_votes', JSON.stringify(votes)) }
+  } catch {}
 }
 
 // Store configs from server
@@ -676,6 +680,13 @@ function getConfigForType(type, integKey) {
 onMounted(() => {
   loadConnectedIntegrations()
   handleOAuthReturn()
+  // Restore votes from localStorage
+  try {
+    const votes = JSON.parse(localStorage.getItem('scalyo_integ_votes') || '[]')
+    for (const integ of integrationsList.value) {
+      if (votes.includes(integ.key)) integ.voted = true
+    }
+  } catch {}
 })
 </script>
 
