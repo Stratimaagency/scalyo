@@ -135,12 +135,12 @@ team.post('/', async (c) => {
     await c.env.DB.prepare('INSERT INTO notification_preferences (user_id) VALUES (?)').bind(newUser.id).run()
 
     // Send invitation email
-    const company = await c.env.DB.prepare('SELECT name FROM companies WHERE id = ?').bind(user.company_id).first()
+    const companyInfo = await c.env.DB.prepare('SELECT name FROM companies WHERE id = ?').bind(user.company_id).first()
     c.executionCtx.waitUntil(sendInviteEmail(c.env, {
       to: email,
       displayName: display_name || email,
       inviterName: user.display_name || user.email,
-      companyName: company?.name || 'votre entreprise',
+      companyName: companyInfo?.name || 'votre entreprise',
       tempPassword: password,
     }))
 
