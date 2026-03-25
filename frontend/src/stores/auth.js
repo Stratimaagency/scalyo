@@ -70,10 +70,16 @@ export const useAuthStore = defineStore('auth', () => {
     return res.data
   }
 
+  async function changePassword(data) {
+    const res = await authApi.changePassword(data)
+    user.value = res.data
+    return res.data
+  }
+
   return {
     user, company, loading, theme,
     isAuthenticated,
     init, login, register, logout,
-    updateProfile, updateCompany,
+    updateProfile, updateCompany, changePassword,
   }
 })

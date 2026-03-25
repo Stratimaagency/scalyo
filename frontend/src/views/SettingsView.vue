@@ -1,4 +1,18 @@
 <template>
+  <!-- Forced password change modal -->
+  <div v-if="authStore.user?.must_change_password" class="modal-overlay">
+    <div class="modal-content" style="max-width: 440px;">
+      <h4 style="font-weight: 800; margin-bottom: 8px;">{{ t('forceChangeTitle') }}</h4>
+      <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">{{ t('forceChangeDesc') }}</p>
+      <div v-if="pwError" style="background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 12px; color: var(--red);">{{ pwError }}</div>
+      <AppField :label="t('newPassword')" v-model="pwForm.new_password" type="password" :placeholder="t('teamPasswordHint')" />
+      <AppField :label="t('confirmPassword')" v-model="pwForm.confirm_password" type="password" />
+      <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 8px;" @click="doForceChangePassword" :disabled="changingPw">
+        {{ changingPw ? t('saving') : t('changePasswordBtn') }}
+      </button>
+    </div>
+  </div>
+
   <div class="fade-in">
     <div class="mb-lg">
       <h3 style="font-weight: 800; margin-bottom: 4px">{{ t('settingsTitle') }}</h3>
@@ -26,6 +40,15 @@
         <h4 style="font-weight: 800; margin-bottom: 14px">{{ t('companyNameLabel') }}</h4>
         <AppField :label="t('companyNameLabel')" v-model="companyName" :placeholder="t('companyPlaceholder')" />
         <button class="btn btn-primary" @click="saveCompany" :disabled="saving">{{ saving ? t('saving') : t('save') }}</button>
+      </AppCard>
+      <AppCard class="mb-md">
+        <h4 style="font-weight: 800; margin-bottom: 14px">{{ t('changePasswordTitle') }}</h4>
+        <div v-if="pwError" style="background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 12px; color: var(--red);">{{ pwError }}</div>
+        <div v-if="pwSuccess" style="background: rgba(74,222,128,.1); border: 1px solid rgba(74,222,128,.2); border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 12px; color: var(--green);">{{ pwSuccess }}</div>
+        <AppField :label="t('currentPassword')" v-model="pwForm.current_password" type="password" />
+        <AppField :label="t('newPassword')" v-model="pwForm.new_password" type="password" :placeholder="t('teamPasswordHint')" />
+        <AppField :label="t('confirmPassword')" v-model="pwForm.confirm_password" type="password" />
+        <button class="btn btn-primary" @click="doChangePassword" :disabled="changingPw">{{ changingPw ? t('saving') : t('changePasswordBtn') }}</button>
       </AppCard>
     </template>
 
@@ -253,6 +276,54 @@ const { t } = useI18n()
 const tab = ref('profile')
 const saving = ref(false)
 const isManager = computed(() => authStore.user?.role === 'manager')
+
+// Password change
+const pwForm = reactive({ current_password: '', new_password: '', confirm_password: '' })
+const pwError = ref('')
+const pwSuccess = ref('')
+const changingPw = ref(false)
+
+async function doChangePassword() {
+  pwError.value = ''
+  pwSuccess.value = ''
+  if (!pwForm.new_password || pwForm.new_password.length < 8) {
+    pwError.value = t('errPassLength')
+    return
+  }
+  if (pwForm.new_password !== pwForm.confirm_password) {
+    pwError.value = t('passwordMismatch')
+    return
+  }
+  changingPw.value = true
+  try {
+    await authStore.changePassword({ current_password: pwForm.current_password, new_password: pwForm.new_password })
+    pwSuccess.value = t('passwordChanged')
+    Object.assign(pwForm, { current_password: '', new_password: '', confirm_password: '' })
+  } catch (e) {
+    pwError.value = e.response?.data?.error || t('teamInviteError')
+  }
+  changingPw.value = false
+}
+
+async function doForceChangePassword() {
+  pwError.value = ''
+  if (!pwForm.new_password || pwForm.new_password.length < 8) {
+    pwError.value = t('errPassLength')
+    return
+  }
+  if (pwForm.new_password !== pwForm.confirm_password) {
+    pwError.value = t('passwordMismatch')
+    return
+  }
+  changingPw.value = true
+  try {
+    await authStore.changePassword({ new_password: pwForm.new_password })
+    Object.assign(pwForm, { current_password: '', new_password: '', confirm_password: '' })
+  } catch (e) {
+    pwError.value = e.response?.data?.error || t('teamInviteError')
+  }
+  changingPw.value = false
+}
 
 const profile = reactive({ display_name: authStore.user?.display_name || '' })
 const companyName = ref(authStore.company?.name || '')

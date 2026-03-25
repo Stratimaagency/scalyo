@@ -29,6 +29,7 @@ function serializeUser(user) {
     theme: user.theme,
     currency: user.currency,
     company: user.company_id,
+    must_change_password: !!user.must_change_password,
   }
 }
 
@@ -277,6 +278,38 @@ auth.get('/stripe-urls/', async (c) => {
     growth: c.env.STRIPE_GROWTH_URL || '',
     elite: c.env.STRIPE_ELITE_URL || '',
   })
+})
+
+// POST /api/auth/change-password/
+auth.post('/change-password/', async (c) => {
+  const { id } = c.get('user')
+  const { current_password, new_password } = await c.req.json()
+
+  if (!new_password || new_password.length < 8) {
+    return c.json({ error: 'Le nouveau mot de passe doit faire au moins 8 caractères' }, 400)
+  }
+
+  const db = c.env.DB
+  const user = await db.prepare('SELECT * FROM users WHERE id = ?').bind(id).first()
+  if (!user) return c.json({ error: 'User not found' }, 404)
+
+  // If not forced change, require current password
+  if (!user.must_change_password) {
+    if (!current_password) {
+      return c.json({ error: 'Mot de passe actuel requis' }, 400)
+    }
+    const valid = await verifyPassword(current_password, user.password_hash)
+    if (!valid) {
+      return c.json({ error: 'Mot de passe actuel incorrect' }, 401)
+    }
+  }
+
+  const newHash = await hashPassword(new_password)
+  const updated = await db.prepare(
+    `UPDATE users SET password_hash = ?, must_change_password = 0, updated_at = datetime('now') WHERE id = ? RETURNING *`
+  ).bind(newHash, id).first()
+
+  return c.json(serializeUser(updated))
 })
 
 export default auth

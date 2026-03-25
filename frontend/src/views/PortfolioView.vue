@@ -248,7 +248,14 @@
           <div style="padding-top: 4px; padding-bottom: 20px;">
             <AppField :label="t('accNameLabel')" v-model="editForm.name" required />
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-              <AppField label="CSM" v-model="editForm.csm" />
+              <div class="field-group">
+                <label class="field-label">CSM</label>
+                <select v-model="editForm.csm"
+                  style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; cursor: pointer;">
+                  <option value="">{{ t('unassigned') }}</option>
+                  <option v-for="m in teamMembers" :key="m.id" :value="m.display_name || m.email">{{ m.display_name || m.email }}</option>
+                </select>
+              </div>
               <div class="field-group">
                 <label class="field-label">Industry</label>
                 <select v-model="editForm.industry"
@@ -288,7 +295,14 @@
 
       <AppField :label="t('accNameLabel')" v-model="newAcc.name" required />
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <AppField label="CSM" v-model="newAcc.csm" placeholder="CSM name" />
+        <div class="field-group">
+          <label class="field-label">CSM</label>
+          <select v-model="newAcc.csm"
+            style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; cursor: pointer;">
+            <option value="">{{ t('unassigned') }}</option>
+            <option v-for="m in teamMembers" :key="m.id" :value="m.display_name || m.email">{{ m.display_name || m.email }}</option>
+          </select>
+        </div>
         <div class="field-group">
           <label class="field-label">Industry</label>
           <select v-model="newAcc.industry"
@@ -377,7 +391,7 @@ import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { useI18n } from '../i18n'
 import { useFormatting, CURRENCIES } from '../composables/useFormatting'
-import { portfolioApi } from '../api'
+import { portfolioApi, teamApi } from '../api'
 import HealthBar from '../components/HealthBar.vue'
 import RiskPill from '../components/RiskPill.vue'
 import AppModal from '../components/AppModal.vue'
@@ -478,9 +492,19 @@ const standardTodos = computed(() => {
   })
 })
 
+// ─── Team members for CSM dropdown ───
+const teamMembers = ref([])
+async function loadTeamMembers() {
+  try {
+    const res = await teamApi.list()
+    teamMembers.value = (res.data.members || []).filter(m => m.role === 'csm' || m.role === 'manager')
+  } catch {}
+}
+
 // ─── Lifecycle ───
 onMounted(() => {
   portfolioStore.fetchAccounts()
+  loadTeamMembers()
   restoreFilters()
   restoreAddDraft()
 })
