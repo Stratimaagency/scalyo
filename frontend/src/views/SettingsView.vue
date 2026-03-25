@@ -95,6 +95,7 @@
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
               <span class="tag" :class="m.role === 'manager' ? 'risk-low' : 'risk-medium'" style="font-size: 11px; padding: 3px 10px;">{{ m.role === 'manager' ? 'Manager' : 'CSM' }}</span>
+              <button v-if="m.role === 'csm'" class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px;" @click="openAccountsModal(m)">{{ t('manageAccounts') || 'Comptes' }}</button>
               <button v-if="m.id !== authStore.user?.id" class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px; color: var(--red);" @click="removeMember(m)">{{ t('teamRemoveBtn') }}</button>
             </div>
           </div>
@@ -122,6 +123,37 @@
           <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 8px;" @click="inviteMember" :disabled="inviting">
             {{ inviting ? t('teamCreating') : t('teamCreateBtn') }}
           </button>
+        </div>
+      </div>
+
+      <!-- Account assignment modal -->
+      <div v-if="showAccountsModal" class="modal-overlay" @click.self="showAccountsModal = false">
+        <div class="modal-content" style="max-width: 500px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h4 style="font-weight: 800;">{{ t('assignAccounts') || 'Assigner des comptes' }} — {{ selectedCsm?.display_name || selectedCsm?.email }}</h4>
+            <button @click="showAccountsModal = false" style="background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer;">&times;</button>
+          </div>
+          <p style="font-size: 12px; color: var(--muted); margin-bottom: 14px;">{{ t('assignAccountsDesc') || 'Cochez les comptes que ce CSM pourra voir et gérer.' }}</p>
+          <div v-if="allAccounts.length === 0" style="padding: 20px; text-align: center; color: var(--muted); font-size: 13px;">
+            {{ t('noAccounts') || 'Aucun compte dans le portfolio.' }}
+          </div>
+          <div v-else style="max-height: 340px; overflow-y: auto; margin-bottom: 14px;">
+            <label v-for="acc in allAccounts" :key="acc.id" style="display: flex; align-items: center; gap: 10px; padding: 10px 8px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 13px;"
+              @click="toggleAccount(acc.id)">
+              <input type="checkbox" :checked="assignedAccountIds.includes(acc.id)" style="accent-color: var(--teal); width: 16px; height: 16px;" @click.stop="toggleAccount(acc.id)" />
+              <div style="flex: 1;">
+                <div style="font-weight: 700;">{{ acc.name }}</div>
+                <div v-if="acc.csm" style="font-size: 11px; color: var(--muted);">CSM: {{ acc.csm }}</div>
+              </div>
+              <span v-if="acc.arr" style="font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace;">{{ acc.arr.toLocaleString() }}</span>
+            </label>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; color: var(--muted);">{{ assignedAccountIds.length }} {{ t('selected') || 'sélectionné(s)' }}</span>
+            <button class="btn btn-primary" @click="saveAccountAssignments" :disabled="savingAccounts" style="font-size: 13px; padding: 8px 20px;">
+              {{ savingAccounts ? (t('saving') || 'Enregistrement...') : (t('save') || 'Enregistrer') }}
+            </button>
+          </div>
         </div>
       </div>
     </template>
@@ -264,7 +296,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { useI18n } from '../i18n'
-import { authApi, teamApi } from '../api'
+import { authApi, teamApi, portfolioApi } from '../api'
 import AppCard from '../components/AppCard.vue'
 import AppField from '../components/AppField.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
@@ -341,6 +373,13 @@ const showInviteModal = ref(false)
 const inviteForm = reactive({ email: '', display_name: '', role: 'csm', password: '' })
 const inviteError = ref('')
 const inviting = ref(false)
+
+// Account assignment
+const showAccountsModal = ref(false)
+const selectedCsm = ref(null)
+const allAccounts = ref([])
+const assignedAccountIds = ref([])
+const savingAccounts = ref(false)
 
 const trialDaysLeft = computed(() => {
   const created = authStore.company?.created_at
@@ -426,6 +465,42 @@ async function removeMember(member) {
   } catch (e) {
     console.error('removeMember error:', e)
   }
+}
+
+async function openAccountsModal(member) {
+  selectedCsm.value = member
+  savingAccounts.value = false
+  try {
+    const [allRes, assignedRes] = await Promise.all([
+      portfolioApi.getAccounts(),
+      teamApi.getCsmAccounts(member.id)
+    ])
+    allAccounts.value = allRes.data || []
+    assignedAccountIds.value = (assignedRes.data.accounts || []).map(a => a.id)
+  } catch (e) {
+    console.error('openAccountsModal error:', e)
+    allAccounts.value = []
+    assignedAccountIds.value = []
+  }
+  showAccountsModal.value = true
+}
+
+function toggleAccount(id) {
+  const idx = assignedAccountIds.value.indexOf(id)
+  if (idx >= 0) assignedAccountIds.value.splice(idx, 1)
+  else assignedAccountIds.value.push(id)
+}
+
+async function saveAccountAssignments() {
+  if (!selectedCsm.value) return
+  savingAccounts.value = true
+  try {
+    await teamApi.setCsmAccounts(selectedCsm.value.id, assignedAccountIds.value)
+    showAccountsModal.value = false
+  } catch (e) {
+    console.error('saveAccountAssignments error:', e)
+  }
+  savingAccounts.value = false
 }
 
 async function saveProfile() {
