@@ -674,7 +674,13 @@ async function createAccount() {
 function startEdit() {
   if (selectedAccount.value) {
     const draft = restoreEditDraft(selectedAccount.value.id)
-    editForm.value = draft || { ...selectedAccount.value }
+    if (!draft) {
+      const base = { ...selectedAccount.value }
+      if (!base.mrr && base.arr) base.mrr = base.arr / 12
+      editForm.value = base
+    } else {
+      editForm.value = draft
+    }
   }
   detailTab.value = 'edit'
 }
@@ -690,15 +696,21 @@ async function saveEdit() {
     const h = parseInt(editForm.value.health) || 70
     const mrr = parseFloat(editForm.value.mrr) || 0
     const payload = {
-      ...editForm.value,
+      name: editForm.value.name,
+      csm: editForm.value.csm,
+      industry: editForm.value.industry,
       mrr,
       arr: mrr * 12,
       health: h,
       risk: computeRisk(h),
+      renewal: editForm.value.renewal,
+      contact: editForm.value.contact,
+      contact_email: editForm.value.contact_email,
+      notes: editForm.value.notes,
     }
+    clearEditDraft()
     const updated = await portfolioStore.updateAccount(selectedAccount.value.id, payload)
     selectedAccount.value = updated
-    clearEditDraft()
     detailTab.value = 'overview'
   } catch (e) {
     editError.value = e?.response?.data?.error || e?.response?.data?.detail || t('errUnexpected') || 'An unexpected error occurred'
