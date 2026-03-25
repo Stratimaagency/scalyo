@@ -1,8 +1,4 @@
-import { Hono } from 'hono'
 import { authMiddleware, companyRequired } from '../middleware/auth.js'
-
-const wellbeing = new Hono()
-wellbeing.use('/*', authMiddleware(), companyRequired())
 
 function parseWellbeing(row) {
   return {
@@ -18,8 +14,7 @@ function parseWellbeing(row) {
   }
 }
 
-// GET /api/wellbeing/
-wellbeing.get('', async (c) => {
+async function getWellbeing(c) {
   const { company_id } = c.get('user')
   let row = await c.env.DB.prepare(
     'SELECT * FROM wellbeing WHERE company_id = ?'
@@ -32,28 +27,12 @@ wellbeing.get('', async (c) => {
   }
 
   return c.json(parseWellbeing(row))
-})
-wellbeing.get('/', async (c) => {
-  const { company_id } = c.get('user')
-  let row = await c.env.DB.prepare(
-    'SELECT * FROM wellbeing WHERE company_id = ?'
-  ).bind(company_id).first()
+}
 
-  if (!row) {
-    row = await c.env.DB.prepare(
-      'INSERT INTO wellbeing (company_id) VALUES (?) RETURNING *'
-    ).bind(company_id).first()
-  }
-
-  return c.json(parseWellbeing(row))
-})
-
-// PATCH /api/wellbeing/update/
-wellbeing.patch('/update/', async (c) => {
+async function updateWellbeing(c) {
   const { company_id } = c.get('user')
   const data = await c.req.json()
 
-  // Ensure exists
   await c.env.DB.prepare(
     'INSERT OR IGNORE INTO wellbeing (company_id) VALUES (?)'
   ).bind(company_id).run()
@@ -81,6 +60,13 @@ wellbeing.patch('/update/', async (c) => {
   ).bind(...values).first()
 
   return c.json(parseWellbeing(row))
-})
+}
 
-export default wellbeing
+export function registerWellbeingRoutes(app) {
+  const auth = authMiddleware()
+  const company = companyRequired()
+
+  app.get('/api/wellbeing', auth, company, getWellbeing)
+  app.get('/api/wellbeing/', auth, company, getWellbeing)
+  app.patch('/api/wellbeing/update/', auth, company, updateWellbeing)
+}
