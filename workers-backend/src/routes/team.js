@@ -3,7 +3,9 @@ import { authMiddleware, companyRequired } from '../middleware/auth.js'
 import { hashPassword } from '../utils/password.js'
 
 const team = new Hono()
-team.use('/*', authMiddleware(), companyRequired())
+
+const auth = authMiddleware()
+const company = companyRequired()
 
 async function sendInviteEmail(env, { to, displayName, inviterName, companyName, tempPassword }) {
   const from = env.FROM_EMAIL || 'noreply@scalyo.app'
@@ -58,20 +60,20 @@ async function sendInviteEmail(env, { to, displayName, inviterName, companyName,
 // Plan limits
 const PLAN_LIMITS = {
   Starter: { managers: 1, csms: 2, accounts: 6 },
-  Growth: { managers: 3, csms: -1, accounts: -1 },  // -1 = unlimited
+  Growth: { managers: 3, csms: -1, accounts: -1 },
   Elite: { managers: 5, csms: -1, accounts: -1 },
 }
 
-// GET /api/team/ — list team members
-team.get('/', async (c) => {
+// GET /api/team/ and /api/team — list team members
+async function listMembers(c) {
   try {
     const { company_id } = c.get('user')
     const rows = await c.env.DB.prepare(
       'SELECT id, email, display_name, role, created_at FROM users WHERE company_id = ? ORDER BY role ASC, created_at ASC'
     ).bind(company_id).all()
 
-    const company = await c.env.DB.prepare('SELECT plan FROM companies WHERE id = ?').bind(company_id).first()
-    const plan = company?.plan || 'Starter'
+    const companyRow = await c.env.DB.prepare('SELECT plan FROM companies WHERE id = ?').bind(company_id).first()
+    const plan = companyRow?.plan || 'Starter'
     const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.Starter
 
     return c.json({ members: rows.results || [], limits, plan })
@@ -79,14 +81,12 @@ team.get('/', async (c) => {
     console.error('GET /team error:', err)
     return c.json({ error: 'Failed to load team' }, 500)
   }
-})
+}
 
-// POST /api/team/ — invite (create) a new team member
-team.post('/', async (c) => {
-  console.log('=== POST /team/ HANDLER ENTERED ===', c.req.method, c.req.url)
+// POST /api/team/ and /api/team — invite (create) a new team member
+async function inviteMember(c) {
   try {
     const user = c.get('user')
-    console.log('=== POST /team/ user:', JSON.stringify(user))
     if (user.role !== 'manager') {
       return c.json({ error: 'Only managers can invite team members' }, 403)
     }
@@ -103,8 +103,8 @@ team.post('/', async (c) => {
     const validRole = ['manager', 'csm'].includes(role) ? role : 'csm'
 
     // Check plan limits
-    const company = await c.env.DB.prepare('SELECT plan FROM companies WHERE id = ?').bind(user.company_id).first()
-    const plan = company?.plan || 'Starter'
+    const companyRow = await c.env.DB.prepare('SELECT plan FROM companies WHERE id = ?').bind(user.company_id).first()
+    const plan = companyRow?.plan || 'Starter'
     const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.Starter
 
     const counts = await c.env.DB.prepare(
@@ -144,28 +144,42 @@ team.post('/', async (c) => {
       ).bind(email, passwordHash, display_name || '', validRole, user.company_id).first()
     }
 
-    // Create notification preferences
-    await c.env.DB.prepare('INSERT INTO notification_preferences (user_id) VALUES (?)').bind(newUser.id).run()
+    // Create notification preferences (non-blocking — user is already created)
+    try {
+      await c.env.DB.prepare('INSERT OR IGNORE INTO notification_preferences (user_id) VALUES (?)').bind(newUser.id).run()
+    } catch (npErr) {
+      console.error('notification_preferences insert failed (non-fatal):', npErr.message)
+    }
 
-    // Send invitation email
-    const companyInfo = await c.env.DB.prepare('SELECT name FROM companies WHERE id = ?').bind(user.company_id).first()
-    c.executionCtx.waitUntil(sendInviteEmail(c.env, {
-      to: email,
-      displayName: display_name || email,
-      inviterName: user.display_name || user.email,
-      companyName: companyInfo?.name || 'votre entreprise',
-      tempPassword: password,
-    }))
+    // Send invitation email (non-blocking)
+    try {
+      const companyInfo = await c.env.DB.prepare('SELECT name FROM companies WHERE id = ?').bind(user.company_id).first()
+      c.executionCtx.waitUntil(sendInviteEmail(c.env, {
+        to: email,
+        displayName: display_name || email,
+        inviterName: user.display_name || user.email,
+        companyName: companyInfo?.name || 'votre entreprise',
+        tempPassword: password,
+      }))
+    } catch (emailErr) {
+      console.error('sendInviteEmail error (non-fatal):', emailErr.message)
+    }
 
     return c.json(newUser, 201)
   } catch (err) {
-    console.error('POST /team error:', err.message, err.stack)
-    return c.json({ error: 'Failed to create team member: ' + err.message }, 500)
+    console.error('POST /team error:', err)
+    return c.json({ error: 'Failed to create team member' }, 500)
   }
-})
+}
+
+// Register both with and without trailing slash to avoid Hono subrouter path issues
+team.get('/', auth, company, listMembers)
+team.get('', auth, company, listMembers)
+team.post('/', auth, company, inviteMember)
+team.post('', auth, company, inviteMember)
 
 // DELETE /api/team/:id — remove a team member
-team.delete('/:id', async (c) => {
+team.delete('/:id', auth, company, async (c) => {
   try {
     const user = c.get('user')
     if (user.role !== 'manager') {
@@ -196,11 +210,11 @@ team.delete('/:id', async (c) => {
 })
 
 // GET /api/team/limits — get current plan limits and usage
-team.get('/limits', async (c) => {
+team.get('/limits', auth, company, async (c) => {
   try {
     const { company_id } = c.get('user')
-    const company = await c.env.DB.prepare('SELECT plan FROM companies WHERE id = ?').bind(company_id).first()
-    const plan = company?.plan || 'Starter'
+    const companyRow = await c.env.DB.prepare('SELECT plan FROM companies WHERE id = ?').bind(company_id).first()
+    const plan = companyRow?.plan || 'Starter'
     const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.Starter
 
     const counts = await c.env.DB.prepare(

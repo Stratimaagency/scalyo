@@ -120,8 +120,6 @@ portfolio.patch('/accounts/:id/', async (c) => {
   const id = c.req.param('id')
   const data = await c.req.json()
 
-  console.log('PATCH /accounts/:id/ → id:', id, 'company_id:', company_id, 'payload keys:', Object.keys(data))
-
   const allowed = ['name', 'csm', 'mrr', 'arr', 'industry', 'usage', 'health', 'risk', 'plan', 'contact', 'contact_email', 'notes', 'onboarding_date', 'renewal_date', 'renewal']
   const sets = []
   const values = []
@@ -150,7 +148,6 @@ portfolio.patch('/accounts/:id/', async (c) => {
   values.push(id, company_id)
 
   const sql = `UPDATE accounts SET ${sets.join(', ')} WHERE id = ? AND company_id = ?`
-  console.log('PATCH SQL:', sql, 'values:', JSON.stringify(values))
 
   try {
     const account = await c.env.DB.prepare(sql + ' RETURNING *').bind(...values).first()

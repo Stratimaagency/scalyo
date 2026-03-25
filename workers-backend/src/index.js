@@ -41,10 +41,7 @@ app.route('/api/oauth', oauth)
 app.route('/api/team', team)
 
 // 404 fallback
-app.notFound((c) => {
-  console.error('404 NOT FOUND:', c.req.method, c.req.url, c.req.path)
-  return c.json({ error: 'Not found' }, 404)
-})
+app.notFound((c) => c.json({ error: 'Not found', path: c.req.path, method: c.req.method }, 404))
 
 // Error handler — include CORS headers so browser doesn't block the response
 app.onError((err, c) => {
