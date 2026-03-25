@@ -233,8 +233,10 @@ async function send(text) {
     messages.value.push({ role: 'assistant', content: reply })
     const idx = messages.value.length - 1
     typewriterEffect(idx, reply)
-  } catch {
-    messages.value.push({ role: 'assistant', content: t('errorAI') })
+  } catch (e) {
+    const errMsg = e.response?.data?.error || e.message || 'Unknown error'
+    console.error('Coach chat error:', errMsg)
+    messages.value.push({ role: 'assistant', content: `Erreur : ${errMsg}` })
   }
   loading.value = false
   saveMessages()
