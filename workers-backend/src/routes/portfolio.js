@@ -224,6 +224,13 @@ portfolio.get('/accounts/:account_pk/todos/', async (c) => {
 portfolio.post('/accounts/:account_pk/todos/', async (c) => {
   const { company_id } = c.get('user')
   const accountId = c.req.param('account_pk')
+
+  // Verify account belongs to this company
+  const account = await c.env.DB.prepare(
+    'SELECT id FROM accounts WHERE id = ? AND company_id = ?'
+  ).bind(accountId, company_id).first()
+  if (!account) return c.json({ error: 'Account not found' }, 404)
+
   const data = await c.req.json()
 
   const label = data.label || data.text || ''

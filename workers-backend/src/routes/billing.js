@@ -216,11 +216,12 @@ billing.post('/webhook/', async (c) => {
     const companyId = obj.metadata?.company_id
     const plan = obj.metadata?.plan
     const subscriptionId = obj.subscription
-    if (companyId) {
+    const companyIdInt = parseInt(companyId, 10)
+    if (companyIdInt) {
       await db.prepare(
         `UPDATE companies SET plan = ?, stripe_subscription_id = ?, subscription_status = 'active', updated_at = datetime('now')
          WHERE id = ?`
-      ).bind(plan || 'Starter', subscriptionId || '', parseInt(companyId)).run()
+      ).bind(plan || 'Starter', subscriptionId || '', companyIdInt).run()
 
       // Send subscription confirmation email
       const customerEmail = obj.customer_details?.email || obj.customer_email

@@ -362,7 +362,7 @@ const csmStats = computed(() => {
   return csms.map(csm => {
     const acc = accounts.value.filter(a => a.csm === csm)
     const arr = acc.reduce((s, a) => s + (parseFloat(a.mrr || a.arr) || 0) * 12, 0)
-    const health = Math.round(acc.reduce((s, a) => s + (a.health || 70), 0) / acc.length)
+    const health = acc.length ? Math.round(acc.reduce((s, a) => s + (a.health || 70), 0) / acc.length) : 0
     const crit = acc.filter(a => a.risk === 'critical').length
     return { csm, count: acc.length, arr, health, crit }
   })
