@@ -192,6 +192,10 @@ billing.post('/webhook/', async (c) => {
       for (let i = 0; i < arr1.length; i++) diff |= arr1[i] ^ arr2[i]
       if (diff !== 0) return c.body(null, 400)
 
+      // Reject events older than 5 minutes to prevent replay attacks
+      const now = Math.floor(Date.now() / 1000)
+      if (Math.abs(now - parseInt(timestamp)) > 300) return c.body(null, 400)
+
       event = JSON.parse(body)
     } catch {
       return c.body(null, 400)

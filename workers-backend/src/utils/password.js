@@ -52,10 +52,10 @@ export async function verifyPassword(password, stored) {
     KEY_LENGTH * 8
   )
   // Constant-time comparison to prevent timing attacks
-  const a = new TextEncoder().encode(bufferToHex(derived))
-  const b = new TextEncoder().encode(hashHex)
+  const a = new Uint8Array(derived)
+  const b = new Uint8Array(hexToBuffer(hashHex))
   if (a.byteLength !== b.byteLength) return false
-  const hmacKey = await crypto.subtle.importKey('raw', a, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify'])
-  const sig = await crypto.subtle.sign('HMAC', hmacKey, b)
-  return await crypto.subtle.verify('HMAC', hmacKey, sig, b)
+  let diff = 0
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i]
+  return diff === 0
 }

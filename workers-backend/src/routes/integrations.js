@@ -86,9 +86,12 @@ integrations.post('/', async (c) => {
 
 // ─── TEST connection ────────────────────────────────────────────
 integrations.post('/test', async (c) => {
+  let integration_key = null
   try {
     const { company_id } = c.get('user')
-    const { integration_key, config } = await c.req.json()
+    const body = await c.req.json()
+    integration_key = body.integration_key
+    const config = body.config
 
     if (!integration_key) return c.json({ error: 'integration_key is required' }, 400)
 
@@ -123,7 +126,6 @@ integrations.post('/test', async (c) => {
     // Update integration status to error
     try {
       const { company_id } = c.get('user')
-      const { integration_key } = await c.req.json().catch(() => ({}))
       if (integration_key) {
         await c.env.DB.prepare(
           "UPDATE integrations SET status = 'error', updated_at = datetime('now') WHERE company_id = ? AND integration_key = ?"

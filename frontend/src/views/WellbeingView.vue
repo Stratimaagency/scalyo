@@ -326,7 +326,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { wellbeingApi, coachApi } from '../api'
 import { useI18n } from '../i18n'
 import { usePreferencesStore } from '../stores/preferences'
@@ -375,6 +375,8 @@ async function saveWellbeing(updates) {
     }
   }, 400)
 }
+
+onUnmounted(() => { clearTimeout(saveTimer) })
 
 // ── Computed team (parse if string) ──
 const team = computed(() => {

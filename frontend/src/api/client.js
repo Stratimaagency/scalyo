@@ -14,6 +14,9 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+// Shared refresh promise to avoid multiple simultaneous refresh calls
+let refreshPromise = null
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -23,8 +26,13 @@ api.interceptors.response.use(
       const tokens = getTokens()
       if (tokens.refresh) {
         try {
-          const refreshUrl = (import.meta.env.VITE_API_URL || '/api') + '/auth/token/refresh/'
-          const { data } = await axios.post(refreshUrl, { refresh: tokens.refresh })
+          // If a refresh is already in progress, wait for it
+          if (!refreshPromise) {
+            const refreshUrl = (import.meta.env.VITE_API_URL || '/api') + '/auth/token/refresh/'
+            refreshPromise = axios.post(refreshUrl, { refresh: tokens.refresh })
+              .finally(() => { refreshPromise = null })
+          }
+          const { data } = await refreshPromise
           const refreshed = data.tokens || data
           const newTokens = { ...tokens, access: refreshed.access }
           if (refreshed.refresh) newTokens.refresh = refreshed.refresh
@@ -34,6 +42,7 @@ api.interceptors.response.use(
         } catch {
           clearAuth()
           window.location.reload()
+          return new Promise(() => {}) // prevent error flash before reload
         }
       }
     }
