@@ -72,7 +72,7 @@ const chatContainer = ref(null)
 const typingIndex = ref(-1)
 const typingProgress = ref({})
 
-const dailyLimit = 30
+const dailyLimit = 50
 const STORAGE_KEY = 'scalyo_coach_messages'
 const COUNT_KEY = 'scalyo_coach_count'
 
