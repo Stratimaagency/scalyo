@@ -223,6 +223,13 @@
             <label class="integ-label">{{ t('integInstanceUrl') }}</label>
             <input v-model="configForm.instanceUrl" type="url" class="integ-input" placeholder="https://yourorg.salesforce.com" />
           </div>
+          <div v-if="connectModal.key === 'zendesk'">
+            <label class="integ-label">Sous-domaine Zendesk</label>
+            <input v-model="configForm.domain" type="text" class="integ-input" placeholder="yourcompany" />
+            <span style="font-size: 11px; color: var(--muted);">yourcompany.zendesk.com</span>
+            <label class="integ-label" style="margin-top: 10px;">Email admin</label>
+            <input v-model="configForm.email" type="email" class="integ-input" placeholder="admin@yourcompany.com" />
+          </div>
           <label class="integ-label">{{ t('integSyncFreq') }}</label>
           <select v-model="configForm.syncFreq" class="integ-input">
             <option value="realtime">{{ t('integRealtime') }}</option>
@@ -236,10 +243,20 @@
         </div>
 
         <div v-else-if="connectModal.configType === 'chat'" class="integ-config">
-          <label class="integ-label">{{ t('integWebhookUrl') }}</label>
-          <input v-model="configForm.webhookUrl" type="url" class="integ-input" placeholder="https://hooks.slack.com/..." />
-          <label class="integ-label">{{ t('integChannel') }}</label>
-          <input v-model="configForm.channel" type="text" class="integ-input" placeholder="#customer-success" />
+          <template v-if="connectModal.key === 'whatsapp'">
+            <label class="integ-label">WhatsApp Business API Token</label>
+            <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="EAAxxxxxxxx..." />
+            <label class="integ-label">Phone Number ID</label>
+            <input v-model="configForm.phoneNumberId" type="text" class="integ-input" placeholder="1234567890" />
+            <label class="integ-label">{{ t('integChannel') || 'Numéro destinataire (test)' }}</label>
+            <input v-model="configForm.recipientPhone" type="text" class="integ-input" placeholder="+33612345678" />
+          </template>
+          <template v-else>
+            <label class="integ-label">{{ t('integWebhookUrl') }}</label>
+            <input v-model="configForm.webhookUrl" type="url" class="integ-input" placeholder="https://hooks.slack.com/..." />
+            <label class="integ-label">{{ t('integChannel') }}</label>
+            <input v-model="configForm.channel" type="text" class="integ-input" placeholder="#customer-success" />
+          </template>
           <div class="integ-toggle-row">
             <span style="font-size: 13px;">{{ t('integNotifChurn') }}</span>
             <button class="integ-toggle" :class="{ on: configForm.notifChurn }" @click="configForm.notifChurn = !configForm.notifChurn"></button>
@@ -269,15 +286,22 @@
         </div>
 
         <div v-else-if="connectModal.configType === 'project'" class="integ-config">
-          <label class="integ-label">{{ t('integApiKey') }}</label>
-          <input v-model="configForm.apiKey" type="text" class="integ-input" :placeholder="connectModal.key === 'jira' ? 'email@domain.com:api_token' : 'sk-xxxxxxxx'" />
+          <label class="integ-label">{{ connectModal.key === 'notion' ? 'Notion Integration Token' : t('integApiKey') }}</label>
+          <input v-model="configForm.apiKey" type="text" class="integ-input" :placeholder="connectModal.key === 'jira' ? 'email@domain.com:api_token' : connectModal.key === 'notion' ? 'secret_xxxxxxxx' : 'sk-xxxxxxxx'" />
           <div v-if="connectModal.key === 'jira'">
             <label class="integ-label">{{ t('integJiraDomain') }}</label>
             <input v-model="configForm.domain" type="text" class="integ-input" placeholder="yourcompany" />
             <span style="font-size: 11px; color: var(--muted);">yourcompany.atlassian.net</span>
           </div>
+          <div v-if="connectModal.key === 'notion'">
+            <label class="integ-label">Database ID (optionnel)</label>
+            <input v-model="configForm.databaseId" type="text" class="integ-input" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+            <span style="font-size: 11px; color: var(--muted);">ID de la base Notion à synchroniser (visible dans l'URL)</span>
+          </div>
+          <template v-if="connectModal.key !== 'notion'">
           <label class="integ-label">{{ t('integProjectKey') }}</label>
           <input v-model="configForm.projectKey" type="text" class="integ-input" placeholder="CS-BOARD" />
+          </template>
           <div class="integ-toggle-row">
             <span style="font-size: 13px;">{{ t('integSyncTasks') }}</span>
             <button class="integ-toggle" :class="{ on: configForm.syncTasks }" @click="configForm.syncTasks = !configForm.syncTasks"></button>
@@ -385,7 +409,6 @@ const integrationsList = ref([
   // Data / Import — Available
   { key: 'csv', name: 'Import CSV', icon: '📄', category: 'data', available: true, color: '#6B7280', desc: t('integDescCsv'), features: [t('integFeatOneClick'), t('integFeatMapping')], configType: 'import', voted: false },
   { key: 'excel', name: 'Import Excel', icon: '📊', category: 'data', available: true, color: '#16A34A', desc: t('integDescExcel'), features: [t('integFeatXlsx'), t('integFeatMultiSheet')], configType: 'import', voted: false },
-  { key: 'stripe', name: 'Stripe', icon: '💳', category: 'data', available: true, color: '#6366F1', desc: t('integDescStripe'), features: [t('integFeatBilling'), t('integFeatMrr')], configType: 'crm', voted: false },
 
   // Email — Available
   { key: 'gmail', name: 'Gmail', icon: '📧', category: 'email', available: true, color: '#EA4335', desc: t('integDescGmail'), features: [t('integFeatInbox'), t('integFeatAutoLog'), t('integFeatTemplates')], configType: 'email', voted: false },
@@ -411,12 +434,18 @@ const integrationsList = ref([
   { key: 'jira', name: 'Jira', icon: '🔷', category: 'project', available: true, color: '#0052CC', desc: t('integDescJira'), features: [t('integFeatTickets'), t('integFeatSyncTasks'), t('integFeatBiDir')], configType: 'project', voted: false },
   { key: 'asana', name: 'Asana', icon: '🔶', category: 'project', available: true, color: '#F06A6A', desc: t('integDescAsana'), features: [t('integFeatProjects'), t('integFeatSyncTasks'), t('integFeatTimeline')], configType: 'project', voted: false },
 
+  // Chat — WhatsApp
+  { key: 'whatsapp', name: 'WhatsApp Business', icon: '💚', category: 'chat', available: true, color: '#25D366', desc: t('integDescWhatsapp'), features: [t('integFeatMessages'), t('integFeatAutoLog')], configType: 'chat', voted: false },
+
+  // Support — Zendesk
+  { key: 'zendesk', name: 'Zendesk', icon: '🟡', category: 'chat', available: true, color: '#03363D', desc: t('integDescZendesk'), features: [t('integFeatTickets'), t('integFeatHealthData'), t('integFeatAutoSync')], configType: 'crm', voted: false },
+
+  // Project — Notion
+  { key: 'notion', name: 'Notion', icon: '⬛', category: 'project', available: true, color: '#000000', desc: t('integDescNotion'), features: [t('integFeatDocs'), t('integFeatSyncTasks')], configType: 'project', voted: false },
+
   // Coming soon
-  { key: 'zendesk', name: 'Zendesk', icon: '🟡', category: 'chat', available: false, color: '#03363D', desc: t('integDescZendesk'), features: [t('integFeatTickets'), t('integFeatHealthData')], configType: 'crm', voted: false },
   { key: 'segment', name: 'Segment', icon: '🟣', category: 'data', available: false, color: '#52BD94', desc: t('integDescSegment'), features: [t('integFeatEvents'), t('integFeatHealthData')], configType: 'crm', voted: false },
   { key: 'freshdesk', name: 'Freshdesk', icon: '🟢', category: 'chat', available: false, color: '#2CA01C', desc: t('integDescFreshdesk'), features: [t('integFeatTickets'), t('integFeatAutoSync')], configType: 'crm', voted: false },
-  { key: 'notion', name: 'Notion', icon: '⬛', category: 'project', available: false, color: '#000000', desc: t('integDescNotion'), features: [t('integFeatDocs'), t('integFeatSyncTasks')], configType: 'project', voted: false },
-  { key: 'whatsapp', name: 'WhatsApp Business', icon: '💚', category: 'chat', available: false, color: '#25D366', desc: t('integDescWhatsapp'), features: [t('integFeatMessages'), t('integFeatAutoLog')], configType: 'chat', voted: false },
   { key: 'crisp', name: 'Crisp', icon: '🔵', category: 'chat', available: false, color: '#1972F5', desc: t('integDescCrisp'), features: [t('integFeatLiveChat'), t('integFeatConversations')], configType: 'chat', voted: false },
 ])
 
@@ -466,6 +495,7 @@ function resetForm() {
     notifChurn: true, notifWellbeing: true, notifRenewal: true,
     meetingEmail: '', autoCreateMeeting: false, syncCalendar: true,
     projectKey: '', syncTasks: true, instanceUrl: '', domain: '',
+    phoneNumberId: '', recipientPhone: '', databaseId: '',
   })
 }
 
