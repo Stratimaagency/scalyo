@@ -1,6 +1,5 @@
 // Central registry — maps integration_key to its service module
 
-import * as stripe from './stripe.js'
 import * as slack from './slack.js'
 import * as teams from './teams.js'
 import * as hubspot from './hubspot.js'
@@ -14,9 +13,11 @@ import * as outlook from './outlook.js'
 import * as googleMeet from './google-meet.js'
 import * as zoom from './zoom.js'
 import * as calendly from './calendly.js'
+import * as whatsapp from './whatsapp.js'
+import * as zendesk from './zendesk.js'
+import * as notion from './notion.js'
 
 const services = {
-  stripe,
   slack,
   teams,
   hubspot,
@@ -31,6 +32,9 @@ const services = {
   'google-meet': googleMeet,
   zoom,
   calendly,
+  whatsapp,
+  zendesk,
+  notion,
   csv: null,   // Handled by portfolio import
   excel: null, // Handled by portfolio import
 }
