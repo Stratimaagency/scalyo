@@ -121,6 +121,7 @@ export default {
   currentSubscription: '현재 구독',
   perMonth: '/월',
   notifTitle: '알림 설정',
+  notifSaved: '설정이 저장되었습니다',
   churnAlertLabel: '이탈 알림',
   churnAlertDesc: '계정이 위험 수준에 도달하면 알림',
   weeklyReportLabel: '주간 리포트',
@@ -297,6 +298,7 @@ export default {
   teamMgmtDesc: 'Growth 플랜 이상에서 팀 관리 기능을 사용할 수 있습니다.',
   currentPlan: '현재',
   upgradePlan: '업그레이드',
+  manageSubscription: '구독 관리',
   // Planning day abbreviations
   dayMon: '월',
   dayTue: '화',

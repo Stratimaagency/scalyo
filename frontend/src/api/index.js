@@ -91,6 +91,7 @@ export const emailStudioApi = {
 // Billing
 export const billingApi = {
   createCheckout: (plan) => api.post('/billing/checkout/', { plan }),
+  changePlan: (plan) => api.post('/billing/change-plan/', { plan }),
   openPortal: () => api.post('/billing/portal/'),
   getStatus: () => api.get('/billing/status/'),
 }

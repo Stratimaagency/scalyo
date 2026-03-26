@@ -120,6 +120,7 @@ export default {
   currentSubscription: 'Current subscription',
   perMonth: '/month',
   notifTitle: 'Notification preferences',
+  notifSaved: 'Preferences saved',
   churnAlertLabel: 'Churn alerts',
   churnAlertDesc: 'Notification when an account reaches critical risk',
   weeklyReportLabel: 'Weekly report',
@@ -297,6 +298,7 @@ export default {
   teamMgmtDesc: 'Team management features available on Growth plan and above.',
   currentPlan: 'Current',
   upgradePlan: 'Upgrade',
+  manageSubscription: 'Manage subscription',
   // Planning day abbreviations
   dayMon: 'Mon',
   dayTue: 'Tue',

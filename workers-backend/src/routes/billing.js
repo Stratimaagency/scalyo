@@ -59,6 +59,7 @@ function getStripe(env) {
 billing.use('/checkout/', authMiddleware(), companyRequired())
 billing.use('/portal/', authMiddleware(), companyRequired())
 billing.use('/status/', authMiddleware(), companyRequired())
+billing.use('/change-plan/', authMiddleware(), companyRequired())
 
 // POST /api/billing/checkout/
 billing.post('/checkout/', async (c) => {
@@ -143,6 +144,58 @@ billing.get('/status/', async (c) => {
     subscription_status: company.subscription_status,
     has_subscription: !!company.stripe_subscription_id,
   })
+})
+
+// POST /api/billing/change-plan/ — upgrade/downgrade for existing subscribers
+billing.post('/change-plan/', async (c) => {
+  const { plan } = await c.req.json()
+  if (!['Starter', 'Growth', 'Elite'].includes(plan)) {
+    return c.json({ error: 'Invalid plan' }, 400)
+  }
+
+  const priceId = c.env[PLAN_PRICE_MAP[plan]]
+  if (!priceId) return c.json({ error: `No price configured for plan: ${plan}` }, 400)
+
+  const user = c.get('user')
+  const db = c.env.DB
+  const stripe = getStripe(c.env)
+
+  const company = await db.prepare('SELECT * FROM companies WHERE id = ?').bind(user.company_id).first()
+  if (!company) return c.json({ error: 'Company not found' }, 404)
+
+  // If no active subscription, redirect to checkout
+  if (!company.stripe_subscription_id) {
+    return c.json({ error: 'no_subscription', message: 'No active subscription — use checkout instead' }, 400)
+  }
+
+  // Get current subscription to find the item ID
+  const sub = await stripe.request('GET', `/subscriptions/${company.stripe_subscription_id}`)
+  if (sub.error) {
+    return c.json({ error: sub.error.message || 'Failed to fetch subscription' }, 400)
+  }
+
+  const itemId = sub.items?.data?.[0]?.id
+  if (!itemId) {
+    return c.json({ error: 'No subscription item found' }, 400)
+  }
+
+  // Update the subscription with the new price (proration by default)
+  const updated = await stripe.request('POST', `/subscriptions/${company.stripe_subscription_id}`, {
+    'items[0][id]': itemId,
+    'items[0][price]': priceId,
+    proration_behavior: 'create_prorations',
+  })
+
+  if (updated.error) {
+    return c.json({ error: updated.error.message || 'Failed to change plan' }, 400)
+  }
+
+  // Update plan in DB immediately
+  await db.prepare(
+    "UPDATE companies SET plan = ?, updated_at = datetime('now') WHERE id = ?"
+  ).bind(plan, company.id).run()
+
+  return c.json({ ok: true, plan, message: `Plan changed to ${plan}` })
 })
 
 // POST /api/billing/webhook/ (no auth — Stripe calls this)
