@@ -11,7 +11,6 @@ export const authApi = {
   getNotificationPrefs: () => api.get('/auth/notifications/'),
   updateNotificationPrefs: (data) => api.patch('/auth/notifications/', data),
   deleteAccount: () => api.delete('/auth/delete-account/'),
-  getStripeUrls: () => api.get('/auth/stripe-urls/'),
   changePassword: (data) => api.post('/auth/change-password/', data),
 }
 
@@ -91,6 +90,7 @@ export const emailStudioApi = {
 // Billing
 export const billingApi = {
   createCheckout: (plan) => api.post('/billing/checkout/', { plan }),
+  changePlan: (plan) => api.post('/billing/change-plan/', { plan }),
   openPortal: () => api.post('/billing/portal/'),
   getStatus: () => api.get('/billing/status/'),
 }

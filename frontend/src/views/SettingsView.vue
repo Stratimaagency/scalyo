@@ -172,10 +172,14 @@
           <div style="height: 100%; border-radius: 6px; background: var(--teal); transition: width .3s;" :style="{ width: ((14 - trialDaysLeft) / 14 * 100) + '%' }"></div>
         </div>
       </div>
+      <div v-if="billingError" style="background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 12px; color: var(--red);">{{ billingError }}</div>
       <AppCard class="mb-md">
         <h4 style="font-weight: 800; margin-bottom: 14px">{{ t('currentSubscription') }}</h4>
         <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 16px">
           <span class="tag risk-low" style="font-size: 14px; padding: 6px 14px">{{ authStore.company?.plan || 'Starter' }}</span>
+          <button class="btn btn-secondary" style="font-size: 12px; padding: 4px 12px;" @click="openBillingPortal" :disabled="openingPortal">
+            {{ openingPortal ? '...' : t('manageSubscription') }}
+          </button>
         </div>
       </AppCard>
       <div class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr))">
@@ -187,13 +191,14 @@
           <ul style="list-style: none; font-size: 12px; color: var(--muted); margin-bottom: 14px">
             <li v-for="f in plan.features" :key="f" style="padding: 3px 0; display: flex; align-items: center; gap: 6px;"><ScalyoIcon name="check" :size="12" /> {{ f }}</li>
           </ul>
-          <a v-if="plan.name !== authStore.company?.plan && stripeUrls[plan.name.toLowerCase()]"
-            :href="stripeUrls[plan.name.toLowerCase()]" target="_blank"
-            class="btn btn-primary" style="width: 100%; justify-content: center; text-decoration: none;">
-            {{ t('upgradePlan') }}
-          </a>
-          <button v-else class="btn" :class="plan.name === authStore.company?.plan ? 'btn-secondary' : 'btn-primary'" style="width: 100%; justify-content: center" disabled>
-            {{ plan.name === authStore.company?.plan ? t('currentPlan') : t('upgradePlan') }}
+          <button v-if="plan.name !== authStore.company?.plan"
+            class="btn btn-primary" style="width: 100%; justify-content: center"
+            :disabled="changingPlan === plan.name"
+            @click="changePlan(plan.name)">
+            {{ changingPlan === plan.name ? '...' : t('upgradePlan') }}
+          </button>
+          <button v-else class="btn btn-secondary" style="width: 100%; justify-content: center" disabled>
+            {{ t('currentPlan') }}
           </button>
         </AppCard>
       </div>
@@ -296,7 +301,8 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { useI18n } from '../i18n'
-import { authApi, teamApi, portfolioApi } from '../api'
+import { authApi, teamApi, portfolioApi, billingApi } from '../api'
+import { useToast } from '../composables/useToast'
 import AppCard from '../components/AppCard.vue'
 import AppField from '../components/AppField.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
@@ -305,6 +311,7 @@ const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()
 const router = useRouter()
 const { t } = useI18n()
+const toast = useToast()
 const tab = ref('profile')
 const saving = ref(false)
 const isManager = computed(() => authStore.user?.role === 'manager')
@@ -362,7 +369,9 @@ const companyName = ref(authStore.company?.name || '')
 const selectedCurrency = ref(prefsStore.currency)
 
 const notifPrefs = reactive({ churn_alerts: true, weekly_report: true, wellbeing_alerts: true, renewal_alerts: true })
-const stripeUrls = ref({})
+const changingPlan = ref('')
+const billingError = ref('')
+const openingPortal = ref(false)
 
 // Team management
 const teamMembers = ref([])
@@ -418,10 +427,6 @@ onMounted(async () => {
   try {
     const { data } = await authApi.getNotificationPrefs()
     Object.assign(notifPrefs, data)
-  } catch {}
-  try {
-    const { data } = await authApi.getStripeUrls()
-    stripeUrls.value = data
   } catch {}
   if (isManager.value) loadTeam()
 })
@@ -523,10 +528,59 @@ async function saveCompany() {
   saving.value = false
 }
 
+async function openBillingPortal() {
+  openingPortal.value = true
+  try {
+    const { data } = await billingApi.openPortal()
+    if (data.portal_url) window.location.href = data.portal_url
+  } catch (e) {
+    billingError.value = e.response?.data?.error || e.message
+  }
+  openingPortal.value = false
+}
+
+async function changePlan(planName) {
+  if (changingPlan.value) return
+  changingPlan.value = planName
+  billingError.value = ''
+  try {
+    // Try to change plan on existing subscription
+    const { data } = await billingApi.changePlan(planName)
+    if (data.ok) {
+      if (authStore.company) authStore.company.plan = planName
+      toast.success(`Forfait changé vers ${planName}`)
+      changingPlan.value = ''
+      return
+    }
+  } catch (e) {
+    // If no subscription exists, fallback to checkout
+    if (e.response?.data?.error === 'no_subscription') {
+      try {
+        const { data } = await billingApi.createCheckout(planName)
+        if (data.checkout_url) {
+          window.location.href = data.checkout_url
+          return
+        }
+      } catch (e2) {
+        const msg = e2.response?.data?.error || e2.message
+        billingError.value = msg
+        toast.error(msg)
+      }
+    } else {
+      const msg = e.response?.data?.error || e.message
+      billingError.value = msg
+      toast.error(msg)
+    }
+  }
+  changingPlan.value = ''
+}
+
 async function saveNotifPrefs() {
   try {
     await authApi.updateNotificationPrefs({ ...notifPrefs })
+    toast.success(t('notifSaved'))
   } catch (e) {
+    toast.error(e.response?.data?.error || e.message)
     console.error('saveNotifPrefs error:', e)
   }
 }
