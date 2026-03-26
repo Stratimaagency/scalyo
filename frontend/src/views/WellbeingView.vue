@@ -260,7 +260,7 @@
         <!-- Helpline info -->
         <AppCard>
           <h4 style="font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 6px">
-            📞 {{ t('wbTalkSomeone') }}
+            💬 {{ t('wbTalkSomeone') }}
           </h4>
           <p style="font-size: 12px; color: var(--muted); line-height: 1.7; margin-bottom: 10px">
             {{ t('wbHelpline') }}
@@ -449,7 +449,7 @@ const coachingFeatures = computed(() => [
 
 // ── Side panel resources ──
 const sideResources = computed(() => [
-  { icon: '📞', title: t('wbTalkSomeone'), desc: t('wbHelpline') },
+  { icon: '💬', title: t('wbTalkSomeone'), desc: t('wbHelpline') },
   { icon: '🧘', title: t('wbDecompress'), desc: 'Breathing, mindfulness' },
   { icon: '📝', title: t('wbManage'), desc: t('trackWorkload') },
   { icon: '🔋', title: t('wbBookSession'), desc: t('wbBookHow') },
