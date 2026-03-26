@@ -20,8 +20,10 @@ export function useChat(apiFn) {
     try {
       const result = await apiFn(messages.value)
       messages.value.push({ role: 'assistant', content: result })
-    } catch {
-      messages.value.push({ role: 'assistant', content: 'Sorry, an error occurred. Please try again.' })
+    } catch (e) {
+      const errMsg = e.response?.data?.error || e.message || 'Unknown error'
+      console.error('Chat error:', errMsg)
+      messages.value.push({ role: 'assistant', content: `Erreur : ${errMsg}` })
     }
 
     sending.value = false

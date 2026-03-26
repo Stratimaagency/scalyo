@@ -9,7 +9,7 @@ const SYSTEM_PROMPTS = {
   nova: "Tu es Nova, assistante bien-être dédiée aux équipes Customer Success. Tu aides les CSMs à gérer le stress, la charge mentale, les conflits, l'épuisement professionnel. Tu es empathique, bienveillante et professionnelle. Tout est confidentiel. Réponds dans la langue de l'utilisateur.",
 }
 
-const DEEPSEEK_URL = 'https://api.deepseek.com/chat/completions'
+const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions'
 const MODEL = 'deepseek-chat'
 const MAX_TOKENS = 1024
 
