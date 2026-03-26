@@ -34,7 +34,7 @@
       </h4>
       <div class="integ-connected-chips">
         <span v-for="integ in connectedIntegrations" :key="integ.key" class="integ-connected-chip">
-          <span>{{ integ.icon }}</span> {{ integ.name }}
+          <img v-if="integ.logo" :src="integ.logo" :alt="integ.name" style="width: 16px; height: 16px;" /> <span v-else>{{ integ.icon }}</span> {{ integ.name }}
           <button class="integ-disconnect-x" @click.stop="disconnectIntegration(integ)" title="Disconnect">&times;</button>
         </span>
       </div>
@@ -50,7 +50,7 @@
         <AppCard v-for="integ in filteredAvailable" :key="integ.key" class="card-lift integ-card">
           <div class="integ-card-header">
             <div class="integ-icon-wrap" :style="{ background: integ.color + '15', border: '1px solid ' + integ.color + '30' }">
-              <span class="integ-card-icon">{{ integ.icon }}</span>
+              <img v-if="integ.logo" :src="integ.logo" :alt="integ.name" class="integ-card-logo" /><span v-else class="integ-card-icon">{{ integ.icon }}</span>
             </div>
             <div>
               <div style="font-weight: 700; font-size: 14px;">{{ integ.name }}</div>
@@ -100,7 +100,7 @@
         <AppCard v-for="integ in filteredComingSoon" :key="integ.key" class="integ-card">
           <div class="integ-card-header">
             <div class="integ-icon-wrap" style="opacity: 0.6;">
-              <span class="integ-card-icon">{{ integ.icon }}</span>
+              <img v-if="integ.logo" :src="integ.logo" :alt="integ.name" class="integ-card-logo" /><span v-else class="integ-card-icon">{{ integ.icon }}</span>
             </div>
             <div>
               <div style="font-weight: 700; font-size: 14px;">{{ integ.name }}</div>
@@ -406,47 +406,41 @@ const categories = computed(() => [
 ])
 
 const integrationsList = ref([
-  // Data / Import — Available
+  // Data / Import
   { key: 'csv', name: 'Import CSV', icon: '📄', category: 'data', available: true, color: '#6B7280', desc: t('integDescCsv'), features: [t('integFeatOneClick'), t('integFeatMapping')], configType: 'import', voted: false },
   { key: 'excel', name: 'Import Excel', icon: '📊', category: 'data', available: true, color: '#16A34A', desc: t('integDescExcel'), features: [t('integFeatXlsx'), t('integFeatMultiSheet')], configType: 'import', voted: false },
 
-  // Email — Available
-  { key: 'gmail', name: 'Gmail', icon: '📧', category: 'email', available: true, color: '#EA4335', desc: t('integDescGmail'), features: [t('integFeatInbox'), t('integFeatAutoLog'), t('integFeatTemplates')], configType: 'email', voted: false },
-  { key: 'outlook', name: 'Outlook / Office 365', icon: '📬', category: 'email', available: true, color: '#0078D4', desc: t('integDescOutlook'), features: [t('integFeatInbox'), t('integFeatCalendar'), t('integFeatContacts')], configType: 'email', voted: false },
+  // Email
+  { key: 'gmail', name: 'Gmail', logo: 'https://cdn.simpleicons.org/gmail', category: 'email', available: true, color: '#EA4335', desc: t('integDescGmail'), features: [t('integFeatInbox'), t('integFeatAutoLog'), t('integFeatTemplates')], configType: 'email', voted: false },
+  { key: 'outlook', name: 'Outlook / Office 365', logo: 'https://cdn.simpleicons.org/microsoftoutlook', category: 'email', available: true, color: '#0078D4', desc: t('integDescOutlook'), features: [t('integFeatInbox'), t('integFeatCalendar'), t('integFeatContacts')], configType: 'email', voted: false },
   { key: 'imap', name: 'IMAP / SMTP', icon: '📨', category: 'email', available: true, color: '#6B7280', desc: t('integDescImap'), features: [t('integFeatAnyProvider'), t('integFeatSsl')], configType: 'email', voted: false },
 
-  // CRM — Available
-  { key: 'hubspot', name: 'HubSpot CRM', icon: '🟠', category: 'crm', available: true, color: '#FF7A59', desc: t('integDescHubspot'), features: [t('integFeatContacts'), t('integFeatDeals'), t('integFeatAutoSync')], configType: 'crm', voted: false },
-  { key: 'salesforce', name: 'Salesforce', icon: '☁️', category: 'crm', available: true, color: '#00A1E0', desc: t('integDescSalesforce'), features: [t('integFeatAccounts'), t('integFeatOpportunities'), t('integFeatBiDir')], configType: 'crm', voted: false },
-  { key: 'pipedrive', name: 'Pipedrive', icon: '🟢', category: 'crm', available: true, color: '#25C16F', desc: t('integDescPipedrive'), features: [t('integFeatDeals'), t('integFeatContacts'), t('integFeatActivity')], configType: 'crm', voted: false },
+  // CRM
+  { key: 'hubspot', name: 'HubSpot CRM', logo: 'https://cdn.simpleicons.org/hubspot', category: 'crm', available: true, color: '#FF7A59', desc: t('integDescHubspot'), features: [t('integFeatContacts'), t('integFeatDeals'), t('integFeatAutoSync')], configType: 'crm', voted: false },
+  { key: 'salesforce', name: 'Salesforce', logo: 'https://cdn.simpleicons.org/salesforce', category: 'crm', available: true, color: '#00A1E0', desc: t('integDescSalesforce'), features: [t('integFeatAccounts'), t('integFeatOpportunities'), t('integFeatBiDir')], configType: 'crm', voted: false },
+  { key: 'pipedrive', name: 'Pipedrive', logo: 'https://cdn.simpleicons.org/pipedrive', category: 'crm', available: true, color: '#25C16F', desc: t('integDescPipedrive'), features: [t('integFeatDeals'), t('integFeatContacts'), t('integFeatActivity')], configType: 'crm', voted: false },
 
-  // Chat — Available
-  { key: 'slack', name: 'Slack', icon: '💜', category: 'chat', available: true, color: '#4A154B', desc: t('integDescSlack'), features: [t('integFeatAlerts'), t('integFeatCommands'), t('integFeatChannels')], configType: 'chat', voted: false },
-  { key: 'teams', name: 'Microsoft Teams', icon: '🟦', category: 'chat', available: true, color: '#5B5FC7', desc: t('integDescTeams'), features: [t('integFeatAlerts'), t('integFeatBot'), t('integFeatChannels')], configType: 'chat', voted: false },
-  { key: 'intercom', name: 'Intercom', icon: '💬', category: 'chat', available: true, color: '#286EFA', desc: t('integDescIntercom'), features: [t('integFeatConversations'), t('integFeatHealthData'), t('integFeatAutoTag')], configType: 'chat', voted: false },
+  // Chat
+  { key: 'slack', name: 'Slack', logo: 'https://cdn.simpleicons.org/slack', category: 'chat', available: true, color: '#4A154B', desc: t('integDescSlack'), features: [t('integFeatAlerts'), t('integFeatCommands'), t('integFeatChannels')], configType: 'chat', voted: false },
+  { key: 'teams', name: 'Microsoft Teams', logo: 'https://cdn.simpleicons.org/microsoftteams', category: 'chat', available: true, color: '#5B5FC7', desc: t('integDescTeams'), features: [t('integFeatAlerts'), t('integFeatBot'), t('integFeatChannels')], configType: 'chat', voted: false },
+  { key: 'intercom', name: 'Intercom', logo: 'https://cdn.simpleicons.org/intercom', category: 'chat', available: true, color: '#286EFA', desc: t('integDescIntercom'), features: [t('integFeatConversations'), t('integFeatHealthData'), t('integFeatAutoTag')], configType: 'chat', voted: false },
+  { key: 'whatsapp', name: 'WhatsApp Business', logo: 'https://cdn.simpleicons.org/whatsapp', category: 'chat', available: true, color: '#25D366', desc: t('integDescWhatsapp'), features: [t('integFeatMessages'), t('integFeatAutoLog')], configType: 'chat', voted: false },
+  { key: 'zendesk', name: 'Zendesk', logo: 'https://cdn.simpleicons.org/zendesk', category: 'chat', available: true, color: '#03363D', desc: t('integDescZendesk'), features: [t('integFeatTickets'), t('integFeatHealthData'), t('integFeatAutoSync')], configType: 'crm', voted: false },
 
-  // Meeting — Available
-  { key: 'google-meet', name: 'Google Meet', icon: '🎥', category: 'meeting', available: true, color: '#0F9D58', desc: t('integDescGoogleMeet'), features: [t('integFeatAutoLink'), t('integFeatCalSync'), t('integFeatOneClick')], configType: 'meeting', voted: false },
-  { key: 'zoom', name: 'Zoom', icon: '📹', category: 'meeting', available: true, color: '#2D8CFF', desc: t('integDescZoom'), features: [t('integFeatAutoLink'), t('integFeatRecording'), t('integFeatSchedule')], configType: 'meeting', voted: false },
-  { key: 'calendly', name: 'Calendly', icon: '📅', category: 'meeting', available: true, color: '#006BFF', desc: t('integDescCalendly'), features: [t('integFeatBooking'), t('integFeatAutoAssign'), t('integFeatReminders')], configType: 'meeting', voted: false },
+  // Meeting
+  { key: 'google-meet', name: 'Google Meet', logo: 'https://cdn.simpleicons.org/googlemeet', category: 'meeting', available: true, color: '#0F9D58', desc: t('integDescGoogleMeet'), features: [t('integFeatAutoLink'), t('integFeatCalSync'), t('integFeatOneClick')], configType: 'meeting', voted: false },
+  { key: 'zoom', name: 'Zoom', logo: 'https://cdn.simpleicons.org/zoom', category: 'meeting', available: true, color: '#2D8CFF', desc: t('integDescZoom'), features: [t('integFeatAutoLink'), t('integFeatRecording'), t('integFeatSchedule')], configType: 'meeting', voted: false },
+  { key: 'calendly', name: 'Calendly', logo: 'https://cdn.simpleicons.org/calendly', category: 'meeting', available: true, color: '#006BFF', desc: t('integDescCalendly'), features: [t('integFeatBooking'), t('integFeatAutoAssign'), t('integFeatReminders')], configType: 'meeting', voted: false },
 
-  // Project — Available
-  { key: 'jira', name: 'Jira', icon: '🔷', category: 'project', available: true, color: '#0052CC', desc: t('integDescJira'), features: [t('integFeatTickets'), t('integFeatSyncTasks'), t('integFeatBiDir')], configType: 'project', voted: false },
-  { key: 'asana', name: 'Asana', icon: '🔶', category: 'project', available: true, color: '#F06A6A', desc: t('integDescAsana'), features: [t('integFeatProjects'), t('integFeatSyncTasks'), t('integFeatTimeline')], configType: 'project', voted: false },
-
-  // Chat — WhatsApp
-  { key: 'whatsapp', name: 'WhatsApp Business', icon: '💚', category: 'chat', available: true, color: '#25D366', desc: t('integDescWhatsapp'), features: [t('integFeatMessages'), t('integFeatAutoLog')], configType: 'chat', voted: false },
-
-  // Support — Zendesk
-  { key: 'zendesk', name: 'Zendesk', icon: '🟡', category: 'chat', available: true, color: '#03363D', desc: t('integDescZendesk'), features: [t('integFeatTickets'), t('integFeatHealthData'), t('integFeatAutoSync')], configType: 'crm', voted: false },
-
-  // Project — Notion
-  { key: 'notion', name: 'Notion', icon: '⬛', category: 'project', available: true, color: '#000000', desc: t('integDescNotion'), features: [t('integFeatDocs'), t('integFeatSyncTasks')], configType: 'project', voted: false },
+  // Project
+  { key: 'jira', name: 'Jira', logo: 'https://cdn.simpleicons.org/jira', category: 'project', available: true, color: '#0052CC', desc: t('integDescJira'), features: [t('integFeatTickets'), t('integFeatSyncTasks'), t('integFeatBiDir')], configType: 'project', voted: false },
+  { key: 'asana', name: 'Asana', logo: 'https://cdn.simpleicons.org/asana', category: 'project', available: true, color: '#F06A6A', desc: t('integDescAsana'), features: [t('integFeatProjects'), t('integFeatSyncTasks'), t('integFeatTimeline')], configType: 'project', voted: false },
+  { key: 'notion', name: 'Notion', logo: 'https://cdn.simpleicons.org/notion', category: 'project', available: true, color: '#000000', desc: t('integDescNotion'), features: [t('integFeatDocs'), t('integFeatSyncTasks')], configType: 'project', voted: false },
 
   // Coming soon
-  { key: 'segment', name: 'Segment', icon: '🟣', category: 'data', available: false, color: '#52BD94', desc: t('integDescSegment'), features: [t('integFeatEvents'), t('integFeatHealthData')], configType: 'crm', voted: false },
-  { key: 'freshdesk', name: 'Freshdesk', icon: '🟢', category: 'chat', available: false, color: '#2CA01C', desc: t('integDescFreshdesk'), features: [t('integFeatTickets'), t('integFeatAutoSync')], configType: 'crm', voted: false },
-  { key: 'crisp', name: 'Crisp', icon: '🔵', category: 'chat', available: false, color: '#1972F5', desc: t('integDescCrisp'), features: [t('integFeatLiveChat'), t('integFeatConversations')], configType: 'chat', voted: false },
+  { key: 'segment', name: 'Segment', logo: 'https://cdn.simpleicons.org/segment', category: 'data', available: false, color: '#52BD94', desc: t('integDescSegment'), features: [t('integFeatEvents'), t('integFeatHealthData')], configType: 'crm', voted: false },
+  { key: 'freshdesk', name: 'Freshdesk', logo: 'https://cdn.simpleicons.org/freshdesk', category: 'chat', available: false, color: '#2CA01C', desc: t('integDescFreshdesk'), features: [t('integFeatTickets'), t('integFeatAutoSync')], configType: 'crm', voted: false },
+  { key: 'crisp', name: 'Crisp', logo: 'https://cdn.simpleicons.org/crisp', category: 'chat', available: false, color: '#1972F5', desc: t('integDescCrisp'), features: [t('integFeatLiveChat'), t('integFeatConversations')], configType: 'chat', voted: false },
 ])
 
 const availableIntegrations = computed(() => integrationsList.value.filter(i => i.available))
@@ -785,6 +779,7 @@ onMounted(() => {
   background: var(--surface);
 }
 .integ-card-icon { font-size: 22px; }
+.integ-card-logo { width: 24px; height: 24px; object-fit: contain; }
 .integ-card-desc {
   font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 10px;
 }
