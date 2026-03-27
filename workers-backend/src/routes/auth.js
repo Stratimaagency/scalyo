@@ -47,7 +47,7 @@ function serializeUser(user) {
 
 // POST /api/auth/register/
 auth.post('/register/', async (c) => {
-  const { email, password, display_name, company_name, role } = await c.req.json()
+  const { email, password, display_name, company_name, role, plan } = await c.req.json()
 
   if (!email || !password || !company_name) {
     return c.json({ error: 'email, password and company_name are required' }, 400)
@@ -67,10 +67,11 @@ auth.post('/register/', async (c) => {
     return c.json({ error: 'A user with this email already exists.' }, 400)
   }
 
-  // Create company
+  // Create company with selected plan
+  const validPlan = ['Starter', 'Growth', 'Elite'].includes(plan) ? plan : 'Starter'
   const companyResult = await db.prepare(
-    'INSERT INTO companies (name) VALUES (?) RETURNING id'
-  ).bind(company_name).first()
+    'INSERT INTO companies (name, plan) VALUES (?, ?) RETURNING id'
+  ).bind(company_name, validPlan).first()
 
   if (!companyResult) {
     return c.json({ error: 'Failed to create company' }, 500)

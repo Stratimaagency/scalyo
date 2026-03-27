@@ -33,6 +33,23 @@
             >{{ r === 'manager' ? 'Manager' : 'CSM' }}</button>
           </div>
         </div>
+
+        <!-- Plan selection -->
+        <div class="field-group">
+          <label class="field-label">FORFAIT</label>
+          <div class="plan-selector">
+            <button
+              v-for="p in plans" :key="p.key"
+              class="plan-option"
+              :class="{ active: form.plan === p.key }"
+              @click="form.plan = p.key"
+            >
+              <div class="plan-option-name">{{ p.name }}</div>
+              <div class="plan-option-price">{{ p.price }}</div>
+              <div class="plan-option-desc">{{ p.desc }}</div>
+            </button>
+          </div>
+        </div>
       </template>
 
       <AppField :label="t('emailPro')" v-model="form.email" type="email" placeholder="you@company.com" />
@@ -110,12 +127,19 @@ onMounted(async () => {
   }
 })
 
+const plans = [
+  { key: 'Starter', name: 'Starter', price: '97€/mois', desc: 'Essentiel pour debuter' },
+  { key: 'Growth', name: 'Growth', price: '297€/mois', desc: 'Toutes les fonctionnalites' },
+  { key: 'Elite', name: 'Elite', price: '697€/mois', desc: 'Support prioritaire + illimite' },
+]
+
 const form = reactive({
   email: '',
   password: '',
   display_name: '',
   company_name: '',
   role: 'manager',
+  plan: 'Starter',
 })
 
 async function submit() {
@@ -186,5 +210,42 @@ async function submit() {
   justify-content: center;
   gap: 12px;
   margin-bottom: 28px;
+}
+.plan-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.plan-option {
+  padding: 12px 8px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.plan-option:hover {
+  border-color: var(--teal);
+}
+.plan-option.active {
+  border-color: var(--teal);
+  background: rgba(77, 182, 160, 0.08);
+}
+.plan-option-name {
+  font-weight: 800;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+.plan-option-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--teal);
+  margin-bottom: 4px;
+}
+.plan-option-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.3;
 }
 </style>
