@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="lienA" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#5eead4"/>
+    </linearGradient>
+    <linearGradient id="lienB" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#0f766e"/>
+    </linearGradient>
+  </defs>
+  <!-- Fond -->
+  <rect width="400" height="400" rx="40" fill="#0f172a"/>
+  <!-- Concept A: Le Lien — deux formes organiques qui s'enlacent -->
+  <!-- Forme Client (gauche, monte) -->
+  <path d="
+    M 130 280
+    C 100 240, 100 200, 120 170
+    C 140 140, 170 130, 200 140
+    C 230 150, 240 170, 230 200
+  " stroke="url(#lienA)" stroke-width="28" fill="none" stroke-linecap="round"/>
+  <!-- Forme Entreprise (droite, descend) -->
+  <path d="
+    M 270 120
+    C 300 160, 300 200, 280 230
+    C 260 260, 230 270, 200 260
+    C 170 250, 160 230, 170 200
+  " stroke="url(#lienB)" stroke-width="28" fill="none" stroke-linecap="round"/>
+  <!-- Point de connexion central lumineux -->
+  <circle cx="200" cy="200" r="16" fill="#5eead4" opacity="0.9"/>
+  <circle cx="200" cy="200" r="28" fill="#5eead4" opacity="0.15"/>
+  <circle cx="200" cy="200" r="42" fill="#5eead4" opacity="0.06"/>
+  <!-- Texte -->
+  <text x="200" y="350" text-anchor="middle" font-family="-apple-system, 'Segoe UI', sans-serif" font-size="36" font-weight="800" letter-spacing="-1" fill="#ffffff">scal<tspan fill="#5eead4">yo</tspan></text>
+</svg>
