@@ -1463,7 +1463,7 @@ nav.scrolled {
   color: var(--dt);
   margin-bottom: 24px;
 }
-.hero-h1 .accent {
+.hero-h1 :deep(.accent) {
   background: linear-gradient(135deg, var(--teal), #14b8a6, #2dd4bf, #14b8a6, var(--teal));
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -1473,7 +1473,7 @@ nav.scrolled {
   display: inline-block;
   animation: shimmer 6s linear infinite;
 }
-.hero-h1 .accent::before {
+.hero-h1 :deep(.accent)::before {
   content: '';
   position: absolute;
   inset: -30px -50px;
@@ -1484,7 +1484,7 @@ nav.scrolled {
   filter: blur(24px);
   pointer-events: none;
 }
-.accent {
+:deep(.accent) {
   background: linear-gradient(135deg, var(--teal), #14b8a6, #2dd4bf);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1500,7 +1500,7 @@ nav.scrolled {
   max-width: 520px;
   margin: 0 auto 40px;
 }
-.hero-sub strong { color: var(--dt); font-weight: 500; }
+.hero-sub :deep(strong) { color: var(--dt); font-weight: 500; }
 
 .hero-cta {
   display: flex; align-items: center; justify-content: center;
@@ -2030,7 +2030,7 @@ input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(13,14
   border-left: 2px solid var(--teal);
   max-width: 540px; margin-bottom: 40px;
 }
-.pricing-note strong { color: var(--dt); font-weight: 600; }
+.pricing-note :deep(strong) { color: var(--dt); font-weight: 600; }
 
 .plans { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
 .plan {
@@ -2074,7 +2074,7 @@ input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(13,14
 .pb-outline { border: 1.5px solid var(--dline2); color: var(--dt2); }
 .pb-outline:hover { background: var(--dk4); color: var(--dt); border-color: var(--dline2); }
 .plan-footnote { font-size: 12px; color: var(--dt3); text-align: center; margin-top: 18px; }
-.plan-footnote strong { color: var(--dt2); }
+.plan-footnote :deep(strong) { color: var(--dt2); }
 
 /* ────────────────────────────────────
    TESTIMONIAL
@@ -2138,7 +2138,7 @@ input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(13,14
   font-weight: 800; letter-spacing: -.04em; line-height: 1.05;
   color: var(--dt); margin-bottom: 20px;
 }
-.end-h2 em { font-style: normal; background: linear-gradient(135deg, var(--teal), #14b8a6, #2dd4bf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.end-h2 :deep(em) { font-style: normal; background: linear-gradient(135deg, var(--teal), #14b8a6, #2dd4bf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .end-sub { font-size: 17px; color: var(--dt2); line-height: 1.65; max-width: 500px; margin: 0 auto 40px; }
 .end-btns { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
 .end-note { margin-top: 20px; font-size: 13px; color: var(--dt3); }
