@@ -1,4 +1,5 @@
 <template>
+  <PlanGate requiredPlan="Growth" :moduleName="t('quotesTitle')">
   <div class="fade-in">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
       <div>
@@ -87,6 +88,7 @@
       </div>
     </AppModal>
   </div>
+  </PlanGate>
 </template>
 
 <script setup>
@@ -97,6 +99,7 @@ import AppField from '../components/AppField.vue'
 import AppModal from '../components/AppModal.vue'
 import EmptyState from '../components/EmptyState.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
+import PlanGate from '../components/PlanGate.vue'
 
 const { t } = useI18n()
 const prefsStore = usePreferencesStore()

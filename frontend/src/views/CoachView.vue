@@ -7,6 +7,11 @@
         <p style="font-size: 13px; color: var(--muted)">{{ t('coachStatus') }}</p>
         <div v-if="dailyCount >= dailyLimit" style="font-size: 12px; color: var(--amber); margin-top: 6px">
           {{ lang === 'en' ? 'Daily limit reached. Try again tomorrow.' : lang === 'kr' ? '일일 한도에 도달했습니다.' : 'Limite quotidienne atteinte.' }}
+          <div v-if="isStarter" style="margin-top: 8px">
+            <button class="btn btn-primary btn-sm" @click="$router.push({ name: 'settings' })">
+              {{ lang === 'en' ? '🔓 Upgrade to Growth (50 msg/day)' : lang === 'kr' ? '🔓 Growth로 업그레이드 (50 메시지/일)' : '🔓 Passer à Growth (50 msg/jour)' }}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -72,7 +77,9 @@ const chatContainer = ref(null)
 const typingIndex = ref(-1)
 const typingProgress = ref({})
 
-const dailyLimit = 50
+const PLAN_LIMITS = { Starter: 5, Growth: 50, Elite: 50 }
+const dailyLimit = computed(() => PLAN_LIMITS[authStore.company?.plan || 'Starter'] || 5)
+const isStarter = computed(() => (authStore.company?.plan || 'Starter') === 'Starter')
 const STORAGE_KEY = 'scalyo_coach_messages'
 const COUNT_KEY = 'scalyo_coach_count'
 
@@ -203,7 +210,7 @@ function findKBAnswer(text) {
 
 // Send message
 async function send(text) {
-  if (!text?.trim() || dailyCount.value >= dailyLimit) return
+  if (!text?.trim() || dailyCount.value >= dailyLimit.value) return
   const userText = text.trim()
   messages.value.push({ role: 'user', content: userText })
   input.value = ''

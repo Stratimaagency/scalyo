@@ -15,6 +15,7 @@
         >
           <span class="nav-icon"><ScalyoIcon :name="item.icon" :size="18" /></span>
           <span class="nav-label">{{ item.label }}</span>
+          <span v-if="item.locked" style="font-size: 11px; opacity: 0.5; margin-left: auto;">&#x1F512;</span>
           <span
             v-if="item.key === 'portfolio' && criticalCount > 0"
             class="nav-badge-critical"
