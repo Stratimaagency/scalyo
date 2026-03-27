@@ -1,4 +1,5 @@
 <template>
+  <PlanGate requiredPlan="Growth" moduleName="Roadmap">
   <div class="fade-in" style="padding: 24px 28px; height: 100%; overflow-y: auto">
     <div v-if="loading" style="display: flex; justify-content: center; align-items: center; padding: 60px 0; color: var(--muted); font-size: 14px">
       Chargement...
@@ -218,6 +219,7 @@
     />
     </template>
   </div>
+  </PlanGate>
 </template>
 
 <script setup>
@@ -227,6 +229,7 @@ import { useI18n } from '../i18n'
 import { usePreferencesStore } from '../stores/preferences'
 import HealthBar from '../components/HealthBar.vue'
 import EmptyState from '../components/EmptyState.vue'
+import PlanGate from '../components/PlanGate.vue'
 
 const { t, lang } = useI18n()
 const prefsStore = usePreferencesStore()

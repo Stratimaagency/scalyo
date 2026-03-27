@@ -6,18 +6,20 @@ const ALL_NAV_ITEMS = [
   { key: 'dashboard', icon: 'dashboard', role: 'all' },
   { key: 'portfolio', icon: 'briefcase', role: 'all' },
   { key: 'kpis', icon: 'chart-up', role: 'all' },
-  { key: 'planning', icon: 'calendar', role: 'all' },
+  { key: 'planning', icon: 'calendar', role: 'all', minPlan: 'Growth' },
   { key: 'tasks', icon: 'check-circle', role: 'all' },
   { key: 'wellbeing', icon: 'heart', role: 'all' },
   { key: 'coach', icon: 'robot', role: 'all' },
   { key: 'resources', icon: 'books', role: 'manager' },
-  { key: 'quotes', icon: 'document', role: 'manager' },
-  { key: 'email-studio', icon: 'envelope', role: 'all' },
-  { key: 'integrations', icon: 'bolt', role: 'manager' },
-  { key: 'roadmap', icon: 'map', role: 'manager' },
+  { key: 'quotes', icon: 'document', role: 'manager', minPlan: 'Growth' },
+  { key: 'email-studio', icon: 'envelope', role: 'all', minPlan: 'Growth' },
+  { key: 'integrations', icon: 'bolt', role: 'manager', minPlan: 'Growth' },
+  { key: 'roadmap', icon: 'map', role: 'manager', minPlan: 'Growth' },
   { key: 'tips', icon: 'lightbulb', role: 'all' },
   { key: 'settings', icon: 'gear', role: 'all' },
 ]
+
+const PLAN_RANK = { Starter: 0, Growth: 1, Elite: 2 }
 
 const LABEL_KEYS = {
   dashboard: 'dashboard',
@@ -42,12 +44,14 @@ export function useNavigation() {
 
   const navItems = computed(() => {
     const role = authStore.user?.role || 'csm'
+    const currentPlanRank = PLAN_RANK[authStore.company?.plan || 'Starter'] ?? 0
     return ALL_NAV_ITEMS
       .filter(item => item.role === 'all' || item.role === role)
       .map(item => ({
         ...item,
         label: t(LABEL_KEYS[item.key] || item.key),
         routeName: item.key,
+        locked: item.minPlan ? currentPlanRank < (PLAN_RANK[item.minPlan] ?? 1) : false,
       }))
   })
 

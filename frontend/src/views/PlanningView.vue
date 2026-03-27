@@ -1,4 +1,5 @@
 <template>
+  <PlanGate requiredPlan="Growth" :moduleName="t('planning')">
   <div class="fade-in" style="display: flex; flex-direction: column; height: 100%; overflow: hidden">
     <div v-if="loading" style="display: flex; justify-content: center; align-items: center; padding: 60px 0; color: var(--muted); font-size: 14px">
       Chargement...
@@ -217,6 +218,7 @@
     </AppModal>
     </template>
   </div>
+  </PlanGate>
 </template>
 
 <script setup>
@@ -226,6 +228,7 @@ import { useI18n } from '../i18n'
 import { usePreferencesStore } from '../stores/preferences'
 import { usePortfolioStore } from '../stores/portfolio'
 import AppModal from '../components/AppModal.vue'
+import PlanGate from '../components/PlanGate.vue'
 
 const { t } = useI18n()
 const prefsStore = usePreferencesStore()

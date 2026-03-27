@@ -1,4 +1,5 @@
 <template>
+  <PlanGate requiredPlan="Growth" moduleName="Email Studio">
   <div class="fade-in" style="display: flex; height: 100%; overflow: hidden">
     <!-- Sidebar -->
     <div style="width: 260px; border-right: 1px solid var(--border); overflow: auto; padding: 20px 14px; flex-shrink: 0">
@@ -133,11 +134,13 @@
       </div>
     </div>
   </div>
+  </PlanGate>
 </template>
 
 <script setup>
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { useI18n } from '../i18n'
+import PlanGate from '../components/PlanGate.vue'
 
 const { t, lang } = useI18n()
 

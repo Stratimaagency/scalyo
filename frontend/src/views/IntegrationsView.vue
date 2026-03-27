@@ -1,4 +1,5 @@
 <template>
+  <PlanGate requiredPlan="Growth" moduleName="Integrations">
   <div class="fade-in">
     <div class="mb-lg">
       <h3 style="font-weight: 800; margin-bottom: 4px">{{ t('integrationsTitle') }}</h3>
@@ -338,6 +339,7 @@
       </div>
     </AppModal>
   </div>
+  </PlanGate>
 </template>
 
 <script setup>
@@ -348,6 +350,7 @@ import { integrationsApi } from '../api'
 import AppCard from '../components/AppCard.vue'
 import AppModal from '../components/AppModal.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
+import PlanGate from '../components/PlanGate.vue'
 
 const { t } = useI18n()
 const route = useRoute()
