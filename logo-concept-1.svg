@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="wave" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0d9488"/>
+      <stop offset="50%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+  </defs>
+  <!-- La Vague de Croissance — S formé par deux courbes dynamiques -->
+  <path d="
+    M 130 35
+    C 130 35, 115 25, 95 25
+    C 65 25, 45 42, 45 62
+    C 45 82, 60 92, 85 100
+    C 115 110, 155 118, 155 142
+    C 155 168, 130 180, 100 180
+    C 78 180, 65 170, 65 170
+  " stroke="url(#wave)" stroke-width="18" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Point lumineux au sommet -->
+  <circle cx="133" cy="33" r="6" fill="#34d399" opacity="0.9"/>
+  <circle cx="133" cy="33" r="12" fill="#34d399" opacity="0.2"/>
+</svg>

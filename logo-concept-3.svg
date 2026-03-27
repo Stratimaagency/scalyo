@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bar1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f766e"/>
+      <stop offset="100%" stop-color="#0d9488"/>
+    </linearGradient>
+    <linearGradient id="bar2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+    <linearGradient id="bar3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#2dd4bf"/>
+    </linearGradient>
+    <linearGradient id="bar4" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2dd4bf"/>
+      <stop offset="100%" stop-color="#5eead4"/>
+    </linearGradient>
+    <linearGradient id="bar5" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#5eead4"/>
+      <stop offset="100%" stop-color="#99f6e4"/>
+    </linearGradient>
+  </defs>
+  <!-- Le Pulse — S formé par 5 barres décalées, style IBM/Stripe -->
+  <!-- Barre 1 (haut-droite) -->
+  <rect x="90" y="28" width="68" height="16" rx="8" fill="url(#bar5)"/>
+  <!-- Barre 2 -->
+  <rect x="50" y="56" width="80" height="16" rx="8" fill="url(#bar4)"/>
+  <!-- Barre 3 (centre) -->
+  <rect x="60" y="84" width="80" height="16" rx="8" fill="url(#bar3)"/>
+  <!-- Barre 4 -->
+  <rect x="70" y="112" width="80" height="16" rx="8" fill="url(#bar2)"/>
+  <!-- Barre 5 (bas-gauche) -->
+  <rect x="42" y="140" width="68" height="16" rx="8" fill="url(#bar1)"/>
+</svg>
