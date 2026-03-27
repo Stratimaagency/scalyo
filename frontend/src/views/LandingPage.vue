@@ -5,7 +5,7 @@
 <nav id="main-nav" :class="{ scrolled: navScrolled }">
   <a href="/" class="nav-logo">
     <img src="/logo.svg" alt="Scalyo" class="nav-logo-img" />
-    Scalyo
+    scal<span>yo</span>
   </a>
   <div class="nav-links">
     <a href="#features">{{ t('nav_features') }}</a>
@@ -958,7 +958,7 @@
 <footer>
   <div class="footer-grid">
     <div>
-      <a href="/" class="nav-logo"><img src="/logo.svg" alt="Scalyo" class="nav-logo-img" />Scalyo</a>
+      <a href="/" class="nav-logo"><img src="/logo.svg" alt="Scalyo" class="nav-logo-img" />scal<span>yo</span></a>
       <p class="footer-desc">{{ t('footer_desc') }}</p>
       <div class="footer-social">
         <a href="https://x.com/scalyo_app" target="_blank" rel="noopener" class="fsoc" aria-label="X">&#x1D54F;</a>
@@ -1378,13 +1378,18 @@ nav.scrolled {
 }
 .nav-logo {
   display: flex; align-items: center; gap: 8px;
-  font-weight: 700; font-size: 17px; letter-spacing: -.03em;
+  font-weight: 800; font-size: 18px; letter-spacing: -.04em;
   color: var(--dt);
 }
 .nav-logo-img {
-  width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+  width: 36px; height: 36px; flex-shrink: 0;
 }
-.nav-logo span { color: var(--teal); }
+.nav-logo span {
+  background: linear-gradient(135deg, #0D9488, #2dd4bf);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 .nav-links { display: flex; gap: 0; }
 .nav-links a {
   padding: 7px 14px; border-radius: 7px;
@@ -2267,7 +2272,7 @@ footer {
   .n-ghost { display: none; }
   .n-solid { padding: 9px 16px; font-size: 13px; }
   .nav-logo { font-size: 16px; }
-  .nav-logo-img { width: 28px; height: 28px; }
+  .nav-logo-img { width: 32px; height: 32px; }
 
   /* HERO */
   .hero { padding: 90px 20px 56px; text-align: center; }
