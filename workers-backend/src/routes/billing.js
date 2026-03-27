@@ -50,7 +50,11 @@ function getStripe(env) {
         },
         body: body ? new URLSearchParams(body).toString() : undefined,
       })
-      return res.json()
+      const data = await res.json()
+      if (data.error) {
+        console.error('Stripe API error:', path, data.error.message)
+      }
+      return data
     }
   }
 }
@@ -93,21 +97,29 @@ billing.post('/checkout/', async (c) => {
   }
 
   const frontendUrl = c.env.FRONTEND_URL || 'http://localhost:5173'
-  const session = await stripe.request('POST', '/checkout/sessions', {
-    customer: customerId,
-    'payment_method_types[0]': 'card',
-    'line_items[0][price]': priceId,
-    'line_items[0][quantity]': '1',
-    mode: 'subscription',
-    allow_promotion_codes: 'true',
-    'subscription_data[trial_period_days]': '14',
-    success_url: `${frontendUrl}/settings?billing=success`,
-    cancel_url: `${frontendUrl}/settings?billing=cancelled`,
-    'metadata[company_id]': String(company.id),
-    'metadata[plan]': plan,
-  })
+  try {
+    const session = await stripe.request('POST', '/checkout/sessions', {
+      customer: customerId,
+      'payment_method_types[0]': 'card',
+      'line_items[0][price]': priceId,
+      'line_items[0][quantity]': '1',
+      mode: 'subscription',
+      allow_promotion_codes: 'true',
+      'subscription_data[trial_period_days]': '14',
+      success_url: `${frontendUrl}/settings?billing=success`,
+      cancel_url: `${frontendUrl}/settings?billing=cancelled`,
+      'metadata[company_id]': String(company.id),
+      'metadata[plan]': plan,
+    })
 
-  return c.json({ checkout_url: session.url })
+    if (session.error) {
+      return c.json({ error: session.error.message }, 400)
+    }
+    return c.json({ checkout_url: session.url })
+  } catch (e) {
+    console.error('Checkout error:', e.message)
+    return c.json({ error: e.message }, 500)
+  }
 })
 
 // POST /api/billing/portal/
