@@ -99,6 +99,8 @@ billing.post('/checkout/', async (c) => {
     'line_items[0][price]': priceId,
     'line_items[0][quantity]': '1',
     mode: 'subscription',
+    allow_promotion_codes: 'true',
+    'subscription_data[trial_period_days]': '14',
     success_url: `${frontendUrl}/settings?billing=success`,
     cancel_url: `${frontendUrl}/settings?billing=cancelled`,
     'metadata[company_id]': String(company.id),
