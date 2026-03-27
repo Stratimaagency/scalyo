@@ -1,5 +1,9 @@
 <template>
   <div class="fade-in" style="display: flex; flex-direction: column; height: 100%; overflow: hidden">
+    <div v-if="loading" style="display: flex; justify-content: center; align-items: center; padding: 60px 0; color: var(--muted); font-size: 14px">
+      Chargement...
+    </div>
+    <template v-else>
     <!-- Header bar -->
     <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 28px 14px; flex-shrink: 0; border-bottom: 1px solid var(--border)">
       <div style="display: flex; align-items: center; gap: 14px">
@@ -211,6 +215,7 @@
         </div>
       </template>
     </AppModal>
+    </template>
   </div>
 </template>
 
@@ -280,6 +285,8 @@ const formColor = ref('teal')
 const formNote = ref('')
 const formAccount = ref('')
 
+const loading = ref(true)
+
 onMounted(async () => {
   try {
     const { data } = await planningApi.getEvents()
@@ -291,6 +298,8 @@ onMounted(async () => {
     await portfolioStore.fetchAccounts()
   } catch (e) {
     console.error('Failed to load accounts for planning:', e)
+  } finally {
+    loading.value = false
   }
 })
 

@@ -133,7 +133,7 @@ integrations.post('/test', async (c) => {
       }
     } catch {}
 
-    return c.json({ error: err.message || 'Connection test failed' }, 400)
+    return c.json({ error: 'Connection test failed. Please check your credentials.' }, 400)
   }
 })
 
