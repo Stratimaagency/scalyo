@@ -1,15 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0D9488"/>
-      <stop offset="100%" stop-color="#14b8a6"/>
+    <linearGradient id="la" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#5eead4"/>
     </linearGradient>
-    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#fff" stop-opacity=".25"/>
-      <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+    <linearGradient id="lb" x1="100%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#5eead4"/>
+      <stop offset="100%" stop-color="#0f766e"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
-  <rect width="64" height="32" rx="16" fill="url(#shine)"/>
-  <path d="M41 20c0 0-3.5-3-10-3-5 0-8.5 2.5-8.5 6 0 3.8 3.5 5.5 9 7 5.5 1.5 9.5 3.5 9.5 8 0 4.5-4 7.5-10 7.5-6.5 0-10.5-3.5-10.5-3.5" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Courbe Client -->
+  <path d="M 18 46 C 12 37, 12 27, 18 21 C 24 15, 30 13, 32 18 C 34 23, 35 27, 36 31"
+    stroke="url(#la)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Courbe Entreprise -->
+  <path d="M 46 18 C 52 27, 52 37, 46 43 C 40 49, 34 51, 32 46 C 30 41, 29 37, 28 33"
+    stroke="url(#lb)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Point de connexion -->
+  <circle cx="32" cy="32" r="3.5" fill="#5eead4" opacity="0.9"/>
+  <circle cx="32" cy="32" r="7" fill="#5eead4" opacity="0.15"/>
 </svg>

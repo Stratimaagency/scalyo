@@ -1,8 +1,26 @@
 <template>
   <div class="scalyo-logo" :style="{ gap: gap + 'px' }">
-    <div class="scalyo-logo-mark" :style="{ width: markSize + 'px', height: markSize + 'px', borderRadius: Math.round(markSize * 0.28) + 'px' }">
-      <svg :width="Math.round(markSize * 0.55)" :height="Math.round(markSize * 0.55)" viewBox="0 0 20 20" fill="none">
-        <path d="M13.5 5.5C13.5 5.5 12 4 9.5 4 7.5 4 6 5 6 6.8c0 1.8 1.5 2.6 4 3.3 2.5.7 4.5 1.7 4.5 3.9 0 2.2-2 3.5-4.5 3.5-2.8 0-4.5-1.7-4.5-1.7" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <div class="scalyo-logo-mark" :style="{ width: markSize + 'px', height: markSize + 'px' }">
+      <svg :width="Math.round(markSize * 0.75)" :height="Math.round(markSize * 0.75)" viewBox="0 0 100 100" fill="none">
+        <defs>
+          <linearGradient :id="'lienA-'+uid" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#0d9488"/>
+            <stop offset="100%" stop-color="#5eead4"/>
+          </linearGradient>
+          <linearGradient :id="'lienB-'+uid" x1="100%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#5eead4"/>
+            <stop offset="100%" stop-color="#0f766e"/>
+          </linearGradient>
+        </defs>
+        <!-- Courbe Client -->
+        <path d="M 28 72 C 18 58, 18 42, 28 32 C 38 22, 48 20, 50 28 C 52 36, 54 42, 56 48"
+          :stroke="'url(#lienA-'+uid+')'" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <!-- Courbe Entreprise -->
+        <path d="M 72 28 C 82 42, 82 58, 72 68 C 62 78, 52 80, 50 72 C 48 64, 46 58, 44 52"
+          :stroke="'url(#lienB-'+uid+')'" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <!-- Point de connexion -->
+        <circle cx="50" cy="50" r="5" fill="#5eead4" opacity="0.9"/>
+        <circle cx="50" cy="50" r="10" fill="#5eead4" opacity="0.15"/>
       </svg>
     </div>
     <span v-if="showText" class="scalyo-logo-text" :style="{ fontSize: fontSize + 'px' }">
@@ -12,6 +30,7 @@
 </template>
 
 <script setup>
+const uid = Math.random().toString(36).slice(2, 8)
 defineProps({
   markSize: { type: Number, default: 34 },
   fontSize: { type: Number, default: 22 },
@@ -26,12 +45,10 @@ defineProps({
   align-items: center;
 }
 .scalyo-logo-mark {
-  background: linear-gradient(135deg, #0D9488, #14b8a6);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(13, 148, 136, .3);
 }
 .scalyo-logo-text {
   font-weight: 900;
