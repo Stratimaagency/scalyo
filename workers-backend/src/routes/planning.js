@@ -1,8 +1,9 @@
 import { Hono } from 'hono'
 import { authMiddleware, companyRequired } from '../middleware/auth.js'
+import { planGate } from '../middleware/planGate.js'
 
 const planning = new Hono()
-planning.use('/*', authMiddleware(), companyRequired())
+planning.use('/*', authMiddleware(), companyRequired(), planGate('Growth'))
 
 // GET /api/planning/
 planning.get('/', async (c) => {
