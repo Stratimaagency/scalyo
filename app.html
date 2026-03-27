@@ -7692,7 +7692,7 @@ Répondez à ces 3 questions :
     }],
     tip: "Configurez ces séquences une seule fois dans votre outil emailing. Elles tournent ensuite en autonome 24h/24."
   },
-  "Session Coaching Mensuelle 1h": {
+  "Monthly 1h Coaching Session": {
     sections: [{
       title: T("wbFormat",lang),
       content: `• 15 min : revue de vos KPIs du mois\n• 20 min : analyse d'un compte prioritaire\n• 15 min : travail sur un défi spécifique (pitch, escalade, expansion)\n• 10 min : plan d'actions pour le mois suivant`
@@ -7833,6 +7833,127 @@ Répondez à ces 3 questions :
 • Rapport mensuel SLA : taux de conformité par catégorie
 • Revue contractuelle : alignement SLA vs capacité réelle`
     }]
+  },
+  "Protocole Détection Churn": {
+    sections: [{
+      title: "🔍 Signaux d'alerte précoces",
+      content: `• Baisse d'usage > 20% vs mois précédent\n• NPS < 6 au dernier sondage\n• Tickets support répétés sur le même problème\n• Silence > 3 semaines (pas d'email, pas d'appel)\n• Contact clé absent ou changé`
+    }, {
+      title: "📊 Score de risque (0-10)",
+      content: `**Calculez un score sur 10 :**\n• Fréquence d'usage (0-2) — quotidien=2, hebdo=1, rare=0\n• Engagement QBR (0-2) — actif=2, passif=1, absent=0\n• Évolution MRR (0-2) — croissance=2, stable=1, déclin=0\n• Feedback récent (0-2) — positif=2, neutre=1, négatif=0\n• Contact C-level (0-2) — accessible=2, faible=1, aucun=0\n\n→ Score < 5 = Risque élevé — activez le protocole immédiatement`
+    }, {
+      title: "🎯 Intervention en 5 étapes",
+      content: `**Étape 1 — Call diagnostic (48h)**\nObjectif : comprendre le vrai problème, pas le symptôme.\n\n**Étape 2 — Audit d'usage**\nAnalyser les 3 derniers mois. Identifier les features inutilisées.\n\n**Étape 3 — Plan de valeur personnalisé**\nProposer 3 quick wins réalisables en 2 semaines.\n\n**Étape 4 — Escalade executive si nécessaire**\nImpliquer votre manager + C-level client si score < 3.\n\n**Étape 5 — Suivi J+7, J+14, J+30**\nMesurer la progression à chaque point de contact.`
+    }, {
+      title: "📞 Script d'ouverture",
+      content: `"Bonjour [Prénom], je voulais prendre de vos nouvelles car j'ai remarqué des changements dans votre utilisation ce mois-ci. Je pense qu'on peut faire mieux ensemble."\n\n→ Écouter 80% du temps, parler 20%\n→ Ne pas défendre le produit — comprendre d'abord\n→ Proposer une démo personnalisée si besoin`
+    }, {
+      title: "✅ Indicateurs de rétablissement",
+      content: `• Usage revenu à > 80% du baseline\n• Réponse email < 48h\n• QBR planifié et réalisé\n• NPS > 7 au prochain sondage\n• Renouvellement signé ou lettre d'intention reçue`
+    }],
+    tip: "Un client perdu coûte 5x plus à remplacer qu'à retenir. Activez ce protocole au premier signal, pas après confirmation."
+  },
+  "NPS de 0 à +50 en 60 jours": {
+    sections: [{
+      title: "📋 Semaine 1-2 : Baseline",
+      content: `• Lancer votre premier sondage NPS (outil : Typeform, Delighted, Scalyo)\n• Segmenter les réponses : Promoteurs (9-10), Passifs (7-8), Détracteurs (0-6)\n• Calculer votre score : ((Promoteurs - Détracteurs) / Total) × 100\n• Objectif baseline : taux de réponse > 30% des clients actifs`
+    }, {
+      title: "🎯 Semaine 3-4 : Boucler la boucle",
+      content: `**100% des détracteurs contactés sous 48h**\n\nScript : "Merci pour votre retour. Pouvez-vous me dire ce qui n'a pas fonctionné ? Je veux comprendre pour améliorer votre expérience."\n\n→ Créer un plan d'action par compte détracteur\n→ Suivi J+14 pour mesurer l'impact\n→ Convertir les détracteurs en passifs = +10 points NPS`
+    }, {
+      title: "🚀 Semaine 5-6 : Amplifier les promoteurs",
+      content: `• Identifier vos top promoteurs (score 9-10 + fort engagement)\n• Demander un avis G2 / Capterra / LinkedIn\n• Solliciter un témoignage vidéo ou écrit\n• Inviter aux bêtas produit et webinaires\n• Programme ambassadeur : accès anticipé aux features + visibilité`
+    }, {
+      title: "📊 Semaine 7-8 : Mesurer et itérer",
+      content: `• Relancer le sondage NPS (même segment)\n• Calculer la progression point par point\n• Identifier les patterns : quels segments se sont améliorés ?\n• Ajuster les playbooks en fonction des résultats\n• Partager les résultats en comité exécutif avec évolution mensuelle`
+    }, {
+      title: "✅ Indicateurs de succès",
+      content: `• NPS global > +40\n• Taux de réponse > 30%\n• 100% des détracteurs contactés et suivis\n• 3+ témoignages ou avis collectés\n• Plan d'action documenté par segment`
+    }],
+    tip: "Le NPS n'est pas une métrique de vanité — c'est un prédicteur de croissance. Chaque point gagné = moins de churn et plus de bouche-à-oreille."
+  },
+  "Automated Email Sequences": {
+    sections: [{
+      title: "⚙️ Séquence 1 — Onboarding automatisé (J1→J30)",
+      content: `Déclencheur : nouvelle inscription\n• J1 : Email de bienvenue + accès ressources\n• J3 : "Avez-vous effectué votre première action ?"\n• J7 : Quick win partagé + invitation webinaire\n• J14 : Health check-in + ressource avancée\n• J30 : Bilan + invitation QBR 90J`
+    }, {
+      title: "🔴 Séquence 2 — Réactivation compte inactif",
+      content: `Déclencheur : 0 connexion depuis 14 jours\n• J1 : "Vous nous manquez" — rapport d'activité personnalisé\n• J3 : Témoignage client similaire + quick win\n• J7 : Proposition d'un call découverte avec CSM\n• J14 : Dernière tentative + sondage raison absence`
+    }, {
+      title: "💰 Séquence 3 — Renouvellement (J-90→J-0)",
+      content: `Déclencheur : 90 jours avant expiration\n• J-90 : Résumé ROI annuel personnalisé\n• J-60 : Proposition renouvellement + options upgrade\n• J-30 : Appel téléphonique CSM + bonus fidélité\n• J-7 : Urgence douce + conditions spéciales`
+    }, {
+      title: "⭐ Séquence 4 — Promoteurs & Parrainage",
+      content: `Déclencheur : NPS ≥ 9\n• J1 : Remerciement personnalisé + demande témoignage\n• J7 : Invitation programme ambassadeur\n• J14 : Proposition co-marketing (case study, webinaire)\n• J30 : Offre parrainage avec récompense mutuelle`
+    }],
+    tip: "Configurez ces séquences une fois dans votre outil d'emailing. Elles tournent ensuite en autonomie 24/7."
+  },
+  "QBR — Guide Complet": {
+    sections: [{
+      title: "📋 Préparation (J-14)",
+      content: `• Collecter les KPIs clés du trimestre (usage, adoption, MRR, NPS)\n• Préparer 3 slides max : résultats, roadmap, recommandations\n• Identifier 1-2 quick wins à annoncer\n• Envoyer l'agenda au client 1 semaine avant\n• Confirmer la présence du sponsor exécutif`
+    }, {
+      title: "🎯 Structure du QBR (60 min)",
+      content: `**5 min — Ice-breaker**\nCommencer par une victoire du client.\n\n**15 min — Bilan du trimestre**\nKPIs, adoption, tickets résolus, ROI mesuré.\n\n**15 min — Feedback client**\nÉcoute active : qu'est-ce qui marche ? Qu'est-ce qui bloque ?\n\n**15 min — Roadmap & recommandations**\nFonctionnalités à venir + plan d'actions personnalisé.\n\n**10 min — Prochaines étapes**\nEngagements mutuels + date du prochain QBR.`
+    }, {
+      title: "📞 Scripts clés",
+      content: `**Ouverture :** "Merci d'être là. Aujourd'hui, on fait le bilan de Q[N] et on construit ensemble le plan pour Q[N+1]."\n\n**Si sponsor absent :** "Je propose qu'on envoie un résumé exécutif à [Sponsor] avec nos 3 actions clés."\n\n**Si résultats décevants :** "Les chiffres sont en-dessous de nos attentes. Voici ce que je propose pour corriger ça rapidement..."\n\n**Clôture :** "Récap : 3 actions — [1], [2], [3]. Je vous envoie le compte-rendu sous 24h."`
+    }, {
+      title: "✅ Checklist post-QBR",
+      content: `• Envoyer compte-rendu sous 24h (email structuré)\n• Créer les tickets/tâches pour les actions promises\n• Planifier les suivis intermédiaires\n• Mettre à jour le health score du compte\n• Partager les insights en interne (produit, sales)`
+    }],
+    tip: "Un bon QBR n'est pas une présentation, c'est une conversation. Le client doit parler 50% du temps."
+  },
+  "Playbook Expansion & Upsell": {
+    sections: [{
+      title: "🔍 Signaux d'expansion",
+      content: `• Usage > 80% des licences achetées\n• Demandes de features avancées récurrentes\n• Nouveaux départements/équipes qui veulent accéder\n• Feedback NPS ≥ 9 + témoignage spontané\n• Le client mentionne un budget en fin d'année\n• Croissance de l'entreprise (levée de fonds, recrutements, nouveaux marchés)`
+    }, {
+      title: "💡 Préparer le pitch",
+      content: `**Framework : Valeur → Impact → Proposition**\n\n1. **Valeur prouvée** : "Sur les 6 derniers mois, vous avez [résultat mesurable]"\n2. **Opportunité identifiée** : "J'ai remarqué que [signal d'expansion]"\n3. **Proposition concrète** : "Voici comment [offre supérieure] pourrait [bénéfice quantifié]"\n\n**ROI à préparer :**\n• Coût actuel vs valeur générée\n• Projection avec l'upgrade\n• Témoignages clients similaires qui ont upgradé`
+    }, {
+      title: "🎯 Techniques de closing",
+      content: `• **Ancrage temporel** : "Si on active ça ce mois-ci, vous pourriez voir les résultats dès Q[N+1]"\n• **Social proof** : "[Client similaire] a upgradé il y a 3 mois et a vu +30% de [KPI]"\n• **Exclusivité** : "Je peux vous proposer des conditions spéciales si on valide avant [date]"\n• **Escalade positive** : Impliquer le sponsor pour accélérer la décision\n\n**Ne jamais faire :**\n• Pusher un upsell sur un compte à risque\n• Proposer avant d'avoir prouvé la valeur\n• Ignorer les objections budgétaires`
+    }, {
+      title: "📊 Métriques à suivre",
+      content: `• Expansion MRR mensuel\n• Taux d'upsell (% comptes qui upgradent/trimestre)\n• Délai moyen signature → expansion\n• Net Revenue Retention (NRR) — cible : > 110%\n• Pipeline expansion vs closed won`
+    }],
+    tip: "L'expansion est le résultat naturel d'un bon Customer Success. Si le client voit de la valeur, l'upsell se vend tout seul."
+  },
+  "Health Score — Construction & Calibration": {
+    sections: [{
+      title: "📐 Choisir les métriques (5-7 max)",
+      content: `**Catégories recommandées :**\n\n• **Usage** (poids 30%) : fréquence login, features utilisées, temps passé\n• **Engagement** (poids 25%) : réponse emails, participation QBR, feedback\n• **Résultats** (poids 20%) : KPIs atteints, ROI mesuré\n• **Relation** (poids 15%) : qualité du contact, sponsor actif\n• **Contrat** (poids 10%) : MRR, durée restante, historique renouvellement`
+    }, {
+      title: "⚖️ Pondération & scoring",
+      content: `**Pour chaque métrique, définir 3 niveaux :**\n• 🟢 Sain (score 8-10) : seuil idéal\n• 🟡 À surveiller (score 4-7) : action préventive\n• 🔴 Critique (score 0-3) : intervention immédiate\n\n**Exemple — Login fréquence :**\n• 🟢 > 3 logins/semaine = 10 points\n• 🟡 1-3 logins/semaine = 5 points\n• 🔴 < 1 login/semaine = 1 point\n\n**Score global = Σ (score × poids)**\nTotal sur 100. Seuils : > 70 = Sain, 40-70 = À risque, < 40 = Critique`
+    }, {
+      title: "🔄 Calibration avec données réelles",
+      content: `**Étape 1** : Calculer le score pour tous vos comptes actuels\n**Étape 2** : Comparer avec les churns des 12 derniers mois\n**Étape 3** : Le score prédit-il le churn ? Si non, ajuster les poids\n**Étape 4** : Valider avec votre équipe — le classement correspond-il à leur intuition ?\n**Étape 5** : Recalibrer tous les trimestres\n\n**Red flag** : si un compte "vert" churn, votre modèle a une faille.`
+    }, {
+      title: "✅ Automatisation dans Scalyo",
+      content: `• Saisir le health score dans chaque fiche compte\n• Utiliser les filtres risque pour prioriser\n• Suivre l'évolution dans les KPIs mensuels\n• Déclencher des alertes automatiques sur les baisses\n• Intégrer dans vos QBR comme indicateur principal`
+    }],
+    tip: "Un health score est un outil, pas une vérité. Il doit être challengé régulièrement avec le terrain."
+  },
+  "Renouvellement — Playbook J-120 à J-0": {
+    sections: [{
+      title: "📅 J-120 : Lancement du processus",
+      content: `• Identifier tous les renouvellements à venir (pipeline)\n• Vérifier le health score de chaque compte\n• Préparer le dossier : usage, KPIs, ROI, feedbacks\n• Si health score < 50 : déclencher le protocole churn en parallèle\n• Assigner un owner pour chaque renouvellement`
+    }, {
+      title: "🎯 J-90 : Premier contact renouvellement",
+      content: `**Email template :**\n"Bonjour [Prénom], votre contrat arrive à échéance le [date]. J'aimerais faire un bilan de cette année et discuter de la suite."\n\n**Préparer :**\n• Résumé ROI personnalisé\n• Proposition de renouvellement (même plan ou upgrade)\n• Conditions spéciales si renouvellement anticipé\n• 2-3 témoignages de clients similaires qui ont renouvelé`
+    }, {
+      title: "💬 J-60 : Négociation active",
+      content: `• Call de renouvellement avec le décisionnaire\n• Présenter le ROI chiffré + roadmap à venir\n• Écouter les objections et y répondre\n• Si hésitation budget : proposer un plan de paiement\n• Si hésitation valeur : proposer un POC sur une feature avancée\n\n**Scripts objections :**\n• "Trop cher" → "Sur 12 mois, le coût par [KPI amélioré] est de [X€]. Sans nous, ce coût serait [Y€]."\n• "On n'utilise pas assez" → "C'est justement ce que je veux corriger. Voici un plan d'adoption en 30 jours."`
+    }, {
+      title: "🔔 J-30 : Urgence douce",
+      content: `• Relance si pas de réponse\n• Impliquer votre manager si nécessaire\n• Proposer des conditions "early bird" (remise si signé avant J-15)\n• Préparer le plan B : downgrade plutôt que churn\n\n**Si churn confirmé :**\n• Exit interview (comprendre les vraies raisons)\n• Offboarding propre (export données, transition)\n• Garder la porte ouverte ("win-back" à 6 mois)`
+    }, {
+      title: "✅ J-0 : Renouvellement signé",
+      content: `• Envoyer un email de confirmation + remerciement\n• Mettre à jour le CRM (dates, montant, conditions)\n• Planifier le QBR Q+1\n• Célébrer en interne (partager la victoire)\n• Mettre à jour le health score\n\n**KPIs renouvellement :**\n• Taux de renouvellement > 90%\n• Délai moyen de signature < J-30\n• Taux d'upgrade au renouvellement > 15%`
+    }],
+    tip: "Le renouvellement se joue dès J-120, pas la veille. Un client bien accompagné renouvelle naturellement."
   }
 }
 
@@ -8455,6 +8576,73 @@ Answer these 3 questions:
 • Monthly SLA report: compliance rate by category
 • Contract review: SLA alignment vs actual capacity`
     }]
+  },
+  "QBR — Guide Complet": {
+    sections: [{
+      title: "📋 Preparation (D-14)",
+      content: `• Collect key KPIs for the quarter (usage, adoption, MRR, NPS)\n• Prepare 3 slides max: results, roadmap, recommendations\n• Identify 1-2 quick wins to announce\n• Send agenda to the client 1 week before\n• Confirm executive sponsor attendance`
+    }, {
+      title: "🎯 QBR Structure (60 min)",
+      content: `**5 min — Ice-breaker**\nStart with a client win.\n\n**15 min — Quarterly Review**\nKPIs, adoption, tickets resolved, measured ROI.\n\n**15 min — Client Feedback**\nActive listening: what's working? What's blocking?\n\n**15 min — Roadmap & Recommendations**\nUpcoming features + personalized action plan.\n\n**10 min — Next Steps**\nMutual commitments + next QBR date.`
+    }, {
+      title: "📞 Key Scripts",
+      content: `**Opening:** "Thanks for being here. Today we'll review Q[N] and build the plan for Q[N+1] together."\n\n**If sponsor absent:** "I suggest we send an executive summary to [Sponsor] with our 3 key actions."\n\n**If results are disappointing:** "The numbers are below our targets. Here's what I propose to fix this quickly..."\n\n**Closing:** "Recap: 3 actions — [1], [2], [3]. I'll send the summary within 24h."`
+    }, {
+      title: "✅ Post-QBR Checklist",
+      content: `• Send summary within 24h (structured email)\n• Create tickets/tasks for promised actions\n• Schedule intermediate follow-ups\n• Update the account health score\n• Share insights internally (product, sales)`
+    }],
+    tip: "A good QBR isn't a presentation, it's a conversation. The client should talk 50% of the time."
+  },
+  "Playbook Expansion & Upsell": {
+    sections: [{
+      title: "🔍 Expansion Signals",
+      content: `• Usage > 80% of purchased licenses\n• Recurring requests for advanced features\n• New departments/teams wanting access\n• NPS feedback ≥ 9 + spontaneous testimonial\n• Client mentions end-of-year budget\n• Company growth (fundraising, hiring, new markets)`
+    }, {
+      title: "💡 Prepare the Pitch",
+      content: `**Framework: Value → Impact → Proposal**\n\n1. **Proven value**: "Over the last 6 months, you achieved [measurable result]"\n2. **Identified opportunity**: "I noticed that [expansion signal]"\n3. **Concrete proposal**: "Here's how [higher plan] could [quantified benefit]"\n\n**ROI to prepare:**\n• Current cost vs value generated\n• Projection with the upgrade\n• Testimonials from similar clients who upgraded`
+    }, {
+      title: "🎯 Closing Techniques",
+      content: `• **Time anchoring**: "If we activate this month, you could see results by Q[N+1]"\n• **Social proof**: "[Similar client] upgraded 3 months ago and saw +30% in [KPI]"\n• **Exclusivity**: "I can offer special terms if we validate before [date]"\n• **Positive escalation**: Involve the sponsor to accelerate the decision\n\n**Never do:**\n• Push an upsell on an at-risk account\n• Propose before proving value\n• Ignore budget objections`
+    }, {
+      title: "📊 Metrics to Track",
+      content: `• Monthly Expansion MRR\n• Upsell rate (% accounts upgrading/quarter)\n• Average time from signature to expansion\n• Net Revenue Retention (NRR) — target: > 110%\n• Expansion pipeline vs closed won`
+    }],
+    tip: "Expansion is the natural result of good Customer Success. If the client sees value, the upsell sells itself."
+  },
+  "Health Score — Construction & Calibration": {
+    sections: [{
+      title: "📐 Choose Metrics (5-7 max)",
+      content: `**Recommended categories:**\n\n• **Usage** (weight 30%): login frequency, features used, time spent\n• **Engagement** (weight 25%): email response, QBR participation, feedback\n• **Results** (weight 20%): KPIs achieved, measured ROI\n• **Relationship** (weight 15%): contact quality, active sponsor\n• **Contract** (weight 10%): MRR, remaining duration, renewal history`
+    }, {
+      title: "⚖️ Weighting & Scoring",
+      content: `**For each metric, define 3 levels:**\n• 🟢 Healthy (score 8-10): ideal threshold\n• 🟡 Watch (score 4-7): preventive action\n• 🔴 Critical (score 0-3): immediate intervention\n\n**Example — Login frequency:**\n• 🟢 > 3 logins/week = 10 points\n• 🟡 1-3 logins/week = 5 points\n• 🔴 < 1 login/week = 1 point\n\n**Overall score = Σ (score × weight)**\nTotal out of 100. Thresholds: > 70 = Healthy, 40-70 = At risk, < 40 = Critical`
+    }, {
+      title: "🔄 Calibrate with Real Data",
+      content: `**Step 1**: Calculate the score for all current accounts\n**Step 2**: Compare with churns from the last 12 months\n**Step 3**: Does the score predict churn? If not, adjust weights\n**Step 4**: Validate with your team — does the ranking match their intuition?\n**Step 5**: Recalibrate quarterly\n\n**Red flag**: if a "green" account churns, your model has a flaw.`
+    }, {
+      title: "✅ Automation in Scalyo",
+      content: `• Enter the health score in each account card\n• Use risk filters to prioritize\n• Track evolution in monthly KPIs\n• Trigger automatic alerts on drops\n• Integrate into your QBRs as the main indicator`
+    }],
+    tip: "A health score is a tool, not a truth. It should be regularly challenged with field reality."
+  },
+  "Renouvellement — Playbook J-120 à J-0": {
+    sections: [{
+      title: "📅 D-120: Process Launch",
+      content: `• Identify all upcoming renewals (pipeline)\n• Check the health score of each account\n• Prepare the file: usage, KPIs, ROI, feedback\n• If health score < 50: trigger the churn protocol in parallel\n• Assign an owner for each renewal`
+    }, {
+      title: "🎯 D-90: First Renewal Contact",
+      content: `**Email template:**\n"Hi [Name], your contract expires on [date]. I'd like to review this year and discuss what's next."\n\n**Prepare:**\n• Personalized ROI summary\n• Renewal proposal (same plan or upgrade)\n• Special terms for early renewal\n• 2-3 testimonials from similar clients who renewed`
+    }, {
+      title: "💬 D-60: Active Negotiation",
+      content: `• Renewal call with the decision maker\n• Present measured ROI + upcoming roadmap\n• Listen to objections and address them\n• If budget hesitation: propose a payment plan\n• If value hesitation: propose a POC on an advanced feature\n\n**Objection scripts:**\n• "Too expensive" → "Over 12 months, the cost per [improved KPI] is [X]. Without us, that cost would be [Y]."\n• "We don't use it enough" → "That's exactly what I want to fix. Here's a 30-day adoption plan."`
+    }, {
+      title: "🔔 D-30: Gentle Urgency",
+      content: `• Follow up if no response\n• Involve your manager if needed\n• Offer "early bird" terms (discount if signed before D-15)\n• Prepare plan B: downgrade rather than churn\n\n**If churn confirmed:**\n• Exit interview (understand the real reasons)\n• Clean offboarding (data export, transition)\n• Keep the door open ("win-back" at 6 months)`
+    }, {
+      title: "✅ D-0: Renewal Signed",
+      content: `• Send confirmation email + thank you\n• Update CRM (dates, amount, terms)\n• Schedule Q+1 QBR\n• Celebrate internally (share the win)\n• Update the health score\n\n**Renewal KPIs:**\n• Renewal rate > 90%\n• Average signing time < D-30\n• Upgrade rate at renewal > 15%`
+    }],
+    tip: "Renewal starts at D-120, not the day before. A well-supported client renews naturally."
   }
 };
 const RESOURCE_CONTENT_KR = {
@@ -8736,6 +8924,61 @@ const RESOURCE_CONTENT_KR = {
     {title:"4. SLA 준수",content:`• 자동 SLA 모니터링
 • 위험 시 사전 알림 (80%)
 • 월간 SLA 준수율 보고서`}]
+  },
+  "QBR — Guide Complet": {
+    sections: [{
+      title: "📋 준비 (D-14)",
+      content: `• 분기 핵심 KPI 수집 (사용량, 도입률, MRR, NPS)\n• 슬라이드 최대 3장: 결과, 로드맵, 추천\n• Quick win 1-2개 준비\n• 1주 전 고객에게 의제 전송\n• 경영진 스폰서 참석 확인`
+    }, {
+      title: "🎯 QBR 구조 (60분)",
+      content: `**5분 — 아이스브레이커**\n고객 성과로 시작.\n\n**15분 — 분기 리뷰**\nKPI, 도입률, 해결 티켓, ROI.\n\n**15분 — 고객 피드백**\n적극적 경청: 무엇이 작동? 무엇이 차단?\n\n**15분 — 로드맵 & 추천**\n출시 예정 기능 + 맞춤 실행 계획.\n\n**10분 — 다음 단계**\n상호 약속 + 다음 QBR 날짜.`
+    }, {
+      title: "✅ QBR 후 체크리스트",
+      content: `• 24시간 내 요약 전송\n• 약속된 작업 티켓 생성\n• 중간 후속 조치 일정\n• Health Score 업데이트\n• 내부 인사이트 공유 (제품, 영업)`
+    }],
+    tip: "좋은 QBR은 프레젠테이션이 아니라 대화입니다. 고객이 50% 말해야 합니다."
+  },
+  "Playbook Expansion & Upsell": {
+    sections: [{
+      title: "🔍 확장 신호",
+      content: `• 사용량 > 구매 라이선스의 80%\n• 고급 기능 반복 요청\n• 새 부서/팀 액세스 요구\n• NPS ≥ 9 + 자발적 추천\n• 고객이 연말 예산 언급\n• 회사 성장 (자금 조달, 채용, 신규 시장)`
+    }, {
+      title: "💡 피칭 준비",
+      content: `**프레임워크: 가치 → 영향 → 제안**\n\n1. **입증된 가치**: "지난 6개월간 [측정 가능한 결과]를 달성했습니다"\n2. **확인된 기회**: "[확장 신호]를 발견했습니다"\n3. **구체적 제안**: "[상위 플랜]이 [정량화된 혜택]을 제공할 수 있습니다"`
+    }, {
+      title: "📊 추적 지표",
+      content: `• 월간 확장 MRR\n• 업셀 비율 (%/분기)\n• 서명~확장 평균 시간\n• NRR 목표: > 110%\n• 확장 파이프라인 vs 성사`
+    }],
+    tip: "확장은 좋은 CS의 자연스러운 결과입니다."
+  },
+  "Health Score — Construction & Calibration": {
+    sections: [{
+      title: "📐 지표 선택 (5-7개 최대)",
+      content: `• **사용량** (30%): 로그인 빈도, 사용 기능, 소요 시간\n• **참여도** (25%): 이메일 응답, QBR 참여, 피드백\n• **결과** (20%): KPI 달성, ROI\n• **관계** (15%): 연락 품질, 스폰서\n• **계약** (10%): MRR, 남은 기간, 갱신 이력`
+    }, {
+      title: "⚖️ 가중치 & 점수",
+      content: `**각 지표에 3단계 정의:**\n• 🟢 건강 (8-10)\n• 🟡 주의 (4-7)\n• 🔴 위험 (0-3)\n\n**총점 = Σ (점수 × 가중치)**\n100점 만점. 기준: > 70 = 건강, 40-70 = 위험, < 40 = 위기`
+    }, {
+      title: "🔄 실제 데이터로 보정",
+      content: `1단계: 모든 계정 점수 계산\n2단계: 지난 12개월 이탈과 비교\n3단계: 이탈 예측 여부 확인\n4단계: 팀 직관과 검증\n5단계: 분기별 재보정`
+    }],
+    tip: "Health Score는 도구이지 진실이 아닙니다. 현장과 정기적으로 검증하세요."
+  },
+  "Renouvellement — Playbook J-120 à J-0": {
+    sections: [{
+      title: "📅 D-120: 프로세스 시작",
+      content: `• 모든 갱신 예정 확인\n• 각 계정 Health Score 확인\n• 사용량, KPI, ROI, 피드백 준비\n• Health Score < 50이면 이탈 프로토콜 병행`
+    }, {
+      title: "🎯 D-90: 첫 갱신 연락",
+      content: `이메일: "안녕하세요 [이름], 계약이 [날짜]에 만료됩니다. 올해를 돌아보고 향후 계획을 논의하고 싶습니다."\n\n준비:\n• 맞춤 ROI 요약\n• 갱신 제안 (동일 또는 업그레이드)\n• 조기 갱신 특별 조건`
+    }, {
+      title: "💬 D-60: 적극 협상",
+      content: `• 의사결정자와 갱신 통화\n• ROI + 로드맵 제시\n• 이의 경청 및 대응\n• 예산 문제시 분할 결제 제안`
+    }, {
+      title: "✅ D-0: 갱신 완료",
+      content: `• 확인 이메일 전송\n• CRM 업데이트\n• Q+1 QBR 일정\n• 내부 축하\n\n**갱신 KPI:**\n• 갱신율 > 90%\n• 평균 서명 시간 < D-30\n• 갱신 시 업그레이드율 > 15%`
+    }],
+    tip: "갱신은 D-120부터 시작됩니다. 잘 관리된 고객은 자연스럽게 갱신합니다."
   }
 };
 
@@ -8865,6 +9108,30 @@ const ResourcesView = ({
     key:"Process Qualité",
     title:lang==="en"?"Quality Process":lang==="kr"?"품질 프로세스":"Process Qualité",
     desc:lang==="en"?"CS quality standards: internal audits, satisfaction metrics, continuous improvement, SLA.":lang==="kr"?"CS 품질 기준: 내부 감사, 만족도, 개선, SLA.":"Standards qualité CS : audits internes, métriques satisfaction, amélioration continue.",
+    locked:false
+  }, {
+    emoji:"📞", type:"Playbook", color:C.blue,
+    key:"QBR — Guide Complet",
+    title:lang==="en"?"QBR — Complete Guide":lang==="kr"?"QBR — 완전 가이드":"QBR — Guide Complet",
+    desc:lang==="en"?"Structure, agenda, slides, scripts and follow-up for impactful Quarterly Business Reviews.":lang==="kr"?"임팩트 있는 QBR을 위한 구조, 의제, 슬라이드, 스크립트 및 후속 조치.":"Structure, agenda, slides, scripts et suivi pour des QBR impactants.",
+    locked:false
+  }, {
+    emoji:"💰", type:"Playbook", color:C.green,
+    key:"Playbook Expansion & Upsell",
+    title:lang==="en"?"Expansion & Upsell Playbook":lang==="kr"?"확장 & 업셀 플레이북":"Playbook Expansion & Upsell",
+    desc:lang==="en"?"Identify signals, prepare pitches, and close expansion deals with existing clients.":lang==="kr"?"신호 식별, 피칭 준비, 기존 고객 확장 거래 성사.":"Identifier les signaux, préparer les pitchs, et closer les deals d'expansion.",
+    locked:false
+  }, {
+    emoji:"🧠", type:"Guide", color:C.purple,
+    key:"Health Score — Construction & Calibration",
+    title:lang==="en"?"Health Score — Build & Calibrate":lang==="kr"?"Health Score — 구축 & 보정":"Health Score — Construction & Calibration",
+    desc:lang==="en"?"Build a predictive health score: choose metrics, weight them, and calibrate with real data.":lang==="kr"?"예측 Health Score 구축: 지표 선택, 가중치, 실제 데이터 보정.":"Construisez un health score prédictif : choisir les métriques, les pondérer, et calibrer avec vos données.",
+    locked:false
+  }, {
+    emoji:"🔄", type:"Playbook", color:C.amber,
+    key:"Renouvellement — Playbook J-120 à J-0",
+    title:lang==="en"?"Renewal Playbook D-120 to D-0":lang==="kr"?"갱신 플레이북 D-120 ~ D-0":"Renouvellement — Playbook J-120 à J-0",
+    desc:lang==="en"?"Complete timeline from D-120 to renewal day. Scripts, emails, escalation triggers.":lang==="kr"?"D-120부터 갱신일까지 전체 타임라인. 스크립트, 이메일, 에스컬레이션.":"Timeline complète de J-120 au jour du renouvellement. Scripts, emails, déclencheurs d'escalade.",
     locked:false
   }].filter(r => role === "manager" || !r.managerOnly);
   const filtered = activeCategory === "all" ? items : items.filter(r => r.type === activeCategory);
@@ -9905,8 +10172,9 @@ const IntegrationsView = ({lang="fr"}) => {
 };
 
 const EmailStudioView = ({
-  plan, lang="fr"
+  plan, lang="fr", onUpgrade
 }) => {
+  const isStarter = plan === "Starter";
   const [activeCat, setActiveCat] = useState("all");
   const tplSet = lang==="en" ? EMAIL_TEMPLATES_EN : lang==="kr" ? EMAIL_TEMPLATES_KR : EMAIL_TEMPLATES;
   const [selected, setSelected] = useState(tplSet[0]);
@@ -10022,17 +10290,19 @@ const EmailStudioView = ({
     color: C.teal,
     size: "xs"
   }, selected.cat)), /*#__PURE__*/React.createElement("button", {
-    onClick: copy,
+    onClick: isStarter ? onUpgrade : copy,
     className: "btn-base",
     style: {
       padding: "10px 22px",
       borderRadius: 12,
       fontSize: 13,
-      background: copied ? C.greenBg : C.tealBg,
-      border: `1px solid ${copied ? C.greenBorder : C.tealBorder}`,
-      color: copied ? C.green : C.teal
+      background: isStarter ? C.amberBg : (copied ? C.greenBg : C.tealBg),
+      border: `1px solid ${isStarter ? C.amberBorder : (copied ? C.greenBorder : C.tealBorder)}`,
+      color: isStarter ? C.amber : (copied ? C.green : C.teal)
     }
-  }, copied ? (lang==="en" ? "✅ Copied!" : lang==="kr" ? "✅ 복사됨!" : T("copied",lang)) : (lang==="en" ? "📋 Copy email" : lang==="kr" ? "📋 이메일 복사" : "📋 Copier l'email"))), /*#__PURE__*/React.createElement("div", {
+  }, isStarter
+    ? (lang==="en" ? "🔒 Growth plan" : lang==="kr" ? "🔒 Growth 플랜" : "🔒 Plan Growth")
+    : (copied ? (lang==="en" ? "✅ Copied!" : lang==="kr" ? "✅ 복사됨!" : T("copied",lang)) : (lang==="en" ? "📋 Copy email" : lang==="kr" ? "📋 이메일 복사" : "📋 Copier l'email")))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 14
     }
@@ -10048,7 +10318,8 @@ const EmailStudioView = ({
     }
   }, lang==="en" ? "Subject" : lang==="kr" ? "제목" : "Objet"), /*#__PURE__*/React.createElement("input", {
     value: editSubject,
-    onChange: e => setEditSubject(e.target.value),
+    onChange: isStarter ? undefined : (e => setEditSubject(e.target.value)),
+    readOnly: isStarter,
     style: {
       width: "100%",
       background: C.surface,
@@ -10056,7 +10327,8 @@ const EmailStudioView = ({
       borderRadius: 12,
       padding: "11px 14px",
       color: C.text,
-      fontSize: 14
+      fontSize: 14,
+      opacity: isStarter ? 0.6 : 1
     }
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
     style: {
@@ -10068,23 +10340,41 @@ const EmailStudioView = ({
       textTransform: "uppercase",
       letterSpacing: ".08em"
     }
-  }, lang==="en" ? "Message body" : lang==="kr" ? "메시지 본문" : "Corps du message"), /*#__PURE__*/React.createElement("textarea", {
+  }, lang==="en" ? "Message body" : lang==="kr" ? "메시지 본문" : "Corps du message"),
+  isStarter ? React.createElement("div", { style: { position: "relative" } },
+    React.createElement("div", { style: {
+      width: "100%", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
+      padding: "14px", color: C.text, fontSize: 13, fontFamily: "'JetBrains Mono',monospace",
+      lineHeight: 1.7, whiteSpace: "pre-wrap", minHeight: 280, overflow: "hidden"
+    } },
+      editBody.split("\n").slice(0, Math.ceil(editBody.split("\n").length * 0.4)).join("\n")
+    ),
+    React.createElement("div", { style: {
+      position: "absolute", bottom: 0, left: 0, right: 0, height: "70%",
+      background: `linear-gradient(transparent, ${C.bg} 60%)`,
+      backdropFilter: "blur(4px)",
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", paddingBottom: 20,
+      borderRadius: "0 0 12px 12px"
+    } },
+      React.createElement("span", { style: { fontSize: 28, marginBottom: 8 } }, "\uD83D\uDD12"),
+      React.createElement("span", { style: { fontSize: 14, fontWeight: 700, marginBottom: 4 } },
+        lang==="en" ? "Full templates available on Growth plan" : lang==="kr" ? "Growth 플랜에서 전체 템플릿 제공" : "Templates complets disponibles sur le plan Growth"
+      ),
+      React.createElement("button", {
+        onClick: onUpgrade,
+        style: { background: C.teal, color: "#fff", border: "none", borderRadius: 10, padding: "10px 24px", fontSize: 13, fontWeight: 700, cursor: "pointer", marginTop: 8 }
+      }, lang==="en" ? "Upgrade" : lang==="kr" ? "업그레이드" : "Voir les plans")
+    )
+  ) : React.createElement("textarea", {
     value: editBody,
     onChange: e => setEditBody(e.target.value),
     rows: 18,
     style: {
-      width: "100%",
-      background: C.surface,
-      border: `1px solid ${C.border}`,
-      borderRadius: 12,
-      padding: "14px",
-      color: C.text,
-      fontSize: 13,
-      fontFamily: "'JetBrains Mono',monospace",
-      resize: "vertical",
-      lineHeight: 1.7
+      width: "100%", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
+      padding: "14px", color: C.text, fontSize: 13, fontFamily: "'JetBrains Mono',monospace",
+      resize: "vertical", lineHeight: 1.7
     }
-  })), /*#__PURE__*/React.createElement("div", {
+  })), !isStarter && /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 14,
       padding: "12px 16px",
@@ -15081,7 +15371,7 @@ const App = () => {
         });
       case "email":
         return /*#__PURE__*/React.createElement(EmailStudioView, {
-          plan: company?.plan || "Starter", lang: lang
+          plan: company?.plan || "Starter", lang: lang, onUpgrade: () => setShowUpgrade(true)
         });
       case "coach":
         return /*#__PURE__*/React.createElement(CoachIAView, {lang:lang, plan: company?.plan || "Starter"});

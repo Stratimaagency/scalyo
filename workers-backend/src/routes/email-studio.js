@@ -5,7 +5,7 @@ import { planGate } from '../middleware/planGate.js'
 const emailStudio = new Hono()
 emailStudio.use('/*', authMiddleware(), companyRequired())
 
-// Send requires Growth+ plan (templates are viewable by all)
+// Send requires Growth+ plan
 emailStudio.use('/send/*', planGate('Growth'))
 
 // --- Template Registry (in-memory, same as Django version) ---
