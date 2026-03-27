@@ -67,40 +67,40 @@ billing.use('/change-plan/', authMiddleware(), companyRequired())
 
 // POST /api/billing/checkout/
 billing.post('/checkout/', async (c) => {
-  const { plan } = await c.req.json()
-  if (!['Starter', 'Growth', 'Elite'].includes(plan)) {
-    return c.json({ error: 'Invalid plan' }, 400)
-  }
-
-  const priceId = c.env[PLAN_PRICE_MAP[plan]]
-  if (!priceId) return c.json({ error: `No price configured for plan: ${plan}` }, 400)
-
-  const user = c.get('user')
-  const db = c.env.DB
-  const stripe = getStripe(c.env)
-
-  // Get or create customer
-  const company = await db.prepare('SELECT * FROM companies WHERE id = ?').bind(user.company_id).first()
-  if (!company) return c.json({ error: 'Company not found' }, 404)
-  let customerId = company.stripe_customer_id
-
-  if (!customerId) {
-    const customer = await stripe.request('POST', '/customers', {
-      email: user.email,
-      name: company.name,
-      'metadata[company_id]': String(company.id),
-    })
-    customerId = customer.id
-    await db.prepare(
-      "UPDATE companies SET stripe_customer_id = ?, updated_at = datetime('now') WHERE id = ?"
-    ).bind(customerId, company.id).run()
-  }
-
-  const frontendUrl = c.env.FRONTEND_URL || 'http://localhost:5173'
   try {
+    const { plan } = await c.req.json()
+    if (!['Starter', 'Growth', 'Elite'].includes(plan)) {
+      return c.json({ error: 'Invalid plan' }, 400)
+    }
+
+    const priceId = c.env[PLAN_PRICE_MAP[plan]]
+    if (!priceId) return c.json({ error: `No price configured for plan: ${plan}` }, 400)
+
+    const user = c.get('user')
+    const db = c.env.DB
+    const stripe = getStripe(c.env)
+
+    // Get or create customer
+    const company = await db.prepare('SELECT * FROM companies WHERE id = ?').bind(user.company_id).first()
+    if (!company) return c.json({ error: 'Company not found' }, 404)
+    let customerId = company.stripe_customer_id
+
+    if (!customerId) {
+      const customer = await stripe.request('POST', '/customers', {
+        email: user.email,
+        name: company.name,
+        'metadata[company_id]': String(company.id),
+      })
+      if (customer.error) return c.json({ error: customer.error.message }, 400)
+      customerId = customer.id
+      await db.prepare(
+        "UPDATE companies SET stripe_customer_id = ?, updated_at = datetime('now') WHERE id = ?"
+      ).bind(customerId, company.id).run()
+    }
+
+    const frontendUrl = c.env.FRONTEND_URL || 'http://localhost:5173'
     const session = await stripe.request('POST', '/checkout/sessions', {
       customer: customerId,
-      'payment_method_types[0]': 'card',
       'line_items[0][price]': priceId,
       'line_items[0][quantity]': '1',
       mode: 'subscription',
@@ -113,11 +113,12 @@ billing.post('/checkout/', async (c) => {
     })
 
     if (session.error) {
+      console.error('Stripe checkout error:', session.error)
       return c.json({ error: session.error.message }, 400)
     }
     return c.json({ checkout_url: session.url })
   } catch (e) {
-    console.error('Checkout error:', e.message)
+    console.error('Checkout exception:', e.message, e.stack)
     return c.json({ error: e.message }, 500)
   }
 })
