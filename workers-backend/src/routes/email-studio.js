@@ -166,7 +166,7 @@ emailStudio.post('/send/', async (c) => {
         return c.json({ error: `Failed to send email: ${err}` }, 500)
       }
     } catch (e) {
-      return c.json({ error: `Failed to send email: ${e.message}` }, 500)
+      return c.json({ error: 'Failed to send email. Please try again.' }, 500)
     }
   } else {
     // MailChannels send (free on Workers)
@@ -186,7 +186,7 @@ emailStudio.post('/send/', async (c) => {
         return c.json({ error: `Failed to send email: ${err}` }, 500)
       }
     } catch (e) {
-      return c.json({ error: `Failed to send email: ${e.message}` }, 500)
+      return c.json({ error: 'Failed to send email. Please try again.' }, 500)
     }
   }
 

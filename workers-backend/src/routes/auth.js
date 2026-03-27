@@ -5,6 +5,9 @@ import { authMiddleware, companyRequired } from '../middleware/auth.js'
 
 const auth = new Hono()
 
+// Helper: validate email format
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
 // Helper: generate tokens
 async function generateTokens(user, secret) {
   const payload = {
@@ -39,6 +42,9 @@ auth.post('/register/', async (c) => {
 
   if (!email || !password || !company_name) {
     return c.json({ error: 'email, password and company_name are required' }, 400)
+  }
+  if (!isValidEmail(email)) {
+    return c.json({ error: 'Invalid email format' }, 400)
   }
   if (password.length < 8) {
     return c.json({ error: 'Password must be at least 8 characters' }, 400)
@@ -83,6 +89,9 @@ auth.post('/login/', async (c) => {
   const { email, password } = await c.req.json()
   if (!email || !password) {
     return c.json({ error: 'email and password are required' }, 400)
+  }
+  if (!isValidEmail(email)) {
+    return c.json({ error: 'Invalid email format' }, 400)
   }
 
   const db = c.env.DB

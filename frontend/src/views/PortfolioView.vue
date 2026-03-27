@@ -498,7 +498,9 @@ async function loadTeamMembers() {
   try {
     const res = await teamApi.list()
     teamMembers.value = (res.data.members || []).filter(m => m.role === 'csm' || m.role === 'manager')
-  } catch {}
+  } catch (e) {
+    console.error('Failed to load team members:', e)
+  }
 }
 
 // ─── Lifecycle ───

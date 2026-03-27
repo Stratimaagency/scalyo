@@ -2177,7 +2177,7 @@ const LoginScreen = ({
           company: company.trim(),
           role
         }));
-        setInfo(T("confirmSent",lang)); localStorage.setItem("scalyo_signup_pending", "1");
+        setInfo(T("confirmSent",lang));
         setTab("login");
         setLoading(false);
         return;
@@ -14711,7 +14711,7 @@ const App = () => {
       const key = "scalyo_coaching_reminder_dismissed";
       const stored = localStorage.getItem(key);
       const now = new Date();
-      const monthKey = `${now.getFullYear()}-${now.getMonth()}`;
+      const monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
       if (stored !== monthKey) setShowCoachingReminder(true);
     } catch(e) {}
   }, [appData, role]);
@@ -15422,7 +15422,7 @@ const App = () => {
         setShowCoachingReminder(false);
         try {
           const now = new Date();
-          localStorage.setItem("scalyo_coaching_reminder_dismissed", `${now.getFullYear()}-${now.getMonth()}`);
+          localStorage.setItem("scalyo_coaching_reminder_dismissed", `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`);
         } catch(e) {}
       }
     }),

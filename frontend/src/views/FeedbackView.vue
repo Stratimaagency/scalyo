@@ -70,7 +70,10 @@ async function submit() {
   try {
     await feedbackApi.create(form)
     sent.value = true
-  } catch {}
+  } catch (e) {
+    console.error('Failed to submit feedback:', e)
+    alert(e?.response?.data?.message || 'Failed to send feedback. Please try again.')
+  }
   submitting.value = false
 }
 

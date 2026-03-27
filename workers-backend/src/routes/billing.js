@@ -134,7 +134,7 @@ billing.post('/checkout/', async (c) => {
     return c.json({ checkout_url: session.url })
   } catch (e) {
     console.error('Checkout exception:', e.message, e.stack)
-    return c.json({ error: e.message }, 500)
+    return c.json({ error: 'Checkout failed. Please try again.' }, 500)
   }
 })
 
