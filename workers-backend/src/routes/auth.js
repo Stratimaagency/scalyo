@@ -205,6 +205,85 @@ auth.get('/verify/:token', async (c) => {
   return c.json({ message: 'Email verified successfully' })
 })
 
+// POST /api/auth/forgot-password/ — send reset email (public)
+auth.post('/forgot-password/', async (c) => {
+  const { email } = await c.req.json()
+  if (!email || !isValidEmail(email)) {
+    return c.json({ message: 'Si un compte existe, un email a été envoyé.' })
+  }
+
+  const db = c.env.DB
+  const user = await db.prepare('SELECT id, email FROM users WHERE email = ?').bind(email).first()
+
+  // Always return success (don't leak if email exists)
+  if (!user) {
+    return c.json({ message: 'Si un compte existe, un email a été envoyé.' })
+  }
+
+  const token = generateVerificationToken()
+  const expires = new Date(Date.now() + 60 * 60 * 1000).toISOString() // 1h
+
+  await db.prepare(
+    'UPDATE users SET verification_token = ?, verification_expires = ? WHERE id = ?'
+  ).bind(token, expires, user.id).run()
+
+  const frontendUrl = c.env.FRONTEND_URL || 'https://scalyo.pages.dev'
+  const resetUrl = `${frontendUrl}/login?reset=${token}`
+  sendEmail(c.env, {
+    to: user.email,
+    subject: 'Réinitialisation de mot de passe — Scalyo',
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <span style="font-size: 28px; font-weight: 900; letter-spacing: -1px;">scal<span style="color: #4DB6A0;">yo</span></span>
+        </div>
+        <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Réinitialiser votre mot de passe</h2>
+        <p style="color: #666; font-size: 14px; line-height: 1.6;">
+          Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe.
+        </p>
+        <div style="text-align: center; margin: 28px 0;">
+          <a href="${resetUrl}" style="display: inline-block; background: #4DB6A0; color: #fff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 15px;">Nouveau mot de passe</a>
+        </div>
+        <p style="color: #999; font-size: 12px;">Ce lien expire dans 1 heure. Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
+      </div>
+    `,
+  }).catch(() => {})
+
+  return c.json({ message: 'Si un compte existe, un email a été envoyé.' })
+})
+
+// POST /api/auth/reset-password/ — reset password with token (public)
+auth.post('/reset-password/', async (c) => {
+  const { token, password } = await c.req.json()
+
+  if (!token || !password) {
+    return c.json({ error: 'Token et mot de passe requis' }, 400)
+  }
+  if (password.length < 8) {
+    return c.json({ error: 'Le mot de passe doit faire au moins 8 caractères' }, 400)
+  }
+
+  const db = c.env.DB
+  const user = await db.prepare(
+    'SELECT id, verification_expires FROM users WHERE verification_token = ?'
+  ).bind(token).first()
+
+  if (!user) {
+    return c.json({ error: 'Lien invalide ou expiré' }, 400)
+  }
+
+  if (user.verification_expires && new Date(user.verification_expires) < new Date()) {
+    return c.json({ error: 'Lien expiré. Veuillez refaire une demande.' }, 400)
+  }
+
+  const newHash = await hashPassword(password)
+  await db.prepare(
+    "UPDATE users SET password_hash = ?, verification_token = '', verification_expires = '', must_change_password = 0, updated_at = datetime('now') WHERE id = ?"
+  ).bind(newHash, user.id).run()
+
+  return c.json({ message: 'Mot de passe modifié avec succès' })
+})
+
 // --- Protected routes ---
 auth.use('/*', authMiddleware())
 
