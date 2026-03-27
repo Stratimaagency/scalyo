@@ -3,8 +3,8 @@ main = "src/index.js"
 compatibility_date = "2024-09-01"
 
 [vars]
-FRONTEND_URL = "https://scalyo.app"
-APP_URL = "https://scalyo.app"
+FRONTEND_URL = "https://scalyo.pages.dev"
+APP_URL = "https://scalyo-api.stratimaagency.workers.dev"
 
 [[d1_databases]]
 binding = "DB"

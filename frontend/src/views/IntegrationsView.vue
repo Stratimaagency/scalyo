@@ -544,12 +544,15 @@ function validateConfig(type, integKey) {
     case 'email':
       return configForm.provider && configForm.email
     case 'crm':
+      if (integKey === 'zendesk') return configForm.apiKey && configForm.domain && configForm.email
       return configForm.apiKey
     case 'chat':
+      if (integKey === 'whatsapp') return configForm.apiKey && configForm.phoneNumberId
       return configForm.webhookUrl
     case 'meeting':
       return configForm.apiKey || configForm.meetingEmail
     case 'project':
+      if (integKey === 'notion') return configForm.apiKey
       return configForm.apiKey && configForm.projectKey
     default:
       return configForm.apiKey
@@ -692,13 +695,26 @@ function getConfigForType(type, integKey) {
     case 'email':
       return { provider: configForm.provider, email: configForm.email, syncIncoming: configForm.syncIncoming, syncOutgoing: configForm.syncOutgoing }
     case 'crm':
-      return { apiKey: configForm.apiKey, syncFreq: configForm.syncFreq, autoSync: configForm.autoSync, ...(configForm.instanceUrl ? { instanceUrl: configForm.instanceUrl } : {}) }
+      return {
+        apiKey: configForm.apiKey, syncFreq: configForm.syncFreq, autoSync: configForm.autoSync,
+        ...(configForm.instanceUrl ? { instanceUrl: configForm.instanceUrl } : {}),
+        ...(configForm.domain ? { domain: configForm.domain } : {}),
+        ...(configForm.email ? { email: configForm.email } : {}),
+      }
     case 'chat':
+      if (integKey === 'whatsapp') {
+        return { apiKey: configForm.apiKey, phoneNumberId: configForm.phoneNumberId, recipientPhone: configForm.recipientPhone, notifChurn: configForm.notifChurn, notifWellbeing: configForm.notifWellbeing, notifRenewal: configForm.notifRenewal }
+      }
       return { webhookUrl: configForm.webhookUrl, channel: configForm.channel, notifChurn: configForm.notifChurn, notifWellbeing: configForm.notifWellbeing, notifRenewal: configForm.notifRenewal }
     case 'meeting':
       return { ...(configForm.apiKey ? { apiKey: configForm.apiKey } : {}), meetingEmail: configForm.meetingEmail, autoCreateMeeting: configForm.autoCreateMeeting, syncCalendar: configForm.syncCalendar }
     case 'project':
-      return { apiKey: configForm.apiKey, projectKey: configForm.projectKey, syncTasks: configForm.syncTasks, ...(configForm.domain ? { domain: configForm.domain } : {}) }
+      return {
+        apiKey: configForm.apiKey, syncTasks: configForm.syncTasks,
+        ...(integKey !== 'notion' ? { projectKey: configForm.projectKey } : {}),
+        ...(configForm.domain ? { domain: configForm.domain } : {}),
+        ...(configForm.databaseId ? { databaseId: configForm.databaseId } : {}),
+      }
     default:
       return { apiKey: configForm.apiKey }
   }
