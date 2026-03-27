@@ -8989,28 +8989,32 @@ const RESOURCE_CONTENT_KR = {
 const StarterBlurWrap = ({ isStarter, lang = "fr", moduleName = "", onUpgrade, children }) => {
   if (!isStarter) return children;
   const msgs = {
-    fr: { title: `Débloquez ${moduleName}`, desc: "Passez au plan Growth pour accéder à cette fonctionnalité.", btn: "Voir les plans" },
-    en: { title: `Unlock ${moduleName}`, desc: "Upgrade to Growth to access this feature.", btn: "View plans" },
-    kr: { title: `${moduleName} 잠금 해제`, desc: "이 기능을 사용하려면 Growth로 업그레이드하세요.", btn: "플랜 보기" },
+    fr: { title: `Débloquez ${moduleName}`, desc: "Disponible sur le plan Growth. Découvrez tout le potentiel de Scalyo.", btn: "Débloquer maintenant", badge: "GROWTH" },
+    en: { title: `Unlock ${moduleName}`, desc: "Available on the Growth plan. Discover Scalyo's full potential.", btn: "Unlock now", badge: "GROWTH" },
+    kr: { title: `${moduleName} 잠금 해제`, desc: "Growth 플랜에서 사용 가능합니다. Scalyo의 전체 잠재력을 발견하세요.", btn: "지금 잠금 해제", badge: "GROWTH" },
   };
   const m = msgs[lang] || msgs.fr;
   return React.createElement("div", { style: { position: "relative", height: "100%", overflow: "hidden" } },
-    React.createElement("div", { style: { filter: "blur(5px)", pointerEvents: "none", userSelect: "none", height: "100%", opacity: 0.6 } }, children),
+    React.createElement("div", { style: { filter: "blur(6px)", pointerEvents: "none", userSelect: "none", height: "100%", opacity: 0.5 } }, children),
     React.createElement("div", { style: {
       position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
-      background: "rgba(255,255,255,0.15)", backdropFilter: "blur(2px)",
+      background: "linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.4) 40%, rgba(255,255,255,0.7) 100%)",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, zIndex: 10
     } },
       React.createElement("div", { style: {
-        background: C.bg, borderRadius: 20, padding: "36px 48px", textAlign: "center",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.12)", border: `1px solid ${C.border}`, maxWidth: 400
+        background: C.bg, borderRadius: 24, padding: "40px 52px", textAlign: "center",
+        boxShadow: "0 12px 48px rgba(0,0,0,0.15)", border: `2px solid ${C.teal}`, maxWidth: 420
       } },
-        React.createElement("span", { style: { fontSize: 48, display: "block", marginBottom: 12 } }, "\uD83D\uDD13"),
-        React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, marginBottom: 8 } }, m.title),
-        React.createElement("p", { style: { fontSize: 14, color: C.muted, marginBottom: 20, lineHeight: 1.5 } }, m.desc),
+        React.createElement("div", { style: {
+          background: C.tealBg, color: C.teal, fontSize: 11, fontWeight: 800, letterSpacing: "0.1em",
+          padding: "4px 14px", borderRadius: 20, display: "inline-block", marginBottom: 16, border: `1px solid ${C.tealBorder}`
+        } }, m.badge),
+        React.createElement("span", { style: { fontSize: 52, display: "block", marginBottom: 14 } }, "\uD83D\uDD13"),
+        React.createElement("h3", { style: { fontSize: 22, fontWeight: 900, marginBottom: 10 } }, m.title),
+        React.createElement("p", { style: { fontSize: 14, color: C.muted, marginBottom: 24, lineHeight: 1.6 } }, m.desc),
         React.createElement("button", {
           onClick: onUpgrade,
-          style: { background: C.teal, color: "#fff", border: "none", borderRadius: 12, padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer", width: "100%" }
+          style: { background: C.teal, color: "#fff", border: "none", borderRadius: 14, padding: "16px 36px", fontSize: 16, fontWeight: 800, cursor: "pointer", width: "100%", boxShadow: "0 4px 16px rgba(77,182,160,0.3)", transition: "transform 0.15s" }
         }, m.btn)
       )
     )
@@ -15360,9 +15364,12 @@ const App = () => {
           onUpgrade: () => setShowUpgrade(true)
         });
       case "email":
-        return /*#__PURE__*/React.createElement(EmailStudioView, {
+        return /*#__PURE__*/React.createElement(StarterBlurWrap, {
+          isStarter: (company?.plan || "Starter") === "Starter",
+          lang: lang, moduleName: T("email",lang), onUpgrade: () => setShowUpgrade(true)
+        }, /*#__PURE__*/React.createElement(EmailStudioView, {
           plan: company?.plan || "Starter", lang: lang, onUpgrade: () => setShowUpgrade(true)
-        });
+        }));
       case "coach":
         return /*#__PURE__*/React.createElement(CoachIAView, {lang:lang, plan: company?.plan || "Starter"});
 
@@ -15381,19 +15388,28 @@ const App = () => {
           onLang: handleLang,
         });
       case "roadmap":
-        return /*#__PURE__*/React.createElement(RoadmapView, {
+        return /*#__PURE__*/React.createElement(StarterBlurWrap, {
+          isStarter: (company?.plan || "Starter") === "Starter",
+          lang: lang, moduleName: lang==="en"?"Roadmap":lang==="kr"?"로드맵":"Roadmap", onUpgrade: () => setShowUpgrade(true)
+        }, /*#__PURE__*/React.createElement(RoadmapView, {
           roadmap: roadmap,
           updateRoadmap: updateRoadmap,
           lang: lang
-        });
+        }));
       case "taskboard":
         return /*#__PURE__*/React.createElement(UnifiedTaskBoard, {accounts:accounts, role:role, lang:lang, companyId:company?.id||null});
       case "tips":
         return /*#__PURE__*/React.createElement(TipsView, {role:role, lang:lang});
       case "quotes":
-        return /*#__PURE__*/React.createElement(QuotesView, {lang:lang, currency:currency, companyId:company?.id});
+        return /*#__PURE__*/React.createElement(StarterBlurWrap, {
+          isStarter: (company?.plan || "Starter") === "Starter",
+          lang: lang, moduleName: T("quotes",lang), onUpgrade: () => setShowUpgrade(true)
+        }, /*#__PURE__*/React.createElement(QuotesView, {lang:lang, currency:currency, companyId:company?.id}));
       case "integrations":
-        return /*#__PURE__*/React.createElement(IntegrationsView, {lang:lang});
+        return /*#__PURE__*/React.createElement(StarterBlurWrap, {
+          isStarter: (company?.plan || "Starter") === "Starter",
+          lang: lang, moduleName: lang==="en"?"Integrations":lang==="kr"?"통합":"Intégrations", onUpgrade: () => setShowUpgrade(true)
+        }, /*#__PURE__*/React.createElement(IntegrationsView, {lang:lang}));
       default:
         return /*#__PURE__*/React.createElement(DashboardView, {
           company: company,
