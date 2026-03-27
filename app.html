@@ -8985,22 +8985,35 @@ const RESOURCE_CONTENT_KR = {
 
 ;
 
-// ── PlanGateView : shown when a module requires a higher plan
-const PlanGateView = ({ moduleName, requiredPlan = "Growth", lang = "fr", onUpgrade }) => {
+// ── StarterBlurWrap : shows content blurred with upgrade overlay for Starter
+const StarterBlurWrap = ({ isStarter, lang = "fr", moduleName = "", onUpgrade, children }) => {
+  if (!isStarter) return children;
   const msgs = {
-    fr: { title: `${moduleName} — Plan ${requiredPlan} requis`, desc: `Cette fonctionnalité est disponible à partir du plan ${requiredPlan}.`, btn: "Voir les plans" },
-    en: { title: `${moduleName} — ${requiredPlan} plan required`, desc: `This feature is available on the ${requiredPlan} plan and above.`, btn: "View plans" },
-    kr: { title: `${moduleName} — ${requiredPlan} 플랜 필요`, desc: `이 기능은 ${requiredPlan} 플랜 이상에서 사용 가능합니다.`, btn: "플랜 보기" },
+    fr: { title: `Débloquez ${moduleName}`, desc: "Passez au plan Growth pour accéder à cette fonctionnalité.", btn: "Voir les plans" },
+    en: { title: `Unlock ${moduleName}`, desc: "Upgrade to Growth to access this feature.", btn: "View plans" },
+    kr: { title: `${moduleName} 잠금 해제`, desc: "이 기능을 사용하려면 Growth로 업그레이드하세요.", btn: "플랜 보기" },
   };
   const m = msgs[lang] || msgs.fr;
-  return React.createElement("div", { style: { display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"100%", gap:20, padding:40, textAlign:"center" } },
-    React.createElement("span", { style: { fontSize:56 } }, "\uD83D\uDD12"),
-    React.createElement("h2", { style: { fontSize:22, fontWeight:700, margin:0 } }, m.title),
-    React.createElement("p", { style: { fontSize:15, color:C.muted, maxWidth:400 } }, m.desc),
-    React.createElement("button", {
-      onClick: onUpgrade,
-      style: { background:C.teal, color:"#fff", border:"none", borderRadius:10, padding:"12px 28px", fontSize:15, fontWeight:700, cursor:"pointer" }
-    }, m.btn)
+  return React.createElement("div", { style: { position: "relative", height: "100%", overflow: "hidden" } },
+    React.createElement("div", { style: { filter: "blur(5px)", pointerEvents: "none", userSelect: "none", height: "100%", opacity: 0.6 } }, children),
+    React.createElement("div", { style: {
+      position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+      background: "rgba(255,255,255,0.15)", backdropFilter: "blur(2px)",
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, zIndex: 10
+    } },
+      React.createElement("div", { style: {
+        background: C.bg, borderRadius: 20, padding: "36px 48px", textAlign: "center",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.12)", border: `1px solid ${C.border}`, maxWidth: 400
+      } },
+        React.createElement("span", { style: { fontSize: 48, display: "block", marginBottom: 12 } }, "\uD83D\uDD13"),
+        React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, marginBottom: 8 } }, m.title),
+        React.createElement("p", { style: { fontSize: 14, color: C.muted, marginBottom: 20, lineHeight: 1.5 } }, m.desc),
+        React.createElement("button", {
+          onClick: onUpgrade,
+          style: { background: C.teal, color: "#fff", border: "none", borderRadius: 12, padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer", width: "100%" }
+        }, m.btn)
+      )
+    )
   );
 };
 
@@ -9138,6 +9151,7 @@ const ResourcesView = ({
   const RC = lang==="en" ? RESOURCE_CONTENT_EN : lang==="kr" ? RESOURCE_CONTENT_KR : RESOURCE_CONTENT;
   const rKey = selectedResource?.key || selectedResource?.title;
   const content = selectedResource ? (RC[rKey] || RESOURCE_CONTENT[rKey]) : null;
+  const isResourceLocked = selectedResource?.locked;
   if (selectedResource && content) return /*#__PURE__*/React.createElement("div", {
     className: "fade-in",
     style: {
@@ -9179,7 +9193,12 @@ const ResourcesView = ({
   }, selectedResource.title), /*#__PURE__*/React.createElement(Tag, {
     color: selectedResource.color,
     size: "xs"
-  }, selectedResource.type))), /*#__PURE__*/React.createElement("div", {
+  }, selectedResource.type))), /*#__PURE__*/React.createElement(StarterBlurWrap, {
+    isStarter: isResourceLocked,
+    lang: lang,
+    moduleName: selectedResource.title,
+    onUpgrade: onUpgrade
+  }, /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
       overflowY: "auto",
@@ -9264,7 +9283,7 @@ const ResourcesView = ({
       fontSize: 14,
       textDecoration: "none"
     }
-  }, content.cta.label)));
+  }, content.cta.label))));
   return /*#__PURE__*/React.createElement("div", {
     className: "fade-in",
     style: {
@@ -9318,47 +9337,18 @@ const ResourcesView = ({
     }
   }, filtered.map((r, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
-    onClick: r.locked ? onUpgrade : () => setSelectedResource(r),
+    onClick: () => setSelectedResource(r),
     className: "card-lift",
     style: {
-      background: r.locked ? C.faint : C.surface,
-      border: `1px solid ${C.border}`,
+      background: C.surface,
+      border: `1px solid ${r.locked ? C.amberBorder : C.border}`,
       borderRadius: 16,
       padding: 20,
-      opacity: r.locked ? .65 : 1,
       cursor: "pointer",
       position: "relative",
       overflow: "hidden"
     }
-  }, r.locked && /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "absolute",
-      inset: 0,
-      background: "rgba(45,42,38,0.40)",
-      borderRadius: 16,
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 10,
-      backdropFilter: "blur(3px)"
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 28
-    }
-  }, "\uD83D\uDD12"), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 12,
-      color: C.amber,
-      fontWeight: 700
-    }
-  }, plan === "Starter" ? (lang==="en"?"Growth plan required":lang==="kr"?"Growth 플랜 필요":"Plan Growth requis") : (lang==="en"?"Elite plan required":lang==="kr"?"Elite 플랜 필요":"Plan Elite requis")), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 11,
-      color: C.muted
-    }
-  }, lang==="en" ? "Click to see plans" : lang==="kr" ? "플랜 보기" : T("tipsCTA",lang))), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       justifyContent: "space-between",
@@ -9393,7 +9383,7 @@ const ResourcesView = ({
       lineHeight: 1.6,
       marginBottom: 14
     }
-  }, r.desc), !r.locked && /*#__PURE__*/React.createElement("div", {
+  }, r.desc), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: (RC[r.key||r.title]||RESOURCE_CONTENT[r.key||r.title]) ? C.teal : C.muted,
@@ -14650,8 +14640,7 @@ const NAV_MANAGER = (lang) => [{
 }, {
   id: "planning",
   label: T("planning",lang),
-  icon: "📅",
-  minPlan: "Growth"
+  icon: "📅"
 }, {
   id: "kpi",
   label: T("kpi",lang),
@@ -14704,8 +14693,7 @@ const NAV_CSM = (lang) => [{
 }, {
   id: "planning",
   label: T("planning",lang),
-  icon: "📅",
-  minPlan: "Growth"
+  icon: "📅"
 }, {
   id: "kpi",
   label: T("kpi",lang),
@@ -15338,14 +15326,16 @@ const App = () => {
           companyId: company?.id || null,
         });
       case "planning":
-        if ((company?.plan || "Starter") === "Starter") {
-          return React.createElement(PlanGateView, { moduleName: T("planning",lang), requiredPlan: "Growth", lang: lang, onUpgrade: () => setShowUpgrade(true) });
-        }
-        return /*#__PURE__*/React.createElement(PlanningView, {
+        return /*#__PURE__*/React.createElement(StarterBlurWrap, {
+          isStarter: (company?.plan || "Starter") === "Starter",
+          lang: lang,
+          moduleName: T("planning",lang),
+          onUpgrade: () => setShowUpgrade(true)
+        }, /*#__PURE__*/React.createElement(PlanningView, {
           accounts: accounts,
           lang: lang,
           companyId: company?.id || null,
-        });
+        }));
       case "kpi":
         return /*#__PURE__*/React.createElement(KPIView, {
           accounts: accounts,
@@ -15480,14 +15470,10 @@ const App = () => {
   }, nav.map(({
     id,
     label,
-    icon,
-    minPlan
+    icon
   }) => {
     const active = screen === id;
     const hasBadge = id === "portfolio" && criticalCount > 0;
-    const PLAN_RANK = { Starter: 0, Growth: 1, Elite: 2 };
-    const currentPlan = company?.plan || "Starter";
-    const isLocked = minPlan && (PLAN_RANK[currentPlan] || 0) < (PLAN_RANK[minPlan] || 1);
     return /*#__PURE__*/React.createElement("div", {
       key: id,
       className: "nav-btn",
@@ -15499,9 +15485,8 @@ const App = () => {
         padding: "9px 10px",
         background: active ? C.tealBg : "transparent",
         border: `1px solid ${active ? C.tealBorder : "transparent"}`,
-        color: isLocked ? C.muted : (active ? C.teal : C.muted),
-        marginBottom: 1,
-        opacity: isLocked ? 0.6 : 1
+        color: active ? C.teal : C.muted,
+        marginBottom: 1
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
@@ -15514,7 +15499,7 @@ const App = () => {
         fontWeight: active ? 700 : 400,
         flex: 1
       }
-    }, label), isLocked && React.createElement("span", { style: { fontSize: 10, flexShrink: 0 } }, "\uD83D\uDD12"), hasBadge && /*#__PURE__*/React.createElement("span", {
+    }, label), hasBadge && /*#__PURE__*/React.createElement("span", {
       style: {
         background: C.red,
         color: "#fff",

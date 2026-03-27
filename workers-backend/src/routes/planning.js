@@ -3,9 +3,9 @@ import { authMiddleware, companyRequired } from '../middleware/auth.js'
 import { planGate } from '../middleware/planGate.js'
 
 const planning = new Hono()
-planning.use('/*', authMiddleware(), companyRequired(), planGate('Growth'))
+planning.use('/*', authMiddleware(), companyRequired())
 
-// GET /api/planning/
+// GET /api/planning/ — readable by all plans (teaser for Starter)
 planning.get('/', async (c) => {
   const { company_id } = c.get('user')
   let cal = await c.env.DB.prepare(
@@ -21,8 +21,8 @@ planning.get('/', async (c) => {
   return c.json({ id: cal.id, events: JSON.parse(cal.events || '[]'), updated_at: cal.updated_at })
 })
 
-// POST /api/planning/save/
-planning.post('/save/', async (c) => {
+// POST /api/planning/save/ — Growth+ only
+planning.post('/save/', planGate('Growth'), async (c) => {
   const { company_id } = c.get('user')
   const { events } = await c.req.json()
 
