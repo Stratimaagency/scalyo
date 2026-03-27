@@ -4901,6 +4901,7 @@ const AccountDetailPanel = ({
   }), tab === "edit" && /*#__PURE__*/React.createElement(EditAccountPanel, {
     account: sel,
     lang: lang,
+    currency: currency,
     onClose: onClose,
     onSaved: () => {
       onClose();
@@ -4914,7 +4915,8 @@ const EditAccountPanel = ({
   account: acc,
   onClose,
   onSaved,
-  lang="fr"
+  lang="fr",
+  currency="EUR"
 }) => {
   const EDIT_KEY = "scalyo_draft_edit_" + acc.id;
   const [form, setForm] = useState(() => {
@@ -5001,7 +5003,7 @@ const EditAccountPanel = ({
       gap: 10
     }
   }, /*#__PURE__*/React.createElement(Field, {
-    label: "MRR (€)",
+    label: `MRR (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol})`,
     value: form.mrr,
     onChange: v => setForm(p => ({
       ...p,
