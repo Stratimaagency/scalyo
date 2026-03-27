@@ -14,6 +14,8 @@ export const authApi = {
   changePassword: (data) => api.post('/auth/change-password/', data),
   verifyEmail: (token) => api.get(`/auth/verify/${token}`),
   resendVerification: () => api.post('/auth/resend-verification/'),
+  forgotPassword: (email) => api.post('/auth/forgot-password/', { email }),
+  resetPassword: (token, password) => api.post('/auth/reset-password/', { token, password }),
 }
 
 // Team

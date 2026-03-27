@@ -6,10 +6,10 @@
       </div>
 
       <h2 style="font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 6px">
-        {{ isLogin ? t('loginTitle') : t('registerTitle') }}
+        {{ mode === 'login' ? t('loginTitle') : mode === 'register' ? t('registerTitle') : mode === 'forgot' ? 'Mot de passe oublié' : 'Nouveau mot de passe' }}
       </h2>
       <p style="text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 24px">
-        {{ t('noCB') }}
+        {{ mode === 'forgot' ? 'Entrez votre email pour recevoir un lien de réinitialisation' : mode === 'reset' ? 'Choisissez votre nouveau mot de passe' : t('noCB') }}
       </p>
 
       <div v-if="error" style="padding: 10px 14px; background: var(--redBg); border: 1px solid var(--redBorder); border-radius: 10px; color: var(--red); font-size: 13px; margin-bottom: 14px">
@@ -20,7 +20,8 @@
         {{ successMsg }}
       </div>
 
-      <template v-if="!isLogin">
+      <!-- REGISTER fields -->
+      <template v-if="mode === 'register'">
         <AppField :label="t('displayName')" v-model="form.display_name" :placeholder="t('namePlaceholder')" />
         <AppField :label="t('companyNameLabel')" v-model="form.company_name" :placeholder="t('companyPlaceholder')" />
         <div class="field-group">
@@ -52,11 +53,12 @@
         </div>
       </template>
 
-      <AppField :label="t('emailPro')" v-model="form.email" type="email" placeholder="you@company.com" />
+      <!-- EMAIL (login, register, forgot) -->
+      <AppField v-if="mode !== 'reset'" :label="t('emailPro')" v-model="form.email" type="email" placeholder="you@company.com" />
 
-      <!-- Password with visibility toggle -->
-      <div class="field-group">
-        <label class="field-label">Password</label>
+      <!-- PASSWORD (login, register, reset) -->
+      <div v-if="mode !== 'forgot'" class="field-group">
+        <label class="field-label">{{ mode === 'reset' ? 'Nouveau mot de passe' : 'Password' }}</label>
         <div style="position: relative;">
           <input
             class="field-input"
@@ -75,17 +77,25 @@
         </div>
       </div>
 
+      <!-- Forgot password link (login only) -->
+      <p v-if="mode === 'login'" style="text-align: right; margin: -4px 0 8px; font-size: 12px;">
+        <span style="cursor: pointer; color: var(--teal);" @click="switchMode('forgot')">Mot de passe oublié ?</span>
+      </p>
+
       <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; margin-top: 8px" :disabled="submitting" @click="submit">
-        {{ submitting ? t('saving') : (isLogin ? t('loginBtn') : t('registerBtn')) }}
+        {{ submitting ? t('saving') : mode === 'login' ? t('loginBtn') : mode === 'register' ? t('registerBtn') : mode === 'forgot' ? 'Envoyer le lien' : 'Réinitialiser' }}
       </button>
 
       <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--muted)">
-        <span style="cursor: pointer; color: var(--teal); font-weight: 600" @click="isLogin = !isLogin; error = ''; successMsg = ''">
-          {{ isLogin ? t('switchToRegister') : t('switchToLogin') }}
+        <span v-if="mode === 'login'" style="cursor: pointer; color: var(--teal); font-weight: 600" @click="switchMode('register')">
+          {{ t('switchToRegister') }}
+        </span>
+        <span v-else style="cursor: pointer; color: var(--teal); font-weight: 600" @click="switchMode('login')">
+          {{ t('switchToLogin') }}
         </span>
       </p>
 
-      <p v-if="!isLogin" style="text-align: center; font-size: 11px; color: var(--muted); margin-top: 12px">
+      <p v-if="mode === 'register'" style="text-align: center; font-size: 11px; color: var(--muted); margin-top: 12px">
         {{ t('termsAccept') }}
       </p>
     </div>
@@ -105,24 +115,38 @@ const authStore = useAuthStore()
 const router = useRouter()
 const { t } = useI18n()
 
-const isLogin = ref(true)
+const mode = ref('login') // login | register | forgot | reset
+const resetToken = ref('')
 const submitting = ref(false)
 const error = ref('')
 const successMsg = ref('')
 const showPassword = ref(false)
 
-// Handle email verification token from URL
+function switchMode(m) {
+  mode.value = m
+  error.value = ''
+  successMsg.value = ''
+}
+
+// Handle URL params (verify email, reset password)
 onMounted(async () => {
   const params = new URLSearchParams(window.location.search)
-  const verifyToken = params.get('verify')
-  if (verifyToken) {
+
+  const verifyTokenParam = params.get('verify')
+  if (verifyTokenParam) {
     try {
-      await authApi.verifyEmail(verifyToken)
+      await authApi.verifyEmail(verifyTokenParam)
       successMsg.value = 'Email vérifié avec succès ! Vous pouvez vous connecter.'
     } catch {
       error.value = 'Lien de vérification invalide ou expiré.'
     }
-    // Clean URL
+    window.history.replaceState({}, '', window.location.pathname)
+  }
+
+  const resetParam = params.get('reset')
+  if (resetParam) {
+    mode.value = 'reset'
+    resetToken.value = resetParam
     window.history.replaceState({}, '', window.location.pathname)
   }
 })
@@ -145,17 +169,39 @@ const form = reactive({
 async function submit() {
   error.value = ''
   successMsg.value = ''
-  if (!form.email || !form.password) {
-    error.value = t('errEmailPass')
-    return
-  }
-  if (!isLogin.value && form.password.length < 8) {
-    error.value = t('errPassLength')
-    return
-  }
   submitting.value = true
+
   try {
-    if (isLogin.value) {
+    if (mode.value === 'forgot') {
+      if (!form.email) { error.value = 'Entrez votre email'; submitting.value = false; return }
+      await authApi.forgotPassword(form.email)
+      successMsg.value = 'Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.'
+      submitting.value = false
+      return
+    }
+
+    if (mode.value === 'reset') {
+      if (!form.password || form.password.length < 8) { error.value = 'Le mot de passe doit faire au moins 8 caractères'; submitting.value = false; return }
+      await authApi.resetPassword(resetToken.value, form.password)
+      successMsg.value = 'Mot de passe modifié ! Vous pouvez vous connecter.'
+      mode.value = 'login'
+      form.password = ''
+      submitting.value = false
+      return
+    }
+
+    if (!form.email || !form.password) {
+      error.value = t('errEmailPass')
+      submitting.value = false
+      return
+    }
+    if (mode.value === 'register' && form.password.length < 8) {
+      error.value = t('errPassLength')
+      submitting.value = false
+      return
+    }
+
+    if (mode.value === 'login') {
       await authStore.login(form.email, form.password)
     } else {
       if (!form.display_name || !form.company_name) {
