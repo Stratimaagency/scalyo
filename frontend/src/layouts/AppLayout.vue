@@ -3,8 +3,7 @@
     <!-- Desktop sidebar -->
     <aside class="sidebar-desktop">
       <div class="sidebar-logo">
-        <div class="logo-icon"><ScalyoIcon name="bolt" :size="18" /></div>
-        <span class="logo-text">scal<span class="logo-accent">yo</span></span>
+        <ScalyoLogo :markSize="34" :fontSize="22" :gap="9" />
       </div>
       <nav class="sidebar-nav">
         <router-link
@@ -112,6 +111,7 @@ import { usePortfolioStore } from '../stores/portfolio'
 import { useI18n } from '../i18n'
 import { useNavigation } from '../composables/useNavigation'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
+import ScalyoLogo from '../components/ScalyoLogo.vue'
 
 const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()

@@ -4,7 +4,7 @@
 <!-- NAV -->
 <nav id="main-nav" :class="{ scrolled: navScrolled }">
   <a href="/" class="nav-logo">
-    <div class="nav-logo-icon">S</div>
+    <img src="/logo.svg" alt="Scalyo" class="nav-logo-img" />
     Scalyo
   </a>
   <div class="nav-links">
@@ -958,7 +958,7 @@
 <footer>
   <div class="footer-grid">
     <div>
-      <a href="/" class="nav-logo"><div class="nav-logo-icon">S</div>Scalyo</a>
+      <a href="/" class="nav-logo"><img src="/logo.svg" alt="Scalyo" class="nav-logo-img" />Scalyo</a>
       <p class="footer-desc">{{ t('footer_desc') }}</p>
       <div class="footer-social">
         <a href="https://x.com/scalyo_app" target="_blank" rel="noopener" class="fsoc" aria-label="X">&#x1D54F;</a>
@@ -1381,11 +1381,8 @@ nav.scrolled {
   font-weight: 700; font-size: 17px; letter-spacing: -.03em;
   color: var(--dt);
 }
-.nav-logo-icon {
-  width: 30px; height: 30px; border-radius: 8px;
-  background: var(--teal); display: grid; place-items: center;
-  font-size: 15px; font-weight: 900; color: #fff; flex-shrink: 0;
-  box-shadow: 0 0 0 1px rgba(240,246,252,.08);
+.nav-logo-img {
+  width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
 }
 .nav-logo span { color: var(--teal); }
 .nav-links { display: flex; gap: 0; }
@@ -2270,7 +2267,7 @@ footer {
   .n-ghost { display: none; }
   .n-solid { padding: 9px 16px; font-size: 13px; }
   .nav-logo { font-size: 16px; }
-  .nav-logo-icon { width: 28px; height: 28px; font-size: 13px; }
+  .nav-logo-img { width: 28px; height: 28px; }
 
   /* HERO */
   .hero { padding: 90px 20px 56px; text-align: center; }
