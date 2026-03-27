@@ -1,18 +1,61 @@
 // Notion integration
 const BASE = 'https://api.notion.com/v1'
 
-function headers(apiKey) {
+function getToken(config) {
+  return config.accessToken || config.apiKey
+}
+
+function headers(token) {
   return {
-    Authorization: `Bearer ${apiKey}`,
+    Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
     'Notion-Version': '2022-06-28',
   }
 }
 
-export async function testConnection(config) {
-  if (!config.apiKey) throw new Error('Notion Integration Token is required')
+// ─── OAuth ────────────────────────────────────────────
+export function getAuthUrl(env, state) {
+  const params = new URLSearchParams({
+    client_id: env.NOTION_CLIENT_ID,
+    redirect_uri: `${env.APP_URL}/api/oauth/callback/notion`,
+    response_type: 'code',
+    owner: 'user',
+    state,
+  })
+  return `https://api.notion.com/v1/oauth/authorize?${params}`
+}
 
-  const res = await fetch(`${BASE}/users/me`, { headers: headers(config.apiKey) })
+export async function exchangeCode(code, env) {
+  const auth = btoa(`${env.NOTION_CLIENT_ID}:${env.NOTION_CLIENT_SECRET}`)
+  const res = await fetch('https://api.notion.com/v1/oauth/token', {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${auth}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: `${env.APP_URL}/api/oauth/callback/notion`,
+    }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.error || 'Notion OAuth failed')
+  }
+  const data = await res.json()
+  return {
+    access_token: data.access_token,
+    workspace_name: data.workspace_name || '',
+    bot_id: data.bot_id || '',
+  }
+}
+
+export async function testConnection(config) {
+  const token = getToken(config)
+  if (!token) throw new Error('Notion token missing')
+
+  const res = await fetch(`${BASE}/users/me`, { headers: headers(token) })
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
@@ -22,9 +65,10 @@ export async function testConnection(config) {
 }
 
 export async function sync(config, env, companyId) {
-  if (!config.apiKey) throw new Error('Notion token missing')
+  const token = getToken(config)
+  if (!token) throw new Error('Notion token missing')
 
-  const h = headers(config.apiKey)
+  const h = headers(token)
   const results = { databases: 0, pages: 0 }
 
   // Search for databases shared with the integration
