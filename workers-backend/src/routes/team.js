@@ -1,6 +1,8 @@
 import { authMiddleware, companyRequired } from '../middleware/auth.js'
 import { hashPassword } from '../utils/password.js'
 
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
 async function sendInviteEmail(env, { to, displayName, inviterName, companyName, tempPassword }) {
   const from = env.FROM_EMAIL || 'noreply@scalyo.app'
   const loginUrl = env.APP_URL || 'https://scalyo.app/login'
@@ -89,6 +91,9 @@ async function inviteMember(c) {
 
     if (!email || !password) {
       return c.json({ error: 'Email and password are required' }, 400)
+    }
+    if (!isValidEmail(email)) {
+      return c.json({ error: 'Invalid email format' }, 400)
     }
     if (password.length < 8) {
       return c.json({ error: 'Password must be at least 8 characters' }, 400)

@@ -174,7 +174,7 @@ portfolio.patch('/accounts/:id/', async (c) => {
     return c.json({ ...account, issues: JSON.parse(account.issues || '[]') })
   } catch (err) {
     console.error('PATCH DB error:', err.message)
-    return c.json({ error: 'Database error: ' + err.message }, 500)
+    return c.json({ error: 'An internal error occurred. Please try again.' }, 500)
   }
 })
 
@@ -196,8 +196,11 @@ portfolio.post('/accounts/import_accounts/', async (c) => {
   const { company_id } = c.get('user')
   const { accounts } = await c.req.json()
 
-  if (!accounts || !accounts.length) {
+  if (!accounts || !Array.isArray(accounts) || !accounts.length) {
     return c.json({ error: 'At least one account is required.' }, 400)
+  }
+  if (accounts.length > 500) {
+    return c.json({ error: 'Maximum 500 accounts per import.' }, 400)
   }
 
   const ids = []

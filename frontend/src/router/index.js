@@ -63,7 +63,9 @@ router.beforeEach((to, from, next) => {
       if (authStore.user?.must_change_password) {
         return next({ name: 'settings' })
       }
-    } catch {}
+    } catch (e) {
+      console.error('Failed to check password change requirement:', e)
+    }
   }
 
   next()

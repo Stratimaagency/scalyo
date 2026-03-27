@@ -199,7 +199,7 @@ integrations.post('/sync/:key', async (c) => {
       ).bind(company_id, key).run()
     } catch {}
 
-    return c.json({ error: err.message || 'Sync failed' }, 500)
+    return c.json({ error: 'Sync failed. Please try again.' }, 500)
   }
 })
 
@@ -239,7 +239,7 @@ integrations.get('/oauth/authorize/:provider', async (c) => {
     return c.json({ authUrl })
   } catch (err) {
     console.error('OAuth authorize error:', err.message, err.stack)
-    return c.json({ error: `OAuth flow error: ${err.message}` }, 500)
+    return c.json({ error: 'OAuth flow failed. Please try again.' }, 500)
   }
 })
 

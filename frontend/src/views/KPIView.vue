@@ -1,5 +1,9 @@
 <template>
   <div class="fade-in">
+    <div v-if="loading" style="display: flex; justify-content: center; align-items: center; padding: 60px 0; color: var(--muted); font-size: 14px">
+      Chargement...
+    </div>
+    <template v-else>
     <div class="tab-bar mb-lg">
       <button class="tab-item" :class="{ active: tab === 'standard' }" @click="tab = 'standard'" style="display: flex; align-items: center; gap: 5px;"><ScalyoIcon name="dashboard" :size="15" /> KPIs Standard</button>
       <button class="tab-item" :class="{ active: tab === 'custom' }" @click="tab = 'custom'" style="display: flex; align-items: center; gap: 5px;"><ScalyoIcon name="target" :size="15" /> {{ t('kpiCustomTitle') }}</button>
@@ -112,6 +116,8 @@
       </AppCard>
     </template>
 
+    </template>
+
     <!-- New KPI Modal -->
     <AppModal v-if="showNewKpi" :title="editingKpiIdx !== null ? t('edit') : t('kpiNewBtn')" @close="showNewKpi = false; editingKpiIdx = null">
       <AppField :label="t('name') || 'Name'" v-model="newKpi.name" required />
@@ -149,6 +155,7 @@ const currencySymbol = computed(() => {
   return '€'
 })
 const tab = ref('standard')
+const loading = ref(true)
 const saving = ref(false)
 const showNewKpi = ref(false)
 const period = ref(new Date().toISOString().slice(0, 7))
@@ -166,7 +173,11 @@ onMounted(async () => {
       else if (row.period === '__goals__') Object.assign(goals, row.goals || {})
       else if (row.period === period.value && row.kpis) Object.assign(kpis, row.kpis)
     })
-  } catch {}
+  } catch (e) {
+    console.error('Failed to load KPIs:', e)
+  } finally {
+    loading.value = false
+  }
 })
 
 function fmtK(v) {

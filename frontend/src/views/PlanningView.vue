@@ -284,10 +284,14 @@ onMounted(async () => {
   try {
     const { data } = await planningApi.getEvents()
     events.value = data.events || []
-  } catch {}
+  } catch (e) {
+    console.error('Failed to load planning events:', e)
+  }
   try {
     await portfolioStore.fetchAccounts()
-  } catch {}
+  } catch (e) {
+    console.error('Failed to load accounts for planning:', e)
+  }
 })
 
 // Day names (i18n)

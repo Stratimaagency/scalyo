@@ -1,5 +1,9 @@
 <template>
   <div class="fade-in">
+    <div v-if="loading" style="display: flex; justify-content: center; align-items: center; padding: 60px 0; color: var(--muted); font-size: 14px">
+      Chargement...
+    </div>
+    <template v-else>
     <!-- Header -->
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px">
       <div>
@@ -188,6 +192,8 @@
       >&times;</button>
     </div>
 
+    </template>
+
     <!-- ═══ ADD/EDIT TASK MODAL ═══ -->
     <AppModal v-if="showModal" :title="editingTask ? t('editTask') : t('newTask')" max-width="480px" @close="closeModal">
       <!-- Title -->
@@ -367,6 +373,7 @@ const CS_TIPS = {
 
 // ── State ──
 
+const loading = ref(true)
 const tasks = ref([])
 const showModal = ref(false)
 const editingTask = ref(null)
@@ -419,6 +426,8 @@ onMounted(async () => {
       const raw = localStorage.getItem('scalyo_tasks')
       if (raw) tasks.value = JSON.parse(raw)
     } catch {}
+  } finally {
+    loading.value = false
   }
 
   // Restore tab preference
@@ -579,7 +588,7 @@ async function saveAll() {
   // Save to localStorage as fallback
   try { localStorage.setItem('scalyo_tasks', JSON.stringify(tasks.value)) } catch {}
   // Save to API
-  try { await taskApi.saveTasks(tasks.value) } catch {}
+  try { await taskApi.saveTasks(tasks.value) } catch (e) { console.error('Failed to save tasks to API:', e) }
 }
 
 // ── CS Tips ──

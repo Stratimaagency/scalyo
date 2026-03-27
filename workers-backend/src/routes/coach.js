@@ -55,7 +55,7 @@ coach.post('/chat/', async (c) => {
       role: 'assistant',
     })
   } catch (e) {
-    return c.json({ error: e.message }, 500)
+    return c.json({ error: 'Coach AI temporarily unavailable. Please try again.' }, 500)
   }
 })
 
@@ -87,7 +87,7 @@ coach.post('/stream/', async (c) => {
       }),
     })
   } catch (e) {
-    return c.json({ error: e.message }, 500)
+    return c.json({ error: 'Coach AI temporarily unavailable. Please try again.' }, 500)
   }
 
   if (!response.ok) {
@@ -132,7 +132,8 @@ coach.post('/stream/', async (c) => {
       }
       await writer.write(encoder.encode('data: [DONE]\n\n'))
     } catch (e) {
-      await writer.write(encoder.encode(`data: ${JSON.stringify({ error: e.message })}\n\n`))
+      console.error('Coach stream error:', e.message)
+      await writer.write(encoder.encode(`data: ${JSON.stringify({ error: 'Coach AI temporarily unavailable.' })}\n\n`))
     } finally {
       await writer.close()
     }
@@ -141,7 +142,7 @@ coach.post('/stream/', async (c) => {
   const frontendUrl = c.env?.FRONTEND_URL || 'https://scalyo.app'
   const allowedOrigins = [frontendUrl, 'http://localhost:5173', 'http://localhost:4173']
   const origin = c.req.header('Origin')
-  const isAllowed = allowedOrigins.includes(origin) || (origin && origin.endsWith('.scalyo.pages.dev'))
+  const isAllowed = allowedOrigins.includes(origin) || (origin && /^https:\/\/[a-z0-9-]+\.scalyo\.pages\.dev$/.test(origin))
   const allowedOrigin = isAllowed ? origin : allowedOrigins[0]
 
   return new Response(readable, {
@@ -151,6 +152,7 @@ coach.post('/stream/', async (c) => {
       'Connection': 'keep-alive',
       'Access-Control-Allow-Origin': allowedOrigin,
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'X-Content-Type-Options': 'nosniff',
     },
   })
 })
