@@ -99,18 +99,33 @@ billing.post('/checkout/', async (c) => {
     }
 
     const frontendUrl = c.env.FRONTEND_URL || 'http://localhost:5173'
-    const session = await stripe.request('POST', '/checkout/sessions', {
+
+    // Calculate remaining trial days based on company creation date (14-day trial)
+    const checkoutParams = {
       customer: customerId,
       'line_items[0][price]': priceId,
       'line_items[0][quantity]': '1',
       mode: 'subscription',
       allow_promotion_codes: 'true',
-      'subscription_data[trial_period_days]': '14',
       success_url: `${frontendUrl}/settings?billing=success`,
       cancel_url: `${frontendUrl}/settings?billing=cancelled`,
       'metadata[company_id]': String(company.id),
       'metadata[plan]': plan,
-    })
+    }
+
+    if (company.created_at) {
+      const created = new Date(company.created_at)
+      const now = new Date()
+      const daysSinceCreation = Math.floor((now - created) / (1000 * 60 * 60 * 24))
+      const remainingTrialDays = Math.max(0, 14 - daysSinceCreation)
+      if (remainingTrialDays > 0) {
+        checkoutParams['subscription_data[trial_period_days]'] = String(remainingTrialDays)
+      }
+    } else {
+      checkoutParams['subscription_data[trial_period_days]'] = '14'
+    }
+
+    const session = await stripe.request('POST', '/checkout/sessions', checkoutParams)
 
     if (session.error) {
       console.error('Stripe checkout error:', session.error)
