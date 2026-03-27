@@ -12,6 +12,8 @@ export const authApi = {
   updateNotificationPrefs: (data) => api.patch('/auth/notifications/', data),
   deleteAccount: () => api.delete('/auth/delete-account/'),
   changePassword: (data) => api.post('/auth/change-password/', data),
+  verifyEmail: (token) => api.get(`/auth/verify/${token}`),
+  resendVerification: () => api.post('/auth/resend-verification/'),
 }
 
 // Team

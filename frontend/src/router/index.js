@@ -14,6 +14,12 @@ const routes = [
     component: () => import('../views/LoginView.vue'),
     meta: { guest: true },
   },
+  {
+    path: '/legal',
+    name: 'legal',
+    component: () => import('../views/LegalView.vue'),
+    meta: { guest: true },
+  },
   // Authenticated routes — lazy loaded
   {
     path: '/app',

@@ -80,6 +80,14 @@
         </div>
       </div>
       <main class="main-scroll" style="flex: 1; overflow-y: auto;">
+        <!-- Email verification banner -->
+        <div v-if="authStore.user && !authStore.user.email_verified"
+          style="background: #FEF3C7; border-bottom: 1px solid #F59E0B; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: #92400E;">
+          <span>Veuillez vérifier votre adresse email. Consultez votre boîte de réception.</span>
+          <button @click="resendVerification" style="background: #F59E0B; color: #fff; border: none; border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer;">
+            {{ resendMsg || 'Renvoyer' }}
+          </button>
+        </div>
         <div class="view-pad">
           <router-view />
         </div>
@@ -103,11 +111,12 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { usePortfolioStore } from '../stores/portfolio'
+import { authApi } from '../api'
 import { useI18n } from '../i18n'
 import { useNavigation } from '../composables/useNavigation'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
@@ -122,6 +131,18 @@ const { t } = useI18n()
 const { navItems, mobileNavItems } = useNavigation()
 
 const company = computed(() => authStore.company)
+const resendMsg = ref('')
+async function resendVerification() {
+  try {
+    resendMsg.value = '...'
+    await authApi.resendVerification()
+    resendMsg.value = 'Envoyé !'
+    setTimeout(() => { resendMsg.value = '' }, 5000)
+  } catch {
+    resendMsg.value = 'Erreur'
+    setTimeout(() => { resendMsg.value = '' }, 3000)
+  }
+}
 
 onMounted(() => {
   if (!portfolioStore.accounts.length) {

@@ -2,11 +2,19 @@ import { Hono } from 'hono'
 import { hashPassword, verifyPassword } from '../utils/password.js'
 import { signJwt } from '../utils/jwt.js'
 import { authMiddleware, companyRequired } from '../middleware/auth.js'
+import { sendEmail } from '../utils/email.js'
 
 const auth = new Hono()
 
 // Helper: validate email format
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+// Helper: generate verification token (random hex)
+function generateVerificationToken() {
+  const arr = new Uint8Array(32)
+  crypto.getRandomValues(arr)
+  return Array.from(arr, b => b.toString(16).padStart(2, '0')).join('')
+}
 
 // Helper: generate tokens
 async function generateTokens(user, secret) {
@@ -33,6 +41,7 @@ function serializeUser(user) {
     currency: user.currency,
     company: user.company_id,
     must_change_password: !!user.must_change_password,
+    email_verified: !!user.email_verified,
   }
 }
 
@@ -67,20 +76,53 @@ auth.post('/register/', async (c) => {
     return c.json({ error: 'Failed to create company' }, 500)
   }
 
-  // Create user
+  // Create user with verification token
   const passwordHash = await hashPassword(password)
   const validRole = ['manager', 'csm'].includes(role) ? role : 'manager'
+  const verificationToken = generateVerificationToken()
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24h
+
   const userResult = await db.prepare(
-    `INSERT INTO users (email, password_hash, display_name, role, company_id)
-     VALUES (?, ?, ?, ?, ?) RETURNING *`
-  ).bind(email, passwordHash, display_name || '', validRole, companyResult.id).first()
+    `INSERT INTO users (email, password_hash, display_name, role, company_id, email_verified, verification_token, verification_expires)
+     VALUES (?, ?, ?, ?, ?, 0, ?, ?) RETURNING *`
+  ).bind(email, passwordHash, display_name || '', validRole, companyResult.id, verificationToken, expires).first()
 
   // Create notification preferences
   await db.prepare(
     'INSERT INTO notification_preferences (user_id) VALUES (?)'
   ).bind(userResult.id).run()
 
+  // Send verification email (non-blocking)
+  const appUrl = c.env.APP_URL || 'https://scalyo.app'
+  const verifyUrl = `${appUrl.replace(/\/$/, '')}/?verify=${verificationToken}`
+  sendEmail(c.env, {
+    to: email,
+    subject: 'Vérifiez votre email — Scalyo',
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <span style="font-size: 28px; font-weight: 900; letter-spacing: -1px;">scal<span style="color: #4DB6A0;">yo</span></span>
+        </div>
+        <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Confirmez votre adresse email</h2>
+        <p style="color: #666; font-size: 14px; line-height: 1.6;">
+          Cliquez sur le bouton ci-dessous pour activer votre compte Scalyo.
+        </p>
+        <div style="text-align: center; margin: 28px 0;">
+          <a href="${verifyUrl}" style="display: inline-block; background: #4DB6A0; color: #fff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 15px;">Vérifier mon email</a>
+        </div>
+        <p style="color: #999; font-size: 12px;">Ce lien expire dans 24 heures.</p>
+        <p style="color: #999; font-size: 11px; text-align: center; margin-top: 24px;">Cet email a été envoyé automatiquement par Scalyo.</p>
+      </div>
+    `,
+  }).catch(() => {})
+
   const tokens = await generateTokens(userResult, c.env.JWT_SECRET)
+
+  // Track signup
+  try {
+    await db.prepare('INSERT INTO analytics (event, user_id, company_id) VALUES (?, ?, ?)').bind('signup', userResult.id, companyResult.id).run()
+  } catch {}
+
   return c.json({ user: serializeUser(userResult), tokens }, 201)
 })
 
@@ -106,6 +148,12 @@ auth.post('/login/', async (c) => {
   }
 
   const tokens = await generateTokens(user, c.env.JWT_SECRET)
+
+  // Track login
+  try {
+    await c.env.DB.prepare('INSERT INTO analytics (event, user_id, company_id) VALUES (?, ?, ?)').bind('login', user.id, user.company_id).run()
+  } catch {}
+
   return c.json({ user: serializeUser(user), tokens })
 })
 
@@ -128,8 +176,73 @@ auth.post('/token/refresh/', async (c) => {
   return c.json({ tokens })
 })
 
+// GET /api/auth/verify/:token — verify email (public)
+auth.get('/verify/:token', async (c) => {
+  const token = c.req.param('token')
+  if (!token || token.length < 32) {
+    return c.json({ error: 'Invalid verification token' }, 400)
+  }
+
+  const db = c.env.DB
+  const user = await db.prepare(
+    'SELECT id, verification_expires FROM users WHERE verification_token = ? AND email_verified = 0'
+  ).bind(token).first()
+
+  if (!user) {
+    return c.json({ error: 'Invalid or already used token' }, 400)
+  }
+
+  // Check expiry
+  if (user.verification_expires && new Date(user.verification_expires) < new Date()) {
+    return c.json({ error: 'Token expired. Please request a new verification email.' }, 400)
+  }
+
+  await db.prepare(
+    "UPDATE users SET email_verified = 1, verification_token = '', verification_expires = '' WHERE id = ?"
+  ).bind(user.id).run()
+
+  return c.json({ message: 'Email verified successfully' })
+})
+
 // --- Protected routes ---
 auth.use('/*', authMiddleware())
+
+// POST /api/auth/resend-verification/ — resend verification email
+auth.post('/resend-verification/', async (c) => {
+  const { id } = c.get('user')
+  const db = c.env.DB
+  const user = await db.prepare('SELECT * FROM users WHERE id = ?').bind(id).first()
+  if (!user) return c.json({ error: 'User not found' }, 404)
+  if (user.email_verified) return c.json({ message: 'Email already verified' })
+
+  const token = generateVerificationToken()
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+  await db.prepare(
+    'UPDATE users SET verification_token = ?, verification_expires = ? WHERE id = ?'
+  ).bind(token, expires, id).run()
+
+  const appUrl = c.env.APP_URL || 'https://scalyo.app'
+  const verifyUrl = `${appUrl.replace(/\/$/, '')}/?verify=${token}`
+  await sendEmail(c.env, {
+    to: user.email,
+    subject: 'Vérifiez votre email — Scalyo',
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <span style="font-size: 28px; font-weight: 900; letter-spacing: -1px;">scal<span style="color: #4DB6A0;">yo</span></span>
+        </div>
+        <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Confirmez votre adresse email</h2>
+        <p style="color: #666; font-size: 14px; line-height: 1.6;">Cliquez sur le bouton ci-dessous pour activer votre compte.</p>
+        <div style="text-align: center; margin: 28px 0;">
+          <a href="${verifyUrl}" style="display: inline-block; background: #4DB6A0; color: #fff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 15px;">Vérifier mon email</a>
+        </div>
+        <p style="color: #999; font-size: 12px;">Ce lien expire dans 24 heures.</p>
+      </div>
+    `,
+  })
+
+  return c.json({ message: 'Verification email sent' })
+})
 
 // GET /api/auth/profile/
 auth.get('/profile/', async (c) => {
@@ -280,14 +393,6 @@ auth.delete('/delete-account/', async (c) => {
   return c.body(null, 204)
 })
 
-// GET /api/auth/stripe-urls/
-auth.get('/stripe-urls/', async (c) => {
-  return c.json({
-    starter: c.env.STRIPE_STARTER_URL || '',
-    growth: c.env.STRIPE_GROWTH_URL || '',
-    elite: c.env.STRIPE_ELITE_URL || '',
-  })
-})
 
 // POST /api/auth/change-password/
 auth.post('/change-password/', async (c) => {

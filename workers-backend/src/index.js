@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { corsMiddleware, corsHeaders } from './middleware/cors.js'
+import { rateLimitMiddleware } from './middleware/rateLimit.js'
 
 import auth from './routes/auth.js'
 import portfolio from './routes/portfolio.js'
@@ -24,6 +25,11 @@ app.use('*', corsMiddleware())
 // Health check
 app.get('/', (c) => c.json({ status: 'ok', service: 'scalyo-api' }))
 
+// Rate limiting on sensitive routes (10 req/min for auth, 20 for coach)
+app.use('/api/auth/login/*', rateLimitMiddleware({ maxRequests: 10, windowMs: 60000 }))
+app.use('/api/auth/register/*', rateLimitMiddleware({ maxRequests: 5, windowMs: 60000 }))
+app.use('/api/coach/*', rateLimitMiddleware({ maxRequests: 20, windowMs: 60000 }))
+
 // Mount all routes
 app.route('/api/auth', auth)
 app.route('/api/portfolio', portfolio)
@@ -44,12 +50,18 @@ registerTeamRoutes(app)
 app.notFound((c) => c.json({ error: 'Not found', path: c.req.path, method: c.req.method }, 404))
 
 // Error handler — include CORS headers so browser doesn't block the response
-app.onError((err, c) => {
+app.onError(async (err, c) => {
   const headers = corsHeaders(c)
   if (err instanceof SyntaxError && err.message?.includes('JSON')) {
     return c.json({ error: 'Invalid JSON request body' }, 400, headers)
   }
   console.error('Unhandled error:', err)
+  // Log to D1 for monitoring
+  try {
+    await c.env.DB.prepare(
+      'INSERT INTO error_log (path, method, status, message) VALUES (?, ?, 500, ?)'
+    ).bind(c.req.path, c.req.method, (err.message || 'Unknown error').slice(0, 500)).run()
+  } catch {}
   return c.json({ error: 'Internal server error' }, 500, headers)
 })
 

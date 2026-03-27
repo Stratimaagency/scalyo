@@ -5,9 +5,6 @@ compatibility_date = "2024-09-01"
 [vars]
 FRONTEND_URL = "https://scalyo.app"
 APP_URL = "https://scalyo.app"
-STRIPE_STARTER_URL = ""
-STRIPE_GROWTH_URL = ""
-STRIPE_ELITE_URL = ""
 
 [[d1_databases]]
 binding = "DB"
