@@ -895,6 +895,7 @@ function resetImport() {
 
 async function runImport() {
   // Check plan limit before importing
+  let rows = importPreview.value
   if (isStarterPlan.value) {
     const currentCount = portfolioStore.accounts.length
     const maxAccounts = 6
@@ -903,10 +904,14 @@ async function runImport() {
       setTimeout(() => { importMsg.value = '' }, 5000)
       return
     }
+    const remaining = maxAccounts - currentCount
+    if (rows.length > remaining) {
+      rows = rows.slice(0, remaining)
+      importMsg.value = `Starter plan: only ${remaining} accounts can be imported (limit: ${maxAccounts}).`
+    }
   }
 
   importRunning.value = true
-  const rows = importPreview.value
   importTotal.value = rows.length
   importDone.value = 0
   importProgress.value = 0

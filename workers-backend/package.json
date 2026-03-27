@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "hono": "^4.4.0",
-    "@anthropic-ai/sdk": "^0.30.0",
     "stripe": "^16.0.0"
   },
   "devDependencies": {

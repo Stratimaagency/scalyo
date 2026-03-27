@@ -2799,7 +2799,8 @@ const UpgradeModal = ({
 const ImportModal = ({
   onClose,
   onImport,
-  companyId
+  companyId,
+  currency="EUR"
 }) => {
   const IMPORT_DRAFT_KEY = "scalyo_draft_import";
   const [step, setStep] = useState(() => { try { const d = JSON.parse(localStorage.getItem(IMPORT_DRAFT_KEY)); return d?.step || "upload"; } catch(e) { return "upload"; } });
@@ -2820,7 +2821,7 @@ const ImportModal = ({
     required: false
   }, {
     key: "mrr",
-    label: lang==="kr"?"MRR (€/월)":lang==="en"?"MRR (€/month)":"MRR (€/mois)",
+    label: lang==="kr"?`MRR (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol}/월)`:lang==="en"?`MRR (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol}/month)`:`MRR (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol}/mois)`,
     required: false
   }, {
     key: "industry",
@@ -5290,7 +5291,8 @@ const PortfolioView = ({
   showImport && React.createElement(Portal, null, React.createElement(ImportModal, {
     onClose: () => setShowImport(false),
     onImport: handleImportDone,
-    companyId: companyId
+    companyId: companyId,
+    currency: currency
   })),
   showAdd && ReactDOM.createPortal(
     React.createElement(ModalErrorBoundary, {onClose: () => setShowAdd(false)},
@@ -10111,7 +10113,8 @@ const KPIView = ({
   accounts,
   role="csm",
   lang="fr",
-  companyId=null
+  companyId=null,
+  currency="EUR"
 }) => {
   const csms = [...new Set(accounts.map(a=>a.csm).filter(Boolean))].sort();
   const [csmFilter, setCsmFilter] = React.useState("all");
@@ -10194,7 +10197,7 @@ const KPIView = ({
     if(goals.nps>0&&kpis.nps>0&&kpis.nps<goals.nps){alerts.push({id:"nps",level:kpis.nps<goals.nps*0.7?"critical":"warning",kpi:"NPS",current:kpis.nps,goal:goals.nps,msg:lang==="kr"?`NPS ${kpis.nps} — 목표 ${goals.nps} 미달`:lang==="en"?`NPS ${kpis.nps} below target ${goals.nps}`:`NPS ${kpis.nps} sous objectif ${goals.nps}`,icon:"⭐"});}
     if(goals.renewalRate>0&&kpis.renewalRate>0&&kpis.renewalRate<goals.renewalRate){alerts.push({id:"renewal",level:kpis.renewalRate<goals.renewalRate-15?"critical":"warning",kpi:lang==="kr"?"갱신률":lang==="en"?"Renewal Rate":"Taux Renouvellement",current:kpis.renewalRate+"%",goal:goals.renewalRate+"%",msg:lang==="kr"?`갱신률 ${kpis.renewalRate}% — 목표 ${goals.renewalRate}% 미달`:lang==="en"?`Renewal rate ${kpis.renewalRate}% below target ${goals.renewalRate}%`:`Renouvellement ${kpis.renewalRate}% sous objectif ${goals.renewalRate}%`,icon:"🔄"});}
     if(goals.csat>0&&kpis.csat>0&&kpis.csat<goals.csat){alerts.push({id:"csat",level:kpis.csat<goals.csat-2?"critical":"warning",kpi:"CSAT",current:kpis.csat+"/10",goal:goals.csat+"/10",msg:lang==="kr"?`CSAT ${kpis.csat}/10 — 목표 ${goals.csat}/10 미달`:lang==="en"?`CSAT ${kpis.csat}/10 below target ${goals.csat}/10`:`CSAT ${kpis.csat}/10 sous objectif ${goals.csat}/10`,icon:"😊"});}
-    if(goals.mrr>0&&kpis.mrr>0&&kpis.mrr<goals.mrr){alerts.push({id:"mrr",level:kpis.mrr<goals.mrr*0.8?"critical":"warning",kpi:"MRR",current:kpis.mrr.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")+"€",goal:goals.mrr.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")+"€",msg:lang==="kr"?`MRR ${kpis.mrr.toLocaleString("ko-KR")}€ — 목표 ${goals.mrr.toLocaleString("ko-KR")}€ 미달`:lang==="en"?`MRR ${kpis.mrr.toLocaleString()}€ below target ${goals.mrr.toLocaleString()}€`:`MRR ${kpis.mrr.toLocaleString("fr-FR")}€ sous objectif ${goals.mrr.toLocaleString("fr-FR")}€`,icon:"💰"});}
+    if(goals.mrr>0&&kpis.mrr>0&&kpis.mrr<goals.mrr){const cs=(CURRENCIES[currency]||CURRENCIES.EUR).symbol;alerts.push({id:"mrr",level:kpis.mrr<goals.mrr*0.8?"critical":"warning",kpi:"MRR",current:fmtCur(kpis.mrr.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR"),currency),goal:fmtCur(goals.mrr.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR"),currency),msg:lang==="kr"?`MRR ${fmtCur(kpis.mrr.toLocaleString("ko-KR"),currency)} — 목표 ${fmtCur(goals.mrr.toLocaleString("ko-KR"),currency)} 미달`:lang==="en"?`MRR ${fmtCur(kpis.mrr.toLocaleString(),currency)} below target ${fmtCur(goals.mrr.toLocaleString(),currency)}`:`MRR ${fmtCur(kpis.mrr.toLocaleString("fr-FR"),currency)} sous objectif ${fmtCur(goals.mrr.toLocaleString("fr-FR"),currency)}`,icon:"💰"});}
     if(goals.nrr>0&&kpis.nrr>0&&kpis.nrr<goals.nrr){alerts.push({id:"nrr",level:kpis.nrr<80?"critical":"warning",kpi:"NRR",current:kpis.nrr+"%",goal:goals.nrr+"%",msg:lang==="kr"?`NRR ${kpis.nrr}% — 목표 ${goals.nrr}% 미달${kpis.nrr<80?" (위험 — 즉시 조치 필요)":""}`:lang==="en"?`NRR ${kpis.nrr}% below target ${goals.nrr}%${kpis.nrr<80?" — critical, immediate action required":""}`:`NRR ${kpis.nrr}% sous l'objectif ${goals.nrr}%${kpis.nrr<80?" — critique, action immédiate requise":""}`})}
 if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"critical",kpi:"Churn",current:kpis.churned,goal:goals.churned,msg:lang==="kr"?`${kpis.churned}개 이탈 — 임계값 ${goals.churned} 초과`:lang==="en"?`${kpis.churned} churned clients exceed max ${goals.churned}`:`${kpis.churned} churns dépassent le seuil max ${goals.churned}`,icon:"📉"});}
     // KPIs custom
@@ -10773,14 +10776,14 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       gap: 12
     }
   }, /*#__PURE__*/React.createElement(KpiField, {
-    label: "MRR (\u20AC)",
+    label: `MRR (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol})`,
     k: "mrr",
-    unit: "\u20AC",
+    unit: (CURRENCIES[currency]||CURRENCIES.EUR).symbol,
     goalKey: "mrr"
   , kpis:kpis, goals:goals, draft:draft, upd:upd, commitUpd:commitUpd, lang:lang}), /*#__PURE__*/React.createElement(KpiField, {
-    label: lang==="en" ? "Expansion Revenue (\u20AC)" : lang==="kr" ? "확장 매출 (\u20AC)" : "Revenu d'expansion (\u20AC)",
+    label: lang==="en" ? `Expansion Revenue (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol})` : lang==="kr" ? `확장 매출 (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol})` : `Revenu d'expansion (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol})`,
     k: "expansionRevenue",
-    unit: "\u20AC"
+    unit: (CURRENCIES[currency]||CURRENCIES.EUR).symbol
   , kpis:kpis, goals:goals, draft:draft, upd:upd, commitUpd:commitUpd, lang:lang}), /*#__PURE__*/React.createElement(KpiField, {
     label: lang==="en" ? "New clients" : lang==="kr" ? "신규 고객" : T("kpiNewClients",lang),
     k: "newClients"
@@ -10808,9 +10811,9 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       gap: 10
     }
   }, [{
-    label: lang==="en" ? "MRR Target (€)" : lang==="kr" ? "MRR 목표 (€)" : "MRR Objectif (€)",
+    label: lang==="en" ? `MRR Target (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol})` : lang==="kr" ? `MRR 목표 (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol})` : `MRR Objectif (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol})`,
     k: "mrr",
-    unit: "€"
+    unit: (CURRENCIES[currency]||CURRENCIES.EUR).symbol
   }, {
     label: lang==="en" ? "Max Churn" : lang==="kr" ? "최대 이탈" : "Churn Max",
     k: "churned"
@@ -11291,7 +11294,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
           React.createElement("select", {value:kpiForm.type,onChange:e=>setKpiForm(p=>({...p,type:e.target.value}))},
             React.createElement("option", {value:"number"}, lang==="en" ? "Number" : lang==="kr" ? "숫자" : "Nombre"),
             React.createElement("option", {value:"percent"}, lang==="kr"?"백분율 (%)":lang==="en"?"Percentage (%)":"Pourcentage (%)"),
-            React.createElement("option", {value:"currency"}, lang==="en" ? "Currency (€)" : lang==="kr" ? "통화 (€)" : T("kpiMonetary",lang)),
+            React.createElement("option", {value:"currency"}, lang==="en" ? `Currency (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol})` : lang==="kr" ? `통화 (${(CURRENCIES[currency]||CURRENCIES.EUR).symbol})` : `${T("kpiMonetary",lang).replace("€",(CURRENCIES[currency]||CURRENCIES.EUR).symbol)}`),
             React.createElement("option", {value:"score"}, lang==="kr"?"점수 (0-10)":lang==="en"?"Score (0-10)":"Score (0-10)"),
             React.createElement("option", {value:"days"}, lang==="en" ? "Duration (days)" : lang==="kr" ? "기간 (일)" : T("kpiDuration",lang))
           )
@@ -11344,7 +11347,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
         const pct=kpi.goal>0?Math.min(kpi.value/kpi.goal*100,100):null;
         const ok=pct===null?null:(kpi.value>=kpi.goal);
         const fmtVal=(v)=>{
-          if(kpi.type==="currency") return v.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")+" €";
+          if(kpi.type==="currency") return fmtCur(v.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR"), currency);
           if(kpi.type==="percent") return v+"%";
           if(kpi.type==="score") return v+"/10";
           if(kpi.type==="days") return v+(lang==="kr"?" 일":lang==="en"?" days":" jours");
@@ -11808,8 +11811,8 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     title: lang==="kr"?"💰 매출 성과":lang==="en"?"💰 Revenue Performance":"💰 Performance Revenus",
     items: [{
       label: "MRR",
-      val: `${kpis.mrr.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")} €`,
-      obj: goals.mrr > 0 ? lang==="kr"?`목표: ${goals.mrr.toLocaleString("ko-KR")} €`:lang==="en"?`Target: ${goals.mrr.toLocaleString("en-US")} €`:`Objectif : ${goals.mrr.toLocaleString("fr-FR")} €` : ""
+      val: fmtCur(kpis.mrr.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR"), currency),
+      obj: goals.mrr > 0 ? lang==="kr"?`목표: ${fmtCur(goals.mrr.toLocaleString("ko-KR"), currency)}`:lang==="en"?`Target: ${fmtCur(goals.mrr.toLocaleString("en-US"), currency)}`:`Objectif : ${fmtCur(goals.mrr.toLocaleString("fr-FR"), currency)}` : ""
     }, {
       label: lang==="en" ? "Churn Rate" : lang==="kr" ? "이탈률" : "Taux de Churn",
       val: `${churnRate}%`,
@@ -11820,7 +11823,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
       status: nrr >= 100 ? (lang==="kr" ? "✓ 순 확장" : lang==="en" ? "✓ Net Expansion" : "✓ Expansion nette") : nrr >= 90 ? (lang==="kr" ? "→ 안정" : lang==="en" ? "→ Stable" : "→ Stable") : (lang==="kr" ? "⚠ 수축" : lang==="en" ? "⚠ Contraction" : "⚠ Contraction")
     }, {
       label: lang==="en" ? "Expansion Revenue" : lang==="kr" ? "확장 매출" : "Revenu d'expansion",
-      val: `${kpis.expansionRevenue.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")} €`
+      val: fmtCur(kpis.expansionRevenue.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR"), currency)
     }]
   }, {
     title: lang==="kr"?"⭐ 고객 만족도":lang==="en"?"⭐ Customer Satisfaction":"⭐ Satisfaction Client",
@@ -11930,7 +11933,7 @@ if(goals.churned>0&&kpis.churned>goals.churned){alerts.push({id:"churn",level:"c
     React.createElement("div", {style:{display:"flex",flexDirection:"column",gap:6}},
       customKpis.map((k,ki)=>{
         const fmtV=(v)=>{
-          if(k.type==="currency") return v.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR")+" €";
+          if(k.type==="currency") return fmtCur(v.toLocaleString(lang==="kr"?"ko-KR":lang==="en"?"en-US":"fr-FR"), currency);
           if(k.type==="percent") return v+"%";
           if(k.type==="score") return v+"/10";
           if(k.type==="days") return v+(lang==="kr"?" 일":lang==="en"?" days":" jours");
@@ -13084,7 +13087,7 @@ const getCoachResponseEN = (msg) => {
   return CS_COACH_RESPONSES_EN.default.answer;
 };
 
-const getCoachResponsense = (msg, lang) => {
+const getCoachResponse = (msg, lang) => {
   if (lang === "en") return getCoachResponseEN(msg);
   if (lang === "kr") return getCoachResponseKR(msg);
   const lower = msg.toLowerCase();
@@ -15032,6 +15035,7 @@ const App = () => {
           role: role,
           lang: lang,
           companyId: company?.id || null,
+          currency: currency,
         });
       case "wellbeing":
         return /*#__PURE__*/React.createElement(WellbeingView, {
