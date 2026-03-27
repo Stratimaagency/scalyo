@@ -155,6 +155,22 @@
           {{ connectError }}
         </div>
 
+        <!-- Setup guide -->
+        <div v-if="getSetupGuide(connectModal.key)" class="integ-guide">
+          <div class="integ-guide-header" @click="showGuide = !showGuide">
+            <span style="font-weight: 700; font-size: 12px;">{{ showGuide ? '▼' : '▶' }} Comment obtenir vos identifiants ?</span>
+          </div>
+          <div v-if="showGuide" class="integ-guide-body">
+            <div v-for="(step, i) in getSetupGuide(connectModal.key).steps" :key="i" class="integ-guide-step">
+              <span class="integ-guide-num">{{ i + 1 }}</span>
+              <span style="font-size: 12px; line-height: 1.5;">{{ step }}</span>
+            </div>
+            <a v-if="getSetupGuide(connectModal.key).link" :href="getSetupGuide(connectModal.key).link" target="_blank" rel="noopener" class="integ-guide-link">
+              Ouvrir {{ connectModal.name }} &rarr;
+            </a>
+          </div>
+        </div>
+
         <!-- Config fields based on integration type -->
 
         <!-- OAuth integrations (Gmail, Outlook, Google Meet) -->
@@ -219,7 +235,7 @@
 
         <div v-else-if="connectModal.configType === 'crm'" class="integ-config">
           <label class="integ-label">{{ t('integApiKey') }}</label>
-          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="sk-xxxxxxxx" />
+          <input v-model="configForm.apiKey" type="text" class="integ-input" :placeholder="getSetupGuide(connectModal.key)?.placeholder || 'sk-xxxxxxxx'" />
           <div v-if="connectModal.key === 'salesforce'">
             <label class="integ-label">{{ t('integInstanceUrl') }}</label>
             <input v-model="configForm.instanceUrl" type="url" class="integ-input" placeholder="https://yourorg.salesforce.com" />
@@ -249,12 +265,12 @@
             <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="EAAxxxxxxxx..." />
             <label class="integ-label">Phone Number ID</label>
             <input v-model="configForm.phoneNumberId" type="text" class="integ-input" placeholder="1234567890" />
-            <label class="integ-label">{{ t('integChannel') || 'Numéro destinataire (test)' }}</label>
+            <label class="integ-label">{{ t('integChannel') || 'Numero destinataire (test)' }}</label>
             <input v-model="configForm.recipientPhone" type="text" class="integ-input" placeholder="+33612345678" />
           </template>
           <template v-else>
             <label class="integ-label">{{ t('integWebhookUrl') }}</label>
-            <input v-model="configForm.webhookUrl" type="url" class="integ-input" placeholder="https://hooks.slack.com/..." />
+            <input v-model="configForm.webhookUrl" type="url" class="integ-input" :placeholder="connectModal.key === 'slack' ? 'https://hooks.slack.com/services/...' : 'https://...webhook.office.com/...'" />
             <label class="integ-label">{{ t('integChannel') }}</label>
             <input v-model="configForm.channel" type="text" class="integ-input" placeholder="#customer-success" />
           </template>
@@ -274,7 +290,7 @@
 
         <div v-else-if="connectModal.configType === 'meeting'" class="integ-config">
           <label class="integ-label">{{ connectModal.key === 'calendly' ? t('integApiKey') : t('integMeetingAccount') }}</label>
-          <input v-if="connectModal.key === 'calendly'" v-model="configForm.apiKey" type="text" class="integ-input" placeholder="Personal access token" />
+          <input v-if="connectModal.key === 'calendly'" v-model="configForm.apiKey" type="text" class="integ-input" placeholder="eyJhbGciOiJIUzI..." />
           <input v-else v-model="configForm.meetingEmail" type="email" class="integ-input" placeholder="team@company.com" />
           <div class="integ-toggle-row">
             <span style="font-size: 13px;">{{ t('integAutoCreateMeeting') }}</span>
@@ -288,7 +304,7 @@
 
         <div v-else-if="connectModal.configType === 'project'" class="integ-config">
           <label class="integ-label">{{ connectModal.key === 'notion' ? 'Notion Integration Token' : t('integApiKey') }}</label>
-          <input v-model="configForm.apiKey" type="text" class="integ-input" :placeholder="connectModal.key === 'jira' ? 'email@domain.com:api_token' : connectModal.key === 'notion' ? 'secret_xxxxxxxx' : 'sk-xxxxxxxx'" />
+          <input v-model="configForm.apiKey" type="text" class="integ-input" :placeholder="getSetupGuide(connectModal.key)?.placeholder || 'sk-xxxxxxxx'" />
           <div v-if="connectModal.key === 'jira'">
             <label class="integ-label">{{ t('integJiraDomain') }}</label>
             <input v-model="configForm.domain" type="text" class="integ-input" placeholder="yourcompany" />
@@ -297,7 +313,7 @@
           <div v-if="connectModal.key === 'notion'">
             <label class="integ-label">Database ID (optionnel)</label>
             <input v-model="configForm.databaseId" type="text" class="integ-input" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
-            <span style="font-size: 11px; color: var(--muted);">ID de la base Notion à synchroniser (visible dans l'URL)</span>
+            <span style="font-size: 11px; color: var(--muted);">ID de la base Notion a synchroniser (visible dans l'URL)</span>
           </div>
           <template v-if="connectModal.key !== 'notion'">
           <label class="integ-label">{{ t('integProjectKey') }}</label>
@@ -392,6 +408,89 @@ const configForm = reactive({
   domain: '',
 })
 
+const showGuide = ref(false)
+
+const SETUP_GUIDES = {
+  slack: {
+    steps: ['Ouvrez Slack et allez dans votre workspace', 'Menu Apps > Gerer > Custom Integrations > Incoming Webhooks', 'Cliquez "Add to Slack", choisissez un channel', 'Copiez le Webhook URL et collez-le ci-dessous'],
+    link: 'https://api.slack.com/apps',
+    placeholder: 'https://hooks.slack.com/services/...',
+  },
+  teams: {
+    steps: ['Ouvrez Teams, allez dans le channel souhaite', 'Cliquez "..." > Connecteurs > Incoming Webhook', 'Donnez un nom (ex: Scalyo), cliquez Creer', 'Copiez le Webhook URL et collez-le ci-dessous'],
+    link: 'https://teams.microsoft.com',
+    placeholder: 'https://...webhook.office.com/...',
+  },
+  hubspot: {
+    steps: ['Connectez-vous a HubSpot', 'Allez dans Settings > Integrations > Private Apps', 'Creez une Private App avec les scopes : crm.objects.contacts.read, crm.objects.deals.read', 'Copiez le Access Token et collez-le ci-dessous'],
+    link: 'https://app.hubspot.com/private-apps/',
+    placeholder: 'pat-na1-xxxxxxxx-xxxx...',
+  },
+  salesforce: {
+    steps: ['Connectez-vous a Salesforce', 'Setup > Apps > App Manager > New Connected App', 'Activez OAuth et selectionnez les scopes API', 'Copiez le Consumer Key (= Access Token) et votre Instance URL'],
+    link: 'https://login.salesforce.com',
+    placeholder: 'Bearer token...',
+  },
+  pipedrive: {
+    steps: ['Connectez-vous a Pipedrive', 'Cliquez sur votre avatar > Settings > Personal Preferences', 'Onglet API > copiez votre API Token', 'Collez-le ci-dessous'],
+    link: 'https://app.pipedrive.com/settings/api',
+    placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+  },
+  intercom: {
+    steps: ['Connectez-vous a Intercom', 'Settings > Integrations > Developer Hub > Your apps', 'Creez une app ou selectionnez-en une', 'Authentication > copiez le Access Token'],
+    link: 'https://app.intercom.com/a/developer-signup',
+    placeholder: 'dG9rOjxxxxxxxx...',
+  },
+  whatsapp: {
+    steps: ['Allez sur Meta for Developers', 'Creez ou selectionnez une app Business', 'WhatsApp > API Setup > copiez le Temporary Access Token', 'Copiez aussi le Phone Number ID affiche en dessous'],
+    link: 'https://developers.facebook.com/apps/',
+    placeholder: 'EAAxxxxxxxx...',
+  },
+  zendesk: {
+    steps: ['Connectez-vous a Zendesk Admin', 'Apps & Integrations > APIs > Zendesk API', 'Activez Token Access, cliquez "Add API Token"', 'Copiez le token, renseignez votre sous-domaine et email admin'],
+    link: 'https://support.zendesk.com/hc/en-us/articles/4408889192858',
+    placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+  },
+  jira: {
+    steps: ['Connectez-vous a Atlassian', 'Allez sur id.atlassian.com/manage-profile/security/api-tokens', 'Cliquez "Create API Token", donnez un nom', 'Le format a coller : votre-email@domain.com:token_genere'],
+    link: 'https://id.atlassian.com/manage-profile/security/api-tokens',
+    placeholder: 'email@domain.com:api_token',
+  },
+  asana: {
+    steps: ['Connectez-vous a Asana', 'Cliquez votre avatar > My Settings > Apps > Personal Access Tokens', 'Cliquez "Create new token"', 'Copiez le token et collez-le ci-dessous'],
+    link: 'https://app.asana.com/0/my-apps',
+    placeholder: '1/1234567890:abcdef...',
+  },
+  notion: {
+    steps: ['Allez sur notion.so/my-integrations', 'Cliquez "New Integration", donnez un nom', 'Copiez le Internal Integration Secret', 'Dans Notion, partagez votre base avec cette integration (Share > Invite)'],
+    link: 'https://www.notion.so/my-integrations',
+    placeholder: 'secret_xxxxxxxxxxxxxxxxxxxxxxxx',
+  },
+  zoom: {
+    steps: ['Allez sur marketplace.zoom.us', 'Creez une app Server-to-Server OAuth', 'Activez les scopes : meeting:read, user:read', 'Copiez le Account-level Access Token'],
+    link: 'https://marketplace.zoom.us/develop/create',
+    placeholder: 'eyJhbGciOiJIUzI...',
+  },
+  calendly: {
+    steps: ['Connectez-vous a Calendly', 'Allez dans Integrations > API & Webhooks', 'Cliquez "Generate new token"', 'Copiez le Personal Access Token'],
+    link: 'https://calendly.com/integrations/api_webhooks',
+    placeholder: 'eyJhbGciOiJIUzI...',
+  },
+  gmail: {
+    steps: ['Cliquez "Autoriser" ci-dessous', 'Connectez-vous avec votre compte Google', 'Autorisez Scalyo a lire/envoyer des emails', 'C\'est tout !'],
+  },
+  outlook: {
+    steps: ['Cliquez "Autoriser" ci-dessous', 'Connectez-vous avec votre compte Microsoft', 'Autorisez Scalyo a acceder a vos emails et calendrier', 'C\'est tout !'],
+  },
+  'google-meet': {
+    steps: ['Cliquez "Autoriser" ci-dessous', 'Connectez-vous avec votre compte Google', 'Autorisez l\'acces au calendrier Google', 'Les evenements Meet seront synchronises automatiquement'],
+  },
+}
+
+function getSetupGuide(key) {
+  return SETUP_GUIDES[key] || null
+}
+
 const emailProviders = [
   { key: 'gmail', name: 'Gmail', icon: '📧' },
   { key: 'outlook', name: 'Outlook', icon: '📬' },
@@ -469,6 +568,7 @@ function openConnectModal(integ) {
   connectSuccess.value = false
   connectError.value = ''
   oauthLoading.value = false
+  showGuide.value = true
   // Always reset first, then apply existing config if editing
   resetForm()
   const existingConfig = connectedConfigs.value[integ.key]
@@ -890,6 +990,55 @@ onMounted(() => {
   background: var(--greenBg); border: 1px solid var(--greenBorder);
   color: var(--green); font-size: 13px; font-weight: 600; text-align: center;
 }
+
+/* Setup guide */
+.integ-guide {
+  margin-bottom: 16px;
+  border-radius: 10px;
+  border: 1px solid var(--tealBorder, #bbf7d0);
+  background: var(--tealBg, #f0fdf4);
+  overflow: hidden;
+}
+.integ-guide-header {
+  padding: 10px 14px;
+  cursor: pointer;
+  color: var(--teal);
+  user-select: none;
+}
+.integ-guide-header:hover { opacity: 0.8; }
+.integ-guide-body {
+  padding: 0 14px 12px;
+}
+.integ-guide-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.integ-guide-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.integ-guide-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--teal);
+  text-decoration: none;
+}
+.integ-guide-link:hover { text-decoration: underline; }
 
 @media (max-width: 768px) {
   .integ-tabs { gap: 4px; }
