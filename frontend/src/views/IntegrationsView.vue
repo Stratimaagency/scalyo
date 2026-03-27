@@ -155,43 +155,160 @@
           {{ connectError }}
         </div>
 
-        <!-- Config fields based on integration type -->
+        <!-- Config fields — simplified per integration -->
 
-        <!-- OAuth integrations (Gmail, Outlook, Google Meet) -->
-        <div v-if="isOAuthIntegration(connectModal.key)" class="integ-config">
-          <div v-if="oauthEmail" class="integ-oauth-connected">
-            <span style="color: var(--green); font-weight: 700;">{{ t('integOAuthConnected') }}</span>
-            <span style="font-size: 13px;">{{ oauthEmail }}</span>
-          </div>
-          <button v-else class="btn btn-primary integ-connect-btn" @click="startOAuth(connectModal.key)" :disabled="oauthLoading">
-            {{ oauthLoading ? t('integOAuthRedirecting') : t('integOAuthAuthorize') }}
-          </button>
-          <div v-if="connectModal.configType === 'email'">
-            <label class="integ-label" style="margin-top: 12px;">{{ t('integEmailSync') }}</label>
-            <div class="integ-toggle-row">
-              <span style="font-size: 13px;">{{ t('integEmailIncoming') }}</span>
-              <button class="integ-toggle" :class="{ on: configForm.syncIncoming }" @click="configForm.syncIncoming = !configForm.syncIncoming"></button>
-            </div>
-            <div class="integ-toggle-row">
-              <span style="font-size: 13px;">{{ t('integEmailOutgoing') }}</span>
-              <button class="integ-toggle" :class="{ on: configForm.syncOutgoing }" @click="configForm.syncOutgoing = !configForm.syncOutgoing"></button>
-            </div>
-          </div>
-          <div v-if="connectModal.configType === 'meeting'">
-            <div class="integ-toggle-row" style="margin-top: 12px;">
-              <span style="font-size: 13px;">{{ t('integAutoCreateMeeting') }}</span>
-              <button class="integ-toggle" :class="{ on: configForm.autoCreateMeeting }" @click="configForm.autoCreateMeeting = !configForm.autoCreateMeeting"></button>
-            </div>
-            <div class="integ-toggle-row">
-              <span style="font-size: 13px;">{{ t('integSyncCalendar') }}</span>
-              <button class="integ-toggle" :class="{ on: configForm.syncCalendar }" @click="configForm.syncCalendar = !configForm.syncCalendar"></button>
-            </div>
-          </div>
+        <!-- Gmail -->
+        <div v-if="connectModal.key === 'gmail'" class="integ-config">
+          <label class="integ-label">Adresse Gmail</label>
+          <input v-model="configForm.email" type="email" class="integ-input" placeholder="team@gmail.com" />
+          <label class="integ-label">Mot de passe d'application</label>
+          <input v-model="configForm.apiKey" type="password" class="integ-input" placeholder="xxxx xxxx xxxx xxxx" />
+          <span class="integ-hint">Google > Compte > Securite > Mots de passe des applications > generer un mot de passe</span>
         </div>
 
-        <!-- IMAP manual email -->
-        <div v-else-if="connectModal.configType === 'email'" class="integ-config">
-          <label class="integ-label">{{ t('integEmailProvider') }}</label>
+        <!-- Outlook -->
+        <div v-else-if="connectModal.key === 'outlook'" class="integ-config">
+          <label class="integ-label">Adresse Outlook / Office 365</label>
+          <input v-model="configForm.email" type="email" class="integ-input" placeholder="team@outlook.com" />
+          <label class="integ-label">Mot de passe d'application</label>
+          <input v-model="configForm.apiKey" type="password" class="integ-input" placeholder="xxxx xxxx xxxx xxxx" />
+          <span class="integ-hint">Microsoft > Compte > Securite > Mots de passe des applications</span>
+        </div>
+
+        <!-- Google Meet -->
+        <div v-else-if="connectModal.key === 'google-meet'" class="integ-config">
+          <label class="integ-label">Adresse Google</label>
+          <input v-model="configForm.email" type="email" class="integ-input" placeholder="team@gmail.com" />
+          <label class="integ-label">Mot de passe d'application</label>
+          <input v-model="configForm.apiKey" type="password" class="integ-input" placeholder="xxxx xxxx xxxx xxxx" />
+          <span class="integ-hint">Meme mot de passe d'application que Gmail</span>
+        </div>
+
+        <!-- Import CSV/Excel -->
+        <div v-else-if="connectModal.configType === 'import'" class="integ-config">
+          <p style="font-size: 13px; color: var(--muted); line-height: 1.6;">
+            {{ t('integImportDesc') }}
+          </p>
+          <router-link :to="{ name: 'portfolio' }" class="btn btn-primary integ-connect-btn" style="text-decoration: none;" @click="connectModal = null">
+            {{ t('integImportGoToPortfolio') }}
+          </router-link>
+        </div>
+
+        <!-- Slack -->
+        <div v-else-if="connectModal.key === 'slack'" class="integ-config">
+          <label class="integ-label">URL du Webhook Slack</label>
+          <input v-model="configForm.webhookUrl" type="url" class="integ-input" placeholder="https://hooks.slack.com/services/..." />
+          <span class="integ-hint">Slack > Apps > Incoming Webhooks > copier l'URL</span>
+          <label class="integ-label">Channel (optionnel)</label>
+          <input v-model="configForm.channel" type="text" class="integ-input" placeholder="#customer-success" />
+        </div>
+
+        <!-- Teams -->
+        <div v-else-if="connectModal.key === 'teams'" class="integ-config">
+          <label class="integ-label">URL du Webhook Teams</label>
+          <input v-model="configForm.webhookUrl" type="url" class="integ-input" placeholder="https://...webhook.office.com/..." />
+          <span class="integ-hint">Teams > Channel > Connecteurs > Incoming Webhook > copier l'URL</span>
+          <label class="integ-label">Channel (optionnel)</label>
+          <input v-model="configForm.channel" type="text" class="integ-input" placeholder="#customer-success" />
+        </div>
+
+        <!-- HubSpot -->
+        <div v-else-if="connectModal.key === 'hubspot'" class="integ-config">
+          <label class="integ-label">Token d'acces HubSpot</label>
+          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="pat-na1-xxxxxxxx..." />
+          <span class="integ-hint">HubSpot > Parametres > Integrations > Private Apps > copier le token</span>
+        </div>
+
+        <!-- Salesforce -->
+        <div v-else-if="connectModal.key === 'salesforce'" class="integ-config">
+          <label class="integ-label">Token d'acces Salesforce</label>
+          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="Bearer token..." />
+          <label class="integ-label">URL de votre instance</label>
+          <input v-model="configForm.instanceUrl" type="url" class="integ-input" placeholder="https://yourorg.salesforce.com" />
+          <span class="integ-hint">Setup > Apps > Connected App > Consumer Key + votre URL Salesforce</span>
+        </div>
+
+        <!-- Pipedrive -->
+        <div v-else-if="connectModal.key === 'pipedrive'" class="integ-config">
+          <label class="integ-label">Token Pipedrive</label>
+          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+          <span class="integ-hint">Pipedrive > Avatar > Parametres > API > copier le token</span>
+        </div>
+
+        <!-- Intercom -->
+        <div v-else-if="connectModal.key === 'intercom'" class="integ-config">
+          <label class="integ-label">Token d'acces Intercom</label>
+          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="dG9rOjxxxxxxxx..." />
+          <span class="integ-hint">Intercom > Settings > Integrations > Developer Hub > Access Token</span>
+        </div>
+
+        <!-- WhatsApp -->
+        <div v-else-if="connectModal.key === 'whatsapp'" class="integ-config">
+          <label class="integ-label">Token WhatsApp Business API</label>
+          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="EAAxxxxxxxx..." />
+          <label class="integ-label">Phone Number ID</label>
+          <input v-model="configForm.phoneNumberId" type="text" class="integ-input" placeholder="1234567890" />
+          <span class="integ-hint">Meta for Developers > Votre app > WhatsApp > API Setup</span>
+        </div>
+
+        <!-- Zendesk -->
+        <div v-else-if="connectModal.key === 'zendesk'" class="integ-config">
+          <label class="integ-label">Sous-domaine Zendesk</label>
+          <input v-model="configForm.domain" type="text" class="integ-input" placeholder="votre-entreprise" />
+          <span class="integ-hint">votre-entreprise.zendesk.com</span>
+          <label class="integ-label">Email administrateur</label>
+          <input v-model="configForm.email" type="email" class="integ-input" placeholder="admin@votre-entreprise.com" />
+          <label class="integ-label">Token API</label>
+          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+          <span class="integ-hint">Admin > Apps > APIs > Zendesk API > Add API Token</span>
+        </div>
+
+        <!-- Jira -->
+        <div v-else-if="connectModal.key === 'jira'" class="integ-config">
+          <label class="integ-label">Domaine Atlassian</label>
+          <input v-model="configForm.domain" type="text" class="integ-input" placeholder="votre-entreprise" />
+          <span class="integ-hint">votre-entreprise.atlassian.net</span>
+          <label class="integ-label">Email + Token API</label>
+          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="email@domain.com:api_token" />
+          <span class="integ-hint">id.atlassian.com > Security > API Tokens > Create</span>
+          <label class="integ-label">Cle du projet (optionnel)</label>
+          <input v-model="configForm.projectKey" type="text" class="integ-input" placeholder="CS-BOARD" />
+        </div>
+
+        <!-- Asana -->
+        <div v-else-if="connectModal.key === 'asana'" class="integ-config">
+          <label class="integ-label">Token personnel Asana</label>
+          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="1/1234567890:abcdef..." />
+          <span class="integ-hint">Asana > Mon profil > Apps > Personal Access Tokens</span>
+        </div>
+
+        <!-- Notion -->
+        <div v-else-if="connectModal.key === 'notion'" class="integ-config">
+          <label class="integ-label">Token d'integration Notion</label>
+          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="secret_xxxxxxxxxxxxxxxxxxxxxxxx" />
+          <span class="integ-hint">notion.so/my-integrations > New integration > copier le secret</span>
+          <label class="integ-label">ID de la base (optionnel)</label>
+          <input v-model="configForm.databaseId" type="text" class="integ-input" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+          <span class="integ-hint">Visible dans l'URL de votre base Notion</span>
+        </div>
+
+        <!-- Zoom -->
+        <div v-else-if="connectModal.key === 'zoom'" class="integ-config">
+          <label class="integ-label">Token d'acces Zoom</label>
+          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="eyJhbGciOiJIUzI..." />
+          <span class="integ-hint">marketplace.zoom.us > Server-to-Server OAuth > Access Token</span>
+        </div>
+
+        <!-- Calendly -->
+        <div v-else-if="connectModal.key === 'calendly'" class="integ-config">
+          <label class="integ-label">Token personnel Calendly</label>
+          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="eyJhbGciOiJIUzI..." />
+          <span class="integ-hint">Calendly > Integrations > API & Webhooks > Personal Access Token</span>
+        </div>
+
+        <!-- IMAP -->
+        <div v-else-if="connectModal.key === 'imap'" class="integ-config">
+          <label class="integ-label">Fournisseur</label>
           <div class="integ-provider-grid">
             <button
               v-for="p in emailProviders"
@@ -204,123 +321,14 @@
               <span style="font-size: 12px; font-weight: 600;">{{ p.name }}</span>
             </button>
           </div>
-          <label class="integ-label">{{ t('integEmailAddress') }}</label>
+          <label class="integ-label">Adresse email</label>
           <input v-model="configForm.email" type="email" class="integ-input" placeholder="team@company.com" />
-          <label class="integ-label">{{ t('integEmailSync') }}</label>
-          <div class="integ-toggle-row">
-            <span style="font-size: 13px;">{{ t('integEmailIncoming') }}</span>
-            <button class="integ-toggle" :class="{ on: configForm.syncIncoming }" @click="configForm.syncIncoming = !configForm.syncIncoming"></button>
-          </div>
-          <div class="integ-toggle-row">
-            <span style="font-size: 13px;">{{ t('integEmailOutgoing') }}</span>
-            <button class="integ-toggle" :class="{ on: configForm.syncOutgoing }" @click="configForm.syncOutgoing = !configForm.syncOutgoing"></button>
-          </div>
         </div>
 
-        <div v-else-if="connectModal.configType === 'crm'" class="integ-config">
-          <label class="integ-label">{{ t('integApiKey') }}</label>
-          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="sk-xxxxxxxx" />
-          <div v-if="connectModal.key === 'salesforce'">
-            <label class="integ-label">{{ t('integInstanceUrl') }}</label>
-            <input v-model="configForm.instanceUrl" type="url" class="integ-input" placeholder="https://yourorg.salesforce.com" />
-          </div>
-          <div v-if="connectModal.key === 'zendesk'">
-            <label class="integ-label">Sous-domaine Zendesk</label>
-            <input v-model="configForm.domain" type="text" class="integ-input" placeholder="yourcompany" />
-            <span style="font-size: 11px; color: var(--muted);">yourcompany.zendesk.com</span>
-            <label class="integ-label" style="margin-top: 10px;">Email admin</label>
-            <input v-model="configForm.email" type="email" class="integ-input" placeholder="admin@yourcompany.com" />
-          </div>
-          <label class="integ-label">{{ t('integSyncFreq') }}</label>
-          <select v-model="configForm.syncFreq" class="integ-input">
-            <option value="realtime">{{ t('integRealtime') }}</option>
-            <option value="hourly">{{ t('integHourly') }}</option>
-            <option value="daily">{{ t('integDaily') }}</option>
-          </select>
-          <div class="integ-toggle-row">
-            <span style="font-size: 13px;">{{ t('integAutoSync') }}</span>
-            <button class="integ-toggle" :class="{ on: configForm.autoSync }" @click="configForm.autoSync = !configForm.autoSync"></button>
-          </div>
-        </div>
-
-        <div v-else-if="connectModal.configType === 'chat'" class="integ-config">
-          <template v-if="connectModal.key === 'whatsapp'">
-            <label class="integ-label">WhatsApp Business API Token</label>
-            <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="EAAxxxxxxxx..." />
-            <label class="integ-label">Phone Number ID</label>
-            <input v-model="configForm.phoneNumberId" type="text" class="integ-input" placeholder="1234567890" />
-            <label class="integ-label">{{ t('integChannel') || 'Numéro destinataire (test)' }}</label>
-            <input v-model="configForm.recipientPhone" type="text" class="integ-input" placeholder="+33612345678" />
-          </template>
-          <template v-else>
-            <label class="integ-label">{{ t('integWebhookUrl') }}</label>
-            <input v-model="configForm.webhookUrl" type="url" class="integ-input" placeholder="https://hooks.slack.com/..." />
-            <label class="integ-label">{{ t('integChannel') }}</label>
-            <input v-model="configForm.channel" type="text" class="integ-input" placeholder="#customer-success" />
-          </template>
-          <div class="integ-toggle-row">
-            <span style="font-size: 13px;">{{ t('integNotifChurn') }}</span>
-            <button class="integ-toggle" :class="{ on: configForm.notifChurn }" @click="configForm.notifChurn = !configForm.notifChurn"></button>
-          </div>
-          <div class="integ-toggle-row">
-            <span style="font-size: 13px;">{{ t('integNotifWellbeing') }}</span>
-            <button class="integ-toggle" :class="{ on: configForm.notifWellbeing }" @click="configForm.notifWellbeing = !configForm.notifWellbeing"></button>
-          </div>
-          <div class="integ-toggle-row">
-            <span style="font-size: 13px;">{{ t('integNotifRenewal') }}</span>
-            <button class="integ-toggle" :class="{ on: configForm.notifRenewal }" @click="configForm.notifRenewal = !configForm.notifRenewal"></button>
-          </div>
-        </div>
-
-        <div v-else-if="connectModal.configType === 'meeting'" class="integ-config">
-          <label class="integ-label">{{ connectModal.key === 'calendly' ? t('integApiKey') : t('integMeetingAccount') }}</label>
-          <input v-if="connectModal.key === 'calendly'" v-model="configForm.apiKey" type="text" class="integ-input" placeholder="Personal access token" />
-          <input v-else v-model="configForm.meetingEmail" type="email" class="integ-input" placeholder="team@company.com" />
-          <div class="integ-toggle-row">
-            <span style="font-size: 13px;">{{ t('integAutoCreateMeeting') }}</span>
-            <button class="integ-toggle" :class="{ on: configForm.autoCreateMeeting }" @click="configForm.autoCreateMeeting = !configForm.autoCreateMeeting"></button>
-          </div>
-          <div class="integ-toggle-row">
-            <span style="font-size: 13px;">{{ t('integSyncCalendar') }}</span>
-            <button class="integ-toggle" :class="{ on: configForm.syncCalendar }" @click="configForm.syncCalendar = !configForm.syncCalendar"></button>
-          </div>
-        </div>
-
-        <div v-else-if="connectModal.configType === 'project'" class="integ-config">
-          <label class="integ-label">{{ connectModal.key === 'notion' ? 'Notion Integration Token' : t('integApiKey') }}</label>
-          <input v-model="configForm.apiKey" type="text" class="integ-input" :placeholder="connectModal.key === 'jira' ? 'email@domain.com:api_token' : connectModal.key === 'notion' ? 'secret_xxxxxxxx' : 'sk-xxxxxxxx'" />
-          <div v-if="connectModal.key === 'jira'">
-            <label class="integ-label">{{ t('integJiraDomain') }}</label>
-            <input v-model="configForm.domain" type="text" class="integ-input" placeholder="yourcompany" />
-            <span style="font-size: 11px; color: var(--muted);">yourcompany.atlassian.net</span>
-          </div>
-          <div v-if="connectModal.key === 'notion'">
-            <label class="integ-label">Database ID (optionnel)</label>
-            <input v-model="configForm.databaseId" type="text" class="integ-input" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
-            <span style="font-size: 11px; color: var(--muted);">ID de la base Notion à synchroniser (visible dans l'URL)</span>
-          </div>
-          <template v-if="connectModal.key !== 'notion'">
-          <label class="integ-label">{{ t('integProjectKey') }}</label>
-          <input v-model="configForm.projectKey" type="text" class="integ-input" placeholder="CS-BOARD" />
-          </template>
-          <div class="integ-toggle-row">
-            <span style="font-size: 13px;">{{ t('integSyncTasks') }}</span>
-            <button class="integ-toggle" :class="{ on: configForm.syncTasks }" @click="configForm.syncTasks = !configForm.syncTasks"></button>
-          </div>
-        </div>
-
-        <div v-else-if="connectModal.configType === 'import'" class="integ-config">
-          <p style="font-size: 13px; color: var(--muted); line-height: 1.6;">
-            {{ t('integImportDesc') }}
-          </p>
-          <router-link :to="{ name: 'portfolio' }" class="btn btn-primary integ-connect-btn" style="text-decoration: none;" @click="connectModal = null">
-            {{ t('integImportGoToPortfolio') }}
-          </router-link>
-        </div>
-
+        <!-- Fallback generique -->
         <div v-else class="integ-config">
-          <label class="integ-label">{{ t('integApiKey') }}</label>
-          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="sk-xxxxxxxx" />
+          <label class="integ-label">Token d'acces</label>
+          <input v-model="configForm.apiKey" type="text" class="integ-input" placeholder="Collez votre token ici..." />
         </div>
 
         <div v-if="connectModal.configType !== 'import'" style="display: flex; gap: 8px; margin-top: 20px;">
@@ -363,12 +371,6 @@ const connectedKeys = ref(new Set())
 const testing = ref(null)
 const syncing = ref(null)
 const syncStatus = ref({})
-const oauthLoading = ref(false)
-const oauthEmail = ref('')
-
-// OAuth integrations map
-const OAUTH_KEYS = { gmail: 'google', outlook: 'microsoft', 'google-meet': 'google' }
-function isOAuthIntegration(key) { return key in OAUTH_KEYS }
 
 const configForm = reactive({
   provider: '',
@@ -468,18 +470,11 @@ function getCategoryCount(key) {
 function openConnectModal(integ) {
   connectSuccess.value = false
   connectError.value = ''
-  oauthLoading.value = false
   // Always reset first, then apply existing config if editing
   resetForm()
   const existingConfig = connectedConfigs.value[integ.key]
   if (existingConfig) {
     Object.assign(configForm, existingConfig)
-  }
-  // Set OAuth email if already connected
-  if (isOAuthIntegration(integ.key) && existingConfig?.email) {
-    oauthEmail.value = existingConfig.email
-  } else {
-    oauthEmail.value = ''
   }
   connectModal.value = integ
 }
@@ -538,22 +533,26 @@ async function loadConnectedIntegrations() {
 
 
 function validateConfig(type, integKey) {
-  // OAuth integrations are validated by the OAuth flow, not the form
-  if (isOAuthIntegration(integKey)) return true
-  switch (type) {
-    case 'email':
+  // Per-integration validation
+  switch (integKey) {
+    case 'gmail': case 'outlook': case 'google-meet':
+      return configForm.email && configForm.apiKey
+    case 'imap':
       return configForm.provider && configForm.email
-    case 'crm':
-      if (integKey === 'zendesk') return configForm.apiKey && configForm.domain && configForm.email
-      return configForm.apiKey
-    case 'chat':
-      if (integKey === 'whatsapp') return configForm.apiKey && configForm.phoneNumberId
+    case 'slack': case 'teams':
       return configForm.webhookUrl
-    case 'meeting':
-      return configForm.apiKey || configForm.meetingEmail
-    case 'project':
-      if (integKey === 'notion') return configForm.apiKey
-      return configForm.apiKey && configForm.projectKey
+    case 'whatsapp':
+      return configForm.apiKey && configForm.phoneNumberId
+    case 'zendesk':
+      return configForm.apiKey && configForm.domain && configForm.email
+    case 'jira':
+      return configForm.apiKey && configForm.domain
+    case 'salesforce':
+      return configForm.apiKey && configForm.instanceUrl
+    case 'notion':
+      return configForm.apiKey
+    case 'csv': case 'excel':
+      return true
     default:
       return configForm.apiKey
   }
@@ -563,6 +562,7 @@ const connectError = ref('')
 
 async function saveConnection() {
   connectError.value = ''
+  connectSuccess.value = false
 
   if (!validateConfig(connectModal.value.configType, connectModal.value.key)) {
     connectError.value = t('integErrorRequired')
@@ -570,16 +570,38 @@ async function saveConnection() {
   }
 
   saving.value = true
+  const integKey = connectModal.value.key
+  const config = getConfigForType(connectModal.value.configType, integKey)
+
   try {
-    const config = getConfigForType(connectModal.value.configType, connectModal.value.key)
-    await integrationsApi.connect(connectModal.value.key, config)
-    connectedKeys.value = new Set([...connectedKeys.value, connectModal.value.key])
-    connectedConfigs.value[connectModal.value.key] = config
+    // 1. Save config
+    await integrationsApi.connect(integKey, config)
+    connectedKeys.value = new Set([...connectedKeys.value, integKey])
+    connectedConfigs.value[integKey] = config
+
+    // 2. Auto-test connection
+    try {
+      await integrationsApi.test(integKey, config)
+      syncStatus.value[integKey] = { syncStatus: 'success', lastSyncAt: new Date().toISOString() }
+    } catch {
+      // Test failed but connection is saved — user can retry
+      syncStatus.value[integKey] = { syncStatus: 'error', lastSyncAt: new Date().toISOString(), syncDetails: { error: 'Test failed' } }
+    }
+
+    // 3. Auto-sync first data (skip for push-only like Slack/Teams and import)
+    const pushOnly = ['slack', 'teams', 'csv', 'excel', 'imap']
+    if (!pushOnly.includes(integKey)) {
+      try {
+        await integrationsApi.sync(integKey)
+        syncStatus.value[integKey] = { syncStatus: 'success', lastSyncAt: new Date().toISOString() }
+      } catch {}
+    }
+
     connectSuccess.value = true
-    setTimeout(() => { connectModal.value = null }, 1200)
+    setTimeout(() => { connectModal.value = null }, 800)
   } catch (err) {
     const msg = err.response?.data?.error || err.message || 'Unknown error'
-    connectError.value = t('integErrorConnect') + ' ' + msg
+    connectError.value = msg
   } finally {
     saving.value = false
   }
@@ -597,13 +619,8 @@ async function disconnectIntegration(integ) {
   }
 }
 
-// Handle connect: OAuth redirect or open modal
 function handleConnect(integ) {
-  if (isOAuthIntegration(integ.key)) {
-    openConnectModal(integ)
-  } else {
-    openConnectModal(integ)
-  }
+  openConnectModal(integ)
 }
 
 // Test an integration connection
@@ -641,41 +658,13 @@ async function syncIntegration(integ) {
   }
 }
 
-// Start OAuth flow
-async function startOAuth(integKey) {
-  oauthLoading.value = true
-  connectError.value = ''
-  try {
-    const provider = OAUTH_KEYS[integKey]
-    if (!provider) {
-      connectError.value = `No OAuth provider for: ${integKey}`
-      oauthLoading.value = false
-      return
-    }
-    const res = await integrationsApi.getOAuthUrl(provider)
-    const data = res.data || res
-    if (data.authUrl) {
-      window.location.href = data.authUrl
-    } else {
-      connectError.value = data.error || 'No auth URL returned from server'
-      oauthLoading.value = false
-    }
-  } catch (err) {
-    console.error('[OAuth] Error:', err)
-    connectError.value = err.response?.data?.error || err.message || 'OAuth authorization failed'
-    oauthLoading.value = false
-  }
-}
-
-// Handle OAuth return (query params)
+// Handle OAuth return (query params) — kept for backward compatibility
 function handleOAuthReturn() {
   const params = route.query
   if (params.oauth === 'success') {
-    oauthEmail.value = params.email || ''
-    // Refresh integrations list
     loadConnectedIntegrations()
   } else if (params.oauth === 'error') {
-    loadError.value = params.message || 'OAuth failed'
+    loadError.value = params.message || 'Connexion echouee'
   }
 }
 
@@ -686,35 +675,25 @@ function formatDate(dateStr) {
 }
 
 function getConfigForType(type, integKey) {
-  if (isOAuthIntegration(integKey)) {
-    if (type === 'email') return { syncIncoming: configForm.syncIncoming, syncOutgoing: configForm.syncOutgoing }
-    if (type === 'meeting') return { autoCreateMeeting: configForm.autoCreateMeeting, syncCalendar: configForm.syncCalendar }
-    return {}
-  }
-  switch (type) {
-    case 'email':
-      return { provider: configForm.provider, email: configForm.email, syncIncoming: configForm.syncIncoming, syncOutgoing: configForm.syncOutgoing }
-    case 'crm':
-      return {
-        apiKey: configForm.apiKey, syncFreq: configForm.syncFreq, autoSync: configForm.autoSync,
-        ...(configForm.instanceUrl ? { instanceUrl: configForm.instanceUrl } : {}),
-        ...(configForm.domain ? { domain: configForm.domain } : {}),
-        ...(configForm.email ? { email: configForm.email } : {}),
-      }
-    case 'chat':
-      if (integKey === 'whatsapp') {
-        return { apiKey: configForm.apiKey, phoneNumberId: configForm.phoneNumberId, recipientPhone: configForm.recipientPhone, notifChurn: configForm.notifChurn, notifWellbeing: configForm.notifWellbeing, notifRenewal: configForm.notifRenewal }
-      }
-      return { webhookUrl: configForm.webhookUrl, channel: configForm.channel, notifChurn: configForm.notifChurn, notifWellbeing: configForm.notifWellbeing, notifRenewal: configForm.notifRenewal }
-    case 'meeting':
-      return { ...(configForm.apiKey ? { apiKey: configForm.apiKey } : {}), meetingEmail: configForm.meetingEmail, autoCreateMeeting: configForm.autoCreateMeeting, syncCalendar: configForm.syncCalendar }
-    case 'project':
-      return {
-        apiKey: configForm.apiKey, syncTasks: configForm.syncTasks,
-        ...(integKey !== 'notion' ? { projectKey: configForm.projectKey } : {}),
-        ...(configForm.domain ? { domain: configForm.domain } : {}),
-        ...(configForm.databaseId ? { databaseId: configForm.databaseId } : {}),
-      }
+  switch (integKey) {
+    case 'gmail': case 'outlook': case 'google-meet':
+      return { email: configForm.email, apiKey: configForm.apiKey }
+    case 'imap':
+      return { provider: configForm.provider, email: configForm.email }
+    case 'slack': case 'teams':
+      return { webhookUrl: configForm.webhookUrl, channel: configForm.channel }
+    case 'whatsapp':
+      return { apiKey: configForm.apiKey, phoneNumberId: configForm.phoneNumberId }
+    case 'hubspot': case 'pipedrive': case 'intercom': case 'asana': case 'zoom': case 'calendly':
+      return { apiKey: configForm.apiKey }
+    case 'salesforce':
+      return { apiKey: configForm.apiKey, instanceUrl: configForm.instanceUrl }
+    case 'zendesk':
+      return { apiKey: configForm.apiKey, domain: configForm.domain, email: configForm.email }
+    case 'jira':
+      return { apiKey: configForm.apiKey, domain: configForm.domain, projectKey: configForm.projectKey }
+    case 'notion':
+      return { apiKey: configForm.apiKey, databaseId: configForm.databaseId }
     default:
       return { apiKey: configForm.apiKey }
   }
@@ -889,6 +868,16 @@ onMounted(() => {
   margin-top: 12px; padding: 10px; border-radius: 8px;
   background: var(--greenBg); border: 1px solid var(--greenBorder);
   color: var(--green); font-size: 13px; font-weight: 600; text-align: center;
+}
+
+/* Hint text under inputs */
+.integ-hint {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+  margin-bottom: 4px;
+  line-height: 1.4;
 }
 
 @media (max-width: 768px) {

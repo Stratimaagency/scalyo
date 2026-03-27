@@ -1,14 +1,64 @@
 const BASE = 'https://api.hubapi.com'
 
-function headers(apiKey) {
+function headers(token) {
   return {
-    Authorization: `Bearer ${apiKey}`,
+    Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
   }
 }
 
+function getToken(config) {
+  return config.accessToken || config.apiKey
+}
+
+// ─── OAuth ────────────────────────────────────────────
+export function getAuthUrl(env, state) {
+  const params = new URLSearchParams({
+    client_id: env.HUBSPOT_CLIENT_ID,
+    redirect_uri: `${env.APP_URL}/api/oauth/callback/hubspot`,
+    scope: 'crm.objects.contacts.read crm.objects.deals.read',
+    state,
+  })
+  return `https://app.hubspot.com/oauth/authorize?${params}`
+}
+
+export async function exchangeCode(code, env) {
+  const res = await fetch('https://api.hubapi.com/oauth/v1/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'authorization_code',
+      code,
+      client_id: env.HUBSPOT_CLIENT_ID,
+      client_secret: env.HUBSPOT_CLIENT_SECRET,
+      redirect_uri: `${env.APP_URL}/api/oauth/callback/hubspot`,
+    }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.message || 'HubSpot OAuth failed')
+  }
+  return res.json()
+}
+
+export async function refreshToken(refresh_token, env) {
+  const res = await fetch('https://api.hubapi.com/oauth/v1/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token,
+      client_id: env.HUBSPOT_CLIENT_ID,
+      client_secret: env.HUBSPOT_CLIENT_SECRET,
+    }),
+  })
+  if (!res.ok) throw new Error('HubSpot OAuth refresh failed')
+  return res.json()
+}
+
 export async function testConnection(config) {
-  const res = await fetch(`${BASE}/crm/v3/objects/contacts?limit=1`, { headers: headers(config.apiKey) })
+  const token = getToken(config)
+  const res = await fetch(`${BASE}/crm/v3/objects/contacts?limit=1`, { headers: headers(token) })
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
     throw new Error(err.message || `HubSpot API error ${res.status}`)
@@ -17,7 +67,7 @@ export async function testConnection(config) {
 }
 
 export async function sync(config, env, companyId) {
-  const h = headers(config.apiKey)
+  const h = headers(getToken(config))
   const results = { contacts: 0, deals: 0 }
 
   // Fetch contacts

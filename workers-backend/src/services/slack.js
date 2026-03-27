@@ -1,10 +1,45 @@
+// ─── OAuth ────────────────────────────────────────────
+export function getAuthUrl(env, state) {
+  const params = new URLSearchParams({
+    client_id: env.SLACK_CLIENT_ID,
+    redirect_uri: `${env.APP_URL}/api/oauth/callback/slack`,
+    scope: 'incoming-webhook',
+    state,
+  })
+  return `https://slack.com/oauth/v2/authorize?${params}`
+}
+
+export async function exchangeCode(code, env) {
+  const res = await fetch('https://slack.com/api/oauth.v2.access', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      code,
+      client_id: env.SLACK_CLIENT_ID,
+      client_secret: env.SLACK_CLIENT_SECRET,
+      redirect_uri: `${env.APP_URL}/api/oauth/callback/slack`,
+    }),
+  })
+  if (!res.ok) throw new Error('Slack OAuth failed')
+  const data = await res.json()
+  if (!data.ok) throw new Error(data.error || 'Slack OAuth failed')
+  // Slack returns webhook in incoming_webhook.url
+  return {
+    access_token: data.access_token || '',
+    webhook_url: data.incoming_webhook?.url || '',
+    channel: data.incoming_webhook?.channel || '',
+    team: data.team?.name || '',
+  }
+}
+
+// ─── Connection ───────────────────────────────────────
 export async function testConnection(config) {
   if (!config.webhookUrl) throw new Error('Webhook URL is required')
 
   const res = await fetch(config.webhookUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text: '✅ Scalyo connected successfully! You will receive customer alerts here.' }),
+    body: JSON.stringify({ text: 'Scalyo connected! You will receive customer alerts here.' }),
   })
 
   if (!res.ok) {
