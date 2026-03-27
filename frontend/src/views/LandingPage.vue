@@ -443,7 +443,7 @@
   <div class="mod-inner">
     <div class="mod-text rv">
       <div class="mod-tag"><span class="mod-tag-icon">&#x1F3AF;</span><span class="mod-tag-label">{{ t('fl_m1tag') }}</span></div>
-      <h2 class="mod-h2">{{ t('fl_m1h2') }}</h2>
+      <h2 class="mod-h2" v-html="t('fl_m1h2')"></h2>
       <p class="mod-body">{{ t('fl_m1body') }}</p>
       <ul class="mod-list">
         <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m1p1') }}</span></li>
@@ -475,7 +475,7 @@
   <div class="mod-inner">
     <div class="mod-text rv">
       <div class="mod-tag"><span class="mod-tag-icon">&#x1F4CA;</span><span class="mod-tag-label">{{ t('fl_m2tag') }}</span></div>
-      <h2 class="mod-h2">{{ t('fl_m2h2') }}</h2>
+      <h2 class="mod-h2" v-html="t('fl_m2h2')"></h2>
       <p class="mod-body">{{ t('fl_m2body') }}</p>
       <ul class="mod-list">
         <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m2p1') }}</span></li>
@@ -513,7 +513,7 @@
   <div class="mod-inner">
     <div class="mod-text rv">
       <div class="mod-tag"><span class="mod-tag-icon">&#x1F49A;</span><span class="mod-tag-label">{{ t('fl_m3tag') }}</span></div>
-      <h2 class="mod-h2">{{ t('fl_m3h2') }}</h2>
+      <h2 class="mod-h2" v-html="t('fl_m3h2')"></h2>
       <p class="mod-body">{{ t('fl_m3body') }}</p>
       <ul class="mod-list">
         <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m3p1') }}</span></li>
@@ -550,7 +550,7 @@
   <div class="mod-inner">
     <div class="mod-text rv">
       <div class="mod-tag"><span class="mod-tag-icon">&#x1F916;</span><span class="mod-tag-label">{{ t('fl_m4tag') }}</span></div>
-      <h2 class="mod-h2">{{ t('fl_m4h2') }}</h2>
+      <h2 class="mod-h2" v-html="t('fl_m4h2')"></h2>
       <p class="mod-body">{{ t('fl_m4body') }}</p>
       <ul class="mod-list">
         <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m4p1') }}</span></li>
@@ -580,7 +580,7 @@
   <div class="mod-inner">
     <div class="mod-text rv">
       <div class="mod-tag"><span class="mod-tag-icon">&#x2709;&#xFE0F;</span><span class="mod-tag-label">{{ t('fl_m5tag') }}</span></div>
-      <h2 class="mod-h2">{{ t('fl_m5h2') }}</h2>
+      <h2 class="mod-h2" v-html="t('fl_m5h2')"></h2>
       <p class="mod-body">{{ t('fl_m5body') }}</p>
       <ul class="mod-list">
         <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m5p1') }}</span></li>
@@ -614,7 +614,7 @@
   <div class="mod-inner">
     <div class="mod-text rv">
       <div class="mod-tag"><span class="mod-tag-icon">&#x1F4C5;</span><span class="mod-tag-label">{{ t('fl_m6tag') }}</span></div>
-      <h2 class="mod-h2">{{ t('fl_m6h2') }}</h2>
+      <h2 class="mod-h2" v-html="t('fl_m6h2')"></h2>
       <p class="mod-body">{{ t('fl_m6body') }}</p>
       <ul class="mod-list">
         <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m6p1') }}</span></li>
@@ -655,7 +655,7 @@
   <div class="mod-inner">
     <div class="mod-text rv">
       <div class="mod-tag"><span class="mod-tag-icon">&#x2705;</span><span class="mod-tag-label">{{ t('fl_m7tag') }}</span></div>
-      <h2 class="mod-h2">{{ t('fl_m7h2') }}</h2>
+      <h2 class="mod-h2" v-html="t('fl_m7h2')"></h2>
       <p class="mod-body">{{ t('fl_m7body') }}</p>
       <ul class="mod-list">
         <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m7p1') }}</span></li>
@@ -696,7 +696,7 @@
   <div class="mod-inner">
     <div class="mod-text rv">
       <div class="mod-tag"><span class="mod-tag-icon">&#x1F4DA;</span><span class="mod-tag-label">{{ t('fl_m8tag') }}</span></div>
-      <h2 class="mod-h2">{{ t('fl_m8h2') }}</h2>
+      <h2 class="mod-h2" v-html="t('fl_m8h2')"></h2>
       <p class="mod-body">{{ t('fl_m8body') }}</p>
       <ul class="mod-list">
         <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m8p1') }}</span></li>
@@ -729,7 +729,7 @@
   <div class="container">
     <div class="rv" style="margin-bottom:56px">
       <div class="label"><div class="label-line"></div><span>{{ t('roi_tag') }}</span></div>
-      <h2 class="h2-light">{{ t('roi_h2') }}</h2>
+      <h2 class="h2-light" v-html="t('roi_h2')"></h2>
       <p class="sub-light">{{ t('roi_sub') }}</p>
     </div>
     <div class="roi-wrap">
@@ -781,7 +781,7 @@
       <div class="label"><div class="label-line"></div><span>{{ t('pricing_tag') }}</span></div>
       <div class="pricing-header">
         <div>
-          <h2 class="h2-light" style="margin-bottom:0">{{ t('pricing_h2') }}</h2>
+          <h2 class="h2-light" style="margin-bottom:0" v-html="t('pricing_h2')"></h2>
         </div>
       </div>
       <div class="pricing-note" v-html="t('pricing_note')"></div>
@@ -859,7 +859,7 @@
 <section class="section section-dark" id="integrations">
   <div class="container" style="text-align: center;">
     <div class="label" style="justify-content: center;"><div class="label-line"></div><span>{{ t('integ_tag') }}</span><div class="label-line"></div></div>
-    <h2 class="h2-light" style="margin-bottom: 16px">{{ t('integ_h2') }}</h2>
+    <h2 class="h2-light" style="margin-bottom: 16px" v-html="t('integ_h2')"></h2>
     <p style="color: var(--dt2); font-size: 16px; max-width: 600px; margin: 0 auto 32px; line-height: 1.7;">
       {{ t('integ_sub') }}
     </p>
@@ -920,7 +920,7 @@
   <div class="container">
     <div class="rv" style="margin-bottom:56px;text-align:center">
       <div class="label" style="justify-content:center"><div class="label-line"></div><span>{{ t('faq_tag') }}</span><div class="label-line"></div></div>
-      <h2 class="h2-light">{{ t('faq_h2') }}</h2>
+      <h2 class="h2-light" v-html="t('faq_h2')"></h2>
     </div>
     <div class="faq-list">
       <div v-for="(item, index) in faqItems" :key="index" class="faq-item" :class="{ open: openFaqIndex === index }">
@@ -1483,6 +1483,12 @@ nav.scrolled {
   animation: glow-pulse 6s ease-in-out infinite;
   filter: blur(24px);
   pointer-events: none;
+}
+.accent {
+  background: linear-gradient(135deg, var(--teal), #14b8a6, #2dd4bf);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 @keyframes glow-pulse { 0%,100% { opacity: .6; } 50% { opacity: 1; } }
 
@@ -2132,7 +2138,7 @@ input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(13,14
   font-weight: 800; letter-spacing: -.04em; line-height: 1.05;
   color: var(--dt); margin-bottom: 20px;
 }
-.end-h2 em { font-style: normal; color: var(--teal); }
+.end-h2 em { font-style: normal; background: linear-gradient(135deg, var(--teal), #14b8a6, #2dd4bf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .end-sub { font-size: 17px; color: var(--dt2); line-height: 1.65; max-width: 500px; margin: 0 auto 40px; }
 .end-btns { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
 .end-note { margin-top: 20px; font-size: 13px; color: var(--dt3); }
