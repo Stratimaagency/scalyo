@@ -76,10 +76,11 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useI18n } from '../i18n'
+import { authApi } from '../api'
 import AppField from '../components/AppField.vue'
 import ScalyoLogo from '../components/ScalyoLogo.vue'
 
@@ -92,6 +93,22 @@ const submitting = ref(false)
 const error = ref('')
 const successMsg = ref('')
 const showPassword = ref(false)
+
+// Handle email verification token from URL
+onMounted(async () => {
+  const params = new URLSearchParams(window.location.search)
+  const verifyToken = params.get('verify')
+  if (verifyToken) {
+    try {
+      await authApi.verifyEmail(verifyToken)
+      successMsg.value = 'Email vérifié avec succès ! Vous pouvez vous connecter.'
+    } catch {
+      error.value = 'Lien de vérification invalide ou expiré.'
+    }
+    // Clean URL
+    window.history.replaceState({}, '', window.location.pathname)
+  }
+})
 
 const form = reactive({
   email: '',

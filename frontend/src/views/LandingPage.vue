@@ -982,8 +982,8 @@
     <div class="footer-col">
       <h4>{{ t('footer_col_contact') }}</h4>
       <a href="javascript:void(0)" @click="modalSupport = true">{{ t('footer_support') }}</a>
-      <a href="javascript:void(0)" @click="modalRgpd = true">{{ t('footer_rgpd') }}</a>
-      <a href="javascript:void(0)" @click="modalLegal = true">{{ t('footer_legal') }}</a>
+      <router-link to="/legal">{{ t('footer_rgpd') }}</router-link>
+      <router-link to="/legal">{{ t('footer_legal') }}</router-link>
     </div>
   </div>
   <div class="footer-bottom">
