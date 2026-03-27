@@ -1,8 +1,12 @@
 import { Hono } from 'hono'
-import { authMiddleware } from '../middleware/auth.js'
+import { authMiddleware, companyRequired } from '../middleware/auth.js'
+import { planGate } from '../middleware/planGate.js'
 
 const emailStudio = new Hono()
-emailStudio.use('/*', authMiddleware())
+emailStudio.use('/*', authMiddleware(), companyRequired())
+
+// Send requires Growth+ plan (templates are viewable by all)
+emailStudio.use('/send/*', planGate('Growth'))
 
 // --- Template Registry (in-memory, same as Django version) ---
 

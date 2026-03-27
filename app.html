@@ -746,7 +746,7 @@ const I18N={
     upgradeTagline:'Des équipes CS qui performent, des clients qui restent.',
     upgradeUnlimitedCSM:'CSMs illimités',
     upgradeUnlimitedAcc:'Comptes illimités',
-    upgrade5Acc:'5 comptes clients',
+    upgrade5Acc:'6 comptes clients',
     upgradeOnboarding:'Onboarding dédié',
     upgradeDashboard:'Tableau de bord & roadmap',
     upgradeWellbeing:'Bien-être équipe',
@@ -1121,7 +1121,7 @@ const I18N={
     upgradeTagline:'CS teams that perform, clients that stay.',
     upgradeUnlimitedCSM:'Unlimited CSMs',
     upgradeUnlimitedAcc:'Unlimited accounts',
-    upgrade5Acc:'5 client accounts',
+    upgrade5Acc:'6 client accounts',
     upgradeOnboarding:'Dedicated onboarding',
     upgradeDashboard:'Dashboard & roadmap',
     upgradeWellbeing:'Team wellbeing',
@@ -1517,7 +1517,7 @@ const I18N={
     upgradeTagline:'성과를 내는 CS 팀, 남아있는 고객.',
     upgradeUnlimitedCSM:'무제한 CSM',
     upgradeUnlimitedAcc:'무제한 계정',
-    upgrade5Acc:'5개 클라이언트 계정',
+    upgrade5Acc:'6개 클라이언트 계정',
     upgradeOnboarding:'전담 온보딩',
     upgradeDashboard:'대시보드 및 로드맵',
     upgradeWellbeing:'팀 웰빙',
@@ -2594,7 +2594,7 @@ const UpgradeModal = ({
     period: T("perMonth",lang),
     users: "1 CSM",
     highlight: false,
-    features: lang==="kr"?[T("upgrade5Acc",lang),"대시보드 & 로드맵","기본 CS 리소스",T("emailPro",lang)]:lang==="en"?[T("upgrade5Acc",lang),"Dashboard & roadmap","Basic CS resources",T("emailPro",lang)]:[T("upgrade5Acc",lang),T("upgradeDashboard",lang),"Ressources CS de base","Support email"],
+    features: lang==="kr"?[T("upgrade5Acc",lang),"대시보드 & 로드맵","기본 CS 리소스","AI 코치 (5개/일)",T("emailPro",lang)]:lang==="en"?[T("upgrade5Acc",lang),"Dashboard & roadmap","Basic CS resources","AI Coach (5 msg/day)",T("emailPro",lang)]:[T("upgrade5Acc",lang),T("upgradeDashboard",lang),"Ressources CS de base","Coach IA (5 msg/jour)","Support email"],
     link: STRIPE.starter,
     current: currentPlan === "Starter"
   }, {
@@ -2604,7 +2604,7 @@ const UpgradeModal = ({
     period: T("perMonth",lang),
     users: "5 CSMs",
     highlight: true,
-    features: lang==="kr"?["무제한 계정","팀 웰빙",T("email",lang),"AI 코치","CSV/Excel 가져오기","우선 지원"]:lang==="en"?["Unlimited accounts","Team wellbeing",T("email",lang),"AI Coach","CSV/Excel Import","Priority support"]:[T("upgradeUnlimitedAcc",lang),T("upgradeWellbeing",lang),T("email",lang),"Coach IA","Import CSV/Excel","Support prioritaire"],
+    features: lang==="kr"?["무제한 계정","팀 웰빙",T("email",lang),"AI 코치 (무제한)","플래닝","CSV/Excel 가져오기","우선 지원"]:lang==="en"?["Unlimited accounts","Team wellbeing",T("email",lang),"AI Coach (unlimited)","Planning","CSV/Excel Import","Priority support"]:[T("upgradeUnlimitedAcc",lang),T("upgradeWellbeing",lang),T("email",lang),"Coach IA (illimité)","Planning","Import CSV/Excel","Support prioritaire"],
     link: STRIPE.growth,
     current: currentPlan === "Growth"
   }, {
@@ -5048,7 +5048,7 @@ const PortfolioView = ({
   session,
   plan="Starter"
 }) => {
-  const MAX_ACCOUNTS = plan === "Starter" ? 10 : Infinity;
+  const MAX_ACCOUNTS = plan === "Starter" ? 6 : Infinity;
   const atLimit = plan === "Starter" && accounts.length >= MAX_ACCOUNTS;
   const [selected, setSelected] = useState(null);
   const [filter, _setFilter] = useState(() => { try { return localStorage.getItem("scalyo_pf_filter") || "all"; } catch(e) { return "all"; } });
@@ -8741,6 +8741,26 @@ const RESOURCE_CONTENT_KR = {
 
 
 ;
+
+// ── PlanGateView : shown when a module requires a higher plan
+const PlanGateView = ({ moduleName, requiredPlan = "Growth", lang = "fr", onUpgrade }) => {
+  const msgs = {
+    fr: { title: `${moduleName} — Plan ${requiredPlan} requis`, desc: `Cette fonctionnalité est disponible à partir du plan ${requiredPlan}.`, btn: "Voir les plans" },
+    en: { title: `${moduleName} — ${requiredPlan} plan required`, desc: `This feature is available on the ${requiredPlan} plan and above.`, btn: "View plans" },
+    kr: { title: `${moduleName} — ${requiredPlan} 플랜 필요`, desc: `이 기능은 ${requiredPlan} 플랜 이상에서 사용 가능합니다.`, btn: "플랜 보기" },
+  };
+  const m = msgs[lang] || msgs.fr;
+  return React.createElement("div", { style: { display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"100%", gap:20, padding:40, textAlign:"center" } },
+    React.createElement("span", { style: { fontSize:56 } }, "\uD83D\uDD12"),
+    React.createElement("h2", { style: { fontSize:22, fontWeight:700, margin:0 } }, m.title),
+    React.createElement("p", { style: { fontSize:15, color:C.muted, maxWidth:400 } }, m.desc),
+    React.createElement("button", {
+      onClick: onUpgrade,
+      style: { background:C.teal, color:"#fff", border:"none", borderRadius:10, padding:"12px 28px", fontSize:15, fontWeight:700, cursor:"pointer" }
+    }, m.btn)
+  );
+};
+
 const ResourcesView = ({
   plan, lang="fr",
   role="manager",
@@ -13104,7 +13124,7 @@ const getCoachResponse = (msg, lang) => {
 };
 const formatMsg = (t) => renderMD(t);
 
-const CoachIAView = ({lang="fr"}) => {
+const CoachIAView = ({lang="fr", plan="Starter"}) => {
   const welcome = lang==="en"
     ? "Hi! I'm your CS Coach. Ask me anything about churn, QBRs, NPS, onboarding, or CS strategy."
     : lang==="kr"
@@ -13248,7 +13268,8 @@ PROHIBITED: never "it depends" without immediately explaining what and how to de
     }
   };
 
-  const COACH_LIMIT = 50;
+  const COACH_PLAN_LIMITS = { Starter: 5, Growth: 50, Elite: 50 };
+  const COACH_LIMIT = COACH_PLAN_LIMITS[plan] || 5;
   const getCoachCount = () => {
     const today = new Date().toISOString().slice(0,10);
     const stored = JSON.parse(localStorage.getItem("scalyo_coach_limit") || "{}");
@@ -13266,7 +13287,8 @@ PROHIBITED: never "it depends" without immediately explaining what and how to de
     const text = msg || input.trim();
     if (!text || loading) return;
     if (getCoachCount() >= COACH_LIMIT) {
-      setMessages(m => [...m, { role: "assistant", text: lang==="en" ? "You have reached the daily limit of 50 messages. Come back tomorrow!" : lang==="kr" ? "일일 메시지 한도(50개)에 도달했습니다. 내일 다시 오세요!" : "Tu as atteint la limite de 50 messages par jour. Reviens demain !" }]);
+      const upgradeHint = plan === "Starter" ? (lang==="en" ? " Upgrade to Growth for 50 messages/day." : lang==="kr" ? " Growth로 업그레이드하면 50개/일." : " Passe au plan Growth pour 50 messages/jour.") : "";
+      setMessages(m => [...m, { role: "assistant", text: (lang==="en" ? `You have reached the daily limit of ${COACH_LIMIT} messages.${upgradeHint} Come back tomorrow!` : lang==="kr" ? `일일 메시지 한도(${COACH_LIMIT}개)에 도달했습니다.${upgradeHint} 내일 다시 오세요!` : `Tu as atteint la limite de ${COACH_LIMIT} messages par jour.${upgradeHint} Reviens demain !`) }]);
       return;
     }
     setInput("");
@@ -14338,7 +14360,8 @@ const NAV_MANAGER = (lang) => [{
 }, {
   id: "planning",
   label: T("planning",lang),
-  icon: "📅"
+  icon: "📅",
+  minPlan: "Growth"
 }, {
   id: "kpi",
   label: T("kpi",lang),
@@ -14391,7 +14414,8 @@ const NAV_CSM = (lang) => [{
 }, {
   id: "planning",
   label: T("planning",lang),
-  icon: "📅"
+  icon: "📅",
+  minPlan: "Growth"
 }, {
   id: "kpi",
   label: T("kpi",lang),
@@ -15024,6 +15048,9 @@ const App = () => {
           companyId: company?.id || null,
         });
       case "planning":
+        if ((company?.plan || "Starter") === "Starter") {
+          return React.createElement(PlanGateView, { moduleName: T("planning",lang), requiredPlan: "Growth", lang: lang, onUpgrade: () => setShowUpgrade(true) });
+        }
         return /*#__PURE__*/React.createElement(PlanningView, {
           accounts: accounts,
           lang: lang,
@@ -15057,7 +15084,7 @@ const App = () => {
           plan: company?.plan || "Starter", lang: lang
         });
       case "coach":
-        return /*#__PURE__*/React.createElement(CoachIAView, {lang:lang});
+        return /*#__PURE__*/React.createElement(CoachIAView, {lang:lang, plan: company?.plan || "Starter"});
 
       case "settings":
         return /*#__PURE__*/React.createElement(SettingsView, {
@@ -15163,10 +15190,14 @@ const App = () => {
   }, nav.map(({
     id,
     label,
-    icon
+    icon,
+    minPlan
   }) => {
     const active = screen === id;
     const hasBadge = id === "portfolio" && criticalCount > 0;
+    const PLAN_RANK = { Starter: 0, Growth: 1, Elite: 2 };
+    const currentPlan = company?.plan || "Starter";
+    const isLocked = minPlan && (PLAN_RANK[currentPlan] || 0) < (PLAN_RANK[minPlan] || 1);
     return /*#__PURE__*/React.createElement("div", {
       key: id,
       className: "nav-btn",
@@ -15178,8 +15209,9 @@ const App = () => {
         padding: "9px 10px",
         background: active ? C.tealBg : "transparent",
         border: `1px solid ${active ? C.tealBorder : "transparent"}`,
-        color: active ? C.teal : C.muted,
-        marginBottom: 1
+        color: isLocked ? C.muted : (active ? C.teal : C.muted),
+        marginBottom: 1,
+        opacity: isLocked ? 0.6 : 1
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
@@ -15192,7 +15224,7 @@ const App = () => {
         fontWeight: active ? 700 : 400,
         flex: 1
       }
-    }, label), hasBadge && /*#__PURE__*/React.createElement("span", {
+    }, label), isLocked && React.createElement("span", { style: { fontSize: 10, flexShrink: 0 } }, "\uD83D\uDD12"), hasBadge && /*#__PURE__*/React.createElement("span", {
       style: {
         background: C.red,
         color: "#fff",
