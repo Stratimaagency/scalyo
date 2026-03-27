@@ -31,7 +31,7 @@ const routes = [
       { path: 'portfolio', name: 'portfolio', component: () => import('../views/PortfolioView.vue') },
       { path: 'kpis', name: 'kpis', component: () => import('../views/KPIView.vue') },
       { path: 'tasks', name: 'tasks', component: () => import('../views/TaskBoardView.vue') },
-      { path: 'planning', name: 'planning', component: () => import('../views/PlanningView.vue'), meta: { minPlan: 'Growth' } },
+      { path: 'planning', name: 'planning', component: () => import('../views/PlanningView.vue') },
       { path: 'wellbeing', name: 'wellbeing', component: () => import('../views/WellbeingView.vue') },
       { path: 'coach', name: 'coach', component: () => import('../views/CoachView.vue') },
       { path: 'resources', name: 'resources', component: () => import('../views/ResourcesView.vue') },
@@ -71,22 +71,6 @@ router.beforeEach((to, from, next) => {
       }
     } catch (e) {
       console.error('Failed to check password change requirement:', e)
-    }
-  }
-
-  // Plan gating: redirect to settings if plan is too low
-  if (to.meta.minPlan && isAuthenticated) {
-    try {
-      const authStore = useAuthStore()
-      const PLAN_RANK = { Starter: 0, Growth: 1, Elite: 2 }
-      const currentPlan = authStore.company?.plan || 'Starter'
-      const currentRank = PLAN_RANK[currentPlan] ?? 0
-      const requiredRank = PLAN_RANK[to.meta.minPlan] ?? 1
-      if (currentRank < requiredRank) {
-        return next({ name: 'settings' })
-      }
-    } catch (e) {
-      console.error('Failed to check plan requirement:', e)
     }
   }
 

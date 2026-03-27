@@ -2,13 +2,11 @@ import { computed } from 'vue'
 import { useI18n } from '../i18n'
 import { useAuthStore } from '../stores/auth'
 
-const PLAN_RANK = { Starter: 0, Growth: 1, Elite: 2 }
-
 const ALL_NAV_ITEMS = [
   { key: 'dashboard', icon: 'dashboard', role: 'all' },
   { key: 'portfolio', icon: 'briefcase', role: 'all' },
   { key: 'kpis', icon: 'chart-up', role: 'all' },
-  { key: 'planning', icon: 'calendar', role: 'all', minPlan: 'Growth' },
+  { key: 'planning', icon: 'calendar', role: 'all' },
   { key: 'tasks', icon: 'check-circle', role: 'all' },
   { key: 'wellbeing', icon: 'heart', role: 'all' },
   { key: 'coach', icon: 'robot', role: 'all' },
@@ -44,20 +42,13 @@ export function useNavigation() {
 
   const navItems = computed(() => {
     const role = authStore.user?.role || 'csm'
-    const plan = authStore.company?.plan || 'Starter'
-    const planRank = PLAN_RANK[plan] ?? 0
     return ALL_NAV_ITEMS
       .filter(item => item.role === 'all' || item.role === role)
-      .map(item => {
-        const locked = item.minPlan ? planRank < (PLAN_RANK[item.minPlan] ?? 1) : false
-        return {
-          ...item,
-          label: t(LABEL_KEYS[item.key] || item.key),
-          routeName: item.key,
-          locked,
-          requiredPlan: item.minPlan || null,
-        }
-      })
+      .map(item => ({
+        ...item,
+        label: t(LABEL_KEYS[item.key] || item.key),
+        routeName: item.key,
+      }))
   })
 
   const mobileNavItems = computed(() =>
