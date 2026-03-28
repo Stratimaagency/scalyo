@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
-import { authMiddleware, companyRequired } from '../middleware/auth.js'
+import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 
 const portfolio = new Hono()
-portfolio.use('/*', authMiddleware(), companyRequired())
+portfolio.use('/*', authMiddleware(), companyRequired(), trialGuard())
 
 // GET /api/portfolio/accounts/
 portfolio.get('/accounts/', async (c) => {

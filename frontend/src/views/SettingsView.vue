@@ -39,18 +39,6 @@
       <AppCard class="mb-md">
         <h4 style="font-weight: 800; margin-bottom: 14px">{{ t('companyNameLabel') }}</h4>
         <AppField :label="t('companyNameLabel')" v-model="companyName" :placeholder="t('companyPlaceholder')" />
-        <div class="field-group" style="margin-top: 12px;">
-          <label class="field-label">FORFAIT</label>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-            <button v-for="p in planOptions" :key="p.key"
-              style="padding: 10px 8px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg); cursor: pointer; text-align: center; transition: all 0.15s;"
-              :style="selectedPlan === p.key ? 'border-color: var(--teal); background: rgba(77,182,160,0.08);' : ''"
-              @click="selectedPlan = p.key">
-              <div style="font-weight: 800; font-size: 13px;">{{ p.name }}</div>
-              <div style="font-size: 14px; font-weight: 700; color: var(--teal);">{{ p.price }}</div>
-            </button>
-          </div>
-        </div>
         <button class="btn btn-primary" style="margin-top: 12px;" @click="saveCompany" :disabled="saving">{{ saving ? t('saving') : t('save') }}</button>
       </AppCard>
       <AppCard class="mb-md">
@@ -409,7 +397,11 @@ const assignedAccountIds = ref([])
 const savingAccounts = ref(false)
 
 const trialDaysLeft = computed(() => {
-  const created = authStore.company?.created_at
+  const c = authStore.company
+  if (!c) return 14
+  if (c.subscription_status === 'active' || c.subscription_status === 'paid') return -1
+  if (c.trial_days_left !== undefined) return c.trial_days_left
+  const created = c.created_at
   if (!created) return 14
   const diff = 14 - Math.floor((Date.now() - new Date(created).getTime()) / 86400000)
   return Math.max(0, diff)
@@ -539,7 +531,7 @@ async function saveProfile() {
 async function saveCompany() {
   saving.value = true
   try {
-    await authStore.updateCompany({ name: companyName.value, plan: selectedPlan.value })
+    await authStore.updateCompany({ name: companyName.value })
   } catch (e) {
     console.error('saveCompany error:', e)
   }

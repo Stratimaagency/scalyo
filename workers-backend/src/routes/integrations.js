@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
-import { authMiddleware, companyRequired } from '../middleware/auth.js'
+import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 import { getService, isOAuth, getOAuthProvider } from '../services/registry.js'
 import * as gmailService from '../services/gmail.js'
 import * as outlookService from '../services/outlook.js'
 import { signJwt, verifyJwt } from '../utils/jwt.js'
 
 const integrations = new Hono()
-integrations.use('/*', authMiddleware(), companyRequired())
+integrations.use('/*', authMiddleware(), companyRequired(), trialGuard())
 
 // ─── LIST connected integrations ────────────────────────────────
 integrations.get('/', async (c) => {
