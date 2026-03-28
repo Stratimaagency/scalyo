@@ -134,7 +134,19 @@ async function syncIntegration(c) {
     return c.json({ ok: true, ...result })
   } catch (err) {
     console.error('POST /integrations/sync error:', err)
-    return c.json({ error: 'Sync failed' }, 500)
+
+    // Log error to sync log
+    try {
+      const key = c.req.param('key')
+      const { company_id } = c.get('user')
+      await c.env.DB.prepare(
+        `INSERT INTO integration_sync_log (company_id, integration_key, status, details)
+         VALUES (?, ?, 'error', ?)
+         ON CONFLICT(company_id, integration_key) DO UPDATE SET status = 'error', details = ?, synced_at = datetime('now')`
+      ).bind(company_id, key, JSON.stringify({ error: err.message }), JSON.stringify({ error: err.message })).run()
+    } catch {}
+
+    return c.json({ error: err.message || 'Sync failed' }, 500)
   }
 }
 
@@ -172,6 +184,9 @@ export function registerIntegrationRoutes(app) {
   app.post('/api/integrations', auth, company, trial, connectIntegration)
   app.post('/api/integrations/', auth, company, trial, connectIntegration)
   app.post('/api/integrations/test', auth, company, trial, testIntegration)
+  app.post('/api/integrations/test/', auth, company, trial, testIntegration)
   app.post('/api/integrations/sync/:key', auth, company, trial, syncIntegration)
+  app.post('/api/integrations/sync/:key/', auth, company, trial, syncIntegration)
   app.delete('/api/integrations/:key', auth, company, trial, disconnectIntegration)
+  app.delete('/api/integrations/:key/', auth, company, trial, disconnectIntegration)
 }
