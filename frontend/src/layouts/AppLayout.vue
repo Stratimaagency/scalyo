@@ -149,14 +149,9 @@ onMounted(async () => {
   if (!portfolioStore.accounts.length) {
     portfolioStore.fetchAccounts()
   }
-  // Check if email was verified (e.g. user clicked verify link in another tab)
+  // Refresh profile to get latest email_verified status
   if (authStore.user && !authStore.user.email_verified) {
-    try {
-      const { data } = await authApi.getProfile()
-      if (data.email_verified) {
-        authStore.user = { ...authStore.user, email_verified: true }
-      }
-    } catch {}
+    await authStore.init()
   }
 })
 
