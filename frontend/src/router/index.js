@@ -59,6 +59,10 @@ router.beforeEach((to, from, next) => {
     return next({ name: 'login' })
   }
   if (to.meta.guest && isAuthenticated && to.name !== 'landing') {
+    // Allow access to /login with verify or reset params
+    if (to.name === 'login' && (to.query.verify || to.query.reset)) {
+      return next()
+    }
     return next({ name: 'dashboard' })
   }
 
