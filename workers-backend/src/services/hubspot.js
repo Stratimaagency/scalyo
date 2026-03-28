@@ -23,7 +23,6 @@ export async function sync(config, env, companyId) {
   const h = headers(config.apiKey)
   const results = { contacts: 0, deals: 0 }
 
-  // Fetch contacts
   const contactsRes = await fetch(
     `${BASE}/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,email,phone,company`,
     { headers: h }
@@ -55,7 +54,6 @@ export async function sync(config, env, companyId) {
     results.contacts++
   }
 
-  // Fetch deals
   const dealsRes = await fetch(
     `${BASE}/crm/v3/objects/deals?limit=100&properties=dealname,amount,dealstage`,
     { headers: h }
@@ -66,4 +64,128 @@ export async function sync(config, env, companyId) {
   }
 
   return results
+}
+
+// ─── LIVE DATA ──────────────────────────────────────────
+export async function fetchData(config) {
+  const h = headers(config.apiKey)
+
+  // Contacts
+  const contactsRes = await fetch(
+    `${BASE}/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,email,phone,company,lifecyclestage,createdate`,
+    { headers: h }
+  )
+  if (!contactsRes.ok) throw new Error(`Erreur HubSpot contacts (${contactsRes.status})`)
+  const contactsData = await contactsRes.json()
+
+  const contacts = (contactsData.results || []).map(c => {
+    const p = c.properties || {}
+    return {
+      id: c.id,
+      name: [p.firstname, p.lastname].filter(Boolean).join(' ') || p.email || `Contact ${c.id}`,
+      email: p.email || '',
+      phone: p.phone || '',
+      company: p.company || '',
+      stage: p.lifecyclestage || '',
+      createdAt: p.createdate || '',
+    }
+  })
+
+  // Deals
+  const dealsRes = await fetch(
+    `${BASE}/crm/v3/objects/deals?limit=100&properties=dealname,amount,dealstage,closedate,pipeline`,
+    { headers: h }
+  )
+  let deals = []
+  if (dealsRes.ok) {
+    const dealsData = await dealsRes.json()
+    deals = (dealsData.results || []).map(d => {
+      const p = d.properties || {}
+      return {
+        id: d.id,
+        name: p.dealname || `Deal ${d.id}`,
+        amount: p.amount ? parseFloat(p.amount) : 0,
+        stage: p.dealstage || '',
+        closeDate: p.closedate || '',
+        pipeline: p.pipeline || '',
+      }
+    })
+  }
+
+  return {
+    sections: [
+      { key: 'contacts', title: 'Contacts', icon: '👥', items: contacts, total: contacts.length,
+        columns: [
+          { key: 'name', label: 'Nom' },
+          { key: 'email', label: 'Email' },
+          { key: 'phone', label: 'Telephone' },
+          { key: 'company', label: 'Entreprise' },
+          { key: 'stage', label: 'Etape' },
+        ],
+        actions: ['create', 'edit'],
+      },
+      { key: 'deals', title: 'Deals', icon: '💰', items: deals, total: deals.length,
+        columns: [
+          { key: 'name', label: 'Nom' },
+          { key: 'amount', label: 'Montant', type: 'currency' },
+          { key: 'stage', label: 'Etape' },
+          { key: 'closeDate', label: 'Date fermeture', type: 'date' },
+        ],
+        actions: ['create'],
+      },
+    ],
+  }
+}
+
+// ─── ACTIONS ────────────────────────────────────────────
+export async function performAction(config, action, payload) {
+  const h = headers(config.apiKey)
+
+  if (action === 'createContact') {
+    const res = await fetch(`${BASE}/crm/v3/objects/contacts`, {
+      method: 'POST', headers: h,
+      body: JSON.stringify({ properties: {
+        firstname: payload.firstname || '',
+        lastname: payload.lastname || '',
+        email: payload.email || '',
+        phone: payload.phone || '',
+        company: payload.company || '',
+      }}),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err.message || `Erreur creation contact (${res.status})`)
+    }
+    return { ok: true, message: 'Contact cree dans HubSpot' }
+  }
+
+  if (action === 'editContact') {
+    const res = await fetch(`${BASE}/crm/v3/objects/contacts/${payload.id}`, {
+      method: 'PATCH', headers: h,
+      body: JSON.stringify({ properties: {
+        ...(payload.firstname !== undefined && { firstname: payload.firstname }),
+        ...(payload.lastname !== undefined && { lastname: payload.lastname }),
+        ...(payload.email !== undefined && { email: payload.email }),
+        ...(payload.phone !== undefined && { phone: payload.phone }),
+        ...(payload.company !== undefined && { company: payload.company }),
+      }}),
+    })
+    if (!res.ok) throw new Error(`Erreur modification contact (${res.status})`)
+    return { ok: true, message: 'Contact modifie dans HubSpot' }
+  }
+
+  if (action === 'createDeal') {
+    const res = await fetch(`${BASE}/crm/v3/objects/deals`, {
+      method: 'POST', headers: h,
+      body: JSON.stringify({ properties: {
+        dealname: payload.name || '',
+        amount: payload.amount ? String(payload.amount) : '',
+        dealstage: payload.stage || 'appointmentscheduled',
+      }}),
+    })
+    if (!res.ok) throw new Error(`Erreur creation deal (${res.status})`)
+    return { ok: true, message: 'Deal cree dans HubSpot' }
+  }
+
+  throw new Error(`Action inconnue: ${action}`)
 }

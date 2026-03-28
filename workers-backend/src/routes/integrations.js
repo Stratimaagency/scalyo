@@ -173,6 +173,57 @@ async function disconnectIntegration(c) {
   }
 }
 
+// ─── FETCH LIVE DATA from integration ───────────────────────────
+async function fetchIntegrationData(c) {
+  try {
+    const { company_id } = c.get('user')
+    const key = c.req.param('key')
+
+    const integ = await c.env.DB.prepare(
+      'SELECT * FROM integrations WHERE company_id = ? AND integration_key = ?'
+    ).bind(company_id, key).first()
+
+    if (!integ) return c.json({ error: 'Integration non connectee' }, 404)
+
+    const config = JSON.parse(integ.config || '{}')
+    const service = getService(key)
+    if (!service || !service.fetchData) return c.json({ error: `Pas de donnees pour: ${key}` }, 400)
+
+    const data = await service.fetchData(config)
+    return c.json(data)
+  } catch (err) {
+    console.error('GET /integrations/:key/data error:', err)
+    return c.json({ error: err.message || 'Erreur chargement donnees' }, 500)
+  }
+}
+
+// ─── PERFORM ACTION on integration ──────────────────────────────
+async function performIntegrationAction(c) {
+  try {
+    const { company_id } = c.get('user')
+    const key = c.req.param('key')
+    const { action, payload } = await c.req.json()
+
+    if (!action) return c.json({ error: 'action requise' }, 400)
+
+    const integ = await c.env.DB.prepare(
+      'SELECT * FROM integrations WHERE company_id = ? AND integration_key = ?'
+    ).bind(company_id, key).first()
+
+    if (!integ) return c.json({ error: 'Integration non connectee' }, 404)
+
+    const config = JSON.parse(integ.config || '{}')
+    const service = getService(key)
+    if (!service || !service.performAction) return c.json({ error: `Pas d'actions pour: ${key}` }, 400)
+
+    const result = await service.performAction(config, action, payload || {})
+    return c.json(result)
+  } catch (err) {
+    console.error('POST /integrations/:key/action error:', err)
+    return c.json({ error: err.message || 'Erreur execution action' }, 500)
+  }
+}
+
 // ─── Register routes directly on app ────────────────────────────
 export function registerIntegrationRoutes(app) {
   const auth = authMiddleware()
@@ -187,6 +238,10 @@ export function registerIntegrationRoutes(app) {
   app.post('/api/integrations/test/', auth, company, trial, testIntegration)
   app.post('/api/integrations/sync/:key', auth, company, trial, syncIntegration)
   app.post('/api/integrations/sync/:key/', auth, company, trial, syncIntegration)
+  app.get('/api/integrations/:key/data', auth, company, trial, fetchIntegrationData)
+  app.get('/api/integrations/:key/data/', auth, company, trial, fetchIntegrationData)
+  app.post('/api/integrations/:key/action', auth, company, trial, performIntegrationAction)
+  app.post('/api/integrations/:key/action/', auth, company, trial, performIntegrationAction)
   app.delete('/api/integrations/:key', auth, company, trial, disconnectIntegration)
   app.delete('/api/integrations/:key/', auth, company, trial, disconnectIntegration)
 }

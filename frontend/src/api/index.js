@@ -106,4 +106,6 @@ export const integrationsApi = {
   disconnect: (key) => api.delete(`/integrations/${key}`),
   test: (integration_key, config) => api.post('/integrations/test', { integration_key, config }),
   sync: (key) => api.post(`/integrations/sync/${key}`),
+  fetchData: (key) => api.get(`/integrations/${key}/data`),
+  performAction: (key, action, payload) => api.post(`/integrations/${key}/action`, { action, payload }),
 }

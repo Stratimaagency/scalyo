@@ -41,6 +41,7 @@ const routes = [
       { path: 'roadmap', name: 'roadmap', component: () => import('../views/RoadmapView.vue') },
       { path: 'feedback', name: 'feedback', component: () => import('../views/FeedbackView.vue') },
       { path: 'integrations', name: 'integrations', component: () => import('../views/IntegrationsView.vue') },
+      { path: 'integrations/:key', name: 'integration-detail', component: () => import('../views/IntegrationDetailView.vue'), props: true },
       { path: 'quotes', name: 'quotes', component: () => import('../views/QuotesView.vue') },
     ],
   },
