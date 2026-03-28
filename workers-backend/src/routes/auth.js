@@ -163,6 +163,18 @@ auth.post('/token/refresh/', async (c) => {
   return c.json({ tokens })
 })
 
+// POST /api/auth/admin/set-plan — one-time admin endpoint
+auth.post('/admin/set-plan', async (c) => {
+  const { email, plan, secret } = await c.req.json()
+  if (secret !== 'scalyo-admin-2026') return c.json({ error: 'Unauthorized' }, 401)
+  if (!['Starter', 'Growth', 'Elite'].includes(plan)) return c.json({ error: 'Invalid plan' }, 400)
+  const db = c.env.DB
+  const user = await db.prepare('SELECT company_id FROM users WHERE email = ?').bind(email).first()
+  if (!user) return c.json({ error: 'User not found' }, 404)
+  await db.prepare('UPDATE companies SET plan = ? WHERE id = ?').bind(plan, user.company_id).run()
+  return c.json({ ok: true, email, plan })
+})
+
 // GET /api/auth/verify/:token — verify email (public)
 auth.get('/verify/:token', async (c) => {
   const token = c.req.param('token')
