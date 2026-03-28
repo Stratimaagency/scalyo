@@ -28,23 +28,17 @@ const services = {
   asana,
   gmail,
   outlook,
-  imap: null, // Not implemented yet
+  imap: null,
   'google-meet': googleMeet,
   zoom,
   calendly,
   whatsapp,
   zendesk,
   notion,
-  csv: null,   // Handled by portfolio import
-  excel: null, // Handled by portfolio import
 }
 
-// Integrations that require OAuth instead of API key
-export const OAUTH_INTEGRATIONS = {
-  gmail: 'google',
-  'google-meet': 'google',
-  outlook: 'microsoft',
-}
+// OAuth integrations — Gmail/Outlook/Google Meet removed (use app password instead)
+export const OAUTH_INTEGRATIONS = {}
 
 export function getService(key) {
   return services[key] || null
