@@ -97,11 +97,11 @@
                   <span v-else :class="getStatusClass(col.key, item[col.key])">{{ item[col.key] || '-' }}</span>
                 </td>
                 <td v-if="section.actions?.length" class="id-actions-cell">
-                  <button v-if="section.actions.includes('edit')" class="id-action-btn" @click="openEditForm(section.key, item)" title="Modifier">
-                    <ScalyoIcon name="settings" :size="12" />
+                  <button v-if="section.actions.includes('edit')" class="id-action-btn" @click="openEditForm(section.key, item)">
+                    <ScalyoIcon name="settings" :size="11" /> Modifier
                   </button>
-                  <button v-if="section.actions.includes('complete') && !item.completed" class="id-action-btn id-action-complete" @click="completeItem(section.key, item)" title="Terminer">
-                    ✓
+                  <button v-if="section.actions.includes('complete') && !item.completed" class="id-action-btn id-action-complete" @click="completeItem(section.key, item)">
+                    ✓ Terminer
                   </button>
                 </td>
               </tr>
@@ -507,11 +507,11 @@ onMounted(() => {
 .id-link { color: var(--teal); text-decoration: none; font-weight: 600; }
 .id-link:hover { text-decoration: underline; }
 
-.id-actions-cell { text-align: right; }
+.id-actions-cell { text-align: right; white-space: nowrap; }
 .id-action-btn {
-  background: none; border: 1px solid var(--border); border-radius: 6px;
-  padding: 4px 8px; cursor: pointer; color: var(--muted); font-size: 12px;
-  transition: all 0.15s;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+  padding: 6px 12px; cursor: pointer; color: var(--muted); font-size: 12px;
+  transition: all 0.15s; display: inline-flex; align-items: center; gap: 4px; margin-left: 4px;
 }
 .id-action-btn:hover { border-color: var(--teal); color: var(--teal); }
 .id-action-complete { color: var(--green); border-color: var(--green); font-weight: 700; }

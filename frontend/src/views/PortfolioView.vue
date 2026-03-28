@@ -110,14 +110,14 @@
           </div>
         </div>
         <div style="display: flex; gap: 6px; flex-shrink: 0;">
-          <button @click.stop="startEdit" style="background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px;" :title="t('edit')">
-            <ScalyoIcon name="pencil" :size="16" />
+          <button class="btn btn-secondary" @click.stop="startEdit" style="font-size: 12px; padding: 6px 12px; display: flex; align-items: center; gap: 4px;">
+            <ScalyoIcon name="pencil" :size="12" /> {{ t('edit') }}
           </button>
-          <button @click="removeAccount" style="background: none; border: none; color: var(--faint); cursor: pointer; padding: 4px;" :title="t('delete')">
-            <ScalyoIcon name="trash" :size="16" />
+          <button class="btn btn-secondary" @click="removeAccount" style="font-size: 12px; padding: 6px 12px; display: flex; align-items: center; gap: 4px; color: var(--red);">
+            <ScalyoIcon name="trash" :size="12" /> {{ t('delete') }}
           </button>
-          <button @click="selectedAccount = null" style="background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px;">
-            <ScalyoIcon name="close" :size="16" />
+          <button class="btn btn-secondary" @click="selectedAccount = null" style="font-size: 12px; padding: 6px 12px;">
+            <ScalyoIcon name="close" :size="12" />
           </button>
         </div>
       </div>
@@ -226,8 +226,8 @@
                 </div>
                 <input type="date" v-model="task.date"
                   style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; font-size: 11px; color: var(--text); cursor: pointer;" />
-                <button @click="removeFreeTask(idx)" style="background: none; border: none; color: var(--faint); cursor: pointer; padding: 2px;">
-                  <ScalyoIcon name="close" :size="12" />
+                <button @click="removeFreeTask(idx)" style="background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--red); cursor: pointer; padding: 4px 8px; font-size: 11px; display: flex; align-items: center; gap: 3px;">
+                  <ScalyoIcon name="close" :size="10" /> Retirer
                 </button>
               </div>
               <div v-if="!freeTasks.length" style="font-size: 12px; color: var(--muted); padding: 8px 0; text-align: center;">
