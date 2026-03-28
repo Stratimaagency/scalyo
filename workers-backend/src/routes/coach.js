@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
-import { authMiddleware } from '../middleware/auth.js'
+import { authMiddleware, trialGuard } from '../middleware/auth.js'
 
 const coach = new Hono()
-coach.use('/*', authMiddleware())
+coach.use('/*', authMiddleware(), trialGuard())
 
 // Daily message limits per plan
 const DAILY_MSG_LIMITS = { Starter: 5, Growth: -1, Elite: -1 }

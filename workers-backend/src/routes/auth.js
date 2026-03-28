@@ -68,10 +68,10 @@ auth.post('/register/', async (c) => {
     return c.json({ error: 'A user with this email already exists.' }, 400)
   }
 
-  // Create company with selected plan
+  // Create company with selected plan + trial
   const validPlan = ['Starter', 'Growth', 'Elite'].includes(plan) ? plan : 'Starter'
   const companyResult = await db.prepare(
-    'INSERT INTO companies (name, plan) VALUES (?, ?) RETURNING id'
+    "INSERT INTO companies (name, plan, subscription_status) VALUES (?, ?, 'trialing') RETURNING id"
   ).bind(company_name, validPlan).first()
 
   if (!companyResult) {
@@ -325,14 +325,27 @@ auth.patch('/profile/', async (c) => {
 auth.get('/company/', companyRequired(), async (c) => {
   const { company_id } = c.get('user')
   const company = await c.env.DB.prepare('SELECT * FROM companies WHERE id = ?').bind(company_id).first()
-  return c.json(company)
+
+  // Calculate trial info
+  const status = company.subscription_status || 'trialing'
+  let trial_days_left = 0
+  let trial_expired = false
+  if (status === 'trialing' && company.created_at) {
+    const created = new Date(company.created_at)
+    const now = new Date()
+    const daysSince = Math.floor((now - created) / (1000 * 60 * 60 * 24))
+    trial_days_left = Math.max(0, 14 - daysSince)
+    trial_expired = trial_days_left === 0
+  }
+
+  return c.json({ ...company, subscription_status: status, trial_days_left, trial_expired })
 })
 
 // PATCH /api/auth/company/
 auth.patch('/company/', companyRequired(), async (c) => {
   const { company_id } = c.get('user')
   const data = await c.req.json()
-  const allowed = ['name', 'arr', 'churn', 'nps', 'color', 'logo', 'plan']
+  const allowed = ['name', 'arr', 'churn', 'nps', 'color', 'logo']
   const sets = []
   const values = []
 

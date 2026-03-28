@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
-import { authMiddleware, companyRequired } from '../middleware/auth.js'
+import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 
 const kpis = new Hono()
-kpis.use('/*', authMiddleware(), companyRequired())
+kpis.use('/*', authMiddleware(), companyRequired(), trialGuard())
 
 function parseKpiRow(row) {
   return {

@@ -1,9 +1,9 @@
 import { Hono } from 'hono'
-import { authMiddleware, companyRequired } from '../middleware/auth.js'
+import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 import { planGate } from '../middleware/planGate.js'
 
 const emailStudio = new Hono()
-emailStudio.use('/*', authMiddleware(), companyRequired())
+emailStudio.use('/*', authMiddleware(), companyRequired(), trialGuard())
 
 // Send requires Growth+ plan
 emailStudio.use('/send/*', planGate('Growth'))

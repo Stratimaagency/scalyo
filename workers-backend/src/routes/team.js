@@ -1,4 +1,4 @@
-import { authMiddleware, companyRequired } from '../middleware/auth.js'
+import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 import { hashPassword } from '../utils/password.js'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -296,13 +296,14 @@ async function setCsmAccounts(c) {
 export function registerTeamRoutes(app) {
   const auth = authMiddleware()
   const company = companyRequired()
+  const trial = trialGuard()
 
-  app.get('/api/team', auth, company, listMembers)
-  app.get('/api/team/', auth, company, listMembers)
-  app.post('/api/team', auth, company, inviteMember)
-  app.post('/api/team/', auth, company, inviteMember)
-  app.delete('/api/team/:id', auth, company, removeMember)
-  app.get('/api/team/limits', auth, company, getLimits)
-  app.get('/api/team/:id/accounts', auth, company, getCsmAccounts)
-  app.put('/api/team/:id/accounts', auth, company, setCsmAccounts)
+  app.get('/api/team', auth, company, trial, listMembers)
+  app.get('/api/team/', auth, company, trial, listMembers)
+  app.post('/api/team', auth, company, trial, inviteMember)
+  app.post('/api/team/', auth, company, trial, inviteMember)
+  app.delete('/api/team/:id', auth, company, trial, removeMember)
+  app.get('/api/team/limits', auth, company, trial, getLimits)
+  app.get('/api/team/:id/accounts', auth, company, trial, getCsmAccounts)
+  app.put('/api/team/:id/accounts', auth, company, trial, setCsmAccounts)
 }

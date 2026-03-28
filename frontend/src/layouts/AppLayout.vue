@@ -51,6 +51,9 @@
               <span :style="{ color: planColor }">{{ company?.plan || 'Starter' }}</span>
               · {{ authStore.user?.role === 'manager' ? 'Manager' : 'CSM' }}
             </div>
+            <div v-if="trialDaysLeft !== null && !trialExpired" class="sidebar-trial-badge">
+              {{ trialDaysLeft }} jour{{ trialDaysLeft > 1 ? 's' : '' }} d'essai restant{{ trialDaysLeft > 1 ? 's' : '' }}
+            </div>
           </div>
           <button class="sidebar-logout-btn" :title="t('close')" @click="logout"><ScalyoIcon name="power" :size="16" /></button>
         </div>
@@ -94,7 +97,34 @@
             </button>
           </div>
         </div>
-        <div class="view-pad">
+        <!-- Trial expiry warning banner -->
+        <div v-if="trialDaysLeft !== null && trialDaysLeft <= 3 && trialDaysLeft > 0 && !trialExpired"
+          style="background: #FEF3C7; border-bottom: 1px solid #F59E0B; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; color: #92400E;">
+          <span>Votre essai gratuit se termine dans {{ trialDaysLeft }} jour{{ trialDaysLeft > 1 ? 's' : '' }}. Souscrivez pour continuer.</span>
+          <router-link :to="{ name: 'settings' }" style="background: #92400E; color: #fff; border: none; border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none;">
+            Souscrire
+          </router-link>
+        </div>
+        <!-- Trial expired overlay -->
+        <div v-if="trialExpired" class="trial-expired-overlay">
+          <div class="trial-expired-card">
+            <div style="font-size: 48px; margin-bottom: 16px;">&#x23F0;</div>
+            <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 8px;">Votre essai gratuit est terminé</h2>
+            <p style="color: var(--muted); font-size: 14px; margin-bottom: 24px; max-width: 400px;">
+              Vous avez profité de 14 jours gratuits sur le forfait <strong>{{ company?.plan || 'Starter' }}</strong>.<br>
+              Souscrivez maintenant pour continuer à utiliser Scalyo.
+            </p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+              <router-link :to="{ name: 'settings' }" class="btn btn-primary" style="padding: 12px 32px; font-size: 15px;">
+                Choisir mon abonnement
+              </router-link>
+            </div>
+            <p style="color: var(--muted); font-size: 12px; margin-top: 16px;">
+              Besoin d'aide ? <a href="mailto:support@scalyo.app" style="color: var(--teal);">Contactez-nous</a>
+            </p>
+          </div>
+        </div>
+        <div v-else class="view-pad">
           <router-view />
         </div>
       </main>
@@ -197,6 +227,21 @@ const planColor = computed(() => {
   return 'var(--muted)'
 })
 
+const trialDaysLeft = computed(() => {
+  const c = company.value
+  if (!c) return null
+  if (c.subscription_status === 'active' || c.subscription_status === 'paid') return null
+  if (c.trial_days_left !== undefined) return c.trial_days_left
+  return null
+})
+
+const trialExpired = computed(() => {
+  const c = company.value
+  if (!c) return false
+  if (c.subscription_status === 'active' || c.subscription_status === 'paid') return false
+  return c.trial_expired === true
+})
+
 const roleLabel = computed(() => {
   if (authStore.user?.role === 'manager') return t('csManager')
   return 'CSM'
@@ -240,5 +285,27 @@ function logout() {
   justify-content: center;
   flex-shrink: 0;
   font-size: 10px;
+}
+.sidebar-trial-badge {
+  font-size: 10px;
+  color: #F59E0B;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.trial-expired-overlay {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: var(--bg);
+}
+.trial-expired-card {
+  text-align: center;
+  max-width: 480px;
+  padding: 48px 32px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
 }
 </style>

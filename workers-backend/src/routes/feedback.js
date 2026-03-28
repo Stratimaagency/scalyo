@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
-import { authMiddleware } from '../middleware/auth.js'
+import { authMiddleware, trialGuard } from '../middleware/auth.js'
 
 const feedback = new Hono()
-feedback.use('/*', authMiddleware())
+feedback.use('/*', authMiddleware(), trialGuard())
 
 // POST /api/feedback/
 feedback.post('/', async (c) => {

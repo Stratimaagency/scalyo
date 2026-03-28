@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
-import { authMiddleware, companyRequired } from '../middleware/auth.js'
+import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 
 const tasks = new Hono()
-tasks.use('/*', authMiddleware(), companyRequired())
+tasks.use('/*', authMiddleware(), companyRequired(), trialGuard())
 
 // GET /api/tasks/
 tasks.get('/', async (c) => {

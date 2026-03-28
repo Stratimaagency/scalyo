@@ -1,4 +1,4 @@
-import { authMiddleware, companyRequired } from '../middleware/auth.js'
+import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 
 function parseWellbeing(row) {
   return {
@@ -65,8 +65,9 @@ async function updateWellbeing(c) {
 export function registerWellbeingRoutes(app) {
   const auth = authMiddleware()
   const company = companyRequired()
+  const trial = trialGuard()
 
-  app.get('/api/wellbeing', auth, company, getWellbeing)
-  app.get('/api/wellbeing/', auth, company, getWellbeing)
-  app.patch('/api/wellbeing/update/', auth, company, updateWellbeing)
+  app.get('/api/wellbeing', auth, company, trial, getWellbeing)
+  app.get('/api/wellbeing/', auth, company, trial, getWellbeing)
+  app.patch('/api/wellbeing/update/', auth, company, trial, updateWellbeing)
 }
