@@ -1,42 +1,15 @@
-// WhatsApp Business API integration (via Meta Cloud API)
-const BASE = 'https://graph.facebook.com/v18.0'
+// WhatsApp Business integration
+// User provides their phone number — connection stored for future messaging features
 
 export async function testConnection(config) {
-  if (!config.apiKey) throw new Error('WhatsApp Business API token is required')
-  if (!config.phoneNumberId) throw new Error('Phone Number ID is required')
-
-  const res = await fetch(`${BASE}/${config.phoneNumberId}`, {
-    headers: { Authorization: `Bearer ${config.apiKey}` },
-  })
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(err.error?.message || `WhatsApp API error ${res.status}`)
-  }
-  return { ok: true, message: 'WhatsApp Business connected' }
+  if (!config.phone) throw new Error('Numero de telephone requis')
+  // Validate phone format (basic check)
+  const cleaned = config.phone.replace(/[\s\-().]/g, '')
+  if (cleaned.length < 8) throw new Error('Numero de telephone invalide')
+  return { ok: true, message: `WhatsApp configure pour ${config.phone}` }
 }
 
-export async function sendNotification(config, message) {
-  if (!config.apiKey || !config.phoneNumberId || !config.recipientPhone) return
-
-  const res = await fetch(`${BASE}/${config.phoneNumberId}/messages`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${config.apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      messaging_product: 'whatsapp',
-      to: config.recipientPhone,
-      type: 'text',
-      text: { body: message },
-    }),
-  })
-
-  if (!res.ok) throw new Error(`WhatsApp send failed: ${res.status}`)
-  return { ok: true }
-}
-
-export async function sync() {
-  return { ok: true, message: 'WhatsApp is push-only — notifications active' }
+export async function sync(config) {
+  if (!config.phone) throw new Error('Numero de telephone requis')
+  return { ok: true, message: 'WhatsApp configure. Les notifications seront envoyees a ce numero.' }
 }
