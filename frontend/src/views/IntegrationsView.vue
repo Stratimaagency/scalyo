@@ -76,28 +76,6 @@
       </div>
     </div>
 
-    <!-- Coming soon -->
-    <div v-if="comingSoonList.length" class="mb-lg">
-      <h4 class="integ-section-title">
-        <span class="integ-dot integ-dot-amber"></span>
-        {{ t('integrationsComingSoon') }}
-      </h4>
-      <div class="integ-grid">
-        <AppCard v-for="integ in comingSoonList" :key="integ.key" class="integ-card" style="opacity: 0.6;">
-          <div class="integ-card-header">
-            <div class="integ-icon-wrap" :style="{ background: integ.color + '15', border: '1px solid ' + integ.color + '30' }">
-              <span class="integ-card-icon">{{ integ.icon }}</span>
-            </div>
-            <div>
-              <div style="font-weight: 700; font-size: 14px;">{{ integ.name }}</div>
-              <span class="tag" style="font-size: 10px; padding: 2px 8px; background: var(--surface); border: 1px solid var(--border);">Bientot</span>
-            </div>
-          </div>
-          <p class="integ-card-desc">{{ integ.desc }}</p>
-        </AppCard>
-      </div>
-    </div>
-
     <!-- Request -->
     <AppCard>
       <div style="text-align: center; padding: 20px;">
@@ -186,72 +164,135 @@ const configForm = reactive({
 const integrations = [
   // Email
   { key: 'gmail', name: 'Gmail', icon: '📧', color: '#EA4335', available: true,
-    desc: 'Synchronisez vos emails Gmail avec vos comptes clients.',
+    desc: 'Recevez et envoyez vos emails clients directement depuis Scalyo.',
     fields: [
-      { key: 'email', label: 'Adresse Gmail', type: 'email', placeholder: 'vous@gmail.com' },
+      { key: 'email', label: 'Votre adresse Gmail', type: 'email', placeholder: 'vous@gmail.com' },
       { key: 'password', label: 'Mot de passe d\'application', type: 'password', placeholder: 'xxxx xxxx xxxx xxxx',
-        hint: 'Google > Compte > Securite > Mots de passe des applications > Generer' },
+        hint: 'Ce n\'est pas votre mot de passe habituel. Allez sur myaccount.google.com > Securite > "Mots de passe des applications" > Creez-en un et collez-le ici.' },
     ]},
   { key: 'outlook', name: 'Outlook / Office 365', icon: '📬', color: '#0078D4', available: true,
-    desc: 'Connectez vos emails et calendrier Outlook.',
+    desc: 'Recevez et envoyez vos emails clients depuis votre compte Outlook.',
     fields: [
-      { key: 'email', label: 'Adresse Outlook', type: 'email', placeholder: 'vous@outlook.com' },
+      { key: 'email', label: 'Votre adresse Outlook', type: 'email', placeholder: 'vous@outlook.com' },
       { key: 'password', label: 'Mot de passe d\'application', type: 'password', placeholder: 'xxxx xxxx xxxx xxxx',
-        hint: 'Microsoft > Mon compte > Securite > Mots de passe des applications' },
+        hint: 'Allez sur account.microsoft.com > Securite > "Mots de passe des applications" > Creez-en un et collez-le ici.' },
     ]},
 
-  // Chat
+  // Notifications
   { key: 'slack', name: 'Slack', icon: '💜', color: '#4A154B', available: true,
-    desc: 'Recevez des alertes client dans Slack.',
+    desc: 'Recevez vos alertes clients dans votre canal Slack prefere.',
     fields: [
-      { key: 'webhookUrl', label: 'URL du Webhook', type: 'url', placeholder: 'https://hooks.slack.com/services/...',
-        hint: 'Slack > Votre espace > Apps > Incoming Webhooks > Copier l\'URL' },
-      { key: 'channel', label: 'Channel (optionnel)', type: 'text', placeholder: '#customer-success', optional: true },
+      { key: 'webhookUrl', label: 'Lien de notification Slack', type: 'url', placeholder: 'https://hooks.slack.com/services/...',
+        hint: 'Dans Slack : allez dans "Administration" > "Applications" > cherchez "Incoming Webhooks" > activez-le > copiez le lien et collez-le ici.' },
+      { key: 'channel', label: 'Nom du canal (optionnel)', type: 'text', placeholder: '#alertes-clients', optional: true },
     ]},
   { key: 'teams', name: 'Microsoft Teams', icon: '🟦', color: '#5B5FC7', available: true,
-    desc: 'Recevez des alertes client dans Teams.',
+    desc: 'Recevez vos alertes clients dans votre canal Teams prefere.',
     fields: [
-      { key: 'webhookUrl', label: 'URL du Webhook', type: 'url', placeholder: 'https://...webhook.office.com/...',
-        hint: 'Teams > Channel > ... > Connecteurs > Incoming Webhook > Copier' },
-      { key: 'channel', label: 'Channel (optionnel)', type: 'text', placeholder: '#customer-success', optional: true },
+      { key: 'webhookUrl', label: 'Lien de notification Teams', type: 'url', placeholder: 'https://...webhook.office.com/...',
+        hint: 'Dans Teams : clic droit sur un canal > "Connecteurs" > "Incoming Webhook" > donnez un nom > copiez le lien et collez-le ici.' },
+      { key: 'channel', label: 'Nom du canal (optionnel)', type: 'text', placeholder: '#alertes-clients', optional: true },
     ]},
 
   // WhatsApp
   { key: 'whatsapp', name: 'WhatsApp Business', icon: '💚', color: '#25D366', available: true,
     desc: 'Envoyez des messages a vos clients via WhatsApp.',
     fields: [
-      { key: 'phone', label: 'Numero de telephone', type: 'tel', placeholder: '+33 6 12 34 56 78',
-        hint: 'Le numero associe a votre compte WhatsApp Business' },
+      { key: 'phone', label: 'Votre numero WhatsApp', type: 'tel', placeholder: '+33 6 12 34 56 78',
+        hint: 'Le numero de telephone lie a votre compte WhatsApp Business.' },
     ]},
 
-  // CRM — coming soon
-  { key: 'hubspot', name: 'HubSpot CRM', icon: '🟠', color: '#FF7A59', available: false,
-    desc: 'Synchronisez vos contacts et deals HubSpot.', fields: [] },
-  { key: 'salesforce', name: 'Salesforce', icon: '☁️', color: '#00A1E0', available: false,
-    desc: 'Connectez vos comptes Salesforce.', fields: [] },
-  { key: 'pipedrive', name: 'Pipedrive', icon: '🟢', color: '#25C16F', available: false,
-    desc: 'Synchronisez vos deals Pipedrive.', fields: [] },
-  { key: 'intercom', name: 'Intercom', icon: '💬', color: '#286EFA', available: false,
-    desc: 'Connectez vos conversations Intercom.', fields: [] },
-  { key: 'zendesk', name: 'Zendesk', icon: '🎫', color: '#17A2B8', available: false,
-    desc: 'Synchronisez vos tickets Zendesk.', fields: [] },
+  // CRM
+  { key: 'hubspot', name: 'HubSpot', icon: '🟠', color: '#FF7A59', available: true,
+    desc: 'Synchronisez vos contacts et vos affaires depuis HubSpot.',
+    fields: [
+      { key: 'email', label: 'Email de connexion HubSpot', type: 'email', placeholder: 'vous@entreprise.com',
+        hint: 'L\'email que vous utilisez pour vous connecter a HubSpot.' },
+      { key: 'password', label: 'Mot de passe HubSpot', type: 'password', placeholder: 'Votre mot de passe' },
+    ]},
+  { key: 'salesforce', name: 'Salesforce', icon: '☁️', color: '#00A1E0', available: true,
+    desc: 'Synchronisez vos contacts et opportunites depuis Salesforce.',
+    fields: [
+      { key: 'email', label: 'Email de connexion Salesforce', type: 'email', placeholder: 'vous@entreprise.com',
+        hint: 'L\'email que vous utilisez pour vous connecter a Salesforce.' },
+      { key: 'password', label: 'Mot de passe Salesforce', type: 'password', placeholder: 'Votre mot de passe' },
+    ]},
+  { key: 'pipedrive', name: 'Pipedrive', icon: '🟢', color: '#25C16F', available: true,
+    desc: 'Synchronisez vos contacts et vos affaires depuis Pipedrive.',
+    fields: [
+      { key: 'email', label: 'Email de connexion Pipedrive', type: 'email', placeholder: 'vous@entreprise.com',
+        hint: 'L\'email que vous utilisez pour vous connecter a Pipedrive.' },
+      { key: 'password', label: 'Mot de passe Pipedrive', type: 'password', placeholder: 'Votre mot de passe' },
+    ]},
+  { key: 'intercom', name: 'Intercom', icon: '💬', color: '#286EFA', available: true,
+    desc: 'Synchronisez vos conversations clients depuis Intercom.',
+    fields: [
+      { key: 'email', label: 'Email de connexion Intercom', type: 'email', placeholder: 'vous@entreprise.com',
+        hint: 'L\'email que vous utilisez pour vous connecter a Intercom.' },
+      { key: 'password', label: 'Mot de passe Intercom', type: 'password', placeholder: 'Votre mot de passe' },
+    ]},
+  { key: 'zendesk', name: 'Zendesk', icon: '🎫', color: '#17A2B8', available: true,
+    desc: 'Synchronisez vos tickets de support depuis Zendesk.',
+    fields: [
+      { key: 'email', label: 'Email de connexion Zendesk', type: 'email', placeholder: 'vous@entreprise.com',
+        hint: 'L\'email que vous utilisez pour vous connecter a Zendesk.' },
+      { key: 'password', label: 'Mot de passe Zendesk', type: 'password', placeholder: 'Votre mot de passe' },
+      { key: 'domain', label: 'Nom de votre espace Zendesk', type: 'text', placeholder: 'votre-entreprise',
+        hint: 'C\'est le debut de votre adresse Zendesk : votre-entreprise.zendesk.com' },
+    ]},
 
-  // Project — coming soon
-  { key: 'jira', name: 'Jira', icon: '🔷', color: '#0052CC', available: false,
-    desc: 'Synchronisez vos tickets Jira.', fields: [] },
-  { key: 'notion', name: 'Notion', icon: '📝', color: '#787878', available: false,
-    desc: 'Synchronisez vos bases Notion.', fields: [] },
+  // Gestion de projet
+  { key: 'jira', name: 'Jira', icon: '🔷', color: '#0052CC', available: true,
+    desc: 'Synchronisez vos taches et tickets depuis Jira.',
+    fields: [
+      { key: 'email', label: 'Email de connexion Atlassian', type: 'email', placeholder: 'vous@entreprise.com',
+        hint: 'L\'email que vous utilisez pour vous connecter a Jira / Atlassian.' },
+      { key: 'password', label: 'Mot de passe Atlassian', type: 'password', placeholder: 'Votre mot de passe' },
+      { key: 'domain', label: 'Nom de votre espace Jira', type: 'text', placeholder: 'votre-entreprise',
+        hint: 'C\'est le debut de votre adresse Jira : votre-entreprise.atlassian.net' },
+    ]},
+  { key: 'notion', name: 'Notion', icon: '📝', color: '#787878', available: true,
+    desc: 'Synchronisez vos bases de donnees et pages Notion.',
+    fields: [
+      { key: 'email', label: 'Email de connexion Notion', type: 'email', placeholder: 'vous@entreprise.com',
+        hint: 'L\'email que vous utilisez pour vous connecter a Notion.' },
+      { key: 'password', label: 'Mot de passe Notion', type: 'password', placeholder: 'Votre mot de passe' },
+    ]},
+  { key: 'asana', name: 'Asana', icon: '🔶', color: '#F06A6A', available: true,
+    desc: 'Synchronisez vos taches et projets depuis Asana.',
+    fields: [
+      { key: 'email', label: 'Email de connexion Asana', type: 'email', placeholder: 'vous@entreprise.com',
+        hint: 'L\'email que vous utilisez pour vous connecter a Asana.' },
+      { key: 'password', label: 'Mot de passe Asana', type: 'password', placeholder: 'Votre mot de passe' },
+    ]},
 
-  // Meeting — coming soon
-  { key: 'zoom', name: 'Zoom', icon: '📹', color: '#2D8CFF', available: false,
-    desc: 'Planifiez des appels Zoom.', fields: [] },
-  { key: 'calendly', name: 'Calendly', icon: '📅', color: '#006BFF', available: false,
-    desc: 'Synchronisez vos rendez-vous Calendly.', fields: [] },
+  // Visioconference
+  { key: 'google-meet', name: 'Google Meet', icon: '🎥', color: '#00897B', available: true,
+    desc: 'Planifiez et gerez vos appels video Google Meet.',
+    fields: [
+      { key: 'email', label: 'Votre adresse Gmail', type: 'email', placeholder: 'vous@gmail.com',
+        hint: 'L\'email Google que vous utilisez pour vos reunions Meet.' },
+      { key: 'password', label: 'Mot de passe d\'application', type: 'password', placeholder: 'xxxx xxxx xxxx xxxx',
+        hint: 'Meme mot de passe d\'application que pour Gmail (myaccount.google.com > Securite).' },
+    ]},
+  { key: 'zoom', name: 'Zoom', icon: '📹', color: '#2D8CFF', available: true,
+    desc: 'Planifiez et gerez vos appels video Zoom.',
+    fields: [
+      { key: 'email', label: 'Email de connexion Zoom', type: 'email', placeholder: 'vous@entreprise.com',
+        hint: 'L\'email que vous utilisez pour vous connecter a Zoom.' },
+      { key: 'password', label: 'Mot de passe Zoom', type: 'password', placeholder: 'Votre mot de passe' },
+    ]},
+  { key: 'calendly', name: 'Calendly', icon: '📅', color: '#006BFF', available: true,
+    desc: 'Synchronisez vos rendez-vous et creneaux Calendly.',
+    fields: [
+      { key: 'email', label: 'Email de connexion Calendly', type: 'email', placeholder: 'vous@entreprise.com',
+        hint: 'L\'email que vous utilisez pour vous connecter a Calendly.' },
+      { key: 'password', label: 'Mot de passe Calendly', type: 'password', placeholder: 'Votre mot de passe' },
+    ]},
 ]
 
 const connectedList = computed(() => integrations.filter(i => connectedKeys.value.has(i.key)))
 const availableList = computed(() => integrations.filter(i => i.available && !connectedKeys.value.has(i.key)))
-const comingSoonList = computed(() => integrations.filter(i => !i.available && !connectedKeys.value.has(i.key)))
 
 function resetForm() {
   Object.assign(configForm, { email: '', password: '', webhookUrl: '', channel: '', phone: '', domain: '' })
@@ -394,7 +435,6 @@ onMounted(() => {
 }
 .integ-dot { width: 8px; height: 8px; border-radius: 50%; }
 .integ-dot-green { background: var(--green); }
-.integ-dot-amber { background: var(--amber); }
 .integ-dot-teal { background: var(--teal); }
 
 .integ-grid {

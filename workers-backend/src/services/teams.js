@@ -1,5 +1,8 @@
+// Microsoft Teams — connexion via lien de notification (webhook)
+// Le webhook permet d'envoyer des notifications dans un canal Teams
+
 export async function testConnection(config) {
-  if (!config.webhookUrl) throw new Error('Webhook URL is required')
+  if (!config.webhookUrl) throw new Error('Lien de notification Teams requis')
 
   const res = await fetch(config.webhookUrl, {
     method: 'POST',
@@ -7,20 +10,19 @@ export async function testConnection(config) {
     body: JSON.stringify({
       '@type': 'MessageCard',
       '@context': 'http://schema.org/extensions',
-      summary: 'Scalyo Connected',
+      summary: 'Scalyo Connecte',
       themeColor: '00BFA6',
-      title: 'Scalyo Connected',
-      text: '✅ Scalyo connected successfully! You will receive customer alerts here.',
+      title: 'Scalyo Connecte',
+      text: '✅ Scalyo connecte ! Vous recevrez vos alertes ici.',
     }),
   })
 
-  if (!res.ok) throw new Error(`Teams webhook error: ${res.status}`)
-  return { ok: true, message: 'Teams connected — test message sent' }
+  if (!res.ok) throw new Error('Le lien Teams ne fonctionne pas. Verifiez-le.')
+  return { ok: true, message: 'Teams connecte — message test envoye !' }
 }
 
-export async function sendNotification(config, message, title = 'Scalyo Alert') {
+export async function sendNotification(config, message, title = 'Alerte Scalyo') {
   if (!config.webhookUrl) return
-
   const res = await fetch(config.webhookUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -33,11 +35,10 @@ export async function sendNotification(config, message, title = 'Scalyo Alert') 
       text: message,
     }),
   })
-
-  if (!res.ok) throw new Error(`Teams send failed: ${res.status}`)
+  if (!res.ok) throw new Error('Envoi Teams echoue')
   return { ok: true }
 }
 
 export async function sync() {
-  return { ok: true, message: 'Teams is push-only — notifications active' }
+  return { ok: true, message: 'Teams configure — les notifications sont actives.' }
 }

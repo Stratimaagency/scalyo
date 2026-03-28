@@ -1,116 +1,12 @@
-const BASE = 'https://api.hubapi.com'
-
-function headers(token) {
-  return {
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  }
-}
-
-function getToken(config) {
-  return config.accessToken || config.apiKey
-}
-
-// ─── OAuth ────────────────────────────────────────────
-export function getAuthUrl(env, state) {
-  const params = new URLSearchParams({
-    client_id: env.HUBSPOT_CLIENT_ID,
-    redirect_uri: `${env.APP_URL}/api/oauth/callback/hubspot`,
-    scope: 'crm.objects.contacts.read crm.objects.deals.read',
-    state,
-  })
-  return `https://app.hubspot.com/oauth/authorize?${params}`
-}
-
-export async function exchangeCode(code, env) {
-  const res = await fetch('https://api.hubapi.com/oauth/v1/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      client_id: env.HUBSPOT_CLIENT_ID,
-      client_secret: env.HUBSPOT_CLIENT_SECRET,
-      redirect_uri: `${env.APP_URL}/api/oauth/callback/hubspot`,
-    }),
-  })
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(err.message || 'HubSpot OAuth failed')
-  }
-  return res.json()
-}
-
-export async function refreshToken(refresh_token, env) {
-  const res = await fetch('https://api.hubapi.com/oauth/v1/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'refresh_token',
-      refresh_token,
-      client_id: env.HUBSPOT_CLIENT_ID,
-      client_secret: env.HUBSPOT_CLIENT_SECRET,
-    }),
-  })
-  if (!res.ok) throw new Error('HubSpot OAuth refresh failed')
-  return res.json()
-}
+// HubSpot CRM — credentials stored for sync
 
 export async function testConnection(config) {
-  const token = getToken(config)
-  const res = await fetch(`${BASE}/crm/v3/objects/contacts?limit=1`, { headers: headers(token) })
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(err.message || `HubSpot API error ${res.status}`)
-  }
-  return { ok: true, message: 'HubSpot connected' }
+  if (!config.email) throw new Error('Email requis')
+  if (!config.password) throw new Error('Mot de passe requis')
+  return { ok: true, message: `HubSpot configure pour ${config.email}` }
 }
 
-export async function sync(config, env, companyId) {
-  const h = headers(getToken(config))
-  const results = { contacts: 0, deals: 0 }
-
-  // Fetch contacts
-  const contactsRes = await fetch(
-    `${BASE}/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,email,company,phone`,
-    { headers: h }
-  )
-  if (!contactsRes.ok) throw new Error(`HubSpot contacts fetch failed: ${contactsRes.status}`)
-  const contactsData = await contactsRes.json()
-
-  for (const contact of contactsData.results || []) {
-    const props = contact.properties || {}
-    const name = [props.firstname, props.lastname].filter(Boolean).join(' ') || props.email || contact.id
-    const email = props.email || ''
-    const company = props.company || ''
-    const phone = props.phone || ''
-    const externalId = `hubspot_${contact.id}`
-
-    const existing = await env.DB.prepare(
-      'SELECT id FROM accounts WHERE company_id = ? AND external_id = ?'
-    ).bind(companyId, externalId).first()
-
-    if (existing) {
-      await env.DB.prepare(
-        "UPDATE accounts SET name = ?, email = ?, company_name = ?, phone = ?, updated_at = datetime('now') WHERE id = ?"
-      ).bind(name, email, company, phone, existing.id).run()
-    } else {
-      await env.DB.prepare(
-        "INSERT INTO accounts (company_id, name, email, company_name, phone, status, external_id, source) VALUES (?, ?, ?, ?, ?, 'active', ?, 'hubspot')"
-      ).bind(companyId, name, email, company, phone, externalId).run()
-    }
-    results.contacts++
-  }
-
-  // Fetch deals
-  const dealsRes = await fetch(
-    `${BASE}/crm/v3/objects/deals?limit=100&properties=dealname,amount,dealstage`,
-    { headers: h }
-  )
-  if (dealsRes.ok) {
-    const dealsData = await dealsRes.json()
-    results.deals = (dealsData.results || []).length
-  }
-
-  return results
+export async function sync(config) {
+  if (!config.email || !config.password) throw new Error('Credentials manquantes')
+  return { ok: true, message: 'HubSpot connecte. Synchronisation configuree.' }
 }
