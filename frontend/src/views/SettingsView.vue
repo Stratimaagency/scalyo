@@ -39,7 +39,19 @@
       <AppCard class="mb-md">
         <h4 style="font-weight: 800; margin-bottom: 14px">{{ t('companyNameLabel') }}</h4>
         <AppField :label="t('companyNameLabel')" v-model="companyName" :placeholder="t('companyPlaceholder')" />
-        <button class="btn btn-primary" @click="saveCompany" :disabled="saving">{{ saving ? t('saving') : t('save') }}</button>
+        <div class="field-group" style="margin-top: 12px;">
+          <label class="field-label">FORFAIT</label>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+            <button v-for="p in planOptions" :key="p.key"
+              style="padding: 10px 8px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg); cursor: pointer; text-align: center; transition: all 0.15s;"
+              :style="selectedPlan === p.key ? 'border-color: var(--teal); background: rgba(77,182,160,0.08);' : ''"
+              @click="selectedPlan = p.key">
+              <div style="font-weight: 800; font-size: 13px;">{{ p.name }}</div>
+              <div style="font-size: 14px; font-weight: 700; color: var(--teal);">{{ p.price }}</div>
+            </button>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top: 12px;" @click="saveCompany" :disabled="saving">{{ saving ? t('saving') : t('save') }}</button>
       </AppCard>
       <AppCard class="mb-md">
         <h4 style="font-weight: 800; margin-bottom: 14px">{{ t('changePasswordTitle') }}</h4>
@@ -366,6 +378,12 @@ async function doForceChangePassword() {
 
 const profile = reactive({ display_name: authStore.user?.display_name || '' })
 const companyName = ref(authStore.company?.name || '')
+const selectedPlan = ref(authStore.company?.plan || 'Starter')
+const planOptions = [
+  { key: 'Starter', name: 'Starter', price: '97€/mois' },
+  { key: 'Growth', name: 'Growth', price: '297€/mois' },
+  { key: 'Elite', name: 'Elite', price: '697€/mois' },
+]
 const selectedCurrency = ref(prefsStore.currency)
 
 const notifPrefs = reactive({ churn_alerts: true, weekly_report: true, wellbeing_alerts: true, renewal_alerts: true })
@@ -521,7 +539,7 @@ async function saveProfile() {
 async function saveCompany() {
   saving.value = true
   try {
-    await authStore.updateCompany({ name: companyName.value })
+    await authStore.updateCompany({ name: companyName.value, plan: selectedPlan.value })
   } catch (e) {
     console.error('saveCompany error:', e)
   }
