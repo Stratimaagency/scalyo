@@ -49,13 +49,13 @@
             <button class="btn btn-secondary integ-btn" style="flex: 1;" @click="syncIntegration(integ)" :disabled="syncing === integ.key">
               {{ syncing === integ.key ? 'Sync...' : t('integSync') }}
             </button>
-            <button class="btn btn-secondary integ-btn" style="flex: 0;" @click="openModal(integ)">
-              <ScalyoIcon name="settings" :size="12" />
-            </button>
-            <button class="btn btn-secondary integ-btn" style="flex: 0; color: var(--red);" @click="confirmDisconnect(integ)">
-              <ScalyoIcon name="x" :size="12" />
+            <button class="btn btn-secondary integ-btn" style="flex: 1;" @click="openModal(integ)">
+              <ScalyoIcon name="settings" :size="12" /> Modifier
             </button>
           </div>
+          <button class="btn integ-btn integ-disconnect-btn" @click="confirmDisconnect(integ)">
+            Deconnecter {{ integ.name }}
+          </button>
         </AppCard>
       </div>
     </div>
@@ -503,6 +503,13 @@ onMounted(() => {
   background: var(--greenBg); border: 1px solid var(--greenBorder);
   color: var(--green); font-size: 13px; font-weight: 600; text-align: center;
 }
+
+.integ-disconnect-btn {
+  margin-top: 8px; width: 100%; background: none; border: 1px solid var(--border);
+  color: var(--red); font-size: 11px; padding: 6px 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s;
+}
+.integ-disconnect-btn:hover { background: var(--redBg, #fef2f2); border-color: var(--red); }
 
 @media (max-width: 768px) {
   .integ-grid { grid-template-columns: 1fr; }
