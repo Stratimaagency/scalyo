@@ -83,7 +83,7 @@ export async function sync(config, env, companyId) {
       ).bind(name, email, mrr, existing.id).run()
     } else {
       await env.DB.prepare(
-        "INSERT INTO accounts (company_id, name, email, mrr, status, external_id, source) VALUES (?, ?, ?, ?, 'active', ?, 'stripe')"
+        "INSERT INTO accounts (company_id, name, email, mrr, external_id, source) VALUES (?, ?, ?, ?, ?, 'stripe')"
       ).bind(companyId, name, email, mrr, `stripe_${cust.id}`).run()
     }
 

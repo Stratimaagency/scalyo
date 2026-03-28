@@ -151,143 +151,91 @@ const syncStatus = ref({})
 const loadError = ref('')
 
 const configForm = reactive({
+  apiKey: '',
   email: '',
-  password: '',
+  domain: '',
   webhookUrl: '',
   channel: '',
-  phone: '',
-  domain: '',
 })
 
 // ── Integrations list ──────────────────────────────────
-// Each integration only asks for what the USER knows (no tokens, no dev stuff)
 const integrations = [
-  // Email
-  { key: 'gmail', name: 'Gmail', icon: '📧', color: '#EA4335', available: true,
-    desc: 'Recevez et envoyez vos emails clients directement depuis Scalyo.',
+  // CRM — importent les contacts dans le portefeuille
+  { key: 'hubspot', name: 'HubSpot', icon: '🟠', color: '#FF7A59', available: true,
+    desc: 'Importe automatiquement vos contacts et deals dans le portefeuille.',
     fields: [
-      { key: 'email', label: 'Votre adresse Gmail', type: 'email', placeholder: 'vous@gmail.com' },
-      { key: 'password', label: 'Mot de passe d\'application', type: 'password', placeholder: 'xxxx xxxx xxxx xxxx',
-        hint: 'Ce n\'est pas votre mot de passe habituel. Allez sur myaccount.google.com > Securite > "Mots de passe des applications" > Creez-en un et collez-le ici.' },
+      { key: 'apiKey', label: 'Cle d\'acces HubSpot', type: 'password', placeholder: 'pat-na1-xxxxxxxx-xxxx-xxxx...',
+        hint: 'Connectez-vous a HubSpot → Parametres (roue dentee en haut a droite) → Integrations → Applications privees → Creer une application privee → Donnez un nom (ex: Scalyo) → Onglet "Portees" : cochez CRM (contacts, entreprises, transactions) → Creer → Copiez le token et collez-le ici.' },
     ]},
-  { key: 'outlook', name: 'Outlook / Office 365', icon: '📬', color: '#0078D4', available: true,
-    desc: 'Recevez et envoyez vos emails clients depuis votre compte Outlook.',
+  { key: 'pipedrive', name: 'Pipedrive', icon: '🟢', color: '#25C16F', available: true,
+    desc: 'Importe vos contacts et deals dans le portefeuille.',
     fields: [
-      { key: 'email', label: 'Votre adresse Outlook', type: 'email', placeholder: 'vous@outlook.com' },
-      { key: 'password', label: 'Mot de passe d\'application', type: 'password', placeholder: 'xxxx xxxx xxxx xxxx',
-        hint: 'Allez sur account.microsoft.com > Securite > "Mots de passe des applications" > Creez-en un et collez-le ici.' },
+      { key: 'apiKey', label: 'Token API Pipedrive', type: 'password', placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+        hint: 'Connectez-vous a Pipedrive → Cliquez sur votre avatar en haut a droite → Parametres personnels → API → Copiez votre "Token API personnel" et collez-le ici.' },
+    ]},
+  { key: 'intercom', name: 'Intercom', icon: '💬', color: '#286EFA', available: true,
+    desc: 'Importe vos contacts et conversations dans le portefeuille.',
+    fields: [
+      { key: 'apiKey', label: 'Token d\'acces Intercom', type: 'password', placeholder: 'dG9rOmxxxxxxxxxxxxxxxx',
+        hint: 'Connectez-vous a Intercom → Parametres → Integrations → Developer Hub → Nouvelle application → Authentification → Copiez l\'Access Token et collez-le ici.' },
     ]},
 
-  // Notifications
+  // Support — importent les tickets
+  { key: 'zendesk', name: 'Zendesk', icon: '🎫', color: '#17A2B8', available: true,
+    desc: 'Importe vos tickets de support et contacts clients.',
+    fields: [
+      { key: 'email', label: 'Email de votre compte Zendesk', type: 'email', placeholder: 'vous@entreprise.com' },
+      { key: 'apiKey', label: 'Token API Zendesk', type: 'password', placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+        hint: 'Connectez-vous a Zendesk → Admin (roue dentee) → Canaux → API → Activez "Acces par token" → Ajoutez un token → Copiez-le et collez-le ici.' },
+      { key: 'domain', label: 'Nom de votre espace Zendesk', type: 'text', placeholder: 'votre-entreprise',
+        hint: 'C\'est le debut de votre adresse : votre-entreprise.zendesk.com' },
+    ]},
+  { key: 'jira', name: 'Jira', icon: '🔷', color: '#0052CC', available: true,
+    desc: 'Importe vos tickets et taches dans le Task Board.',
+    fields: [
+      { key: 'email', label: 'Email de votre compte Atlassian', type: 'email', placeholder: 'vous@entreprise.com' },
+      { key: 'apiKey', label: 'Token API Atlassian', type: 'password', placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxx',
+        hint: 'Allez sur id.atlassian.com → Securite → Tokens API → Creer un token API → Copiez-le et collez-le ici.' },
+      { key: 'domain', label: 'Nom de votre espace Jira', type: 'text', placeholder: 'votre-entreprise',
+        hint: 'C\'est le debut de votre adresse : votre-entreprise.atlassian.net' },
+    ]},
+
+  // Productivite — synchronisent les taches
+  { key: 'notion', name: 'Notion', icon: '📝', color: '#787878', available: true,
+    desc: 'Importe vos bases de donnees et pages dans Scalyo.',
+    fields: [
+      { key: 'apiKey', label: 'Cle d\'integration Notion', type: 'password', placeholder: 'secret_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+        hint: 'Allez sur notion.so/my-integrations → Nouvelle integration → Donnez un nom (ex: Scalyo) → Validez → Copiez le "Secret interne" et collez-le ici. Ensuite, dans Notion, ouvrez la page ou base a synchroniser → ... → Connexions → Ajoutez votre integration.' },
+    ]},
+  { key: 'asana', name: 'Asana', icon: '🔶', color: '#F06A6A', available: true,
+    desc: 'Importe vos taches et projets dans le Task Board.',
+    fields: [
+      { key: 'apiKey', label: 'Token d\'acces personnel Asana', type: 'password', placeholder: '1/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+        hint: 'Connectez-vous a Asana → Cliquez sur votre photo de profil → Parametres du profil → Applications → Tokens d\'acces personnel → Creer un token → Copiez-le et collez-le ici.' },
+    ]},
+
+  // Calendrier
+  { key: 'calendly', name: 'Calendly', icon: '📅', color: '#006BFF', available: true,
+    desc: 'Importe vos rendez-vous dans le planning.',
+    fields: [
+      { key: 'apiKey', label: 'Token d\'acces personnel Calendly', type: 'password', placeholder: 'eyJhbGciOiJIUzI1NiJ9...',
+        hint: 'Connectez-vous a Calendly → Integrations → API et Webhooks → Generer un nouveau token → Copiez-le et collez-le ici.' },
+    ]},
+
+  // Notifications — envoient des alertes
   { key: 'slack', name: 'Slack', icon: '💜', color: '#4A154B', available: true,
-    desc: 'Recevez vos alertes clients dans votre canal Slack prefere.',
+    desc: 'Recevez des alertes quand un compte client est en danger.',
     fields: [
       { key: 'webhookUrl', label: 'Lien de notification Slack', type: 'url', placeholder: 'https://hooks.slack.com/services/...',
-        hint: 'Dans Slack : allez dans "Administration" > "Applications" > cherchez "Incoming Webhooks" > activez-le > copiez le lien et collez-le ici.' },
+        hint: 'Dans Slack : Administration → Applications → Cherchez "Incoming Webhooks" → Activez-le → Ajoutez un webhook pour un canal (ex: #alertes-clients) → Copiez le lien et collez-le ici.' },
       { key: 'channel', label: 'Nom du canal (optionnel)', type: 'text', placeholder: '#alertes-clients', optional: true },
     ]},
   { key: 'teams', name: 'Microsoft Teams', icon: '🟦', color: '#5B5FC7', available: true,
-    desc: 'Recevez vos alertes clients dans votre canal Teams prefere.',
+    desc: 'Recevez des alertes quand un compte client est en danger.',
     fields: [
       { key: 'webhookUrl', label: 'Lien de notification Teams', type: 'url', placeholder: 'https://...webhook.office.com/...',
-        hint: 'Dans Teams : clic droit sur un canal > "Connecteurs" > "Incoming Webhook" > donnez un nom > copiez le lien et collez-le ici.' },
+        hint: 'Dans Teams : clic droit sur un canal → Connecteurs → Incoming Webhook → Donnez un nom (ex: Scalyo) → Creer → Copiez le lien et collez-le ici.' },
       { key: 'channel', label: 'Nom du canal (optionnel)', type: 'text', placeholder: '#alertes-clients', optional: true },
-    ]},
-
-  // WhatsApp
-  { key: 'whatsapp', name: 'WhatsApp Business', icon: '💚', color: '#25D366', available: true,
-    desc: 'Envoyez des messages a vos clients via WhatsApp.',
-    fields: [
-      { key: 'phone', label: 'Votre numero WhatsApp', type: 'tel', placeholder: '+33 6 12 34 56 78',
-        hint: 'Le numero de telephone lie a votre compte WhatsApp Business.' },
-    ]},
-
-  // CRM
-  { key: 'hubspot', name: 'HubSpot', icon: '🟠', color: '#FF7A59', available: true,
-    desc: 'Synchronisez vos contacts et vos affaires depuis HubSpot.',
-    fields: [
-      { key: 'email', label: 'Email de connexion HubSpot', type: 'email', placeholder: 'vous@entreprise.com',
-        hint: 'L\'email que vous utilisez pour vous connecter a HubSpot.' },
-      { key: 'password', label: 'Mot de passe HubSpot', type: 'password', placeholder: 'Votre mot de passe' },
-    ]},
-  { key: 'salesforce', name: 'Salesforce', icon: '☁️', color: '#00A1E0', available: true,
-    desc: 'Synchronisez vos contacts et opportunites depuis Salesforce.',
-    fields: [
-      { key: 'email', label: 'Email de connexion Salesforce', type: 'email', placeholder: 'vous@entreprise.com',
-        hint: 'L\'email que vous utilisez pour vous connecter a Salesforce.' },
-      { key: 'password', label: 'Mot de passe Salesforce', type: 'password', placeholder: 'Votre mot de passe' },
-    ]},
-  { key: 'pipedrive', name: 'Pipedrive', icon: '🟢', color: '#25C16F', available: true,
-    desc: 'Synchronisez vos contacts et vos affaires depuis Pipedrive.',
-    fields: [
-      { key: 'email', label: 'Email de connexion Pipedrive', type: 'email', placeholder: 'vous@entreprise.com',
-        hint: 'L\'email que vous utilisez pour vous connecter a Pipedrive.' },
-      { key: 'password', label: 'Mot de passe Pipedrive', type: 'password', placeholder: 'Votre mot de passe' },
-    ]},
-  { key: 'intercom', name: 'Intercom', icon: '💬', color: '#286EFA', available: true,
-    desc: 'Synchronisez vos conversations clients depuis Intercom.',
-    fields: [
-      { key: 'email', label: 'Email de connexion Intercom', type: 'email', placeholder: 'vous@entreprise.com',
-        hint: 'L\'email que vous utilisez pour vous connecter a Intercom.' },
-      { key: 'password', label: 'Mot de passe Intercom', type: 'password', placeholder: 'Votre mot de passe' },
-    ]},
-  { key: 'zendesk', name: 'Zendesk', icon: '🎫', color: '#17A2B8', available: true,
-    desc: 'Synchronisez vos tickets de support depuis Zendesk.',
-    fields: [
-      { key: 'email', label: 'Email de connexion Zendesk', type: 'email', placeholder: 'vous@entreprise.com',
-        hint: 'L\'email que vous utilisez pour vous connecter a Zendesk.' },
-      { key: 'password', label: 'Mot de passe Zendesk', type: 'password', placeholder: 'Votre mot de passe' },
-      { key: 'domain', label: 'Nom de votre espace Zendesk', type: 'text', placeholder: 'votre-entreprise',
-        hint: 'C\'est le debut de votre adresse Zendesk : votre-entreprise.zendesk.com' },
-    ]},
-
-  // Gestion de projet
-  { key: 'jira', name: 'Jira', icon: '🔷', color: '#0052CC', available: true,
-    desc: 'Synchronisez vos taches et tickets depuis Jira.',
-    fields: [
-      { key: 'email', label: 'Email de connexion Atlassian', type: 'email', placeholder: 'vous@entreprise.com',
-        hint: 'L\'email que vous utilisez pour vous connecter a Jira / Atlassian.' },
-      { key: 'password', label: 'Mot de passe Atlassian', type: 'password', placeholder: 'Votre mot de passe' },
-      { key: 'domain', label: 'Nom de votre espace Jira', type: 'text', placeholder: 'votre-entreprise',
-        hint: 'C\'est le debut de votre adresse Jira : votre-entreprise.atlassian.net' },
-    ]},
-  { key: 'notion', name: 'Notion', icon: '📝', color: '#787878', available: true,
-    desc: 'Synchronisez vos bases de donnees et pages Notion.',
-    fields: [
-      { key: 'email', label: 'Email de connexion Notion', type: 'email', placeholder: 'vous@entreprise.com',
-        hint: 'L\'email que vous utilisez pour vous connecter a Notion.' },
-      { key: 'password', label: 'Mot de passe Notion', type: 'password', placeholder: 'Votre mot de passe' },
-    ]},
-  { key: 'asana', name: 'Asana', icon: '🔶', color: '#F06A6A', available: true,
-    desc: 'Synchronisez vos taches et projets depuis Asana.',
-    fields: [
-      { key: 'email', label: 'Email de connexion Asana', type: 'email', placeholder: 'vous@entreprise.com',
-        hint: 'L\'email que vous utilisez pour vous connecter a Asana.' },
-      { key: 'password', label: 'Mot de passe Asana', type: 'password', placeholder: 'Votre mot de passe' },
-    ]},
-
-  // Visioconference
-  { key: 'google-meet', name: 'Google Meet', icon: '🎥', color: '#00897B', available: true,
-    desc: 'Planifiez et gerez vos appels video Google Meet.',
-    fields: [
-      { key: 'email', label: 'Votre adresse Gmail', type: 'email', placeholder: 'vous@gmail.com',
-        hint: 'L\'email Google que vous utilisez pour vos reunions Meet.' },
-      { key: 'password', label: 'Mot de passe d\'application', type: 'password', placeholder: 'xxxx xxxx xxxx xxxx',
-        hint: 'Meme mot de passe d\'application que pour Gmail (myaccount.google.com > Securite).' },
-    ]},
-  { key: 'zoom', name: 'Zoom', icon: '📹', color: '#2D8CFF', available: true,
-    desc: 'Planifiez et gerez vos appels video Zoom.',
-    fields: [
-      { key: 'email', label: 'Email de connexion Zoom', type: 'email', placeholder: 'vous@entreprise.com',
-        hint: 'L\'email que vous utilisez pour vous connecter a Zoom.' },
-      { key: 'password', label: 'Mot de passe Zoom', type: 'password', placeholder: 'Votre mot de passe' },
-    ]},
-  { key: 'calendly', name: 'Calendly', icon: '📅', color: '#006BFF', available: true,
-    desc: 'Synchronisez vos rendez-vous et creneaux Calendly.',
-    fields: [
-      { key: 'email', label: 'Email de connexion Calendly', type: 'email', placeholder: 'vous@entreprise.com',
-        hint: 'L\'email que vous utilisez pour vous connecter a Calendly.' },
-      { key: 'password', label: 'Mot de passe Calendly', type: 'password', placeholder: 'Votre mot de passe' },
     ]},
 ]
 
@@ -295,7 +243,7 @@ const connectedList = computed(() => integrations.filter(i => connectedKeys.valu
 const availableList = computed(() => integrations.filter(i => i.available && !connectedKeys.value.has(i.key)))
 
 function resetForm() {
-  Object.assign(configForm, { email: '', password: '', webhookUrl: '', channel: '', phone: '', domain: '' })
+  Object.assign(configForm, { apiKey: '', email: '', domain: '', webhookUrl: '', channel: '' })
 }
 
 function openModal(integ) {
@@ -364,12 +312,21 @@ async function saveConnection() {
     connectedKeys.value = new Set([...connectedKeys.value, integKey])
     connectedConfigs.value[integKey] = config
 
-    // Auto-test
+    // Auto-test then auto-sync
     try {
       await integrationsApi.test(integKey, config)
-      syncStatus.value[integKey] = { syncStatus: 'success', lastSyncAt: new Date().toISOString() }
-    } catch {
-      syncStatus.value[integKey] = { syncStatus: 'error', lastSyncAt: new Date().toISOString() }
+      // Test passed — now sync data
+      try {
+        const syncRes = await integrationsApi.sync(integKey)
+        const syncData = syncRes.data || syncRes
+        syncStatus.value[integKey] = { syncStatus: 'success', lastSyncAt: new Date().toISOString(), syncDetails: syncData }
+      } catch (syncErr) {
+        const msg = syncErr.response?.data?.error || syncErr.message || 'Sync echoue'
+        syncStatus.value[integKey] = { syncStatus: 'error', lastSyncAt: new Date().toISOString(), syncDetails: { error: msg } }
+      }
+    } catch (testErr) {
+      const msg = testErr.response?.data?.error || testErr.message || 'Test echoue'
+      syncStatus.value[integKey] = { syncStatus: 'error', lastSyncAt: new Date().toISOString(), syncDetails: { error: msg } }
     }
 
     connectSuccess.value = true
@@ -408,8 +365,9 @@ async function testIntegration(integ) {
 async function syncIntegration(integ) {
   syncing.value = integ.key
   try {
-    await integrationsApi.sync(integ.key)
-    syncStatus.value[integ.key] = { syncStatus: 'success', lastSyncAt: new Date().toISOString() }
+    const res = await integrationsApi.sync(integ.key)
+    const data = res.data || res
+    syncStatus.value[integ.key] = { syncStatus: 'success', lastSyncAt: new Date().toISOString(), syncDetails: data }
   } catch {
     syncStatus.value[integ.key] = { syncStatus: 'error', lastSyncAt: new Date().toISOString() }
   } finally {
