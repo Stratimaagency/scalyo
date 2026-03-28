@@ -94,9 +94,9 @@ auth.post('/register/', async (c) => {
   ).bind(userResult.id).run()
 
   // Send verification email (non-blocking)
-  const appUrl = c.env.APP_URL || 'https://scalyo.app'
-  const verifyUrl = `${appUrl.replace(/\/$/, '')}/?verify=${verificationToken}`
-  sendEmail(c.env, {
+  const frontendUrl = c.env.FRONTEND_URL || 'https://scalyo.app'
+  const verifyUrl = `${frontendUrl.replace(/\/$/, '')}/login?verify=${verificationToken}`
+  await sendEmail(c.env, {
     to: email,
     subject: 'Vérifiez votre email — Scalyo',
     html: `
@@ -302,8 +302,8 @@ auth.post('/resend-verification/', async (c) => {
     'UPDATE users SET verification_token = ?, verification_expires = ? WHERE id = ?'
   ).bind(token, expires, id).run()
 
-  const appUrl = c.env.APP_URL || 'https://scalyo.app'
-  const verifyUrl = `${appUrl.replace(/\/$/, '')}/?verify=${token}`
+  const frontendUrl = c.env.FRONTEND_URL || 'https://scalyo.app'
+  const verifyUrl = `${frontendUrl.replace(/\/$/, '')}/login?verify=${token}`
   await sendEmail(c.env, {
     to: user.email,
     subject: 'Vérifiez votre email — Scalyo',
