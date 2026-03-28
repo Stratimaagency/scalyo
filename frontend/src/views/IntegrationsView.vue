@@ -175,19 +175,19 @@ const integrations = [
     desc: 'Importe automatiquement vos contacts et deals dans le portefeuille.',
     fields: [
       { key: 'apiKey', label: 'Cle d\'acces HubSpot', type: 'password', placeholder: 'pat-na1-xxxxxxxx-xxxx-xxxx...',
-        hint: '1. Connectez-vous a app.hubspot.com\n2. Roue dentee (Parametres) en haut a droite\n3. Menu gauche : Integrations → Applications privees\n4. Creer une application privee → Nom : Scalyo\n5. Onglet "Portees" : cochez contacts, entreprises, transactions\n6. Cliquez Creer → Copiez le token (commence par pat-...)' },
+        hint: '1. Ouvrez <a href="https://app.hubspot.com/settings" target="_blank">app.hubspot.com/settings</a>\n2. Menu gauche : Integrations → Applications privees\n3. Cliquez "Creer une application privee" → Nom : Scalyo\n4. Onglet "Portees" : cochez contacts, entreprises, transactions\n5. Cliquez Creer → Copiez le token (commence par pat-...)' },
     ]},
   { key: 'pipedrive', name: 'Pipedrive', icon: '🟢', color: '#25C16F', available: true,
     desc: 'Importe vos contacts et deals dans le portefeuille.',
     fields: [
       { key: 'apiKey', label: 'Token API Pipedrive', type: 'password', placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-        hint: 'Connectez-vous a Pipedrive → Cliquez sur votre avatar en haut a droite → Parametres personnels → API → Copiez votre "Token API personnel" et collez-le ici.' },
+        hint: '1. Ouvrez <a href="https://app.pipedrive.com/settings/api" target="_blank">app.pipedrive.com/settings/api</a>\n2. Vous verrez "Votre token API personnel"\n3. Copiez-le et collez-le ici' },
     ]},
   { key: 'intercom', name: 'Intercom', icon: '💬', color: '#286EFA', available: true,
     desc: 'Importe vos contacts et conversations dans le portefeuille.',
     fields: [
       { key: 'apiKey', label: 'Token d\'acces Intercom', type: 'password', placeholder: 'dG9rOmxxxxxxxxxxxxxxxx',
-        hint: 'Connectez-vous a Intercom → Parametres → Integrations → Developer Hub → Nouvelle application → Authentification → Copiez l\'Access Token et collez-le ici.' },
+        hint: '1. Ouvrez <a href="https://app.intercom.com/a/apps/_/developer-hub" target="_blank">app.intercom.com → Developer Hub</a>\n2. Cliquez "New app" → Nom : Scalyo → Internal integration\n3. Onglet "Authentication" → Copiez l\'Access Token\n4. Collez-le ici' },
     ]},
 
   // Support — importent les tickets
@@ -196,18 +196,18 @@ const integrations = [
     fields: [
       { key: 'email', label: 'Email de votre compte Zendesk', type: 'email', placeholder: 'vous@entreprise.com' },
       { key: 'apiKey', label: 'Token API Zendesk', type: 'password', placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-        hint: 'Connectez-vous a Zendesk → Admin (roue dentee) → Canaux → API → Activez "Acces par token" → Ajoutez un token → Copiez-le et collez-le ici.' },
-      { key: 'domain', label: 'Nom de votre espace Zendesk', type: 'text', placeholder: 'votre-entreprise',
-        hint: 'C\'est le debut de votre adresse : votre-entreprise.zendesk.com' },
+        hint: '1. Ouvrez votre Zendesk → Admin Center (roue dentee)\n2. Allez dans <a href="https://support.zendesk.com/hc/en-us/articles/4408889192858" target="_blank">Apps et integrations → API Zendesk</a>\n3. Activez "Acces par token"\n4. Cliquez "Ajouter un token API" → Copiez-le ici' },
+      { key: 'domain', label: 'Sous-domaine Zendesk', type: 'text', placeholder: 'votre-entreprise',
+        hint: 'C\'est le debut de votre adresse : <strong>votre-entreprise</strong>.zendesk.com' },
     ]},
   { key: 'jira', name: 'Jira', icon: '🔷', color: '#0052CC', available: true,
     desc: 'Importe vos tickets et taches dans le Task Board.',
     fields: [
       { key: 'email', label: 'Email de votre compte Atlassian', type: 'email', placeholder: 'vous@entreprise.com' },
       { key: 'apiKey', label: 'Token API Atlassian', type: 'password', placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxx',
-        hint: 'Allez sur id.atlassian.com → Securite → Tokens API → Creer un token API → Copiez-le et collez-le ici.' },
-      { key: 'domain', label: 'Nom de votre espace Jira', type: 'text', placeholder: 'votre-entreprise',
-        hint: 'C\'est le debut de votre adresse : votre-entreprise.atlassian.net' },
+        hint: '1. Ouvrez <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">id.atlassian.com → Tokens API</a>\n2. Cliquez "Creer un token API"\n3. Nom : Scalyo → Creer\n4. Copiez le token et collez-le ici' },
+      { key: 'domain', label: 'Sous-domaine Jira', type: 'text', placeholder: 'votre-entreprise',
+        hint: 'C\'est le debut de votre adresse : <strong>votre-entreprise</strong>.atlassian.net' },
     ]},
 
   // Productivite — synchronisent les taches
@@ -215,13 +215,13 @@ const integrations = [
     desc: 'Importe vos bases de donnees et pages dans Scalyo.',
     fields: [
       { key: 'apiKey', label: 'Secret d\'integration Notion', type: 'password', placeholder: 'secret_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-        hint: '1. Allez sur notion.so/profile/integrations\n2. Cliquez "Nouvelle integration" → Nom : Scalyo → Envoyer\n3. Copiez le "Secret d\'integration interne" (commence par secret_...)\n4. IMPORTANT : Dans Notion, ouvrez la page ou base a synchroniser → cliquez ... (3 points) en haut a droite → Connexions → Connecter a → Scalyo\nSans l\'etape 4, Scalyo ne verra aucune donnee.' },
+        hint: '1. Ouvrez <a href="https://www.notion.so/profile/integrations" target="_blank">notion.so/profile/integrations</a>\n2. Cliquez "Nouvelle integration" → Nom : Scalyo → Envoyer\n3. Copiez le "Secret d\'integration interne" (commence par secret_...)\n4. <strong>IMPORTANT</strong> : Retournez dans Notion → ouvrez la page ou base a synchroniser → cliquez <strong>...</strong> (3 points en haut a droite) → <strong>Connexions</strong> → <strong>Connecter a → Scalyo</strong>\nSans l\'etape 4, Scalyo ne verra aucune donnee.' },
     ]},
   { key: 'asana', name: 'Asana', icon: '🔶', color: '#F06A6A', available: true,
     desc: 'Importe vos taches et projets dans le Task Board.',
     fields: [
       { key: 'apiKey', label: 'Token d\'acces personnel Asana', type: 'password', placeholder: '1/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-        hint: 'Connectez-vous a Asana → Cliquez sur votre photo de profil → Parametres du profil → Applications → Tokens d\'acces personnel → Creer un token → Copiez-le et collez-le ici.' },
+        hint: '1. Ouvrez <a href="https://app.asana.com/0/my-apps" target="_blank">app.asana.com/0/my-apps</a>\n2. Cliquez "Creer un token"\n3. Nom : Scalyo → Creer\n4. Copiez le token et collez-le ici' },
     ]},
 
   // Calendrier
@@ -229,7 +229,7 @@ const integrations = [
     desc: 'Importe vos rendez-vous dans le planning.',
     fields: [
       { key: 'apiKey', label: 'Token d\'acces personnel Calendly', type: 'password', placeholder: 'eyJhbGciOiJIUzI1NiJ9...',
-        hint: 'Connectez-vous a Calendly → Integrations → API et Webhooks → Generer un nouveau token → Copiez-le et collez-le ici.' },
+        hint: '1. Ouvrez <a href="https://calendly.com/integrations/api_webhooks" target="_blank">calendly.com/integrations/api_webhooks</a>\n2. Cliquez "Generer un nouveau token"\n3. Nom : Scalyo → Creer le token\n4. Copiez-le et collez-le ici' },
     ]},
 
   // Notifications — envoient des alertes
@@ -237,14 +237,14 @@ const integrations = [
     desc: 'Recevez des alertes quand un compte client est en danger.',
     fields: [
       { key: 'webhookUrl', label: 'Lien de notification Slack', type: 'url', placeholder: 'https://hooks.slack.com/services/...',
-        hint: 'Dans Slack : Administration → Applications → Cherchez "Incoming Webhooks" → Activez-le → Ajoutez un webhook pour un canal (ex: #alertes-clients) → Copiez le lien et collez-le ici.' },
+        hint: '1. Ouvrez <a href="https://api.slack.com/apps" target="_blank">api.slack.com/apps</a>\n2. Cliquez "Create New App" → "From scratch" → Nom : Scalyo\n3. Menu gauche : "Incoming Webhooks" → Activez-le\n4. Cliquez "Add New Webhook to Workspace" → Choisissez un canal (ex: #alertes)\n5. Copiez le "Webhook URL" et collez-le ici' },
       { key: 'channel', label: 'Nom du canal (optionnel)', type: 'text', placeholder: '#alertes-clients', optional: true },
     ]},
   { key: 'teams', name: 'Microsoft Teams', icon: '🟦', color: '#5B5FC7', available: true,
     desc: 'Recevez des alertes quand un compte client est en danger.',
     fields: [
       { key: 'webhookUrl', label: 'Lien de notification Teams', type: 'url', placeholder: 'https://...webhook.office.com/...',
-        hint: 'Dans Teams : clic droit sur un canal → Connecteurs → Incoming Webhook → Donnez un nom (ex: Scalyo) → Creer → Copiez le lien et collez-le ici.' },
+        hint: '1. Dans Teams, faites un clic droit sur un canal\n2. Cliquez "Connecteurs" (ou "Workflows")\n3. Cherchez "Incoming Webhook" → Configurer\n4. Nom : Scalyo → Creer\n5. Copiez le lien webhook et collez-le ici' },
       { key: 'channel', label: 'Nom du canal (optionnel)', type: 'text', placeholder: '#alertes-clients', optional: true },
     ]},
 ]
