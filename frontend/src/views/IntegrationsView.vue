@@ -30,21 +30,26 @@
             </div>
           </div>
           <div v-if="syncStatus[integ.key]" class="integ-sync-status" :class="'integ-sync-' + syncStatus[integ.key].syncStatus">
-            <span v-if="syncStatus[integ.key].syncStatus === 'success'">{{ t('integSyncOk') }}</span>
-            <span v-else>{{ t('integSyncError') }}</span>
+            <div>
+              <span v-if="syncStatus[integ.key].syncStatus === 'success'">{{ t('integSyncOk') }}</span>
+              <span v-else>{{ t('integSyncError') }}</span>
+              <span v-if="syncStatus[integ.key].syncDetails && syncStatus[integ.key].syncStatus === 'success'" class="integ-sync-details">
+                {{ formatSyncDetails(syncStatus[integ.key].syncDetails) }}
+              </span>
+              <span v-if="syncStatus[integ.key].syncDetails?.error" class="integ-sync-details">
+                {{ syncStatus[integ.key].syncDetails.error }}
+              </span>
+            </div>
             <span v-if="syncStatus[integ.key].lastSyncAt" style="font-size: 10px; opacity: 0.7;">{{ formatDate(syncStatus[integ.key].lastSyncAt) }}</span>
           </div>
           <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button class="btn btn-secondary integ-btn" style="flex: 1;" @click="testIntegration(integ)" :disabled="testing === integ.key">
-              {{ testing === integ.key ? '...' : t('integTest') }}
+            <button class="btn btn-secondary integ-btn" style="flex: 1;" @click="syncIntegration(integ)" :disabled="syncing === integ.key">
+              {{ syncing === integ.key ? 'Synchronisation...' : t('integSync') }}
             </button>
-            <button class="btn btn-primary integ-btn" style="flex: 1;" @click="syncIntegration(integ)" :disabled="syncing === integ.key">
-              {{ syncing === integ.key ? '...' : t('integSync') }}
+            <button class="btn btn-secondary integ-btn" style="flex: 1;" @click="openModal(integ)">
+              <ScalyoIcon name="settings" :size="12" /> Modifier
             </button>
-            <button class="btn btn-secondary integ-btn" style="flex: 0;" @click="openModal(integ)">
-              <ScalyoIcon name="settings" :size="12" />
-            </button>
-            <button class="btn btn-secondary integ-btn" style="flex: 0; color: var(--red);" @click="disconnectIntegration(integ)">
+            <button class="btn btn-secondary integ-btn" style="flex: 0; color: var(--red);" @click="confirmDisconnect(integ)">
               <ScalyoIcon name="x" :size="12" />
             </button>
           </div>
@@ -89,7 +94,7 @@
     </AppCard>
 
     <!-- Connect modal -->
-    <AppModal v-if="modal" :title="'Connecter ' + modal.name" @close="modal = null">
+    <AppModal v-if="modal" :title="(connectedKeys.has(modal.key) ? 'Modifier ' : 'Connecter ') + modal.name" @close="modal = null">
       <div class="integ-modal-body">
         <div class="integ-modal-icon-row">
           <span style="font-size: 40px;">{{ modal.icon }}</span>
@@ -116,7 +121,7 @@
 
         <div style="display: flex; gap: 8px; margin-top: 20px;">
           <button class="btn btn-primary" style="flex: 1;" @click="saveConnection" :disabled="saving">
-            {{ saving ? '...' : 'Connecter' }}
+            {{ saving ? '...' : (connectedKeys.has(modal.key) ? 'Mettre a jour' : 'Connecter') }}
           </button>
           <button class="btn btn-secondary" @click="modal = null">Annuler</button>
         </div>
@@ -338,6 +343,11 @@ async function saveConnection() {
   }
 }
 
+function confirmDisconnect(integ) {
+  if (!confirm(`Deconnecter ${integ.name} ?`)) return
+  disconnectIntegration(integ)
+}
+
 async function disconnectIntegration(integ) {
   try {
     await integrationsApi.disconnect(integ.key)
@@ -345,6 +355,7 @@ async function disconnectIntegration(integ) {
     newKeys.delete(integ.key)
     connectedKeys.value = newKeys
     delete connectedConfigs.value[integ.key]
+    delete syncStatus.value[integ.key]
   } catch (err) {
     loadError.value = err.response?.data?.error || err.message || 'Erreur'
   }
@@ -368,11 +379,29 @@ async function syncIntegration(integ) {
     const res = await integrationsApi.sync(integ.key)
     const data = res.data || res
     syncStatus.value[integ.key] = { syncStatus: 'success', lastSyncAt: new Date().toISOString(), syncDetails: data }
-  } catch {
-    syncStatus.value[integ.key] = { syncStatus: 'error', lastSyncAt: new Date().toISOString() }
+  } catch (err) {
+    const msg = err.response?.data?.error || err.message || 'Erreur de synchronisation'
+    syncStatus.value[integ.key] = { syncStatus: 'error', lastSyncAt: new Date().toISOString(), syncDetails: { error: msg } }
   } finally {
     syncing.value = null
   }
+}
+
+function formatSyncDetails(details) {
+  if (!details || details.error) return ''
+  const parts = []
+  if (details.contacts) parts.push(`${details.contacts} contact${details.contacts > 1 ? 's' : ''}`)
+  if (details.deals) parts.push(`${details.deals} deal${details.deals > 1 ? 's' : ''}`)
+  if (details.issues) parts.push(`${details.issues} ticket${details.issues > 1 ? 's' : ''}`)
+  if (details.tasks) parts.push(`${details.tasks} tache${details.tasks > 1 ? 's' : ''}`)
+  if (details.events) parts.push(`${details.events} evenement${details.events > 1 ? 's' : ''}`)
+  if (details.tickets) parts.push(`${details.tickets} ticket${details.tickets > 1 ? 's' : ''}`)
+  if (details.users) parts.push(`${details.users} utilisateur${details.users > 1 ? 's' : ''}`)
+  if (details.conversations) parts.push(`${details.conversations} conversation${details.conversations > 1 ? 's' : ''}`)
+  if (details.entries) parts.push(`${details.entries} entree${details.entries > 1 ? 's' : ''}`)
+  if (details.projects) parts.push(`${details.projects} projet${details.projects > 1 ? 's' : ''}`)
+  if (details.message) return details.message
+  return parts.length ? `(${parts.join(', ')})` : ''
 }
 
 function formatDate(dateStr) {
@@ -439,6 +468,7 @@ onMounted(() => {
 }
 .integ-sync-success { background: var(--greenBg, #f0fdf4); color: var(--green); border: 1px solid var(--greenBorder, #bbf7d0); }
 .integ-sync-error { background: var(--redBg, #fef2f2); color: var(--red); border: 1px solid var(--redBorder, #fecaca); }
+.integ-sync-details { display: block; font-size: 10px; font-weight: 400; opacity: 0.8; margin-top: 2px; }
 
 .integ-error {
   margin-top: 12px; padding: 10px; border-radius: 8px;
