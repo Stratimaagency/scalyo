@@ -43,11 +43,14 @@
             <span v-if="syncStatus[integ.key].lastSyncAt" style="font-size: 10px; opacity: 0.7;">{{ formatDate(syncStatus[integ.key].lastSyncAt) }}</span>
           </div>
           <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button class="btn btn-secondary integ-btn" style="flex: 1;" @click="syncIntegration(integ)" :disabled="syncing === integ.key">
-              {{ syncing === integ.key ? 'Synchronisation...' : t('integSync') }}
+            <button v-if="hasDetailView(integ.key)" class="btn btn-primary integ-btn" style="flex: 1;" @click="goToDetail(integ)">
+              Ouvrir
             </button>
-            <button class="btn btn-secondary integ-btn" style="flex: 1;" @click="openModal(integ)">
-              <ScalyoIcon name="settings" :size="12" /> Modifier
+            <button class="btn btn-secondary integ-btn" style="flex: 1;" @click="syncIntegration(integ)" :disabled="syncing === integ.key">
+              {{ syncing === integ.key ? 'Sync...' : t('integSync') }}
+            </button>
+            <button class="btn btn-secondary integ-btn" style="flex: 0;" @click="openModal(integ)">
+              <ScalyoIcon name="settings" :size="12" />
             </button>
             <button class="btn btn-secondary integ-btn" style="flex: 0; color: var(--red);" @click="confirmDisconnect(integ)">
               <ScalyoIcon name="x" :size="12" />
@@ -135,6 +138,7 @@
 
 <script setup>
 import { ref, computed, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from '../i18n'
 import { integrationsApi } from '../api'
 import AppCard from '../components/AppCard.vue'
@@ -143,6 +147,7 @@ import ScalyoIcon from '../components/ScalyoIcon.vue'
 import PlanGate from '../components/PlanGate.vue'
 
 const { t } = useI18n()
+const router = useRouter()
 
 const modal = ref(null)
 const saving = ref(false)
@@ -402,6 +407,14 @@ function formatSyncDetails(details) {
   if (details.projects) parts.push(`${details.projects} projet${details.projects > 1 ? 's' : ''}`)
   if (details.message) return details.message
   return parts.length ? `(${parts.join(', ')})` : ''
+}
+
+function hasDetailView(key) {
+  return !['slack', 'teams'].includes(key)
+}
+
+function goToDetail(integ) {
+  router.push({ name: 'integration-detail', params: { key: integ.key } })
 }
 
 function formatDate(dateStr) {

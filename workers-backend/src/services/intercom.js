@@ -4,11 +4,7 @@
 const BASE = 'https://api.intercom.io'
 
 function headers(apiKey) {
-  return {
-    Authorization: `Bearer ${apiKey}`,
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-  }
+  return { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json', Accept: 'application/json' }
 }
 
 export async function testConnection(config) {
@@ -27,7 +23,6 @@ export async function sync(config, env, companyId) {
   const h = headers(config.apiKey)
   const results = { contacts: 0, conversations: 0 }
 
-  // Fetch contacts
   const contactsRes = await fetch(`${BASE}/contacts?per_page=50`, { headers: h })
   if (!contactsRes.ok) throw new Error(`Intercom contacts: erreur ${contactsRes.status}`)
   const contactsData = await contactsRes.json()
@@ -54,7 +49,6 @@ export async function sync(config, env, companyId) {
     results.contacts++
   }
 
-  // Fetch open conversations count
   const convRes = await fetch(`${BASE}/conversations?open=true&per_page=1`, { headers: h })
   if (convRes.ok) {
     const convData = await convRes.json()
@@ -62,4 +56,85 @@ export async function sync(config, env, companyId) {
   }
 
   return results
+}
+
+// ─── LIVE DATA ──────────────────────────────────────────
+export async function fetchData(config) {
+  const h = headers(config.apiKey)
+
+  // Contacts
+  const contactsRes = await fetch(`${BASE}/contacts?per_page=50`, { headers: h })
+  if (!contactsRes.ok) throw new Error(`Erreur Intercom contacts (${contactsRes.status})`)
+  const contactsData = await contactsRes.json()
+
+  const contacts = (contactsData.data || []).map(c => ({
+    id: c.id,
+    name: c.name || c.email || 'Sans nom',
+    email: c.email || '',
+    phone: c.phone || '',
+    role: c.role || '',
+    lastSeen: c.last_seen_at ? new Date(c.last_seen_at * 1000).toISOString() : '',
+    createdAt: c.created_at ? new Date(c.created_at * 1000).toISOString() : '',
+  }))
+
+  // Conversations
+  const convRes = await fetch(`${BASE}/conversations?per_page=20&sort_field=updated_at&sort_order=desc`, { headers: h })
+  let conversations = []
+  if (convRes.ok) {
+    const convData = await convRes.json()
+    conversations = (convData.conversations || []).map(c => ({
+      id: c.id,
+      title: c.source?.subject || c.source?.body?.slice(0, 80) || `Conversation ${c.id}`,
+      state: c.state || '',
+      priority: c.priority || 'normal',
+      assignee: c.assignee?.name || 'Non assigne',
+      updatedAt: c.updated_at ? new Date(c.updated_at * 1000).toISOString() : '',
+    }))
+  }
+
+  return {
+    sections: [
+      { key: 'contacts', title: 'Contacts', icon: '👥', items: contacts, total: contactsData.total_count || contacts.length,
+        columns: [
+          { key: 'name', label: 'Nom' },
+          { key: 'email', label: 'Email' },
+          { key: 'phone', label: 'Telephone' },
+          { key: 'role', label: 'Role' },
+          { key: 'lastSeen', label: 'Derniere visite', type: 'date' },
+        ],
+        actions: ['create'],
+      },
+      { key: 'conversations', title: 'Conversations', icon: '💬', items: conversations, total: conversations.length,
+        columns: [
+          { key: 'title', label: 'Sujet' },
+          { key: 'state', label: 'Statut' },
+          { key: 'priority', label: 'Priorite' },
+          { key: 'assignee', label: 'Assigne a' },
+          { key: 'updatedAt', label: 'Mis a jour', type: 'date' },
+        ],
+        actions: [],
+      },
+    ],
+  }
+}
+
+// ─── ACTIONS ────────────────────────────────────────────
+export async function performAction(config, action, payload) {
+  const h = headers(config.apiKey)
+
+  if (action === 'createContact') {
+    const res = await fetch(`${BASE}/contacts`, {
+      method: 'POST', headers: h,
+      body: JSON.stringify({
+        role: 'user',
+        name: payload.name || '',
+        email: payload.email || '',
+        phone: payload.phone || '',
+      }),
+    })
+    if (!res.ok) throw new Error(`Erreur creation contact (${res.status})`)
+    return { ok: true, message: 'Contact cree dans Intercom' }
+  }
+
+  throw new Error(`Action inconnue: ${action}`)
 }

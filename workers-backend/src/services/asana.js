@@ -4,7 +4,7 @@
 const BASE = 'https://app.asana.com/api/1.0'
 
 function headers(apiKey) {
-  return { Authorization: `Bearer ${apiKey}`, Accept: 'application/json' }
+  return { Authorization: `Bearer ${apiKey}`, Accept: 'application/json', 'Content-Type': 'application/json' }
 }
 
 export async function testConnection(config) {
@@ -23,21 +23,18 @@ export async function sync(config, env, companyId) {
   const h = headers(config.apiKey)
   const results = { tasks: 0, projects: 0 }
 
-  // Get user's workspace
   const meRes = await fetch(`${BASE}/users/me`, { headers: h })
   if (!meRes.ok) throw new Error('Asana: impossible de recuperer l\'utilisateur')
   const me = await meRes.json()
   const workspace = me.data?.workspaces?.[0]?.gid
   if (!workspace) throw new Error('Asana: aucun workspace trouve')
 
-  // Fetch projects
   const projRes = await fetch(`${BASE}/projects?workspace=${workspace}&limit=100`, { headers: h })
   if (projRes.ok) {
     const projData = await projRes.json()
     results.projects = (projData.data || []).length
   }
 
-  // Fetch my incomplete tasks
   const tasksRes = await fetch(
     `${BASE}/tasks?workspace=${workspace}&assignee=me&completed_since=now&limit=50&opt_fields=name,completed,assignee.name,due_on`,
     { headers: h }
@@ -45,7 +42,6 @@ export async function sync(config, env, companyId) {
   if (!tasksRes.ok) throw new Error(`Asana taches: erreur ${tasksRes.status}`)
   const tasksData = await tasksRes.json()
 
-  // Load existing task_boards JSON singleton
   const existing = await env.DB.prepare(
     'SELECT id, tasks FROM task_boards WHERE company_id = ?'
   ).bind(companyId).first()
@@ -55,51 +51,129 @@ export async function sync(config, env, companyId) {
     try { currentTasks = JSON.parse(existing.tasks || '[]') } catch { currentTasks = [] }
   }
 
-  // Build map of existing Asana tasks
   const existingMap = new Map()
   for (const t of currentTasks) {
-    if (t.externalId && t.externalId.startsWith('asana_')) {
-      existingMap.set(t.externalId, t)
-    }
+    if (t.externalId && t.externalId.startsWith('asana_')) existingMap.set(t.externalId, t)
   }
 
-  // Process Asana tasks
   const newAsanaTasks = []
   for (const task of tasksData.data || []) {
     const externalId = `asana_${task.gid}`
-    const isDone = task.completed || false
-
-    const taskObj = {
+    newAsanaTasks.push({
       id: existingMap.get(externalId)?.id || Date.now().toString() + Math.random().toString(36).slice(2, 6),
       title: task.name || 'Tache Asana',
-      note: 'Source: Asana',
-      color: 'blue',
-      quadrant: 'q2',
-      dueDate: task.due_on || '',
-      account: '',
-      done: isDone,
-      externalId,
+      note: 'Source: Asana', color: 'blue', quadrant: 'q2',
+      dueDate: task.due_on || '', account: '', done: task.completed || false, externalId,
       createdAt: existingMap.get(externalId)?.createdAt || new Date().toISOString(),
-    }
-
-    newAsanaTasks.push(taskObj)
+    })
     results.tasks++
   }
 
-  // Merge: keep non-Asana tasks, replace Asana ones
   const nonAsanaTasks = currentTasks.filter(t => !t.externalId || !t.externalId.startsWith('asana_'))
   const mergedTasks = [...nonAsanaTasks, ...newAsanaTasks]
 
-  // Upsert into task_boards singleton
   if (existing) {
-    await env.DB.prepare(
-      "UPDATE task_boards SET tasks = ?, updated_at = datetime('now') WHERE company_id = ?"
-    ).bind(JSON.stringify(mergedTasks), companyId).run()
+    await env.DB.prepare("UPDATE task_boards SET tasks = ?, updated_at = datetime('now') WHERE company_id = ?")
+      .bind(JSON.stringify(mergedTasks), companyId).run()
   } else {
-    await env.DB.prepare(
-      "INSERT INTO task_boards (company_id, tasks) VALUES (?, ?)"
-    ).bind(companyId, JSON.stringify(mergedTasks)).run()
+    await env.DB.prepare("INSERT INTO task_boards (company_id, tasks) VALUES (?, ?)")
+      .bind(companyId, JSON.stringify(mergedTasks)).run()
   }
 
   return results
+}
+
+// ─── LIVE DATA ──────────────────────────────────────────
+export async function fetchData(config) {
+  const h = headers(config.apiKey)
+
+  const meRes = await fetch(`${BASE}/users/me`, { headers: h })
+  if (!meRes.ok) throw new Error('Erreur Asana')
+  const me = await meRes.json()
+  const workspace = me.data?.workspaces?.[0]?.gid
+  if (!workspace) throw new Error('Aucun workspace Asana')
+
+  // Projects
+  const projRes = await fetch(`${BASE}/projects?workspace=${workspace}&limit=100&opt_fields=name,color,created_at`, { headers: h })
+  let projects = []
+  if (projRes.ok) {
+    const projData = await projRes.json()
+    projects = (projData.data || []).map(p => ({
+      gid: p.gid, name: p.name || '', color: p.color || '',
+    }))
+  }
+
+  // Tasks
+  const tasksRes = await fetch(
+    `${BASE}/tasks?workspace=${workspace}&assignee=me&completed_since=now&limit=100&opt_fields=name,completed,due_on,assignee.name,projects.name,notes`,
+    { headers: h }
+  )
+  if (!tasksRes.ok) throw new Error(`Erreur Asana taches (${tasksRes.status})`)
+  const tasksData = await tasksRes.json()
+
+  const tasks = (tasksData.data || []).map(t => ({
+    gid: t.gid,
+    name: t.name || '',
+    completed: t.completed || false,
+    dueOn: t.due_on || '',
+    project: t.projects?.[0]?.name || '',
+    notes: (t.notes || '').slice(0, 200),
+  }))
+
+  return {
+    sections: [
+      { key: 'tasks', title: 'Taches', icon: '✅', items: tasks, total: tasks.length,
+        columns: [
+          { key: 'name', label: 'Nom' },
+          { key: 'project', label: 'Projet' },
+          { key: 'dueOn', label: 'Echeance', type: 'date' },
+          { key: 'completed', label: 'Fait', type: 'boolean' },
+        ],
+        actions: ['create', 'complete'],
+      },
+      { key: 'projects', title: 'Projets', icon: '📂', items: projects, total: projects.length,
+        columns: [
+          { key: 'name', label: 'Nom' },
+        ],
+        actions: [],
+      },
+    ],
+    meta: { workspace, projects },
+  }
+}
+
+// ─── ACTIONS ────────────────────────────────────────────
+export async function performAction(config, action, payload) {
+  const h = headers(config.apiKey)
+
+  if (action === 'createTask') {
+    const meRes = await fetch(`${BASE}/users/me`, { headers: h })
+    const me = await meRes.json()
+    const workspace = me.data?.workspaces?.[0]?.gid
+
+    const body = {
+      data: {
+        name: payload.name || '',
+        workspace, assignee: 'me',
+        ...(payload.dueOn && { due_on: payload.dueOn }),
+        ...(payload.notes && { notes: payload.notes }),
+        ...(payload.project && { projects: [payload.project] }),
+      },
+    }
+
+    const res = await fetch(`${BASE}/tasks`, { method: 'POST', headers: h, body: JSON.stringify(body) })
+    if (!res.ok) throw new Error(`Erreur creation tache (${res.status})`)
+    return { ok: true, message: 'Tache creee dans Asana' }
+  }
+
+  if (action === 'completeTask') {
+    const res = await fetch(`${BASE}/tasks/${payload.gid}`, {
+      method: 'PUT', headers: h,
+      body: JSON.stringify({ data: { completed: true } }),
+    })
+    if (!res.ok) throw new Error(`Erreur completion tache (${res.status})`)
+    return { ok: true, message: 'Tache terminee dans Asana' }
+  }
+
+  throw new Error(`Action inconnue: ${action}`)
 }
