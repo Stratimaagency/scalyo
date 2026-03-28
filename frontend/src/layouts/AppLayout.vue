@@ -154,7 +154,7 @@ onMounted(async () => {
     try {
       const { data } = await authApi.getProfile()
       if (data.email_verified) {
-        authStore.user.email_verified = true
+        authStore.user = { ...authStore.user, email_verified: true }
       }
     } catch {}
   }
