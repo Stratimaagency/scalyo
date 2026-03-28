@@ -82,12 +82,17 @@
       </div>
       <main class="main-scroll" style="flex: 1; overflow-y: auto;">
         <!-- Email verification banner -->
-        <div v-if="authStore.user && !authStore.user.email_verified"
-          style="background: #FEF3C7; border-bottom: 1px solid #F59E0B; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: #92400E;">
+        <div v-if="showVerifyBanner"
+          style="background: #FEF3C7; border-bottom: 1px solid #F59E0B; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; color: #92400E;">
           <span>Veuillez vérifier votre adresse email. Consultez votre boîte de réception.</span>
-          <button @click="resendVerification" style="background: #F59E0B; color: #fff; border: none; border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer;">
-            {{ resendMsg || 'Renvoyer' }}
-          </button>
+          <div style="display: flex; gap: 6px; flex-shrink: 0;">
+            <button @click="checkVerified" style="background: #92400E; color: #fff; border: none; border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer;">
+              {{ checkMsg || "C'est fait" }}
+            </button>
+            <button @click="resendVerification" style="background: #F59E0B; color: #fff; border: none; border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer;">
+              {{ resendMsg || 'Renvoyer' }}
+            </button>
+          </div>
         </div>
         <div class="view-pad">
           <router-view />
@@ -132,7 +137,10 @@ const { t } = useI18n()
 const { navItems, mobileNavItems } = useNavigation()
 
 const company = computed(() => authStore.company)
+const showVerifyBanner = ref(authStore.user && !authStore.user.email_verified)
 const resendMsg = ref('')
+const checkMsg = ref('')
+
 async function resendVerification() {
   try {
     resendMsg.value = '...'
@@ -145,13 +153,26 @@ async function resendVerification() {
   }
 }
 
-onMounted(async () => {
+async function checkVerified() {
+  checkMsg.value = '...'
+  try {
+    const { data } = await authApi.getProfile()
+    if (data.email_verified) {
+      authStore.user = data
+      showVerifyBanner.value = false
+    } else {
+      checkMsg.value = 'Pas encore'
+      setTimeout(() => { checkMsg.value = '' }, 3000)
+    }
+  } catch {
+    checkMsg.value = 'Erreur'
+    setTimeout(() => { checkMsg.value = '' }, 3000)
+  }
+}
+
+onMounted(() => {
   if (!portfolioStore.accounts.length) {
     portfolioStore.fetchAccounts()
-  }
-  // Refresh profile to get latest email_verified status
-  if (authStore.user && !authStore.user.email_verified) {
-    await authStore.init()
   }
 })
 

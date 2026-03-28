@@ -136,6 +136,12 @@ onMounted(async () => {
   if (verifyTokenParam) {
     try {
       await authApi.verifyEmail(verifyTokenParam)
+      // If already logged in, update store and redirect to dashboard
+      if (authStore.isAuthenticated) {
+        await authStore.init()
+        router.push({ name: 'dashboard' })
+        return
+      }
       successMsg.value = 'Email vérifié avec succès ! Vous pouvez vous connecter.'
     } catch {
       error.value = 'Lien de vérification invalide ou expiré.'
