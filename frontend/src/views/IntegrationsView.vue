@@ -118,7 +118,7 @@
               class="integ-input"
               :placeholder="field.placeholder"
             />
-            <span v-if="field.hint" class="integ-hint">{{ field.hint }}</span>
+            <span v-if="field.hint" class="integ-hint" v-html="field.hint.replace(/\\n/g, '<br>')"></span>
           </template>
         </div>
 
@@ -175,7 +175,7 @@ const integrations = [
     desc: 'Importe automatiquement vos contacts et deals dans le portefeuille.',
     fields: [
       { key: 'apiKey', label: 'Cle d\'acces HubSpot', type: 'password', placeholder: 'pat-na1-xxxxxxxx-xxxx-xxxx...',
-        hint: 'Connectez-vous a HubSpot → Parametres (roue dentee en haut a droite) → Integrations → Applications privees → Creer une application privee → Donnez un nom (ex: Scalyo) → Onglet "Portees" : cochez CRM (contacts, entreprises, transactions) → Creer → Copiez le token et collez-le ici.' },
+        hint: '1. Connectez-vous a app.hubspot.com\n2. Roue dentee (Parametres) en haut a droite\n3. Menu gauche : Integrations → Applications privees\n4. Creer une application privee → Nom : Scalyo\n5. Onglet "Portees" : cochez contacts, entreprises, transactions\n6. Cliquez Creer → Copiez le token (commence par pat-...)' },
     ]},
   { key: 'pipedrive', name: 'Pipedrive', icon: '🟢', color: '#25C16F', available: true,
     desc: 'Importe vos contacts et deals dans le portefeuille.',
@@ -214,8 +214,8 @@ const integrations = [
   { key: 'notion', name: 'Notion', icon: '📝', color: '#787878', available: true,
     desc: 'Importe vos bases de donnees et pages dans Scalyo.',
     fields: [
-      { key: 'apiKey', label: 'Cle d\'integration Notion', type: 'password', placeholder: 'secret_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-        hint: 'Allez sur notion.so/my-integrations → Nouvelle integration → Donnez un nom (ex: Scalyo) → Validez → Copiez le "Secret interne" et collez-le ici. Ensuite, dans Notion, ouvrez la page ou base a synchroniser → ... → Connexions → Ajoutez votre integration.' },
+      { key: 'apiKey', label: 'Secret d\'integration Notion', type: 'password', placeholder: 'secret_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+        hint: '1. Allez sur notion.so/profile/integrations\n2. Cliquez "Nouvelle integration" → Nom : Scalyo → Envoyer\n3. Copiez le "Secret d\'integration interne" (commence par secret_...)\n4. IMPORTANT : Dans Notion, ouvrez la page ou base a synchroniser → cliquez ... (3 points) en haut a droite → Connexions → Connecter a → Scalyo\nSans l\'etape 4, Scalyo ne verra aucune donnee.' },
     ]},
   { key: 'asana', name: 'Asana', icon: '🔶', color: '#F06A6A', available: true,
     desc: 'Importe vos taches et projets dans le Task Board.',
