@@ -229,7 +229,7 @@ auth.post('/forgot-password/', async (c) => {
 
   const frontendUrl = c.env.FRONTEND_URL || 'https://scalyo.pages.dev'
   const resetUrl = `${frontendUrl}/login?reset=${token}`
-  sendEmail(c.env, {
+  const sent = await sendEmail(c.env, {
     to: user.email,
     subject: 'Réinitialisation de mot de passe — Scalyo',
     html: `
@@ -247,7 +247,8 @@ auth.post('/forgot-password/', async (c) => {
         <p style="color: #999; font-size: 12px;">Ce lien expire dans 1 heure. Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
       </div>
     `,
-  }).catch(() => {})
+  })
+  if (!sent) console.error('Failed to send reset email to:', user.email)
 
   return c.json({ message: 'Si un compte existe, un email a été envoyé.' })
 })
