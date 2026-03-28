@@ -13,7 +13,7 @@ import coach from './routes/coach.js'
 import emailStudio from './routes/email-studio.js'
 import billing from './routes/billing.js'
 import feedback from './routes/feedback.js'
-import integrations from './routes/integrations.js'
+import { registerIntegrationRoutes } from './routes/integrations.js'
 import { registerTeamRoutes } from './routes/team.js'
 
 const app = new Hono()
@@ -41,7 +41,7 @@ app.route('/api/coach', coach)
 app.route('/api/email-studio', emailStudio)
 app.route('/api/billing', billing)
 app.route('/api/feedback', feedback)
-app.route('/api/integrations', integrations)
+registerIntegrationRoutes(app)
 registerTeamRoutes(app)
 
 // 404 fallback
