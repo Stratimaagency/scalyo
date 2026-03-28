@@ -3,6 +3,7 @@ import { hashPassword, verifyPassword } from '../utils/password.js'
 import { signJwt } from '../utils/jwt.js'
 import { authMiddleware, companyRequired } from '../middleware/auth.js'
 import { sendEmail } from '../utils/email.js'
+import { verificationEmail, resetPasswordEmail } from '../utils/email-templates.js'
 
 const auth = new Hono()
 
@@ -98,23 +99,8 @@ auth.post('/register/', async (c) => {
   const verifyUrl = `${frontendUrl.replace(/\/$/, '')}/login?verify=${verificationToken}`
   await sendEmail(c.env, {
     to: email,
-    subject: 'Vérifiez votre email — Scalyo',
-    html: `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px;">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <span style="font-size: 28px; font-weight: 900; letter-spacing: -1px;">scal<span style="color: #4DB6A0;">yo</span></span>
-        </div>
-        <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Confirmez votre adresse email</h2>
-        <p style="color: #666; font-size: 14px; line-height: 1.6;">
-          Cliquez sur le bouton ci-dessous pour activer votre compte Scalyo.
-        </p>
-        <div style="text-align: center; margin: 28px 0;">
-          <a href="${verifyUrl}" style="display: inline-block; background: #4DB6A0; color: #fff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 15px;">Vérifier mon email</a>
-        </div>
-        <p style="color: #999; font-size: 12px;">Ce lien expire dans 24 heures.</p>
-        <p style="color: #999; font-size: 11px; text-align: center; margin-top: 24px;">Cet email a été envoyé automatiquement par Scalyo.</p>
-      </div>
-    `,
+    subject: 'Bienvenue sur Scalyo ! Confirmez votre email 🎉',
+    html: verificationEmail(verifyUrl),
   }).catch(() => {})
 
   const tokens = await generateTokens(userResult, c.env.JWT_SECRET)
@@ -231,22 +217,8 @@ auth.post('/forgot-password/', async (c) => {
   const resetUrl = `${frontendUrl}/login?reset=${token}`
   const sent = await sendEmail(c.env, {
     to: user.email,
-    subject: 'Réinitialisation de mot de passe — Scalyo',
-    html: `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px;">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <span style="font-size: 28px; font-weight: 900; letter-spacing: -1px;">scal<span style="color: #4DB6A0;">yo</span></span>
-        </div>
-        <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Réinitialiser votre mot de passe</h2>
-        <p style="color: #666; font-size: 14px; line-height: 1.6;">
-          Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe.
-        </p>
-        <div style="text-align: center; margin: 28px 0;">
-          <a href="${resetUrl}" style="display: inline-block; background: #4DB6A0; color: #fff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 15px;">Nouveau mot de passe</a>
-        </div>
-        <p style="color: #999; font-size: 12px;">Ce lien expire dans 1 heure. Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
-      </div>
-    `,
+    subject: 'Réinitialiser votre mot de passe 🔐 — Scalyo',
+    html: resetPasswordEmail(resetUrl),
   })
   if (!sent) console.error('Failed to send reset email to:', user.email)
 
@@ -306,20 +278,8 @@ auth.post('/resend-verification/', async (c) => {
   const verifyUrl = `${frontendUrl.replace(/\/$/, '')}/login?verify=${token}`
   await sendEmail(c.env, {
     to: user.email,
-    subject: 'Vérifiez votre email — Scalyo',
-    html: `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px;">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <span style="font-size: 28px; font-weight: 900; letter-spacing: -1px;">scal<span style="color: #4DB6A0;">yo</span></span>
-        </div>
-        <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Confirmez votre adresse email</h2>
-        <p style="color: #666; font-size: 14px; line-height: 1.6;">Cliquez sur le bouton ci-dessous pour activer votre compte.</p>
-        <div style="text-align: center; margin: 28px 0;">
-          <a href="${verifyUrl}" style="display: inline-block; background: #4DB6A0; color: #fff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 15px;">Vérifier mon email</a>
-        </div>
-        <p style="color: #999; font-size: 12px;">Ce lien expire dans 24 heures.</p>
-      </div>
-    `,
+    subject: 'Confirmez votre email 🎉 — Scalyo',
+    html: verificationEmail(verifyUrl),
   })
 
   return c.json({ message: 'Verification email sent' })
