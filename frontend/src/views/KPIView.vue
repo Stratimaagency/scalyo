@@ -76,8 +76,8 @@
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
               <div class="kpi-value" :style="{ color: kpi.color || 'var(--teal)' }">{{ kpi.value }}</div>
-              <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 8px;" @click="editCustomKpi(i)">{{ t('edit') }}</button>
-              <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 8px; color: var(--red);" @click="deleteCustomKpi(i)">{{ t('delete') }}</button>
+              <button class="btn btn-secondary" style="font-size: 12px; padding: 6px 14px;" @click="editCustomKpi(i)">{{ t('edit') }}</button>
+              <button class="btn btn-secondary" style="font-size: 12px; padding: 6px 14px; color: var(--red);" @click="deleteCustomKpi(i)">{{ t('delete') }}</button>
             </div>
           </div>
           <div v-if="kpi.goal && kpi.goal > 0" style="font-size: 11px; color: var(--muted); margin-top: 6px">

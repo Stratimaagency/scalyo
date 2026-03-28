@@ -95,8 +95,8 @@
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
               <span class="tag" :class="m.role === 'manager' ? 'risk-low' : 'risk-medium'" style="font-size: 11px; padding: 3px 10px;">{{ m.role === 'manager' ? 'Manager' : 'CSM' }}</span>
-              <button v-if="m.role === 'csm'" class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px;" @click="openAccountsModal(m)">{{ t('manageAccounts') || 'Comptes' }}</button>
-              <button v-if="m.id !== authStore.user?.id" class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px; color: var(--red);" @click="removeMember(m)">{{ t('teamRemoveBtn') }}</button>
+              <button v-if="m.role === 'csm'" class="btn btn-secondary" style="font-size: 12px; padding: 7px 14px;" @click="openAccountsModal(m)">{{ t('manageAccounts') || 'Comptes' }}</button>
+              <button v-if="m.id !== authStore.user?.id" class="btn btn-secondary" style="font-size: 12px; padding: 7px 14px; color: var(--red);" @click="removeMember(m)">{{ t('teamRemoveBtn') }}</button>
             </div>
           </div>
         </div>

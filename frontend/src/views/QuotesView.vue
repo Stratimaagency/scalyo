@@ -54,11 +54,11 @@
           <span class="csm-chip" :style="{ background: statusBg(q.status), color: statusColor(q.status), borderColor: statusColor(q.status) }">
             {{ statusLabel(q.status) }}
           </span>
-          <button class="btn btn-sm btn-secondary" @click.stop="duplicateQuote(q)" :title="t('quotesDuplicate')">
-            <ScalyoIcon name="copy" :size="13" />
+          <button class="btn btn-sm btn-secondary" @click.stop="duplicateQuote(q)" style="display: flex; align-items: center; gap: 4px; padding: 6px 12px; font-size: 12px;">
+            <ScalyoIcon name="copy" :size="12" /> {{ t('quotesDuplicate') }}
           </button>
-          <button class="btn btn-sm btn-danger" @click.stop="removeQuote(q.id)" :title="t('delete')">
-            <ScalyoIcon name="trash" :size="13" />
+          <button class="btn btn-sm btn-danger" @click.stop="removeQuote(q.id)" style="display: flex; align-items: center; gap: 4px; padding: 6px 12px; font-size: 12px;">
+            <ScalyoIcon name="trash" :size="12" /> {{ t('delete') }}
           </button>
         </div>
       </div>

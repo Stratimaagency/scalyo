@@ -680,16 +680,16 @@ const TaskCard = {
           <span v-if="isOverdue" style="font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: rgba(239,68,68,0.12); color: #EF4444">Overdue</span>
           <span v-if="task.dueDate && !isOverdue" style="font-size: 10px; color: var(--muted)">{{ task.dueDate }}</span>
         </div>
-        <div style="display: flex; gap: 4px">
-          <button @click.stop="$emit('edit', task)" style="background: none; border: none; cursor: pointer; font-size: 12px; color: var(--muted); padding: 2px 4px; border-radius: 4px">✏️</button>
-          <button @click.stop="$emit('delete', task.id)" style="background: none; border: none; cursor: pointer; font-size: 12px; color: var(--muted); padding: 2px 4px; border-radius: 4px">🗑</button>
+        <div style="display: flex; gap: 4px; align-items: center;">
+          <button @click.stop="$emit('edit', task)" style="border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 11px; color: var(--muted); padding: 4px 8px; background: var(--bg); display: flex; align-items: center; gap: 3px;">✏️ Modifier</button>
+          <button @click.stop="$emit('delete', task.id)" style="border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 11px; color: var(--red); padding: 4px 8px; background: var(--bg); display: flex; align-items: center; gap: 3px;">🗑 Suppr.</button>
           <select
             @change="if($event.target.value) { $emit('move', task.id, $event.target.value); $event.target.value = ''; }"
             @click.stop
             value=""
-            style="font-size: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--muted); padding: 2px 4px; cursor: pointer"
+            style="font-size: 11px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--muted); padding: 4px 8px; cursor: pointer"
           >
-            <option value="">→</option>
+            <option value="">Deplacer →</option>
             <option v-for="q in otherQuads" :key="q.id" :value="q.id">{{ q.icon }} {{ q.label }}</option>
           </select>
         </div>
