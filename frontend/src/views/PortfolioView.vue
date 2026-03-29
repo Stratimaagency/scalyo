@@ -469,17 +469,20 @@ const mrrLabel = computed(() => {
 })
 
 // ─── Standard todo templates ───
-const STANDARD_TODO_TYPES = [
-  { type: 'call', label: 'Call client' },
-  { type: 'meeting', label: 'Schedule meeting' },
-  { type: 'email', label: 'Send follow-up email' },
-  { type: 'qbr', label: 'Prepare QBR' },
-  { type: 'renewal', label: 'Renewal check' },
-  { type: 'health_check', label: 'Health check review' },
-]
+const STANDARD_TODO_TYPES = computed(() => {
+  const l = prefsStore.lang
+  return [
+    { type: 'call', label: l === 'en' ? 'Call client' : l === 'kr' ? '고객 통화' : 'Appeler le client' },
+    { type: 'meeting', label: l === 'en' ? 'Schedule meeting' : l === 'kr' ? '미팅 예약' : 'Planifier un meeting' },
+    { type: 'email', label: l === 'en' ? 'Send follow-up email' : l === 'kr' ? '후속 이메일 전송' : 'Envoyer un email de suivi' },
+    { type: 'qbr', label: l === 'en' ? 'Prepare QBR' : l === 'kr' ? 'QBR 준비' : 'Préparer le QBR' },
+    { type: 'renewal', label: l === 'en' ? 'Renewal check' : l === 'kr' ? '갱신 확인' : 'Vérifier le renouvellement' },
+    { type: 'health_check', label: l === 'en' ? 'Health check review' : l === 'kr' ? '헬스 체크 리뷰' : 'Revue du health check' },
+  ]
+})
 
 const standardTodos = computed(() => {
-  return STANDARD_TODO_TYPES.map(tmpl => {
+  return STANDARD_TODO_TYPES.value.map(tmpl => {
     const existing = accountTodos.value.find(t => t.type === tmpl.type)
     return {
       type: tmpl.type,
