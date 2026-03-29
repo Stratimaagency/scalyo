@@ -236,19 +236,23 @@ function friendlyError(err) {
 
 // Integration definitions (same as IntegrationsView)
 const integrations = {
-  hubspot: { name: 'HubSpot', icon: '🟠', color: '#FF7A59', desc: 'CRM — Contacts et deals' },
-  pipedrive: { name: 'Pipedrive', icon: '🟢', color: '#25C16F', desc: 'CRM — Contacts et deals' },
-  intercom: { name: 'Intercom', icon: '💬', color: '#286EFA', desc: 'Contacts et conversations' },
-  zendesk: { name: 'Zendesk', icon: '🎫', color: '#17A2B8', desc: 'Tickets de support' },
-  jira: { name: 'Jira', icon: '🔷', color: '#0052CC', desc: 'Tickets et tâches' },
-  notion: { name: 'Notion', icon: '📝', color: '#787878', desc: 'Bases de données et pages' },
-  asana: { name: 'Asana', icon: '🔶', color: '#F06A6A', desc: 'Tâches et projets' },
-  calendly: { name: 'Calendly', icon: '📅', color: '#006BFF', desc: 'Rendez-vous' },
-  slack: { name: 'Slack', icon: '💜', color: '#4A154B', desc: 'Notifications' },
-  teams: { name: 'Teams', icon: '🟦', color: '#5B5FC7', desc: 'Notifications' },
+  hubspot: { name: 'HubSpot', icon: '🟠', color: '#FF7A59', descKey: 'integDescHubspot' },
+  pipedrive: { name: 'Pipedrive', icon: '🟢', color: '#25C16F', descKey: 'integDescPipedrive' },
+  intercom: { name: 'Intercom', icon: '💬', color: '#286EFA', descKey: 'integDescIntercom' },
+  zendesk: { name: 'Zendesk', icon: '🎫', color: '#17A2B8', descKey: 'integDescZendesk' },
+  jira: { name: 'Jira', icon: '🔷', color: '#0052CC', descKey: 'integDescJira' },
+  notion: { name: 'Notion', icon: '📝', color: '#787878', descKey: 'integDescNotion' },
+  asana: { name: 'Asana', icon: '🔶', color: '#F06A6A', descKey: 'integDescAsana' },
+  calendly: { name: 'Calendly', icon: '📅', color: '#006BFF', descKey: 'integDescCalendly' },
+  slack: { name: 'Slack', icon: '💜', color: '#4A154B', descKey: 'integDescSlack' },
+  teams: { name: 'Teams', icon: '🟦', color: '#5B5FC7', descKey: 'integDescTeams' },
 }
 
-const integDef = computed(() => integrations[key.value] || null)
+const integDef = computed(() => {
+  const def = integrations[key.value]
+  if (!def) return null
+  return { ...def, desc: t(def.descKey) }
+})
 
 async function refreshData() {
   loading.value = true
