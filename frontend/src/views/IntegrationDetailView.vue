@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="id-header">
       <router-link :to="{ name: 'integrations' }" class="id-back">
-        <ScalyoIcon name="arrow-left" :size="14" /> Integrations
+        <ScalyoIcon name="arrow-left" :size="14" /> {{ t('integrations') }}
       </router-link>
       <div class="id-title-row">
         <div class="id-icon-wrap" :style="{ background: integDef?.color + '15', border: '1px solid ' + (integDef?.color || '#888') + '30' }">
@@ -16,10 +16,10 @@
         </div>
         <div style="margin-left: auto; display: flex; gap: 8px;">
           <button class="btn btn-secondary" @click="refreshData" :disabled="loading">
-            {{ loading ? 'Chargement...' : 'Actualiser' }}
+            {{ loading ? t('loading') : t('refresh') }}
           </button>
           <button class="btn btn-primary" @click="doSync" :disabled="syncing">
-            {{ syncing ? 'Synchronisation...' : 'Synchroniser' }}
+            {{ syncing ? t('syncing') : t('syncNow') }}
           </button>
         </div>
       </div>
@@ -28,23 +28,19 @@
     <!-- Error -->
     <div v-if="error" class="id-error">
       {{ error }}
-      <button class="btn btn-secondary" style="margin-left: 8px; font-size: 12px;" @click="refreshData">Réessayer</button>
+      <button class="btn btn-secondary" style="margin-left: 8px; font-size: 12px;" @click="refreshData">{{ t('retry') }}</button>
     </div>
 
     <!-- Success message -->
     <div v-if="successMsg" class="id-success">{{ successMsg }}</div>
 
     <!-- Loading -->
-    <div v-if="loading && !data" class="id-loading">Chargement des données...</div>
+    <div v-if="loading && !data" class="id-loading">{{ t('integLoadingData') }}</div>
 
     <!-- Notion: no databases warning -->
     <div v-if="key === 'notion' && data && !data.databases?.length && !loading" class="id-error" style="background: #1e293b; border-color: #334155; color: #94a3b8;">
-      <strong style="color: #f59e0b;">Aucune base de données trouvée.</strong><br>
-      Pour que Scalyo voie vos données Notion :<br>
-      1. Ouvrez la page ou base dans Notion<br>
-      2. Cliquez <strong>...</strong> (3 points en haut à droite)<br>
-      3. <strong>Connexions</strong> → <strong>Connecter à</strong> → choisissez votre intégration Scalyo<br>
-      Puis cliquez "Actualiser" ci-dessus.
+      <strong style="color: #f59e0b;">{{ t('integNoDatabase') }}.</strong><br>
+      <span style="white-space: pre-line;">{{ t('integNotionInstructions') }}</span>
     </div>
 
     <!-- Notion: special databases view -->
@@ -53,7 +49,7 @@
         <div class="id-section-header">
           <h4 class="id-section-title">📊 {{ db.title }} <span class="id-count">({{ db.total }})</span></h4>
           <button v-if="canCreate(key)" class="btn btn-primary btn-sm" @click="openCreateForm('createPage', { databaseId: db.id, titleProperty: db.columns.find(c => c.propType === 'title')?.key || 'Name' })">
-            + Ajouter
+            + {{ t('add') }}
           </button>
         </div>
         <div class="id-table-wrap">
@@ -71,7 +67,7 @@
                 </td>
               </tr>
               <tr v-if="!db.entries.length">
-                <td :colspan="db.columns.length" style="text-align: center; color: var(--muted);">Aucune entrée</td>
+                <td :colspan="db.columns.length" style="text-align: center; color: var(--muted);">{{ t('integNoData') }}</td>
               </tr>
             </tbody>
           </table>
@@ -85,7 +81,7 @@
         <div class="id-section-header">
           <h4 class="id-section-title">{{ section.icon }} {{ section.title }} <span class="id-count">({{ section.total }})</span></h4>
           <button v-if="section.actions?.includes('create')" class="btn btn-primary btn-sm" @click="openCreateForm(getCreateAction(section.key), {})">
-            + Ajouter
+            + {{ t('add') }}
           </button>
         </div>
         <div class="id-table-wrap">
@@ -103,29 +99,29 @@
                   <span v-else-if="col.type === 'date'">{{ formatDate(item[col.key]) }}</span>
                   <span v-else-if="col.type === 'datetime'">{{ formatDateTime(item[col.key]) }}</span>
                   <span v-else-if="col.type === 'boolean'">{{ item[col.key] ? '✅' : '' }}</span>
-                  <span v-else-if="col.type === 'url' && item[col.key]"><a :href="item[col.key]" target="_blank" class="id-link">Lien</a></span>
+                  <span v-else-if="col.type === 'url' && item[col.key]"><a :href="item[col.key]" target="_blank" class="id-link">{{ t('link') }}</a></span>
                   <span v-else :class="getStatusClass(col.key, item[col.key])">{{ item[col.key] || '-' }}</span>
                 </td>
                 <td v-if="section.actions?.length" class="id-actions-cell">
                   <button v-if="section.actions.includes('edit')" class="id-action-btn" @click="openEditForm(section.key, item)">
-                    <ScalyoIcon name="settings" :size="11" /> Modifier
+                    <ScalyoIcon name="settings" :size="11" /> {{ t('edit') }}
                   </button>
                   <button v-if="section.actions.includes('complete') && !item.completed" class="id-action-btn id-action-complete" @click="completeItem(section.key, item)">
-                    ✓ Terminer
+                    ✓ {{ t('done') }}
                   </button>
                   <button v-if="section.actions.includes('updateStatus')" class="id-action-btn" @click="openUpdateStatusForm(section.key, item)">
-                    Modifier statut
+                    {{ t('changeStatus') }}
                   </button>
                 </td>
               </tr>
               <tr v-if="!section.items?.length">
                 <td :colspan="section.columns.length + (section.actions?.length ? 1 : 0)" style="text-align: center; color: var(--muted); padding: 20px;">
-                  <div>Aucune donnée pour le moment</div>
+                  <div>{{ t('integNoData') }}</div>
                   <div style="font-size: 12px; margin-top: 6px;">
                     {{ getEmptyHint(section.key) }}
                   </div>
                   <button class="btn btn-secondary" style="margin-top: 10px; font-size: 12px;" @click="doSync">
-                    Synchroniser maintenant
+                    {{ t('syncNow') }}
                   </button>
                 </td>
               </tr>
@@ -138,7 +134,7 @@
     <!-- Notion recent pages -->
     <template v-if="key === 'notion' && data?.recentPages?.length">
       <div class="id-section">
-        <h4 class="id-section-title">📄 Pages récentes</h4>
+        <h4 class="id-section-title">📄 {{ t('integRecentPages') }}</h4>
         <div class="id-pages-grid">
           <a v-for="page in data.recentPages" :key="page.id" :href="page.url" target="_blank" class="id-page-card">
             <span class="id-page-icon">{{ page.icon }}</span>
@@ -155,13 +151,13 @@
     <AppModal v-if="actionModal" :title="actionModal.title" @close="actionModal = null">
       <div class="id-form">
         <div v-if="actionModal.loading" style="text-align: center; padding: 20px; color: var(--muted);">
-          Chargement des statuts disponibles...
+          {{ t('integLoadingStatuses') }}
         </div>
         <div v-if="actionError" class="id-error" style="margin-bottom: 12px;">{{ actionError }}</div>
         <template v-if="!actionModal.loading" v-for="field in actionModal.fields" :key="field.key">
           <label class="id-form-label">{{ field.label }}</label>
           <select v-if="field.type === 'select'" v-model="actionForm[field.key]" class="id-form-input">
-            <option value="">-- Choisir --</option>
+            <option value="">{{ t('integChoose') }}</option>
             <option v-for="opt in field.options" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
           </select>
           <textarea v-else-if="field.type === 'textarea'" v-model="actionForm[field.key]" class="id-form-input" rows="3" :placeholder="field.placeholder || ''"></textarea>
@@ -169,9 +165,9 @@
         </template>
         <div v-if="!actionModal.loading" style="display: flex; gap: 8px; margin-top: 16px;">
           <button class="btn btn-primary" style="flex: 1;" @click="submitAction" :disabled="submitting">
-            {{ submitting ? '...' : actionModal.submitLabel || 'Créer' }}
+            {{ submitting ? '...' : actionModal.submitLabel || t('create') }}
           </button>
-          <button class="btn btn-secondary" @click="actionModal = null">Annuler</button>
+          <button class="btn btn-secondary" @click="actionModal = null">{{ t('cancel') }}</button>
         </div>
       </div>
     </AppModal>
@@ -183,9 +179,15 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { integrationsApi } from '../api'
+import { useI18n } from '../i18n'
+import { usePreferencesStore } from '../stores/preferences'
 import AppModal from '../components/AppModal.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
 import PlanGate from '../components/PlanGate.vue'
+
+const { t } = useI18n()
+const prefsStore = usePreferencesStore()
+const userLocale = computed(() => ({ fr: 'fr-FR', en: 'en-US', kr: 'ko-KR' }[prefsStore.lang] || 'fr-FR'))
 
 const route = useRoute()
 const router = useRouter()
@@ -207,28 +209,29 @@ const loadingTransitions = ref(false)
 function friendlyError(err) {
   const raw = err.response?.data?.error || err.message || ''
   const lower = raw.toLowerCase()
-  // Erreurs réseau
+  const name = integDef.value?.name || ''
+  // Network errors
   if (err.code === 'ERR_NETWORK' || lower.includes('failed to fetch') || lower.includes('network'))
-    return 'Problème de connexion internet. Vérifiez votre réseau et réessayez.'
-  // Token/clé invalide ou expiré
+    return t('integErrNetwork')
+  // Token/key invalid or expired
   if (lower.includes('401') || lower.includes('unauthorized') || lower.includes('invalid') || lower.includes('expired') || lower.includes('invalide'))
-    return `Votre clé d'accès ${integDef.value?.name || ''} est invalide ou expirée. Allez dans Intégrations → Modifier pour la renouveler.`
-  // Accès refusé
+    return t('integErrUnauthorized').replace('{name}', name)
+  // Access denied
   if (lower.includes('403') || lower.includes('forbidden'))
-    return `Accès refusé par ${integDef.value?.name || 'le service'}. Vérifiez les permissions de votre clé d'accès.`
-  // Ressource non trouvée
+    return t('integErrForbidden').replace('{name}', name || t('integrations'))
+  // Resource not found
   if (lower.includes('404') || lower.includes('not found'))
-    return `La ressource demandée n'existe pas ou plus dans ${integDef.value?.name || 'le service'}.`
-  // Erreur serveur externe
+    return t('integErrNotFound').replace('{name}', name || t('integrations'))
+  // External server error
   if (lower.includes('500') || lower.includes('502') || lower.includes('503') || lower.includes('server'))
-    return `${integDef.value?.name || 'Le service'} est temporairement indisponible. Réessayez dans quelques minutes.`
+    return t('integErrServer').replace('{name}', name || t('integrations'))
   // Rate limit
   if (lower.includes('429') || lower.includes('rate') || lower.includes('too many'))
-    return 'Trop de requêtes envoyées. Attendez une minute puis réessayez.'
-  // Message du backend déjà en français (commence par majuscule et contient des accents ou mots français)
+    return t('integErrRateLimit')
+  // Message from backend already formatted
   if (raw && /^[A-ZÀ-Ü]/.test(raw)) return raw
   // Fallback
-  return raw || 'Une erreur est survenue. Réessayez ou vérifiez votre configuration.'
+  return raw || t('integErrFallback')
 }
 
 // Integration definitions (same as IntegrationsView)
@@ -266,7 +269,7 @@ async function doSync() {
   try {
     const res = await integrationsApi.sync(key.value)
     const result = res.data || res
-    successMsg.value = 'Synchronisation terminée !'
+    successMsg.value = t('integSyncDone')
     setTimeout(() => { successMsg.value = '' }, 3000)
     // Refresh data after sync
     await refreshData()
@@ -298,70 +301,70 @@ function getCreateFields(action, extraData) {
   switch (action) {
     case 'createContact':
       if (key.value === 'hubspot') return [
-        { key: 'firstname', label: 'Prénom', placeholder: 'Jean' },
-        { key: 'lastname', label: 'Nom', placeholder: 'Dupont' },
-        { key: 'email', label: 'Email', type: 'email', placeholder: 'jean@example.com' },
-        { key: 'phone', label: 'Téléphone', placeholder: '+33 6 00 00 00 00' },
-        { key: 'company', label: 'Entreprise', placeholder: 'Acme Inc.' },
+        { key: 'firstname', label: t('integFieldFirstName'), placeholder: 'Jean' },
+        { key: 'lastname', label: t('integFieldLastName'), placeholder: 'Dupont' },
+        { key: 'email', label: t('integFieldEmail'), type: 'email', placeholder: 'jean@example.com' },
+        { key: 'phone', label: t('integFieldPhone'), placeholder: '+33 6 00 00 00 00' },
+        { key: 'company', label: t('integFieldCompany'), placeholder: 'Acme Inc.' },
       ]
       if (key.value === 'pipedrive') return [
-        { key: 'name', label: 'Nom complet', placeholder: 'Jean Dupont' },
-        { key: 'email', label: 'Email', type: 'email', placeholder: 'jean@example.com' },
-        { key: 'phone', label: 'Téléphone', placeholder: '+33 6 00 00 00 00' },
+        { key: 'name', label: t('integFieldFullName'), placeholder: 'Jean Dupont' },
+        { key: 'email', label: t('integFieldEmail'), type: 'email', placeholder: 'jean@example.com' },
+        { key: 'phone', label: t('integFieldPhone'), placeholder: '+33 6 00 00 00 00' },
       ]
       return [
-        { key: 'name', label: 'Nom', placeholder: 'Jean Dupont' },
-        { key: 'email', label: 'Email', type: 'email', placeholder: 'jean@example.com' },
-        { key: 'phone', label: 'Téléphone', placeholder: '+33 6 00 00 00 00' },
+        { key: 'name', label: t('name'), placeholder: 'Jean Dupont' },
+        { key: 'email', label: t('integFieldEmail'), type: 'email', placeholder: 'jean@example.com' },
+        { key: 'phone', label: t('integFieldPhone'), placeholder: '+33 6 00 00 00 00' },
       ]
     case 'createDeal':
       if (key.value === 'hubspot') return [
-        { key: 'name', label: 'Nom du deal', placeholder: 'Contrat Acme' },
-        { key: 'amount', label: 'Montant', type: 'number', placeholder: '10000' },
+        { key: 'name', label: t('integFieldDealName'), placeholder: 'Contrat Acme' },
+        { key: 'amount', label: t('integFieldAmount'), type: 'number', placeholder: '10000' },
       ]
       return [
-        { key: 'name', label: 'Nom du deal', placeholder: 'Contrat Acme' },
-        { key: 'value', label: 'Montant', type: 'number', placeholder: '10000' },
+        { key: 'name', label: t('integFieldDealName'), placeholder: 'Contrat Acme' },
+        { key: 'value', label: t('integFieldAmount'), type: 'number', placeholder: '10000' },
       ]
     case 'createIssue': {
       const projects = data.value?.meta?.projects || []
       return [
-        { key: 'project', label: 'Projet', type: 'select', options: projects.map(p => ({ value: p.key, label: `${p.key} - ${p.name}` })) },
-        { key: 'summary', label: 'Résumé', placeholder: 'Description courte du ticket' },
-        { key: 'type', label: 'Type', type: 'select', options: [
-          { value: 'Task', label: 'Tâche' }, { value: 'Bug', label: 'Bug' }, { value: 'Story', label: 'Story' },
+        { key: 'project', label: t('integFieldProject'), type: 'select', options: projects.map(p => ({ value: p.key, label: `${p.key} - ${p.name}` })) },
+        { key: 'summary', label: t('integFieldSummary'), placeholder: '' },
+        { key: 'type', label: t('integFieldType'), type: 'select', options: [
+          { value: 'Task', label: t('integTypeTask') }, { value: 'Bug', label: t('integTypeBug') }, { value: 'Story', label: t('integTypeStory') },
         ]},
-        { key: 'description', label: 'Description', type: 'textarea', placeholder: 'Détails...' },
-        { key: 'priority', label: 'Priorité', type: 'select', options: [
-          { value: 'Highest', label: 'Critique' }, { value: 'High', label: 'Haute' },
-          { value: 'Medium', label: 'Moyenne' }, { value: 'Low', label: 'Basse' },
+        { key: 'description', label: t('integFieldDescription'), type: 'textarea', placeholder: '' },
+        { key: 'priority', label: t('integFieldPriority'), type: 'select', options: [
+          { value: 'Highest', label: t('integPriorityCritical') }, { value: 'High', label: t('integPriorityHigh') },
+          { value: 'Medium', label: t('integPriorityMedium') }, { value: 'Low', label: t('integPriorityLow') },
         ]},
       ]
     }
     case 'createTicket':
       return [
-        { key: 'subject', label: 'Sujet', placeholder: 'Problème de connexion...' },
-        { key: 'description', label: 'Description', type: 'textarea', placeholder: 'Détails...' },
-        { key: 'priority', label: 'Priorité', type: 'select', options: [
-          { value: 'urgent', label: 'Urgente' }, { value: 'high', label: 'Haute' },
-          { value: 'normal', label: 'Normale' }, { value: 'low', label: 'Basse' },
+        { key: 'subject', label: t('integFieldSubject'), placeholder: '' },
+        { key: 'description', label: t('integFieldDescription'), type: 'textarea', placeholder: '' },
+        { key: 'priority', label: t('integFieldPriority'), type: 'select', options: [
+          { value: 'urgent', label: t('integPriorityUrgent') }, { value: 'high', label: t('integPriorityHigh') },
+          { value: 'normal', label: t('integPriorityNormal') }, { value: 'low', label: t('integPriorityLow') },
         ]},
       ]
     case 'createTask': {
       const projects = data.value?.meta?.projects || []
       return [
-        { key: 'name', label: 'Nom de la tâche', placeholder: 'Ma nouvelle tâche' },
-        { key: 'dueOn', label: 'Échéance', type: 'date' },
-        { key: 'notes', label: 'Notes', type: 'textarea', placeholder: 'Détails...' },
-        ...(projects.length ? [{ key: 'project', label: 'Projet', type: 'select', options: projects.map(p => ({ value: p.gid, label: p.name })) }] : []),
+        { key: 'name', label: t('integFieldTaskName'), placeholder: '' },
+        { key: 'dueOn', label: t('integFieldDueDate'), type: 'date' },
+        { key: 'notes', label: t('notes'), type: 'textarea', placeholder: '' },
+        ...(projects.length ? [{ key: 'project', label: t('integFieldProject'), type: 'select', options: projects.map(p => ({ value: p.gid, label: p.name })) }] : []),
       ]
     }
     case 'createPage':
       return [
-        { key: 'title', label: 'Titre de la page', placeholder: 'Nouvelle page' },
+        { key: 'title', label: t('integFieldPageTitle'), placeholder: '' },
       ]
     default:
-      return [{ key: 'name', label: 'Nom', placeholder: '' }]
+      return [{ key: 'name', label: t('name'), placeholder: '' }]
   }
 }
 
@@ -378,7 +381,7 @@ function openCreateForm(action, extraData) {
     action,
     fields,
     extraData,
-    submitLabel: 'Créer',
+    submitLabel: t('create'),
   }
 }
 
@@ -391,10 +394,10 @@ function openEditForm(sectionKey, item) {
   Object.assign(actionForm, { id: item.id, ...item })
 
   actionModal.value = {
-    title: `Modifier ${item.name || item.summary || ''}`,
+    title: `${t('edit')} ${item.name || item.summary || ''}`,
     action,
     fields,
-    submitLabel: 'Enregistrer',
+    submitLabel: t('save'),
   }
 }
 
@@ -403,7 +406,7 @@ async function completeItem(sectionKey, item) {
     if (key.value === 'asana') {
       await integrationsApi.performAction(key.value, 'completeTask', { gid: item.gid })
     }
-    successMsg.value = 'Tâche terminée !'
+    successMsg.value = t('integTaskDone')
     setTimeout(() => { successMsg.value = '' }, 2000)
     await refreshData()
   } catch (err) {
@@ -419,10 +422,10 @@ async function openUpdateStatusForm(sectionKey, item) {
     // Show loading modal immediately
     loadingTransitions.value = true
     actionModal.value = {
-      title: `Modifier statut — ${item.key || item.summary || ''}`,
+      title: `${t('changeStatus')} — ${item.key || item.summary || ''}`,
       action: 'updateStatus',
       fields: [],
-      submitLabel: 'Mettre à jour',
+      submitLabel: t('update'),
       loading: true,
     }
     try {
@@ -430,13 +433,13 @@ async function openUpdateStatusForm(sectionKey, item) {
       const transitions = res.data?.transitions || res.transitions || []
       actionForm.issueId = item.id
       actionModal.value = {
-        title: `Modifier statut — ${item.key || item.summary || ''}`,
+        title: `${t('changeStatus')} — ${item.key || item.summary || ''}`,
         action: 'updateStatus',
         fields: [{
-          key: 'transitionId', label: 'Nouveau statut', type: 'select',
-          options: transitions.map(t => ({ value: t.id, label: t.name })),
+          key: 'transitionId', label: t('integFieldNewStatus'), type: 'select',
+          options: transitions.map(tr => ({ value: tr.id, label: tr.name })),
         }],
-        submitLabel: 'Mettre à jour',
+        submitLabel: t('update'),
       }
     } catch (err) {
       actionModal.value = null
