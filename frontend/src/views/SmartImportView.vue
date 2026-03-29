@@ -71,7 +71,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(row, i) in sheet.previewRows.slice(0, 5)" :key="i" style="border-bottom: 1px solid var(--border);">
+              <tr v-for="(row, i) in (sheet.previewRows || []).slice(0, 5)" :key="i" style="border-bottom: 1px solid var(--border);">
                 <td v-for="col in sheet.previewHeaders" :key="col" style="padding: 4px 6px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                   {{ row[col] ?? '—' }}
                 </td>
@@ -146,7 +146,7 @@
         {{ importResult.events || 0 }} {{ t('planning').toLowerCase() }}
       </p>
       <div v-if="importResult.errors && importResult.errors.length" style="margin-bottom: 16px; text-align: left; background: var(--redBg); border-radius: 8px; padding: 12px; font-size: 12px; color: var(--red);">
-        <div v-for="(err, i) in importResult.errors.slice(0, 5)" :key="i">{{ err }}</div>
+        <div v-for="(err, i) in (importResult.errors || []).slice(0, 5)" :key="i">{{ err }}</div>
       </div>
       <div style="display: flex; gap: 8px; justify-content: center;">
         <router-link :to="{ name: 'portfolio' }" class="btn btn-primary" style="padding: 10px 24px;">{{ t('viewPortfolio') }}</router-link>
@@ -1022,11 +1022,12 @@ async function doImport() {
       }
     }
 
-    // Dedup tasks one more time
+    // Dedup tasks + remove invalid ones
     const seenTitles = new Set()
     payload.tasks = payload.tasks.filter(t => {
-      const key = t.title.toLowerCase().replace(/[^a-z0-9]/g, '')
-      if (seenTitles.has(key)) return false
+      if (!t || !t.title) return false
+      const key = String(t.title).toLowerCase().replace(/[^a-z0-9]/g, '')
+      if (!key || seenTitles.has(key)) return false
       seenTitles.add(key)
       return true
     })
@@ -1176,49 +1177,54 @@ async function doImport() {
     // 3. Save tasks via the SAME API that TaskBoardView uses
     if (payload.tasks.length) {
       try {
-        // Get existing tasks first
-        const { data: existing } = await taskApi.getTasks()
-        const existingTasks = existing.tasks || []
-        // Format tasks to match TaskBoardView format exactly
+        let existingTasks = []
+        try {
+          const { data: taskData } = await taskApi.getTasks()
+          existingTasks = taskData?.tasks || []
+        } catch { existingTasks = [] }
+
         const now = new Date().toISOString()
         const newTasks = payload.tasks.map((t, i) => ({
           id: (Date.now() + i).toString(),
-          title: String(t.title || ''),
+          title: String(t.title || 'Sans titre'),
           note: String(t.note || ''),
           quadrant: t.quadrant || 'q1',
           color: t.color || 'teal',
           done: false,
-          dueDate: t.due || t.dueDate || '',
-          account: t.account || '',
+          dueDate: String(t.due || t.dueDate || ''),
+          account: String(t.account || ''),
           createdAt: now,
         }))
-        // Save ALL tasks (existing + new)
         await taskApi.saveTasks([...existingTasks, ...newTasks])
         result.tasks = newTasks.length
       } catch (e) {
-        result.errors.push('Tasks: ' + (e.response?.data?.error || e.message))
+        result.errors.push('Tasks: ' + (e?.message || 'erreur'))
       }
     }
 
     // 4. Save planning events via the SAME API that PlanningView uses
     if (payload.events && payload.events.length) {
       try {
-        const { data: existing } = await planningApi.getEvents()
-        const existingEvents = existing.events || []
+        let existingEvents = []
+        try {
+          const { data: planData } = await planningApi.getEvents()
+          existingEvents = planData?.events || []
+        } catch { existingEvents = [] }
+
         const newEvents = payload.events.map((ev, i) => ({
           id: (Date.now() + 1000 + i).toString(),
-          title: ev.title,
-          date: ev.date,
-          startTime: ev.startTime || '09:00',
-          endTime: ev.endTime || '10:00',
+          title: String(ev.title || ''),
+          date: String(ev.date || ''),
+          startTime: String(ev.startTime || '09:00'),
+          endTime: String(ev.endTime || '10:00'),
           color: ev.color || 'teal',
-          account: ev.account || '',
-          notes: ev.notes || '',
+          account: String(ev.account || ''),
+          notes: String(ev.notes || ''),
         }))
         await planningApi.saveEvents([...existingEvents, ...newEvents])
         result.events = newEvents.length
       } catch (e) {
-        result.errors.push('Planning: ' + (e.response?.data?.error || e.message))
+        result.errors.push('Planning: ' + (e?.message || 'erreur'))
       }
     }
 
