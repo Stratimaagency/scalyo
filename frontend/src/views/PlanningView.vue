@@ -426,7 +426,7 @@ function openAddEvent(dateStr) {
   editEventData.value = null
   savedEvent.value = null
   formTitle.value = ''
-  formDate.value = dateStr || todayStr
+  formDate.value = dateStr || todayStr.value
   formTime.value = '09:00'
   formEndTime.value = '10:00'
   formColor.value = 'teal'
