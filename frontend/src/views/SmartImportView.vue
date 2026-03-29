@@ -276,39 +276,47 @@ async function processFile(file) {
         rawData[key] = rows
 
         const sheetLower = sheetName.toLowerCase()
+        const base = { name: key, columns: guessColumns(headers), previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length }
 
-        // --- DETECT & EXTRACT ---
+        // --- UNIVERSAL DETECTION: try ALL types, pick the best match ---
+        const scores = {
+          portfolio: scorePortfolio(sheetLower, headersLower, rows),
+          team: scoreTeam(sheetLower, headersLower, rows),
+          kpis: scoreKpis(sheetLower, headersLower, rows),
+          tasks: scoreTasks(sheetLower, headersLower, rows),
+          roadmap: scoreRoadmap(sheetLower, headersLower, rows),
+          planning: scorePlanning(sheetLower, headersLower, rows),
+        }
 
-        // 1. Portfolio (client list)
-        if (isPortfolioSheet(sheetLower, headersLower)) {
-          mappedSheets.push({ name: key, module: 'portfolio', confidence: 0.99, columns: guessColumns(headers), previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length, notes: 'Portefeuille client détecté' })
+        // Pick the module with highest score
+        const best = Object.entries(scores).sort((a, b) => b[1] - a[1])[0]
+        const [module, score] = best
 
-        // 2. CSM Team data → extract KPIs + generate tasks
-        } else if (isCsmSheet(sheetLower, headersLower)) {
-          mappedSheets.push({ name: key, module: 'team', confidence: 0.95, columns: guessColumns(headers), previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length, notes: 'Données équipe CSM' })
+        if (score > 0) {
+          mappedSheets.push({ ...base, module, confidence: Math.min(0.99, score), notes: getModuleNotes(module) })
+        }
+
+        // ALWAYS scan for KPIs (every sheet can contain KPI data)
+        extractKpisFromRows(rows, kpis)
+
+        // ALWAYS check for CSM/team data (generates wellbeing tasks)
+        if (scores.team > 0.3) {
           extractCsmInsights(rows, kpis, tasks, teamData)
+        }
 
-        // 3. KPI / Dashboard → extract all numbers
-        } else if (isKpiSheet(sheetLower, headersLower)) {
-          mappedSheets.push({ name: key, module: 'kpis', confidence: 0.95, columns: {}, previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length, notes: 'KPIs extraits' })
-          extractKpisFromRows(rows, kpis)
+        // ALWAYS extract tasks from task-like sheets
+        if (scores.tasks > 0.3) {
+          extractTaskRows(rows, headers, tasks)
+        }
 
-        // 4. Tasks
-        } else if (isTaskSheet(sheetLower, headersLower)) {
-          mappedSheets.push({ name: key, module: 'tasks', confidence: 0.9, columns: guessColumns(headers), previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length, notes: 'Tâches détectées' })
+        // ALWAYS extract roadmap items
+        if (scores.roadmap > 0.3) {
+          extractRoadmapRows(rows, headers, tasks)
+        }
 
-        // 5. Roadmap
-        } else if (isRoadmapSheet(sheetLower, headersLower)) {
-          mappedSheets.push({ name: key, module: 'roadmap', confidence: 0.9, columns: guessColumns(headers), previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length, notes: 'Roadmap détectée' })
-
-        // 6. Auto-detect: scan ALL cells for KPI-like values
-        } else {
-          extractKpisFromRows(rows, kpis)
-          // If it has name-like columns + numbers, treat as portfolio
-          const auto = autoDetectModule(rows, headersLower)
-          if (auto !== 'skip') {
-            mappedSheets.push({ name: key, module: auto, confidence: 0.6, columns: guessColumns(headers), previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length, notes: 'Auto-détecté' })
-          }
+        // ALWAYS extract planning events
+        if (scores.planning > 0.3) {
+          extractPlanningRows(rows, headers, tasks)
         }
       }
     }
@@ -545,6 +553,154 @@ function extractCsmInsights(rows, kpis, tasks, teamData) {
   }
 }
 
+// === UNIVERSAL SCORING — each function returns 0-1 confidence ===
+
+function scorePortfolio(name, headers, rows) {
+  let score = 0
+  if (['client', 'portfolio', 'portefeuille', 'account', 'compte'].some(k => name.includes(k))) score += 0.5
+  if (headers.some(h => ['client', 'compte', 'account', 'entreprise', 'company', 'nom client', 'id client', 'société'].includes(h))) score += 0.3
+  if (headers.some(h => h.includes('arr') || h.includes('mrr') || h.includes('ca') || h.includes('revenue') || h.includes('plan'))) score += 0.2
+  if (rows.length > 10) score += 0.1
+  return Math.min(1, score)
+}
+
+function scoreTeam(name, headers, rows) {
+  let score = 0
+  if (['csm', 'équipe', 'equipe', 'team', 'vue csm', 'profil'].some(k => name.includes(k))) score += 0.5
+  if (headers.some(h => h === 'csm' || h.includes('séniorité') || h.includes('seniorite'))) score += 0.3
+  if (headers.some(h => h.includes('churn') || h.includes('client'))) score += 0.2
+  // Check values for person names
+  const hasNames = rows.slice(0, 5).some(r => Object.values(r).some(v => /^[A-ZÀ-Ü][a-zà-ü]+ [A-ZÀ-Ü]/.test(String(v))))
+  if (hasNames && rows.length <= 20) score += 0.2
+  return Math.min(1, score)
+}
+
+function scoreKpis(name, headers, rows) {
+  let score = 0
+  if (['kpi', 'dashboard', 'synthese', 'résumé', 'summary', 'indicateur', 'metric', 'stats'].some(k => name.includes(k))) score += 0.5
+  if (headers.some(h => h.includes('nps') || h.includes('churn') || h.includes('health score') || h.includes('total'))) score += 0.3
+  // KPI tables are usually small with label-value pairs
+  if (rows.length <= 10 && rows.length > 0) score += 0.1
+  // Check for KPI values in cells
+  const allVals = rows.flatMap(r => Object.values(r).map(v => String(v).toLowerCase()))
+  if (allVals.some(v => v.includes('total client') || v.includes('ca total') || v.includes('nps') || v.includes('health'))) score += 0.3
+  return Math.min(1, score)
+}
+
+function scoreTasks(name, headers, rows) {
+  let score = 0
+  if (['task', 'tâche', 'tache', 'todo', 'action', 'à faire', 'a faire', 'suivi', 'backlog'].some(k => name.includes(k))) score += 0.5
+  if (headers.some(h => ['tâche', 'task', 'action', 'todo', 'à faire', 'titre', 'description', 'assigné'].includes(h))) score += 0.3
+  if (headers.some(h => h.includes('priorité') || h.includes('priority') || h.includes('statut') || h.includes('status') || h.includes('deadline') || h.includes('échéance'))) score += 0.2
+  // Check for action verbs in values
+  const allVals = rows.slice(0, 10).flatMap(r => Object.values(r).map(v => String(v).toLowerCase()))
+  if (allVals.some(v => /^(appeler|planifier|envoyer|vérifier|préparer|organiser|suivre|relancer|contacter|mettre à jour|call|send|schedule|review|prepare)/i.test(v))) score += 0.3
+  return Math.min(1, score)
+}
+
+function scoreRoadmap(name, headers, rows) {
+  let score = 0
+  if (['roadmap', 'plan', 'jalons', 'milestone', 'étape', 'projet', 'objectif', 'okr'].some(k => name.includes(k))) score += 0.5
+  if (headers.some(h => ['phase', 'milestone', 'jalon', 'étape', 'objectif', 'livrable', 'deliverable'].includes(h))) score += 0.3
+  if (headers.some(h => h.includes('progress') || h.includes('avancement') || h.includes('%'))) score += 0.2
+  return Math.min(1, score)
+}
+
+function scorePlanning(name, headers, rows) {
+  let score = 0
+  if (['planning', 'calendar', 'agenda', 'rendez-vous', 'rdv', 'réunion', 'meeting', 'événement'].some(k => name.includes(k))) score += 0.5
+  if (headers.some(h => h.includes('date') || h.includes('heure') || h.includes('time') || h.includes('début') || h.includes('fin'))) score += 0.3
+  if (headers.some(h => h.includes('lieu') || h.includes('location') || h.includes('salle') || h.includes('lien') || h.includes('zoom'))) score += 0.2
+  return Math.min(1, score)
+}
+
+function getModuleNotes(module) {
+  const notes = {
+    portfolio: 'Portefeuille client détecté',
+    team: 'Données équipe CSM — bien-être et performance',
+    kpis: 'Indicateurs de performance extraits',
+    tasks: 'Tâches / actions à importer dans le Kanban',
+    roadmap: 'Roadmap / jalons de projet',
+    planning: 'Événements à ajouter au planning',
+  }
+  return notes[module] || 'Détecté automatiquement'
+}
+
+// === EXTRACTORS for tasks, roadmap, planning ===
+
+function extractTaskRows(rows, headers, tasks) {
+  const cols = guessColumns(headers)
+  const titleField = Object.entries(cols).find(([, v]) => v === 'name')?.[0] ||
+    headers.find(h => /tâche|task|action|titre|title|todo|description|à faire/i.test(h)) || headers[0]
+
+  for (const row of rows) {
+    const title = String(row[titleField] || '').trim()
+    if (!title || title.length < 3) continue
+    // Skip headers/labels that repeat
+    if (/^(tâche|task|action|titre|title|statut|status)$/i.test(title)) continue
+
+    const note = findCol(row, 'note', 'description', 'detail', 'détail', 'commentaire') || ''
+    const due = findCol(row, 'date', 'échéance', 'echeance', 'due', 'deadline', 'limite') || ''
+    const account = findCol(row, 'client', 'compte', 'account') || ''
+    const priority = String(findCol(row, 'priorité', 'priority', 'urgence') || '').toLowerCase()
+    const status = String(findCol(row, 'statut', 'status', 'état') || '').toLowerCase()
+
+    // Skip if already done
+    if (status.includes('terminé') || status.includes('done') || status.includes('fait') || status.includes('fermé')) continue
+
+    let quadrant = 'q2', color = 'teal'
+    if (priority.includes('urgent') || priority.includes('critic') || priority.includes('haute') || priority.includes('high')) { quadrant = 'q1'; color = 'red' }
+    else if (priority.includes('moyen') || priority.includes('medium') || priority.includes('normal')) { quadrant = 'q2'; color = 'orange' }
+    else if (priority.includes('basse') || priority.includes('low') || priority.includes('faible')) { quadrant = 'q4'; color = 'blue' }
+
+    tasks.push({ title, note: String(note), quadrant, color, account: String(account), due: String(due) })
+  }
+}
+
+function extractRoadmapRows(rows, headers, tasks) {
+  // Roadmap items go to the roadmap array in the import payload (not tasks)
+  // But we store them in tasks for preview, they'll be separated during doImport
+  for (const row of rows) {
+    const title = findCol(row, 'titre', 'title', 'objectif', 'objective', 'milestone', 'jalon', 'livrable', 'étape') ||
+      findCol(row, 'nom', 'name', 'description') || ''
+    if (!title || String(title).length < 3) continue
+    if (/^(titre|title|objectif|phase|milestone)$/i.test(String(title))) continue
+
+    const phase = findCol(row, 'phase', 'étape', 'step') || '1'
+    const status = String(findCol(row, 'statut', 'status', 'état') || 'pending').toLowerCase()
+    const due = findCol(row, 'date', 'échéance', 'due', 'deadline') || ''
+    const progress = parseNum(findCol(row, 'progress', 'avancement', '%'))
+    const owner = findCol(row, 'responsable', 'owner', 'assigné', 'assigned') || ''
+
+    tasks.push({
+      title: `🗺️ ${String(title).trim()}`,
+      note: `Phase: ${phase}, Statut: ${status}, Avancement: ${progress}%${owner ? ', Responsable: ' + owner : ''}`,
+      quadrant: 'q2', color: 'teal', account: '', due: String(due),
+      _type: 'roadmap', _phase: String(phase), _status: status, _progress: progress, _owner: String(owner),
+    })
+  }
+}
+
+function extractPlanningRows(rows, headers, tasks) {
+  for (const row of rows) {
+    const title = findCol(row, 'titre', 'title', 'événement', 'event', 'réunion', 'meeting', 'objet', 'sujet') ||
+      findCol(row, 'nom', 'name', 'description') || ''
+    if (!title || String(title).length < 3) continue
+    if (/^(titre|title|événement|date|heure)$/i.test(String(title))) continue
+
+    const date = findCol(row, 'date', 'jour', 'day') || ''
+    const time = findCol(row, 'heure', 'time', 'début', 'start') || ''
+    const location = findCol(row, 'lieu', 'location', 'salle', 'room', 'lien', 'link', 'zoom') || ''
+
+    tasks.push({
+      title: `📅 ${String(title).trim()}`,
+      note: `${date ? 'Date: ' + date : ''}${time ? ' à ' + time : ''}${location ? ' — ' + location : ''}`,
+      quadrant: 'q2', color: 'blue', account: '', due: String(date),
+      _type: 'planning',
+    })
+  }
+}
+
 function guessColumns(headers) {
   const map = {}
   for (const h of headers) {
@@ -564,43 +720,6 @@ function guessColumns(headers) {
     else if (hl.includes('nps')) map[h] = 'nps'
   }
   return map
-}
-
-// --- Sheet type detection ---
-function isPortfolioSheet(name, headers) {
-  const nameHits = ['client', 'portfolio', 'portefeuille', 'account', 'compte'].some(k => name.includes(k))
-  const headerHits = headers.some(h => ['client', 'compte', 'account', 'entreprise', 'company', 'nom client', 'id client'].includes(h)) &&
-    headers.some(h => h.includes('arr') || h.includes('mrr') || h.includes('ca') || h.includes('chiffre') || h.includes('revenue') || h.includes('plan'))
-  return nameHits || headerHits
-}
-
-function isKpiSheet(name, headers) {
-  return ['kpi', 'dashboard', 'synthese', 'résumé', 'summary', 'globaux', 'indicateur'].some(k => name.includes(k)) ||
-    headers.some(h => h.includes('total client') || h.includes('ca total') || (h.includes('nps') && h.includes('moy')))
-}
-
-function isTaskSheet(name, headers) {
-  return ['task', 'tâche', 'tache', 'todo', 'action'].some(k => name.includes(k)) ||
-    headers.some(h => ['tâche', 'task', 'action', 'todo'].includes(h))
-}
-
-function isRoadmapSheet(name, headers) {
-  return ['roadmap', 'plan', 'jalons', 'milestone', 'planning projet'].some(k => name.includes(k)) ||
-    headers.some(h => ['phase', 'milestone', 'jalon', 'étape'].includes(h))
-}
-
-function isCsmSheet(name, headers) {
-  return (['csm', 'équipe', 'equipe', 'team', 'vue csm', 'vue par csm', 'profil csm'].some(k => name.includes(k)) ||
-    (headers.some(h => h === 'csm' || h.includes('séniorité') || h.includes('seniorite')) &&
-      headers.some(h => h.includes('client') || h.includes('ca') || h.includes('churn'))))
-}
-
-function autoDetectModule(rows, headers) {
-  const hasName = headers.some(h => ['nom', 'name', 'client', 'entreprise', 'company', 'société'].includes(h))
-  const hasNum = headers.some(h => h.includes('arr') || h.includes('mrr') || h.includes('ca') || h.includes('revenue') || h.includes('health'))
-  if (hasName && hasNum && rows.length > 3) return 'portfolio'
-  if (hasName && rows.length > 1) return 'tasks'
-  return 'skip'
 }
 
 function extractAllTables(sheet) {
