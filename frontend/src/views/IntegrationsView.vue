@@ -54,7 +54,7 @@
             </button>
           </div>
           <button class="btn integ-btn integ-disconnect-btn" @click="confirmDisconnect(integ)">
-            Deconnecter {{ integ.name }}
+            Déconnecter {{ integ.name }}
           </button>
         </AppCard>
       </div>
@@ -112,7 +112,12 @@
         <div class="integ-config">
           <template v-for="field in modal.fields" :key="field.key">
             <label class="integ-label">{{ field.label }}</label>
+            <div v-if="field.type === 'password' && isEditing && configForm[field.key]" class="integ-saved-token">
+              <span style="flex: 1;">Clé enregistrée ({{ configForm[field.key].slice(0, 6) }}...)</span>
+              <button type="button" class="integ-change-btn" @click="configForm[field.key] = ''">Modifier</button>
+            </div>
             <input
+              v-else
               v-model="configForm[field.key]"
               :type="field.type || 'text'"
               class="integ-input"
@@ -124,12 +129,12 @@
 
         <div style="display: flex; gap: 8px; margin-top: 20px;">
           <button class="btn btn-primary" style="flex: 1;" @click="saveConnection" :disabled="saving">
-            {{ saving ? '...' : (connectedKeys.has(modal.key) ? 'Mettre a jour' : 'Connecter') }}
+            {{ saving ? '...' : (connectedKeys.has(modal.key) ? 'Mettre à jour' : 'Connecter') }}
           </button>
           <button class="btn btn-secondary" @click="modal = null">Annuler</button>
         </div>
 
-        <div v-if="connectSuccess" class="integ-success">Connecte avec succes !</div>
+        <div v-if="connectSuccess" class="integ-success">Connecté avec succès !</div>
       </div>
     </AppModal>
   </div>
@@ -174,8 +179,8 @@ const integrations = [
   { key: 'hubspot', name: 'HubSpot', icon: '🟠', color: '#FF7A59', available: true,
     desc: 'Importe automatiquement vos contacts et deals dans le portefeuille.',
     fields: [
-      { key: 'apiKey', label: 'Cle d\'acces HubSpot', type: 'password', placeholder: 'pat-na1-xxxxxxxx-xxxx-xxxx...',
-        hint: '1. Ouvrez <a href="https://app.hubspot.com/settings" target="_blank">app.hubspot.com/settings</a>\n2. Menu gauche : Integrations → Applications privees\n3. Cliquez "Creer une application privee" → Nom : Scalyo\n4. Onglet "Portees" : cochez contacts, entreprises, transactions\n5. Cliquez Creer → Copiez le token (commence par pat-...)' },
+      { key: 'apiKey', label: 'Clé d\'accès HubSpot', type: 'password', placeholder: 'pat-na1-xxxxxxxx-xxxx-xxxx...',
+        hint: '1. Ouvrez <a href="https://app.hubspot.com/settings" target="_blank">app.hubspot.com/settings</a>\n2. Menu gauche : Intégrations → Applications privées\n3. Cliquez "Créer une application privée" → Nom : Scalyo\n4. Onglet "Portées" : cochez contacts, entreprises, transactions\n5. Cliquez Créer → Copiez le token (commence par pat-...)' },
     ]},
   { key: 'pipedrive', name: 'Pipedrive', icon: '🟢', color: '#25C16F', available: true,
     desc: 'Importe vos contacts et deals dans le portefeuille.',
@@ -186,7 +191,7 @@ const integrations = [
   { key: 'intercom', name: 'Intercom', icon: '💬', color: '#286EFA', available: true,
     desc: 'Importe vos contacts et conversations dans le portefeuille.',
     fields: [
-      { key: 'apiKey', label: 'Token d\'acces Intercom', type: 'password', placeholder: 'dG9rOmxxxxxxxxxxxxxxxx',
+      { key: 'apiKey', label: 'Token d\'accès Intercom', type: 'password', placeholder: 'dG9rOmxxxxxxxxxxxxxxxx',
         hint: '1. Ouvrez <a href="https://app.intercom.com/a/apps/_/developer-hub" target="_blank">app.intercom.com → Developer Hub</a>\n2. Cliquez "New app" → Nom : Scalyo → Internal integration\n3. Onglet "Authentication" → Copiez l\'Access Token\n4. Collez-le ici' },
     ]},
 
@@ -196,40 +201,40 @@ const integrations = [
     fields: [
       { key: 'email', label: 'Email de votre compte Zendesk', type: 'email', placeholder: 'vous@entreprise.com' },
       { key: 'apiKey', label: 'Token API Zendesk', type: 'password', placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-        hint: '1. Ouvrez votre Zendesk → Admin Center (roue dentee)\n2. Allez dans <a href="https://support.zendesk.com/hc/en-us/articles/4408889192858" target="_blank">Apps et integrations → API Zendesk</a>\n3. Activez "Acces par token"\n4. Cliquez "Ajouter un token API" → Copiez-le ici' },
+        hint: '1. Ouvrez votre Zendesk → Admin Center (roue dentée)\n2. Allez dans <a href="https://support.zendesk.com/hc/en-us/articles/4408889192858" target="_blank">Apps et intégrations → API Zendesk</a>\n3. Activez "Accès par token"\n4. Cliquez "Ajouter un token API" → Copiez-le ici' },
       { key: 'domain', label: 'Sous-domaine Zendesk', type: 'text', placeholder: 'votre-entreprise',
-        hint: 'C\'est le debut de votre adresse : <strong>votre-entreprise</strong>.zendesk.com' },
+        hint: 'Regardez votre URL Zendesk : si c\'est <strong>acme</strong>.zendesk.com, entrez <strong>acme</strong>.\nN\'entrez que le mot avant ".zendesk.com".' },
     ]},
   { key: 'jira', name: 'Jira', icon: '🔷', color: '#0052CC', available: true,
-    desc: 'Importe vos tickets et taches dans le Task Board.',
+    desc: 'Importe vos tickets et tâches dans le Task Board.',
     fields: [
       { key: 'email', label: 'Email de votre compte Atlassian', type: 'email', placeholder: 'vous@entreprise.com' },
       { key: 'apiKey', label: 'Token API Atlassian', type: 'password', placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxx',
-        hint: '1. Ouvrez <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">id.atlassian.com → Tokens API</a>\n2. Cliquez "Creer un token API"\n3. Nom : Scalyo → Creer\n4. Copiez le token et collez-le ici' },
+        hint: '1. Ouvrez <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">id.atlassian.com → Tokens API</a>\n2. Cliquez "Créer un token API"\n3. Nom : Scalyo → Créer\n4. Copiez le token et collez-le ici' },
       { key: 'domain', label: 'Sous-domaine Jira', type: 'text', placeholder: 'votre-entreprise',
-        hint: 'C\'est le debut de votre adresse : <strong>votre-entreprise</strong>.atlassian.net' },
+        hint: 'Regardez votre URL Jira : si c\'est <strong>acme</strong>.atlassian.net, entrez <strong>acme</strong>.\nN\'entrez que le mot avant ".atlassian.net".' },
     ]},
 
   // Productivite — synchronisent les taches
   { key: 'notion', name: 'Notion', icon: '📝', color: '#787878', available: true,
-    desc: 'Importe vos bases de donnees et pages dans Scalyo.',
+    desc: 'Importe vos bases de données et pages dans Scalyo.',
     fields: [
-      { key: 'apiKey', label: 'Secret d\'integration Notion', type: 'password', placeholder: 'secret_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-        hint: '1. Ouvrez <a href="https://www.notion.so/profile/integrations" target="_blank">notion.so/profile/integrations</a>\n2. Cliquez "Nouvelle integration" → Nom : Scalyo → Envoyer\n3. Copiez le "Secret d\'integration interne" (commence par secret_...)\n4. <strong>IMPORTANT</strong> : Retournez dans Notion → ouvrez la page ou base a synchroniser → cliquez <strong>...</strong> (3 points en haut a droite) → <strong>Connexions</strong> → <strong>Connecter a → Scalyo</strong>\nSans l\'etape 4, Scalyo ne verra aucune donnee.' },
+      { key: 'apiKey', label: 'Secret d\'intégration Notion', type: 'password', placeholder: 'secret_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+        hint: '1. Ouvrez <a href="https://www.notion.so/profile/integrations" target="_blank">notion.so/profile/integrations</a>\n2. Cliquez "Nouvelle intégration" → Nom : Scalyo → Envoyer\n3. Copiez le "Secret d\'intégration interne" (commence par secret_...)\n4. <strong>IMPORTANT</strong> : Retournez dans Notion → ouvrez la page ou base à synchroniser → cliquez <strong>...</strong> (3 points en haut à droite) → <strong>Connexions</strong> → <strong>Connecter à → Scalyo</strong>\nSans l\'étape 4, Scalyo ne verra aucune donnée.' },
     ]},
   { key: 'asana', name: 'Asana', icon: '🔶', color: '#F06A6A', available: true,
-    desc: 'Importe vos taches et projets dans le Task Board.',
+    desc: 'Importe vos tâches et projets dans le Task Board.',
     fields: [
-      { key: 'apiKey', label: 'Token d\'acces personnel Asana', type: 'password', placeholder: '1/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-        hint: '1. Ouvrez <a href="https://app.asana.com/0/my-apps" target="_blank">app.asana.com/0/my-apps</a>\n2. Cliquez "Creer un token"\n3. Nom : Scalyo → Creer\n4. Copiez le token et collez-le ici' },
+      { key: 'apiKey', label: 'Token d\'accès personnel Asana', type: 'password', placeholder: '1/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+        hint: '1. Ouvrez <a href="https://app.asana.com/0/my-apps" target="_blank">app.asana.com/0/my-apps</a>\n2. Cliquez "Créer un token"\n3. Nom : Scalyo → Créer\n4. Copiez le token et collez-le ici' },
     ]},
 
   // Calendrier
   { key: 'calendly', name: 'Calendly', icon: '📅', color: '#006BFF', available: true,
     desc: 'Importe vos rendez-vous dans le planning.',
     fields: [
-      { key: 'apiKey', label: 'Token d\'acces personnel Calendly', type: 'password', placeholder: 'eyJhbGciOiJIUzI1NiJ9...',
-        hint: '1. Ouvrez <a href="https://calendly.com/integrations/api_webhooks" target="_blank">calendly.com/integrations/api_webhooks</a>\n2. Cliquez "Generer un nouveau token"\n3. Nom : Scalyo → Creer le token\n4. Copiez-le et collez-le ici' },
+      { key: 'apiKey', label: 'Token d\'accès personnel Calendly', type: 'password', placeholder: 'eyJhbGciOiJIUzI1NiJ9...',
+        hint: '1. Ouvrez <a href="https://calendly.com/integrations/api_webhooks" target="_blank">calendly.com/integrations/api_webhooks</a>\n2. Cliquez "Générer un nouveau token"\n3. Nom : Scalyo → Créer le token\n4. Copiez-le et collez-le ici' },
     ]},
 
   // Notifications — envoient des alertes
@@ -238,19 +243,40 @@ const integrations = [
     fields: [
       { key: 'webhookUrl', label: 'Lien de notification Slack', type: 'url', placeholder: 'https://hooks.slack.com/services/...',
         hint: '1. Ouvrez <a href="https://api.slack.com/apps" target="_blank">api.slack.com/apps</a>\n2. Cliquez "Create New App" → "From scratch" → Nom : Scalyo\n3. Menu gauche : "Incoming Webhooks" → Activez-le\n4. Cliquez "Add New Webhook to Workspace" → Choisissez un canal (ex: #alertes)\n5. Copiez le "Webhook URL" et collez-le ici' },
-      { key: 'channel', label: 'Nom du canal (optionnel)', type: 'text', placeholder: '#alertes-clients', optional: true },
+      { key: 'channel', label: 'Nom du canal (optionnel)', type: 'text', placeholder: '#alertes-clients', optional: true,
+        hint: 'Laissez vide pour utiliser le canal par défaut du webhook.' },
     ]},
   { key: 'teams', name: 'Microsoft Teams', icon: '🟦', color: '#5B5FC7', available: true,
     desc: 'Recevez des alertes quand un compte client est en danger.',
     fields: [
       { key: 'webhookUrl', label: 'Lien de notification Teams', type: 'url', placeholder: 'https://...webhook.office.com/...',
-        hint: '1. Dans Teams, faites un clic droit sur un canal\n2. Cliquez "Connecteurs" (ou "Workflows")\n3. Cherchez "Incoming Webhook" → Configurer\n4. Nom : Scalyo → Creer\n5. Copiez le lien webhook et collez-le ici' },
-      { key: 'channel', label: 'Nom du canal (optionnel)', type: 'text', placeholder: '#alertes-clients', optional: true },
+        hint: '1. Dans Teams, faites un clic droit sur un canal\n2. Cliquez "Connecteurs" (ou "Workflows")\n3. Cherchez "Incoming Webhook" → Configurer\n4. Nom : Scalyo → Créer\n5. Copiez le lien webhook et collez-le ici' },
+      { key: 'channel', label: 'Nom du canal (optionnel)', type: 'text', placeholder: '#alertes-clients', optional: true,
+        hint: 'Laissez vide pour utiliser le canal par défaut du webhook.' },
     ]},
 ]
 
 const connectedList = computed(() => integrations.filter(i => connectedKeys.value.has(i.key)))
 const availableList = computed(() => integrations.filter(i => i.available && !connectedKeys.value.has(i.key)))
+const isEditing = computed(() => modal.value && connectedKeys.value.has(modal.value.key))
+
+// Transforme les erreurs techniques en messages compréhensibles
+function friendlyError(err) {
+  const raw = err.response?.data?.error || err.message || ''
+  const lower = raw.toLowerCase()
+  if (err.code === 'ERR_NETWORK' || lower.includes('failed to fetch') || lower.includes('network'))
+    return 'Problème de connexion internet. Vérifiez votre réseau et réessayez.'
+  if (lower.includes('401') || lower.includes('unauthorized') || lower.includes('invalid') || lower.includes('expired') || lower.includes('invalide'))
+    return `Clé d'accès invalide ou expirée. Vérifiez-la et réessayez.`
+  if (lower.includes('403') || lower.includes('forbidden'))
+    return 'Accès refusé. Vérifiez les permissions de votre clé d\'accès.'
+  if (lower.includes('500') || lower.includes('502') || lower.includes('503') || lower.includes('server'))
+    return 'Le service est temporairement indisponible. Réessayez dans quelques minutes.'
+  if (lower.includes('429') || lower.includes('rate') || lower.includes('too many'))
+    return 'Trop de requêtes. Attendez une minute puis réessayez.'
+  if (raw && /^[A-ZÀ-Ü]/.test(raw)) return raw
+  return raw || 'Une erreur est survenue. Réessayez ou vérifiez votre configuration.'
+}
 
 function resetForm() {
   Object.assign(configForm, { apiKey: '', email: '', domain: '', webhookUrl: '', channel: '' })
@@ -288,7 +314,7 @@ async function loadConnectedIntegrations() {
     connectedConfigs.value = configs
     syncStatus.value = syncs
   } catch (err) {
-    loadError.value = err.response?.data?.error || err.message || 'Erreur de chargement'
+    loadError.value = friendlyError(err)
   }
 }
 
@@ -331,25 +357,25 @@ async function saveConnection() {
         const syncData = syncRes.data || syncRes
         syncStatus.value[integKey] = { syncStatus: 'success', lastSyncAt: new Date().toISOString(), syncDetails: syncData }
       } catch (syncErr) {
-        const msg = syncErr.response?.data?.error || syncErr.message || 'Sync echoue'
+        const msg = friendlyError(syncErr)
         syncStatus.value[integKey] = { syncStatus: 'error', lastSyncAt: new Date().toISOString(), syncDetails: { error: msg } }
       }
     } catch (testErr) {
-      const msg = testErr.response?.data?.error || testErr.message || 'Test echoue'
+      const msg = friendlyError(testErr)
       syncStatus.value[integKey] = { syncStatus: 'error', lastSyncAt: new Date().toISOString(), syncDetails: { error: msg } }
     }
 
     connectSuccess.value = true
     setTimeout(() => { modal.value = null }, 800)
   } catch (err) {
-    connectError.value = err.response?.data?.error || err.message || 'Erreur'
+    connectError.value = friendlyError(err)
   } finally {
     saving.value = false
   }
 }
 
 function confirmDisconnect(integ) {
-  if (!confirm(`Deconnecter ${integ.name} ?`)) return
+  if (!confirm(`Déconnecter ${integ.name} ?`)) return
   disconnectIntegration(integ)
 }
 
@@ -362,7 +388,7 @@ async function disconnectIntegration(integ) {
     delete connectedConfigs.value[integ.key]
     delete syncStatus.value[integ.key]
   } catch (err) {
-    loadError.value = err.response?.data?.error || err.message || 'Erreur'
+    loadError.value = friendlyError(err)
   }
 }
 
@@ -385,7 +411,7 @@ async function syncIntegration(integ) {
     const data = res.data || res
     syncStatus.value[integ.key] = { syncStatus: 'success', lastSyncAt: new Date().toISOString(), syncDetails: data }
   } catch (err) {
-    const msg = err.response?.data?.error || err.message || 'Erreur de synchronisation'
+    const msg = friendlyError(err)
     syncStatus.value[integ.key] = { syncStatus: 'error', lastSyncAt: new Date().toISOString(), syncDetails: { error: msg } }
   } finally {
     syncing.value = null
@@ -398,12 +424,12 @@ function formatSyncDetails(details) {
   if (details.contacts) parts.push(`${details.contacts} contact${details.contacts > 1 ? 's' : ''}`)
   if (details.deals) parts.push(`${details.deals} deal${details.deals > 1 ? 's' : ''}`)
   if (details.issues) parts.push(`${details.issues} ticket${details.issues > 1 ? 's' : ''}`)
-  if (details.tasks) parts.push(`${details.tasks} tache${details.tasks > 1 ? 's' : ''}`)
-  if (details.events) parts.push(`${details.events} evenement${details.events > 1 ? 's' : ''}`)
+  if (details.tasks) parts.push(`${details.tasks} tâche${details.tasks > 1 ? 's' : ''}`)
+  if (details.events) parts.push(`${details.events} événement${details.events > 1 ? 's' : ''}`)
   if (details.tickets) parts.push(`${details.tickets} ticket${details.tickets > 1 ? 's' : ''}`)
   if (details.users) parts.push(`${details.users} utilisateur${details.users > 1 ? 's' : ''}`)
   if (details.conversations) parts.push(`${details.conversations} conversation${details.conversations > 1 ? 's' : ''}`)
-  if (details.entries) parts.push(`${details.entries} entree${details.entries > 1 ? 's' : ''}`)
+  if (details.entries) parts.push(`${details.entries} entrée${details.entries > 1 ? 's' : ''}`)
   if (details.projects) parts.push(`${details.projects} projet${details.projects > 1 ? 's' : ''}`)
   if (details.message) return details.message
   return parts.length ? `(${parts.join(', ')})` : ''
@@ -510,6 +536,19 @@ onMounted(() => {
   cursor: pointer; transition: all 0.15s;
 }
 .integ-disconnect-btn:hover { background: var(--redBg, #fef2f2); border-color: var(--red); }
+
+.integ-saved-token {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-radius: 8px;
+  background: var(--greenBg, #f0fdf4); border: 1px solid var(--greenBorder, #bbf7d0);
+  color: var(--green); font-size: 13px; font-weight: 600;
+}
+.integ-change-btn {
+  background: none; border: 1px solid var(--border); border-radius: 6px;
+  padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer;
+  color: var(--muted); transition: all 0.15s;
+}
+.integ-change-btn:hover { border-color: var(--teal); color: var(--teal); }
 
 @media (max-width: 768px) {
   .integ-grid { grid-template-columns: 1fr; }

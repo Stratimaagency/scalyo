@@ -8,23 +8,23 @@ function headers(apiKey) {
 }
 
 export async function testConnection(config) {
-  if (!config.apiKey) throw new Error('Token d\'acces Intercom requis')
+  if (!config.apiKey) throw new Error('Clé d\'accès Intercom requise')
 
   const res = await fetch(`${BASE}/me`, { headers: headers(config.apiKey) })
-  if (res.status === 401) throw new Error('Token invalide. Verifiez votre Access Token Intercom.')
-  if (!res.ok) throw new Error(`Erreur Intercom (${res.status})`)
+  if (res.status === 401) throw new Error('Clé invalide. Vérifiez votre clé Intercom.')
+  if (!res.ok) throw new Error('Erreur de connexion Intercom')
 
-  return { ok: true, message: 'Intercom connecte avec succes' }
+  return { ok: true, message: 'Intercom connecté avec succès' }
 }
 
 export async function sync(config, env, companyId) {
-  if (!config.apiKey) throw new Error('Token d\'acces manquant')
+  if (!config.apiKey) throw new Error('Clé d\'accès manquante')
 
   const h = headers(config.apiKey)
   const results = { contacts: 0, conversations: 0 }
 
   const contactsRes = await fetch(`${BASE}/contacts?per_page=50`, { headers: h })
-  if (!contactsRes.ok) throw new Error(`Intercom contacts: erreur ${contactsRes.status}`)
+  if (!contactsRes.ok) throw new Error('Impossible de charger les contacts Intercom')
   const contactsData = await contactsRes.json()
 
   for (const contact of contactsData.data || []) {
@@ -64,7 +64,7 @@ export async function fetchData(config) {
 
   // Contacts
   const contactsRes = await fetch(`${BASE}/contacts?per_page=50`, { headers: h })
-  if (!contactsRes.ok) throw new Error(`Erreur Intercom contacts (${contactsRes.status})`)
+  if (!contactsRes.ok) throw new Error('Impossible de charger les contacts Intercom')
   const contactsData = await contactsRes.json()
 
   const contacts = (contactsData.data || []).map(c => ({
@@ -87,7 +87,7 @@ export async function fetchData(config) {
       title: c.source?.subject || c.source?.body?.slice(0, 80) || `Conversation ${c.id}`,
       state: c.state || '',
       priority: c.priority || 'normal',
-      assignee: c.assignee?.name || 'Non assigne',
+      assignee: c.assignee?.name || 'Non assigné',
       updatedAt: c.updated_at ? new Date(c.updated_at * 1000).toISOString() : '',
     }))
   }
@@ -98,7 +98,7 @@ export async function fetchData(config) {
         columns: [
           { key: 'name', label: 'Nom' },
           { key: 'email', label: 'Email' },
-          { key: 'phone', label: 'Telephone' },
+          { key: 'phone', label: 'Téléphone' },
           { key: 'role', label: 'Role' },
           { key: 'lastSeen', label: 'Derniere visite', type: 'date' },
         ],
@@ -108,9 +108,9 @@ export async function fetchData(config) {
         columns: [
           { key: 'title', label: 'Sujet' },
           { key: 'state', label: 'Statut' },
-          { key: 'priority', label: 'Priorite' },
-          { key: 'assignee', label: 'Assigne a' },
-          { key: 'updatedAt', label: 'Mis a jour', type: 'date' },
+          { key: 'priority', label: 'Priorité' },
+          { key: 'assignee', label: 'Assigné à' },
+          { key: 'updatedAt', label: 'Mis à jour', type: 'date' },
         ],
         actions: [],
       },
@@ -132,9 +132,9 @@ export async function performAction(config, action, payload) {
         phone: payload.phone || '',
       }),
     })
-    if (!res.ok) throw new Error(`Erreur creation contact (${res.status})`)
-    return { ok: true, message: 'Contact cree dans Intercom' }
+    if (!res.ok) throw new Error('Impossible de créer le contact')
+    return { ok: true, message: 'Contact créé dans Intercom' }
   }
 
-  throw new Error(`Action inconnue: ${action}`)
+  throw new Error('Action non reconnue')
 }

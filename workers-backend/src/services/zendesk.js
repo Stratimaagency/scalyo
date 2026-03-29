@@ -15,25 +15,25 @@ function getHeaders(config) {
 
 export async function testConnection(config) {
   if (!config.email) throw new Error('Email Zendesk requis')
-  if (!config.apiKey) throw new Error('Token API Zendesk requis')
+  if (!config.apiKey) throw new Error('Clé d\'accès Zendesk requise')
   if (!config.domain) throw new Error('Sous-domaine Zendesk requis')
 
   const res = await fetch(`${getBase(config)}/users/me.json`, { headers: getHeaders(config) })
-  if (res.status === 401) throw new Error('Identifiants invalides. Verifiez email, token et sous-domaine.')
+  if (res.status === 401) throw new Error('Identifiants invalides. Vérifiez votre email, clé et sous-domaine.')
   if (!res.ok) throw new Error(`Erreur Zendesk (${res.status})`)
 
-  return { ok: true, message: `Zendesk connecte (${config.domain}.zendesk.com)` }
+  return { ok: true, message: `Zendesk connecté (${config.domain}.zendesk.com)` }
 }
 
 export async function sync(config, env, companyId) {
-  if (!config.email || !config.apiKey || !config.domain) throw new Error('Configuration Zendesk incomplete')
+  if (!config.email || !config.apiKey || !config.domain) throw new Error('Configuration Zendesk incomplète')
 
   const base = getBase(config)
   const h = getHeaders(config)
   const results = { tickets: 0, users: 0 }
 
   const ticketsRes = await fetch(`${base}/tickets.json?sort_by=updated_at&sort_order=desc&per_page=100`, { headers: h })
-  if (!ticketsRes.ok) throw new Error(`Zendesk tickets: erreur ${ticketsRes.status}`)
+  if (!ticketsRes.ok) throw new Error(`Impossible de charger les tickets Zendesk`)
   const ticketsData = await ticketsRes.json()
   results.tickets = (ticketsData.tickets || []).length
 
@@ -72,7 +72,7 @@ export async function fetchData(config) {
 
   // Tickets
   const ticketsRes = await fetch(`${base}/tickets.json?sort_by=updated_at&sort_order=desc&per_page=100`, { headers: h })
-  if (!ticketsRes.ok) throw new Error(`Erreur Zendesk tickets (${ticketsRes.status})`)
+  if (!ticketsRes.ok) throw new Error(`Impossible de charger les tickets Zendesk`)
   const ticketsData = await ticketsRes.json()
 
   const tickets = (ticketsData.tickets || []).map(t => ({
@@ -109,9 +109,9 @@ export async function fetchData(config) {
           { key: 'id', label: '#' },
           { key: 'subject', label: 'Sujet' },
           { key: 'status', label: 'Statut' },
-          { key: 'priority', label: 'Priorite' },
+          { key: 'priority', label: 'Priorité' },
           { key: 'type', label: 'Type' },
-          { key: 'updatedAt', label: 'Mis a jour', type: 'date' },
+          { key: 'updatedAt', label: 'Mis à jour', type: 'date' },
         ],
         actions: ['create', 'updateStatus'],
       },
@@ -119,7 +119,7 @@ export async function fetchData(config) {
         columns: [
           { key: 'name', label: 'Nom' },
           { key: 'email', label: 'Email' },
-          { key: 'phone', label: 'Telephone' },
+          { key: 'phone', label: 'Téléphone' },
         ],
         actions: [],
       },
@@ -142,8 +142,8 @@ export async function performAction(config, action, payload) {
         type: payload.type || 'problem',
       }}),
     })
-    if (!res.ok) throw new Error(`Erreur creation ticket (${res.status})`)
-    return { ok: true, message: 'Ticket cree dans Zendesk' }
+    if (!res.ok) throw new Error(`Impossible de créer le ticket`)
+    return { ok: true, message: 'Ticket créé dans Zendesk' }
   }
 
   if (action === 'updateStatus') {
@@ -151,9 +151,9 @@ export async function performAction(config, action, payload) {
       method: 'PUT', headers: h,
       body: JSON.stringify({ ticket: { status: payload.status } }),
     })
-    if (!res.ok) throw new Error(`Erreur mise a jour ticket (${res.status})`)
-    return { ok: true, message: 'Ticket mis a jour' }
+    if (!res.ok) throw new Error(`Impossible de mettre à jour le ticket`)
+    return { ok: true, message: 'Ticket mis à jour' }
   }
 
-  throw new Error(`Action inconnue: ${action}`)
+  throw new Error(`Action non reconnue`)
 }

@@ -8,17 +8,17 @@ function headers(apiKey) {
 }
 
 export async function testConnection(config) {
-  if (!config.apiKey) throw new Error('Cle d\'acces HubSpot requise')
+  if (!config.apiKey) throw new Error('Clé d\'accès HubSpot requise')
 
   const res = await fetch(`${BASE}/crm/v3/objects/contacts?limit=1`, { headers: headers(config.apiKey) })
-  if (res.status === 401) throw new Error('Cle invalide. Verifiez votre token HubSpot.')
-  if (!res.ok) throw new Error(`Erreur HubSpot (${res.status})`)
+  if (res.status === 401) throw new Error('Clé invalide. Vérifiez votre clé HubSpot.')
+  if (!res.ok) throw new Error('Erreur de connexion HubSpot')
 
-  return { ok: true, message: 'HubSpot connecte avec succes' }
+  return { ok: true, message: 'HubSpot connecté avec succès' }
 }
 
 export async function sync(config, env, companyId) {
-  if (!config.apiKey) throw new Error('Cle d\'acces manquante')
+  if (!config.apiKey) throw new Error('Clé d\'accès manquante')
 
   const h = headers(config.apiKey)
   const results = { contacts: 0, deals: 0 }
@@ -27,7 +27,7 @@ export async function sync(config, env, companyId) {
     `${BASE}/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,email,phone,company`,
     { headers: h }
   )
-  if (!contactsRes.ok) throw new Error(`HubSpot contacts: erreur ${contactsRes.status}`)
+  if (!contactsRes.ok) throw new Error('Impossible de charger les contacts HubSpot')
   const contactsData = await contactsRes.json()
 
   for (const contact of contactsData.results || []) {
@@ -75,7 +75,7 @@ export async function fetchData(config) {
     `${BASE}/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,email,phone,company,lifecyclestage,createdate`,
     { headers: h }
   )
-  if (!contactsRes.ok) throw new Error(`Erreur HubSpot contacts (${contactsRes.status})`)
+  if (!contactsRes.ok) throw new Error('Impossible de charger les contacts HubSpot')
   const contactsData = await contactsRes.json()
 
   const contacts = (contactsData.results || []).map(c => {
@@ -120,9 +120,9 @@ export async function fetchData(config) {
         columns: [
           { key: 'name', label: 'Nom' },
           { key: 'email', label: 'Email' },
-          { key: 'phone', label: 'Telephone' },
+          { key: 'phone', label: 'Téléphone' },
           { key: 'company', label: 'Entreprise' },
-          { key: 'stage', label: 'Etape' },
+          { key: 'stage', label: 'Étape' },
         ],
         actions: ['create', 'edit'],
       },
@@ -130,7 +130,7 @@ export async function fetchData(config) {
         columns: [
           { key: 'name', label: 'Nom' },
           { key: 'amount', label: 'Montant', type: 'currency' },
-          { key: 'stage', label: 'Etape' },
+          { key: 'stage', label: 'Étape' },
           { key: 'closeDate', label: 'Date fermeture', type: 'date' },
         ],
         actions: ['create'],
@@ -156,9 +156,9 @@ export async function performAction(config, action, payload) {
     })
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || `Erreur creation contact (${res.status})`)
+      throw new Error(err.message || 'Impossible de créer le contact')
     }
-    return { ok: true, message: 'Contact cree dans HubSpot' }
+    return { ok: true, message: 'Contact créé dans HubSpot' }
   }
 
   if (action === 'editContact') {
@@ -172,8 +172,8 @@ export async function performAction(config, action, payload) {
         ...(payload.company !== undefined && { company: payload.company }),
       }}),
     })
-    if (!res.ok) throw new Error(`Erreur modification contact (${res.status})`)
-    return { ok: true, message: 'Contact modifie dans HubSpot' }
+    if (!res.ok) throw new Error('Impossible de modifier le contact')
+    return { ok: true, message: 'Contact modifié dans HubSpot' }
   }
 
   if (action === 'createDeal') {
@@ -185,9 +185,9 @@ export async function performAction(config, action, payload) {
         dealstage: payload.stage || 'appointmentscheduled',
       }}),
     })
-    if (!res.ok) throw new Error(`Erreur creation deal (${res.status})`)
-    return { ok: true, message: 'Deal cree dans HubSpot' }
+    if (!res.ok) throw new Error('Impossible de créer le deal')
+    return { ok: true, message: 'Deal créé dans HubSpot' }
   }
 
-  throw new Error(`Action inconnue: ${action}`)
+  throw new Error('Action non reconnue')
 }
