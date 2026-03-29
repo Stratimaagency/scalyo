@@ -159,14 +159,15 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { integrationsApi } from '../api'
 import AppModal from '../components/AppModal.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
 import PlanGate from '../components/PlanGate.vue'
 
-const props = defineProps({ key: String })
+const route = useRoute()
 const router = useRouter()
+const key = computed(() => route.params.key)
 
 const data = ref(null)
 const loading = ref(false)
@@ -193,13 +194,13 @@ const integrations = {
   teams: { name: 'Teams', icon: '🟦', color: '#5B5FC7', desc: 'Notifications' },
 }
 
-const integDef = computed(() => integrations[props.key] || null)
+const integDef = computed(() => integrations[key.value] || null)
 
 async function refreshData() {
   loading.value = true
   error.value = ''
   try {
-    const res = await integrationsApi.fetchData(props.key)
+    const res = await integrationsApi.fetchData(key.value)
     data.value = res.data || res
   } catch (err) {
     error.value = err.response?.data?.error || err.message || 'Erreur de chargement'
@@ -212,7 +213,7 @@ async function doSync() {
   syncing.value = true
   error.value = ''
   try {
-    const res = await integrationsApi.sync(props.key)
+    const res = await integrationsApi.sync(key.value)
     const result = res.data || res
     successMsg.value = 'Synchronisation terminee !'
     setTimeout(() => { successMsg.value = '' }, 3000)
@@ -245,14 +246,14 @@ function getCreateAction(sectionKey) {
 function getCreateFields(action, extraData) {
   switch (action) {
     case 'createContact':
-      if (props.key === 'hubspot') return [
+      if (key.value === 'hubspot') return [
         { key: 'firstname', label: 'Prenom', placeholder: 'Jean' },
         { key: 'lastname', label: 'Nom', placeholder: 'Dupont' },
         { key: 'email', label: 'Email', type: 'email', placeholder: 'jean@example.com' },
         { key: 'phone', label: 'Telephone', placeholder: '+33 6 00 00 00 00' },
         { key: 'company', label: 'Entreprise', placeholder: 'Acme Inc.' },
       ]
-      if (props.key === 'pipedrive') return [
+      if (key.value === 'pipedrive') return [
         { key: 'name', label: 'Nom complet', placeholder: 'Jean Dupont' },
         { key: 'email', label: 'Email', type: 'email', placeholder: 'jean@example.com' },
         { key: 'phone', label: 'Telephone', placeholder: '+33 6 00 00 00 00' },
@@ -263,7 +264,7 @@ function getCreateFields(action, extraData) {
         { key: 'phone', label: 'Telephone', placeholder: '+33 6 00 00 00 00' },
       ]
     case 'createDeal':
-      if (props.key === 'hubspot') return [
+      if (key.value === 'hubspot') return [
         { key: 'name', label: 'Nom du deal', placeholder: 'Contrat Acme' },
         { key: 'amount', label: 'Montant', type: 'number', placeholder: '10000' },
       ]
@@ -348,8 +349,8 @@ function openEditForm(sectionKey, item) {
 
 async function completeItem(sectionKey, item) {
   try {
-    if (props.key === 'asana') {
-      await integrationsApi.performAction(props.key, 'completeTask', { gid: item.gid })
+    if (key.value === 'asana') {
+      await integrationsApi.performAction(key.value, 'completeTask', { gid: item.gid })
     }
     successMsg.value = 'Tache terminee !'
     setTimeout(() => { successMsg.value = '' }, 2000)
@@ -368,7 +369,7 @@ async function submitAction() {
     if (actionModal.value?.extraData) {
       Object.assign(payload, actionModal.value.extraData)
     }
-    const res = await integrationsApi.performAction(props.key, actionModal.value.action, payload)
+    const res = await integrationsApi.performAction(key.value, actionModal.value.action, payload)
     const result = res.data || res
     successMsg.value = result.message || 'Action effectuee !'
     setTimeout(() => { successMsg.value = '' }, 3000)
@@ -435,7 +436,7 @@ onMounted(() => {
     return
   }
   // Slack and Teams have no data view
-  if (['slack', 'teams'].includes(props.key)) {
+  if (['slack', 'teams'].includes(key.value)) {
     router.push({ name: 'integrations' })
     return
   }
