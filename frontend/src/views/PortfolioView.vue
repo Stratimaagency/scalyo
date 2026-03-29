@@ -28,7 +28,7 @@
       <!-- Starter plan limit alert -->
       <div v-if="isStarterPlan && portfolioStore.accounts.length >= 6"
         style="margin-bottom: 10px; padding: 9px 12px; background: var(--amberBg, #fef3cd); border: 1px solid var(--amberBorder, #ffc107); border-radius: 9px; font-size: 12px; color: var(--amber, #856404);">
-        <ScalyoIcon name="warning" :size="12" /> Starter plan: max 6 accounts. Upgrade to add more.
+        <ScalyoIcon name="warning" :size="12" /> {{ t('starterLimitAlert') }}
       </div>
 
       <!-- Import success message -->
@@ -142,7 +142,7 @@
             </div>
             <div style="background: var(--surface); border-radius: 12px; padding: 12px; text-align: center;">
               <div style="font-size: 15px; font-weight: 900; font-family: 'JetBrains Mono', monospace;">{{ selectedAccount.health || 70 }}</div>
-              <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">Health</div>
+              <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">{{ t('health') }}</div>
             </div>
             <div style="background: var(--surface); border-radius: 12px; padding: 12px; text-align: center;">
               <RiskPill :risk="selectedAccount.risk" />
@@ -153,7 +153,7 @@
           <!-- Health bar -->
           <div style="margin-bottom: 14px;">
             <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 5px;">
-              <span>Health Score</span>
+              <span>{{ t('healthScore') }}</span>
               <span style="font-weight: 700; color: var(--text);">{{ selectedAccount.health || 70 }}/100</span>
             </div>
             <HealthBar :val="selectedAccount.health || 70" />
@@ -168,7 +168,7 @@
           <!-- Issues/alerts -->
           <div v-if="accountIssues.length" class="card card-danger" style="margin-bottom: 12px; padding: 12px;">
             <div style="font-weight: 800; font-size: 13px; color: var(--red); margin-bottom: 8px; display: flex; align-items: center; gap: 4px;">
-              <ScalyoIcon name="warning" :size="14" /> Alert signals
+              <ScalyoIcon name="warning" :size="14" /> {{ t('alertSignals') }}
             </div>
             <div v-for="(issue, i) in accountIssues" :key="i" style="display: flex; gap: 8px; padding: 5px 0; font-size: 12px; line-height: 1.4;">
               <span style="color: var(--red); flex-shrink: 0;">&rarr;</span>
@@ -187,7 +187,7 @@
           <div style="padding-top: 4px; padding-bottom: 20px;">
             <!-- Standard action todos -->
             <div style="margin-bottom: 16px;">
-              <div style="font-weight: 700; font-size: 13px; margin-bottom: 10px; color: var(--text);">Actions</div>
+              <div style="font-weight: 700; font-size: 13px; margin-bottom: 10px; color: var(--text);">{{ t('actions') }}</div>
               <div v-for="todo in standardTodos" :key="todo.type"
                 style="display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);">
                 <input type="checkbox" :checked="todo.done" @change="toggleStandardTodo(todo)"
@@ -207,10 +207,10 @@
             <!-- Custom free tasks -->
             <div style="margin-bottom: 12px;">
               <div style="font-weight: 700; font-size: 13px; margin-bottom: 10px; color: var(--text); display: flex; justify-content: space-between; align-items: center;">
-                <span>Custom tasks</span>
+                <span>{{ t('customTasks') }}</span>
                 <button class="btn-base" @click="addFreeTask"
                   style="font-size: 11px; padding: 3px 10px; border-radius: 16px; background: var(--tealBg); border: 1px solid var(--tealBorder); color: var(--teal);">
-                  + {{ t('addFreeTask') || 'Add task' }}
+                  + {{ t('addFreeTask') }}
                 </button>
               </div>
               <div v-for="(task, idx) in freeTasks" :key="idx"
@@ -227,11 +227,11 @@
                 <input type="date" v-model="task.date"
                   style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; font-size: 11px; color: var(--text); cursor: pointer;" />
                 <button @click="removeFreeTask(idx)" style="background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--red); cursor: pointer; padding: 4px 8px; font-size: 11px; display: flex; align-items: center; gap: 3px;">
-                  <ScalyoIcon name="close" :size="10" /> Retirer
+                  <ScalyoIcon name="close" :size="10" /> {{ t('removeTask') }}
                 </button>
               </div>
               <div v-if="!freeTasks.length" style="font-size: 12px; color: var(--muted); padding: 8px 0; text-align: center;">
-                No custom tasks yet.
+                {{ t('noCustomTasks') }}
               </div>
             </div>
 
@@ -249,7 +249,7 @@
             <AppField :label="t('accNameLabel')" v-model="editForm.name" required />
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
               <div class="field-group">
-                <label class="field-label">CSM</label>
+                <label class="field-label">{{ t('csmLabel') }}</label>
                 <select v-model="editForm.csm"
                   style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; cursor: pointer;">
                   <option value="">{{ t('unassigned') }}</option>
@@ -257,7 +257,7 @@
                 </select>
               </div>
               <div class="field-group">
-                <label class="field-label">Industry</label>
+                <label class="field-label">{{ t('industry') }}</label>
                 <select v-model="editForm.industry"
                   style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; cursor: pointer;">
                   <option value="">--</option>
@@ -267,12 +267,12 @@
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
               <AppField :label="mrrLabel" v-model="editForm.mrr" type="number" />
-              <AppField label="Health (0-100)" v-model="editForm.health" type="number" />
+              <AppField :label="t('healthScore') + ' (0-100)'" v-model="editForm.health" type="number" />
             </div>
             <AppField :label="t('renewal')" v-model="editForm.renewal" />
-            <AppField label="Contact" v-model="editForm.contact" />
-            <AppField label="Email" v-model="editForm.contact_email" type="email" />
-            <AppField label="Notes" v-model="editForm.notes" type="textarea" />
+            <AppField :label="t('contact')" v-model="editForm.contact" />
+            <AppField :label="t('emailPro')" v-model="editForm.contact_email" type="email" />
+            <AppField :label="t('notes')" v-model="editForm.notes" type="textarea" />
 
             <div v-if="editError" style="margin-top: 8px; padding: 8px 12px; background: var(--redBg, #fdd); border: 1px solid var(--redBorder, #fbb); border-radius: 8px; font-size: 12px; color: var(--red);">
               {{ editError }}
@@ -296,7 +296,7 @@
       <AppField :label="t('accNameLabel')" v-model="newAcc.name" required />
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
         <div class="field-group">
-          <label class="field-label">CSM</label>
+          <label class="field-label">{{ t('csmLabel') }}</label>
           <select v-model="newAcc.csm"
             style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; cursor: pointer;">
             <option value="">{{ t('unassigned') }}</option>
@@ -304,7 +304,7 @@
           </select>
         </div>
         <div class="field-group">
-          <label class="field-label">Industry</label>
+          <label class="field-label">{{ t('industry') }}</label>
           <select v-model="newAcc.industry"
             style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; cursor: pointer;">
             <option value="">--</option>
