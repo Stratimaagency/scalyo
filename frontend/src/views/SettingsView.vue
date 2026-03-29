@@ -66,7 +66,7 @@
             <div style="font-size: 20px; font-weight: 800;">{{ teamUsage.csms }}<span style="color: var(--muted); font-size: 13px;">/{{ teamLimits.csms === -1 ? '∞' : teamLimits.csms }}</span></div>
           </div>
           <div style="flex: 1; min-width: 120px;">
-            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">{{ t('demo_active_acc') }}</div>
+            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">{{ t('portfolio') }}</div>
             <div style="font-size: 20px; font-weight: 800;">{{ teamUsage.accounts }}<span style="color: var(--muted); font-size: 13px;">/{{ teamLimits.accounts === -1 ? '∞' : teamLimits.accounts }}</span></div>
           </div>
         </div>
