@@ -8,33 +8,33 @@ function headers(apiKey) {
 }
 
 export async function testConnection(config) {
-  if (!config.apiKey) throw new Error('Token d\'acces Calendly requis')
+  if (!config.apiKey) throw new Error('Clé d\'accès Calendly requise')
 
   const res = await fetch(`${BASE}/users/me`, { headers: headers(config.apiKey) })
-  if (res.status === 401) throw new Error('Token invalide. Verifiez votre token Calendly.')
-  if (!res.ok) throw new Error(`Erreur Calendly (${res.status})`)
+  if (res.status === 401) throw new Error('Clé invalide. Vérifiez votre clé Calendly.')
+  if (!res.ok) throw new Error('Erreur de connexion Calendly')
 
-  return { ok: true, message: 'Calendly connecte avec succes' }
+  return { ok: true, message: 'Calendly connecté avec succès' }
 }
 
 export async function sync(config, env, companyId) {
-  if (!config.apiKey) throw new Error('Token d\'acces manquant')
+  if (!config.apiKey) throw new Error('Clé d\'accès manquante')
 
   const h = headers(config.apiKey)
   const results = { events: 0 }
 
   const meRes = await fetch(`${BASE}/users/me`, { headers: h })
-  if (!meRes.ok) throw new Error('Calendly: impossible de recuperer l\'utilisateur')
+  if (!meRes.ok) throw new Error('Impossible de récupérer les informations Calendly')
   const me = await meRes.json()
   const userUri = me.resource?.uri
-  if (!userUri) throw new Error('Calendly: URI utilisateur introuvable')
+  if (!userUri) throw new Error('Impossible d\'accéder à Calendly')
 
   const now = new Date().toISOString()
   const eventsRes = await fetch(
     `${BASE}/scheduled_events?user=${encodeURIComponent(userUri)}&min_start_time=${now}&count=50&status=active`,
     { headers: h }
   )
-  if (!eventsRes.ok) throw new Error(`Calendly events: erreur ${eventsRes.status}`)
+  if (!eventsRes.ok) throw new Error('Impossible de charger les événements Calendly')
   const eventsData = await eventsRes.json()
 
   const existing = await env.DB.prepare(
@@ -88,10 +88,10 @@ export async function fetchData(config) {
   const h = headers(config.apiKey)
 
   const meRes = await fetch(`${BASE}/users/me`, { headers: h })
-  if (!meRes.ok) throw new Error('Erreur Calendly')
+  if (!meRes.ok) throw new Error('Erreur de connexion Calendly')
   const me = await meRes.json()
   const userUri = me.resource?.uri
-  if (!userUri) throw new Error('Calendly: URI introuvable')
+  if (!userUri) throw new Error('Impossible d\'accéder à Calendly')
 
   // Upcoming events
   const now = new Date().toISOString()
@@ -99,7 +99,7 @@ export async function fetchData(config) {
     `${BASE}/scheduled_events?user=${encodeURIComponent(userUri)}&min_start_time=${now}&count=50&status=active`,
     { headers: h }
   )
-  if (!eventsRes.ok) throw new Error(`Erreur Calendly events (${eventsRes.status})`)
+  if (!eventsRes.ok) throw new Error('Impossible de charger les événements Calendly')
   const eventsData = await eventsRes.json()
 
   const events = (eventsData.collection || []).map(e => ({
@@ -142,10 +142,10 @@ export async function fetchData(config) {
         ],
         actions: [],
       },
-      { key: 'eventTypes', title: 'Types d\'evenements', icon: '⚙️', items: eventTypes, total: eventTypes.length,
+      { key: 'eventTypes', title: 'Types d\'événements', icon: '⚙️', items: eventTypes, total: eventTypes.length,
         columns: [
           { key: 'name', label: 'Nom' },
-          { key: 'duration', label: 'Duree (min)' },
+          { key: 'duration', label: 'Durée (min)' },
           { key: 'schedulingUrl', label: 'Lien', type: 'url' },
         ],
         actions: [],
@@ -155,5 +155,5 @@ export async function fetchData(config) {
 }
 
 export async function performAction(config, action, payload) {
-  throw new Error('Calendly ne supporte pas cette action')
+  throw new Error('Calendly est en lecture seule')
 }

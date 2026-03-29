@@ -10,8 +10,8 @@ export async function testConnection(config) {
     body: JSON.stringify({ text: '✅ Scalyo connecte ! Vous recevrez vos alertes ici.' }),
   })
 
-  if (!res.ok) throw new Error('Le lien Slack ne fonctionne pas. Verifiez-le.')
-  return { ok: true, message: 'Slack connecte — message test envoye !' }
+  if (!res.ok) throw new Error('Le lien Slack ne fonctionne pas. Vérifiez-le.')
+  return { ok: true, message: 'Slack connecté — message test envoyé !' }
 }
 
 export async function sendNotification(config, message) {
@@ -24,12 +24,12 @@ export async function sendNotification(config, message) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
-  if (!res.ok) throw new Error('Envoi Slack echoue')
+  if (!res.ok) throw new Error('Envoi Slack échoué')
   return { ok: true }
 }
 
 export async function sync() {
-  return { ok: true, message: 'Slack configure — les notifications sont actives.' }
+  return { ok: true, message: 'Slack configuré — les notifications sont actives.' }
 }
 
 export async function fetchData() {

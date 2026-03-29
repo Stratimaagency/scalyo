@@ -36,7 +36,7 @@ async function listIntegrations(c) {
     return c.json(results)
   } catch (err) {
     console.error('GET /integrations error:', err)
-    return c.json({ error: 'Failed to load integrations' }, 500)
+    return c.json({ error: 'Impossible de charger les intégrations' }, 500)
   }
 }
 
@@ -46,7 +46,7 @@ async function connectIntegration(c) {
     const { company_id } = c.get('user')
     const { integration_key, config } = await c.req.json()
 
-    if (!integration_key) return c.json({ error: 'integration_key is required' }, 400)
+    if (!integration_key) return c.json({ error: 'Intégration non spécifiée' }, 400)
 
     const configStr = JSON.stringify(config || {})
 
@@ -73,7 +73,7 @@ async function connectIntegration(c) {
     }, 201)
   } catch (err) {
     console.error('POST /integrations error:', err)
-    return c.json({ error: 'Failed to save integration' }, 500)
+    return c.json({ error: 'Impossible d\'enregistrer l\'intégration' }, 500)
   }
 }
 
@@ -83,10 +83,10 @@ async function testIntegration(c) {
     const { company_id } = c.get('user')
     const { integration_key, config } = await c.req.json()
 
-    if (!integration_key) return c.json({ error: 'integration_key is required' }, 400)
+    if (!integration_key) return c.json({ error: 'Intégration non spécifiée' }, 400)
 
     const service = getService(integration_key)
-    if (!service) return c.json({ error: `No service for: ${integration_key}` }, 400)
+    if (!service) return c.json({ error: `Intégration "${integration_key}" non disponible` }, 400)
 
     const result = await service.testConnection(config)
 
@@ -97,7 +97,7 @@ async function testIntegration(c) {
     return c.json(result)
   } catch (err) {
     console.error('POST /integrations/test error:', err)
-    return c.json({ error: err.message || 'Connection test failed' }, 400)
+    return c.json({ error: err.message || 'Test de connexion échoué' }, 400)
   }
 }
 
@@ -111,11 +111,11 @@ async function syncIntegration(c) {
       'SELECT * FROM integrations WHERE company_id = ? AND integration_key = ?'
     ).bind(company_id, key).first()
 
-    if (!integ) return c.json({ error: 'Integration not connected' }, 404)
+    if (!integ) return c.json({ error: 'Intégration non connectée' }, 404)
 
     const config = JSON.parse(integ.config || '{}')
     const service = getService(key)
-    if (!service || !service.sync) return c.json({ error: `No sync for: ${key}` }, 400)
+    if (!service || !service.sync) return c.json({ error: `Synchronisation non disponible pour ${key}` }, 400)
 
     const result = await service.sync(config, c.env, company_id)
 
@@ -146,7 +146,7 @@ async function syncIntegration(c) {
       ).bind(company_id, key, JSON.stringify({ error: err.message }), JSON.stringify({ error: err.message })).run()
     } catch {}
 
-    return c.json({ error: err.message || 'Sync failed' }, 500)
+    return c.json({ error: err.message || 'Synchronisation échouée' }, 500)
   }
 }
 
@@ -169,7 +169,7 @@ async function disconnectIntegration(c) {
     return c.json({ status: 'disconnected' })
   } catch (err) {
     console.error('DELETE /integrations error:', err)
-    return c.json({ error: 'Failed to disconnect integration' }, 500)
+    return c.json({ error: 'Impossible de déconnecter l\'intégration' }, 500)
   }
 }
 
@@ -183,17 +183,17 @@ async function fetchIntegrationData(c) {
       'SELECT * FROM integrations WHERE company_id = ? AND integration_key = ?'
     ).bind(company_id, key).first()
 
-    if (!integ) return c.json({ error: 'Integration non connectee' }, 404)
+    if (!integ) return c.json({ error: 'Intégration non connectée' }, 404)
 
     const config = JSON.parse(integ.config || '{}')
     const service = getService(key)
-    if (!service || !service.fetchData) return c.json({ error: `Pas de donnees pour: ${key}` }, 400)
+    if (!service || !service.fetchData) return c.json({ error: `Données non disponibles pour ${key}` }, 400)
 
     const data = await service.fetchData(config)
     return c.json(data)
   } catch (err) {
     console.error('GET /integrations/:key/data error:', err)
-    return c.json({ error: err.message || 'Erreur chargement donnees' }, 500)
+    return c.json({ error: err.message || 'Erreur lors du chargement des données' }, 500)
   }
 }
 
@@ -204,23 +204,23 @@ async function performIntegrationAction(c) {
     const key = c.req.param('key')
     const { action, payload } = await c.req.json()
 
-    if (!action) return c.json({ error: 'action requise' }, 400)
+    if (!action) return c.json({ error: 'Action requise' }, 400)
 
     const integ = await c.env.DB.prepare(
       'SELECT * FROM integrations WHERE company_id = ? AND integration_key = ?'
     ).bind(company_id, key).first()
 
-    if (!integ) return c.json({ error: 'Integration non connectee' }, 404)
+    if (!integ) return c.json({ error: 'Intégration non connectée' }, 404)
 
     const config = JSON.parse(integ.config || '{}')
     const service = getService(key)
-    if (!service || !service.performAction) return c.json({ error: `Pas d'actions pour: ${key}` }, 400)
+    if (!service || !service.performAction) return c.json({ error: `Actions non disponibles pour ${key}` }, 400)
 
     const result = await service.performAction(config, action, payload || {})
     return c.json(result)
   } catch (err) {
     console.error('POST /integrations/:key/action error:', err)
-    return c.json({ error: err.message || 'Erreur execution action' }, 500)
+    return c.json({ error: err.message || 'Erreur lors de l\'exécution' }, 500)
   }
 }
 

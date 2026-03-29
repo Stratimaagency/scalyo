@@ -17,8 +17,8 @@ export async function testConnection(config) {
     }),
   })
 
-  if (!res.ok) throw new Error('Le lien Teams ne fonctionne pas. Verifiez-le.')
-  return { ok: true, message: 'Teams connecte — message test envoye !' }
+  if (!res.ok) throw new Error('Le lien Teams ne fonctionne pas. Vérifiez-le.')
+  return { ok: true, message: 'Teams connecté — message test envoyé !' }
 }
 
 export async function sendNotification(config, message, title = 'Alerte Scalyo') {
@@ -35,12 +35,12 @@ export async function sendNotification(config, message, title = 'Alerte Scalyo')
       text: message,
     }),
   })
-  if (!res.ok) throw new Error('Envoi Teams echoue')
+  if (!res.ok) throw new Error('Envoi Teams échoué')
   return { ok: true }
 }
 
 export async function sync() {
-  return { ok: true, message: 'Teams configure — les notifications sont actives.' }
+  return { ok: true, message: 'Teams configuré — les notifications sont actives.' }
 }
 
 export async function fetchData() {

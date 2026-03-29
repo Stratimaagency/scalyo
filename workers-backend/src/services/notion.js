@@ -12,17 +12,17 @@ function headers(apiKey) {
 }
 
 export async function testConnection(config) {
-  if (!config.apiKey) throw new Error('Cle d\'integration Notion requise')
+  if (!config.apiKey) throw new Error('Clé d\'intégration Notion requise')
 
   const res = await fetch(`${BASE}/users/me`, { headers: headers(config.apiKey) })
-  if (res.status === 401) throw new Error('Cle invalide. Verifiez votre secret d\'integration Notion.')
-  if (!res.ok) throw new Error(`Erreur Notion (${res.status})`)
+  if (res.status === 401) throw new Error('Clé invalide. Vérifiez votre clé Notion.')
+  if (!res.ok) throw new Error('Erreur de connexion Notion')
 
-  return { ok: true, message: 'Notion connecte avec succes' }
+  return { ok: true, message: 'Notion connecté avec succès' }
 }
 
 export async function sync(config, env, companyId) {
-  if (!config.apiKey) throw new Error('Cle d\'integration manquante')
+  if (!config.apiKey) throw new Error('Clé d\'intégration manquante')
 
   const h = headers(config.apiKey)
   const results = { databases: 0, entries: 0 }
@@ -31,7 +31,7 @@ export async function sync(config, env, companyId) {
     method: 'POST', headers: h,
     body: JSON.stringify({ filter: { value: 'database', property: 'object' }, page_size: 10 }),
   })
-  if (!searchRes.ok) throw new Error(`Notion search: erreur ${searchRes.status}`)
+  if (!searchRes.ok) throw new Error('Impossible de charger les données Notion')
   const searchData = await searchRes.json()
 
   for (const db of searchData.results || []) {
@@ -78,7 +78,7 @@ export async function fetchData(config) {
     method: 'POST', headers: h,
     body: JSON.stringify({ filter: { value: 'database', property: 'object' }, page_size: 20 }),
   })
-  if (!dbSearchRes.ok) throw new Error(`Erreur Notion (${dbSearchRes.status})`)
+  if (!dbSearchRes.ok) throw new Error('Impossible de charger les données Notion')
   const dbSearchData = await dbSearchRes.json()
 
   const databases = []
@@ -135,7 +135,7 @@ export async function fetchData(config) {
     databases,
     recentPages,
     sections: [
-      { key: 'pages', title: 'Pages recentes', icon: '📄', items: recentPages, total: recentPages.length,
+      { key: 'pages', title: 'Pages récentes', icon: '📄', items: recentPages, total: recentPages.length,
         columns: [
           { key: 'icon', label: '' },
           { key: 'title', label: 'Titre' },
@@ -152,7 +152,7 @@ export async function performAction(config, action, payload) {
   const h = headers(config.apiKey)
 
   if (action === 'createPage') {
-    if (!payload.databaseId) throw new Error('Base de donnees requise')
+    if (!payload.databaseId) throw new Error('Base de données requise')
     if (!payload.title) throw new Error('Titre requis')
 
     const body = {
@@ -184,13 +184,13 @@ export async function performAction(config, action, payload) {
     const res = await fetch(`${BASE}/pages`, { method: 'POST', headers: h, body: JSON.stringify(body) })
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || `Erreur creation page (${res.status})`)
+      throw new Error(err.message || 'Impossible de créer la page')
     }
-    return { ok: true, message: 'Page creee dans Notion' }
+    return { ok: true, message: 'Page créée dans Notion' }
   }
 
   if (action === 'updatePage') {
-    if (!payload.pageId) throw new Error('Page ID requis')
+    if (!payload.pageId) throw new Error('Page requise')
 
     const body = { properties: {} }
     for (const [key, val] of Object.entries(payload.properties || {})) {
@@ -210,13 +210,13 @@ export async function performAction(config, action, payload) {
     const res = await fetch(`${BASE}/pages/${payload.pageId}`, {
       method: 'PATCH', headers: h, body: JSON.stringify(body),
     })
-    if (!res.ok) throw new Error(`Erreur modification page (${res.status})`)
-    return { ok: true, message: 'Page modifiee dans Notion' }
+    if (!res.ok) throw new Error('Impossible de modifier la page')
+    return { ok: true, message: 'Page modifiée dans Notion' }
   }
 
   if (action === 'getPage') {
     const res = await fetch(`${BASE}/pages/${payload.pageId}`, { headers: h })
-    if (!res.ok) throw new Error(`Erreur chargement page (${res.status})`)
+    if (!res.ok) throw new Error('Impossible de charger la page')
     const page = await res.json()
 
     // Get page content (blocks)
@@ -233,7 +233,7 @@ export async function performAction(config, action, payload) {
     return { page, blocks }
   }
 
-  throw new Error(`Action inconnue: ${action}`)
+  throw new Error('Action non reconnue')
 }
 
 // ─── HELPERS ────────────────────────────────────────────

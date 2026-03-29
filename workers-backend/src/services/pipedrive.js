@@ -4,26 +4,26 @@
 const BASE = 'https://api.pipedrive.com/v1'
 
 export async function testConnection(config) {
-  if (!config.apiKey) throw new Error('Token API Pipedrive requis')
+  if (!config.apiKey) throw new Error('Clé d\'accès Pipedrive requise')
 
   const res = await fetch(`${BASE}/users/me?api_token=${config.apiKey}`)
-  if (res.status === 401) throw new Error('Token invalide. Verifiez votre token Pipedrive.')
-  if (!res.ok) throw new Error(`Erreur Pipedrive (${res.status})`)
+  if (res.status === 401) throw new Error('Clé invalide. Vérifiez votre clé Pipedrive.')
+  if (!res.ok) throw new Error('Erreur de connexion Pipedrive')
 
   const data = await res.json()
-  if (!data.success) throw new Error(data.error || 'Authentification Pipedrive echouee')
+  if (!data.success) throw new Error(data.error || 'Authentification Pipedrive échouée')
 
-  return { ok: true, message: 'Pipedrive connecte avec succes' }
+  return { ok: true, message: 'Pipedrive connecté avec succès' }
 }
 
 export async function sync(config, env, companyId) {
-  if (!config.apiKey) throw new Error('Token API manquant')
+  if (!config.apiKey) throw new Error('Clé d\'accès manquante')
 
   const token = config.apiKey
   const results = { contacts: 0, deals: 0 }
 
   const personsRes = await fetch(`${BASE}/persons?limit=100&api_token=${token}`)
-  if (!personsRes.ok) throw new Error(`Pipedrive contacts: erreur ${personsRes.status}`)
+  if (!personsRes.ok) throw new Error('Impossible de charger les contacts Pipedrive')
   const personsData = await personsRes.json()
 
   for (const person of personsData.data || []) {
@@ -63,7 +63,7 @@ export async function fetchData(config) {
   const token = config.apiKey
 
   const personsRes = await fetch(`${BASE}/persons?limit=100&api_token=${token}`)
-  if (!personsRes.ok) throw new Error(`Erreur Pipedrive (${personsRes.status})`)
+  if (!personsRes.ok) throw new Error('Impossible de charger les contacts Pipedrive')
   const personsData = await personsRes.json()
 
   const contacts = (personsData.data || []).map(p => ({
@@ -98,7 +98,7 @@ export async function fetchData(config) {
         columns: [
           { key: 'name', label: 'Nom' },
           { key: 'email', label: 'Email' },
-          { key: 'phone', label: 'Telephone' },
+          { key: 'phone', label: 'Téléphone' },
           { key: 'company', label: 'Entreprise' },
           { key: 'openDeals', label: 'Deals ouverts' },
         ],
@@ -132,8 +132,8 @@ export async function performAction(config, action, payload) {
         phone: payload.phone ? [{ value: payload.phone, primary: true }] : undefined,
       }),
     })
-    if (!res.ok) throw new Error(`Erreur creation contact (${res.status})`)
-    return { ok: true, message: 'Contact cree dans Pipedrive' }
+    if (!res.ok) throw new Error('Impossible de créer le contact')
+    return { ok: true, message: 'Contact créé dans Pipedrive' }
   }
 
   if (action === 'createDeal') {
@@ -146,8 +146,8 @@ export async function performAction(config, action, payload) {
         currency: payload.currency || 'EUR',
       }),
     })
-    if (!res.ok) throw new Error(`Erreur creation deal (${res.status})`)
-    return { ok: true, message: 'Deal cree dans Pipedrive' }
+    if (!res.ok) throw new Error('Impossible de créer le deal')
+    return { ok: true, message: 'Deal créé dans Pipedrive' }
   }
 
   if (action === 'editContact') {
@@ -160,9 +160,9 @@ export async function performAction(config, action, payload) {
         ...(payload.phone && { phone: [{ value: payload.phone, primary: true }] }),
       }),
     })
-    if (!res.ok) throw new Error(`Erreur modification contact (${res.status})`)
-    return { ok: true, message: 'Contact modifie dans Pipedrive' }
+    if (!res.ok) throw new Error('Impossible de modifier le contact')
+    return { ok: true, message: 'Contact modifié dans Pipedrive' }
   }
 
-  throw new Error(`Action inconnue: ${action}`)
+  throw new Error('Action non reconnue')
 }

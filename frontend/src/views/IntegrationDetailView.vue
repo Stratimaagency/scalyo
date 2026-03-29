@@ -28,22 +28,22 @@
     <!-- Error -->
     <div v-if="error" class="id-error">
       {{ error }}
-      <button class="btn btn-secondary" style="margin-left: 8px; font-size: 12px;" @click="refreshData">Reessayer</button>
+      <button class="btn btn-secondary" style="margin-left: 8px; font-size: 12px;" @click="refreshData">Réessayer</button>
     </div>
 
     <!-- Success message -->
     <div v-if="successMsg" class="id-success">{{ successMsg }}</div>
 
     <!-- Loading -->
-    <div v-if="loading && !data" class="id-loading">Chargement des donnees...</div>
+    <div v-if="loading && !data" class="id-loading">Chargement des données...</div>
 
     <!-- Notion: no databases warning -->
     <div v-if="key === 'notion' && data && !data.databases?.length && !loading" class="id-error" style="background: #1e293b; border-color: #334155; color: #94a3b8;">
-      <strong style="color: #f59e0b;">Aucune base de donnees trouvee.</strong><br>
-      Pour que Scalyo voie vos donnees Notion :<br>
+      <strong style="color: #f59e0b;">Aucune base de données trouvée.</strong><br>
+      Pour que Scalyo voie vos données Notion :<br>
       1. Ouvrez la page ou base dans Notion<br>
-      2. Cliquez <strong>...</strong> (3 points en haut a droite)<br>
-      3. <strong>Connexions</strong> → <strong>Connecter a</strong> → choisissez votre integration Scalyo<br>
+      2. Cliquez <strong>...</strong> (3 points en haut à droite)<br>
+      3. <strong>Connexions</strong> → <strong>Connecter à</strong> → choisissez votre intégration Scalyo<br>
       Puis cliquez "Actualiser" ci-dessus.
     </div>
 
@@ -71,7 +71,7 @@
                 </td>
               </tr>
               <tr v-if="!db.entries.length">
-                <td :colspan="db.columns.length" style="text-align: center; color: var(--muted);">Aucune entree</td>
+                <td :colspan="db.columns.length" style="text-align: center; color: var(--muted);">Aucune entrée</td>
               </tr>
             </tbody>
           </table>
@@ -120,7 +120,7 @@
               </tr>
               <tr v-if="!section.items?.length">
                 <td :colspan="section.columns.length + (section.actions?.length ? 1 : 0)" style="text-align: center; color: var(--muted); padding: 20px;">
-                  Aucune donnee
+                  Aucune donnée
                 </td>
               </tr>
             </tbody>
@@ -132,7 +132,7 @@
     <!-- Notion recent pages -->
     <template v-if="key === 'notion' && data?.recentPages?.length">
       <div class="id-section">
-        <h4 class="id-section-title">📄 Pages recentes</h4>
+        <h4 class="id-section-title">📄 Pages récentes</h4>
         <div class="id-pages-grid">
           <a v-for="page in data.recentPages" :key="page.id" :href="page.url" target="_blank" class="id-page-card">
             <span class="id-page-icon">{{ page.icon }}</span>
@@ -160,7 +160,7 @@
         </template>
         <div style="display: flex; gap: 8px; margin-top: 16px;">
           <button class="btn btn-primary" style="flex: 1;" @click="submitAction" :disabled="submitting">
-            {{ submitting ? '...' : actionModal.submitLabel || 'Creer' }}
+            {{ submitting ? '...' : actionModal.submitLabel || 'Créer' }}
           </button>
           <button class="btn btn-secondary" @click="actionModal = null">Annuler</button>
         </div>
@@ -199,9 +199,9 @@ const integrations = {
   pipedrive: { name: 'Pipedrive', icon: '🟢', color: '#25C16F', desc: 'CRM — Contacts et deals' },
   intercom: { name: 'Intercom', icon: '💬', color: '#286EFA', desc: 'Contacts et conversations' },
   zendesk: { name: 'Zendesk', icon: '🎫', color: '#17A2B8', desc: 'Tickets de support' },
-  jira: { name: 'Jira', icon: '🔷', color: '#0052CC', desc: 'Tickets et taches' },
-  notion: { name: 'Notion', icon: '📝', color: '#787878', desc: 'Bases de donnees et pages' },
-  asana: { name: 'Asana', icon: '🔶', color: '#F06A6A', desc: 'Taches et projets' },
+  jira: { name: 'Jira', icon: '🔷', color: '#0052CC', desc: 'Tickets et tâches' },
+  notion: { name: 'Notion', icon: '📝', color: '#787878', desc: 'Bases de données et pages' },
+  asana: { name: 'Asana', icon: '🔶', color: '#F06A6A', desc: 'Tâches et projets' },
   calendly: { name: 'Calendly', icon: '📅', color: '#006BFF', desc: 'Rendez-vous' },
   slack: { name: 'Slack', icon: '💜', color: '#4A154B', desc: 'Notifications' },
   teams: { name: 'Teams', icon: '🟦', color: '#5B5FC7', desc: 'Notifications' },
@@ -228,7 +228,7 @@ async function doSync() {
   try {
     const res = await integrationsApi.sync(key.value)
     const result = res.data || res
-    successMsg.value = 'Synchronisation terminee !'
+    successMsg.value = 'Synchronisation terminée !'
     setTimeout(() => { successMsg.value = '' }, 3000)
     // Refresh data after sync
     await refreshData()
@@ -260,21 +260,21 @@ function getCreateFields(action, extraData) {
   switch (action) {
     case 'createContact':
       if (key.value === 'hubspot') return [
-        { key: 'firstname', label: 'Prenom', placeholder: 'Jean' },
+        { key: 'firstname', label: 'Prénom', placeholder: 'Jean' },
         { key: 'lastname', label: 'Nom', placeholder: 'Dupont' },
         { key: 'email', label: 'Email', type: 'email', placeholder: 'jean@example.com' },
-        { key: 'phone', label: 'Telephone', placeholder: '+33 6 00 00 00 00' },
+        { key: 'phone', label: 'Téléphone', placeholder: '+33 6 00 00 00 00' },
         { key: 'company', label: 'Entreprise', placeholder: 'Acme Inc.' },
       ]
       if (key.value === 'pipedrive') return [
         { key: 'name', label: 'Nom complet', placeholder: 'Jean Dupont' },
         { key: 'email', label: 'Email', type: 'email', placeholder: 'jean@example.com' },
-        { key: 'phone', label: 'Telephone', placeholder: '+33 6 00 00 00 00' },
+        { key: 'phone', label: 'Téléphone', placeholder: '+33 6 00 00 00 00' },
       ]
       return [
         { key: 'name', label: 'Nom', placeholder: 'Jean Dupont' },
         { key: 'email', label: 'Email', type: 'email', placeholder: 'jean@example.com' },
-        { key: 'phone', label: 'Telephone', placeholder: '+33 6 00 00 00 00' },
+        { key: 'phone', label: 'Téléphone', placeholder: '+33 6 00 00 00 00' },
       ]
     case 'createDeal':
       if (key.value === 'hubspot') return [
@@ -289,12 +289,12 @@ function getCreateFields(action, extraData) {
       const projects = data.value?.meta?.projects || []
       return [
         { key: 'project', label: 'Projet', type: 'select', options: projects.map(p => ({ value: p.key, label: `${p.key} - ${p.name}` })) },
-        { key: 'summary', label: 'Resume', placeholder: 'Description courte du ticket' },
+        { key: 'summary', label: 'Résumé', placeholder: 'Description courte du ticket' },
         { key: 'type', label: 'Type', type: 'select', options: [
-          { value: 'Task', label: 'Tache' }, { value: 'Bug', label: 'Bug' }, { value: 'Story', label: 'Story' },
+          { value: 'Task', label: 'Tâche' }, { value: 'Bug', label: 'Bug' }, { value: 'Story', label: 'Story' },
         ]},
-        { key: 'description', label: 'Description', type: 'textarea', placeholder: 'Details...' },
-        { key: 'priority', label: 'Priorite', type: 'select', options: [
+        { key: 'description', label: 'Description', type: 'textarea', placeholder: 'Détails...' },
+        { key: 'priority', label: 'Priorité', type: 'select', options: [
           { value: 'Highest', label: 'Critique' }, { value: 'High', label: 'Haute' },
           { value: 'Medium', label: 'Moyenne' }, { value: 'Low', label: 'Basse' },
         ]},
@@ -302,9 +302,9 @@ function getCreateFields(action, extraData) {
     }
     case 'createTicket':
       return [
-        { key: 'subject', label: 'Sujet', placeholder: 'Probleme de connexion...' },
-        { key: 'description', label: 'Description', type: 'textarea', placeholder: 'Details...' },
-        { key: 'priority', label: 'Priorite', type: 'select', options: [
+        { key: 'subject', label: 'Sujet', placeholder: 'Problème de connexion...' },
+        { key: 'description', label: 'Description', type: 'textarea', placeholder: 'Détails...' },
+        { key: 'priority', label: 'Priorité', type: 'select', options: [
           { value: 'urgent', label: 'Urgente' }, { value: 'high', label: 'Haute' },
           { value: 'normal', label: 'Normale' }, { value: 'low', label: 'Basse' },
         ]},
@@ -312,9 +312,9 @@ function getCreateFields(action, extraData) {
     case 'createTask': {
       const projects = data.value?.meta?.projects || []
       return [
-        { key: 'name', label: 'Nom de la tache', placeholder: 'Ma nouvelle tache' },
-        { key: 'dueOn', label: 'Echeance', type: 'date' },
-        { key: 'notes', label: 'Notes', type: 'textarea', placeholder: 'Details...' },
+        { key: 'name', label: 'Nom de la tâche', placeholder: 'Ma nouvelle tâche' },
+        { key: 'dueOn', label: 'Échéance', type: 'date' },
+        { key: 'notes', label: 'Notes', type: 'textarea', placeholder: 'Détails...' },
         ...(projects.length ? [{ key: 'project', label: 'Projet', type: 'select', options: projects.map(p => ({ value: p.gid, label: p.name })) }] : []),
       ]
     }
@@ -340,7 +340,7 @@ function openCreateForm(action, extraData) {
     action,
     fields,
     extraData,
-    submitLabel: 'Creer',
+    submitLabel: 'Créer',
   }
 }
 
@@ -365,7 +365,7 @@ async function completeItem(sectionKey, item) {
     if (key.value === 'asana') {
       await integrationsApi.performAction(key.value, 'completeTask', { gid: item.gid })
     }
-    successMsg.value = 'Tache terminee !'
+    successMsg.value = 'Tâche terminée !'
     setTimeout(() => { successMsg.value = '' }, 2000)
     await refreshData()
   } catch (err) {
@@ -390,7 +390,7 @@ async function openUpdateStatusForm(sectionKey, item) {
           key: 'transitionId', label: 'Nouveau statut', type: 'select',
           options: transitions.map(t => ({ value: t.id, label: t.name })),
         }],
-        submitLabel: 'Mettre a jour',
+        submitLabel: 'Mettre à jour',
       }
     } catch (err) {
       error.value = err.response?.data?.error || err.message || 'Erreur chargement statuts'
@@ -406,11 +406,11 @@ async function openUpdateStatusForm(sectionKey, item) {
           { value: 'open', label: 'Ouvert' },
           { value: 'pending', label: 'En attente' },
           { value: 'hold', label: 'En pause' },
-          { value: 'solved', label: 'Resolu' },
-          { value: 'closed', label: 'Ferme' },
+          { value: 'solved', label: 'Résolu' },
+          { value: 'closed', label: 'Fermé' },
         ],
       }],
-      submitLabel: 'Mettre a jour',
+      submitLabel: 'Mettre à jour',
     }
   }
 }
@@ -426,7 +426,7 @@ async function submitAction() {
     }
     const res = await integrationsApi.performAction(key.value, actionModal.value.action, payload)
     const result = res.data || res
-    successMsg.value = result.message || 'Action effectuee !'
+    successMsg.value = result.message || 'Action effectuée !'
     setTimeout(() => { successMsg.value = '' }, 3000)
     actionModal.value = null
     await refreshData()
@@ -443,10 +443,10 @@ function getActionTitle(action) {
     createDeal: 'Nouveau deal',
     createIssue: 'Nouveau ticket Jira',
     createTicket: 'Nouveau ticket Zendesk',
-    createTask: 'Nouvelle tache',
+    createTask: 'Nouvelle tâche',
     createPage: 'Nouvelle page Notion',
   }
-  return titles[action] || 'Nouvelle entree'
+  return titles[action] || 'Nouvelle entrée'
 }
 
 function getStatusClass(colKey, value) {

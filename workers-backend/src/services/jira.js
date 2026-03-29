@@ -15,18 +15,18 @@ function getHeaders(config) {
 
 export async function testConnection(config) {
   if (!config.email) throw new Error('Email Atlassian requis')
-  if (!config.apiKey) throw new Error('Token API Atlassian requis')
+  if (!config.apiKey) throw new Error("Clé d'accès Atlassian requise")
   if (!config.domain) throw new Error('Sous-domaine Jira requis')
 
   const res = await fetch(`${getBase(config)}/myself`, { headers: getHeaders(config) })
-  if (res.status === 401) throw new Error('Identifiants invalides. Verifiez email, token et sous-domaine.')
+  if (res.status === 401) throw new Error('Identifiants invalides. Vérifiez votre email, clé et sous-domaine.')
   if (!res.ok) throw new Error(`Erreur Jira (${res.status})`)
 
-  return { ok: true, message: `Jira connecte (${config.domain}.atlassian.net)` }
+  return { ok: true, message: `Jira connecté (${config.domain}.atlassian.net)` }
 }
 
 export async function sync(config, env, companyId) {
-  if (!config.email || !config.apiKey || !config.domain) throw new Error('Configuration Jira incomplete')
+  if (!config.email || !config.apiKey || !config.domain) throw new Error('Configuration Jira incomplète')
 
   const h = getHeaders(config)
   const base = getBase(config)
@@ -37,7 +37,7 @@ export async function sync(config, env, companyId) {
     `${base}/search?jql=${jql}&maxResults=50&fields=summary,status,assignee,priority,updated`,
     { headers: h }
   )
-  if (!res.ok) throw new Error(`Jira issues: erreur ${res.status}`)
+  if (!res.ok) throw new Error(`Impossible de charger les tickets Jira`)
   const data = await res.json()
 
   const existing = await env.DB.prepare(
@@ -115,7 +115,7 @@ export async function fetchData(config) {
     `${base}/search?jql=${jql}&maxResults=100&fields=summary,status,assignee,priority,updated,project,issuetype,created`,
     { headers: h }
   )
-  if (!issuesRes.ok) throw new Error(`Erreur Jira issues (${issuesRes.status})`)
+  if (!issuesRes.ok) throw new Error(`Impossible de charger les tickets Jira`)
   const issuesData = await issuesRes.json()
 
   const issues = (issuesData.issues || []).map(i => {
@@ -126,7 +126,7 @@ export async function fetchData(config) {
       status: f.status?.name || '',
       statusCategory: f.status?.statusCategory?.key || '',
       priority: f.priority?.name || '',
-      assignee: f.assignee?.displayName || 'Non assigne',
+      assignee: f.assignee?.displayName || 'Non assigné',
       project: f.project?.name || '',
       projectKey: f.project?.key || '',
       type: f.issuetype?.name || '',
@@ -151,11 +151,11 @@ export async function fetchData(config) {
     sections: [
       { key: 'issues', title: 'Tickets', icon: '🎫', items: issues, total: issuesData.total || issues.length,
         columns: [
-          { key: 'key', label: 'Cle' },
-          { key: 'summary', label: 'Resume' },
+          { key: 'key', label: 'Clé' },
+          { key: 'summary', label: 'Résumé' },
           { key: 'status', label: 'Statut' },
-          { key: 'priority', label: 'Priorite' },
-          { key: 'assignee', label: 'Assigne a' },
+          { key: 'priority', label: 'Priorité' },
+          { key: 'assignee', label: 'Assigné à' },
           { key: 'project', label: 'Projet' },
           { key: 'type', label: 'Type' },
         ],
@@ -163,7 +163,7 @@ export async function fetchData(config) {
       },
       { key: 'projects', title: 'Projets', icon: '📂', items: projects, total: projects.length,
         columns: [
-          { key: 'key', label: 'Cle' },
+          { key: 'key', label: 'Clé' },
           { key: 'name', label: 'Nom' },
         ],
         actions: [],
@@ -179,8 +179,8 @@ export async function performAction(config, action, payload) {
   const base = getBase(config)
 
   if (action === 'createIssue') {
-    if (!payload.project) throw new Error('Projet requis')
-    if (!payload.summary) throw new Error('Resume requis')
+    if (!payload.project) throw new Error('Veuillez sélectionner un projet')
+    if (!payload.summary) throw new Error('Veuillez entrer un résumé')
 
     const body = {
       fields: {
@@ -198,29 +198,29 @@ export async function performAction(config, action, payload) {
     const res = await fetch(`${base}/issue`, { method: 'POST', headers: h, body: JSON.stringify(body) })
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))
-      throw new Error(err.errors ? Object.values(err.errors).join(', ') : `Erreur creation (${res.status})`)
+      throw new Error(err.errors ? Object.values(err.errors).join(', ') : `Impossible de créer le ticket`)
     }
     const created = await res.json()
-    return { ok: true, message: `Ticket ${created.key} cree` }
+    return { ok: true, message: `Ticket ${created.key} créé` }
   }
 
   if (action === 'updateStatus') {
-    if (!payload.issueId || !payload.transitionId) throw new Error('Issue et transition requis')
+    if (!payload.issueId || !payload.transitionId) throw new Error('Veuillez sélectionner un nouveau statut')
 
     const res = await fetch(`${base}/issue/${payload.issueId}/transitions`, {
       method: 'POST', headers: h,
       body: JSON.stringify({ transition: { id: payload.transitionId } }),
     })
-    if (!res.ok) throw new Error(`Erreur mise a jour statut (${res.status})`)
-    return { ok: true, message: 'Statut mis a jour' }
+    if (!res.ok) throw new Error(`Impossible de mettre à jour le statut`)
+    return { ok: true, message: 'Statut mis à jour' }
   }
 
   if (action === 'getTransitions') {
     const res = await fetch(`${base}/issue/${payload.issueId}/transitions`, { headers: h })
-    if (!res.ok) throw new Error(`Erreur chargement transitions (${res.status})`)
+    if (!res.ok) throw new Error('Impossible de charger les statuts disponibles')
     const data = await res.json()
     return { transitions: (data.transitions || []).map(t => ({ id: t.id, name: t.name })) }
   }
 
-  throw new Error(`Action inconnue: ${action}`)
+  throw new Error('Action non reconnue')
 }

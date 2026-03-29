@@ -8,26 +8,26 @@ function headers(apiKey) {
 }
 
 export async function testConnection(config) {
-  if (!config.apiKey) throw new Error('Token d\'acces Asana requis')
+  if (!config.apiKey) throw new Error("Clé d'accès Asana requise")
 
   const res = await fetch(`${BASE}/users/me`, { headers: headers(config.apiKey) })
-  if (res.status === 401) throw new Error('Token invalide. Verifiez votre token Asana.')
-  if (!res.ok) throw new Error(`Erreur Asana (${res.status})`)
+  if (res.status === 401) throw new Error('Clé invalide. Vérifiez votre clé Asana.')
+  if (!res.ok) throw new Error('Erreur de connexion Asana')
 
-  return { ok: true, message: 'Asana connecte avec succes' }
+  return { ok: true, message: 'Asana connecté avec succès' }
 }
 
 export async function sync(config, env, companyId) {
-  if (!config.apiKey) throw new Error('Token d\'acces manquant')
+  if (!config.apiKey) throw new Error("Clé d'accès manquante")
 
   const h = headers(config.apiKey)
   const results = { tasks: 0, projects: 0 }
 
   const meRes = await fetch(`${BASE}/users/me`, { headers: h })
-  if (!meRes.ok) throw new Error('Asana: impossible de recuperer l\'utilisateur')
+  if (!meRes.ok) throw new Error("Impossible de récupérer les informations Asana")
   const me = await meRes.json()
   const workspace = me.data?.workspaces?.[0]?.gid
-  if (!workspace) throw new Error('Asana: aucun workspace trouve')
+  if (!workspace) throw new Error('Aucun espace de travail Asana trouvé')
 
   const projRes = await fetch(`${BASE}/projects?workspace=${workspace}&limit=100`, { headers: h })
   if (projRes.ok) {
@@ -39,7 +39,7 @@ export async function sync(config, env, companyId) {
     `${BASE}/tasks?workspace=${workspace}&assignee=me&completed_since=now&limit=50&opt_fields=name,completed,assignee.name,due_on`,
     { headers: h }
   )
-  if (!tasksRes.ok) throw new Error(`Asana taches: erreur ${tasksRes.status}`)
+  if (!tasksRes.ok) throw new Error('Impossible de charger les tâches Asana')
   const tasksData = await tasksRes.json()
 
   const existing = await env.DB.prepare(
@@ -61,7 +61,7 @@ export async function sync(config, env, companyId) {
     const externalId = `asana_${task.gid}`
     newAsanaTasks.push({
       id: existingMap.get(externalId)?.id || Date.now().toString() + Math.random().toString(36).slice(2, 6),
-      title: task.name || 'Tache Asana',
+      title: task.name || 'Tâche Asana',
       note: 'Source: Asana', color: 'blue', quadrant: 'q2',
       dueDate: task.due_on || '', account: '', done: task.completed || false, externalId,
       createdAt: existingMap.get(externalId)?.createdAt || new Date().toISOString(),
@@ -88,10 +88,10 @@ export async function fetchData(config) {
   const h = headers(config.apiKey)
 
   const meRes = await fetch(`${BASE}/users/me`, { headers: h })
-  if (!meRes.ok) throw new Error('Erreur Asana')
+  if (!meRes.ok) throw new Error('Erreur de connexion Asana')
   const me = await meRes.json()
   const workspace = me.data?.workspaces?.[0]?.gid
-  if (!workspace) throw new Error('Aucun workspace Asana')
+  if (!workspace) throw new Error('Aucun espace de travail Asana trouvé')
 
   // Projects
   const projRes = await fetch(`${BASE}/projects?workspace=${workspace}&limit=100&opt_fields=name,color,created_at`, { headers: h })
@@ -108,7 +108,7 @@ export async function fetchData(config) {
     `${BASE}/tasks?workspace=${workspace}&assignee=me&completed_since=now&limit=100&opt_fields=name,completed,due_on,assignee.name,projects.name,notes`,
     { headers: h }
   )
-  if (!tasksRes.ok) throw new Error(`Erreur Asana taches (${tasksRes.status})`)
+  if (!tasksRes.ok) throw new Error('Impossible de charger les tâches Asana')
   const tasksData = await tasksRes.json()
 
   const tasks = (tasksData.data || []).map(t => ({
@@ -122,11 +122,11 @@ export async function fetchData(config) {
 
   return {
     sections: [
-      { key: 'tasks', title: 'Taches', icon: '✅', items: tasks, total: tasks.length,
+      { key: 'tasks', title: 'Tâches', icon: '✅', items: tasks, total: tasks.length,
         columns: [
           { key: 'name', label: 'Nom' },
           { key: 'project', label: 'Projet' },
-          { key: 'dueOn', label: 'Echeance', type: 'date' },
+          { key: 'dueOn', label: 'Échéance', type: 'date' },
           { key: 'completed', label: 'Fait', type: 'boolean' },
         ],
         actions: ['create', 'complete'],
@@ -162,8 +162,8 @@ export async function performAction(config, action, payload) {
     }
 
     const res = await fetch(`${BASE}/tasks`, { method: 'POST', headers: h, body: JSON.stringify(body) })
-    if (!res.ok) throw new Error(`Erreur creation tache (${res.status})`)
-    return { ok: true, message: 'Tache creee dans Asana' }
+    if (!res.ok) throw new Error('Impossible de créer la tâche')
+    return { ok: true, message: 'Tâche créée dans Asana' }
   }
 
   if (action === 'completeTask') {
@@ -171,9 +171,9 @@ export async function performAction(config, action, payload) {
       method: 'PUT', headers: h,
       body: JSON.stringify({ data: { completed: true } }),
     })
-    if (!res.ok) throw new Error(`Erreur completion tache (${res.status})`)
-    return { ok: true, message: 'Tache terminee dans Asana' }
+    if (!res.ok) throw new Error('Impossible de terminer la tâche')
+    return { ok: true, message: 'Tâche terminée dans Asana' }
   }
 
-  throw new Error(`Action inconnue: ${action}`)
+  throw new Error('Action non reconnue')
 }
