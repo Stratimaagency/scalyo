@@ -166,7 +166,7 @@
 import { ref, computed } from 'vue'
 import * as XLSX from 'xlsx'
 import { useI18n } from '../i18n'
-import { smartImportApi } from '../api'
+import { smartImportApi, kpiApi, taskApi } from '../api'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const { t } = useI18n()
@@ -1111,12 +1111,62 @@ async function doImport() {
       taskTitles: payload.tasks.map(t => t.title).slice(0, 5),
     })
 
-    const { data } = await smartImportApi.execute(payload)
-    console.log('Import result:', data)
-    importResult.value = data.imported || data
+    const result = { portfolio: 0, kpis: 0, tasks: 0, roadmap: 0, errors: [] }
+
+    // 1. Import portfolio via smart-import endpoint (this works)
+    if (payload.portfolio.length) {
+      try {
+        const { data } = await smartImportApi.execute({ portfolio: payload.portfolio, kpis: {}, tasks: [], roadmap: [] })
+        result.portfolio = data.imported?.portfolio || payload.portfolio.length
+      } catch (e) {
+        result.errors.push('Portfolio: ' + (e.response?.data?.error || e.message))
+      }
+    }
+
+    // 2. Save KPIs via the SAME API that KPIView uses
+    if (payload.kpis && payload.kpis.mrr) {
+      try {
+        const period = new Date().toISOString().slice(0, 7)
+        await kpiApi.saveMonthly({ period, kpis: payload.kpis })
+        result.kpis = 1
+      } catch (e) {
+        result.errors.push('KPIs: ' + (e.response?.data?.error || e.message))
+      }
+    }
+
+    // 3. Save tasks via the SAME API that TaskBoardView uses
+    if (payload.tasks.length) {
+      try {
+        // Get existing tasks first
+        const { data: existing } = await taskApi.getTasks()
+        const existingTasks = existing.tasks || []
+        // Format tasks to match TaskBoardView format exactly
+        const now = new Date().toISOString()
+        const newTasks = payload.tasks.map((t, i) => ({
+          id: (Date.now() + i).toString(),
+          title: String(t.title || ''),
+          note: String(t.note || ''),
+          quadrant: t.quadrant || 'q1',
+          color: t.color || 'teal',
+          done: false,
+          dueDate: t.due || t.dueDate || '',
+          account: t.account || '',
+          createdAt: now,
+        }))
+        // Save ALL tasks (existing + new)
+        await taskApi.saveTasks([...existingTasks, ...newTasks])
+        result.tasks = newTasks.length
+      } catch (e) {
+        result.errors.push('Tasks: ' + (e.response?.data?.error || e.message))
+      }
+    }
+
+    console.log('Import complete:', result)
+    if (result.errors.length) console.error('Import errors:', result.errors)
+    importResult.value = result
     step.value = 'done'
   } catch (err) {
-    console.error('Import execute error:', err.response?.data || err)
+    console.error('Import error:', err)
     error.value = err.response?.data?.error || err.message || t('errorGeneric')
   }
   importing.value = false
