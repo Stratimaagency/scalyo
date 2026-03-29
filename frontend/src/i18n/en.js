@@ -732,6 +732,16 @@ export default {
   feedbackImprovement: 'Improvement',
   feedbackOther: 'Other',
   feedbackError: 'Failed to send. Please try again.',
+  // --- Industries ---
+  Manufacturing: 'Manufacturing',
+  Retail: 'Retail',
+  Logistics: 'Logistics',
+  RealEstate: 'Real Estate',
+  Other: 'Other',
+  // --- Errors ---
+  accountNameRequired: 'Account name is required',
+  nameRequired: 'Name is required',
+  errUnexpected: 'An unexpected error occurred',
   // --- Smart Import ---
   smartImport: 'Smart Import',
   smartImportTitle: 'Smart Import',

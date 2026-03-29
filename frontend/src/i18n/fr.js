@@ -732,6 +732,16 @@ export default {
   feedbackImprovement: 'Amélioration',
   feedbackOther: 'Autre',
   feedbackError: 'Échec de l\'envoi. Veuillez réessayer.',
+  // --- Industries ---
+  Manufacturing: 'Industrie',
+  Retail: 'Commerce',
+  Logistics: 'Logistique',
+  RealEstate: 'Immobilier',
+  Other: 'Autre',
+  // --- Errors ---
+  accountNameRequired: 'Le nom du compte est requis',
+  nameRequired: 'Le nom est requis',
+  errUnexpected: 'Une erreur inattendue est survenue',
   // --- Smart Import ---
   smartImport: 'Import intelligent',
   smartImportTitle: 'Import intelligent',

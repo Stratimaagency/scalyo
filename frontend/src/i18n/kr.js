@@ -729,6 +729,16 @@ export default {
   feedbackImprovement: '개선',
   feedbackOther: '기타',
   feedbackError: '전송 실패. 다시 시도해주세요.',
+  // --- Industries ---
+  Manufacturing: '제조업',
+  Retail: '소매업',
+  Logistics: '물류',
+  RealEstate: '부동산',
+  Other: '기타',
+  // --- Errors ---
+  accountNameRequired: '계정 이름이 필요합니다',
+  nameRequired: '이름이 필요합니다',
+  errUnexpected: '예기치 못한 오류가 발생했습니다',
   // --- Smart Import ---
   smartImport: '스마트 가져오기',
   smartImportTitle: '스마트 가져오기',
