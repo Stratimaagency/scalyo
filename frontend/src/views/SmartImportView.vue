@@ -1057,6 +1057,8 @@ async function doImport() {
 
       // === GENERATE TASKS (Eisenhower + Kanban) ===
 
+      const criticals = payload.portfolio.filter(a => a.risk === 'critical')
+
       // Q1 — FAIRE MAINTENANT (urgent + important) : comptes critiques
       for (const acc of criticals.slice(0, 5)) {
         payload.tasks.push({ title: `🚨 Appel urgent : ${acc.name}`, note: `Compte critique. Health ${acc.health}/100. ARR: ${acc.arr ? Number(acc.arr).toLocaleString() + '€' : 'N/A'}. Objectif : comprendre la situation et proposer un plan d'action sous 48h.`, quadrant: 'q1', color: 'red', account: acc.name })
