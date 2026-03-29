@@ -345,12 +345,13 @@ function parseNum(v) {
 }
 
 function parsePortfolioRows(rows) {
-  return rows.filter(r => findCol(r, 'client', 'compte', 'account', 'entreprise', 'company', 'nom', 'name')).map(r => {
-    const name = findCol(r, 'client', 'compte', 'account', 'entreprise', 'company', 'nom', 'name')
+  const nameKeys = ['client', 'compte', 'account', 'entreprise', 'company', 'nom', 'name', 'société', 'societe', 'raison sociale']
+  return rows.filter(r => findCol(r, ...nameKeys)).map(r => {
+    const name = findCol(r, ...nameKeys)
     if (!name || typeof name !== 'string' || name.length < 2) return null
-    const arr = parseNum(findCol(r, 'arr', 'ca annuel', 'annual revenue', 'ca géré', 'ca gere', 'revenue'))
-    const mrr = parseNum(findCol(r, 'mrr', 'ca mensuel', 'monthly'))
-    const health = parseNum(findCol(r, 'health', 'santé', 'sante', 'h.score', 'score'))
+    const arr = parseNum(findCol(r, 'arr', 'ca annuel', 'annual revenue', 'ca géré', 'ca gere', 'ca ger', 'revenue', 'chiffre'))
+    const mrr = parseNum(findCol(r, 'mrr', 'ca mensuel', 'monthly', 'mensuel'))
+    const health = parseNum(findCol(r, 'health', 'santé', 'sante', 'h.score', 'score', 'note', 'satisfaction'))
     const healthNorm = health > 10 ? health : Math.round(health * 10) // Handle 0-10 scale
     const risk = detectRisk(r, healthNorm)
     return {
@@ -374,11 +375,13 @@ function detectRisk(row, health) {
   if (riskCol) {
     const r = String(riskCol).toLowerCase()
     if (r.includes('critic') || r.includes('critique') || r.includes('high') || r.includes('élevé')) return 'critical'
-    if (r.includes('watch') || r.includes('moyen') || r.includes('medium') || r.includes('attention')) return 'watch'
+    if (r.includes('watch') || r.includes('moyen') || r.includes('medium') || r.includes('attention')) return 'medium'
     return 'low'
   }
+  // Only assign risk from health if health was actually found (not 0 default)
+  if (health === 0) return 'low'
   if (health <= 40) return 'critical'
-  if (health <= 60) return 'watch'
+  if (health <= 60) return 'medium'
   return 'low'
 }
 

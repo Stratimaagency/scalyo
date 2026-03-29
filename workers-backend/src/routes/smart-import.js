@@ -17,11 +17,15 @@ smartImport.post('/', async (c) => {
 
   const results = { portfolio: 0, kpis: 0, tasks: 0, roadmap: 0, errors: [] }
 
-  // --- 1. Portfolio accounts (individual rows in accounts table) ---
+  // --- 1. Portfolio accounts (batch insert for performance) ---
   if (data.portfolio && Array.isArray(data.portfolio)) {
-    for (const acc of data.portfolio) {
-      try {
-        await db.prepare(
+    const validRisks = ['low', 'medium', 'critical']
+    const BATCH_SIZE = 50
+    for (let i = 0; i < data.portfolio.length; i += BATCH_SIZE) {
+      const batch = data.portfolio.slice(i, i + BATCH_SIZE)
+      const stmts = batch.map(acc => {
+        const risk = validRisks.includes(acc.risk) ? acc.risk : 'low'
+        return db.prepare(
           `INSERT INTO accounts (company_id, name, csm, mrr, arr, health, risk, industry, contact, contact_email, notes, renewal)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         ).bind(
@@ -30,17 +34,20 @@ smartImport.post('/', async (c) => {
           acc.csm || '',
           acc.mrr || 0,
           acc.arr || ((acc.mrr || 0) * 12),
-          acc.health ?? 70,
-          acc.risk || 'low',
+          Math.min(100, Math.max(0, acc.health ?? 70)),
+          risk,
           acc.industry || '',
           acc.contact || '',
           acc.contact_email || '',
           acc.notes || '',
           acc.renewal || ''
-        ).run()
-        results.portfolio++
+        )
+      })
+      try {
+        await db.batch(stmts)
+        results.portfolio += batch.length
       } catch (e) {
-        results.errors.push(`Portfolio "${acc.name}": ${e.message}`)
+        results.errors.push(`Portfolio batch ${i}-${i + batch.length}: ${e.message}`)
       }
     }
   }
