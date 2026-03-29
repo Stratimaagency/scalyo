@@ -17,7 +17,6 @@ CREATE TABLE IF NOT EXISTS users_new (
   must_change_password INTEGER DEFAULT 0,
   verification_token TEXT DEFAULT '',
   verification_expires TEXT DEFAULT '',
-  assigned_csm_id INTEGER DEFAULT NULL,
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))
 );
