@@ -143,7 +143,7 @@
         {{ importResult.portfolio }} {{ t('portfolio').toLowerCase() }},
         {{ importResult.kpis }} KPIs,
         {{ importResult.tasks }} {{ t('tasks').toLowerCase() }},
-        {{ importResult.roadmap }} {{ t('roadmap').toLowerCase() }}
+        {{ importResult.events || 0 }} {{ t('planning').toLowerCase() }}
       </p>
       <div v-if="importResult.errors && importResult.errors.length" style="margin-bottom: 16px; text-align: left; background: var(--redBg); border-radius: 8px; padding: 12px; font-size: 12px; color: var(--red);">
         <div v-for="(err, i) in importResult.errors.slice(0, 5)" :key="i">{{ err }}</div>
@@ -166,7 +166,7 @@
 import { ref, computed } from 'vue'
 import * as XLSX from 'xlsx'
 import { useI18n } from '../i18n'
-import { smartImportApi, kpiApi, taskApi } from '../api'
+import { smartImportApi, kpiApi, taskApi, planningApi } from '../api'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const { t } = useI18n()
@@ -195,12 +195,11 @@ const summaryCards = computed(() => {
     }
   }
   const taskCount = generatedTasks.value.length + counts.tasks
-  const wellbeingCount = generatedTasks.value.filter(t => t.title.includes('💚') || t.title.includes('💛') || t.title.includes('🚨')).length
   return [
     { key: 'portfolio', label: t('portfolio'), count: counts.portfolio },
     { key: 'kpis', label: 'KPIs', count: Object.keys(computedKpis.value).length },
     { key: 'tasks', label: 'Task Board', count: taskCount },
-    { key: 'wellbeing', label: t('wellbeing'), count: wellbeingCount },
+    { key: 'planning', label: t('planning'), count: '✓' },
     { key: 'sheets', label: t('smartImportSheets'), count: aiMapping.value.length },
   ]
 })
@@ -1055,48 +1054,88 @@ async function doImport() {
         avg_health: avgHealth,
       }
 
-      // === ALWAYS generate tasks — UNCONDITIONAL ===
+      // === GENERATE TASKS (Eisenhower + Kanban) ===
 
-      // Critical accounts → urgent tasks
-      const criticals = payload.portfolio.filter(a => a.risk === 'critical').slice(0, 5)
-      for (const acc of criticals) {
-        payload.tasks.push({ title: `🚨 Compte critique : ${acc.name}`, note: `Health ${acc.health}/100. ARR: ${acc.arr ? Number(acc.arr).toLocaleString() + '€' : 'N/A'}.`, quadrant: 'q1', color: 'red', account: acc.name })
+      // Q1 — FAIRE MAINTENANT (urgent + important) : comptes critiques
+      for (const acc of criticals.slice(0, 5)) {
+        payload.tasks.push({ title: `🚨 Appel urgent : ${acc.name}`, note: `Compte critique. Health ${acc.health}/100. ARR: ${acc.arr ? Number(acc.arr).toLocaleString() + '€' : 'N/A'}. Objectif : comprendre la situation et proposer un plan d'action sous 48h.`, quadrant: 'q1', color: 'red', account: acc.name })
       }
-
-      // Low health accounts (even if not marked critical)
-      for (const acc of lowHealthAccounts.slice(0, 5)) {
+      for (const acc of lowHealthAccounts.slice(0, 3)) {
         if (criticals.find(c => c.name === acc.name)) continue
-        payload.tasks.push({ title: `⚠️ Health bas : ${acc.name} (${acc.health}/100)`, note: `Planifier un point de suivi.`, quadrant: 'q1', color: 'orange', account: acc.name })
+        payload.tasks.push({ title: `⚠️ Point de suivi : ${acc.name}`, note: `Health ${acc.health}/100 — en dessous du seuil. Contacter le client cette semaine.`, quadrant: 'q1', color: 'orange', account: acc.name })
       }
 
-      // Watch accounts
-      const watches = payload.portfolio.filter(a => a.risk === 'medium').slice(0, 3)
-      for (const acc of watches) {
-        payload.tasks.push({ title: `👁️ Surveiller : ${acc.name}`, note: `Compte en vigilance. Health ${acc.health}/100.`, quadrant: 'q2', color: 'orange', account: acc.name })
-      }
-
-      // Accounts without CSM
+      // Q2 — PLANIFIER (important, pas urgent) : reviews, coaching, stratégie
       if (noCSM.length > 0) {
-        payload.tasks.push({ title: `📋 ${noCSM.length} comptes sans CSM assigné`, note: 'Assigner un CSM pour assurer le suivi client.', quadrant: 'q2', color: 'orange', account: '' })
+        payload.tasks.push({ title: `📋 Assigner CSM à ${noCSM.length} comptes orphelins`, note: 'Ces comptes n\'ont pas de CSM. Répartir dans l\'équipe selon la charge.', quadrant: 'q2', color: 'orange', account: '' })
       }
-
-      // CSM portfolio review
-      for (const csm of csms.slice(0, 3)) {
+      for (const csm of csms.slice(0, 5)) {
         const csmAccounts = payload.portfolio.filter(a => a.csm === csm)
         const csmRisk = csmAccounts.filter(a => a.risk === 'critical' || (a.health > 0 && a.health < 50)).length
-        payload.tasks.push({ title: `📊 Review portefeuille ${csm}`, note: `${csmAccounts.length} comptes, ${csmRisk} à risque.`, quadrant: 'q2', color: 'teal', account: '' })
+        payload.tasks.push({ title: `📊 Review ${csm} — ${csmAccounts.length} comptes`, note: `${csmRisk} comptes à risque. Préparer les points clés pour le 1:1.`, quadrant: 'q2', color: 'teal', account: '' })
+      }
+      const watches = payload.portfolio.filter(a => a.risk === 'medium').slice(0, 3)
+      for (const acc of watches) {
+        payload.tasks.push({ title: `👁️ Surveiller : ${acc.name}`, note: `Compte en vigilance. Health ${acc.health}/100. Planifier un check-in mensuel.`, quadrant: 'q2', color: 'orange', account: acc.name })
       }
 
-      // Global COPIL task
-      payload.tasks.push({ title: `🗂️ ${payload.portfolio.length} comptes importés — planifier COPIL`, note: `ARR total: ${Number(totalArr).toLocaleString()}€. Health moyen: ${avgHealth}/100. ${criticalCount} critiques, ${watchCount} en vigilance.`, quadrant: 'q2', color: 'teal', account: '' })
+      // Q3 — DÉLÉGUER (urgent, pas important) : admin, suivi routine
+      payload.tasks.push({ title: `📧 Envoyer rapport COPIL à l'équipe`, note: `${payload.portfolio.length} comptes importés. Partager le résumé avec les CSMs.`, quadrant: 'q3', color: 'blue', account: '' })
+
+      // Global COPIL
+      payload.tasks.push({ title: `🗂️ Organiser le prochain COPIL`, note: `ARR: ${Number(totalArr).toLocaleString()}€. Health moyen: ${avgHealth}/100. ${criticalCount} critiques, ${watchCount} en vigilance. ${csms.length} CSMs.`, quadrant: 'q2', color: 'teal', account: '' })
+
+      // === GENERATE PLANNING EVENTS ===
+      const today = new Date()
+      const nextMonday = new Date(today)
+      nextMonday.setDate(today.getDate() + (8 - today.getDay()) % 7)
+      const fmtDate = (d) => d.toISOString().slice(0, 10)
+
+      payload.events = []
+
+      // COPIL meeting
+      payload.events.push({
+        title: `COPIL — Revue portefeuille (${payload.portfolio.length} comptes)`,
+        date: fmtDate(nextMonday),
+        startTime: '10:00',
+        endTime: '11:30',
+        color: 'teal',
+        account: '',
+      })
+
+      // 1:1 with each CSM
+      for (let i = 0; i < csms.length && i < 5; i++) {
+        const d = new Date(nextMonday)
+        d.setDate(d.getDate() + i)
+        payload.events.push({
+          title: `1:1 avec ${csms[i]} — review portefeuille`,
+          date: fmtDate(d),
+          startTime: '14:00',
+          endTime: '14:45',
+          color: 'blue',
+          account: '',
+        })
+      }
+
+      // Follow-up calls for critical accounts
+      for (let i = 0; i < criticals.length && i < 3; i++) {
+        const d = new Date(today)
+        d.setDate(d.getDate() + i + 1)
+        payload.events.push({
+          title: `Appel ${criticals[i].name} — compte critique`,
+          date: fmtDate(d),
+          startTime: '09:00',
+          endTime: '09:30',
+          color: 'red',
+          account: criticals[i].name,
+        })
+      }
     }
 
     // Add wellbeing/CSM tasks from earlier extraction
     if (generatedTasks.value.length) {
       for (const t of generatedTasks.value) {
-        if (t._type === 'roadmap') {
-          payload.roadmap.push({ title: t.title.replace(/^🗺️\s*/, ''), phase: t._phase || '1', status: t._status || 'pending', due: t.due || '' })
-        } else if (!payload.tasks.find(x => x.title === t.title)) {
+        if (!payload.tasks.find(x => x.title === t.title)) {
           payload.tasks.push(t)
         }
       }
@@ -1158,6 +1197,28 @@ async function doImport() {
         result.tasks = newTasks.length
       } catch (e) {
         result.errors.push('Tasks: ' + (e.response?.data?.error || e.message))
+      }
+    }
+
+    // 4. Save planning events via the SAME API that PlanningView uses
+    if (payload.events && payload.events.length) {
+      try {
+        const { data: existing } = await planningApi.getEvents()
+        const existingEvents = existing.events || []
+        const newEvents = payload.events.map((ev, i) => ({
+          id: (Date.now() + 1000 + i).toString(),
+          title: ev.title,
+          date: ev.date,
+          startTime: ev.startTime || '09:00',
+          endTime: ev.endTime || '10:00',
+          color: ev.color || 'teal',
+          account: ev.account || '',
+          notes: ev.notes || '',
+        }))
+        await planningApi.saveEvents([...existingEvents, ...newEvents])
+        result.events = newEvents.length
+      } catch (e) {
+        result.errors.push('Planning: ' + (e.response?.data?.error || e.message))
       }
     }
 
