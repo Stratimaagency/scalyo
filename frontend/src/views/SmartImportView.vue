@@ -1023,10 +1023,35 @@ async function doImport() {
       return true
     })
 
-    // Add computed KPIs
+    // Add computed KPIs — MAP to field names the KPI view expects
     if (computedKpis.value && Object.keys(computedKpis.value).length) {
-      payload.kpis = { ...payload.kpis, ...computedKpis.value }
+      const ck = computedKpis.value
+      payload.kpis = {
+        // Fields the KPI view reads from kpi_data.kpis JSON:
+        mrr: ck.mrr || (ck.total_arr ? Math.round(ck.total_arr / 12) : 0),
+        nps: ck.nps || 0,
+        csat: ck.csat || 0,
+        renewal_rate: ck.adoption_rate || ck.renewal_rate || 0,
+        churned: ck.churned || 0,
+        resolved_tickets: ck.resolved_tickets || 0,
+        // Extra fields for company-level update:
+        total_arr: ck.total_arr || 0,
+        churn_rate: ck.churn_rate || 0,
+        avg_health: ck.avg_health || 0,
+        total_clients: ck.total_clients || 0,
+        at_risk_revenue: ck.at_risk_revenue || 0,
+        adoption_rate: ck.adoption_rate || 0,
+      }
     }
+
+    // Log payload for debugging
+    console.log('Smart Import payload:', {
+      portfolio: payload.portfolio.length,
+      kpis: payload.kpis,
+      tasks: payload.tasks.length,
+      roadmap: payload.roadmap.length,
+      taskTitles: payload.tasks.map(t => t.title).slice(0, 5),
+    })
 
     const { data } = await smartImportApi.execute(payload)
     importResult.value = data.imported
