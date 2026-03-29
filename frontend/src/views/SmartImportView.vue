@@ -294,6 +294,7 @@ async function processFile(file) {
           roadmap: scoreRoadmap(sheetLower, headersLower, rows),
           planning: scorePlanning(sheetLower, headersLower, rows),
         }
+        console.log(`Sheet "${sheetName}" scores:`, scores, 'headers:', headersLower.slice(0, 5))
 
         // Pick the module with highest score
         const best = Object.entries(scores).sort((a, b) => b[1] - a[1])[0]
@@ -303,30 +304,36 @@ async function processFile(file) {
           mappedSheets.push({ ...base, module, confidence: Math.min(0.99, score), notes: getModuleNotes(module) })
         }
 
-        // ALWAYS scan for KPIs (every sheet can contain KPI data)
+        // ALWAYS scan ALL rows for KPIs (every sheet can contain KPI data)
         extractKpisFromRows(rows, kpis)
 
-        // ALWAYS check for CSM/team data (generates wellbeing tasks)
-        if (scores.team > 0.3) {
+        // ALWAYS scan for CSM/team patterns — even if score is low
+        // The score may be 0 because headers are __EMPTY, but values have person names + numbers
+        const hasPersonNames = rows.slice(0, 10).some(r => Object.values(r).some(v => /^[A-ZÀ-Ü][a-zà-ü]+ [A-ZÀ-Ü]/.test(String(v))))
+        const hasPercentages = rows.slice(0, 10).some(r => Object.values(r).some(v => String(v).includes('%')))
+        if (scores.team > 0.2 || (hasPersonNames && hasPercentages && rows.length <= 30)) {
           extractCsmInsights(rows, kpis, tasks, teamData)
         }
 
-        // ALWAYS extract tasks from task-like sheets
+        // Extract tasks if detected
         if (scores.tasks > 0.3) {
           extractTaskRows(rows, headers, tasks)
         }
 
-        // ALWAYS extract roadmap items
+        // Extract roadmap items
         if (scores.roadmap > 0.3) {
           extractRoadmapRows(rows, headers, tasks)
         }
 
-        // ALWAYS extract planning events
+        // Extract planning events
         if (scores.planning > 0.3) {
           extractPlanningRows(rows, headers, tasks)
         }
       }
     }
+
+    console.log('After extraction — KPIs:', kpis, 'Tasks:', tasks.length, 'Team:', teamData.length)
+    if (tasks.length) console.log('Task titles:', tasks.map(t => t.title))
 
     // --- Generate summary ---
     let summary = ''
@@ -483,6 +490,7 @@ function extractKpisFromRows(rows, kpis) {
 function extractCsmInsights(rows, kpis, tasks, teamData) {
   let totalArr = 0, totalHealth = 0, count = 0
   const wellbeingAlerts = []
+  console.log(`extractCsmInsights called with ${rows.length} rows. First row keys:`, Object.keys(rows[0] || {}))
 
   for (const row of rows) {
     const vals = Object.values(row).map(v => String(v).trim())
@@ -492,6 +500,7 @@ function extractCsmInsights(rows, kpis, tasks, teamData) {
     const csmVal = vals.find(v => v.length > 3 && /^[A-ZÀ-Ü][a-zà-ü]+ [A-ZÀ-Ü]/.test(v)) ||
       findCol(row, 'csm', 'nom', 'name') || ''
     if (!csmVal || csmVal.length < 3) continue
+    console.log(`CSM found: "${csmVal}", vals:`, vals.slice(0, 8))
 
     let arr = 0, health = 0, churn = 0, critical = 0, clients = 0, seniority = ''
     let wellbeingNote = '' // Comment about wellbeing/mood/stress
