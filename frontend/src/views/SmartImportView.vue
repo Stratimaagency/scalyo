@@ -334,30 +334,68 @@ async function processFile(file) {
     const portfolioCount = mappedSheets.filter(s => s.module === 'portfolio').reduce((s, sh) => s + sh.totalRows, 0)
     if (portfolioCount) summary += `${portfolioCount} comptes clients.`
 
-    // Deduplicate portfolio sheets by name
-    const seenPortfolioNames = new Set()
-    const dedupedSheets = []
+    // === DATA CLEANING & DEDUPLICATION ===
+    const cleaningReport = { duplicates: 0, emptyRows: 0, cleaned: 0 }
+
+    // 1. Dedup portfolio by name across all sheets
+    const seenNames = new Set()
     for (const sheet of mappedSheets) {
-      if (sheet.module === 'portfolio') {
-        const rows = rawData[sheet.name] || []
-        const uniqueRows = rows.filter(r => {
-          const name = findCol(r, 'client', 'nom', 'name', 'entreprise', 'company', 'id') || Object.values(r)[0]
-          const key = String(name).trim().toLowerCase()
-          if (seenPortfolioNames.has(key)) return false
-          seenPortfolioNames.add(key)
-          return true
-        })
-        rawData[sheet.name] = uniqueRows
-        sheet.totalRows = uniqueRows.length
-        sheet.previewRows = uniqueRows.slice(0, 5)
+      if (sheet.module !== 'portfolio') continue
+      const rows = rawData[sheet.name] || []
+      const cleanRows = []
+      for (const r of rows) {
+        const name = findCol(r, 'client', 'nom', 'name', 'entreprise', 'company', 'id', 'société') || Object.values(r)[0]
+        const nameStr = String(name || '').trim()
+
+        // Skip empty rows
+        if (!nameStr || nameStr.length < 2 || /^__empty/i.test(nameStr)) { cleaningReport.emptyRows++; continue }
+        // Skip header-like rows
+        if (/^(client|nom|name|entreprise|company|total|sous-total|#)/i.test(nameStr)) { cleaningReport.cleaned++; continue }
+
+        // Normalize name for dedup
+        const key = nameStr.toLowerCase().replace(/[^a-zà-ü0-9]/g, '')
+        if (seenNames.has(key)) { cleaningReport.duplicates++; continue }
+        seenNames.add(key)
+
+        // Clean values in the row
+        for (const [k, v] of Object.entries(r)) {
+          const vs = String(v).trim()
+          // Remove currency symbols and spaces from numbers
+          if (/^[\d\s.,€$£₩%]+$/.test(vs) && vs.length > 0) {
+            r[k] = vs.replace(/[€$£₩\s]/g, '').replace(/,/g, '.')
+          }
+          // Normalize empty values
+          if (vs === '-' || vs === 'N/A' || vs === 'n/a' || vs === '—' || vs === '--') r[k] = ''
+        }
+        cleanRows.push(r)
       }
-      dedupedSheets.push(sheet)
+      rawData[sheet.name] = cleanRows
+      sheet.totalRows = cleanRows.length
+      sheet.previewRows = cleanRows.slice(0, 5)
     }
 
+    // 2. Dedup tasks by title
+    const seenTaskTitles = new Set()
+    const uniqueTasks = []
+    for (const t of tasks) {
+      const key = t.title.toLowerCase().replace(/[^a-zà-ü0-9]/g, '')
+      if (seenTaskTitles.has(key)) { cleaningReport.duplicates++; continue }
+      seenTaskTitles.add(key)
+      uniqueTasks.push(t)
+    }
+
+    // 3. Remove sheets with 0 rows after cleaning
+    const finalSheets = mappedSheets.filter(s => s.totalRows > 0 || s.module === 'kpis')
+
+    // Update summary with cleaning info
+    if (cleaningReport.duplicates > 0) summary += `🧹 ${cleaningReport.duplicates} doublons supprimés. `
+    if (cleaningReport.emptyRows > 0) summary += `${cleaningReport.emptyRows} lignes vides ignorées. `
+    if (cleaningReport.cleaned > 0) summary += `${cleaningReport.cleaned} en-têtes/totaux exclus. `
+
     allSheetData.value = rawData
-    aiMapping.value = dedupedSheets
+    aiMapping.value = finalSheets
     computedKpis.value = Object.keys(kpis).length ? kpis : {}
-    generatedTasks.value = tasks
+    generatedTasks.value = uniqueTasks
     aiSummary.value = summary || 'Fichier analysé. Vérifiez le mapping ci-dessous avant d\'importer.'
 
     // Try AI enrichment in background (non-blocking)
@@ -829,18 +867,48 @@ async function doImport() {
       }
     }
 
-    // Auto-compute ARR from MRR if missing
+    // --- FINAL DATA CLEANING before import ---
+
+    // Clean portfolio: compute ARR/MRR, normalize health, validate risk
     for (const acc of payload.portfolio) {
       if (!acc.arr && acc.mrr) acc.arr = acc.mrr * 12
       if (!acc.mrr && acc.arr) acc.mrr = Math.round(acc.arr / 12)
+      // Clean strings: trim, remove leading/trailing quotes
+      for (const k of ['name', 'csm', 'industry', 'contact', 'contact_email', 'notes']) {
+        if (acc[k]) acc[k] = String(acc[k]).trim().replace(/^["']|["']$/g, '')
+      }
+      // Validate email format
+      if (acc.contact_email && !acc.contact_email.includes('@')) acc.contact_email = ''
+      // Ensure numbers
+      acc.arr = Math.abs(parseNum(acc.arr))
+      acc.mrr = Math.abs(parseNum(acc.mrr))
+      acc.health = Math.min(100, Math.max(0, parseInt(acc.health) || 70))
     }
 
-    // Add AI-generated tasks
+    // Remove empty portfolio entries
+    payload.portfolio = payload.portfolio.filter(a => a.name && a.name.length >= 2)
+
+    // Add generated tasks (separate roadmap/planning from regular tasks)
     if (generatedTasks.value.length) {
-      payload.tasks.push(...generatedTasks.value)
+      for (const t of generatedTasks.value) {
+        if (t._type === 'roadmap') {
+          payload.roadmap.push({ title: t.title.replace(/^🗺️\s*/, ''), phase: t._phase, status: t._status, due: t.due || '', progress: t._progress || 0, owner: t._owner || '' })
+        } else {
+          payload.tasks.push(t)
+        }
+      }
     }
 
-    // Add AI-computed KPIs
+    // Dedup tasks one more time
+    const seenTitles = new Set()
+    payload.tasks = payload.tasks.filter(t => {
+      const key = t.title.toLowerCase().replace(/[^a-z0-9]/g, '')
+      if (seenTitles.has(key)) return false
+      seenTitles.add(key)
+      return true
+    })
+
+    // Add computed KPIs
     if (computedKpis.value && Object.keys(computedKpis.value).length) {
       payload.kpis = { ...payload.kpis, ...computedKpis.value }
     }
