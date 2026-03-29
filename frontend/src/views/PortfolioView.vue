@@ -22,6 +22,10 @@
             style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--tealBg); border: 1px solid var(--tealBorder); color: var(--teal);">
             <ScalyoIcon name="upload" :size="12" /> {{ t('importPortfolio') }}
           </button>
+          <button v-if="isManager && portfolioStore.accounts.length > 0" class="btn-base" @click="showBulkDelete = true"
+            style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--redBg); border: 1px solid var(--redBorder); color: var(--red);">
+            <ScalyoIcon name="trash" :size="12" /> {{ t('bulkDelete') }}
+          </button>
         </div>
       </div>
 
@@ -381,6 +385,81 @@
         <div style="font-size: 12px; color: var(--muted);">{{ importDone }}/{{ importTotal }} {{ t('portfolio').toLowerCase() }}</div>
       </div>
     </AppModal>
+
+    <!-- BULK DELETE MODAL — Double security -->
+    <AppModal v-if="showBulkDelete" :title="t('bulkDeleteTitle')" @close="closeBulkDelete">
+      <!-- Step 1: Choose what to delete -->
+      <div v-if="bulkDeleteStep === 1">
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">{{ t('bulkDeleteDesc') }}</p>
+
+        <!-- Delete all -->
+        <div class="card" style="padding: 14px; margin-bottom: 8px; cursor: pointer; border: 2px solid transparent;" :style="{ borderColor: bulkDeleteMode === 'all' ? 'var(--red)' : 'transparent' }" @click="bulkDeleteMode = 'all'">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <input type="radio" v-model="bulkDeleteMode" value="all" />
+            <div>
+              <div style="font-weight: 700; font-size: 14px; color: var(--red);">🗑️ {{ t('bulkDeleteAll') }}</div>
+              <div style="font-size: 12px; color: var(--muted);">{{ portfolioStore.accounts.length }} {{ t('portfolio').toLowerCase() }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete filtered -->
+        <div v-if="filteredAccounts.length !== portfolioStore.accounts.length" class="card" style="padding: 14px; margin-bottom: 8px; cursor: pointer; border: 2px solid transparent;" :style="{ borderColor: bulkDeleteMode === 'filtered' ? 'var(--red)' : 'transparent' }" @click="bulkDeleteMode = 'filtered'">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <input type="radio" v-model="bulkDeleteMode" value="filtered" />
+            <div>
+              <div style="font-weight: 700; font-size: 14px;">🔍 {{ t('bulkDeleteFiltered') }}</div>
+              <div style="font-size: 12px; color: var(--muted);">{{ filteredAccounts.length }} {{ t('portfolio').toLowerCase() }} ({{ filter || t('search') }})</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete selected -->
+        <div class="card" style="padding: 14px; margin-bottom: 16px; cursor: pointer; border: 2px solid transparent;" :style="{ borderColor: bulkDeleteMode === 'selected' ? 'var(--red)' : 'transparent' }" @click="bulkDeleteMode = 'selected'">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <input type="radio" v-model="bulkDeleteMode" value="selected" />
+            <div>
+              <div style="font-weight: 700; font-size: 14px;">☑️ {{ t('bulkDeleteSelected') }}</div>
+              <div style="font-size: 12px; color: var(--muted);">{{ t('bulkDeleteSelectedDesc') }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Select individual accounts (only if mode = selected) -->
+        <div v-if="bulkDeleteMode === 'selected'" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 16px;">
+          <label v-for="acc in filteredAccounts" :key="acc.id" style="display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; cursor: pointer;">
+            <input type="checkbox" :value="acc.id" v-model="bulkDeleteIds" />
+            {{ acc.name }} <span style="color: var(--muted); font-size: 11px;">· {{ acc.csm || '—' }}</span>
+          </label>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%; justify-content: center; background: var(--red); border-color: var(--red);" :disabled="bulkDeleteMode === 'selected' && bulkDeleteIds.length === 0" @click="bulkDeleteStep = 2">
+          {{ t('bulkDeleteNext') }} →
+        </button>
+      </div>
+
+      <!-- Step 2: CONFIRM — type to confirm -->
+      <div v-if="bulkDeleteStep === 2">
+        <div style="background: var(--redBg); border: 1px solid var(--redBorder); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+          <p style="font-size: 14px; font-weight: 700; color: var(--red); margin-bottom: 8px;">⚠️ {{ t('bulkDeleteWarning') }}</p>
+          <p style="font-size: 13px; color: var(--red);">
+            {{ bulkDeleteMode === 'all' ? portfolioStore.accounts.length : bulkDeleteMode === 'filtered' ? filteredAccounts.length : bulkDeleteIds.length }} {{ t('bulkDeleteCountMsg') }}
+          </p>
+        </div>
+
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 8px;">{{ t('bulkDeleteTypeConfirm') }}</p>
+        <input v-model="bulkDeleteConfirmText" :placeholder="t('bulkDeleteTypePlaceholder')" style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: var(--text); font-size: 14px; margin-bottom: 16px;" />
+
+        <div style="display: flex; gap: 8px;">
+          <button class="btn" style="flex: 1; justify-content: center; padding: 12px; background: var(--red); color: #fff; border: none; border-radius: 10px; font-weight: 800; cursor: pointer;"
+            :disabled="bulkDeleteConfirmText !== t('bulkDeleteTypePlaceholder') || bulkDeleting"
+            @click="executeBulkDelete">
+            {{ bulkDeleting ? '...' : t('bulkDeleteConfirmBtn') }}
+          </button>
+          <button class="btn btn-secondary" @click="bulkDeleteStep = 1">{{ t('back') }}</button>
+        </div>
+      </div>
+    </AppModal>
   </div>
 </template>
 
@@ -411,6 +490,12 @@ const filter = ref('all')
 const csmFilter = ref('')
 const showAdd = ref(false)
 const showImport = ref(false)
+const showBulkDelete = ref(false)
+const bulkDeleteStep = ref(1)
+const bulkDeleteMode = ref('all')
+const bulkDeleteIds = ref([])
+const bulkDeleteConfirmText = ref('')
+const bulkDeleting = ref(false)
 const selectedAccount = ref(null)
 const detailTab = ref('overview')
 const creating = ref(false)
@@ -457,6 +542,8 @@ const industrySectors = computed(() => [
 ])
 
 // ─── Plan check ───
+const isManager = computed(() => authStore.user?.role === 'manager')
+
 const isStarterPlan = computed(() => {
   const plan = authStore.company?.plan || 'Starter'
   return plan === 'Starter'
@@ -755,6 +842,34 @@ async function removeAccount() {
   if (!confirm(t('confirmDelete'))) return
   await portfolioStore.deleteAccount(selectedAccount.value.id)
   selectedAccount.value = null
+}
+
+// ─── Bulk Delete ───
+function closeBulkDelete() {
+  showBulkDelete.value = false
+  bulkDeleteStep.value = 1
+  bulkDeleteMode.value = 'all'
+  bulkDeleteIds.value = []
+  bulkDeleteConfirmText.value = ''
+}
+
+async function executeBulkDelete() {
+  bulkDeleting.value = true
+  try {
+    if (bulkDeleteMode.value === 'all') {
+      await portfolioStore.bulkDeleteAccounts([], true)
+    } else if (bulkDeleteMode.value === 'filtered') {
+      const ids = filteredAccounts.value.map(a => a.id)
+      await portfolioStore.bulkDeleteAccounts(ids)
+    } else {
+      await portfolioStore.bulkDeleteAccounts(bulkDeleteIds.value)
+    }
+    selectedAccount.value = null
+    closeBulkDelete()
+  } catch (e) {
+    console.error('Bulk delete error:', e)
+  }
+  bulkDeleting.value = false
 }
 
 // ─── Todos ───

@@ -35,9 +35,16 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     accounts.value = accounts.value.filter(a => a.id !== id)
   }
 
+  async function bulkDeleteAccounts(ids, all = false) {
+    const { data } = await portfolioApi.bulkDelete(all ? { all: true } : { ids })
+    if (all) accounts.value = []
+    else accounts.value = accounts.value.filter(a => !ids.includes(a.id))
+    return data.deleted
+  }
+
   async function importAccounts(data) {
     return portfolioApi.importAccounts(data)
   }
 
-  return { accounts, loading, fetchAccounts, createAccount, updateAccount, deleteAccount, importAccounts }
+  return { accounts, loading, fetchAccounts, createAccount, updateAccount, deleteAccount, bulkDeleteAccounts, importAccounts }
 })
