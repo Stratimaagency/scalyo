@@ -1032,60 +1032,73 @@ async function doImport() {
       return true
     })
 
-    // Add computed KPIs — MERGE (not overwrite) + use camelCase field names for KPIView
-    if (computedKpis.value && Object.keys(computedKpis.value).length) {
-      const ck = computedKpis.value
-      payload.kpis = {
-        ...payload.kpis,
-        // camelCase fields that KPIView reads:
-        mrr: ck.mrr || (ck.total_arr ? Math.round(ck.total_arr / 12) : 0),
-        nps: ck.nps || 0,
-        csat: ck.csat || 0,
-        renewalRate: ck.adoption_rate || ck.renewal_rate || ck.renewalRate || 0,
-        churned: ck.churned || 0,
-        resolvedTickets: ck.resolved_tickets || ck.resolvedTickets || 0,
-        // Extra fields for company-level update:
-        total_arr: ck.total_arr || 0,
-        churn_rate: ck.churn_rate || 0,
-        avg_health: ck.avg_health || 0,
-      }
-    }
-
-    // === FALLBACK: if KPIs still empty, compute from portfolio data ===
-    if (!payload.kpis.mrr && payload.portfolio.length) {
+    // === ALWAYS compute KPIs from imported portfolio — UNCONDITIONAL ===
+    if (payload.portfolio.length) {
       const totalArr = payload.portfolio.reduce((s, a) => s + (a.arr || 0), 0)
-      const avgHealth = Math.round(payload.portfolio.reduce((s, a) => s + (a.health || 0), 0) / payload.portfolio.length)
+      const totalMrr = payload.portfolio.reduce((s, a) => s + (a.mrr || 0), 0)
+      const avgHealth = Math.round(payload.portfolio.reduce((s, a) => s + (a.health || 70), 0) / payload.portfolio.length)
       const criticalCount = payload.portfolio.filter(a => a.risk === 'critical').length
-      payload.kpis = {
-        ...payload.kpis,
-        mrr: Math.round(totalArr / 12),
-        total_arr: totalArr,
-        avg_health: avgHealth,
-        churned: criticalCount,
-        renewalRate: 0,
-        resolvedTickets: 0,
-        nps: payload.kpis.nps || 0,
-        csat: payload.kpis.csat || 0,
-      }
-    }
+      const watchCount = payload.portfolio.filter(a => a.risk === 'medium').length
+      const lowHealthAccounts = payload.portfolio.filter(a => a.health > 0 && a.health < 50)
+      const csms = [...new Set(payload.portfolio.map(a => a.csm).filter(Boolean))]
+      const noCSM = payload.portfolio.filter(a => !a.csm)
 
-    // === FALLBACK: if no tasks generated, generate from portfolio data ===
-    if (!payload.tasks.length && payload.portfolio.length) {
+      payload.kpis = {
+        mrr: totalMrr || Math.round(totalArr / 12),
+        nps: computedKpis.value?.nps || 0,
+        csat: computedKpis.value?.csat || 0,
+        renewalRate: computedKpis.value?.adoption_rate || 0,
+        churned: criticalCount,
+        resolvedTickets: 0,
+        total_arr: totalArr,
+        churn_rate: computedKpis.value?.churn_rate || 0,
+        avg_health: avgHealth,
+      }
+
+      // === ALWAYS generate tasks — UNCONDITIONAL ===
+
+      // Critical accounts → urgent tasks
       const criticals = payload.portfolio.filter(a => a.risk === 'critical').slice(0, 5)
       for (const acc of criticals) {
-        payload.tasks.push({
-          title: `⚠️ Compte critique : ${acc.name} (health ${acc.health}/100)`,
-          note: `ARR: ${acc.arr ? Number(acc.arr).toLocaleString() + '€' : 'N/A'}. CSM: ${acc.csm || 'non assigné'}.`,
-          quadrant: 'q1', color: 'red', account: acc.name,
-        })
+        payload.tasks.push({ title: `🚨 Compte critique : ${acc.name}`, note: `Health ${acc.health}/100. ARR: ${acc.arr ? Number(acc.arr).toLocaleString() + '€' : 'N/A'}.`, quadrant: 'q1', color: 'red', account: acc.name })
       }
-      const noCSM = payload.portfolio.filter(a => !a.csm).length
-      if (noCSM > 0) {
-        payload.tasks.push({
-          title: `📋 ${noCSM} comptes sans CSM assigné`,
-          note: 'Assigner un CSM à ces comptes pour assurer le suivi.',
-          quadrant: 'q2', color: 'orange', account: '',
-        })
+
+      // Low health accounts (even if not marked critical)
+      for (const acc of lowHealthAccounts.slice(0, 5)) {
+        if (criticals.find(c => c.name === acc.name)) continue
+        payload.tasks.push({ title: `⚠️ Health bas : ${acc.name} (${acc.health}/100)`, note: `Planifier un point de suivi.`, quadrant: 'q1', color: 'orange', account: acc.name })
+      }
+
+      // Watch accounts
+      const watches = payload.portfolio.filter(a => a.risk === 'medium').slice(0, 3)
+      for (const acc of watches) {
+        payload.tasks.push({ title: `👁️ Surveiller : ${acc.name}`, note: `Compte en vigilance. Health ${acc.health}/100.`, quadrant: 'q2', color: 'orange', account: acc.name })
+      }
+
+      // Accounts without CSM
+      if (noCSM.length > 0) {
+        payload.tasks.push({ title: `📋 ${noCSM.length} comptes sans CSM assigné`, note: 'Assigner un CSM pour assurer le suivi client.', quadrant: 'q2', color: 'orange', account: '' })
+      }
+
+      // CSM portfolio review
+      for (const csm of csms.slice(0, 3)) {
+        const csmAccounts = payload.portfolio.filter(a => a.csm === csm)
+        const csmRisk = csmAccounts.filter(a => a.risk === 'critical' || (a.health > 0 && a.health < 50)).length
+        payload.tasks.push({ title: `📊 Review portefeuille ${csm}`, note: `${csmAccounts.length} comptes, ${csmRisk} à risque.`, quadrant: 'q2', color: 'teal', account: '' })
+      }
+
+      // Global COPIL task
+      payload.tasks.push({ title: `🗂️ ${payload.portfolio.length} comptes importés — planifier COPIL`, note: `ARR total: ${Number(totalArr).toLocaleString()}€. Health moyen: ${avgHealth}/100. ${criticalCount} critiques, ${watchCount} en vigilance.`, quadrant: 'q2', color: 'teal', account: '' })
+    }
+
+    // Add wellbeing/CSM tasks from earlier extraction
+    if (generatedTasks.value.length) {
+      for (const t of generatedTasks.value) {
+        if (t._type === 'roadmap') {
+          payload.roadmap.push({ title: t.title.replace(/^🗺️\s*/, ''), phase: t._phase || '1', status: t._status || 'pending', due: t.due || '' })
+        } else if (!payload.tasks.find(x => x.title === t.title)) {
+          payload.tasks.push(t)
+        }
       }
     }
 
