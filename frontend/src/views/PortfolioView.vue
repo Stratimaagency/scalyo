@@ -314,12 +314,12 @@
       </div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
         <AppField :label="mrrLabel" v-model="newAcc.mrr" type="number" placeholder="0" />
-        <AppField label="Health (0-100)" v-model="newAcc.health" type="number" />
+        <AppField :label="t('healthScore') + ' (0-100)'" v-model="newAcc.health" type="number" />
       </div>
       <AppField :label="t('renewal')" v-model="newAcc.renewal" />
-      <AppField label="Contact" v-model="newAcc.contact" />
-      <AppField label="Email" v-model="newAcc.contact_email" type="email" />
-      <AppField label="Notes" v-model="newAcc.notes" type="textarea" />
+      <AppField :label="t('contact')" v-model="newAcc.contact" />
+      <AppField :label="t('emailPro')" v-model="newAcc.contact_email" type="email" />
+      <AppField :label="t('notes')" v-model="newAcc.notes" type="textarea" />
 
       <div style="display: flex; gap: 8px; margin-top: 16px;">
         <button class="btn btn-secondary" @click="closeAddModal" style="flex: 1;">{{ t('cancel') }}</button>

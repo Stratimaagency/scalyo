@@ -59,10 +59,10 @@ const submitting = ref(false)
 const form = reactive({ category: '', rating: 0, description: '' })
 
 const categories = [
-  { key: 'bug', label: 'Bug', icon: 'bug' },
-  { key: 'feature', label: 'Feature', icon: 'lightbulb' },
-  { key: 'improvement', label: 'Improvement', icon: 'chart-up' },
-  { key: 'other', label: 'Other', icon: 'chat' },
+  { key: 'bug', label: t('feedbackBug'), icon: 'bug' },
+  { key: 'feature', label: t('feedbackFeature'), icon: 'lightbulb' },
+  { key: 'improvement', label: t('feedbackImprovement'), icon: 'chart-up' },
+  { key: 'other', label: t('feedbackOther'), icon: 'chat' },
 ]
 
 async function submit() {
@@ -72,7 +72,7 @@ async function submit() {
     sent.value = true
   } catch (e) {
     console.error('Failed to submit feedback:', e)
-    alert(e?.response?.data?.message || 'Failed to send feedback. Please try again.')
+    alert(t('feedbackError'))
   }
   submitting.value = false
 }
