@@ -49,13 +49,13 @@
             <div class="sidebar-user-name">{{ company?.name || t('myCompany') }}</div>
             <div class="sidebar-user-meta">
               <span :style="{ color: planColor }">{{ company?.plan || 'Starter' }}</span>
-              · {{ authStore.user?.role === 'manager' ? 'Manager' : 'CSM' }}
+              · {{ roleLabel }}
             </div>
             <div v-if="trialDaysLeft !== null && !trialExpired" class="sidebar-trial-badge">
-              {{ trialDaysLeft }} jour{{ trialDaysLeft > 1 ? 's' : '' }} d'essai restant{{ trialDaysLeft > 1 ? 's' : '' }}
+              {{ t('trialDaysLeft').replace('{days}', trialDaysLeft) }}
             </div>
           </div>
-          <button class="sidebar-logout-btn" :title="t('close')" @click="logout"><ScalyoIcon name="power" :size="16" /></button>
+          <button class="sidebar-logout-btn" :title="t('logout')" @click="logout"><ScalyoIcon name="power" :size="16" /></button>
         </div>
       </div>
     </aside>
@@ -87,40 +87,39 @@
         <!-- Email verification banner -->
         <div v-if="showVerifyBanner"
           style="background: #FEF3C7; border-bottom: 1px solid #F59E0B; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; color: #92400E;">
-          <span>Veuillez vérifier votre adresse email. Consultez votre boîte de réception.</span>
+          <span>{{ t('verifyEmailBanner') }}</span>
           <div style="display: flex; gap: 6px; flex-shrink: 0;">
             <button @click="checkVerified" style="background: #92400E; color: #fff; border: none; border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer;">
-              {{ checkMsg || "C'est fait" }}
+              {{ checkMsg || t('verifyDone') }}
             </button>
             <button @click="resendVerification" style="background: #F59E0B; color: #fff; border: none; border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer;">
-              {{ resendMsg || 'Renvoyer' }}
+              {{ resendMsg || t('verifyResend') }}
             </button>
           </div>
         </div>
         <!-- Trial expiry warning banner -->
         <div v-if="trialDaysLeft !== null && trialDaysLeft <= 3 && trialDaysLeft > 0 && !trialExpired"
           style="background: #FEF3C7; border-bottom: 1px solid #F59E0B; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; color: #92400E;">
-          <span>Votre essai gratuit se termine dans {{ trialDaysLeft }} jour{{ trialDaysLeft > 1 ? 's' : '' }}. Souscrivez pour continuer.</span>
+          <span>{{ t('trialBanner').replace('{days}', trialDaysLeft) }}</span>
           <router-link :to="{ name: 'settings' }" style="background: #92400E; color: #fff; border: none; border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none;">
-            Souscrire
+            {{ t('trialSubscribe') }}
           </router-link>
         </div>
         <!-- Trial expired overlay -->
         <div v-if="trialExpired" class="trial-expired-overlay">
           <div class="trial-expired-card">
             <div style="font-size: 48px; margin-bottom: 16px;">&#x23F0;</div>
-            <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 8px;">Votre essai gratuit est terminé</h2>
+            <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 8px;">{{ t('trialExpiredTitle') }}</h2>
             <p style="color: var(--muted); font-size: 14px; margin-bottom: 24px; max-width: 400px;">
-              Vous avez profité de 14 jours gratuits sur le forfait <strong>{{ company?.plan || 'Starter' }}</strong>.<br>
-              Souscrivez maintenant pour continuer à utiliser Scalyo.
+              {{ t('trialExpiredDesc') }}
             </p>
             <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
               <router-link :to="{ name: 'settings' }" class="btn btn-primary" style="padding: 12px 32px; font-size: 15px;">
-                Choisir mon abonnement
+                {{ t('trialExpiredBtn') }}
               </router-link>
             </div>
             <p style="color: var(--muted); font-size: 12px; margin-top: 16px;">
-              Besoin d'aide ? <a href="mailto:support@scalyo.app" style="color: var(--teal);">Contactez-nous</a>
+              {{ t('trialExpiredHelp') }} <a href="mailto:support@scalyo.app" style="color: var(--teal);">support@scalyo.app</a>
             </p>
           </div>
         </div>
@@ -175,10 +174,10 @@ async function resendVerification() {
   try {
     resendMsg.value = '...'
     await authApi.resendVerification()
-    resendMsg.value = 'Envoyé !'
+    resendMsg.value = t('verifySent')
     setTimeout(() => { resendMsg.value = '' }, 5000)
   } catch {
-    resendMsg.value = 'Erreur'
+    resendMsg.value = t('verifyError')
     setTimeout(() => { resendMsg.value = '' }, 3000)
   }
 }
@@ -191,11 +190,11 @@ async function checkVerified() {
       authStore.user = data
       showVerifyBanner.value = false
     } else {
-      checkMsg.value = 'Pas encore'
+      checkMsg.value = t('verifyNotYet')
       setTimeout(() => { checkMsg.value = '' }, 3000)
     }
   } catch {
-    checkMsg.value = 'Erreur'
+    checkMsg.value = t('verifyError')
     setTimeout(() => { checkMsg.value = '' }, 3000)
   }
 }
@@ -242,23 +241,15 @@ const trialExpired = computed(() => {
   return c.trial_expired === true
 })
 
+const ROLE_KEYS = { manager: 'roleManager', csm: 'roleCSM', commercial: 'roleCommercial', kam: 'roleKAM' }
 const roleLabel = computed(() => {
-  if (authStore.user?.role === 'manager') return t('csManager')
-  return 'CSM'
+  const role = authStore.user?.role || 'csm'
+  return t(ROLE_KEYS[role] || 'roleCSM')
 })
 
-const criticalLabel = computed(() => {
-  const count = criticalCount.value
-  if (prefsStore.lang === 'kr') return '위험'
-  if (prefsStore.lang === 'en') return count > 1 ? 'criticals' : 'critical'
-  return count > 1 ? 'critiques' : 'critique'
-})
+const criticalLabel = computed(() => t('critical'))
 
-const onlineLabel = computed(() => {
-  if (prefsStore.lang === 'en') return 'Online'
-  if (prefsStore.lang === 'kr') return '온라인'
-  return 'En ligne'
-})
+const onlineLabel = computed(() => t('online'))
 
 function langLabel(l) {
   if (l === 'fr') return '🇫🇷 FR'
