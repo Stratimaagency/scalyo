@@ -3,7 +3,7 @@ import { hashPassword, verifyPassword } from '../utils/password.js'
 import { signJwt } from '../utils/jwt.js'
 import { authMiddleware, companyRequired, managerRequired } from '../middleware/auth.js'
 import { sendEmail } from '../utils/email.js'
-import { verificationEmail, resetPasswordEmail } from '../utils/email-templates.js'
+import { verificationEmail, verificationSubject, resetPasswordEmail, resetPasswordSubject } from '../utils/email-templates.js'
 
 const auth = new Hono()
 
@@ -95,13 +95,14 @@ auth.post('/register/', async (c) => {
     'INSERT INTO notification_preferences (user_id) VALUES (?)'
   ).bind(userResult.id).run()
 
-  // Send verification email (non-blocking)
+  // Send verification email (non-blocking, in user's language)
+  const userLang = ['fr', 'en', 'kr'].includes(userResult.language) ? userResult.language : 'fr'
   const frontendUrl = c.env.FRONTEND_URL || 'https://scalyo.app'
   const verifyUrl = `${frontendUrl.replace(/\/$/, '')}/login?verify=${verificationToken}`
   await sendEmail(c.env, {
     to: email,
-    subject: 'Bienvenue sur Scalyo ! Confirmez votre email 🎉',
-    html: verificationEmail(verifyUrl),
+    subject: verificationSubject(userLang),
+    html: verificationEmail(verifyUrl, userLang),
   }).catch(() => {})
 
   const tokens = await generateTokens(userResult, c.env.JWT_SECRET)
@@ -201,7 +202,7 @@ auth.post('/forgot-password/', async (c) => {
   }
 
   const db = c.env.DB
-  const user = await db.prepare('SELECT id, email FROM users WHERE email = ?').bind(email).first()
+  const user = await db.prepare('SELECT id, email, language FROM users WHERE email = ?').bind(email).first()
 
   // Always return success (don't leak if email exists)
   if (!user) {
@@ -215,12 +216,13 @@ auth.post('/forgot-password/', async (c) => {
     'UPDATE users SET verification_token = ?, verification_expires = ? WHERE id = ?'
   ).bind(token, expires, user.id).run()
 
+  const forgotLang = ['fr', 'en', 'kr'].includes(user.language) ? user.language : 'fr'
   const frontendUrl = c.env.FRONTEND_URL || 'https://scalyo.app'
   const resetUrl = `${frontendUrl.replace(/\/$/, '')}/login?reset=${token}`
   const sent = await sendEmail(c.env, {
     to: user.email,
-    subject: 'Réinitialiser votre mot de passe 🔐 — Scalyo',
-    html: resetPasswordEmail(resetUrl),
+    subject: resetPasswordSubject(forgotLang),
+    html: resetPasswordEmail(resetUrl, forgotLang),
   })
   if (!sent) console.error('Failed to send reset email to:', user.email)
 
@@ -276,12 +278,13 @@ auth.post('/resend-verification/', async (c) => {
     'UPDATE users SET verification_token = ?, verification_expires = ? WHERE id = ?'
   ).bind(token, expires, id).run()
 
+  const resendLang = ['fr', 'en', 'kr'].includes(user.language) ? user.language : 'fr'
   const frontendUrl = c.env.FRONTEND_URL || 'https://scalyo.app'
   const verifyUrl = `${frontendUrl.replace(/\/$/, '')}/login?verify=${token}`
   await sendEmail(c.env, {
     to: user.email,
-    subject: 'Confirmez votre email 🎉 — Scalyo',
-    html: verificationEmail(verifyUrl),
+    subject: verificationSubject(resendLang),
+    html: verificationEmail(verifyUrl, resendLang),
   })
 
   return c.json({ message: 'Verification email sent' })
