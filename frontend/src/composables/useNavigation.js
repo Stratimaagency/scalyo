@@ -15,6 +15,7 @@ const ALL_NAV_ITEMS = [
   { key: 'email-studio', icon: 'envelope', roles: ['manager', 'csm', 'commercial', 'kam'], minPlan: 'Growth' },
   { key: 'integrations', icon: 'bolt', roles: ['manager'], minPlan: 'Growth' },
   { key: 'roadmap', icon: 'map', roles: ['manager'], minPlan: 'Growth' },
+  { key: 'smart-import', icon: 'upload', roles: ['manager'] },
   { key: 'tips', icon: 'lightbulb', roles: ['manager', 'csm', 'commercial', 'kam'] },
   { key: 'settings', icon: 'gear', roles: ['manager', 'csm', 'commercial', 'kam'] },
 ]
@@ -34,6 +35,7 @@ const LABEL_KEYS = {
   'email-studio': 'email',
   integrations: 'integrations',
   roadmap: 'roadmap',
+  'smart-import': 'smartImport',
   tips: 'tips',
   settings: 'settings',
 }

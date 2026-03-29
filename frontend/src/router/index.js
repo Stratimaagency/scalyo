@@ -43,6 +43,7 @@ const routes = [
       { path: 'integrations', name: 'integrations', component: () => import('../views/IntegrationsView.vue') },
       { path: 'integrations/:key', name: 'integration-detail', component: () => import('../views/IntegrationDetailView.vue'), props: true },
       { path: 'quotes', name: 'quotes', component: () => import('../views/QuotesView.vue') },
+      { path: 'import', name: 'smart-import', component: () => import('../views/SmartImportView.vue') },
     ],
   },
 ]
