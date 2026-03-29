@@ -35,6 +35,7 @@ export const portfolioApi = {
   createAccount: (data) => api.post('/portfolio/accounts/', data),
   updateAccount: (id, data) => api.patch(`/portfolio/accounts/${id}/`, data),
   deleteAccount: (id) => api.delete(`/portfolio/accounts/${id}/`),
+  bulkDelete: (data) => api.post('/portfolio/accounts/bulk-delete/', data),
   importAccounts: (data) => api.post('/portfolio/accounts/import_accounts/', data),
   getTodos: (accountId) => api.get(`/portfolio/accounts/${accountId}/todos/`),
   createTodo: (accountId, data) => api.post(`/portfolio/accounts/${accountId}/todos/`, data),

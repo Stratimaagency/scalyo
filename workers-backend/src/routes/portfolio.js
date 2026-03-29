@@ -204,6 +204,42 @@ portfolio.delete('/accounts/:id/', async (c) => {
   return c.body(null, 204)
 })
 
+// DELETE /api/portfolio/accounts/bulk/ — delete multiple accounts (manager only)
+portfolio.post('/accounts/bulk-delete/', async (c) => {
+  const user = c.get('user')
+  if (user.role !== 'manager') {
+    return c.json({ error: 'Manager access required' }, 403)
+  }
+
+  const { ids, all } = await c.req.json()
+  const { company_id } = user
+  const db = c.env.DB
+
+  if (all === true) {
+    // Delete ALL accounts for this company
+    const result = await db.prepare('DELETE FROM accounts WHERE company_id = ?').bind(company_id).run()
+    return c.json({ deleted: result.meta.changes })
+  }
+
+  if (!ids || !Array.isArray(ids) || !ids.length) {
+    return c.json({ error: 'ids array or all=true required' }, 400)
+  }
+
+  // Delete specific accounts
+  let deleted = 0
+  const BATCH = 50
+  for (let i = 0; i < ids.length; i += BATCH) {
+    const batch = ids.slice(i, i + BATCH)
+    const placeholders = batch.map(() => '?').join(',')
+    const result = await db.prepare(
+      `DELETE FROM accounts WHERE id IN (${placeholders}) AND company_id = ?`
+    ).bind(...batch, company_id).run()
+    deleted += result.meta.changes
+  }
+
+  return c.json({ deleted })
+})
+
 // POST /api/portfolio/accounts/import_accounts/
 portfolio.post('/accounts/import_accounts/', async (c) => {
   const { company_id } = c.get('user')
