@@ -17,6 +17,40 @@
           <h3 style="font-weight: 800">{{ t('periodLabel') }}</h3>
           <input v-model="period" class="field-input" style="max-width: 200px; padding: 8px 12px; font-size: 13px" :placeholder="t('periodLabel')" />
         </div>
+
+        <!-- Client search — auto-fill KPIs -->
+        <div style="margin-bottom: 16px; position: relative;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="flex: 1; position: relative;">
+              <input v-model="clientSearch" :placeholder="t('kpiSearchClient')" @focus="showClientDropdown = true" @input="showClientDropdown = true"
+                style="width: 100%; background: var(--surface); border: 1px solid var(--tealBorder); border-radius: 10px; padding: 10px 14px 10px 36px; color: var(--text); font-size: 13px;" />
+              <ScalyoIcon name="search" :size="14" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--teal);" />
+            </div>
+            <button v-if="selectedClient" class="btn btn-secondary" style="font-size: 11px; padding: 8px 14px; white-space: nowrap;" @click="clearClient">✕ {{ t('kpiClearClient') }}</button>
+          </div>
+          <!-- Selected client badge -->
+          <div v-if="selectedClient" style="margin-top: 8px; padding: 8px 14px; background: var(--tealBg); border: 1px solid var(--tealBorder); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <span style="font-weight: 700; font-size: 13px;">{{ selectedClient.name }}</span>
+              <span style="font-size: 12px; color: var(--muted); margin-left: 8px;">{{ selectedClient.csm || '—' }} · {{ selectedClient.industry || '—' }}</span>
+            </div>
+            <span style="font-size: 12px; font-weight: 700; color: var(--teal);">{{ t('kpiAutoFilled') }}</span>
+          </div>
+          <!-- Dropdown results -->
+          <div v-if="showClientDropdown && clientResults.length > 0" style="position: absolute; z-index: 100; top: 100%; left: 0; right: 0; background: var(--bg1); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); max-height: 240px; overflow-y: auto; margin-top: 4px;">
+            <div v-for="acc in clientResults" :key="acc.id" @click="selectClient(acc)" style="padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; transition: background 0.1s;" @mouseenter="$event.target.style.background='var(--surface)'" @mouseleave="$event.target.style.background='transparent'">
+              <div>
+                <div style="font-weight: 600; font-size: 13px;">{{ acc.name }}</div>
+                <div style="font-size: 11px; color: var(--muted);">{{ acc.csm || '—' }} · Health {{ acc.health || 0 }}/100</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-weight: 700; font-size: 13px; font-family: 'JetBrains Mono', monospace;">{{ fmtKpiCurrency(acc.arr || acc.mrr * 12 || 0) }}</div>
+                <RiskPill :risk="acc.risk || 'low'" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="grid-3 mb-md">
           <div class="field-group">
             <label class="field-label">MRR ({{ currencySymbol }})</label>
@@ -137,15 +171,18 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { kpiApi } from '../api'
 import { useI18n } from '../i18n'
 import { usePreferencesStore } from '../stores/preferences'
+import { usePortfolioStore } from '../stores/portfolio'
 import KpiCard from '../components/KpiCard.vue'
 import AppCard from '../components/AppCard.vue'
 import AppModal from '../components/AppModal.vue'
 import AppField from '../components/AppField.vue'
 import EmptyState from '../components/EmptyState.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
+import RiskPill from '../components/RiskPill.vue'
 
 const { t } = useI18n()
 const prefsStore = usePreferencesStore()
+const portfolioStore = usePortfolioStore()
 const currencySymbol = computed(() => {
   const c = prefsStore.currency
   if (c === 'USD') return '$'
@@ -164,7 +201,53 @@ const goals = reactive({ mrr: 0, churned: 0, nps: 0, renewalRate: 0 })
 const customKpis = ref([])
 const newKpi = ref({ name: '', value: 0, goal: 0, unit: '', color: '#7EC8B8' })
 
+// Client search
+const clientSearch = ref('')
+const showClientDropdown = ref(false)
+const selectedClient = ref(null)
+
+const clientResults = computed(() => {
+  const q = clientSearch.value.toLowerCase().trim()
+  if (!q) return portfolioStore.accounts.slice(0, 10)
+  return portfolioStore.accounts.filter(a =>
+    a.name?.toLowerCase().includes(q) || a.csm?.toLowerCase().includes(q) || a.industry?.toLowerCase().includes(q)
+  ).slice(0, 10)
+})
+
+function selectClient(acc) {
+  selectedClient.value = acc
+  clientSearch.value = acc.name
+  showClientDropdown.value = false
+
+  // Auto-fill KPIs from client data
+  const arr = parseFloat(acc.arr) || (parseFloat(acc.mrr) || 0) * 12
+  const mrr = parseFloat(acc.mrr) || Math.round(arr / 12)
+  kpis.mrr = mrr
+  kpis.nps = acc.nps || kpis.nps
+  kpis.csat = acc.csat || kpis.csat
+
+  // Health → CSAT approximation (health 0-100 → csat 0-10)
+  if (acc.health && !kpis.csat) kpis.csat = Math.round((acc.health / 10) * 10) / 10
+
+  // Renewal rate from health
+  if (acc.health && !kpis.renewalRate) kpis.renewalRate = Math.min(100, Math.round(acc.health * 1.1))
+}
+
+function clearClient() {
+  selectedClient.value = null
+  clientSearch.value = ''
+}
+
+// Close dropdown on click outside
+if (typeof document !== 'undefined') {
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest?.('[style*="tealBorder"]')) showClientDropdown.value = false
+  })
+}
+
 onMounted(async () => {
+  // Load portfolio if not already loaded
+  if (!portfolioStore.accounts.length) portfolioStore.fetchAccounts()
   try {
     const { data } = await kpiApi.getAll()
     const rows = data.results || data
