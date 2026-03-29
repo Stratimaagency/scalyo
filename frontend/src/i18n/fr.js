@@ -746,6 +746,7 @@ export default {
   smartImportImporting: 'Import en cours...',
   smartImportDone: 'Import terminé avec succès !',
   smartImportAnother: 'Importer un autre fichier',
+  smartImportNoData: 'Aucune donnée détectée dans ce fichier. Vérifiez que vos feuilles contiennent des en-têtes (Client, CSM, ARR, Health...).',
   // --- Common ---
   loading: 'Chargement...',
   errorGeneric: 'Une erreur est survenue',

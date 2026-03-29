@@ -8,7 +8,9 @@
     </div>
 
     <!-- Step 1: Upload -->
-    <div v-if="step === 'upload'" class="card" style="padding: 40px; text-align: center;">
+    <div v-if="step === 'upload'" class="card drop-zone" :class="{ 'drop-active': dragging }"
+      style="padding: 40px; text-align: center;"
+      @dragover.prevent="dragging = true" @dragleave="dragging = false" @drop.prevent="onDrop">
       <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
       <h4 style="font-weight: 700; margin-bottom: 8px;">{{ t('smartImportDrop') }}</h4>
       <p style="font-size: 13px; color: var(--muted); margin-bottom: 20px;">{{ t('smartImportFormats') }}</p>
@@ -117,9 +119,15 @@
         </div>
       </div>
 
+      <!-- Empty state if nothing detected -->
+      <div v-if="totalParsed === 0" class="card" style="padding: 24px; text-align: center; margin-bottom: 12px;">
+        <div style="font-size: 32px; margin-bottom: 8px;">🤷</div>
+        <p style="color: var(--muted); font-size: 13px;">{{ t('smartImportNoData') }}</p>
+      </div>
+
       <!-- Actions -->
       <div style="display: flex; gap: 8px; margin-top: 16px;">
-        <button class="btn btn-primary" style="flex: 1; justify-content: center; padding: 14px;" :disabled="importing" @click="doImport">
+        <button class="btn btn-primary" style="flex: 1; justify-content: center; padding: 14px;" :disabled="importing || totalParsed === 0" @click="doImport">
           {{ importing ? t('smartImportImporting') : t('smartImportConfirm') }}
         </button>
         <button class="btn btn-secondary" @click="reset">{{ t('cancel') }}</button>
@@ -161,9 +169,14 @@ const { t } = useI18n()
 const step = ref('upload') // upload | analyzing | preview | done
 const error = ref('')
 const importing = ref(false)
+const dragging = ref(false)
 const sheetsFound = ref(0)
 const parsed = ref({ portfolio: [], kpis: null, tasks: [], roadmap: [] })
 const importResult = ref({})
+
+const totalParsed = computed(() =>
+  parsed.value.portfolio.length + (parsed.value.kpis ? 1 : 0) + parsed.value.tasks.length + parsed.value.roadmap.length
+)
 
 function reset() {
   step.value = 'upload'
@@ -172,9 +185,18 @@ function reset() {
   importResult.value = {}
 }
 
-async function onFileSelect(e) {
+function onDrop(e) {
+  dragging.value = false
+  const file = e.dataTransfer?.files?.[0]
+  if (file) processFile(file)
+}
+
+function onFileSelect(e) {
   const file = e.target.files[0]
-  if (!file) return
+  if (file) processFile(file)
+}
+
+async function processFile(file) {
   error.value = ''
   step.value = 'analyzing'
 
@@ -184,35 +206,42 @@ async function onFileSelect(e) {
     sheetsFound.value = wb.SheetNames.length
 
     const result = { portfolio: [], kpis: null, tasks: [], roadmap: [] }
+    const seenNames = new Set()
 
     for (const sheetName of wb.SheetNames) {
       const sheet = wb.Sheets[sheetName]
-      const rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false })
-      if (!rows.length) continue
 
-      const headers = Object.keys(rows[0]).map(h => h.toLowerCase().trim())
-      const sheetLower = sheetName.toLowerCase()
+      // Try multiple parse strategies for complex sheets (stacked tables)
+      const allRows = extractAllTables(sheet)
 
-      // Detect sheet type by name and headers
-      if (isPortfolioSheet(sheetLower, headers)) {
-        result.portfolio.push(...parsePortfolioRows(rows))
-      } else if (isKpiSheet(sheetLower, headers)) {
-        result.kpis = { ...result.kpis, ...parseKpiRows(rows) }
-      } else if (isTaskSheet(sheetLower, headers)) {
-        result.tasks.push(...parseTaskRows(rows))
-      } else if (isRoadmapSheet(sheetLower, headers)) {
-        result.roadmap.push(...parseRoadmapRows(rows))
-      } else if (isCsmSheet(sheetLower, headers)) {
-        // CSM profiles → extract KPIs + generate tasks
-        const csmData = parseCsmRows(rows)
-        if (csmData.kpis) result.kpis = { ...result.kpis, ...csmData.kpis }
-        if (csmData.tasks.length) result.tasks.push(...csmData.tasks)
-      } else {
-        // Try auto-detect from content
-        const auto = autoDetect(rows, headers)
-        if (auto.portfolio.length) result.portfolio.push(...auto.portfolio)
-        if (auto.tasks.length) result.tasks.push(...auto.tasks)
-        if (auto.kpis) result.kpis = { ...result.kpis, ...auto.kpis }
+      for (const rows of allRows) {
+        if (!rows.length) continue
+        const headers = Object.keys(rows[0]).map(h => h.toLowerCase().trim())
+        const sheetLower = sheetName.toLowerCase()
+
+        // Priority: portfolio > csm > kpi > tasks > roadmap > auto
+        if (isPortfolioSheet(sheetLower, headers)) {
+          const items = parsePortfolioRows(rows).filter(a => !seenNames.has(a.name))
+          items.forEach(a => seenNames.add(a.name))
+          result.portfolio.push(...items)
+        } else if (isCsmSheet(sheetLower, headers)) {
+          const csmData = parseCsmRows(rows)
+          if (csmData.kpis) result.kpis = { ...result.kpis, ...csmData.kpis }
+          if (csmData.tasks.length) result.tasks.push(...csmData.tasks)
+        } else if (isKpiSheet(sheetLower, headers)) {
+          result.kpis = { ...result.kpis, ...parseKpiRows(rows) }
+        } else if (isTaskSheet(sheetLower, headers)) {
+          result.tasks.push(...parseTaskRows(rows))
+        } else if (isRoadmapSheet(sheetLower, headers)) {
+          result.roadmap.push(...parseRoadmapRows(rows))
+        } else {
+          const auto = autoDetect(rows, headers)
+          const items = auto.portfolio.filter(a => !seenNames.has(a.name))
+          items.forEach(a => seenNames.add(a.name))
+          result.portfolio.push(...items)
+          if (auto.tasks.length) result.tasks.push(...auto.tasks)
+          if (auto.kpis) result.kpis = { ...result.kpis, ...auto.kpis }
+        }
       }
     }
 
@@ -222,6 +251,49 @@ async function onFileSelect(e) {
     error.value = err.message || t('errorGeneric')
     step.value = 'upload'
   }
+}
+
+/**
+ * Extract multiple tables from a single sheet.
+ * Complex Excel files often have stacked tables with headers mid-way.
+ * Strategy: parse the full sheet, then look for rows that look like headers
+ * and split into sub-tables.
+ */
+function extractAllTables(sheet) {
+  // First try: standard parse
+  const rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false })
+  if (!rows.length) return []
+
+  // Check if first row looks like real data headers or decorative content
+  const firstHeaders = Object.keys(rows[0])
+  const looksLikeData = firstHeaders.some(h => {
+    const hl = h.toLowerCase()
+    return ['csm', 'client', 'nom', 'name', 'company', 'entreprise', 'arr', 'mrr',
+      'health', 'santé', 'nps', 'churn', 'task', 'tâche', 'phase'].some(k => hl.includes(k))
+  })
+
+  if (looksLikeData) return [rows]
+
+  // If first headers are decorative, try parsing with different header rows
+  const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1')
+  const tables = []
+
+  for (let startRow = 1; startRow <= Math.min(range.e.r, 20); startRow++) {
+    const subRows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false, range: startRow })
+    if (!subRows.length) continue
+    const subHeaders = Object.keys(subRows[0])
+    const hasRealHeaders = subHeaders.some(h => {
+      const hl = h.toLowerCase()
+      return ['csm', 'client', 'nom', 'name', 'company', 'entreprise', 'arr', 'mrr', 'ca',
+        'health', 'santé', 'h.score', 'nps', 'churn', 'séniorité', 'seniorite',
+        'task', 'tâche', 'phase', 'total'].some(k => hl.includes(k))
+    })
+    if (hasRealHeaders && subRows.length > 1) {
+      tables.push(subRows)
+    }
+  }
+
+  return tables.length ? tables : [rows]
 }
 
 // --- Sheet type detection ---
@@ -251,8 +323,9 @@ function isRoadmapSheet(name, headers) {
 }
 
 function isCsmSheet(name, headers) {
-  const nameHits = ['csm', 'équipe', 'equipe', 'team', 'vue csm', 'profil'].some(k => name.includes(k))
-  const headerHits = headers.some(h => h === 'csm' || h.includes('séniorité') || h.includes('seniorite') || h.includes('seniority'))
+  const nameHits = ['csm', 'équipe', 'equipe', 'team', 'vue csm', 'vue par csm', 'profil'].some(k => name.includes(k))
+  const headerHits = headers.some(h => h === 'csm' || h.includes('séniorité') || h.includes('seniorite') || h.includes('seniority')) &&
+    headers.some(h => h.includes('client') || h.includes('ca') || h.includes('churn') || h.includes('health') || h.includes('score'))
   return nameHits || headerHits
 }
 
@@ -430,4 +503,12 @@ async function doImport() {
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+.drop-zone {
+  border: 2px dashed var(--border);
+  transition: all 0.2s ease;
+}
+.drop-zone.drop-active {
+  border-color: var(--teal);
+  background: rgba(77, 182, 160, 0.05);
+}
 </style>

@@ -746,6 +746,7 @@ export default {
   smartImportImporting: 'Importing...',
   smartImportDone: 'Import completed successfully!',
   smartImportAnother: 'Import another file',
+  smartImportNoData: 'No data detected in this file. Make sure your sheets have headers (Client, CSM, ARR, Health...).',
   // --- Common ---
   loading: 'Loading...',
   errorGeneric: 'Something went wrong',
