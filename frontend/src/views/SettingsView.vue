@@ -66,7 +66,7 @@
             <div style="font-size: 20px; font-weight: 800;">{{ teamUsage.csms }}<span style="color: var(--muted); font-size: 13px;">/{{ teamLimits.csms === -1 ? '∞' : teamLimits.csms }}</span></div>
           </div>
           <div style="flex: 1; min-width: 120px;">
-            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">{{ t('demo_active_acc') || 'Comptes' }}</div>
+            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">{{ t('demo_active_acc') }}</div>
             <div style="font-size: 20px; font-weight: 800;">{{ teamUsage.accounts }}<span style="color: var(--muted); font-size: 13px;">/{{ teamLimits.accounts === -1 ? '∞' : teamLimits.accounts }}</span></div>
           </div>
         </div>
@@ -94,8 +94,8 @@
               </div>
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
-              <span class="tag" :class="m.role === 'manager' ? 'risk-low' : 'risk-medium'" style="font-size: 11px; padding: 3px 10px;">{{ m.role === 'manager' ? 'Manager' : 'CSM' }}</span>
-              <button v-if="m.role === 'csm'" class="btn btn-secondary" style="font-size: 12px; padding: 7px 14px;" @click="openAccountsModal(m)">{{ t('manageAccounts') || 'Comptes' }}</button>
+              <span class="tag" :class="m.role === 'manager' ? 'risk-low' : 'risk-medium'" style="font-size: 11px; padding: 3px 10px;">{{ m.role === 'manager' ? t('roleManager') : t('roleCSM') }}</span>
+              <button v-if="m.role === 'csm'" class="btn btn-secondary" style="font-size: 12px; padding: 7px 14px;" @click="openAccountsModal(m)">{{ t('manageAccounts') }}</button>
               <button v-if="m.id !== authStore.user?.id" class="btn btn-secondary" style="font-size: 12px; padding: 7px 14px; color: var(--red);" @click="removeMember(m)">{{ t('teamRemoveBtn') }}</button>
             </div>
           </div>
@@ -115,11 +115,11 @@
           <div style="margin-bottom: 12px;">
             <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">{{ t('teamRoleLabel') }}</label>
             <div style="display: flex; gap: 8px;">
-              <button class="chip" :class="{ active: inviteForm.role === 'csm' }" @click="inviteForm.role = 'csm'">CSM</button>
-              <button class="chip" :class="{ active: inviteForm.role === 'manager' }" @click="inviteForm.role = 'manager'">Manager</button>
+              <button class="chip" :class="{ active: inviteForm.role === 'csm' }" @click="inviteForm.role = 'csm'">{{ t('roleCSM') }}</button>
+              <button class="chip" :class="{ active: inviteForm.role === 'manager' }" @click="inviteForm.role = 'manager'">{{ t('roleManager') }}</button>
             </div>
           </div>
-          <AppField :label="t('password') || 'Password'" v-model="inviteForm.password" :placeholder="t('teamPasswordHint')" type="password" />
+          <AppField :label="t('password')" v-model="inviteForm.password" :placeholder="t('teamPasswordHint')" type="password" />
           <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 8px;" @click="inviteMember" :disabled="inviting">
             {{ inviting ? t('teamCreating') : t('teamCreateBtn') }}
           </button>
@@ -130,12 +130,12 @@
       <div v-if="showAccountsModal" class="modal-overlay" @click.self="showAccountsModal = false">
         <div class="modal-content" style="max-width: 500px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <h4 style="font-weight: 800;">{{ t('assignAccounts') || 'Assigner des comptes' }} — {{ selectedCsm?.display_name || selectedCsm?.email }}</h4>
+            <h4 style="font-weight: 800;">{{ t('assignAccounts') }} — {{ selectedCsm?.display_name || selectedCsm?.email }}</h4>
             <button @click="showAccountsModal = false" style="background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer;">&times;</button>
           </div>
-          <p style="font-size: 12px; color: var(--muted); margin-bottom: 14px;">{{ t('assignAccountsDesc') || 'Cochez les comptes que ce CSM pourra voir et gérer.' }}</p>
+          <p style="font-size: 12px; color: var(--muted); margin-bottom: 14px;">{{ t('assignAccountsDesc') }}</p>
           <div v-if="allAccounts.length === 0" style="padding: 20px; text-align: center; color: var(--muted); font-size: 13px;">
-            {{ t('noAccounts') || 'Aucun compte dans le portfolio.' }}
+            {{ t('noAccounts') }}
           </div>
           <div v-else style="max-height: 340px; overflow-y: auto; margin-bottom: 14px;">
             <label v-for="acc in allAccounts" :key="acc.id" style="display: flex; align-items: center; gap: 10px; padding: 10px 8px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 13px;"
@@ -149,9 +149,9 @@
             </label>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 12px; color: var(--muted);">{{ assignedAccountIds.length }} {{ t('selected') || 'sélectionné(s)' }}</span>
+            <span style="font-size: 12px; color: var(--muted);">{{ assignedAccountIds.length }} {{ t('selected') }}</span>
             <button class="btn btn-primary" @click="saveAccountAssignments" :disabled="savingAccounts" style="font-size: 13px; padding: 8px 20px;">
-              {{ savingAccounts ? (t('saving') || 'Enregistrement...') : (t('save') || 'Enregistrer') }}
+              {{ savingAccounts ? t('saving') : t('save') }}
             </button>
           </div>
         </div>
@@ -558,7 +558,7 @@ async function changePlan(planName) {
     const { data } = await billingApi.changePlan(planName)
     if (data.ok) {
       if (authStore.company) authStore.company.plan = planName
-      toast.success(`Forfait changé vers ${planName}`)
+      toast.success(t('save') + ': ' + planName)
       changingPlan.value = ''
       return
     }

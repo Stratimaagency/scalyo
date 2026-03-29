@@ -1,11 +1,11 @@
 <template>
   <div class="fade-in">
     <div v-if="loading" style="display: flex; justify-content: center; align-items: center; padding: 60px 0; color: var(--muted); font-size: 14px">
-      Chargement...
+      {{ t('loading') }}
     </div>
     <template v-else>
     <div class="tab-bar mb-lg">
-      <button class="tab-item" :class="{ active: tab === 'standard' }" @click="tab = 'standard'" style="display: flex; align-items: center; gap: 5px;"><ScalyoIcon name="dashboard" :size="15" /> KPIs Standard</button>
+      <button class="tab-item" :class="{ active: tab === 'standard' }" @click="tab = 'standard'" style="display: flex; align-items: center; gap: 5px;"><ScalyoIcon name="dashboard" :size="15" /> {{ t('kpiStandard') }}</button>
       <button class="tab-item" :class="{ active: tab === 'custom' }" @click="tab = 'custom'" style="display: flex; align-items: center; gap: 5px;"><ScalyoIcon name="target" :size="15" /> {{ t('kpiCustomTitle') }}</button>
       <button class="tab-item" :class="{ active: tab === 'goals' }" @click="tab = 'goals'" style="display: flex; align-items: center; gap: 5px;"><ScalyoIcon name="trophy" :size="15" /> {{ t('quarterlyGoals') }}</button>
     </div>
@@ -23,7 +23,7 @@
             <input v-model.number="kpis.mrr" type="number" class="field-input" />
           </div>
           <div class="field-group">
-            <label class="field-label">Churned ({{ currencySymbol }})</label>
+            <label class="field-label">{{ t('churned') }} ({{ currencySymbol }})</label>
             <input v-model.number="kpis.churned" type="number" class="field-input" />
           </div>
           <div class="field-group">
@@ -31,7 +31,7 @@
             <input v-model.number="kpis.nps" type="number" class="field-input" min="-100" max="100" />
           </div>
           <div class="field-group">
-            <label class="field-label">Renewal Rate (%)</label>
+            <label class="field-label">{{ t('renewalRate') }} (%)</label>
             <input v-model.number="kpis.renewalRate" type="number" class="field-input" min="0" max="100" />
           </div>
           <div class="field-group">
@@ -39,7 +39,7 @@
             <input v-model.number="kpis.csat" type="number" class="field-input" min="0" max="10" step="0.1" />
           </div>
           <div class="field-group">
-            <label class="field-label">Resolved Tickets</label>
+            <label class="field-label">{{ t('resolvedTickets') }}</label>
             <input v-model.number="kpis.resolvedTickets" type="number" class="field-input" min="0" />
           </div>
         </div>
@@ -94,19 +94,19 @@
         <h3 style="font-weight: 800; margin-bottom: 14px">{{ t('quarterlyGoals') }}</h3>
         <div class="grid-2">
           <div class="field-group">
-            <label class="field-label">MRR Target ({{ currencySymbol }})</label>
+            <label class="field-label">{{ t('mrrTarget') }} ({{ currencySymbol }})</label>
             <input v-model.number="goals.mrr" type="number" class="field-input" />
           </div>
           <div class="field-group">
-            <label class="field-label">Max Churn ({{ currencySymbol }})</label>
+            <label class="field-label">{{ t('maxChurn') }} ({{ currencySymbol }})</label>
             <input v-model.number="goals.churned" type="number" class="field-input" />
           </div>
           <div class="field-group">
-            <label class="field-label">NPS Target</label>
+            <label class="field-label">{{ t('npsTarget') }}</label>
             <input v-model.number="goals.nps" type="number" class="field-input" />
           </div>
           <div class="field-group">
-            <label class="field-label">Renewal Rate Target (%)</label>
+            <label class="field-label">{{ t('renewalRateTarget') }} (%)</label>
             <input v-model.number="goals.renewalRate" type="number" class="field-input" />
           </div>
         </div>

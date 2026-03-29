@@ -2,7 +2,7 @@
   <PlanGate requiredPlan="Growth" :moduleName="t('planning')">
   <div class="fade-in" style="display: flex; flex-direction: column; height: 100%; overflow: hidden">
     <div v-if="loading" style="display: flex; justify-content: center; align-items: center; padding: 60px 0; color: var(--muted); font-size: 14px">
-      Chargement...
+      {{ t('loading') }}
     </div>
     <template v-else>
     <!-- Header bar -->
@@ -149,7 +149,7 @@
         </div>
         <button @click="closeModal"
           style="width: 100%; padding: 10px; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 600">
-          {{ t('cancel') }}
+          {{ t('close') }}
         </button>
       </template>
 
@@ -160,7 +160,7 @@
 
         <div style="display: flex; gap: 8px; margin-bottom: 12px">
           <div style="flex: 1.5">
-            <div style="font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 4px">Date</div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 4px">{{ t('dateLabel') }}</div>
             <input type="date" v-model="formDate" :style="{ ...inputStyleNoMb }" />
           </div>
           <div style="flex: 1">
@@ -193,7 +193,7 @@
           <option v-for="a in accounts" :key="a.id" :value="a.name">{{ a.name }}</option>
         </select>
 
-        <textarea v-model="formNote" placeholder="Notes..." rows="2" :style="{ ...inputStyle, resize: 'vertical' }"></textarea>
+        <textarea v-model="formNote" :placeholder="t('notesPlaceholder')" rows="2" :style="{ ...inputStyle, resize: 'vertical' }"></textarea>
 
         <div style="display: flex; gap: 8px">
           <button v-if="editEventData" @click="deleteEvent(editEventData.id)"

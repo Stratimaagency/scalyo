@@ -26,10 +26,10 @@
           <ScalyoIcon name="heart" :size="15" /> {{ t('wellbeing') }}
         </button>
         <button class="tab-item" :class="{ active: tab === 'nova' }" @click="tab = 'nova'" style="display: flex; align-items: center; gap: 5px">
-          <ScalyoIcon name="meditation" :size="15" /> Nova AI
+          <ScalyoIcon name="meditation" :size="15" /> {{ t('novaAi') }}
         </button>
         <button class="tab-item" :class="{ active: tab === 'coaching' }" @click="tab = 'coaching'" style="display: flex; align-items: center; gap: 5px">
-          <ScalyoIcon name="book" :size="15" /> Coaching
+          <ScalyoIcon name="book" :size="15" /> {{ t('coaching') }}
         </button>
       </div>
 
@@ -95,7 +95,7 @@
                     border: '1px solid ' + ((member.charge || 70) > 85 ? 'var(--redBorder)' : (member.charge || 70) > 70 ? 'var(--amberBorder)' : 'var(--greenBorder)')
                   }"
                 >
-                  {{ (member.charge || 70) > 85 ? '⚠ Overload' : (member.charge || 70) > 70 ? 'Caution' : 'Healthy' }}
+                  {{ (member.charge || 70) > 85 ? '⚠ ' + t('overload') : (member.charge || 70) > 70 ? t('caution') : t('healthy') }}
                 </span>
               </div>
               <HealthBar :val="100 - (member.charge || 70)" />
@@ -105,7 +105,7 @@
                   style="font-size: 10px"
                   :style="{ color: (member.sat || 7) >= 8 ? 'var(--green)' : (member.sat || 7) >= 6 ? 'var(--amber)' : 'var(--red)' }"
                 >
-                  Sat: {{ member.sat || 7 }}/10
+                  {{ t('satisfaction') }}: {{ member.sat || 7 }}/10
                 </span>
               </div>
               <!-- Team member list -->
@@ -303,7 +303,7 @@
       <!-- Side panel body: Resources & quick actions -->
       <div style="flex: 1; overflow-y: auto; padding: 14px 16px">
         <div style="font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px">
-          Resources
+          {{ t('resources') }}
         </div>
         <div style="display: flex; flex-direction: column; gap: 8px">
           <button

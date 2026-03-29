@@ -1,7 +1,7 @@
 <template>
   <div class="fade-in">
     <div v-if="loading" style="display: flex; justify-content: center; align-items: center; padding: 60px 0; color: var(--muted); font-size: 14px">
-      Chargement...
+      {{ t('loading') }}
     </div>
     <template v-else>
     <!-- Header -->
@@ -179,12 +179,12 @@
 
     <!-- ═══ CS TIPS SECTION ═══ -->
     <div v-if="currentTip" style="margin-top: 18px; background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.22); border-radius: 6px; padding: 12px 16px; font-size: 12.5px; color: var(--text); line-height: 1.7; position: relative">
-      <span style="font-weight: 800; color: #9B6BDF">CS Tip &nbsp;</span>
+      <span style="font-weight: 800; color: #9B6BDF">{{ t('csTip') }} &nbsp;</span>
       {{ currentTip }}
       <button
         @click="rotateTip"
         style="position: absolute; top: 8px; right: 36px; background: none; border: none; cursor: pointer; color: var(--muted); font-size: 14px"
-        title="Next tip"
+        :title="t('nextTip')"
       >&#8635;</button>
       <button
         @click="currentTip = ''"
@@ -306,6 +306,7 @@ import { usePreferencesStore } from '../stores/preferences'
 import AppModal from '../components/AppModal.vue'
 
 const { t, lang } = useI18n()
+Vue.provide('t', t)
 const portfolioStore = usePortfolioStore()
 const prefsStore = usePreferencesStore()
 
@@ -526,6 +527,7 @@ function toggleTask(id) {
 }
 
 function deleteTask(id) {
+  if (!confirm(t('confirmDeleteTask'))) return
   tasks.value = tasks.value.filter(t => t.id !== id)
   saveAll()
 }
@@ -605,6 +607,7 @@ function rotateTip() {
 // TaskCard sub-component defined inline
 const TaskCard = {
   name: 'TaskCard',
+  inject: ['t'],
   props: {
     task: { type: Object, required: true },
   },
@@ -677,19 +680,19 @@ const TaskCard = {
             fontSize: '9px', fontWeight: 700, padding: '2px 7px', borderRadius: '6px',
             background: col.hex + '22', color: col.hex
           }">{{ task.color || 'teal' }}</span>
-          <span v-if="isOverdue" style="font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: rgba(239,68,68,0.12); color: #EF4444">Overdue</span>
+          <span v-if="isOverdue" style="font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: rgba(239,68,68,0.12); color: #EF4444">{{ t('overdue') }}</span>
           <span v-if="task.dueDate && !isOverdue" style="font-size: 10px; color: var(--muted)">{{ task.dueDate }}</span>
         </div>
         <div style="display: flex; gap: 4px; align-items: center;">
-          <button @click.stop="$emit('edit', task)" style="border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 11px; color: var(--muted); padding: 4px 8px; background: var(--bg); display: flex; align-items: center; gap: 3px;">✏️ Modifier</button>
-          <button @click.stop="$emit('delete', task.id)" style="border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 11px; color: var(--red); padding: 4px 8px; background: var(--bg); display: flex; align-items: center; gap: 3px;">🗑 Suppr.</button>
+          <button @click.stop="$emit('edit', task)" style="border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 11px; color: var(--muted); padding: 4px 8px; background: var(--bg); display: flex; align-items: center; gap: 3px;">✏️ {{ t('modify') }}</button>
+          <button @click.stop="$emit('delete', task.id)" style="border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 11px; color: var(--red); padding: 4px 8px; background: var(--bg); display: flex; align-items: center; gap: 3px;">🗑 {{ t('deleteShort') }}</button>
           <select
             @change="if($event.target.value) { $emit('move', task.id, $event.target.value); $event.target.value = ''; }"
             @click.stop
             value=""
             style="font-size: 11px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--muted); padding: 4px 8px; cursor: pointer"
           >
-            <option value="">Deplacer →</option>
+            <option value="">{{ t('moveTo') }}</option>
             <option v-for="q in otherQuads" :key="q.id" :value="q.id">{{ q.icon }} {{ q.label }}</option>
           </select>
         </div>

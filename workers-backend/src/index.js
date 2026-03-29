@@ -13,6 +13,7 @@ import coach from './routes/coach.js'
 import emailStudio from './routes/email-studio.js'
 import billing from './routes/billing.js'
 import feedback from './routes/feedback.js'
+import quotes from './routes/quotes.js'
 import { registerIntegrationRoutes } from './routes/integrations.js'
 import { registerTeamRoutes } from './routes/team.js'
 
@@ -24,9 +25,12 @@ app.use('*', corsMiddleware())
 // Health check
 app.get('/', (c) => c.json({ status: 'ok', service: 'scalyo-api' }))
 
-// Rate limiting on sensitive routes (10 req/min for auth, 20 for coach)
+// Rate limiting on sensitive routes
 app.use('/api/auth/login/*', rateLimitMiddleware({ maxRequests: 10, windowMs: 60000 }))
 app.use('/api/auth/register/*', rateLimitMiddleware({ maxRequests: 5, windowMs: 60000 }))
+app.use('/api/auth/forgot-password/*', rateLimitMiddleware({ maxRequests: 5, windowMs: 60000 }))
+app.use('/api/auth/reset-password/*', rateLimitMiddleware({ maxRequests: 5, windowMs: 60000 }))
+app.use('/api/auth/resend-verification/*', rateLimitMiddleware({ maxRequests: 3, windowMs: 60000 }))
 app.use('/api/coach/*', rateLimitMiddleware({ maxRequests: 20, windowMs: 60000 }))
 
 // Mount all routes
@@ -41,6 +45,7 @@ app.route('/api/coach', coach)
 app.route('/api/email-studio', emailStudio)
 app.route('/api/billing', billing)
 app.route('/api/feedback', feedback)
+app.route('/api/quotes', quotes)
 registerIntegrationRoutes(app)
 registerTeamRoutes(app)
 

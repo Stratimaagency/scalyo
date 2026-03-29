@@ -1,57 +1,9 @@
 import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 import { hashPassword } from '../utils/password.js'
+import { sendEmail } from '../utils/email.js'
+import { inviteEmail } from '../utils/email-templates.js'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-
-async function sendInviteEmail(env, { to, displayName, inviterName, companyName, tempPassword }) {
-  const from = env.FROM_EMAIL || 'noreply@scalyo.app'
-  const loginUrl = env.APP_URL || 'https://scalyo.app/login'
-  const body = `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px;">
-      <div style="text-align: center; margin-bottom: 24px;">
-        <span style="font-size: 28px; font-weight: 900; letter-spacing: -1px;">scal<span style="color: #4DB6A0;">yo</span></span>
-      </div>
-      <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Bienvenue sur Scalyo !</h2>
-      <p style="color: #666; font-size: 14px; line-height: 1.6;">
-        ${inviterName} vous a invité(e) à rejoindre <strong>${companyName}</strong> sur Scalyo.
-      </p>
-      <div style="background: #f4f4f5; border-radius: 10px; padding: 16px; margin: 20px 0;">
-        <p style="margin: 0 0 8px; font-size: 13px; color: #666;">Vos identifiants :</p>
-        <p style="margin: 0 0 4px; font-size: 14px;"><strong>Email :</strong> ${to}</p>
-        <p style="margin: 0; font-size: 14px;"><strong>Mot de passe temporaire :</strong> ${tempPassword}</p>
-      </div>
-      <p style="color: #e74c3c; font-size: 13px; font-weight: 600;">Vous devrez changer votre mot de passe à la première connexion.</p>
-      <div style="text-align: center; margin: 24px 0;">
-        <a href="${loginUrl}" style="display: inline-block; background: #4DB6A0; color: #fff; padding: 12px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px;">Se connecter</a>
-      </div>
-      <p style="color: #999; font-size: 11px; text-align: center;">Cet email a été envoyé automatiquement par Scalyo.</p>
-    </div>
-  `
-  const payload = {
-    personalizations: [{ to: [{ email: to }] }],
-    from: { email: from, name: 'Scalyo' },
-    subject: `${inviterName} vous invite sur Scalyo`,
-    content: [{ type: 'text/html', value: body }],
-  }
-
-  try {
-    if (env.SENDGRID_API_KEY) {
-      await fetch('https://api.sendgrid.com/v3/mail/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${env.SENDGRID_API_KEY}` },
-        body: JSON.stringify(payload),
-      })
-    } else {
-      await fetch('https://api.mailchannels.net/tx/v1/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
-    }
-  } catch (err) {
-    console.error('sendInviteEmail error:', err)
-  }
-}
 
 // Plan limits
 const PLAN_LIMITS = {
@@ -99,7 +51,7 @@ async function inviteMember(c) {
       return c.json({ error: 'Password must be at least 8 characters' }, 400)
     }
 
-    const validRole = ['manager', 'csm'].includes(role) ? role : 'csm'
+    const validRole = ['manager', 'csm', 'commercial', 'kam'].includes(role) ? role : 'csm'
 
     // Check plan limits
     const companyRow = await c.env.DB.prepare('SELECT plan FROM companies WHERE id = ?').bind(user.company_id).first()
@@ -150,15 +102,25 @@ async function inviteMember(c) {
       console.error('notification_preferences insert failed (non-fatal):', npErr.message)
     }
 
-    // Send invitation email (non-blocking)
+    // Send invitation email (non-blocking, in inviter's language)
     try {
+      const inviterUser = await c.env.DB.prepare('SELECT language FROM users WHERE id = ?').bind(user.id).first()
+      const inviteLang = ['fr', 'en', 'kr'].includes(inviterUser?.language) ? inviterUser.language : 'fr'
       const companyInfo = await c.env.DB.prepare('SELECT name FROM companies WHERE id = ?').bind(user.company_id).first()
-      c.executionCtx.waitUntil(sendInviteEmail(c.env, {
+      const loginUrl = c.env.APP_URL || 'https://scalyo.app/login'
+      const invite = inviteEmail({
+        loginUrl,
         to: email,
         displayName: display_name || email,
         inviterName: user.display_name || user.email,
-        companyName: companyInfo?.name || 'votre entreprise',
+        companyName: companyInfo?.name || 'Scalyo',
         tempPassword: password,
+        lang: inviteLang,
+      })
+      c.executionCtx.waitUntil(sendEmail(c.env, {
+        to: email,
+        subject: invite.subject,
+        html: invite.html,
       }))
     } catch (emailErr) {
       console.error('sendInviteEmail error (non-fatal):', emailErr.message)

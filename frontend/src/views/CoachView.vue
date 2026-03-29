@@ -6,10 +6,10 @@
         <h3 style="font-weight: 800">{{ t('coachTitle') }}</h3>
         <p style="font-size: 13px; color: var(--muted)">{{ t('coachStatus') }}</p>
         <div v-if="dailyCount >= dailyLimit" style="font-size: 12px; color: var(--amber); margin-top: 6px">
-          {{ lang === 'en' ? 'Daily limit reached. Try again tomorrow.' : lang === 'kr' ? '일일 한도에 도달했습니다.' : 'Limite quotidienne atteinte.' }}
+          {{ t('dailyLimitReached') }}
           <div v-if="isStarter" style="margin-top: 8px">
             <button class="btn btn-primary btn-sm" @click="$router.push({ name: 'settings' })">
-              {{ lang === 'en' ? '🔓 Upgrade to Growth (50 msg/day)' : lang === 'kr' ? '🔓 Growth로 업그레이드 (50 메시지/일)' : '🔓 Passer à Growth (50 msg/jour)' }}
+              🔓 {{ t('upgradeToGrowth') }}
             </button>
           </div>
         </div>
@@ -54,7 +54,7 @@
 
       <!-- Daily counter -->
       <div style="text-align: right; font-size: 11px; color: var(--muted); margin-top: 6px">
-        {{ dailyCount }}/{{ dailyLimit }} {{ lang === 'en' ? 'messages today' : lang === 'kr' ? '오늘 메시지' : 'messages aujourd\'hui' }}
+        {{ dailyCount }}/{{ dailyLimit }} {{ t('messagestoday') }}
       </div>
     </AppCard>
   </div>
@@ -243,7 +243,7 @@ async function send(text) {
   } catch (e) {
     const errMsg = e.response?.data?.error || e.message || 'Unknown error'
     console.error('Coach chat error:', errMsg)
-    messages.value.push({ role: 'assistant', content: `Erreur : ${errMsg}` })
+    messages.value.push({ role: 'assistant', content: `${t('coachError')}: ${errMsg}` })
   }
   loading.value = false
   saveMessages()

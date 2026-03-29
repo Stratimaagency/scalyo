@@ -44,17 +44,17 @@
           </div>
           <div style="display: flex; gap: 6px; flex-wrap: wrap;">
             <button v-if="hasDetailView(integ.key)" class="btn btn-primary integ-btn" style="flex: 1;" @click="goToDetail(integ)">
-              Ouvrir
+              {{ t('open') }}
             </button>
             <button class="btn btn-secondary integ-btn" style="flex: 1;" @click="syncIntegration(integ)" :disabled="syncing === integ.key">
-              {{ syncing === integ.key ? 'Sync...' : t('integSync') }}
+              {{ syncing === integ.key ? t('syncing') : t('integSync') }}
             </button>
             <button class="btn btn-secondary integ-btn" style="flex: 1;" @click="openModal(integ)">
-              <ScalyoIcon name="settings" :size="12" /> Modifier
+              <ScalyoIcon name="settings" :size="12" /> {{ t('edit') }}
             </button>
           </div>
           <button class="btn integ-btn integ-disconnect-btn" @click="confirmDisconnect(integ)">
-            Déconnecter {{ integ.name }}
+            {{ t('disconnect') }} {{ integ.name }}
           </button>
         </AppCard>
       </div>
@@ -97,7 +97,7 @@
     </AppCard>
 
     <!-- Connect modal -->
-    <AppModal v-if="modal" :title="(connectedKeys.has(modal.key) ? 'Modifier ' : 'Connecter ') + modal.name" @close="modal = null">
+    <AppModal v-if="modal" :title="(connectedKeys.has(modal.key) ? t('edit') + ' ' : t('connect') + ' ') + modal.name" @close="modal = null">
       <div class="integ-modal-body">
         <div class="integ-modal-icon-row">
           <span style="font-size: 40px;">{{ modal.icon }}</span>
@@ -113,8 +113,8 @@
           <template v-for="field in modal.fields" :key="field.key">
             <label class="integ-label">{{ field.label }}</label>
             <div v-if="field.type === 'password' && isEditing && configForm[field.key]" class="integ-saved-token">
-              <span style="flex: 1;">Clé enregistrée ({{ configForm[field.key].slice(0, 6) }}...)</span>
-              <button type="button" class="integ-change-btn" @click="configForm[field.key] = ''">Modifier</button>
+              <span style="flex: 1;">{{ t('keySaved') }} ({{ configForm[field.key].slice(0, 6) }}...)</span>
+              <button type="button" class="integ-change-btn" @click="configForm[field.key] = ''">{{ t('edit') }}</button>
             </div>
             <input
               v-else
@@ -129,12 +129,12 @@
 
         <div style="display: flex; gap: 8px; margin-top: 20px;">
           <button class="btn btn-primary" style="flex: 1;" @click="saveConnection" :disabled="saving">
-            {{ saving ? '...' : (connectedKeys.has(modal.key) ? 'Mettre à jour' : 'Connecter') }}
+            {{ saving ? '...' : (connectedKeys.has(modal.key) ? t('update') : t('connect')) }}
           </button>
-          <button class="btn btn-secondary" @click="modal = null">Annuler</button>
+          <button class="btn btn-secondary" @click="modal = null">{{ t('cancel') }}</button>
         </div>
 
-        <div v-if="connectSuccess" class="integ-success">Connecté avec succès !</div>
+        <div v-if="connectSuccess" class="integ-success">{{ t('connectSuccess') }}</div>
       </div>
     </AppModal>
   </div>
@@ -335,7 +335,7 @@ async function saveConnection() {
   connectSuccess.value = false
 
   if (!isFormValid(modal.value)) {
-    connectError.value = 'Veuillez remplir tous les champs obligatoires.'
+    connectError.value = t('fillRequired')
     return
   }
 
@@ -375,7 +375,7 @@ async function saveConnection() {
 }
 
 function confirmDisconnect(integ) {
-  if (!confirm(`Déconnecter ${integ.name} ?`)) return
+  if (!confirm(t('disconnect') + ' ' + integ.name + ' ?')) return
   disconnectIntegration(integ)
 }
 

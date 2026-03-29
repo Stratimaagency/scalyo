@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { feedbackApi } from '../api'
 import { useI18n } from '../i18n'
 import AppCard from '../components/AppCard.vue'
@@ -58,12 +58,12 @@ const sent = ref(false)
 const submitting = ref(false)
 const form = reactive({ category: '', rating: 0, description: '' })
 
-const categories = [
-  { key: 'bug', label: 'Bug', icon: 'bug' },
-  { key: 'feature', label: 'Feature', icon: 'lightbulb' },
-  { key: 'improvement', label: 'Improvement', icon: 'chart-up' },
-  { key: 'other', label: 'Other', icon: 'chat' },
-]
+const categories = computed(() => [
+  { key: 'bug', label: t('feedbackBug'), icon: 'bug' },
+  { key: 'feature', label: t('feedbackFeature'), icon: 'lightbulb' },
+  { key: 'improvement', label: t('feedbackImprovement'), icon: 'chart-up' },
+  { key: 'other', label: t('feedbackOther'), icon: 'chat' },
+])
 
 async function submit() {
   submitting.value = true
@@ -72,7 +72,7 @@ async function submit() {
     sent.value = true
   } catch (e) {
     console.error('Failed to submit feedback:', e)
-    alert(e?.response?.data?.message || 'Failed to send feedback. Please try again.')
+    alert(t('feedbackError'))
   }
   submitting.value = false
 }
