@@ -758,6 +758,7 @@ export default {
   smartImportDone: 'Import terminé avec succès !',
   smartImportAnother: 'Importer un autre fichier',
   smartImportSkip: 'Ignorer',
+  smartImportGeneratedTasks: 'Tâches générées par l\'IA',
   smartImportNoData: 'Aucune donnée détectée dans ce fichier. Vérifiez que vos feuilles contiennent des en-têtes (Client, CSM, ARR, Health...).',
   // --- i18n fixes ---
   copy: 'copie',

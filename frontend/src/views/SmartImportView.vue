@@ -82,8 +82,46 @@
         </div>
       </div>
 
+      <!-- AI Summary -->
+      <div v-if="aiSummary" class="card" style="padding: 16px; margin-bottom: 12px; border-left: 3px solid var(--teal);">
+        <h4 style="font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+          🧠 Analyse IA
+        </h4>
+        <p style="font-size: 13px; color: var(--muted); line-height: 1.6;">{{ aiSummary }}</p>
+      </div>
+
+      <!-- AI-generated tasks -->
+      <div v-if="generatedTasks.length" class="card" style="padding: 16px; margin-bottom: 12px;">
+        <h4 style="font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          ⚡ {{ t('smartImportGeneratedTasks') }} ({{ generatedTasks.length }})
+        </h4>
+        <div v-for="(task, i) in generatedTasks" :key="i"
+          style="display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border);">
+          <span style="width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;"
+            :style="{ background: task.color === 'red' ? 'var(--red)' : task.color === 'orange' ? '#f59e0b' : 'var(--teal)' }"></span>
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-size: 13px; font-weight: 600;">{{ task.title }}</div>
+            <div v-if="task.note" style="font-size: 11px; color: var(--muted);">{{ task.note }}</div>
+          </div>
+          <button @click="generatedTasks.splice(i, 1)" style="background: none; border: none; cursor: pointer; color: var(--muted); font-size: 14px;" title="Retirer">✕</button>
+        </div>
+      </div>
+
+      <!-- Computed KPIs -->
+      <div v-if="computedKpis && Object.keys(computedKpis).length" class="card" style="padding: 16px; margin-bottom: 12px;">
+        <h4 style="font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          📊 KPIs
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px;">
+          <div v-for="(val, key) in computedKpis" :key="key" style="background: var(--bg); border-radius: 8px; padding: 10px; text-align: center;">
+            <div style="font-size: 16px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--teal);">{{ formatKpiVal(key, val) }}</div>
+            <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">{{ kpiLabel(key) }}</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Empty state -->
-      <div v-if="totalParsed === 0" class="card" style="padding: 24px; text-align: center; margin-bottom: 12px;">
+      <div v-if="totalParsed === 0 && !generatedTasks.length" class="card" style="padding: 24px; text-align: center; margin-bottom: 12px;">
         <div style="font-size: 32px; margin-bottom: 8px;">🤷</div>
         <p style="color: var(--muted); font-size: 13px;">{{ t('smartImportNoData') }}</p>
       </div>
@@ -141,6 +179,9 @@ const analysisStatus = ref('')
 const aiMapping = ref([])
 const allSheetData = ref({})
 const importResult = ref({})
+const aiSummary = ref('')
+const generatedTasks = ref([])
+const computedKpis = ref({})
 
 const totalParsed = computed(() => {
   return aiMapping.value.filter(s => s.module !== 'skip').reduce((sum, s) => sum + (s.totalRows || 0), 0)
@@ -178,6 +219,20 @@ function reset() {
   aiMapping.value = []
   allSheetData.value = {}
   importResult.value = {}
+  aiSummary.value = ''
+  generatedTasks.value = []
+  computedKpis.value = {}
+}
+
+function formatKpiVal(key, val) {
+  if (key.includes('arr') || key.includes('mrr')) return Number(val).toLocaleString() + '€'
+  if (key.includes('rate') || key.includes('churn')) return val + '%'
+  return val
+}
+
+function kpiLabel(key) {
+  const labels = { total_arr: 'ARR Total', avg_health: 'Health Moy.', critical_count: 'Critiques', nps: 'NPS', churn_rate: 'Churn', adoption_rate: 'Adoption', mrr: 'MRR', csat: 'CSAT' }
+  return labels[key] || key
 }
 
 function onDrop(e) {
@@ -237,7 +292,7 @@ async function processFile(file) {
       sheets.push({
         name: sheetName,
         headers: bestHeaders,
-        sampleRows: bestRows.slice(0, 3),
+        sampleRows: bestRows.slice(0, 10),
         totalRows: bestRows.length,
       })
     }
@@ -264,6 +319,9 @@ async function processFile(file) {
           totalRows: (rawData[s.name] || []).length,
         }))
       }
+      if (data.summary) aiSummary.value = data.summary
+      if (data.generated_tasks) generatedTasks.value = data.generated_tasks
+      if (data.computed_kpis) computedKpis.value = data.computed_kpis
     } catch (aiErr) {
       // AI failed — fall back to heuristic mapping
       console.warn('AI analysis failed, using heuristics:', aiErr)
@@ -388,6 +446,16 @@ async function doImport() {
     for (const acc of payload.portfolio) {
       if (!acc.arr && acc.mrr) acc.arr = acc.mrr * 12
       if (!acc.mrr && acc.arr) acc.mrr = Math.round(acc.arr / 12)
+    }
+
+    // Add AI-generated tasks
+    if (generatedTasks.value.length) {
+      payload.tasks.push(...generatedTasks.value)
+    }
+
+    // Add AI-computed KPIs
+    if (computedKpis.value && Object.keys(computedKpis.value).length) {
+      payload.kpis = { ...payload.kpis, ...computedKpis.value }
     }
 
     const { data } = await smartImportApi.execute(payload)
