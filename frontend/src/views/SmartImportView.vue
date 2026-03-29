@@ -320,8 +320,28 @@ async function processFile(file) {
     const portfolioCount = mappedSheets.filter(s => s.module === 'portfolio').reduce((s, sh) => s + sh.totalRows, 0)
     if (portfolioCount) summary += `${portfolioCount} comptes clients détectés.`
 
+    // Deduplicate portfolio sheets by name
+    const seenPortfolioNames = new Set()
+    const dedupedSheets = []
+    for (const sheet of mappedSheets) {
+      if (sheet.module === 'portfolio') {
+        const rows = rawData[sheet.name] || []
+        const uniqueRows = rows.filter(r => {
+          const name = findCol(r, 'client', 'nom', 'name', 'entreprise', 'company', 'id') || Object.values(r)[0]
+          const key = String(name).trim().toLowerCase()
+          if (seenPortfolioNames.has(key)) return false
+          seenPortfolioNames.add(key)
+          return true
+        })
+        rawData[sheet.name] = uniqueRows
+        sheet.totalRows = uniqueRows.length
+        sheet.previewRows = uniqueRows.slice(0, 5)
+      }
+      dedupedSheets.push(sheet)
+    }
+
     allSheetData.value = rawData
-    aiMapping.value = mappedSheets
+    aiMapping.value = dedupedSheets
     computedKpis.value = Object.keys(kpis).length ? kpis : {}
     generatedTasks.value = tasks
     aiSummary.value = summary || 'Fichier analysé. Vérifiez le mapping ci-dessous avant d\'importer.'
@@ -364,89 +384,109 @@ async function tryAiEnrichment(sheetNames, rawData) {
   } catch { /* AI failed — heuristic results are already displayed */ }
 }
 
-// --- KPI extraction from any sheet ---
+// --- KPI extraction: scan ALL cells including __EMPTY columns ---
 function extractKpisFromRows(rows, kpis) {
   for (const row of rows) {
-    for (const [key, val] of Object.entries(row)) {
+    const entries = Object.entries(row)
+    for (let i = 0; i < entries.length; i++) {
+      const [key, val] = entries[i]
       const k = key.toLowerCase().trim()
       const v = parseNum(val)
-      if (!v && v !== 0) continue
+      const valStr = String(val).toLowerCase().trim()
 
-      // Match KPI patterns
+      // Direct column name matching
       if ((k.includes('total') && k.includes('client')) || k.includes('nombre de client')) kpis.total_clients = v
-      if ((k.includes('ca total') || k.includes('arr total') || k === 'ca total portefeuille') && v > 1000) kpis.total_arr = v
-      if (k.includes('health') && k.includes('moy')) { kpis.avg_health = v > 10 ? v : Math.round(v * 10) }
-      if (k.includes('nps') && k.includes('moy')) kpis.nps = v
-      if (k.includes('nps') && !k.includes('moy') && v > 0 && v < 100 && !kpis.nps) kpis.nps = v
-      if (k.includes('churn') && !k.includes('ca')) kpis.churn_rate = v
+      if ((k.includes('ca total') || k.includes('arr total') || k.includes('ca total portefeuille')) && v > 1000) kpis.total_arr = v
+      if (k.includes('health') && (k.includes('moy') || k.includes('score'))) { kpis.avg_health = v > 10 ? v : Math.round(v * 10) }
+      if (k.includes('nps')) { if (v > 0 && v < 100) kpis.nps = v }
+      if (k.includes('churn') && !k.includes('ca') && v > 0) kpis.churn_rate = v
       if ((k.includes('ca') && k.includes('risque')) || k.includes('at risk')) kpis.at_risk_revenue = v
-      if (k.includes('adoption') || k.includes('taux adoption')) kpis.adoption_rate = v
-      if (k.includes('csat')) kpis.csat = v
-      if (k.includes('mrr') && v > 100 && !kpis.mrr) kpis.mrr = v
+      if (k.includes('adoption')) kpis.adoption_rate = v
+      if (k.includes('csat') && v > 0) kpis.csat = v
 
-      // Also check VALUE cells: if the key is a label and val is a number
-      const valStr = String(val).toLowerCase()
-      if (valStr.includes('total client')) kpis.total_clients = parseNum(row[Object.keys(row).find(rk => rk !== key)] || '')
+      // For __EMPTY keys: the VALUE itself might be a label — check next cell for the number
+      if (k.includes('__empty') || k === '' || k.includes('empty')) {
+        const nextVal = i + 1 < entries.length ? entries[i + 1][1] : null
+        const nextNum = nextVal ? parseNum(nextVal) : 0
+        if (valStr.includes('total client') || valStr.includes('nombre de client')) { if (nextNum) kpis.total_clients = nextNum }
+        else if (valStr.includes('ca total') || valStr.includes('ca total portefeuille')) { if (nextNum > 1000) kpis.total_arr = nextNum }
+        else if (valStr.includes('health') && valStr.includes('moy')) { if (nextNum) kpis.avg_health = nextNum > 10 ? nextNum : Math.round(nextNum * 10) }
+        else if (valStr.includes('nps')) { if (nextNum > 0 && nextNum < 100) kpis.nps = nextNum }
+        else if (valStr.includes('churn') && !valStr.includes('ca')) { if (nextNum > 0) kpis.churn_rate = nextNum }
+        else if (valStr.includes('risque') && valStr.includes('ca')) { if (nextNum > 0) kpis.at_risk_revenue = nextNum }
+        else if (valStr.includes('adoption')) { if (nextNum > 0) kpis.adoption_rate = nextNum }
+      }
     }
   }
 }
 
-// --- CSM insights extraction ---
+// --- CSM insights extraction (scans VALUES, not just column names) ---
 function extractCsmInsights(rows, kpis, tasks, teamData) {
   let totalArr = 0, totalHealth = 0, count = 0
 
   for (const row of rows) {
-    const csm = findCol(row, 'csm', 'nom', 'name') || ''
-    if (!csm || typeof csm !== 'string' || csm.length < 3) continue
+    const vals = Object.values(row).map(v => String(v).trim())
+    const keys = Object.keys(row)
 
-    const arr = parseNum(findCol(row, 'ca géré', 'ca gere', 'ca', 'arr', 'revenue'))
-    const health = parseNum(findCol(row, 'health', 'h.score', 'santé', 'score'))
-    const healthNorm = health > 10 ? health : Math.round(health * 10)
-    const churn = parseNum(findCol(row, 'churn', 'attrition'))
-    const critical = parseNum(findCol(row, 'critique', 'critical'))
-    const clients = parseNum(findCol(row, 'clients', 'nombre', 'comptes'))
-    const seniority = String(findCol(row, 'séniorité', 'seniorite', 'seniority', 'ancienneté', 'expérience') || '')
+    // Find CSM name: first value that looks like "Prénom Nom" pattern
+    const csmVal = vals.find(v => v.length > 3 && /^[A-ZÀ-Ü][a-zà-ü]+ [A-ZÀ-Ü]/.test(v)) ||
+      findCol(row, 'csm', 'nom', 'name') || ''
+    if (!csmVal || csmVal.length < 3) continue
 
+    // Scan ALL columns for data — match by column name OR by value pattern
+    let arr = 0, health = 0, churn = 0, critical = 0, clients = 0, seniority = ''
+
+    for (let i = 0; i < keys.length; i++) {
+      const k = keys[i].toLowerCase()
+      const v = vals[i]
+      const n = parseNum(v)
+
+      // By column name
+      if (k.includes('ca') || k.includes('arr') || k.includes('revenue') || k.includes('chiffre')) { if (n > 1000) arr = n }
+      else if (k.includes('health') || k.includes('h.score') || k.includes('santé') || k.includes('score moy')) { health = n }
+      else if (k.includes('churn') || k.includes('attrition')) { churn = n }
+      else if (k.includes('critique') || k.includes('critical')) { critical = n }
+      else if (k.includes('client') || k.includes('compte')) { if (n > 0 && n < 10000) clients = n }
+      else if (k.includes('séniorité') || k.includes('seniorite') || k.includes('seniority') || k.includes('ancienneté')) seniority = v
+      // For __EMPTY columns: detect by value pattern
+      else if (k.includes('empty') || k === '') {
+        if (/senior|junior|confirmé|confirmée|stagiaire/i.test(v)) seniority = v
+        else if (n > 100000 && !arr) arr = n
+        else if (n > 0 && n <= 10 && !health) health = n
+        else if (v.includes('%') && n > 0 && n < 100 && !churn) churn = n
+        else if (n > 50 && n <= 1000 && !clients) clients = n
+        else if (n > 0 && n <= 200 && !critical) critical = n
+      }
+    }
+
+    const healthNorm = health > 0 && health <= 10 ? Math.round(health * 10) : health
     if (arr > 0) totalArr += arr
     if (healthNorm > 0) { totalHealth += healthNorm; count++ }
 
-    teamData.push({ name: csm, arr, health: healthNorm, churn, critical, clients, seniority })
+    teamData.push({ name: csmVal, arr, health: healthNorm, churn, critical, clients, seniority })
 
-    // Generate tasks for at-risk CSMs
+    // Generate tasks
     if (churn > 35) {
-      tasks.push({
-        title: `⚠️ Review portefeuille ${csm} — churn ${churn}%`,
-        note: `${clients} clients, ${critical} critiques, health ${healthNorm}/100. Churn au-dessus du seuil de 35%.`,
-        quadrant: 'q1', color: 'red', account: ''
-      })
+      tasks.push({ title: `⚠️ Review portefeuille ${csmVal} — churn ${churn}%`, note: `${clients} clients, ${critical} critiques, health ${healthNorm}/100.`, quadrant: 'q1', color: 'red', account: '' })
     }
     if (critical > 50) {
-      tasks.push({
-        title: `🔥 Plan d'action urgent — ${csm} a ${critical} comptes critiques`,
-        note: `CA géré: ${arr ? arr.toLocaleString() : '?'}€. Intervention prioritaire nécessaire.`,
-        quadrant: 'q1', color: 'red', account: ''
-      })
+      tasks.push({ title: `🔥 Plan d'action urgent — ${csmVal} a ${critical} comptes critiques`, note: `CA géré: ${arr ? Number(arr).toLocaleString() : '?'}€.`, quadrant: 'q1', color: 'red', account: '' })
     }
-    if (seniority.toLowerCase().includes('junior') && healthNorm < 60 && healthNorm > 0) {
-      tasks.push({
-        title: `🎯 Coaching ${csm} — junior avec health ${healthNorm}/100`,
-        note: `${seniority}. Accompagnement renforcé recommandé.`,
-        quadrant: 'q2', color: 'orange', account: ''
-      })
+    if (seniority && /junior|stagiaire/i.test(seniority) && healthNorm > 0 && healthNorm < 60) {
+      tasks.push({ title: `🎯 Coaching ${csmVal} — ${seniority}, health ${healthNorm}/100`, note: `Accompagnement renforcé recommandé.`, quadrant: 'q2', color: 'orange', account: '' })
     }
   }
 
-  if (totalArr > 0) kpis.total_arr = totalArr
+  if (totalArr > 0 && !kpis.total_arr) kpis.total_arr = totalArr
   if (count > 0) kpis.avg_health = Math.round(totalHealth / count)
+  if (teamData.length) kpis.total_clients = teamData.reduce((s, t) => s + (t.clients || 0), 0)
 
-  // Global tasks
   const avgChurn = teamData.reduce((s, t) => s + (t.churn || 0), 0) / (teamData.length || 1)
   if (avgChurn > 40) {
-    tasks.push({
-      title: `📊 Churn moyen équipe ${Math.round(avgChurn)}% — plan de rétention global`,
-      note: `Tous les CSMs ont un churn élevé. Actions transversales nécessaires.`,
-      quadrant: 'q1', color: 'red', account: ''
-    })
+    tasks.push({ title: `📊 Churn moyen équipe ${Math.round(avgChurn)}% — plan de rétention`, note: `Actions transversales nécessaires.`, quadrant: 'q1', color: 'red', account: '' })
+  }
+  if (kpis.nps && kpis.nps < 30) {
+    tasks.push({ title: `📉 NPS critique: ${kpis.nps} — plan d'amélioration`, note: `NPS en dessous de 30. Objectif > 40.`, quadrant: 'q1', color: 'orange', account: '' })
   }
 }
 
