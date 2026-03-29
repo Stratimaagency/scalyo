@@ -14,6 +14,7 @@ import emailStudio from './routes/email-studio.js'
 import billing from './routes/billing.js'
 import feedback from './routes/feedback.js'
 import quotes from './routes/quotes.js'
+import smartImport from './routes/smart-import.js'
 import { registerIntegrationRoutes } from './routes/integrations.js'
 import { registerTeamRoutes } from './routes/team.js'
 
@@ -46,6 +47,7 @@ app.route('/api/email-studio', emailStudio)
 app.route('/api/billing', billing)
 app.route('/api/feedback', feedback)
 app.route('/api/quotes', quotes)
+app.route('/api/import/smart', smartImport)
 registerIntegrationRoutes(app)
 registerTeamRoutes(app)
 

@@ -79,6 +79,11 @@ export const coachApi = {
   chat: (messages, mode = 'coach') => api.post('/coach/chat/', { messages, mode }),
 }
 
+// Smart Import
+export const smartImportApi = {
+  execute: (data) => api.post('/import/smart/', data),
+}
+
 // Quotes
 export const quotesApi = {
   list: () => api.get('/quotes/'),
