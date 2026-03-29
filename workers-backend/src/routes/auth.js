@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { hashPassword, verifyPassword } from '../utils/password.js'
 import { signJwt } from '../utils/jwt.js'
-import { authMiddleware, companyRequired } from '../middleware/auth.js'
+import { authMiddleware, companyRequired, managerRequired } from '../middleware/auth.js'
 import { sendEmail } from '../utils/email.js'
 import { verificationEmail, resetPasswordEmail } from '../utils/email-templates.js'
 
@@ -80,7 +80,8 @@ auth.post('/register/', async (c) => {
 
   // Create user with verification token
   const passwordHash = await hashPassword(password)
-  const validRole = ['manager', 'csm'].includes(role) ? role : 'manager'
+  const validRoles = ['manager', 'csm', 'commercial', 'kam']
+  const validRole = validRoles.includes(role) ? role : 'manager'
   const verificationToken = generateVerificationToken()
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24h
 
@@ -214,8 +215,8 @@ auth.post('/forgot-password/', async (c) => {
     'UPDATE users SET verification_token = ?, verification_expires = ? WHERE id = ?'
   ).bind(token, expires, user.id).run()
 
-  const frontendUrl = c.env.FRONTEND_URL || 'https://scalyo.pages.dev'
-  const resetUrl = `${frontendUrl}/login?reset=${token}`
+  const frontendUrl = c.env.FRONTEND_URL || 'https://scalyo.app'
+  const resetUrl = `${frontendUrl.replace(/\/$/, '')}/login?reset=${token}`
   const sent = await sendEmail(c.env, {
     to: user.email,
     subject: 'Réinitialiser votre mot de passe 🔐 — Scalyo',
@@ -341,8 +342,8 @@ auth.get('/company/', companyRequired(), async (c) => {
   return c.json({ ...company, subscription_status: status, trial_days_left, trial_expired })
 })
 
-// PATCH /api/auth/company/
-auth.patch('/company/', companyRequired(), async (c) => {
+// PATCH /api/auth/company/ — manager only
+auth.patch('/company/', companyRequired(), managerRequired(), async (c) => {
   const { company_id } = c.get('user')
   const data = await c.req.json()
   const allowed = ['name', 'arr', 'churn', 'nps', 'color', 'logo']

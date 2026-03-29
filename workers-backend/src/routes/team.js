@@ -99,7 +99,7 @@ async function inviteMember(c) {
       return c.json({ error: 'Password must be at least 8 characters' }, 400)
     }
 
-    const validRole = ['manager', 'csm'].includes(role) ? role : 'csm'
+    const validRole = ['manager', 'csm', 'commercial', 'kam'].includes(role) ? role : 'csm'
 
     // Check plan limits
     const companyRow = await c.env.DB.prepare('SELECT plan FROM companies WHERE id = ?').bind(user.company_id).first()

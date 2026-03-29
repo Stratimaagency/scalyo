@@ -42,6 +42,19 @@ export function companyRequired() {
 }
 
 /**
+ * Requires user to have the manager role.
+ */
+export function managerRequired() {
+  return async (c, next) => {
+    const user = c.get('user')
+    if (user?.role !== 'manager') {
+      return c.json({ error: 'Manager access required' }, 403)
+    }
+    await next()
+  }
+}
+
+/**
  * Blocks access if trial has expired and no active subscription.
  * Allows: auth, billing, settings routes (so user can still pay/upgrade).
  */

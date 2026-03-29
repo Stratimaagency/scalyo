@@ -24,9 +24,12 @@ app.use('*', corsMiddleware())
 // Health check
 app.get('/', (c) => c.json({ status: 'ok', service: 'scalyo-api' }))
 
-// Rate limiting on sensitive routes (10 req/min for auth, 20 for coach)
+// Rate limiting on sensitive routes
 app.use('/api/auth/login/*', rateLimitMiddleware({ maxRequests: 10, windowMs: 60000 }))
 app.use('/api/auth/register/*', rateLimitMiddleware({ maxRequests: 5, windowMs: 60000 }))
+app.use('/api/auth/forgot-password/*', rateLimitMiddleware({ maxRequests: 5, windowMs: 60000 }))
+app.use('/api/auth/reset-password/*', rateLimitMiddleware({ maxRequests: 5, windowMs: 60000 }))
+app.use('/api/auth/resend-verification/*', rateLimitMiddleware({ maxRequests: 3, windowMs: 60000 }))
 app.use('/api/coach/*', rateLimitMiddleware({ maxRequests: 20, windowMs: 60000 }))
 
 // Mount all routes

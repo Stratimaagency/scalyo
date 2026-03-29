@@ -3,20 +3,20 @@ import { useI18n } from '../i18n'
 import { useAuthStore } from '../stores/auth'
 
 const ALL_NAV_ITEMS = [
-  { key: 'dashboard', icon: 'dashboard', role: 'all' },
-  { key: 'portfolio', icon: 'briefcase', role: 'all' },
-  { key: 'kpis', icon: 'chart-up', role: 'all' },
-  { key: 'planning', icon: 'calendar', role: 'all', minPlan: 'Growth' },
-  { key: 'tasks', icon: 'check-circle', role: 'all' },
-  { key: 'wellbeing', icon: 'heart', role: 'all' },
-  { key: 'coach', icon: 'robot', role: 'all' },
-  { key: 'resources', icon: 'books', role: 'manager' },
-  { key: 'quotes', icon: 'document', role: 'manager', minPlan: 'Growth' },
-  { key: 'email-studio', icon: 'envelope', role: 'all', minPlan: 'Growth' },
-  { key: 'integrations', icon: 'bolt', role: 'manager', minPlan: 'Growth' },
-  { key: 'roadmap', icon: 'map', role: 'manager', minPlan: 'Growth' },
-  { key: 'tips', icon: 'lightbulb', role: 'all' },
-  { key: 'settings', icon: 'gear', role: 'all' },
+  { key: 'dashboard', icon: 'dashboard', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'portfolio', icon: 'briefcase', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'kpis', icon: 'chart-up', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'planning', icon: 'calendar', roles: ['manager', 'csm', 'kam'], minPlan: 'Growth' },
+  { key: 'tasks', icon: 'check-circle', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'wellbeing', icon: 'heart', roles: ['manager', 'csm', 'kam'] },
+  { key: 'coach', icon: 'robot', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'resources', icon: 'books', roles: ['manager'] },
+  { key: 'quotes', icon: 'document', roles: ['manager', 'commercial', 'kam'], minPlan: 'Growth' },
+  { key: 'email-studio', icon: 'envelope', roles: ['manager', 'csm', 'commercial', 'kam'], minPlan: 'Growth' },
+  { key: 'integrations', icon: 'bolt', roles: ['manager'], minPlan: 'Growth' },
+  { key: 'roadmap', icon: 'map', roles: ['manager'], minPlan: 'Growth' },
+  { key: 'tips', icon: 'lightbulb', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'settings', icon: 'gear', roles: ['manager', 'csm', 'commercial', 'kam'] },
 ]
 
 const PLAN_RANK = { Starter: 0, Growth: 1, Elite: 2 }
@@ -46,7 +46,7 @@ export function useNavigation() {
     const role = authStore.user?.role || 'csm'
     const currentPlanRank = PLAN_RANK[authStore.company?.plan || 'Starter'] ?? 0
     return ALL_NAV_ITEMS
-      .filter(item => item.role === 'all' || item.role === role)
+      .filter(item => item.roles.includes(role))
       .map(item => ({
         ...item,
         label: t(LABEL_KEYS[item.key] || item.key),

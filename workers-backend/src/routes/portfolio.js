@@ -17,8 +17,8 @@ portfolio.get('/accounts/', async (c) => {
   let query = 'SELECT * FROM accounts WHERE company_id = ?'
   const params = [company_id]
 
-  // CSMs only see their assigned accounts
-  if (user.role === 'csm') {
+  // Non-managers only see their assigned accounts
+  if (user.role !== 'manager') {
     query += ' AND assigned_csm_id = ?'
     params.push(user.id)
   }
@@ -106,7 +106,7 @@ portfolio.get('/accounts/:id/', async (c) => {
 
   let q = 'SELECT * FROM accounts WHERE id = ? AND company_id = ?'
   const p = [id, company_id]
-  if (user.role === 'csm') {
+  if (user.role !== 'manager') {
     q += ' AND assigned_csm_id = ?'
     p.push(user.id)
   }
@@ -128,9 +128,18 @@ portfolio.get('/accounts/:id/', async (c) => {
 
 // PATCH /api/portfolio/accounts/:id/
 portfolio.patch('/accounts/:id/', async (c) => {
-  const { company_id } = c.get('user')
+  const user = c.get('user')
+  const { company_id } = user
   const id = c.req.param('id')
   const data = await c.req.json()
+
+  // Non-managers can only edit their own assigned accounts
+  if (user.role !== 'manager') {
+    const account = await c.env.DB.prepare(
+      'SELECT id FROM accounts WHERE id = ? AND company_id = ? AND assigned_csm_id = ?'
+    ).bind(id, company_id, user.id).first()
+    if (!account) return c.json({ error: 'Not found' }, 404)
+  }
 
   const allowed = ['name', 'csm', 'mrr', 'arr', 'industry', 'usage', 'health', 'risk', 'plan', 'contact', 'contact_email', 'notes', 'onboarding_date', 'renewal_date', 'renewal']
   const sets = []
@@ -165,9 +174,6 @@ portfolio.patch('/accounts/:id/', async (c) => {
     const account = await c.env.DB.prepare(sql + ' RETURNING *').bind(...values).first()
 
     if (!account) {
-      // Debug: check if account exists at all
-      const exists = await c.env.DB.prepare('SELECT id, company_id FROM accounts WHERE id = ?').bind(id).first()
-      console.error('PATCH 404 → account exists:', JSON.stringify(exists), 'user company_id:', company_id)
       return c.json({ error: 'Not found' }, 404)
     }
 
@@ -178,9 +184,16 @@ portfolio.patch('/accounts/:id/', async (c) => {
   }
 })
 
-// DELETE /api/portfolio/accounts/:id/
+// DELETE /api/portfolio/accounts/:id/ — manager only
 portfolio.delete('/accounts/:id/', async (c) => {
-  const { company_id } = c.get('user')
+  const user = c.get('user')
+  const { company_id } = user
+
+  // Only managers can delete accounts
+  if (user.role !== 'manager') {
+    return c.json({ error: 'Manager access required' }, 403)
+  }
+
   const id = c.req.param('id')
 
   const result = await c.env.DB.prepare(
@@ -201,6 +214,24 @@ portfolio.post('/accounts/import_accounts/', async (c) => {
   }
   if (accounts.length > 500) {
     return c.json({ error: 'Maximum 500 accounts per import.' }, 400)
+  }
+
+  // Check plan account limit before import
+  const company = await c.env.DB.prepare('SELECT plan FROM companies WHERE id = ?').bind(company_id).first()
+  const plan = company?.plan || 'Starter'
+  const limit = ACCOUNT_LIMITS[plan] ?? 6
+  if (limit > 0) {
+    const existing = await c.env.DB.prepare('SELECT COUNT(*) as cnt FROM accounts WHERE company_id = ?').bind(company_id).first()
+    const totalAfterImport = (existing?.cnt || 0) + accounts.length
+    if (totalAfterImport > limit) {
+      return c.json({ error: `Plan ${plan}: max ${limit} accounts. You have ${existing?.cnt || 0}, cannot import ${accounts.length}. Upgrade to add more.` }, 400)
+    }
+  }
+
+  // Validate that all accounts have a name
+  const invalid = accounts.filter(a => !a.name || !a.name.trim())
+  if (invalid.length > 0) {
+    return c.json({ error: `${invalid.length} account(s) have no name. All accounts must have a name.` }, 400)
   }
 
   const ids = []

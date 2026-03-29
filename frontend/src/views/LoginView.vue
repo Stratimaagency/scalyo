@@ -6,10 +6,10 @@
       </div>
 
       <h2 style="font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 6px">
-        {{ mode === 'login' ? t('loginTitle') : mode === 'register' ? t('registerTitle') : mode === 'forgot' ? 'Mot de passe oublié' : 'Nouveau mot de passe' }}
+        {{ mode === 'login' ? t('loginTitle') : mode === 'register' ? t('registerTitle') : mode === 'forgot' ? t('forgotTitle') : t('resetTitle') }}
       </h2>
       <p style="text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 24px">
-        {{ mode === 'forgot' ? 'Entrez votre email pour recevoir un lien de réinitialisation' : mode === 'reset' ? 'Choisissez votre nouveau mot de passe' : t('noCB') }}
+        {{ mode === 'forgot' ? t('forgotDesc') : mode === 'reset' ? t('resetDesc') : t('noCB') }}
       </p>
 
       <div v-if="error" style="padding: 10px 14px; background: var(--redBg); border: 1px solid var(--redBorder); border-radius: 10px; color: var(--red); font-size: 13px; margin-bottom: 14px">
@@ -26,18 +26,19 @@
         <AppField :label="t('companyNameLabel')" v-model="form.company_name" :placeholder="t('companyPlaceholder')" />
         <div class="field-group">
           <label class="field-label">{{ t('csManager') }}</label>
-          <div style="display: flex; gap: 8px">
+          <div style="display: flex; gap: 6px; flex-wrap: wrap">
             <button
-              v-for="r in ['manager', 'csm']" :key="r"
-              class="chip" :class="{ active: form.role === r }"
-              @click="form.role = r"
-            >{{ r === 'manager' ? 'Manager' : 'CSM' }}</button>
+              v-for="r in roles" :key="r.key"
+              class="chip" :class="{ active: form.role === r.key }"
+              @click="form.role = r.key"
+              :title="r.desc"
+            >{{ r.label }}</button>
           </div>
         </div>
 
         <!-- Plan selection -->
         <div class="field-group">
-          <label class="field-label">FORFAIT</label>
+          <label class="field-label">{{ t('planLabel') }}</label>
           <div class="plan-selector">
             <button
               v-for="p in plans" :key="p.key"
@@ -58,7 +59,7 @@
 
       <!-- PASSWORD (login, register, reset) -->
       <div v-if="mode !== 'forgot'" class="field-group">
-        <label class="field-label">{{ mode === 'reset' ? 'Nouveau mot de passe' : 'Password' }}</label>
+        <label class="field-label">{{ mode === 'reset' ? t('newPasswordLabel') : t('passwordLabel') }}</label>
         <div style="position: relative;">
           <input
             class="field-input"
@@ -72,18 +73,18 @@
             type="button"
             @click="showPassword = !showPassword"
             style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px; padding: 4px; opacity: 0.6;"
-            :title="showPassword ? 'Hide' : 'Show'"
+            :title="showPassword ? t('hidePassword') : t('showPassword')"
           >{{ showPassword ? '🙈' : '👁️' }}</button>
         </div>
       </div>
 
       <!-- Forgot password link (login only) -->
       <p v-if="mode === 'login'" style="text-align: right; margin: -4px 0 8px; font-size: 12px;">
-        <span style="cursor: pointer; color: var(--teal);" @click="switchMode('forgot')">Mot de passe oublié ?</span>
+        <span style="cursor: pointer; color: var(--teal);" @click="switchMode('forgot')">{{ t('forgotLink') }}</span>
       </p>
 
       <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; margin-top: 8px" :disabled="submitting" @click="submit">
-        {{ submitting ? t('saving') : mode === 'login' ? t('loginBtn') : mode === 'register' ? t('registerBtn') : mode === 'forgot' ? 'Envoyer le lien' : 'Réinitialiser' }}
+        {{ submitting ? t('saving') : mode === 'login' ? t('loginBtn') : mode === 'register' ? t('registerBtn') : mode === 'forgot' ? t('sendResetLink') : t('resetBtn') }}
       </button>
 
       <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--muted)">
@@ -103,7 +104,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useI18n } from '../i18n'
@@ -142,9 +143,9 @@ onMounted(async () => {
         router.push({ name: 'dashboard' })
         return
       }
-      successMsg.value = 'Email vérifié avec succès ! Vous pouvez vous connecter.'
+      successMsg.value = t('emailVerified')
     } catch {
-      error.value = 'Lien de vérification invalide ou expiré.'
+      error.value = t('emailVerifyError')
     }
     window.history.replaceState({}, '', window.location.pathname)
   }
@@ -157,11 +158,18 @@ onMounted(async () => {
   }
 })
 
-const plans = [
-  { key: 'Starter', name: 'Starter', price: '97€/mois', desc: 'Essentiel pour debuter' },
-  { key: 'Growth', name: 'Growth', price: '297€/mois', desc: 'Toutes les fonctionnalites' },
-  { key: 'Elite', name: 'Elite', price: '697€/mois', desc: 'Support prioritaire + illimite' },
-]
+const plans = computed(() => [
+  { key: 'Starter', name: 'Starter', price: '97€/mois', desc: t('planStarterDesc') },
+  { key: 'Growth', name: 'Growth', price: '297€/mois', desc: t('planGrowthDesc') },
+  { key: 'Elite', name: 'Elite', price: '697€/mois', desc: t('planEliteDesc') },
+])
+
+const roles = computed(() => [
+  { key: 'manager', label: t('roleManager'), desc: t('roleManagerDesc') },
+  { key: 'csm', label: t('roleCSM'), desc: t('roleCsmDesc') },
+  { key: 'commercial', label: t('roleCommercial'), desc: t('roleCommercialDesc') },
+  { key: 'kam', label: t('roleKAM'), desc: t('roleKamDesc') },
+])
 
 const form = reactive({
   email: '',
@@ -179,17 +187,17 @@ async function submit() {
 
   try {
     if (mode.value === 'forgot') {
-      if (!form.email) { error.value = 'Entrez votre email'; submitting.value = false; return }
+      if (!form.email) { error.value = t('enterEmail'); submitting.value = false; return }
       await authApi.forgotPassword(form.email)
-      successMsg.value = 'Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.'
+      successMsg.value = t('resetEmailSent')
       submitting.value = false
       return
     }
 
     if (mode.value === 'reset') {
-      if (!form.password || form.password.length < 8) { error.value = 'Le mot de passe doit faire au moins 8 caractères'; submitting.value = false; return }
+      if (!form.password || form.password.length < 8) { error.value = t('passMinLength'); submitting.value = false; return }
       await authApi.resetPassword(resetToken.value, form.password)
-      successMsg.value = 'Mot de passe modifié ! Vous pouvez vous connecter.'
+      successMsg.value = t('passChanged')
       mode.value = 'login'
       form.password = ''
       submitting.value = false

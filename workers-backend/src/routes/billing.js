@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { authMiddleware, companyRequired } from '../middleware/auth.js'
+import { authMiddleware, companyRequired, managerRequired } from '../middleware/auth.js'
 
 const billing = new Hono()
 
@@ -60,10 +60,10 @@ function getStripe(env) {
 }
 
 // --- Protected routes (webhook excluded below) ---
-billing.use('/checkout/', authMiddleware(), companyRequired())
-billing.use('/portal/', authMiddleware(), companyRequired())
+billing.use('/checkout/', authMiddleware(), companyRequired(), managerRequired())
+billing.use('/portal/', authMiddleware(), companyRequired(), managerRequired())
 billing.use('/status/', authMiddleware(), companyRequired())
-billing.use('/change-plan/', authMiddleware(), companyRequired())
+billing.use('/change-plan/', authMiddleware(), companyRequired(), managerRequired())
 
 // POST /api/billing/checkout/
 billing.post('/checkout/', async (c) => {
@@ -284,11 +284,9 @@ billing.post('/webhook/', async (c) => {
       return c.body(null, 400)
     }
   } else {
-    try {
-      event = JSON.parse(body)
-    } catch {
-      return c.body(null, 400)
-    }
+    // No webhook secret configured — reject in production for security
+    console.error('STRIPE_WEBHOOK_SECRET not configured — webhook rejected')
+    return c.body(null, 400)
   }
 
   const db = c.env.DB
