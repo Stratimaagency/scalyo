@@ -450,19 +450,19 @@ async function openUpdateStatusForm(sectionKey, item) {
   } else if (key.value === 'zendesk') {
     actionForm.ticketId = item.id
     actionModal.value = {
-      title: `Modifier statut — Ticket #${item.id}`,
+      title: `${t('changeStatus')} — Ticket #${item.id}`,
       action: 'updateStatus',
       fields: [{
-        key: 'status', label: 'Nouveau statut', type: 'select',
+        key: 'status', label: t('integFieldNewStatus'), type: 'select',
         options: [
-          { value: 'open', label: 'Ouvert' },
-          { value: 'pending', label: 'En attente' },
-          { value: 'hold', label: 'En pause' },
-          { value: 'solved', label: 'Résolu' },
-          { value: 'closed', label: 'Fermé' },
+          { value: 'open', label: t('integStatusOpen') },
+          { value: 'pending', label: t('integStatusPending') },
+          { value: 'hold', label: t('integStatusHold') },
+          { value: 'solved', label: t('integStatusSolved') },
+          { value: 'closed', label: t('integStatusClosed') },
         ],
       }],
-      submitLabel: 'Mettre à jour',
+      submitLabel: t('update'),
     }
   }
 }
@@ -478,7 +478,7 @@ async function submitAction() {
     }
     const res = await integrationsApi.performAction(key.value, actionModal.value.action, payload)
     const result = res.data || res
-    successMsg.value = result.message || 'Action effectuée !'
+    successMsg.value = result.message || t('integActionDone')
     setTimeout(() => { successMsg.value = '' }, 3000)
     actionModal.value = null
     await refreshData()
@@ -491,30 +491,31 @@ async function submitAction() {
 
 function getActionTitle(action) {
   const titles = {
-    createContact: 'Nouveau contact',
-    createDeal: 'Nouveau deal',
-    createIssue: 'Nouveau ticket Jira',
-    createTicket: 'Nouveau ticket Zendesk',
-    createTask: 'Nouvelle tâche',
-    createPage: 'Nouvelle page Notion',
+    createContact: t('integNewContact'),
+    createDeal: t('integNewDeal'),
+    createIssue: t('integNewTicket'),
+    createTicket: t('integNewTicket'),
+    createTask: t('integNewTask'),
+    createPage: t('integNewPage'),
   }
-  return titles[action] || 'Nouvelle entrée'
+  return titles[action] || t('integNewEntry')
 }
 
 function getEmptyHint(sectionKey) {
-  const name = integDef.value?.name || 'l\'outil'
-  const hints = {
-    contacts: `Si vous avez des contacts dans ${name}, cliquez "Synchroniser" pour les importer.`,
-    deals: `Si vous avez des deals dans ${name}, cliquez "Synchroniser" pour les importer.`,
-    issues: `Si vous avez des tickets dans ${name}, cliquez "Synchroniser" pour les importer.`,
-    tickets: `Si vous avez des tickets dans ${name}, cliquez "Synchroniser" pour les importer.`,
-    tasks: `Si vous avez des tâches dans ${name}, cliquez "Synchroniser" pour les importer.`,
-    events: `Si vous avez des événements dans ${name}, cliquez "Synchroniser" pour les importer.`,
-    projects: `Les projets apparaîtront après la synchronisation avec ${name}.`,
-    users: `Les utilisateurs apparaîtront après la synchronisation avec ${name}.`,
-    conversations: `Si vous avez des conversations dans ${name}, cliquez "Synchroniser".`,
+  const name = integDef.value?.name || ''
+  const hintKeys = {
+    contacts: 'integHintContacts',
+    deals: 'integHintDeals',
+    issues: 'integHintIssues',
+    tickets: 'integHintTickets',
+    tasks: 'integHintTasks',
+    events: 'integHintEvents',
+    projects: 'integHintProjects',
+    users: 'integHintUsers',
+    conversations: 'integHintConversations',
   }
-  return hints[sectionKey] || `Cliquez "Synchroniser" pour importer les données depuis ${name}.`
+  const hintKey = hintKeys[sectionKey] || 'integHintDefault'
+  return t(hintKey).replace('{name}', name)
 }
 
 function getStatusClass(colKey, value) {
@@ -530,21 +531,21 @@ function getStatusClass(colKey, value) {
 
 function formatCurrency(val) {
   if (val === null || val === undefined || val === '') return '-'
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(val)
+  return new Intl.NumberFormat(userLocale.value, { style: 'currency', currency: prefsStore.currency || 'EUR', maximumFractionDigits: 0 }).format(val)
 }
 
 function formatDate(dateStr) {
   if (!dateStr) return '-'
   const d = new Date(dateStr)
   if (isNaN(d.getTime())) return dateStr
-  return d.toLocaleDateString('fr-FR')
+  return d.toLocaleDateString(userLocale.value)
 }
 
 function formatDateTime(dateStr) {
   if (!dateStr) return '-'
   const d = new Date(dateStr)
   if (isNaN(d.getTime())) return dateStr
-  return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  return d.toLocaleDateString(userLocale.value) + ' ' + d.toLocaleTimeString(userLocale.value, { hour: '2-digit', minute: '2-digit' })
 }
 
 function formatCell(val, col) {
