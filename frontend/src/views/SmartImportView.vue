@@ -194,11 +194,13 @@ const summaryCards = computed(() => {
       counts[s.module] += s.totalRows || 0
     }
   }
+  const taskCount = generatedTasks.value.length + counts.tasks
+  const wellbeingCount = generatedTasks.value.filter(t => t.title.includes('💚') || t.title.includes('💛') || t.title.includes('🚨')).length
   return [
     { key: 'portfolio', label: t('portfolio'), count: counts.portfolio },
-    { key: 'kpis', label: 'KPIs', count: counts.kpis || (counts.team ? 1 : 0) },
-    { key: 'tasks', label: t('tasks'), count: counts.tasks },
-    { key: 'roadmap', label: t('roadmap'), count: counts.roadmap },
+    { key: 'kpis', label: 'KPIs', count: Object.keys(computedKpis.value).length },
+    { key: 'tasks', label: 'Task Board', count: taskCount },
+    { key: 'wellbeing', label: t('wellbeing'), count: wellbeingCount },
     { key: 'sheets', label: t('smartImportSheets'), count: aiMapping.value.length },
   ]
 })
@@ -316,9 +318,13 @@ async function processFile(file) {
     if (kpis.total_arr) summary += `CA Total: ${Number(kpis.total_arr).toLocaleString()}€. `
     if (kpis.avg_health) summary += `Health moyen: ${kpis.avg_health}/100. `
     if (kpis.nps) summary += `NPS: ${kpis.nps}. `
-    if (tasks.length) summary += `${tasks.length} actions prioritaires générées. `
+    const wellbeingTasks = tasks.filter(t => t.title.includes('💚') || t.title.includes('💛') || t.title.includes('épuisement') || t.title.includes('bien-être'))
+    const urgentTasks = tasks.filter(t => t.quadrant === 'q1')
+    if (urgentTasks.length) summary += `${urgentTasks.length} actions urgentes. `
+    if (wellbeingTasks.length) summary += `${wellbeingTasks.length} alertes bien-être. `
+    if (tasks.length) summary += `${tasks.length} tâches au total (Kanban + Eisenhower). `
     const portfolioCount = mappedSheets.filter(s => s.module === 'portfolio').reduce((s, sh) => s + sh.totalRows, 0)
-    if (portfolioCount) summary += `${portfolioCount} comptes clients détectés.`
+    if (portfolioCount) summary += `${portfolioCount} comptes clients.`
 
     // Deduplicate portfolio sheets by name
     const seenPortfolioNames = new Set()
@@ -420,35 +426,37 @@ function extractKpisFromRows(rows, kpis) {
   }
 }
 
-// --- CSM insights extraction (scans VALUES, not just column names) ---
+// --- CSM insights + wellbeing + task generation (scans VALUES) ---
 function extractCsmInsights(rows, kpis, tasks, teamData) {
   let totalArr = 0, totalHealth = 0, count = 0
+  const wellbeingAlerts = []
 
   for (const row of rows) {
     const vals = Object.values(row).map(v => String(v).trim())
     const keys = Object.keys(row)
 
-    // Find CSM name: first value that looks like "Prénom Nom" pattern
+    // Find CSM name: "Prénom Nom" pattern
     const csmVal = vals.find(v => v.length > 3 && /^[A-ZÀ-Ü][a-zà-ü]+ [A-ZÀ-Ü]/.test(v)) ||
       findCol(row, 'csm', 'nom', 'name') || ''
     if (!csmVal || csmVal.length < 3) continue
 
-    // Scan ALL columns for data — match by column name OR by value pattern
     let arr = 0, health = 0, churn = 0, critical = 0, clients = 0, seniority = ''
+    let wellbeingNote = '' // Comment about wellbeing/mood/stress
 
     for (let i = 0; i < keys.length; i++) {
       const k = keys[i].toLowerCase()
       const v = vals[i]
       const n = parseNum(v)
 
-      // By column name
+      // Named columns
       if (k.includes('ca') || k.includes('arr') || k.includes('revenue') || k.includes('chiffre')) { if (n > 1000) arr = n }
       else if (k.includes('health') || k.includes('h.score') || k.includes('santé') || k.includes('score moy')) { health = n }
       else if (k.includes('churn') || k.includes('attrition')) { churn = n }
       else if (k.includes('critique') || k.includes('critical')) { critical = n }
       else if (k.includes('client') || k.includes('compte')) { if (n > 0 && n < 10000) clients = n }
       else if (k.includes('séniorité') || k.includes('seniorite') || k.includes('seniority') || k.includes('ancienneté')) seniority = v
-      // For __EMPTY columns: detect by value pattern
+      else if (k.includes('bien-être') || k.includes('bienetre') || k.includes('wellbeing') || k.includes('moral') || k.includes('commentaire') || k.includes('notes') || k.includes('observation')) wellbeingNote = v
+      // __EMPTY columns: detect by value pattern
       else if (k.includes('empty') || k === '') {
         if (/senior|junior|confirmé|confirmée|stagiaire/i.test(v)) seniority = v
         else if (n > 100000 && !arr) arr = n
@@ -456,6 +464,10 @@ function extractCsmInsights(rows, kpis, tasks, teamData) {
         else if (v.includes('%') && n > 0 && n < 100 && !churn) churn = n
         else if (n > 50 && n <= 1000 && !clients) clients = n
         else if (n > 0 && n <= 200 && !critical) critical = n
+        // Detect wellbeing comments: long text with mood/stress keywords
+        else if (v.length > 10 && /stress|épuis|fatigue|motivé|positiv|variable|surcharge|burn|fragile|inqui|tendu|sous pression|moral|ambitie|dynamique|serein|confian/i.test(v)) {
+          wellbeingNote = v
+        }
       }
     }
 
@@ -463,17 +475,47 @@ function extractCsmInsights(rows, kpis, tasks, teamData) {
     if (arr > 0) totalArr += arr
     if (healthNorm > 0) { totalHealth += healthNorm; count++ }
 
-    teamData.push({ name: csmVal, arr, health: healthNorm, churn, critical, clients, seniority })
+    teamData.push({ name: csmVal, arr, health: healthNorm, churn, critical, clients, seniority, wellbeingNote })
 
-    // Generate tasks
-    if (churn > 35) {
+    // === MATRICE EISENHOWER — Tâches pertinentes ===
+
+    // Q1: URGENT + IMPORTANT — Churn critique, comptes en danger
+    if (churn > 50) {
+      tasks.push({ title: `🚨 URGENT — ${csmVal}: churn ${churn}% (> 50%)`, note: `${clients} clients, ${critical} critiques, CA ${arr ? Number(arr).toLocaleString() + '€' : 'N/A'}. Action immédiate requise.`, quadrant: 'q1', color: 'red', account: '' })
+    } else if (churn > 35) {
       tasks.push({ title: `⚠️ Review portefeuille ${csmVal} — churn ${churn}%`, note: `${clients} clients, ${critical} critiques, health ${healthNorm}/100.`, quadrant: 'q1', color: 'red', account: '' })
     }
-    if (critical > 50) {
-      tasks.push({ title: `🔥 Plan d'action urgent — ${csmVal} a ${critical} comptes critiques`, note: `CA géré: ${arr ? Number(arr).toLocaleString() : '?'}€.`, quadrant: 'q1', color: 'red', account: '' })
+
+    if (critical > 80) {
+      tasks.push({ title: `🔥 ${csmVal}: ${critical} comptes critiques — intervention prioritaire`, note: `CA géré: ${arr ? Number(arr).toLocaleString() + '€' : 'N/A'}. Réunion d'urgence nécessaire.`, quadrant: 'q1', color: 'red', account: '' })
+    } else if (critical > 40) {
+      tasks.push({ title: `⚠️ ${csmVal}: ${critical} comptes critiques à surveiller`, note: `Plan d'action à définir cette semaine.`, quadrant: 'q1', color: 'orange', account: '' })
     }
+
+    // Q1: URGENT — Wellbeing : signes d'épuisement ou stress
+    if (wellbeingNote && /épuis|burn|surcharge|fatigue|sous pression|fragile/i.test(wellbeingNote)) {
+      wellbeingAlerts.push({ name: csmVal, note: wellbeingNote, severity: 'high' })
+      tasks.push({ title: `💚 1:1 urgent avec ${csmVal} — signes d'épuisement`, note: `"${wellbeingNote}". Priorité absolue : écouter, adapter la charge, proposer du soutien.`, quadrant: 'q1', color: 'red', account: '' })
+    }
+    // Q2: IMPORTANT — Wellbeing : stress modéré ou variable
+    else if (wellbeingNote && /stress|variable|tendu|inqui/i.test(wellbeingNote)) {
+      wellbeingAlerts.push({ name: csmVal, note: wellbeingNote, severity: 'medium' })
+      tasks.push({ title: `💛 Check-in avec ${csmVal} — moral à surveiller`, note: `"${wellbeingNote}". Planifier un point cette semaine.`, quadrant: 'q2', color: 'orange', account: '' })
+    }
+    // Q2: IMPORTANT — Wellbeing positif → renforcer
+    else if (wellbeingNote && /positiv|motivé|dynamique|ambitie|serein|confian/i.test(wellbeingNote)) {
+      wellbeingAlerts.push({ name: csmVal, note: wellbeingNote, severity: 'low' })
+      tasks.push({ title: `💚 Valoriser ${csmVal} — énergie positive`, note: `"${wellbeingNote}". Encourager, confier des responsabilités, reconnaître publiquement.`, quadrant: 'q2', color: 'teal', account: '' })
+    }
+
+    // Q2: IMPORTANT — Coaching juniors
     if (seniority && /junior|stagiaire/i.test(seniority) && healthNorm > 0 && healthNorm < 60) {
-      tasks.push({ title: `🎯 Coaching ${csmVal} — ${seniority}, health ${healthNorm}/100`, note: `Accompagnement renforcé recommandé.`, quadrant: 'q2', color: 'orange', account: '' })
+      tasks.push({ title: `🎯 Coaching ${csmVal} — ${seniority}, health ${healthNorm}/100`, note: `Accompagnement renforcé : binôme avec un senior, objectifs adaptés.`, quadrant: 'q2', color: 'orange', account: '' })
+    }
+
+    // Q3: URGENT PAS IMPORTANT — Check-in rapide pour CSMs stables mais avec risques modérés
+    if (churn > 25 && churn <= 35 && !wellbeingNote) {
+      tasks.push({ title: `📞 Point rapide avec ${csmVal} — churn ${churn}% (modéré)`, note: `Pas de signal d'alerte bien-être. Vérifier les comptes à risque.`, quadrant: 'q3', color: 'blue', account: '' })
     }
   }
 
@@ -481,12 +523,25 @@ function extractCsmInsights(rows, kpis, tasks, teamData) {
   if (count > 0) kpis.avg_health = Math.round(totalHealth / count)
   if (teamData.length) kpis.total_clients = teamData.reduce((s, t) => s + (t.clients || 0), 0)
 
+  // Global wellbeing score
+  const highAlerts = wellbeingAlerts.filter(a => a.severity === 'high').length
+  const medAlerts = wellbeingAlerts.filter(a => a.severity === 'medium').length
+  if (highAlerts > 0 || medAlerts > 1) {
+    kpis.wellbeing_score = highAlerts > 2 ? 'critical' : highAlerts > 0 ? 'warning' : 'ok'
+  }
+
+  // Q1: Team-level tasks
   const avgChurn = teamData.reduce((s, t) => s + (t.churn || 0), 0) / (teamData.length || 1)
   if (avgChurn > 40) {
-    tasks.push({ title: `📊 Churn moyen équipe ${Math.round(avgChurn)}% — plan de rétention`, note: `Actions transversales nécessaires.`, quadrant: 'q1', color: 'red', account: '' })
+    tasks.push({ title: `📊 Churn moyen équipe ${Math.round(avgChurn)}% — plan de rétention global`, note: `Tous les CSMs au-dessus de 35%. Revoir la stratégie de rétention.`, quadrant: 'q1', color: 'red', account: '' })
   }
+  if (highAlerts >= 2) {
+    tasks.push({ title: `🚨 ${highAlerts} CSMs en épuisement — réunion équipe bien-être`, note: `Signaux d'épuisement chez ${wellbeingAlerts.filter(a => a.severity === 'high').map(a => a.name).join(', ')}. Réunion managériale urgente.`, quadrant: 'q1', color: 'red', account: '' })
+  }
+
+  // Q2: NPS global
   if (kpis.nps && kpis.nps < 30) {
-    tasks.push({ title: `📉 NPS critique: ${kpis.nps} — plan d'amélioration`, note: `NPS en dessous de 30. Objectif > 40.`, quadrant: 'q1', color: 'orange', account: '' })
+    tasks.push({ title: `📉 NPS global: ${kpis.nps} — plan d'amélioration`, note: `NPS en dessous de 30. Objectif > 40. Identifier les détracteurs.`, quadrant: 'q2', color: 'orange', account: '' })
   }
 }
 
