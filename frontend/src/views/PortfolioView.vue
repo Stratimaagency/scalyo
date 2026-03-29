@@ -602,9 +602,9 @@ watch(selectedAccount, (acc) => {
 
 // ─── Tabs ───
 const detailTabs = computed(() => [
-  ['overview', t('apercu') || (prefsStore.lang === 'en' ? 'Overview' : prefsStore.lang === 'kr' ? '\uAC1C\uC694' : 'Aper\u00E7u')],
-  ['todo', 'Todo'],
-  ['edit', t('editBtn') || t('edit')],
+  ['overview', t('overview')],
+  ['todo', t('todoTab')],
+  ['edit', t('editBtn')],
 ])
 
 // ─── Computed lists ───
