@@ -629,6 +629,7 @@ export default {
   sendResetLink: '링크 보내기',
   resetBtn: '재설정',
   planLabel: '요금제',
+  planMonth: '월',
   planStarterDesc: '시작하기 위한 필수 요소',
   planGrowthDesc: '모든 기능 포함',
   planEliteDesc: '우선 지원 + 무제한',
@@ -744,6 +745,12 @@ export default {
   smartImportDone: '가져오기 완료!',
   smartImportAnother: '다른 파일 가져오기',
   smartImportNoData: '이 파일에서 데이터를 감지할 수 없습니다. 시트에 헤더(Client, CSM, ARR, Health...)가 있는지 확인하세요.',
+  // --- i18n fixes ---
+  copy: '복사',
+  quadDoNow: '지금 실행',
+  quadSchedule: '일정 잡기',
+  quadDelegate: '위임',
+  quadDrop: '제거',
   // --- Common ---
   loading: '로딩 중...',
   errorGeneric: '오류가 발생했습니다',

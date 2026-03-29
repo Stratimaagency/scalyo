@@ -632,6 +632,7 @@ export default {
   sendResetLink: 'Envoyer le lien',
   resetBtn: 'Réinitialiser',
   planLabel: 'FORFAIT',
+  planMonth: 'mois',
   planStarterDesc: 'Essentiel pour débuter',
   planGrowthDesc: 'Toutes les fonctionnalités',
   planEliteDesc: 'Support prioritaire + illimité',
@@ -747,6 +748,12 @@ export default {
   smartImportDone: 'Import terminé avec succès !',
   smartImportAnother: 'Importer un autre fichier',
   smartImportNoData: 'Aucune donnée détectée dans ce fichier. Vérifiez que vos feuilles contiennent des en-têtes (Client, CSM, ARR, Health...).',
+  // --- i18n fixes ---
+  copy: 'copie',
+  quadDoNow: 'Faire maintenant',
+  quadSchedule: 'Planifier',
+  quadDelegate: 'Déléguer',
+  quadDrop: 'Abandonner',
   // --- Common ---
   loading: 'Chargement...',
   errorGeneric: 'Une erreur est survenue',

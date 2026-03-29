@@ -67,8 +67,8 @@
 
     <!-- Add/Edit Modal -->
     <AppModal v-if="showAdd || editingQuote" :title="editingQuote ? t('quotesEdit') : t('quotesNew')" @close="closeModal">
-      <AppField :label="t('quotesFieldTitle')" v-model="qForm.title" placeholder="Proposition commerciale..." />
-      <AppField :label="t('quotesFieldClient')" v-model="qForm.client" placeholder="Nom du client" />
+      <AppField :label="t('quotesFieldTitle')" v-model="qForm.title" :placeholder="t('quotesFieldTitle')" />
+      <AppField :label="t('quotesFieldClient')" v-model="qForm.client" :placeholder="t('quotesFieldClient')" />
       <AppField :label="t('quotesFieldAmount')" v-model="qForm.amount" type="number" placeholder="0" />
       <div class="field-group">
         <label class="field-label">{{ t('quotesFieldStatus') }}</label>
@@ -79,7 +79,7 @@
           </button>
         </div>
       </div>
-      <AppField :label="t('quotesFieldNotes')" v-model="qForm.notes" placeholder="Notes..." />
+      <AppField :label="t('quotesFieldNotes')" v-model="qForm.notes" :placeholder="t('notes')" />
       <div style="display: flex; gap: 8px; margin-top: 14px;">
         <button class="btn btn-primary" style="flex: 1; justify-content: center;" @click="saveQuote">
           {{ editingQuote ? t('update') : t('create') }}
@@ -189,7 +189,7 @@ function editQuote(q) {
 async function duplicateQuote(q) {
   try {
     const { data } = await quotesApi.create({
-      title: q.title + ' (copie)',
+      title: q.title + ' (' + t('copy') + ')',
       client: q.client,
       amount: q.amount,
       status: 'draft',

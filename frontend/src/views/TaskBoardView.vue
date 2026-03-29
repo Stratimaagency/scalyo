@@ -613,8 +613,9 @@ const TaskCard = {
   },
   emits: ['toggle', 'delete', 'edit', 'move'],
   setup(props, { emit }) {
-    const { ref, computed } = Vue
+    const { ref, computed, inject } = Vue
     const hover = ref(false)
+    const t = inject('t')
 
     const TASK_COLORS = [
       { id: 'red',    hex: '#EF4444' },
@@ -625,16 +626,16 @@ const TaskCard = {
       { id: 'purple', hex: '#9B6BDF' },
     ]
 
-    const QUADS = [
-      { id: 'q1', icon: '🔥', label: 'Do it now' },
-      { id: 'q2', icon: '🎯', label: 'Schedule it' },
-      { id: 'q3', icon: '📤', label: 'Delegate' },
-      { id: 'q4', icon: '🗑️', label: 'Drop it' },
-    ]
+    const QUADS = computed(() => [
+      { id: 'q1', icon: '🔥', label: t('quadDoNow') },
+      { id: 'q2', icon: '🎯', label: t('quadSchedule') },
+      { id: 'q3', icon: '📤', label: t('quadDelegate') },
+      { id: 'q4', icon: '🗑️', label: t('quadDrop') },
+    ])
 
     const col = computed(() => TASK_COLORS.find(c => c.id === props.task.color) || TASK_COLORS[0])
     const isOverdue = computed(() => props.task.dueDate && new Date(props.task.dueDate) < new Date() && !props.task.done)
-    const otherQuads = computed(() => QUADS.filter(q => q.id !== props.task.quadrant))
+    const otherQuads = computed(() => QUADS.value.filter(q => q.id !== props.task.quadrant))
 
     return { hover, col, isOverdue, otherQuads, QUADS }
   },

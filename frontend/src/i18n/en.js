@@ -632,6 +632,7 @@ export default {
   sendResetLink: 'Send reset link',
   resetBtn: 'Reset',
   planLabel: 'PLAN',
+  planMonth: 'month',
   planStarterDesc: 'Essential to get started',
   planGrowthDesc: 'All features included',
   planEliteDesc: 'Priority support + unlimited',
@@ -747,6 +748,12 @@ export default {
   smartImportDone: 'Import completed successfully!',
   smartImportAnother: 'Import another file',
   smartImportNoData: 'No data detected in this file. Make sure your sheets have headers (Client, CSM, ARR, Health...).',
+  // --- i18n fixes ---
+  copy: 'copy',
+  quadDoNow: 'Do it now',
+  quadSchedule: 'Schedule it',
+  quadDelegate: 'Delegate',
+  quadDrop: 'Drop it',
   // --- Common ---
   loading: 'Loading...',
   errorGeneric: 'Something went wrong',

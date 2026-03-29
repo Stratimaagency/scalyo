@@ -58,11 +58,11 @@
       <AppCard class="mb-md" v-if="teamLimits">
         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 120px;">
-            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">Managers</div>
+            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">{{ t('roleManager') }}s</div>
             <div style="font-size: 20px; font-weight: 800;">{{ teamUsage.managers }}<span style="color: var(--muted); font-size: 13px;">/{{ teamLimits.managers === -1 ? '∞' : teamLimits.managers }}</span></div>
           </div>
           <div style="flex: 1; min-width: 120px;">
-            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">CSMs</div>
+            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">{{ t('roleCSM') }}s</div>
             <div style="font-size: 20px; font-weight: 800;">{{ teamUsage.csms }}<span style="color: var(--muted); font-size: 13px;">/{{ teamLimits.csms === -1 ? '∞' : teamLimits.csms }}</span></div>
           </div>
           <div style="flex: 1; min-width: 120px;">

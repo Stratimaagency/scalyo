@@ -179,7 +179,7 @@
               <span style="font-weight: 700; color: var(--teal);">{{ fmtCurrency(s.arr) }}</span>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: var(--muted); display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="heart" :size="13" /> Health</span>
+              <span style="color: var(--muted); display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="heart" :size="13" /> {{ t('health') }}</span>
               <span style="font-weight: 700;"
                 :style="{ color: s.health >= 70 ? 'var(--green)' : s.health >= 40 ? 'var(--amber)' : 'var(--red)' }">
                 {{ s.health }}/100

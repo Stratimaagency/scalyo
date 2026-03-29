@@ -378,7 +378,7 @@
         <div style="background: var(--surface); border-radius: 8px; height: 8px; overflow: hidden; margin-bottom: 8px;">
           <div style="height: 100%; background: var(--teal); border-radius: 8px; transition: width .3s;" :style="{ width: importProgress + '%' }"></div>
         </div>
-        <div style="font-size: 12px; color: var(--muted);">{{ importDone }}/{{ importTotal }} accounts</div>
+        <div style="font-size: 12px; color: var(--muted);">{{ importDone }}/{{ importTotal }} {{ t('portfolio').toLowerCase() }}</div>
       </div>
     </AppModal>
   </div>
