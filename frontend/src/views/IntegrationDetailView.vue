@@ -37,6 +37,16 @@
     <!-- Loading -->
     <div v-if="loading && !data" class="id-loading">Chargement des donnees...</div>
 
+    <!-- Notion: no databases warning -->
+    <div v-if="key === 'notion' && data && !data.databases?.length && !loading" class="id-error" style="background: #1e293b; border-color: #334155; color: #94a3b8;">
+      <strong style="color: #f59e0b;">Aucune base de donnees trouvee.</strong><br>
+      Pour que Scalyo voie vos donnees Notion :<br>
+      1. Ouvrez la page ou base dans Notion<br>
+      2. Cliquez <strong>...</strong> (3 points en haut a droite)<br>
+      3. <strong>Connexions</strong> → <strong>Connecter a</strong> → choisissez votre integration Scalyo<br>
+      Puis cliquez "Actualiser" ci-dessus.
+    </div>
+
     <!-- Notion: special databases view -->
     <template v-if="key === 'notion' && data?.databases?.length">
       <div v-for="db in data.databases" :key="db.id" class="id-section">

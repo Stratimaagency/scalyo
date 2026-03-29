@@ -141,7 +141,7 @@ export async function fetchData(config) {
           { key: 'title', label: 'Titre' },
           { key: 'lastEdited', label: 'Modifie le', type: 'date' },
         ],
-        actions: ['create', 'view'],
+        actions: ['view'],
       },
     ],
   }
