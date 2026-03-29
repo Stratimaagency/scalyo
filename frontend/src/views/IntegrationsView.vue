@@ -145,6 +145,7 @@
 import { ref, computed, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from '../i18n'
+import { usePreferencesStore } from '../stores/preferences'
 import { integrationsApi } from '../api'
 import AppCard from '../components/AppCard.vue'
 import AppModal from '../components/AppModal.vue'
@@ -153,6 +154,11 @@ import PlanGate from '../components/PlanGate.vue'
 
 const { t } = useI18n()
 const router = useRouter()
+const prefsStore = usePreferencesStore()
+const L = (fr, en, kr) => {
+  const l = prefsStore.lang
+  return l === 'en' ? en : l === 'kr' ? kr : fr
+}
 
 const modal = ref(null)
 const saving = ref(false)
