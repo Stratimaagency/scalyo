@@ -1032,24 +1032,60 @@ async function doImport() {
       return true
     })
 
-    // Add computed KPIs — MAP to field names the KPI view expects
+    // Add computed KPIs — MERGE (not overwrite) + use camelCase field names for KPIView
     if (computedKpis.value && Object.keys(computedKpis.value).length) {
       const ck = computedKpis.value
       payload.kpis = {
-        // Fields the KPI view reads from kpi_data.kpis JSON:
+        ...payload.kpis,
+        // camelCase fields that KPIView reads:
         mrr: ck.mrr || (ck.total_arr ? Math.round(ck.total_arr / 12) : 0),
         nps: ck.nps || 0,
         csat: ck.csat || 0,
-        renewal_rate: ck.adoption_rate || ck.renewal_rate || 0,
+        renewalRate: ck.adoption_rate || ck.renewal_rate || ck.renewalRate || 0,
         churned: ck.churned || 0,
-        resolved_tickets: ck.resolved_tickets || 0,
+        resolvedTickets: ck.resolved_tickets || ck.resolvedTickets || 0,
         // Extra fields for company-level update:
         total_arr: ck.total_arr || 0,
         churn_rate: ck.churn_rate || 0,
         avg_health: ck.avg_health || 0,
-        total_clients: ck.total_clients || 0,
-        at_risk_revenue: ck.at_risk_revenue || 0,
-        adoption_rate: ck.adoption_rate || 0,
+      }
+    }
+
+    // === FALLBACK: if KPIs still empty, compute from portfolio data ===
+    if (!payload.kpis.mrr && payload.portfolio.length) {
+      const totalArr = payload.portfolio.reduce((s, a) => s + (a.arr || 0), 0)
+      const avgHealth = Math.round(payload.portfolio.reduce((s, a) => s + (a.health || 0), 0) / payload.portfolio.length)
+      const criticalCount = payload.portfolio.filter(a => a.risk === 'critical').length
+      payload.kpis = {
+        ...payload.kpis,
+        mrr: Math.round(totalArr / 12),
+        total_arr: totalArr,
+        avg_health: avgHealth,
+        churned: criticalCount,
+        renewalRate: 0,
+        resolvedTickets: 0,
+        nps: payload.kpis.nps || 0,
+        csat: payload.kpis.csat || 0,
+      }
+    }
+
+    // === FALLBACK: if no tasks generated, generate from portfolio data ===
+    if (!payload.tasks.length && payload.portfolio.length) {
+      const criticals = payload.portfolio.filter(a => a.risk === 'critical').slice(0, 5)
+      for (const acc of criticals) {
+        payload.tasks.push({
+          title: `⚠️ Compte critique : ${acc.name} (health ${acc.health}/100)`,
+          note: `ARR: ${acc.arr ? Number(acc.arr).toLocaleString() + '€' : 'N/A'}. CSM: ${acc.csm || 'non assigné'}.`,
+          quadrant: 'q1', color: 'red', account: acc.name,
+        })
+      }
+      const noCSM = payload.portfolio.filter(a => !a.csm).length
+      if (noCSM > 0) {
+        payload.tasks.push({
+          title: `📋 ${noCSM} comptes sans CSM assigné`,
+          note: 'Assigner un CSM à ces comptes pour assurer le suivi.',
+          quadrant: 'q2', color: 'orange', account: '',
+        })
       }
     }
 
@@ -1063,9 +1099,11 @@ async function doImport() {
     })
 
     const { data } = await smartImportApi.execute(payload)
-    importResult.value = data.imported
+    console.log('Import result:', data)
+    importResult.value = data.imported || data
     step.value = 'done'
   } catch (err) {
+    console.error('Import execute error:', err.response?.data || err)
     error.value = err.response?.data?.error || err.message || t('errorGeneric')
   }
   importing.value = false
