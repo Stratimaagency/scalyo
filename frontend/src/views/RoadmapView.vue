@@ -2,7 +2,7 @@
   <PlanGate requiredPlan="Growth" moduleName="Roadmap">
   <div class="fade-in" style="padding: 24px 28px; height: 100%; overflow-y: auto">
     <div v-if="loading" style="display: flex; justify-content: center; align-items: center; padding: 60px 0; color: var(--muted); font-size: 14px">
-      Chargement...
+      {{ t('loading') }}
     </div>
     <template v-else>
     <!-- Header -->

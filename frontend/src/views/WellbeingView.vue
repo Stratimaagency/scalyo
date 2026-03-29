@@ -249,10 +249,10 @@
           <h4 style="font-weight: 800; margin-bottom: 8px">📅 {{ t('wbFollowUp') }}</h4>
           <div style="display: flex; flex-direction: column; gap: 6px">
             <div style="font-size: 12px; color: var(--muted); line-height: 1.7; padding: 8px 12px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border)">
-              • Monthly: performance review + goal adjustment
+              • {{ prefsStore.lang === 'en' ? 'Monthly: performance review + goal adjustment' : prefsStore.lang === 'kr' ? '월간: 성과 리뷰 + 목표 조정' : 'Mensuel : revue de performance + ajustement des objectifs' }}
             </div>
             <div style="font-size: 12px; color: var(--muted); line-height: 1.7; padding: 8px 12px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border)">
-              • Quarterly: deep-dive session + career development
+              • {{ prefsStore.lang === 'en' ? 'Quarterly: deep-dive session + career development' : prefsStore.lang === 'kr' ? '분기별: 심층 세션 + 경력 개발' : 'Trimestriel : session approfondie + développement de carrière' }}
             </div>
           </div>
         </AppCard>
@@ -443,14 +443,14 @@ watch(() => messages.value.length, async () => {
 const coachingFeatures = computed(() => [
   { icon: '🎯', title: t('wbKpiWeekly'), desc: t('wbFormat') },
   { icon: '🧘', title: t('wbDecompress'), desc: t('wbTalkSomeone') },
-  { icon: '📈', title: t('wbFollowUp'), desc: 'Monthly + quarterly reviews' },
-  { icon: '🔒', title: t('wbConf'), desc: 'End-to-end confidentiality' },
+  { icon: '📈', title: t('wbFollowUp'), desc: prefsStore.lang === 'en' ? 'Monthly + quarterly reviews' : prefsStore.lang === 'kr' ? '월간 + 분기별 리뷰' : 'Revues mensuelles + trimestrielles' },
+  { icon: '🔒', title: t('wbConf'), desc: prefsStore.lang === 'en' ? 'End-to-end confidentiality' : prefsStore.lang === 'kr' ? '완전한 기밀 보장' : 'Confidentialité totale' },
 ])
 
 // ── Side panel resources ──
 const sideResources = computed(() => [
   { icon: '💬', title: t('wbTalkSomeone'), desc: t('wbHelpline') },
-  { icon: '🧘', title: t('wbDecompress'), desc: 'Breathing, mindfulness' },
+  { icon: '🧘', title: t('wbDecompress'), desc: prefsStore.lang === 'en' ? 'Breathing, mindfulness' : prefsStore.lang === 'kr' ? '호흡, 마음챙김' : 'Respiration, pleine conscience' },
   { icon: '📝', title: t('wbManage'), desc: t('trackWorkload') },
   { icon: '🔋', title: t('wbBookSession'), desc: t('wbBookHow') },
 ])

@@ -58,11 +58,11 @@
       <AppCard class="mb-md" v-if="teamLimits">
         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 120px;">
-            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">Managers</div>
+            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">{{ t('roleManager') }}s</div>
             <div style="font-size: 20px; font-weight: 800;">{{ teamUsage.managers }}<span style="color: var(--muted); font-size: 13px;">/{{ teamLimits.managers === -1 ? '∞' : teamLimits.managers }}</span></div>
           </div>
           <div style="flex: 1; min-width: 120px;">
-            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">CSMs</div>
+            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;">{{ t('roleCSM') }}s</div>
             <div style="font-size: 20px; font-weight: 800;">{{ teamUsage.csms }}<span style="color: var(--muted); font-size: 13px;">/{{ teamLimits.csms === -1 ? '∞' : teamLimits.csms }}</span></div>
           </div>
           <div style="flex: 1; min-width: 120px;">
@@ -85,7 +85,7 @@
           <div v-for="m in teamMembers" :key="m.id" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border);">
             <div style="display: flex; align-items: center; gap: 12px;">
               <div style="width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: #fff;"
-                :style="{ background: m.role === 'manager' ? 'var(--teal)' : 'var(--purple, #a78bfa)' }">
+                :style="{ background: { manager: 'var(--teal)', csm: 'var(--purple, #a78bfa)', commercial: '#f59e0b', kam: '#3b82f6' }[m.role] || 'var(--purple, #a78bfa)' }">
                 {{ (m.display_name || m.email).charAt(0).toUpperCase() }}
               </div>
               <div>
@@ -94,8 +94,8 @@
               </div>
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
-              <span class="tag" :class="m.role === 'manager' ? 'risk-low' : 'risk-medium'" style="font-size: 11px; padding: 3px 10px;">{{ m.role === 'manager' ? t('roleManager') : t('roleCSM') }}</span>
-              <button v-if="m.role === 'csm'" class="btn btn-secondary" style="font-size: 12px; padding: 7px 14px;" @click="openAccountsModal(m)">{{ t('manageAccounts') }}</button>
+              <span class="tag" :class="m.role === 'manager' ? 'risk-low' : 'risk-medium'" style="font-size: 11px; padding: 3px 10px;">{{ { manager: t('roleManager'), csm: t('roleCSM'), commercial: t('roleCommercial'), kam: t('roleKAM') }[m.role] || m.role }}</span>
+              <button v-if="['csm', 'commercial', 'kam'].includes(m.role)" class="btn btn-secondary" style="font-size: 12px; padding: 7px 14px;" @click="openAccountsModal(m)">{{ t('manageAccounts') }}</button>
               <button v-if="m.id !== authStore.user?.id" class="btn btn-secondary" style="font-size: 12px; padding: 7px 14px; color: var(--red);" @click="removeMember(m)">{{ t('teamRemoveBtn') }}</button>
             </div>
           </div>
@@ -114,9 +114,11 @@
           <AppField :label="t('displayName')" v-model="inviteForm.display_name" :placeholder="t('teamNamePlaceholder')" />
           <div style="margin-bottom: 12px;">
             <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">{{ t('teamRoleLabel') }}</label>
-            <div style="display: flex; gap: 8px;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <button class="chip" :class="{ active: inviteForm.role === 'csm' }" @click="inviteForm.role = 'csm'">{{ t('roleCSM') }}</button>
               <button class="chip" :class="{ active: inviteForm.role === 'manager' }" @click="inviteForm.role = 'manager'">{{ t('roleManager') }}</button>
+              <button class="chip" :class="{ active: inviteForm.role === 'commercial' }" @click="inviteForm.role = 'commercial'">{{ t('roleCommercial') }}</button>
+              <button class="chip" :class="{ active: inviteForm.role === 'kam' }" @click="inviteForm.role = 'kam'">{{ t('roleKAM') }}</button>
             </div>
           </div>
           <AppField :label="t('password')" v-model="inviteForm.password" :placeholder="t('teamPasswordHint')" type="password" />

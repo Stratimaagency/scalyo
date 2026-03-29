@@ -159,9 +159,9 @@ onMounted(async () => {
 })
 
 const plans = computed(() => [
-  { key: 'Starter', name: 'Starter', price: '97€/mois', desc: t('planStarterDesc') },
-  { key: 'Growth', name: 'Growth', price: '297€/mois', desc: t('planGrowthDesc') },
-  { key: 'Elite', name: 'Elite', price: '697€/mois', desc: t('planEliteDesc') },
+  { key: 'Starter', name: 'Starter', price: '97€/' + t('planMonth'), desc: t('planStarterDesc') },
+  { key: 'Growth', name: 'Growth', price: '297€/' + t('planMonth'), desc: t('planGrowthDesc') },
+  { key: 'Elite', name: 'Elite', price: '697€/' + t('planMonth'), desc: t('planEliteDesc') },
 ])
 
 const roles = computed(() => [
