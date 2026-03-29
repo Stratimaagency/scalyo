@@ -276,7 +276,14 @@ async function processFile(file) {
         rawData[key] = rows
 
         const sheetLower = sheetName.toLowerCase()
-        const base = { name: key, columns: guessColumns(headers), previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length }
+        // Try keyword-based mapping first, then pattern-based as fallback
+        let columns = guessColumns(headers)
+        if (Object.keys(columns).length < 2) {
+          // Not enough columns matched by name → analyze by data patterns
+          const colAnalysis = analyzeColumns(rows)
+          columns = { ...autoMapFields(colAnalysis), ...columns }
+        }
+        const base = { name: key, columns, previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length }
 
         // --- UNIVERSAL DETECTION: try ALL types, pick the best match ---
         const scores = {
@@ -591,64 +598,172 @@ function extractCsmInsights(rows, kpis, tasks, teamData) {
   }
 }
 
+// === COLUMN TYPE ANALYZER — detects type by DATA PATTERNS, not labels ===
+function analyzeColumns(rows) {
+  if (!rows.length) return {}
+  const headers = Object.keys(rows[0])
+  const analysis = {}
+  const sample = rows.slice(0, Math.min(rows.length, 20))
+
+  for (const col of headers) {
+    const vals = sample.map(r => String(r[col] || '').trim()).filter(v => v && v !== '-' && v !== 'N/A')
+    if (!vals.length) { analysis[col] = { type: 'empty' }; continue }
+
+    const stats = {
+      numbers: 0, bigNumbers: 0, smallNumbers: 0, percentages: 0,
+      dates: 0, emails: 0, personNames: 0, longText: 0, shortText: 0,
+      urls: 0, booleans: 0, total: vals.length
+    }
+
+    for (const v of vals) {
+      const n = parseNum(v)
+      if (/^\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}$/.test(v) || /^\d{4}-\d{2}-\d{2}/.test(v)) stats.dates++
+      else if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) stats.emails++
+      else if (/^https?:\/\//.test(v)) stats.urls++
+      else if (/^(oui|non|yes|no|true|false|vrai|faux|✓|✗|x)$/i.test(v)) stats.booleans++
+      else if (/^[A-ZÀ-Ü][a-zà-ü]+(\s+[A-ZÀ-Ü][a-zà-ü]+)+$/.test(v) && v.length < 40) stats.personNames++
+      else if (v.includes('%') || (n > 0 && n <= 100 && /\d/.test(v))) stats.percentages++
+      else if (n !== 0 && !isNaN(n)) {
+        stats.numbers++
+        if (Math.abs(n) > 10000) stats.bigNumbers++
+        else if (Math.abs(n) <= 10) stats.smallNumbers++
+      }
+      else if (v.length > 50) stats.longText++
+      else if (v.length > 2) stats.shortText++
+    }
+
+    const t = stats.total
+    let type = 'text'
+    if (stats.emails / t > 0.5) type = 'email'
+    else if (stats.dates / t > 0.5) type = 'date'
+    else if (stats.personNames / t > 0.5) type = 'person_name'
+    else if (stats.bigNumbers / t > 0.4) type = 'revenue'
+    else if (stats.smallNumbers / t > 0.4 && stats.percentages / t < 0.3) type = 'score'
+    else if (stats.percentages / t > 0.4) type = 'percentage'
+    else if (stats.numbers / t > 0.5) type = 'number'
+    else if (stats.longText / t > 0.3) type = 'comment'
+    else if (stats.booleans / t > 0.5) type = 'boolean'
+    else if (stats.urls / t > 0.5) type = 'url'
+
+    analysis[col] = { type, stats, sample: vals.slice(0, 3) }
+  }
+  return analysis
+}
+
+// Map analyzed column types to Scalyo fields
+function autoMapFields(colAnalysis) {
+  const mapping = {}
+  const used = new Set()
+
+  // Priority order: map most specific types first
+  for (const [col, info] of Object.entries(colAnalysis)) {
+    if (info.type === 'empty') continue
+    let field = null
+
+    if (info.type === 'person_name' && !used.has('name') && !used.has('csm')) {
+      // First person_name column = account name or CSM
+      field = used.has('name') ? 'csm' : 'name'
+    } else if (info.type === 'email') {
+      field = 'contact_email'
+    } else if (info.type === 'revenue') {
+      field = !used.has('arr') ? 'arr' : 'mrr'
+    } else if (info.type === 'score') {
+      field = !used.has('health') ? 'health' : null
+    } else if (info.type === 'percentage') {
+      field = !used.has('churn_rate') ? 'churn_rate' : !used.has('adoption_rate') ? 'adoption_rate' : null
+    } else if (info.type === 'date') {
+      field = !used.has('renewal') ? 'renewal' : !used.has('due') ? 'due' : null
+    } else if (info.type === 'comment') {
+      field = !used.has('notes') ? 'notes' : !used.has('wellbeing') ? 'wellbeing' : null
+    } else if (info.type === 'text') {
+      if (!used.has('name')) field = 'name'
+      else if (!used.has('csm')) field = 'csm'
+      else if (!used.has('industry')) field = 'industry'
+      else if (!used.has('contact')) field = 'contact'
+    }
+
+    if (field) {
+      mapping[col] = field
+      used.add(field)
+    }
+  }
+  return mapping
+}
+
 // === UNIVERSAL SCORING — each function returns 0-1 confidence ===
 
 function scorePortfolio(name, headers, rows) {
   let score = 0
-  if (['client', 'portfolio', 'portefeuille', 'account', 'compte'].some(k => name.includes(k))) score += 0.5
-  if (headers.some(h => ['client', 'compte', 'account', 'entreprise', 'company', 'nom client', 'id client', 'société'].includes(h))) score += 0.3
+  // By sheet name (any language)
+  if (['client', 'portfolio', 'portefeuille', 'account', 'compte', 'customer', '고객', '顧客'].some(k => name.includes(k))) score += 0.5
+  // By column names
+  if (headers.some(h => ['client', 'compte', 'account', 'entreprise', 'company', 'société', 'customer', 'nom client', 'id client'].includes(h))) score += 0.3
   if (headers.some(h => h.includes('arr') || h.includes('mrr') || h.includes('ca') || h.includes('revenue') || h.includes('plan'))) score += 0.2
+  // By data patterns: many rows with text + large numbers = likely portfolio
+  const colTypes = analyzeColumns(rows)
+  const types = Object.values(colTypes).map(c => c.type)
+  if (types.includes('revenue') && (types.includes('text') || types.includes('person_name'))) score += 0.3
   if (rows.length > 10) score += 0.1
   return Math.min(1, score)
 }
 
 function scoreTeam(name, headers, rows) {
   let score = 0
-  if (['csm', 'équipe', 'equipe', 'team', 'vue csm', 'profil'].some(k => name.includes(k))) score += 0.5
-  if (headers.some(h => h === 'csm' || h.includes('séniorité') || h.includes('seniorite'))) score += 0.3
+  if (['csm', 'équipe', 'equipe', 'team', 'vue csm', 'profil', 'collaborat', 'employee', '팀'].some(k => name.includes(k))) score += 0.5
+  if (headers.some(h => h === 'csm' || h.includes('séniorité') || h.includes('seniorite') || h.includes('seniority'))) score += 0.3
   if (headers.some(h => h.includes('churn') || h.includes('client'))) score += 0.2
-  // Check values for person names
-  const hasNames = rows.slice(0, 5).some(r => Object.values(r).some(v => /^[A-ZÀ-Ü][a-zà-ü]+ [A-ZÀ-Ü]/.test(String(v))))
-  if (hasNames && rows.length <= 20) score += 0.2
+  // By data: person names + percentages + small row count = team
+  const colTypes = analyzeColumns(rows)
+  const types = Object.values(colTypes).map(c => c.type)
+  if (types.includes('person_name') && types.includes('percentage') && rows.length <= 30) score += 0.3
+  if (types.includes('person_name') && types.includes('comment') && rows.length <= 30) score += 0.2
   return Math.min(1, score)
 }
 
 function scoreKpis(name, headers, rows) {
   let score = 0
-  if (['kpi', 'dashboard', 'synthese', 'résumé', 'summary', 'indicateur', 'metric', 'stats'].some(k => name.includes(k))) score += 0.5
-  if (headers.some(h => h.includes('nps') || h.includes('churn') || h.includes('health score') || h.includes('total'))) score += 0.3
-  // KPI tables are usually small with label-value pairs
-  if (rows.length <= 10 && rows.length > 0) score += 0.1
-  // Check for KPI values in cells
-  const allVals = rows.flatMap(r => Object.values(r).map(v => String(v).toLowerCase()))
-  if (allVals.some(v => v.includes('total client') || v.includes('ca total') || v.includes('nps') || v.includes('health'))) score += 0.3
+  if (['kpi', 'dashboard', 'synthese', 'résumé', 'summary', 'indicat', 'metric', 'stats', 'overview', '指標'].some(k => name.includes(k))) score += 0.5
+  if (headers.some(h => h.includes('nps') || h.includes('churn') || h.includes('health') || h.includes('total'))) score += 0.3
+  // KPI = small table with label-value pairs
+  if (rows.length <= 10 && rows.length > 0) score += 0.2
+  // Check cells for any label-number pattern
+  const allVals = rows.flatMap(r => Object.entries(r).map(([, v]) => String(v).toLowerCase()))
+  if (allVals.some(v => /total|average|mean|median|sum|count|rate|score|index|ratio/i.test(v))) score += 0.2
   return Math.min(1, score)
 }
 
 function scoreTasks(name, headers, rows) {
   let score = 0
-  if (['task', 'tâche', 'tache', 'todo', 'action', 'à faire', 'a faire', 'suivi', 'backlog'].some(k => name.includes(k))) score += 0.5
-  if (headers.some(h => ['tâche', 'task', 'action', 'todo', 'à faire', 'titre', 'description', 'assigné'].includes(h))) score += 0.3
-  if (headers.some(h => h.includes('priorité') || h.includes('priority') || h.includes('statut') || h.includes('status') || h.includes('deadline') || h.includes('échéance'))) score += 0.2
-  // Check for action verbs in values
-  const allVals = rows.slice(0, 10).flatMap(r => Object.values(r).map(v => String(v).toLowerCase()))
-  if (allVals.some(v => /^(appeler|planifier|envoyer|vérifier|préparer|organiser|suivre|relancer|contacter|mettre à jour|call|send|schedule|review|prepare)/i.test(v))) score += 0.3
+  if (['task', 'tâche', 'tache', 'todo', 'action', 'à faire', 'a faire', 'suivi', 'backlog', 'kanban', '업무', '작업'].some(k => name.includes(k))) score += 0.5
+  if (headers.some(h => ['tâche', 'task', 'action', 'todo', 'à faire', 'titre', 'description', 'assigné', 'assigned'].includes(h))) score += 0.3
+  if (headers.some(h => /priorité|priority|statut|status|deadline|échéance|due/i.test(h))) score += 0.2
+  // By data: text values that look like actions
+  const allVals = rows.slice(0, 15).flatMap(r => Object.values(r).map(v => String(v)))
+  if (allVals.some(v => /^(appeler|planifier|envoyer|vérifier|préparer|organiser|suivre|relancer|contacter|call|send|schedule|review|prepare|check|update|fix|deploy|create)/i.test(v))) score += 0.3
+  // By data patterns: text + dates + booleans/status = tasks
+  const colTypes = analyzeColumns(rows)
+  const types = Object.values(colTypes).map(c => c.type)
+  if (types.includes('date') && types.includes('text') && (types.includes('boolean') || headers.some(h => /statut|status/i.test(h)))) score += 0.3
   return Math.min(1, score)
 }
 
 function scoreRoadmap(name, headers, rows) {
   let score = 0
-  if (['roadmap', 'plan', 'jalons', 'milestone', 'étape', 'projet', 'objectif', 'okr'].some(k => name.includes(k))) score += 0.5
-  if (headers.some(h => ['phase', 'milestone', 'jalon', 'étape', 'objectif', 'livrable', 'deliverable'].includes(h))) score += 0.3
-  if (headers.some(h => h.includes('progress') || h.includes('avancement') || h.includes('%'))) score += 0.2
+  if (['roadmap', 'plan', 'jalons', 'milestone', 'étape', 'projet', 'objectif', 'okr', 'sprint', '로드맵'].some(k => name.includes(k))) score += 0.5
+  if (headers.some(h => ['phase', 'milestone', 'jalon', 'étape', 'objectif', 'livrable', 'deliverable', 'sprint'].includes(h))) score += 0.3
+  if (headers.some(h => /progress|avancement|%|completion/i.test(h))) score += 0.2
   return Math.min(1, score)
 }
 
 function scorePlanning(name, headers, rows) {
   let score = 0
-  if (['planning', 'calendar', 'agenda', 'rendez-vous', 'rdv', 'réunion', 'meeting', 'événement'].some(k => name.includes(k))) score += 0.5
-  if (headers.some(h => h.includes('date') || h.includes('heure') || h.includes('time') || h.includes('début') || h.includes('fin'))) score += 0.3
-  if (headers.some(h => h.includes('lieu') || h.includes('location') || h.includes('salle') || h.includes('lien') || h.includes('zoom'))) score += 0.2
+  if (['planning', 'calendar', 'agenda', 'rendez-vous', 'rdv', 'réunion', 'meeting', 'événement', 'event', '일정'].some(k => name.includes(k))) score += 0.5
+  if (headers.some(h => /date|heure|time|début|start|fin|end/i.test(h))) score += 0.3
+  if (headers.some(h => /lieu|location|salle|room|lien|link|zoom|teams/i.test(h))) score += 0.2
+  // By data: mostly date columns = likely planning
+  const colTypes = analyzeColumns(rows)
+  const dateCount = Object.values(colTypes).filter(c => c.type === 'date').length
+  if (dateCount >= 2) score += 0.3
   return Math.min(1, score)
 }
 
