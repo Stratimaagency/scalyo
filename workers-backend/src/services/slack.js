@@ -31,3 +31,11 @@ export async function sendNotification(config, message) {
 export async function sync() {
   return { ok: true, message: 'Slack configure — les notifications sont actives.' }
 }
+
+export async function fetchData() {
+  return { sections: [] }
+}
+
+export async function performAction() {
+  throw new Error('Slack est en mode notification uniquement')
+}

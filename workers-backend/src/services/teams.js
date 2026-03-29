@@ -42,3 +42,11 @@ export async function sendNotification(config, message, title = 'Alerte Scalyo')
 export async function sync() {
   return { ok: true, message: 'Teams configure — les notifications sont actives.' }
 }
+
+export async function fetchData() {
+  return { sections: [] }
+}
+
+export async function performAction() {
+  throw new Error('Teams est en mode notification uniquement')
+}
