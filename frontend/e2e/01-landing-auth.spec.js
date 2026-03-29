@@ -18,8 +18,10 @@ test.describe('Landing & Auth', () => {
 
   test('register form shows 4 roles', async ({ page }) => {
     await page.goto('/login')
-    // Switch to register mode
-    await page.locator('.login-card span[style*="cursor: pointer"]').first().click()
+    // Switch to register mode — click the link with font-weight 600 (not the forgot password link)
+    await page.locator('span[style*="font-weight: 600"][style*="cursor: pointer"]').last().click()
+    // Wait for register form to appear
+    await expect(page.locator('button.chip').first()).toBeVisible({ timeout: 3000 })
     // Should see 4 role chips
     const chips = page.locator('button.chip')
     await expect(chips).toHaveCount(4)
@@ -31,7 +33,8 @@ test.describe('Landing & Auth', () => {
 
   test('register form shows 3 plans', async ({ page }) => {
     await page.goto('/login')
-    await page.locator('.login-card span[style*="cursor: pointer"]').first().click()
+    await page.locator('span[style*="font-weight: 600"][style*="cursor: pointer"]').last().click()
+    await expect(page.locator('.plan-option').first()).toBeVisible({ timeout: 3000 })
     await expect(page.locator('.plan-option')).toHaveCount(3)
   })
 

@@ -24,7 +24,8 @@ test.describe('Visual & layout checks', () => {
 
   test('register form fields are all visible', async ({ page }) => {
     await page.goto('/login')
-    await page.locator('.login-card span[style*="cursor: pointer"]').first().click()
+    await page.locator('span[style*="font-weight: 600"][style*="cursor: pointer"]').last().click()
+    await expect(page.locator('button.chip').first()).toBeVisible({ timeout: 3000 })
     await expect(page.locator('input[type="email"]')).toBeVisible()
     await expect(page.locator('input[type="password"]')).toBeVisible()
     // Role chips (4 roles)
