@@ -79,6 +79,14 @@ export const coachApi = {
   chat: (messages, mode = 'coach') => api.post('/coach/chat/', { messages, mode }),
 }
 
+// Quotes
+export const quotesApi = {
+  list: () => api.get('/quotes/'),
+  create: (data) => api.post('/quotes/', data),
+  update: (id, data) => api.patch(`/quotes/${id}/`, data),
+  remove: (id) => api.delete(`/quotes/${id}/`),
+}
+
 // Feedback
 export const feedbackApi = {
   create: (data) => api.post('/feedback/', data),

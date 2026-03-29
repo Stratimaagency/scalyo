@@ -92,9 +92,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { usePreferencesStore } from '../stores/preferences'
 import { useI18n } from '../i18n'
+import { quotesApi } from '../api'
 import AppField from '../components/AppField.vue'
 import AppModal from '../components/AppModal.vue'
 import EmptyState from '../components/EmptyState.vue'
@@ -104,15 +105,20 @@ import PlanGate from '../components/PlanGate.vue'
 const { t } = useI18n()
 const prefsStore = usePreferencesStore()
 
-const quotes = ref(JSON.parse(localStorage.getItem('scalyo_quotes') || '[]'))
+const quotes = ref([])
+const loading = ref(true)
 const filter = ref('all')
 const showAdd = ref(false)
 const editingQuote = ref(null)
 const qForm = reactive({ title: '', client: '', amount: 0, status: 'draft', notes: '', date: '' })
 
-function persist() {
-  localStorage.setItem('scalyo_quotes', JSON.stringify(quotes.value))
-}
+onMounted(async () => {
+  try {
+    const { data } = await quotesApi.list()
+    quotes.value = data
+  } catch { /* empty state */ }
+  loading.value = false
+})
 
 const filteredQuotes = computed(() => {
   if (filter.value === 'all') return quotes.value
@@ -159,19 +165,19 @@ function statusIcon(s) {
   return '✎'
 }
 
-function saveQuote() {
+async function saveQuote() {
   if (!qForm.title.trim()) return
   if (!qForm.client.trim()) return
-  const now = new Date().toISOString().slice(0, 10)
-  if (editingQuote.value) {
-    const idx = quotes.value.findIndex(q => q.id === editingQuote.value.id)
-    if (idx >= 0) {
-      quotes.value.splice(idx, 1, { ...quotes.value[idx], ...qForm })
+  try {
+    if (editingQuote.value) {
+      const { data } = await quotesApi.update(editingQuote.value.id, { ...qForm })
+      const idx = quotes.value.findIndex(q => q.id === editingQuote.value.id)
+      if (idx >= 0) quotes.value.splice(idx, 1, data)
+    } else {
+      const { data } = await quotesApi.create({ ...qForm })
+      quotes.value.unshift(data)
     }
-  } else {
-    quotes.value.unshift({ id: Date.now(), ...qForm, date: now })
-  }
-  persist()
+  } catch { /* silent */ }
   closeModal()
 }
 
@@ -180,15 +186,25 @@ function editQuote(q) {
   Object.assign(qForm, { title: q.title, client: q.client, amount: q.amount, status: q.status, notes: q.notes || '', date: q.date })
 }
 
-function duplicateQuote(q) {
-  quotes.value.unshift({ ...q, id: Date.now(), title: q.title + ' (copie)', status: 'draft', date: new Date().toISOString().slice(0, 10) })
-  persist()
+async function duplicateQuote(q) {
+  try {
+    const { data } = await quotesApi.create({
+      title: q.title + ' (copie)',
+      client: q.client,
+      amount: q.amount,
+      status: 'draft',
+      notes: q.notes || '',
+    })
+    quotes.value.unshift(data)
+  } catch { /* silent */ }
 }
 
-function removeQuote(id) {
+async function removeQuote(id) {
   if (!confirm(t('delete') + ' ?')) return
-  quotes.value = quotes.value.filter(q => q.id !== id)
-  persist()
+  try {
+    await quotesApi.remove(id)
+    quotes.value = quotes.value.filter(q => q.id !== id)
+  } catch { /* silent */ }
 }
 
 function closeModal() {

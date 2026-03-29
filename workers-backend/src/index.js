@@ -13,6 +13,7 @@ import coach from './routes/coach.js'
 import emailStudio from './routes/email-studio.js'
 import billing from './routes/billing.js'
 import feedback from './routes/feedback.js'
+import quotes from './routes/quotes.js'
 import { registerIntegrationRoutes } from './routes/integrations.js'
 import { registerTeamRoutes } from './routes/team.js'
 
@@ -44,6 +45,7 @@ app.route('/api/coach', coach)
 app.route('/api/email-studio', emailStudio)
 app.route('/api/billing', billing)
 app.route('/api/feedback', feedback)
+app.route('/api/quotes', quotes)
 registerIntegrationRoutes(app)
 registerTeamRoutes(app)
 
