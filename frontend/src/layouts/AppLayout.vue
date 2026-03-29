@@ -52,7 +52,7 @@
               · {{ roleLabel }}
             </div>
             <div v-if="trialDaysLeft !== null && !trialExpired" class="sidebar-trial-badge">
-              {{ t('trialDaysLeft').replace('{days}', trialDaysLeft) }}
+              {{ t('trialDaysLeftMsg').replace('{days}', trialDaysLeft) }}
             </div>
           </div>
           <button class="sidebar-logout-btn" :title="t('logout')" @click="logout"><ScalyoIcon name="power" :size="16" /></button>
@@ -100,7 +100,7 @@
         <!-- Trial expiry warning banner -->
         <div v-if="trialDaysLeft !== null && trialDaysLeft <= 3 && trialDaysLeft > 0 && !trialExpired"
           style="background: #FEF3C7; border-bottom: 1px solid #F59E0B; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; color: #92400E;">
-          <span>{{ t('trialBanner').replace('{days}', trialDaysLeft) }}</span>
+          <span>{{ t('trialBannerMsg').replace('{days}', trialDaysLeft) }}</span>
           <router-link :to="{ name: 'settings' }" style="background: #92400E; color: #fff; border: none; border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none;">
             {{ t('trialSubscribe') }}
           </router-link>

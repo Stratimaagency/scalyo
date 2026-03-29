@@ -7,7 +7,7 @@ smartImport.use('/*', authMiddleware(), companyRequired(), trialGuard())
 /**
  * POST /api/import/smart
  * Receives pre-parsed Excel data from frontend and dispatches to the right modules.
- * Body: { portfolio: [...], kpis: {...}, tasks: [...], roadmap: [...], team: [...] }
+ * Body: { portfolio: [...], kpis: {...}, tasks: [...], roadmap: [...] }
  */
 smartImport.post('/', async (c) => {
   const user = c.get('user')
@@ -15,9 +15,9 @@ smartImport.post('/', async (c) => {
   const db = c.env.DB
   const data = await c.req.json()
 
-  const results = { portfolio: 0, kpis: 0, tasks: 0, roadmap: 0, team: 0, errors: [] }
+  const results = { portfolio: 0, kpis: 0, tasks: 0, roadmap: 0, errors: [] }
 
-  // --- 1. Portfolio accounts ---
+  // --- 1. Portfolio accounts (individual rows in accounts table) ---
   if (data.portfolio && Array.isArray(data.portfolio)) {
     for (const acc of data.portfolio) {
       try {
@@ -45,40 +45,32 @@ smartImport.post('/', async (c) => {
     }
   }
 
-  // --- 2. KPIs ---
+  // --- 2. KPIs (stored as JSON in kpi_data.kpis column) ---
   if (data.kpis && typeof data.kpis === 'object') {
     const k = data.kpis
-    const period = k.period || new Date().toISOString().slice(0, 7)
-    try {
-      // Upsert monthly KPIs
-      const existing = await db.prepare(
-        'SELECT id FROM kpi_data WHERE company_id = ? AND period = ?'
-      ).bind(company_id, period).first()
+    const period = k.period || new Date().toISOString().slice(0, 7) // YYYY-MM
+    const kpisJson = {
+      mrr: k.mrr ?? 0,
+      churned: k.churned ?? 0,
+      nps: k.nps ?? 0,
+      csat: k.csat ?? 0,
+      renewal_rate: k.renewal_rate ?? 0,
+      resolved_tickets: k.resolved_tickets ?? 0,
+    }
 
-      if (existing) {
-        await db.prepare(
-          `UPDATE kpi_data SET mrr = ?, churned = ?, nps = ?, csat = ?, renewal_rate = ?, resolved_tickets = ?, updated_at = datetime('now')
-           WHERE id = ?`
-        ).bind(
-          k.mrr ?? 0, k.churned ?? 0, k.nps ?? 0, k.csat ?? 0,
-          k.renewal_rate ?? 0, k.resolved_tickets ?? 0, existing.id
-        ).run()
-      } else {
-        await db.prepare(
-          `INSERT INTO kpi_data (company_id, period, mrr, churned, nps, csat, renewal_rate, resolved_tickets)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-        ).bind(
-          company_id, period,
-          k.mrr ?? 0, k.churned ?? 0, k.nps ?? 0, k.csat ?? 0,
-          k.renewal_rate ?? 0, k.resolved_tickets ?? 0
-        ).run()
-      }
+    try {
+      await db.prepare(
+        `INSERT INTO kpi_data (company_id, period, kpis, updated_at)
+         VALUES (?, ?, ?, datetime('now'))
+         ON CONFLICT(company_id, period) DO UPDATE SET
+           kpis = excluded.kpis, updated_at = datetime('now')`
+      ).bind(company_id, period, JSON.stringify(kpisJson)).run()
       results.kpis++
     } catch (e) {
       results.errors.push(`KPIs: ${e.message}`)
     }
 
-    // Update company-level KPIs
+    // Update company-level KPIs (arr, churn, nps on companies table)
     try {
       const sets = []
       const vals = []
@@ -95,50 +87,84 @@ smartImport.post('/', async (c) => {
     }
   }
 
-  // --- 3. Tasks ---
-  if (data.tasks && Array.isArray(data.tasks)) {
-    for (const task of data.tasks) {
-      try {
-        await db.prepare(
-          `INSERT INTO tasks (company_id, user_id, title, note, quadrant, color, status, due, account)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-        ).bind(
-          company_id, user.id,
-          task.title || '',
-          task.note || '',
-          task.quadrant || 'q1',
-          task.color || 'teal',
-          task.status || 'todo',
-          task.due || '',
-          task.account || ''
-        ).run()
-        results.tasks++
-      } catch (e) {
-        results.errors.push(`Task "${task.title}": ${e.message}`)
+  // --- 3. Tasks (stored as JSON array in task_boards.tasks) ---
+  if (data.tasks && Array.isArray(data.tasks) && data.tasks.length) {
+    try {
+      // Get or create the task board
+      let board = await db.prepare(
+        'SELECT * FROM task_boards WHERE company_id = ?'
+      ).bind(company_id).first()
+
+      let existingTasks = []
+      if (board) {
+        existingTasks = JSON.parse(board.tasks || '[]')
       }
+
+      // Append new tasks with unique IDs
+      const now = new Date().toISOString()
+      const newTasks = data.tasks.map((task, i) => ({
+        id: Date.now() + i,
+        title: task.title || '',
+        note: task.note || '',
+        quadrant: task.quadrant || 'q1',
+        color: task.color || 'teal',
+        status: task.status || 'todo',
+        due: task.due || '',
+        account: task.account || '',
+        created: now,
+      }))
+
+      const allTasks = [...existingTasks, ...newTasks]
+
+      await db.prepare(
+        `INSERT INTO task_boards (company_id, tasks, updated_at)
+         VALUES (?, ?, datetime('now'))
+         ON CONFLICT(company_id) DO UPDATE SET
+           tasks = excluded.tasks, updated_at = datetime('now')`
+      ).bind(company_id, JSON.stringify(allTasks)).run()
+
+      results.tasks = newTasks.length
+    } catch (e) {
+      results.errors.push(`Tasks: ${e.message}`)
     }
   }
 
-  // --- 4. Roadmap ---
-  if (data.roadmap && Array.isArray(data.roadmap)) {
-    for (const item of data.roadmap) {
-      try {
-        await db.prepare(
-          `INSERT INTO roadmap_items (company_id, phase, title, status, due, progress, owner)
-           VALUES (?, ?, ?, ?, ?, ?, ?)`
-        ).bind(
-          company_id,
-          item.phase || '1',
-          item.title || '',
-          item.status || 'pending',
-          item.due || '',
-          item.progress ?? 0,
-          item.owner || ''
-        ).run()
-        results.roadmap++
-      } catch (e) {
-        results.errors.push(`Roadmap "${item.title}": ${e.message}`)
+  // --- 4. Roadmap (stored as JSON array in roadmap.items) ---
+  if (data.roadmap && Array.isArray(data.roadmap) && data.roadmap.length) {
+    try {
+      // Get or create roadmap
+      let rm = await db.prepare(
+        'SELECT * FROM roadmap WHERE company_id = ?'
+      ).bind(company_id).first()
+
+      let existingItems = []
+      if (rm) {
+        existingItems = JSON.parse(rm.items || '[]')
       }
+
+      // Append new items with unique IDs
+      const newItems = data.roadmap.map((item, i) => ({
+        id: Date.now() + i,
+        title: item.title || '',
+        phase: item.phase || '1',
+        status: item.status || 'pending',
+        due: item.due || '',
+        progress: item.progress ?? 0,
+        owner: item.owner || '',
+      }))
+
+      const allItems = [...existingItems, ...newItems]
+
+      await db.prepare(
+        `INSERT INTO roadmap (company_id, items, updated_at)
+         VALUES (?, ?, datetime('now'))
+         ON CONFLICT(company_id) DO UPDATE SET
+           items = excluded.items, updated_at = datetime('now')`
+      ).bind(company_id, JSON.stringify(allItems)).run()
+
+      results.roadmap = newItems.length
+    } catch (e) {
+      results.errors.push(`Roadmap: ${e.message}`)
     }
   }
 
