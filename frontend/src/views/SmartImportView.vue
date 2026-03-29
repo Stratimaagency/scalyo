@@ -252,90 +252,82 @@ async function processFile(file) {
   analysisStatus.value = t('smartImportReading')
 
   try {
-    // 1. Parse Excel client-side
     const buffer = await file.arrayBuffer()
     const wb = XLSX.read(buffer, { type: 'array', cellFormula: false, cellDates: true })
 
-    // 2. Extract schema for AI analysis
-    const sheets = []
     const rawData = {}
+    const mappedSheets = []
+    const kpis = {}
+    const tasks = []
+    const teamData = []
 
+    // Parse each sheet — try multiple start rows for complex layouts
     for (const sheetName of wb.SheetNames) {
       const sheet = wb.Sheets[sheetName]
-      const rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false })
-      if (!rows.length) continue
+      const allTables = extractAllTables(sheet)
 
-      // Try multiple start rows for complex sheets with decorative headers
-      let bestRows = rows
-      let bestHeaders = Object.keys(rows[0])
-      const dataKeywords = ['csm', 'client', 'nom', 'name', 'arr', 'mrr', 'ca', 'health', 'santé',
-        'nps', 'churn', 'task', 'tâche', 'phase', 'séniorité', 'contact', 'email',
-        'company', 'entreprise', 'revenue', 'score', 'status', 'statut', 'date']
+      for (const rows of allTables) {
+        if (!rows.length) continue
+        const headers = Object.keys(rows[0])
+        const headersLower = headers.map(h => h.toLowerCase().trim())
+        const key = sheetName + (allTables.length > 1 ? `_${allTables.indexOf(rows)}` : '')
+        rawData[key] = rows
 
-      const hasDataHeaders = bestHeaders.some(h => dataKeywords.some(k => h.toLowerCase().includes(k)))
+        const sheetLower = sheetName.toLowerCase()
 
-      if (!hasDataHeaders) {
-        const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1')
-        for (let startRow = 1; startRow <= Math.min(range.e.r, 15); startRow++) {
-          const subRows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false, range: startRow })
-          if (!subRows.length) continue
-          const subHeaders = Object.keys(subRows[0])
-          if (subHeaders.some(h => dataKeywords.some(k => h.toLowerCase().includes(k)))) {
-            bestRows = subRows
-            bestHeaders = subHeaders
-            break
+        // --- DETECT & EXTRACT ---
+
+        // 1. Portfolio (client list)
+        if (isPortfolioSheet(sheetLower, headersLower)) {
+          mappedSheets.push({ name: key, module: 'portfolio', confidence: 0.99, columns: guessColumns(headers), previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length, notes: 'Portefeuille client détecté' })
+
+        // 2. CSM Team data → extract KPIs + generate tasks
+        } else if (isCsmSheet(sheetLower, headersLower)) {
+          mappedSheets.push({ name: key, module: 'team', confidence: 0.95, columns: guessColumns(headers), previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length, notes: 'Données équipe CSM' })
+          extractCsmInsights(rows, kpis, tasks, teamData)
+
+        // 3. KPI / Dashboard → extract all numbers
+        } else if (isKpiSheet(sheetLower, headersLower)) {
+          mappedSheets.push({ name: key, module: 'kpis', confidence: 0.95, columns: {}, previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length, notes: 'KPIs extraits' })
+          extractKpisFromRows(rows, kpis)
+
+        // 4. Tasks
+        } else if (isTaskSheet(sheetLower, headersLower)) {
+          mappedSheets.push({ name: key, module: 'tasks', confidence: 0.9, columns: guessColumns(headers), previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length, notes: 'Tâches détectées' })
+
+        // 5. Roadmap
+        } else if (isRoadmapSheet(sheetLower, headersLower)) {
+          mappedSheets.push({ name: key, module: 'roadmap', confidence: 0.9, columns: guessColumns(headers), previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length, notes: 'Roadmap détectée' })
+
+        // 6. Auto-detect: scan ALL cells for KPI-like values
+        } else {
+          extractKpisFromRows(rows, kpis)
+          // If it has name-like columns + numbers, treat as portfolio
+          const auto = autoDetectModule(rows, headersLower)
+          if (auto !== 'skip') {
+            mappedSheets.push({ name: key, module: auto, confidence: 0.6, columns: guessColumns(headers), previewHeaders: headers, previewRows: rows.slice(0, 5), totalRows: rows.length, notes: 'Auto-détecté' })
           }
         }
       }
-
-      rawData[sheetName] = bestRows
-      sheets.push({
-        name: sheetName,
-        headers: bestHeaders,
-        sampleRows: bestRows.slice(0, 10),
-        totalRows: bestRows.length,
-      })
     }
+
+    // --- Generate summary ---
+    let summary = ''
+    if (kpis.total_arr) summary += `CA Total: ${Number(kpis.total_arr).toLocaleString()}€. `
+    if (kpis.avg_health) summary += `Health moyen: ${kpis.avg_health}/100. `
+    if (kpis.nps) summary += `NPS: ${kpis.nps}. `
+    if (tasks.length) summary += `${tasks.length} actions prioritaires générées. `
+    const portfolioCount = mappedSheets.filter(s => s.module === 'portfolio').reduce((s, sh) => s + sh.totalRows, 0)
+    if (portfolioCount) summary += `${portfolioCount} comptes clients détectés.`
 
     allSheetData.value = rawData
+    aiMapping.value = mappedSheets
+    computedKpis.value = Object.keys(kpis).length ? kpis : {}
+    generatedTasks.value = tasks
+    aiSummary.value = summary || 'Fichier analysé. Vérifiez le mapping ci-dessous avant d\'importer.'
 
-    if (!sheets.length) {
-      error.value = t('smartImportNoData')
-      step.value = 'upload'
-      return
-    }
-
-    // 3. Send to AI for analysis
-    analysisStatus.value = t('smartImportAnalyzing')
-
-    try {
-      const { data } = await smartImportApi.analyze(sheets)
-
-      if (data.sheets && Array.isArray(data.sheets)) {
-        aiMapping.value = data.sheets.map(s => ({
-          ...s,
-          previewHeaders: Object.keys(rawData[s.name]?.[0] || {}),
-          previewRows: (rawData[s.name] || []).slice(0, 5),
-          totalRows: (rawData[s.name] || []).length,
-        }))
-      }
-      if (data.summary) aiSummary.value = data.summary
-      if (data.generated_tasks) generatedTasks.value = data.generated_tasks
-      if (data.computed_kpis) computedKpis.value = data.computed_kpis
-    } catch (aiErr) {
-      // AI failed — fall back to heuristic mapping
-      console.warn('AI analysis failed, using heuristics:', aiErr)
-      aiMapping.value = sheets.map(s => ({
-        name: s.name,
-        module: guessModule(s.name, s.headers),
-        confidence: 0.5,
-        columns: guessColumns(s.headers),
-        notes: 'Mapped by heuristics (AI unavailable)',
-        previewHeaders: s.headers,
-        previewRows: (rawData[s.name] || []).slice(0, 5),
-        totalRows: s.totalRows,
-      }))
-    }
+    // Try AI enrichment in background (non-blocking)
+    tryAiEnrichment(wb.SheetNames, rawData)
 
     step.value = 'preview'
   } catch (err) {
@@ -344,18 +336,118 @@ async function processFile(file) {
   }
 }
 
-// --- Fallback heuristic mapping (when AI is unavailable) ---
-function guessModule(name, headers) {
-  const n = name.toLowerCase()
-  const h = headers.map(x => x.toLowerCase())
-  if (['portefeuille', 'portfolio', 'client', 'account', 'compte'].some(k => n.includes(k))) return 'portfolio'
-  if (['csm', 'équipe', 'equipe', 'team', 'profil'].some(k => n.includes(k))) return 'team'
-  if (['kpi', 'dashboard', 'synthese', 'summary'].some(k => n.includes(k))) return 'kpis'
-  if (['task', 'tâche', 'todo', 'action'].some(k => n.includes(k))) return 'tasks'
-  if (['roadmap', 'plan', 'jalon', 'milestone'].some(k => n.includes(k))) return 'roadmap'
-  if (h.some(x => x.includes('client') || x.includes('arr') || x.includes('ca '))) return 'portfolio'
-  if (h.some(x => x === 'csm' && h.some(y => y.includes('churn')))) return 'team'
-  return 'skip'
+// --- AI enrichment (bonus, non-blocking) ---
+async function tryAiEnrichment(sheetNames, rawData) {
+  try {
+    const sheets = sheetNames.map(name => ({
+      name,
+      headers: Object.keys((rawData[name] || rawData[name + '_0'])?.[0] || {}),
+      sampleRows: (rawData[name] || rawData[name + '_0'] || []).slice(0, 10),
+      totalRows: (rawData[name] || rawData[name + '_0'] || []).length,
+    })).filter(s => s.headers.length > 0)
+
+    const { data } = await smartImportApi.analyze(sheets)
+    // Merge AI insights with existing data
+    if (data.generated_tasks?.length) {
+      const existing = generatedTasks.value.map(t => t.title)
+      const newTasks = data.generated_tasks.filter(t => !existing.includes(t.title))
+      generatedTasks.value.push(...newTasks)
+    }
+    if (data.computed_kpis) {
+      for (const [k, v] of Object.entries(data.computed_kpis)) {
+        if (v && !computedKpis.value[k]) computedKpis.value[k] = v
+      }
+    }
+    if (data.summary && data.summary.length > aiSummary.value.length) {
+      aiSummary.value = data.summary
+    }
+  } catch { /* AI failed — heuristic results are already displayed */ }
+}
+
+// --- KPI extraction from any sheet ---
+function extractKpisFromRows(rows, kpis) {
+  for (const row of rows) {
+    for (const [key, val] of Object.entries(row)) {
+      const k = key.toLowerCase().trim()
+      const v = parseNum(val)
+      if (!v && v !== 0) continue
+
+      // Match KPI patterns
+      if ((k.includes('total') && k.includes('client')) || k.includes('nombre de client')) kpis.total_clients = v
+      if ((k.includes('ca total') || k.includes('arr total') || k === 'ca total portefeuille') && v > 1000) kpis.total_arr = v
+      if (k.includes('health') && k.includes('moy')) { kpis.avg_health = v > 10 ? v : Math.round(v * 10) }
+      if (k.includes('nps') && k.includes('moy')) kpis.nps = v
+      if (k.includes('nps') && !k.includes('moy') && v > 0 && v < 100 && !kpis.nps) kpis.nps = v
+      if (k.includes('churn') && !k.includes('ca')) kpis.churn_rate = v
+      if ((k.includes('ca') && k.includes('risque')) || k.includes('at risk')) kpis.at_risk_revenue = v
+      if (k.includes('adoption') || k.includes('taux adoption')) kpis.adoption_rate = v
+      if (k.includes('csat')) kpis.csat = v
+      if (k.includes('mrr') && v > 100 && !kpis.mrr) kpis.mrr = v
+
+      // Also check VALUE cells: if the key is a label and val is a number
+      const valStr = String(val).toLowerCase()
+      if (valStr.includes('total client')) kpis.total_clients = parseNum(row[Object.keys(row).find(rk => rk !== key)] || '')
+    }
+  }
+}
+
+// --- CSM insights extraction ---
+function extractCsmInsights(rows, kpis, tasks, teamData) {
+  let totalArr = 0, totalHealth = 0, count = 0
+
+  for (const row of rows) {
+    const csm = findCol(row, 'csm', 'nom', 'name') || ''
+    if (!csm || typeof csm !== 'string' || csm.length < 3) continue
+
+    const arr = parseNum(findCol(row, 'ca géré', 'ca gere', 'ca', 'arr', 'revenue'))
+    const health = parseNum(findCol(row, 'health', 'h.score', 'santé', 'score'))
+    const healthNorm = health > 10 ? health : Math.round(health * 10)
+    const churn = parseNum(findCol(row, 'churn', 'attrition'))
+    const critical = parseNum(findCol(row, 'critique', 'critical'))
+    const clients = parseNum(findCol(row, 'clients', 'nombre', 'comptes'))
+    const seniority = String(findCol(row, 'séniorité', 'seniorite', 'seniority', 'ancienneté', 'expérience') || '')
+
+    if (arr > 0) totalArr += arr
+    if (healthNorm > 0) { totalHealth += healthNorm; count++ }
+
+    teamData.push({ name: csm, arr, health: healthNorm, churn, critical, clients, seniority })
+
+    // Generate tasks for at-risk CSMs
+    if (churn > 35) {
+      tasks.push({
+        title: `⚠️ Review portefeuille ${csm} — churn ${churn}%`,
+        note: `${clients} clients, ${critical} critiques, health ${healthNorm}/100. Churn au-dessus du seuil de 35%.`,
+        quadrant: 'q1', color: 'red', account: ''
+      })
+    }
+    if (critical > 50) {
+      tasks.push({
+        title: `🔥 Plan d'action urgent — ${csm} a ${critical} comptes critiques`,
+        note: `CA géré: ${arr ? arr.toLocaleString() : '?'}€. Intervention prioritaire nécessaire.`,
+        quadrant: 'q1', color: 'red', account: ''
+      })
+    }
+    if (seniority.toLowerCase().includes('junior') && healthNorm < 60 && healthNorm > 0) {
+      tasks.push({
+        title: `🎯 Coaching ${csm} — junior avec health ${healthNorm}/100`,
+        note: `${seniority}. Accompagnement renforcé recommandé.`,
+        quadrant: 'q2', color: 'orange', account: ''
+      })
+    }
+  }
+
+  if (totalArr > 0) kpis.total_arr = totalArr
+  if (count > 0) kpis.avg_health = Math.round(totalHealth / count)
+
+  // Global tasks
+  const avgChurn = teamData.reduce((s, t) => s + (t.churn || 0), 0) / (teamData.length || 1)
+  if (avgChurn > 40) {
+    tasks.push({
+      title: `📊 Churn moyen équipe ${Math.round(avgChurn)}% — plan de rétention global`,
+      note: `Tous les CSMs ont un churn élevé. Actions transversales nécessaires.`,
+      quadrant: 'q1', color: 'red', account: ''
+    })
+  }
 }
 
 function guessColumns(headers) {
@@ -377,6 +469,87 @@ function guessColumns(headers) {
     else if (hl.includes('nps')) map[h] = 'nps'
   }
   return map
+}
+
+// --- Sheet type detection ---
+function isPortfolioSheet(name, headers) {
+  const nameHits = ['client', 'portfolio', 'portefeuille', 'account', 'compte'].some(k => name.includes(k))
+  const headerHits = headers.some(h => ['client', 'compte', 'account', 'entreprise', 'company', 'nom client', 'id client'].includes(h)) &&
+    headers.some(h => h.includes('arr') || h.includes('mrr') || h.includes('ca') || h.includes('chiffre') || h.includes('revenue') || h.includes('plan'))
+  return nameHits || headerHits
+}
+
+function isKpiSheet(name, headers) {
+  return ['kpi', 'dashboard', 'synthese', 'résumé', 'summary', 'globaux', 'indicateur'].some(k => name.includes(k)) ||
+    headers.some(h => h.includes('total client') || h.includes('ca total') || (h.includes('nps') && h.includes('moy')))
+}
+
+function isTaskSheet(name, headers) {
+  return ['task', 'tâche', 'tache', 'todo', 'action'].some(k => name.includes(k)) ||
+    headers.some(h => ['tâche', 'task', 'action', 'todo'].includes(h))
+}
+
+function isRoadmapSheet(name, headers) {
+  return ['roadmap', 'plan', 'jalons', 'milestone', 'planning projet'].some(k => name.includes(k)) ||
+    headers.some(h => ['phase', 'milestone', 'jalon', 'étape'].includes(h))
+}
+
+function isCsmSheet(name, headers) {
+  return (['csm', 'équipe', 'equipe', 'team', 'vue csm', 'vue par csm', 'profil csm'].some(k => name.includes(k)) ||
+    (headers.some(h => h === 'csm' || h.includes('séniorité') || h.includes('seniorite')) &&
+      headers.some(h => h.includes('client') || h.includes('ca') || h.includes('churn'))))
+}
+
+function autoDetectModule(rows, headers) {
+  const hasName = headers.some(h => ['nom', 'name', 'client', 'entreprise', 'company', 'société'].includes(h))
+  const hasNum = headers.some(h => h.includes('arr') || h.includes('mrr') || h.includes('ca') || h.includes('revenue') || h.includes('health'))
+  if (hasName && hasNum && rows.length > 3) return 'portfolio'
+  if (hasName && rows.length > 1) return 'tasks'
+  return 'skip'
+}
+
+function extractAllTables(sheet) {
+  const rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false })
+  if (!rows.length) return []
+
+  const dataKeywords = ['csm', 'client', 'nom', 'name', 'arr', 'mrr', 'ca', 'health', 'santé',
+    'nps', 'churn', 'séniorité', 'seniorite', 'task', 'tâche', 'phase', 'total',
+    'company', 'entreprise', 'revenue', 'score', 'contact', 'email', 'id client',
+    'plan', 'risque', 'critique', 'neutre', 'sain']
+
+  const firstHeaders = Object.keys(rows[0])
+  const hasData = firstHeaders.some(h => dataKeywords.some(k => h.toLowerCase().includes(k)))
+  if (hasData) return [rows]
+
+  // Try different start rows for sheets with decorative headers
+  const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1')
+  const tables = []
+
+  for (let startRow = 1; startRow <= Math.min(range.e.r, 20); startRow++) {
+    const subRows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false, range: startRow })
+    if (!subRows.length) continue
+    const subHeaders = Object.keys(subRows[0])
+    if (subHeaders.some(h => dataKeywords.some(k => h.toLowerCase().includes(k))) && subRows.length > 1) {
+      tables.push(subRows)
+    }
+  }
+
+  return tables.length ? tables : [rows]
+}
+
+// --- Column value finder ---
+function findCol(row, ...keywords) {
+  for (const key of Object.keys(row)) {
+    const k = key.toLowerCase().trim()
+    if (keywords.some(kw => k.includes(kw))) return row[key]
+  }
+  return ''
+}
+
+function parseNum(v) {
+  if (typeof v === 'number') return v
+  if (!v) return 0
+  return parseFloat(String(v).replace(/[^\d.,-]/g, '').replace(',', '.')) || 0
 }
 
 // --- Apply mapping and import ---
@@ -475,12 +648,6 @@ function applyMapping(row, columns) {
     }
   }
   return result
-}
-
-function parseNum(v) {
-  if (typeof v === 'number') return v
-  if (!v) return 0
-  return parseFloat(String(v).replace(/[^\d.,-]/g, '').replace(',', '.')) || 0
 }
 </script>
 
