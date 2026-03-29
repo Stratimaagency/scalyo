@@ -120,7 +120,13 @@
               </tr>
               <tr v-if="!section.items?.length">
                 <td :colspan="section.columns.length + (section.actions?.length ? 1 : 0)" style="text-align: center; color: var(--muted); padding: 20px;">
-                  Aucune donnée
+                  <div>Aucune donnée pour le moment</div>
+                  <div style="font-size: 12px; margin-top: 6px;">
+                    {{ getEmptyHint(section.key) }}
+                  </div>
+                  <button class="btn btn-secondary" style="margin-top: 10px; font-size: 12px;" @click="doSync">
+                    Synchroniser maintenant
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -148,8 +154,11 @@
     <!-- Action Modal -->
     <AppModal v-if="actionModal" :title="actionModal.title" @close="actionModal = null">
       <div class="id-form">
+        <div v-if="actionModal.loading" style="text-align: center; padding: 20px; color: var(--muted);">
+          Chargement des statuts disponibles...
+        </div>
         <div v-if="actionError" class="id-error" style="margin-bottom: 12px;">{{ actionError }}</div>
-        <template v-for="field in actionModal.fields" :key="field.key">
+        <template v-if="!actionModal.loading" v-for="field in actionModal.fields" :key="field.key">
           <label class="id-form-label">{{ field.label }}</label>
           <select v-if="field.type === 'select'" v-model="actionForm[field.key]" class="id-form-input">
             <option value="">-- Choisir --</option>
@@ -158,7 +167,7 @@
           <textarea v-else-if="field.type === 'textarea'" v-model="actionForm[field.key]" class="id-form-input" rows="3" :placeholder="field.placeholder || ''"></textarea>
           <input v-else v-model="actionForm[field.key]" :type="field.type || 'text'" class="id-form-input" :placeholder="field.placeholder || ''" />
         </template>
-        <div style="display: flex; gap: 8px; margin-top: 16px;">
+        <div v-if="!actionModal.loading" style="display: flex; gap: 8px; margin-top: 16px;">
           <button class="btn btn-primary" style="flex: 1;" @click="submitAction" :disabled="submitting">
             {{ submitting ? '...' : actionModal.submitLabel || 'Créer' }}
           </button>
@@ -192,6 +201,35 @@ const actionModal = ref(null)
 const actionForm = reactive({})
 const actionError = ref('')
 const submitting = ref(false)
+const loadingTransitions = ref(false)
+
+// Transforme les erreurs techniques en messages compréhensibles
+function friendlyError(err) {
+  const raw = err.response?.data?.error || err.message || ''
+  const lower = raw.toLowerCase()
+  // Erreurs réseau
+  if (err.code === 'ERR_NETWORK' || lower.includes('failed to fetch') || lower.includes('network'))
+    return 'Problème de connexion internet. Vérifiez votre réseau et réessayez.'
+  // Token/clé invalide ou expiré
+  if (lower.includes('401') || lower.includes('unauthorized') || lower.includes('invalid') || lower.includes('expired') || lower.includes('invalide'))
+    return `Votre clé d'accès ${integDef.value?.name || ''} est invalide ou expirée. Allez dans Intégrations → Modifier pour la renouveler.`
+  // Accès refusé
+  if (lower.includes('403') || lower.includes('forbidden'))
+    return `Accès refusé par ${integDef.value?.name || 'le service'}. Vérifiez les permissions de votre clé d'accès.`
+  // Ressource non trouvée
+  if (lower.includes('404') || lower.includes('not found'))
+    return `La ressource demandée n'existe pas ou plus dans ${integDef.value?.name || 'le service'}.`
+  // Erreur serveur externe
+  if (lower.includes('500') || lower.includes('502') || lower.includes('503') || lower.includes('server'))
+    return `${integDef.value?.name || 'Le service'} est temporairement indisponible. Réessayez dans quelques minutes.`
+  // Rate limit
+  if (lower.includes('429') || lower.includes('rate') || lower.includes('too many'))
+    return 'Trop de requêtes envoyées. Attendez une minute puis réessayez.'
+  // Message du backend déjà en français (commence par majuscule et contient des accents ou mots français)
+  if (raw && /^[A-ZÀ-Ü]/.test(raw)) return raw
+  // Fallback
+  return raw || 'Une erreur est survenue. Réessayez ou vérifiez votre configuration.'
+}
 
 // Integration definitions (same as IntegrationsView)
 const integrations = {
@@ -216,7 +254,7 @@ async function refreshData() {
     const res = await integrationsApi.fetchData(key.value)
     data.value = res.data || res
   } catch (err) {
-    error.value = err.response?.data?.error || err.message || 'Erreur de chargement'
+    error.value = friendlyError(err)
   } finally {
     loading.value = false
   }
@@ -233,7 +271,7 @@ async function doSync() {
     // Refresh data after sync
     await refreshData()
   } catch (err) {
-    error.value = err.response?.data?.error || err.message || 'Erreur de synchronisation'
+    error.value = friendlyError(err)
   } finally {
     syncing.value = false
   }
@@ -369,7 +407,7 @@ async function completeItem(sectionKey, item) {
     setTimeout(() => { successMsg.value = '' }, 2000)
     await refreshData()
   } catch (err) {
-    error.value = err.response?.data?.error || err.message
+    error.value = friendlyError(err)
   }
 }
 
@@ -378,7 +416,15 @@ async function openUpdateStatusForm(sectionKey, item) {
   for (const k of Object.keys(actionForm)) delete actionForm[k]
 
   if (key.value === 'jira') {
-    // Load transitions from Jira API
+    // Show loading modal immediately
+    loadingTransitions.value = true
+    actionModal.value = {
+      title: `Modifier statut — ${item.key || item.summary || ''}`,
+      action: 'updateStatus',
+      fields: [],
+      submitLabel: 'Mettre à jour',
+      loading: true,
+    }
     try {
       const res = await integrationsApi.performAction(key.value, 'getTransitions', { issueId: item.id })
       const transitions = res.data?.transitions || res.transitions || []
@@ -393,7 +439,10 @@ async function openUpdateStatusForm(sectionKey, item) {
         submitLabel: 'Mettre à jour',
       }
     } catch (err) {
-      error.value = err.response?.data?.error || err.message || 'Erreur chargement statuts'
+      actionModal.value = null
+      error.value = friendlyError(err)
+    } finally {
+      loadingTransitions.value = false
     }
   } else if (key.value === 'zendesk') {
     actionForm.ticketId = item.id
@@ -431,7 +480,7 @@ async function submitAction() {
     actionModal.value = null
     await refreshData()
   } catch (err) {
-    actionError.value = err.response?.data?.error || err.message || 'Erreur'
+    actionError.value = friendlyError(err)
   } finally {
     submitting.value = false
   }
@@ -447,6 +496,22 @@ function getActionTitle(action) {
     createPage: 'Nouvelle page Notion',
   }
   return titles[action] || 'Nouvelle entrée'
+}
+
+function getEmptyHint(sectionKey) {
+  const name = integDef.value?.name || 'l\'outil'
+  const hints = {
+    contacts: `Si vous avez des contacts dans ${name}, cliquez "Synchroniser" pour les importer.`,
+    deals: `Si vous avez des deals dans ${name}, cliquez "Synchroniser" pour les importer.`,
+    issues: `Si vous avez des tickets dans ${name}, cliquez "Synchroniser" pour les importer.`,
+    tickets: `Si vous avez des tickets dans ${name}, cliquez "Synchroniser" pour les importer.`,
+    tasks: `Si vous avez des tâches dans ${name}, cliquez "Synchroniser" pour les importer.`,
+    events: `Si vous avez des événements dans ${name}, cliquez "Synchroniser" pour les importer.`,
+    projects: `Les projets apparaîtront après la synchronisation avec ${name}.`,
+    users: `Les utilisateurs apparaîtront après la synchronisation avec ${name}.`,
+    conversations: `Si vous avez des conversations dans ${name}, cliquez "Synchroniser".`,
+  }
+  return hints[sectionKey] || `Cliquez "Synchroniser" pour importer les données depuis ${name}.`
 }
 
 function getStatusClass(colKey, value) {

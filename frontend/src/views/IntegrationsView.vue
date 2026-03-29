@@ -112,7 +112,12 @@
         <div class="integ-config">
           <template v-for="field in modal.fields" :key="field.key">
             <label class="integ-label">{{ field.label }}</label>
+            <div v-if="field.type === 'password' && isEditing && configForm[field.key]" class="integ-saved-token">
+              <span style="flex: 1;">Clé enregistrée ({{ configForm[field.key].slice(0, 6) }}...)</span>
+              <button type="button" class="integ-change-btn" @click="configForm[field.key] = ''">Modifier</button>
+            </div>
             <input
+              v-else
               v-model="configForm[field.key]"
               :type="field.type || 'text'"
               class="integ-input"
@@ -198,7 +203,7 @@ const integrations = [
       { key: 'apiKey', label: 'Token API Zendesk', type: 'password', placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
         hint: '1. Ouvrez votre Zendesk → Admin Center (roue dentée)\n2. Allez dans <a href="https://support.zendesk.com/hc/en-us/articles/4408889192858" target="_blank">Apps et intégrations → API Zendesk</a>\n3. Activez "Accès par token"\n4. Cliquez "Ajouter un token API" → Copiez-le ici' },
       { key: 'domain', label: 'Sous-domaine Zendesk', type: 'text', placeholder: 'votre-entreprise',
-        hint: 'C\'est le début de votre adresse : <strong>votre-entreprise</strong>.zendesk.com' },
+        hint: 'Regardez votre URL Zendesk : si c\'est <strong>acme</strong>.zendesk.com, entrez <strong>acme</strong>.\nN\'entrez que le mot avant ".zendesk.com".' },
     ]},
   { key: 'jira', name: 'Jira', icon: '🔷', color: '#0052CC', available: true,
     desc: 'Importe vos tickets et tâches dans le Task Board.',
@@ -207,7 +212,7 @@ const integrations = [
       { key: 'apiKey', label: 'Token API Atlassian', type: 'password', placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxx',
         hint: '1. Ouvrez <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">id.atlassian.com → Tokens API</a>\n2. Cliquez "Créer un token API"\n3. Nom : Scalyo → Créer\n4. Copiez le token et collez-le ici' },
       { key: 'domain', label: 'Sous-domaine Jira', type: 'text', placeholder: 'votre-entreprise',
-        hint: 'C\'est le début de votre adresse : <strong>votre-entreprise</strong>.atlassian.net' },
+        hint: 'Regardez votre URL Jira : si c\'est <strong>acme</strong>.atlassian.net, entrez <strong>acme</strong>.\nN\'entrez que le mot avant ".atlassian.net".' },
     ]},
 
   // Productivite — synchronisent les taches
@@ -238,19 +243,40 @@ const integrations = [
     fields: [
       { key: 'webhookUrl', label: 'Lien de notification Slack', type: 'url', placeholder: 'https://hooks.slack.com/services/...',
         hint: '1. Ouvrez <a href="https://api.slack.com/apps" target="_blank">api.slack.com/apps</a>\n2. Cliquez "Create New App" → "From scratch" → Nom : Scalyo\n3. Menu gauche : "Incoming Webhooks" → Activez-le\n4. Cliquez "Add New Webhook to Workspace" → Choisissez un canal (ex: #alertes)\n5. Copiez le "Webhook URL" et collez-le ici' },
-      { key: 'channel', label: 'Nom du canal (optionnel)', type: 'text', placeholder: '#alertes-clients', optional: true },
+      { key: 'channel', label: 'Nom du canal (optionnel)', type: 'text', placeholder: '#alertes-clients', optional: true,
+        hint: 'Laissez vide pour utiliser le canal par défaut du webhook.' },
     ]},
   { key: 'teams', name: 'Microsoft Teams', icon: '🟦', color: '#5B5FC7', available: true,
     desc: 'Recevez des alertes quand un compte client est en danger.',
     fields: [
       { key: 'webhookUrl', label: 'Lien de notification Teams', type: 'url', placeholder: 'https://...webhook.office.com/...',
         hint: '1. Dans Teams, faites un clic droit sur un canal\n2. Cliquez "Connecteurs" (ou "Workflows")\n3. Cherchez "Incoming Webhook" → Configurer\n4. Nom : Scalyo → Créer\n5. Copiez le lien webhook et collez-le ici' },
-      { key: 'channel', label: 'Nom du canal (optionnel)', type: 'text', placeholder: '#alertes-clients', optional: true },
+      { key: 'channel', label: 'Nom du canal (optionnel)', type: 'text', placeholder: '#alertes-clients', optional: true,
+        hint: 'Laissez vide pour utiliser le canal par défaut du webhook.' },
     ]},
 ]
 
 const connectedList = computed(() => integrations.filter(i => connectedKeys.value.has(i.key)))
 const availableList = computed(() => integrations.filter(i => i.available && !connectedKeys.value.has(i.key)))
+const isEditing = computed(() => modal.value && connectedKeys.value.has(modal.value.key))
+
+// Transforme les erreurs techniques en messages compréhensibles
+function friendlyError(err) {
+  const raw = err.response?.data?.error || err.message || ''
+  const lower = raw.toLowerCase()
+  if (err.code === 'ERR_NETWORK' || lower.includes('failed to fetch') || lower.includes('network'))
+    return 'Problème de connexion internet. Vérifiez votre réseau et réessayez.'
+  if (lower.includes('401') || lower.includes('unauthorized') || lower.includes('invalid') || lower.includes('expired') || lower.includes('invalide'))
+    return `Clé d'accès invalide ou expirée. Vérifiez-la et réessayez.`
+  if (lower.includes('403') || lower.includes('forbidden'))
+    return 'Accès refusé. Vérifiez les permissions de votre clé d\'accès.'
+  if (lower.includes('500') || lower.includes('502') || lower.includes('503') || lower.includes('server'))
+    return 'Le service est temporairement indisponible. Réessayez dans quelques minutes.'
+  if (lower.includes('429') || lower.includes('rate') || lower.includes('too many'))
+    return 'Trop de requêtes. Attendez une minute puis réessayez.'
+  if (raw && /^[A-ZÀ-Ü]/.test(raw)) return raw
+  return raw || 'Une erreur est survenue. Réessayez ou vérifiez votre configuration.'
+}
 
 function resetForm() {
   Object.assign(configForm, { apiKey: '', email: '', domain: '', webhookUrl: '', channel: '' })
@@ -288,7 +314,7 @@ async function loadConnectedIntegrations() {
     connectedConfigs.value = configs
     syncStatus.value = syncs
   } catch (err) {
-    loadError.value = err.response?.data?.error || err.message || 'Erreur de chargement'
+    loadError.value = friendlyError(err)
   }
 }
 
@@ -331,18 +357,18 @@ async function saveConnection() {
         const syncData = syncRes.data || syncRes
         syncStatus.value[integKey] = { syncStatus: 'success', lastSyncAt: new Date().toISOString(), syncDetails: syncData }
       } catch (syncErr) {
-        const msg = syncErr.response?.data?.error || syncErr.message || 'Sync échouée'
+        const msg = friendlyError(syncErr)
         syncStatus.value[integKey] = { syncStatus: 'error', lastSyncAt: new Date().toISOString(), syncDetails: { error: msg } }
       }
     } catch (testErr) {
-      const msg = testErr.response?.data?.error || testErr.message || 'Test échoué'
+      const msg = friendlyError(testErr)
       syncStatus.value[integKey] = { syncStatus: 'error', lastSyncAt: new Date().toISOString(), syncDetails: { error: msg } }
     }
 
     connectSuccess.value = true
     setTimeout(() => { modal.value = null }, 800)
   } catch (err) {
-    connectError.value = err.response?.data?.error || err.message || 'Erreur'
+    connectError.value = friendlyError(err)
   } finally {
     saving.value = false
   }
@@ -362,7 +388,7 @@ async function disconnectIntegration(integ) {
     delete connectedConfigs.value[integ.key]
     delete syncStatus.value[integ.key]
   } catch (err) {
-    loadError.value = err.response?.data?.error || err.message || 'Erreur'
+    loadError.value = friendlyError(err)
   }
 }
 
@@ -385,7 +411,7 @@ async function syncIntegration(integ) {
     const data = res.data || res
     syncStatus.value[integ.key] = { syncStatus: 'success', lastSyncAt: new Date().toISOString(), syncDetails: data }
   } catch (err) {
-    const msg = err.response?.data?.error || err.message || 'Erreur de synchronisation'
+    const msg = friendlyError(err)
     syncStatus.value[integ.key] = { syncStatus: 'error', lastSyncAt: new Date().toISOString(), syncDetails: { error: msg } }
   } finally {
     syncing.value = null
@@ -510,6 +536,19 @@ onMounted(() => {
   cursor: pointer; transition: all 0.15s;
 }
 .integ-disconnect-btn:hover { background: var(--redBg, #fef2f2); border-color: var(--red); }
+
+.integ-saved-token {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-radius: 8px;
+  background: var(--greenBg, #f0fdf4); border: 1px solid var(--greenBorder, #bbf7d0);
+  color: var(--green); font-size: 13px; font-weight: 600;
+}
+.integ-change-btn {
+  background: none; border: 1px solid var(--border); border-radius: 6px;
+  padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer;
+  color: var(--muted); transition: all 0.15s;
+}
+.integ-change-btn:hover { border-color: var(--teal); color: var(--teal); }
 
 @media (max-width: 768px) {
   .integ-grid { grid-template-columns: 1fr; }
