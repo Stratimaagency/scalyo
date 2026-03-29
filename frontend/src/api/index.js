@@ -81,7 +81,8 @@ export const coachApi = {
 
 // Smart Import
 export const smartImportApi = {
-  execute: (data) => api.post('/import/smart/', data),
+  analyze: (sheets) => api.post('/import/smart/analyze', { sheets }),
+  execute: (data) => api.post('/import/smart/execute', data),
 }
 
 // Quotes

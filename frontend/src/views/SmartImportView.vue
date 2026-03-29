@@ -21,106 +21,107 @@
       </label>
     </div>
 
-    <!-- Step 2: Analyzing -->
+    <!-- Step 2: AI Analyzing -->
     <div v-if="step === 'analyzing'" class="card" style="padding: 40px; text-align: center;">
       <div class="spinner" style="margin: 0 auto 16px;"></div>
       <h4 style="font-weight: 700;">{{ t('smartImportAnalyzing') }}</h4>
-      <p style="font-size: 13px; color: var(--muted);">{{ t('smartImportReading') }}</p>
+      <p style="font-size: 13px; color: var(--muted);">{{ analysisStatus }}</p>
     </div>
 
     <!-- Step 3: Preview -->
     <div v-if="step === 'preview'">
+      <!-- Summary cards -->
       <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-        <div class="card" style="padding: 14px 20px; flex: 1; min-width: 140px; text-align: center;">
-          <div style="font-size: 22px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">{{ parsed.portfolio.length }}</div>
-          <div style="font-size: 11px; color: var(--muted);">{{ t('portfolio') }}</div>
-        </div>
-        <div class="card" style="padding: 14px 20px; flex: 1; min-width: 140px; text-align: center;">
-          <div style="font-size: 22px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">{{ parsed.kpis ? '1' : '0' }}</div>
-          <div style="font-size: 11px; color: var(--muted);">KPIs</div>
-        </div>
-        <div class="card" style="padding: 14px 20px; flex: 1; min-width: 140px; text-align: center;">
-          <div style="font-size: 22px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">{{ parsed.tasks.length }}</div>
-          <div style="font-size: 11px; color: var(--muted);">{{ t('tasks') }}</div>
-        </div>
-        <div class="card" style="padding: 14px 20px; flex: 1; min-width: 140px; text-align: center;">
-          <div style="font-size: 22px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">{{ parsed.roadmap.length }}</div>
-          <div style="font-size: 11px; color: var(--muted);">{{ t('roadmap') }}</div>
-        </div>
-        <div class="card" style="padding: 14px 20px; flex: 1; min-width: 140px; text-align: center;">
-          <div style="font-size: 22px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">{{ sheetsFound }}</div>
-          <div style="font-size: 11px; color: var(--muted);">{{ t('smartImportSheets') }}</div>
+        <div v-for="mod in summaryCards" :key="mod.key" class="card" style="padding: 14px 20px; flex: 1; min-width: 120px; text-align: center;">
+          <div style="font-size: 22px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">{{ mod.count }}</div>
+          <div style="font-size: 11px; color: var(--muted);">{{ mod.label }}</div>
         </div>
       </div>
 
-      <!-- Portfolio preview -->
-      <div v-if="parsed.portfolio.length" class="card" style="padding: 16px; margin-bottom: 12px;">
-        <h4 style="font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-          <ScalyoIcon name="briefcase" :size="16" /> {{ t('portfolio') }} ({{ parsed.portfolio.length }})
-        </h4>
-        <div style="overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+      <!-- AI mapping details -->
+      <div v-for="sheet in aiMapping" :key="sheet.name" class="card" style="padding: 16px; margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <h4 style="font-weight: 700; display: flex; align-items: center; gap: 8px;">
+            <span>{{ moduleIcon(sheet.module) }}</span>
+            {{ sheet.name }}
+            <span style="font-size: 11px; padding: 2px 8px; border-radius: 6px; font-weight: 600;"
+              :style="{ background: 'var(--tealBg)', color: 'var(--teal)' }">
+              {{ moduleLabel(sheet.module) }} ({{ Math.round((sheet.confidence || 0) * 100) }}%)
+            </span>
+          </h4>
+          <select v-model="sheet.module" style="font-size: 12px; padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text);">
+            <option value="portfolio">{{ t('portfolio') }}</option>
+            <option value="kpis">KPIs</option>
+            <option value="tasks">{{ t('tasks') }}</option>
+            <option value="roadmap">{{ t('roadmap') }}</option>
+            <option value="team">Team</option>
+            <option value="skip">{{ t('smartImportSkip') }}</option>
+          </select>
+        </div>
+        <div v-if="sheet.notes" style="font-size: 12px; color: var(--muted); margin-bottom: 8px;">{{ sheet.notes }}</div>
+        <!-- Data preview table -->
+        <div v-if="sheet.previewRows && sheet.previewRows.length && sheet.module !== 'skip'" style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
             <thead>
               <tr style="border-bottom: 1px solid var(--border);">
-                <th style="text-align: left; padding: 6px 8px; color: var(--muted);">{{ t('name') }}</th>
-                <th style="text-align: left; padding: 6px 8px; color: var(--muted);">CSM</th>
-                <th style="text-align: right; padding: 6px 8px; color: var(--muted);">ARR</th>
-                <th style="text-align: center; padding: 6px 8px; color: var(--muted);">{{ t('health') }}</th>
-                <th style="text-align: center; padding: 6px 8px; color: var(--muted);">{{ t('smartImportRisk') }}</th>
+                <th v-for="col in sheet.previewHeaders" :key="col" style="text-align: left; padding: 4px 6px; color: var(--muted); white-space: nowrap;">
+                  {{ col }}
+                  <span v-if="sheet.columns[col]" style="color: var(--teal); font-size: 9px; display: block;">→ {{ sheet.columns[col] }}</span>
+                </th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(acc, i) in parsed.portfolio.slice(0, 20)" :key="i" style="border-bottom: 1px solid var(--border);">
-                <td style="padding: 6px 8px; font-weight: 600;">{{ acc.name }}</td>
-                <td style="padding: 6px 8px;">{{ acc.csm || '—' }}</td>
-                <td style="padding: 6px 8px; text-align: right; font-family: 'JetBrains Mono', monospace;">{{ acc.arr ? Number(acc.arr).toLocaleString() : '—' }}</td>
-                <td style="padding: 6px 8px; text-align: center;">{{ acc.health ?? '—' }}</td>
-                <td style="padding: 6px 8px; text-align: center;">
-                  <span :style="{ color: acc.risk === 'critical' ? 'var(--red)' : acc.risk === 'watch' ? '#f59e0b' : 'var(--green)' }">{{ acc.risk }}</span>
+              <tr v-for="(row, i) in sheet.previewRows.slice(0, 5)" :key="i" style="border-bottom: 1px solid var(--border);">
+                <td v-for="col in sheet.previewHeaders" :key="col" style="padding: 4px 6px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  {{ row[col] ?? '—' }}
                 </td>
               </tr>
             </tbody>
           </table>
-          <p v-if="parsed.portfolio.length > 20" style="font-size: 11px; color: var(--muted); margin-top: 8px;">+{{ parsed.portfolio.length - 20 }} {{ t('more') }}...</p>
+          <p v-if="sheet.totalRows > 5" style="font-size: 11px; color: var(--muted); margin-top: 6px;">+{{ sheet.totalRows - 5 }} {{ t('more') }}...</p>
         </div>
       </div>
 
-      <!-- KPIs preview -->
-      <div v-if="parsed.kpis" class="card" style="padding: 16px; margin-bottom: 12px;">
-        <h4 style="font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-          <ScalyoIcon name="chart-up" :size="16" /> KPIs
+      <!-- AI Summary -->
+      <div v-if="aiSummary" class="card" style="padding: 16px; margin-bottom: 12px; border-left: 3px solid var(--teal);">
+        <h4 style="font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+          🧠 Analyse IA
         </h4>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;">
-          <div v-for="(val, key) in parsed.kpis" :key="key" style="background: var(--bg); border-radius: 8px; padding: 10px; text-align: center;">
-            <div style="font-size: 16px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--teal);">{{ val }}</div>
-            <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">{{ key }}</div>
+        <p style="font-size: 13px; color: var(--muted); line-height: 1.6;">{{ aiSummary }}</p>
+      </div>
+
+      <!-- AI-generated tasks -->
+      <div v-if="generatedTasks.length" class="card" style="padding: 16px; margin-bottom: 12px;">
+        <h4 style="font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          ⚡ {{ t('smartImportGeneratedTasks') }} ({{ generatedTasks.length }})
+        </h4>
+        <div v-for="(task, i) in generatedTasks" :key="i"
+          style="display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border);">
+          <span style="width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;"
+            :style="{ background: task.color === 'red' ? 'var(--red)' : task.color === 'orange' ? '#f59e0b' : 'var(--teal)' }"></span>
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-size: 13px; font-weight: 600;">{{ task.title }}</div>
+            <div v-if="task.note" style="font-size: 11px; color: var(--muted);">{{ task.note }}</div>
+          </div>
+          <button @click="generatedTasks.splice(i, 1)" style="background: none; border: none; cursor: pointer; color: var(--muted); font-size: 14px;" title="Retirer">✕</button>
+        </div>
+      </div>
+
+      <!-- Computed KPIs -->
+      <div v-if="computedKpis && Object.keys(computedKpis).length" class="card" style="padding: 16px; margin-bottom: 12px;">
+        <h4 style="font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          📊 KPIs
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px;">
+          <div v-for="(val, key) in computedKpis" :key="key" style="background: var(--bg); border-radius: 8px; padding: 10px; text-align: center;">
+            <div style="font-size: 16px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--teal);">{{ formatKpiVal(key, val) }}</div>
+            <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">{{ kpiLabel(key) }}</div>
           </div>
         </div>
       </div>
 
-      <!-- Tasks preview -->
-      <div v-if="parsed.tasks.length" class="card" style="padding: 16px; margin-bottom: 12px;">
-        <h4 style="font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-          <ScalyoIcon name="check-circle" :size="16" /> {{ t('tasks') }} ({{ parsed.tasks.length }})
-        </h4>
-        <div v-for="(task, i) in parsed.tasks.slice(0, 10)" :key="i" style="padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px;">
-          {{ task.title }}
-          <span v-if="task.account" style="color: var(--muted); font-size: 11px;"> — {{ task.account }}</span>
-        </div>
-      </div>
-
-      <!-- Roadmap preview -->
-      <div v-if="parsed.roadmap.length" class="card" style="padding: 16px; margin-bottom: 12px;">
-        <h4 style="font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-          <ScalyoIcon name="map" :size="16" /> {{ t('roadmap') }} ({{ parsed.roadmap.length }})
-        </h4>
-        <div v-for="(item, i) in parsed.roadmap.slice(0, 10)" :key="i" style="padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px;">
-          <strong>{{ item.phase }}:</strong> {{ item.title }}
-        </div>
-      </div>
-
-      <!-- Empty state if nothing detected -->
-      <div v-if="totalParsed === 0" class="card" style="padding: 24px; text-align: center; margin-bottom: 12px;">
+      <!-- Empty state -->
+      <div v-if="totalParsed === 0 && !generatedTasks.length" class="card" style="padding: 24px; text-align: center; margin-bottom: 12px;">
         <div style="font-size: 32px; margin-bottom: 8px;">🤷</div>
         <p style="color: var(--muted); font-size: 13px;">{{ t('smartImportNoData') }}</p>
       </div>
@@ -144,6 +145,9 @@
         {{ importResult.tasks }} {{ t('tasks').toLowerCase() }},
         {{ importResult.roadmap }} {{ t('roadmap').toLowerCase() }}
       </p>
+      <div v-if="importResult.errors && importResult.errors.length" style="margin-bottom: 16px; text-align: left; background: var(--redBg); border-radius: 8px; padding: 12px; font-size: 12px; color: var(--red);">
+        <div v-for="(err, i) in importResult.errors.slice(0, 5)" :key="i">{{ err }}</div>
+      </div>
       <div style="display: flex; gap: 8px; justify-content: center;">
         <router-link :to="{ name: 'portfolio' }" class="btn btn-primary" style="padding: 10px 24px;">{{ t('viewPortfolio') }}</router-link>
         <button class="btn btn-secondary" @click="reset">{{ t('smartImportAnother') }}</button>
@@ -153,6 +157,7 @@
     <!-- Error -->
     <div v-if="error" style="padding: 12px 16px; background: var(--redBg); border: 1px solid var(--redBorder); border-radius: 10px; color: var(--red); font-size: 13px; margin-top: 12px;">
       {{ error }}
+      <button @click="error = ''" style="float: right; background: none; border: none; color: var(--red); cursor: pointer; font-weight: 700;">✕</button>
     </div>
   </div>
 </template>
@@ -166,23 +171,68 @@ import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const { t } = useI18n()
 
-const step = ref('upload') // upload | analyzing | preview | done
+const step = ref('upload')
 const error = ref('')
 const importing = ref(false)
 const dragging = ref(false)
-const sheetsFound = ref(0)
-const parsed = ref({ portfolio: [], kpis: null, tasks: [], roadmap: [] })
+const analysisStatus = ref('')
+const aiMapping = ref([])
+const allSheetData = ref({})
 const importResult = ref({})
+const aiSummary = ref('')
+const generatedTasks = ref([])
+const computedKpis = ref({})
 
-const totalParsed = computed(() =>
-  parsed.value.portfolio.length + (parsed.value.kpis ? 1 : 0) + parsed.value.tasks.length + parsed.value.roadmap.length
-)
+const totalParsed = computed(() => {
+  return aiMapping.value.filter(s => s.module !== 'skip').reduce((sum, s) => sum + (s.totalRows || 0), 0)
+})
+
+const summaryCards = computed(() => {
+  const counts = { portfolio: 0, kpis: 0, tasks: 0, roadmap: 0, team: 0 }
+  for (const s of aiMapping.value) {
+    if (s.module !== 'skip' && counts[s.module] !== undefined) {
+      counts[s.module] += s.totalRows || 0
+    }
+  }
+  return [
+    { key: 'portfolio', label: t('portfolio'), count: counts.portfolio },
+    { key: 'kpis', label: 'KPIs', count: counts.kpis || (counts.team ? 1 : 0) },
+    { key: 'tasks', label: t('tasks'), count: counts.tasks },
+    { key: 'roadmap', label: t('roadmap'), count: counts.roadmap },
+    { key: 'sheets', label: t('smartImportSheets'), count: aiMapping.value.length },
+  ]
+})
+
+function moduleIcon(mod) {
+  const icons = { portfolio: '💼', kpis: '📊', tasks: '✅', roadmap: '🗺️', team: '👥', skip: '⏭️' }
+  return icons[mod] || '📄'
+}
+
+function moduleLabel(mod) {
+  const labels = { portfolio: t('portfolio'), kpis: 'KPIs', tasks: t('tasks'), roadmap: t('roadmap'), team: 'Team', skip: t('smartImportSkip') }
+  return labels[mod] || mod
+}
 
 function reset() {
   step.value = 'upload'
   error.value = ''
-  parsed.value = { portfolio: [], kpis: null, tasks: [], roadmap: [] }
+  aiMapping.value = []
+  allSheetData.value = {}
   importResult.value = {}
+  aiSummary.value = ''
+  generatedTasks.value = []
+  computedKpis.value = {}
+}
+
+function formatKpiVal(key, val) {
+  if (key.includes('arr') || key.includes('mrr')) return Number(val).toLocaleString() + '€'
+  if (key.includes('rate') || key.includes('churn')) return val + '%'
+  return val
+}
+
+function kpiLabel(key) {
+  const labels = { total_arr: 'ARR Total', avg_health: 'Health Moy.', critical_count: 'Critiques', nps: 'NPS', churn_rate: 'Churn', adoption_rate: 'Adoption', mrr: 'MRR', csat: 'CSAT' }
+  return labels[key] || key
 }
 
 function onDrop(e) {
@@ -199,53 +249,94 @@ function onFileSelect(e) {
 async function processFile(file) {
   error.value = ''
   step.value = 'analyzing'
+  analysisStatus.value = t('smartImportReading')
 
   try {
+    // 1. Parse Excel client-side
     const buffer = await file.arrayBuffer()
     const wb = XLSX.read(buffer, { type: 'array', cellFormula: false, cellDates: true })
-    sheetsFound.value = wb.SheetNames.length
 
-    const result = { portfolio: [], kpis: null, tasks: [], roadmap: [] }
-    const seenNames = new Set()
+    // 2. Extract schema for AI analysis
+    const sheets = []
+    const rawData = {}
 
     for (const sheetName of wb.SheetNames) {
       const sheet = wb.Sheets[sheetName]
+      const rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false })
+      if (!rows.length) continue
 
-      // Try multiple parse strategies for complex sheets (stacked tables)
-      const allRows = extractAllTables(sheet)
+      // Try multiple start rows for complex sheets with decorative headers
+      let bestRows = rows
+      let bestHeaders = Object.keys(rows[0])
+      const dataKeywords = ['csm', 'client', 'nom', 'name', 'arr', 'mrr', 'ca', 'health', 'santé',
+        'nps', 'churn', 'task', 'tâche', 'phase', 'séniorité', 'contact', 'email',
+        'company', 'entreprise', 'revenue', 'score', 'status', 'statut', 'date']
 
-      for (const rows of allRows) {
-        if (!rows.length) continue
-        const headers = Object.keys(rows[0]).map(h => h.toLowerCase().trim())
-        const sheetLower = sheetName.toLowerCase()
+      const hasDataHeaders = bestHeaders.some(h => dataKeywords.some(k => h.toLowerCase().includes(k)))
 
-        // Priority: portfolio > csm > kpi > tasks > roadmap > auto
-        if (isPortfolioSheet(sheetLower, headers)) {
-          const items = parsePortfolioRows(rows).filter(a => !seenNames.has(a.name))
-          items.forEach(a => seenNames.add(a.name))
-          result.portfolio.push(...items)
-        } else if (isCsmSheet(sheetLower, headers)) {
-          const csmData = parseCsmRows(rows)
-          if (csmData.kpis) result.kpis = { ...result.kpis, ...csmData.kpis }
-          if (csmData.tasks.length) result.tasks.push(...csmData.tasks)
-        } else if (isKpiSheet(sheetLower, headers)) {
-          result.kpis = { ...result.kpis, ...parseKpiRows(rows) }
-        } else if (isTaskSheet(sheetLower, headers)) {
-          result.tasks.push(...parseTaskRows(rows))
-        } else if (isRoadmapSheet(sheetLower, headers)) {
-          result.roadmap.push(...parseRoadmapRows(rows))
-        } else {
-          const auto = autoDetect(rows, headers)
-          const items = auto.portfolio.filter(a => !seenNames.has(a.name))
-          items.forEach(a => seenNames.add(a.name))
-          result.portfolio.push(...items)
-          if (auto.tasks.length) result.tasks.push(...auto.tasks)
-          if (auto.kpis) result.kpis = { ...result.kpis, ...auto.kpis }
+      if (!hasDataHeaders) {
+        const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1')
+        for (let startRow = 1; startRow <= Math.min(range.e.r, 15); startRow++) {
+          const subRows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false, range: startRow })
+          if (!subRows.length) continue
+          const subHeaders = Object.keys(subRows[0])
+          if (subHeaders.some(h => dataKeywords.some(k => h.toLowerCase().includes(k)))) {
+            bestRows = subRows
+            bestHeaders = subHeaders
+            break
+          }
         }
       }
+
+      rawData[sheetName] = bestRows
+      sheets.push({
+        name: sheetName,
+        headers: bestHeaders,
+        sampleRows: bestRows.slice(0, 10),
+        totalRows: bestRows.length,
+      })
     }
 
-    parsed.value = result
+    allSheetData.value = rawData
+
+    if (!sheets.length) {
+      error.value = t('smartImportNoData')
+      step.value = 'upload'
+      return
+    }
+
+    // 3. Send to AI for analysis
+    analysisStatus.value = t('smartImportAnalyzing')
+
+    try {
+      const { data } = await smartImportApi.analyze(sheets)
+
+      if (data.sheets && Array.isArray(data.sheets)) {
+        aiMapping.value = data.sheets.map(s => ({
+          ...s,
+          previewHeaders: Object.keys(rawData[s.name]?.[0] || {}),
+          previewRows: (rawData[s.name] || []).slice(0, 5),
+          totalRows: (rawData[s.name] || []).length,
+        }))
+      }
+      if (data.summary) aiSummary.value = data.summary
+      if (data.generated_tasks) generatedTasks.value = data.generated_tasks
+      if (data.computed_kpis) computedKpis.value = data.computed_kpis
+    } catch (aiErr) {
+      // AI failed — fall back to heuristic mapping
+      console.warn('AI analysis failed, using heuristics:', aiErr)
+      aiMapping.value = sheets.map(s => ({
+        name: s.name,
+        module: guessModule(s.name, s.headers),
+        confidence: 0.5,
+        columns: guessColumns(s.headers),
+        notes: 'Mapped by heuristics (AI unavailable)',
+        previewHeaders: s.headers,
+        previewRows: (rawData[s.name] || []).slice(0, 5),
+        totalRows: s.totalRows,
+      }))
+    }
+
     step.value = 'preview'
   } catch (err) {
     error.value = err.message || t('errorGeneric')
@@ -253,237 +344,121 @@ async function processFile(file) {
   }
 }
 
-/**
- * Extract multiple tables from a single sheet.
- * Complex Excel files often have stacked tables with headers mid-way.
- * Strategy: parse the full sheet, then look for rows that look like headers
- * and split into sub-tables.
- */
-function extractAllTables(sheet) {
-  // First try: standard parse
-  const rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false })
-  if (!rows.length) return []
+// --- Fallback heuristic mapping (when AI is unavailable) ---
+function guessModule(name, headers) {
+  const n = name.toLowerCase()
+  const h = headers.map(x => x.toLowerCase())
+  if (['portefeuille', 'portfolio', 'client', 'account', 'compte'].some(k => n.includes(k))) return 'portfolio'
+  if (['csm', 'équipe', 'equipe', 'team', 'profil'].some(k => n.includes(k))) return 'team'
+  if (['kpi', 'dashboard', 'synthese', 'summary'].some(k => n.includes(k))) return 'kpis'
+  if (['task', 'tâche', 'todo', 'action'].some(k => n.includes(k))) return 'tasks'
+  if (['roadmap', 'plan', 'jalon', 'milestone'].some(k => n.includes(k))) return 'roadmap'
+  if (h.some(x => x.includes('client') || x.includes('arr') || x.includes('ca '))) return 'portfolio'
+  if (h.some(x => x === 'csm' && h.some(y => y.includes('churn')))) return 'team'
+  return 'skip'
+}
 
-  // Check if first row looks like real data headers or decorative content
-  const firstHeaders = Object.keys(rows[0])
-  const looksLikeData = firstHeaders.some(h => {
+function guessColumns(headers) {
+  const map = {}
+  for (const h of headers) {
     const hl = h.toLowerCase()
-    return ['csm', 'client', 'nom', 'name', 'company', 'entreprise', 'arr', 'mrr',
-      'health', 'santé', 'nps', 'churn', 'task', 'tâche', 'phase'].some(k => hl.includes(k))
-  })
-
-  if (looksLikeData) return [rows]
-
-  // If first headers are decorative, try parsing with different header rows
-  const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1')
-  const tables = []
-
-  for (let startRow = 1; startRow <= Math.min(range.e.r, 20); startRow++) {
-    const subRows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false, range: startRow })
-    if (!subRows.length) continue
-    const subHeaders = Object.keys(subRows[0])
-    const hasRealHeaders = subHeaders.some(h => {
-      const hl = h.toLowerCase()
-      return ['csm', 'client', 'nom', 'name', 'company', 'entreprise', 'arr', 'mrr', 'ca',
-        'health', 'santé', 'h.score', 'nps', 'churn', 'séniorité', 'seniorite',
-        'task', 'tâche', 'phase', 'total'].some(k => hl.includes(k))
-    })
-    if (hasRealHeaders && subRows.length > 1) {
-      tables.push(subRows)
-    }
+    if (['client', 'nom', 'name', 'entreprise', 'company', 'société'].some(k => hl.includes(k))) map[h] = 'name'
+    else if (hl === 'csm' || hl.includes('responsable') || hl.includes('owner')) map[h] = 'csm'
+    else if (hl.includes('arr') || hl.includes('ca géré') || hl.includes('ca gere') || hl.includes('revenue') || hl.includes('chiffre')) map[h] = 'arr'
+    else if (hl.includes('mrr') || hl.includes('mensuel')) map[h] = 'mrr'
+    else if (hl.includes('health') || hl.includes('santé') || hl.includes('h.score') || hl.includes('score')) map[h] = 'health'
+    else if (hl.includes('risque') || hl.includes('risk')) map[h] = 'risk'
+    else if (hl.includes('industri') || hl.includes('secteur')) map[h] = 'industry'
+    else if (hl.includes('contact') || hl.includes('référent')) map[h] = 'contact'
+    else if (hl.includes('email') || hl.includes('mail')) map[h] = 'contact_email'
+    else if (hl.includes('note') || hl.includes('comment')) map[h] = 'notes'
+    else if (hl.includes('renewal') || hl.includes('renouvellement') || hl.includes('échéance')) map[h] = 'renewal'
+    else if (hl.includes('churn') || hl.includes('attrition')) map[h] = 'churn_rate'
+    else if (hl.includes('nps')) map[h] = 'nps'
   }
-
-  return tables.length ? tables : [rows]
+  return map
 }
 
-// --- Sheet type detection ---
-function isPortfolioSheet(name, headers) {
-  const nameHits = ['client', 'portfolio', 'portefeuille', 'account', 'compte'].some(k => name.includes(k))
-  const headerHits = headers.some(h => ['client', 'compte', 'account', 'entreprise', 'company'].includes(h)) &&
-    headers.some(h => h.includes('arr') || h.includes('mrr') || h.includes('ca ') || h.includes('chiffre') || h.includes('revenue'))
-  return nameHits || headerHits
-}
-
-function isKpiSheet(name, headers) {
-  const nameHits = ['kpi', 'dashboard', 'synthese', 'résumé', 'summary', 'globaux'].some(k => name.includes(k))
-  const headerHits = headers.some(h => h.includes('nps') || h.includes('churn') || h.includes('health score'))
-  return nameHits || headerHits
-}
-
-function isTaskSheet(name, headers) {
-  const nameHits = ['task', 'tâche', 'tache', 'todo', 'action'].some(k => name.includes(k))
-  const headerHits = headers.some(h => ['tâche', 'task', 'action', 'todo'].includes(h))
-  return nameHits || headerHits
-}
-
-function isRoadmapSheet(name, headers) {
-  const nameHits = ['roadmap', 'plan', 'jalons', 'milestone'].some(k => name.includes(k))
-  const headerHits = headers.some(h => ['phase', 'milestone', 'jalon', 'étape'].includes(h))
-  return nameHits || headerHits
-}
-
-function isCsmSheet(name, headers) {
-  const nameHits = ['csm', 'équipe', 'equipe', 'team', 'vue csm', 'vue par csm', 'profil'].some(k => name.includes(k))
-  const headerHits = headers.some(h => h === 'csm' || h.includes('séniorité') || h.includes('seniorite') || h.includes('seniority')) &&
-    headers.some(h => h.includes('client') || h.includes('ca') || h.includes('churn') || h.includes('health') || h.includes('score'))
-  return nameHits || headerHits
-}
-
-// --- Row parsers ---
-function findCol(row, ...keywords) {
-  for (const key of Object.keys(row)) {
-    const k = key.toLowerCase().trim()
-    if (keywords.some(kw => k.includes(kw))) return row[key]
-  }
-  return ''
-}
-
-function parseNum(v) {
-  if (typeof v === 'number') return v
-  if (!v) return 0
-  return parseFloat(String(v).replace(/[^\d.,-]/g, '').replace(',', '.')) || 0
-}
-
-function parsePortfolioRows(rows) {
-  return rows.filter(r => findCol(r, 'client', 'compte', 'account', 'entreprise', 'company', 'nom', 'name')).map(r => {
-    const name = findCol(r, 'client', 'compte', 'account', 'entreprise', 'company', 'nom', 'name')
-    if (!name || typeof name !== 'string' || name.length < 2) return null
-    const arr = parseNum(findCol(r, 'arr', 'ca annuel', 'annual revenue', 'ca géré', 'ca gere', 'revenue'))
-    const mrr = parseNum(findCol(r, 'mrr', 'ca mensuel', 'monthly'))
-    const health = parseNum(findCol(r, 'health', 'santé', 'sante', 'h.score', 'score'))
-    const healthNorm = health > 10 ? health : Math.round(health * 10) // Handle 0-10 scale
-    const risk = detectRisk(r, healthNorm)
-    return {
-      name: String(name).trim(),
-      csm: String(findCol(r, 'csm', 'responsable', 'owner', 'manager') || '').trim(),
-      arr: arr || mrr * 12,
-      mrr: mrr || Math.round(arr / 12),
-      health: Math.min(100, Math.max(0, healthNorm)),
-      risk,
-      industry: String(findCol(r, 'industrie', 'industry', 'secteur', 'sector') || '').trim(),
-      contact: String(findCol(r, 'contact', 'interlocuteur', 'référent') || '').trim(),
-      contact_email: String(findCol(r, 'email', 'mail', 'courriel') || '').trim(),
-      notes: String(findCol(r, 'notes', 'commentaire', 'comment', 'remarque') || '').trim(),
-      renewal: String(findCol(r, 'renewal', 'renouvellement', 'échéance', 'echeance') || '').trim(),
-    }
-  }).filter(Boolean)
-}
-
-function detectRisk(row, health) {
-  const riskCol = findCol(row, 'risque', 'risk', 'statut', 'status')
-  if (riskCol) {
-    const r = String(riskCol).toLowerCase()
-    if (r.includes('critic') || r.includes('critique') || r.includes('high') || r.includes('élevé')) return 'critical'
-    if (r.includes('watch') || r.includes('moyen') || r.includes('medium') || r.includes('attention')) return 'watch'
-    return 'low'
-  }
-  if (health <= 40) return 'critical'
-  if (health <= 60) return 'watch'
-  return 'low'
-}
-
-function parseKpiRows(rows) {
-  const kpis = {}
-  for (const row of rows) {
-    for (const [key, val] of Object.entries(row)) {
-      const k = key.toLowerCase().trim()
-      const v = parseNum(val)
-      if (k.includes('nps')) kpis.nps = v
-      if (k.includes('churn') && k.includes('%')) kpis.churn_rate = v
-      if (k.includes('churn') && !k.includes('%')) kpis.churned = v
-      if ((k.includes('ca total') || k.includes('arr total') || k.includes('total arr')) && v > 1000) kpis.total_arr = v
-      if (k.includes('mrr') && v > 100) kpis.mrr = v
-      if (k.includes('health') && k.includes('moy')) kpis.avg_health = v
-      if (k.includes('csat')) kpis.csat = v
-      if (k.includes('adoption') || k.includes('taux')) kpis.renewal_rate = v
-      if (k.includes('ticket') || k.includes('résolu')) kpis.resolved_tickets = v
-    }
-  }
-  return Object.keys(kpis).length ? kpis : null
-}
-
-function parseCsmRows(rows) {
-  const kpis = {}
-  const tasks = []
-  let totalArr = 0
-  let totalHealth = 0
-  let count = 0
-
-  for (const row of rows) {
-    const csm = findCol(row, 'csm', 'nom', 'name')
-    const arr = parseNum(findCol(row, 'ca géré', 'ca gere', 'arr', 'ca', 'revenue'))
-    const health = parseNum(findCol(row, 'health', 'h.score', 'santé', 'score'))
-    const churn = parseNum(findCol(row, 'churn', 'attrition'))
-    const critical = parseNum(findCol(row, 'critique', 'critical'))
-
-    if (arr > 0) totalArr += arr
-    if (health > 0) { totalHealth += (health > 10 ? health : health * 10); count++ }
-
-    // Generate tasks for high-risk CSMs
-    if (critical > 3 || churn > 50) {
-      tasks.push({
-        title: `Review ${csm}'s critical accounts (${critical} critical)`,
-        note: `Churn: ${churn}%, Health: ${health}`,
-        quadrant: 'q1',
-        color: 'red',
-      })
-    }
-  }
-
-  if (totalArr > 0) kpis.total_arr = totalArr
-  if (count > 0) kpis.avg_health = Math.round(totalHealth / count)
-
-  return { kpis: Object.keys(kpis).length ? kpis : null, tasks }
-}
-
-function parseTaskRows(rows) {
-  return rows.map(r => {
-    const title = findCol(r, 'tâche', 'tache', 'task', 'action', 'titre', 'title', 'todo')
-    if (!title) return null
-    return {
-      title: String(title).trim(),
-      note: String(findCol(r, 'note', 'description', 'detail', 'détail') || '').trim(),
-      account: String(findCol(r, 'client', 'compte', 'account') || '').trim(),
-      due: String(findCol(r, 'date', 'échéance', 'echeance', 'due', 'deadline') || '').trim(),
-      quadrant: 'q1',
-      color: 'teal',
-    }
-  }).filter(Boolean)
-}
-
-function parseRoadmapRows(rows) {
-  return rows.map(r => {
-    const title = findCol(r, 'titre', 'title', 'objectif', 'objective', 'action', 'milestone', 'jalon')
-    if (!title) return null
-    return {
-      title: String(title).trim(),
-      phase: String(findCol(r, 'phase', 'étape', 'etape', 'step') || '1').trim(),
-      status: String(findCol(r, 'statut', 'status', 'état', 'etat') || 'pending').trim(),
-      due: String(findCol(r, 'date', 'échéance', 'echeance', 'due') || '').trim(),
-      progress: parseNum(findCol(r, 'progress', 'avancement', '%')),
-      owner: String(findCol(r, 'responsable', 'owner', 'assigné', 'assigned') || '').trim(),
-    }
-  }).filter(Boolean)
-}
-
-function autoDetect(rows, headers) {
-  const result = { portfolio: [], tasks: [], kpis: null }
-  // If rows have name + some numeric → treat as portfolio
-  const hasName = headers.some(h => ['nom', 'name', 'client', 'entreprise', 'company'].includes(h))
-  const hasNum = headers.some(h => h.includes('arr') || h.includes('mrr') || h.includes('ca') || h.includes('revenue') || h.includes('health'))
-  if (hasName && hasNum) {
-    result.portfolio = parsePortfolioRows(rows)
-  } else if (hasName) {
-    result.tasks = parseTaskRows(rows)
-  }
-  return result
-}
-
+// --- Apply mapping and import ---
 async function doImport() {
   importing.value = true
   error.value = ''
+
   try {
-    const { data } = await smartImportApi.execute(parsed.value)
+    const payload = { portfolio: [], kpis: {}, tasks: [], roadmap: [] }
+
+    for (const sheet of aiMapping.value) {
+      if (sheet.module === 'skip') continue
+      const rows = allSheetData.value[sheet.name] || []
+      const cols = sheet.columns || {}
+
+      if (sheet.module === 'portfolio') {
+        for (const row of rows) {
+          const mapped = applyMapping(row, cols)
+          if (mapped.name && String(mapped.name).trim().length >= 2) {
+            // Normalize health
+            let health = parseNum(mapped.health)
+            if (health > 0 && health <= 10) health = Math.round(health * 10)
+            // Normalize risk
+            let risk = String(mapped.risk || '').toLowerCase()
+            if (risk.includes('critic') || risk.includes('critique') || risk.includes('high')) risk = 'critical'
+            else if (risk.includes('watch') || risk.includes('moyen') || risk.includes('medium')) risk = 'medium'
+            else risk = health > 0 && health <= 40 ? 'critical' : health <= 60 ? 'medium' : 'low'
+
+            payload.portfolio.push({
+              name: String(mapped.name).trim(),
+              csm: String(mapped.csm || '').trim(),
+              arr: parseNum(mapped.arr),
+              mrr: parseNum(mapped.mrr),
+              health: Math.min(100, Math.max(0, health || 70)),
+              risk,
+              industry: String(mapped.industry || '').trim(),
+              contact: String(mapped.contact || '').trim(),
+              contact_email: String(mapped.contact_email || '').trim(),
+              notes: String(mapped.notes || '').trim(),
+              renewal: String(mapped.renewal || '').trim(),
+            })
+          }
+        }
+      } else if (sheet.module === 'kpis' || sheet.module === 'team') {
+        for (const row of rows) {
+          const mapped = applyMapping(row, cols)
+          if (mapped.nps) payload.kpis.nps = parseNum(mapped.nps)
+          if (mapped.churn_rate) payload.kpis.churn_rate = parseNum(mapped.churn_rate)
+          if (mapped.total_arr) payload.kpis.total_arr = parseNum(mapped.total_arr)
+          if (mapped.mrr) payload.kpis.mrr = parseNum(mapped.mrr)
+          if (mapped.csat) payload.kpis.csat = parseNum(mapped.csat)
+        }
+      } else if (sheet.module === 'tasks') {
+        for (const row of rows) {
+          const mapped = applyMapping(row, cols)
+          if (mapped.title) payload.tasks.push({ title: mapped.title, note: mapped.note || '', due: mapped.due || '', account: mapped.account || '' })
+        }
+      } else if (sheet.module === 'roadmap') {
+        for (const row of rows) {
+          const mapped = applyMapping(row, cols)
+          if (mapped.title) payload.roadmap.push({ title: mapped.title, phase: mapped.phase || '1', status: mapped.status || 'pending', due: mapped.due || '', progress: parseNum(mapped.progress), owner: mapped.owner || '' })
+        }
+      }
+    }
+
+    // Auto-compute ARR from MRR if missing
+    for (const acc of payload.portfolio) {
+      if (!acc.arr && acc.mrr) acc.arr = acc.mrr * 12
+      if (!acc.mrr && acc.arr) acc.mrr = Math.round(acc.arr / 12)
+    }
+
+    // Add AI-generated tasks
+    if (generatedTasks.value.length) {
+      payload.tasks.push(...generatedTasks.value)
+    }
+
+    // Add AI-computed KPIs
+    if (computedKpis.value && Object.keys(computedKpis.value).length) {
+      payload.kpis = { ...payload.kpis, ...computedKpis.value }
+    }
+
+    const { data } = await smartImportApi.execute(payload)
     importResult.value = data.imported
     step.value = 'done'
   } catch (err) {
@@ -491,24 +466,31 @@ async function doImport() {
   }
   importing.value = false
 }
+
+function applyMapping(row, columns) {
+  const result = {}
+  for (const [excelCol, scaField] of Object.entries(columns)) {
+    if (row[excelCol] !== undefined && row[excelCol] !== '') {
+      result[scaField] = row[excelCol]
+    }
+  }
+  return result
+}
+
+function parseNum(v) {
+  if (typeof v === 'number') return v
+  if (!v) return 0
+  return parseFloat(String(v).replace(/[^\d.,-]/g, '').replace(',', '.')) || 0
+}
 </script>
 
 <style scoped>
 .spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--border);
-  border-top-color: var(--teal);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  width: 32px; height: 32px;
+  border: 3px solid var(--border); border-top-color: var(--teal);
+  border-radius: 50%; animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.drop-zone {
-  border: 2px dashed var(--border);
-  transition: all 0.2s ease;
-}
-.drop-zone.drop-active {
-  border-color: var(--teal);
-  background: rgba(77, 182, 160, 0.05);
-}
+.drop-zone { border: 2px dashed var(--border); transition: all 0.2s ease; }
+.drop-zone.drop-active { border-color: var(--teal); background: rgba(77, 182, 160, 0.05); }
 </style>

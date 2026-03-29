@@ -757,6 +757,8 @@ export default {
   smartImportImporting: 'Importing...',
   smartImportDone: 'Import completed successfully!',
   smartImportAnother: 'Import another file',
+  smartImportSkip: 'Skip',
+  smartImportGeneratedTasks: 'AI-generated tasks',
   smartImportNoData: 'No data detected in this file. Make sure your sheets have headers (Client, CSM, ARR, Health...).',
   // --- i18n fixes ---
   copy: 'copy',
