@@ -186,6 +186,108 @@
           </div>
         </template>
 
+        <!-- 360° tab — All modules linked -->
+        <template v-if="detailTab === '360'">
+          <div v-if="loading360" style="text-align: center; padding: 20px; color: var(--muted); font-size: 13px;">{{ t('loading') }}</div>
+          <div v-else style="padding-top: 4px; padding-bottom: 20px;">
+
+            <!-- KPIs snapshot -->
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">📊 KPIs</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
+                <div style="background: var(--surface); border-radius: 8px; padding: 10px; text-align: center;">
+                  <div style="font-size: 16px; font-weight: 900; font-family: 'JetBrains Mono', monospace; color: var(--teal);">{{ fmtARR(selectedAccount.arr || (selectedAccount.mrr || 0) * 12) }}</div>
+                  <div style="font-size: 9px; color: var(--muted);">ARR</div>
+                </div>
+                <div style="background: var(--surface); border-radius: 8px; padding: 10px; text-align: center;">
+                  <div style="font-size: 16px; font-weight: 900; font-family: 'JetBrains Mono', monospace;" :style="{ color: (selectedAccount.health || 0) >= 70 ? 'var(--green)' : (selectedAccount.health || 0) >= 50 ? '#f59e0b' : 'var(--red)' }">{{ selectedAccount.health || 0 }}</div>
+                  <div style="font-size: 9px; color: var(--muted);">Health</div>
+                </div>
+                <div style="background: var(--surface); border-radius: 8px; padding: 10px; text-align: center;">
+                  <RiskPill :risk="selectedAccount.risk || 'low'" />
+                  <div style="font-size: 9px; color: var(--muted); margin-top: 4px;">{{ t('smartImportRisk') }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Infos client -->
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">👤 {{ t('contact') }}</div>
+              <div style="background: var(--surface); border-radius: 8px; padding: 12px; font-size: 13px;">
+                <div v-if="selectedAccount.contact" style="margin-bottom: 4px;"><strong>{{ selectedAccount.contact }}</strong></div>
+                <div v-if="selectedAccount.contact_email" style="color: var(--teal);">{{ selectedAccount.contact_email }}</div>
+                <div v-if="selectedAccount.industry" style="color: var(--muted); margin-top: 4px;">{{ t('industry') }}: {{ selectedAccount.industry }}</div>
+                <div v-if="selectedAccount.csm" style="color: var(--muted); margin-top: 4px;">CSM: {{ selectedAccount.csm }}</div>
+                <div v-if="selectedAccount.renewal" style="margin-top: 4px;" :style="{ color: isRenewalOverdue(selectedAccount.renewal) ? 'var(--red)' : 'var(--muted)' }">{{ t('renewalLabel') }}: {{ selectedAccount.renewal }}</div>
+                <div v-if="!selectedAccount.contact && !selectedAccount.contact_email" style="color: var(--muted); font-style: italic;">{{ t('copilNoContact') }}</div>
+              </div>
+            </div>
+
+            <!-- Tasks liées -->
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">✅ {{ t('tasks') }} ({{ clientTasks.length }})</div>
+              <div v-if="clientTasks.length">
+                <div v-for="(task, i) in clientTasks.slice(0, 8)" :key="i" style="display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                  <span style="width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;" :style="{ background: task.color === 'red' ? 'var(--red)' : task.color === 'orange' ? '#f59e0b' : 'var(--teal)' }"></span>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ task.title }}</div>
+                    <div v-if="task.due" style="font-size: 10px; color: var(--muted);">{{ task.due }}</div>
+                  </div>
+                  <span style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--surface); color: var(--muted);">{{ task.status || task.quadrant }}</span>
+                </div>
+              </div>
+              <div v-else style="font-size: 12px; color: var(--muted); font-style: italic; padding: 8px 0;">{{ t('copilNoTasks') }}</div>
+            </div>
+
+            <!-- Événements / RDV -->
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">📅 {{ t('planning') }} ({{ clientEvents.length }})</div>
+              <div v-if="clientEvents.length">
+                <div v-for="(ev, i) in clientEvents.slice(0, 5)" :key="i" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                  <div style="font-size: 12px; font-weight: 600;">{{ ev.title }}</div>
+                  <div style="font-size: 11px; color: var(--muted);">{{ ev.date }} {{ ev.startTime || '' }}</div>
+                </div>
+              </div>
+              <div v-else style="font-size: 12px; color: var(--muted); font-style: italic; padding: 8px 0;">{{ t('copilNoEvents') }}</div>
+            </div>
+
+            <!-- Devis liés -->
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">📄 {{ t('quotes') }} ({{ clientQuotes.length }})</div>
+              <div v-if="clientQuotes.length">
+                <div v-for="(q, i) in clientQuotes.slice(0, 5)" :key="i" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                  <div>
+                    <div style="font-size: 12px; font-weight: 600;">{{ q.title }}</div>
+                    <div style="font-size: 10px; color: var(--muted);">{{ q.date }}</div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-size: 12px; font-weight: 700; font-family: 'JetBrains Mono', monospace;">{{ q.amount }}€</div>
+                    <span style="font-size: 10px; padding: 1px 6px; border-radius: 4px;" :style="{ background: q.status === 'won' ? 'var(--greenBg)' : q.status === 'lost' ? 'var(--redBg)' : 'var(--surface)', color: q.status === 'won' ? 'var(--green)' : q.status === 'lost' ? 'var(--red)' : 'var(--muted)' }">{{ q.status }}</span>
+                  </div>
+                </div>
+              </div>
+              <div v-else style="font-size: 12px; color: var(--muted); font-style: italic; padding: 8px 0;">{{ t('copilNoQuotes') }}</div>
+            </div>
+
+            <!-- Notes -->
+            <div v-if="selectedAccount.notes" style="margin-bottom: 16px;">
+              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">📝 {{ t('notes') }}</div>
+              <div style="background: var(--surface); border-radius: 8px; padding: 12px; font-size: 13px; color: var(--muted); line-height: 1.6;">{{ selectedAccount.notes }}</div>
+            </div>
+
+            <!-- Situation résumé -->
+            <div style="background: var(--tealBg); border: 1px solid var(--tealBorder); border-radius: 10px; padding: 14px;">
+              <div style="font-weight: 700; font-size: 12px; color: var(--teal); margin-bottom: 6px;">🧠 {{ t('copilSituation') }}</div>
+              <div style="font-size: 12px; color: var(--muted); line-height: 1.6;">
+                {{ selectedAccount.name }} — {{ selectedAccount.risk === 'critical' ? t('copilSituationCritical') : selectedAccount.risk === 'medium' ? t('copilSituationWatch') : t('copilSituationHealthy') }}
+                {{ clientTasks.length ? t('copilSituationTasks').replace('{n}', clientTasks.length) : '' }}
+                {{ clientEvents.length ? t('copilSituationEvents').replace('{n}', clientEvents.length) : '' }}
+                {{ selectedAccount.renewal ? t('copilSituationRenewal').replace('{date}', selectedAccount.renewal) : '' }}
+              </div>
+            </div>
+          </div>
+        </template>
+
         <!-- Todo tab -->
         <template v-if="detailTab === 'todo'">
           <div style="padding-top: 4px; padding-bottom: 20px;">
@@ -470,7 +572,7 @@ import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { useI18n } from '../i18n'
 import { useFormatting, CURRENCIES } from '../composables/useFormatting'
-import { portfolioApi, teamApi } from '../api'
+import { portfolioApi, teamApi, taskApi, planningApi, quotesApi } from '../api'
 import HealthBar from '../components/HealthBar.vue'
 import RiskPill from '../components/RiskPill.vue'
 import AppModal from '../components/AppModal.vue'
@@ -543,6 +645,38 @@ const industrySectors = computed(() => [
 
 // ─── Plan check ───
 const isManager = computed(() => authStore.user?.role === 'manager')
+
+// 360° data
+const clientTasks = ref([])
+const clientEvents = ref([])
+const clientQuotes = ref([])
+const loading360 = ref(false)
+
+async function load360Data(accountName) {
+  if (!accountName) return
+  loading360.value = true
+  try {
+    // Load tasks (from JSON blob — filter by account name)
+    const { data: taskData } = await taskApi.getTasks()
+    const allTasks = taskData.tasks || []
+    clientTasks.value = allTasks.filter(t => t.account && t.account.toLowerCase() === accountName.toLowerCase())
+
+    // Load events (from JSON blob — filter by account)
+    const { data: eventData } = await planningApi.getEvents()
+    const allEvents = eventData.events || []
+    clientEvents.value = allEvents.filter(e => e.account && e.account.toLowerCase() === accountName.toLowerCase())
+
+    // Load quotes (filter by client name)
+    try {
+      const { data: quotesData } = await quotesApi.list()
+      const allQuotes = Array.isArray(quotesData) ? quotesData : (quotesData.results || [])
+      clientQuotes.value = allQuotes.filter(q => q.client && q.client.toLowerCase() === accountName.toLowerCase())
+    } catch { clientQuotes.value = [] }
+  } catch (e) {
+    console.error('360 data load error:', e)
+  }
+  loading360.value = false
+}
 
 const isStarterPlan = computed(() => {
   const plan = authStore.company?.plan || 'Starter'
@@ -684,15 +818,20 @@ watch(selectedAccount, (acc) => {
     detailTab.value = 'overview'
     editError.value = ''
     loadAccountTodos(acc.id)
+    load360Data(acc.name)
   } else {
     accountTodos.value = []
     freeTasks.value = []
+    clientTasks.value = []
+    clientEvents.value = []
+    clientQuotes.value = []
   }
 })
 
 // ─── Tabs ───
 const detailTabs = computed(() => [
   ['overview', t('overview')],
+  ['360', '360°'],
   ['todo', t('todoTab')],
   ['edit', t('editBtn')],
 ])
