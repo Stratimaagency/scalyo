@@ -113,6 +113,9 @@
                   <button v-if="section.actions.includes('complete') && !item.completed" class="id-action-btn id-action-complete" @click="completeItem(section.key, item)">
                     ✓ Terminer
                   </button>
+                  <button v-if="section.actions.includes('updateStatus')" class="id-action-btn" @click="openUpdateStatusForm(section.key, item)">
+                    Modifier statut
+                  </button>
                 </td>
               </tr>
               <tr v-if="!section.items?.length">
@@ -344,7 +347,7 @@ function openCreateForm(action, extraData) {
 function openEditForm(sectionKey, item) {
   actionError.value = ''
   const action = sectionKey === 'contacts' ? 'editContact' : 'edit'
-  const fields = getCreateFields('createContact', {})
+  const fields = getCreateFields(getCreateAction(sectionKey), {})
   // Reset and pre-fill
   for (const k of Object.keys(actionForm)) delete actionForm[k]
   Object.assign(actionForm, { id: item.id, ...item })
@@ -367,6 +370,48 @@ async function completeItem(sectionKey, item) {
     await refreshData()
   } catch (err) {
     error.value = err.response?.data?.error || err.message
+  }
+}
+
+async function openUpdateStatusForm(sectionKey, item) {
+  actionError.value = ''
+  for (const k of Object.keys(actionForm)) delete actionForm[k]
+
+  if (key.value === 'jira') {
+    // Load transitions from Jira API
+    try {
+      const res = await integrationsApi.performAction(key.value, 'getTransitions', { issueId: item.id })
+      const transitions = res.data?.transitions || res.transitions || []
+      actionForm.issueId = item.id
+      actionModal.value = {
+        title: `Modifier statut — ${item.key || item.summary || ''}`,
+        action: 'updateStatus',
+        fields: [{
+          key: 'transitionId', label: 'Nouveau statut', type: 'select',
+          options: transitions.map(t => ({ value: t.id, label: t.name })),
+        }],
+        submitLabel: 'Mettre a jour',
+      }
+    } catch (err) {
+      error.value = err.response?.data?.error || err.message || 'Erreur chargement statuts'
+    }
+  } else if (key.value === 'zendesk') {
+    actionForm.ticketId = item.id
+    actionModal.value = {
+      title: `Modifier statut — Ticket #${item.id}`,
+      action: 'updateStatus',
+      fields: [{
+        key: 'status', label: 'Nouveau statut', type: 'select',
+        options: [
+          { value: 'open', label: 'Ouvert' },
+          { value: 'pending', label: 'En attente' },
+          { value: 'hold', label: 'En pause' },
+          { value: 'solved', label: 'Resolu' },
+          { value: 'closed', label: 'Ferme' },
+        ],
+      }],
+      submitLabel: 'Mettre a jour',
+    }
   }
 }
 

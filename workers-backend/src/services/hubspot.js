@@ -83,6 +83,8 @@ export async function fetchData(config) {
     return {
       id: c.id,
       name: [p.firstname, p.lastname].filter(Boolean).join(' ') || p.email || `Contact ${c.id}`,
+      firstname: p.firstname || '',
+      lastname: p.lastname || '',
       email: p.email || '',
       phone: p.phone || '',
       company: p.company || '',
