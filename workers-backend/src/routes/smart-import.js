@@ -198,17 +198,22 @@ smartImport.post('/execute', async (c) => {
     } catch (e) { results.errors.push(`KPIs: ${e.message}`) }
   }
 
-  // --- Tasks (JSON blob in task_boards) ---
+  // --- Tasks (JSON blob in task_boards — match TaskBoardView field names) ---
   if (data.tasks?.length) {
     try {
       const board = await db.prepare('SELECT * FROM task_boards WHERE company_id = ?').bind(company_id).first()
       const existing = board ? JSON.parse(board.tasks || '[]') : []
       const now = new Date().toISOString()
       const newTasks = data.tasks.map((t, i) => ({
-        id: Date.now() + i, title: String(t.title || '').slice(0, 200),
-        note: String(t.note || '').slice(0, 500), quadrant: t.quadrant || 'q1',
-        color: t.color || 'teal', status: 'todo', due: String(t.due || ''),
-        account: String(t.account || ''), created: now,
+        id: (Date.now() + i).toString(),
+        title: String(t.title || '').slice(0, 200),
+        note: String(t.note || '').slice(0, 500),
+        quadrant: t.quadrant || 'q1',
+        color: t.color || 'teal',
+        done: false,
+        dueDate: String(t.due || t.dueDate || ''),
+        account: String(t.account || ''),
+        createdAt: now,
       }))
       await db.prepare(
         `INSERT INTO task_boards (company_id, tasks, updated_at) VALUES (?, ?, datetime('now'))
@@ -218,16 +223,18 @@ smartImport.post('/execute', async (c) => {
     } catch (e) { results.errors.push(`Tasks: ${e.message}`) }
   }
 
-  // --- Roadmap (JSON blob) ---
+  // --- Roadmap (JSON blob — match RoadmapView field names) ---
   if (data.roadmap?.length) {
     try {
       const rm = await db.prepare('SELECT * FROM roadmap WHERE company_id = ?').bind(company_id).first()
       const existing = rm ? JSON.parse(rm.items || '[]') : []
       const newItems = data.roadmap.map((item, i) => ({
-        id: Date.now() + i, title: String(item.title || '').slice(0, 200),
-        phase: String(item.phase || '1'), status: item.status || 'pending',
-        due: String(item.due || ''), progress: parseInt(item.progress) || 0,
-        owner: String(item.owner || ''),
+        id: 'r_' + (Date.now() + i),
+        label: String(item.title || item.label || '').slice(0, 200),
+        phase: String(item.phase || '1'),
+        done: item.status === 'done' || item.status === 'completed' || false,
+        due: String(item.due || ''),
+        prio: item.prio || (item.progress > 70 ? 'low' : item.progress > 30 ? 'medium' : 'high'),
       }))
       await db.prepare(
         `INSERT INTO roadmap (company_id, items, updated_at) VALUES (?, ?, datetime('now'))
