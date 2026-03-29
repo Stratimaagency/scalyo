@@ -757,6 +757,7 @@ export default {
   smartImportImporting: 'Import en cours...',
   smartImportDone: 'Import terminé avec succès !',
   smartImportAnother: 'Importer un autre fichier',
+  smartImportSkip: 'Ignorer',
   smartImportNoData: 'Aucune donnée détectée dans ce fichier. Vérifiez que vos feuilles contiennent des en-têtes (Client, CSM, ARR, Health...).',
   // --- i18n fixes ---
   copy: 'copie',

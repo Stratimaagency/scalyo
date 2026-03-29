@@ -754,6 +754,7 @@ export default {
   smartImportImporting: '가져오는 중...',
   smartImportDone: '가져오기 완료!',
   smartImportAnother: '다른 파일 가져오기',
+  smartImportSkip: '건너뛰기',
   smartImportNoData: '이 파일에서 데이터를 감지할 수 없습니다. 시트에 헤더(Client, CSM, ARR, Health...)가 있는지 확인하세요.',
   // --- i18n fixes ---
   copy: '복사',
