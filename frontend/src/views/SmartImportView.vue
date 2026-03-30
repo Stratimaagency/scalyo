@@ -167,6 +167,7 @@ import { ref, computed } from 'vue'
 import * as XLSX from 'xlsx'
 import { useI18n } from '../i18n'
 import { smartImportApi, kpiApi, taskApi, planningApi } from '../api'
+import { usePortfolioStore } from '../stores/portfolio'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const { t } = useI18n()
@@ -1189,6 +1190,29 @@ async function doImport() {
       })
       console.log('Import result:', data)
       importResult.value = data.imported || data
+
+      // Force refresh portfolio store so dashboard shows new data
+      try { usePortfolioStore().fetchAccounts() } catch {}
+
+      // Also try to save KPIs and tasks via their own APIs as backup
+      try {
+        if (payload.kpis && payload.kpis.mrr) {
+          await kpiApi.saveMonthly({ period: new Date().toISOString().slice(0, 7), kpis: payload.kpis })
+        }
+      } catch (e) { console.warn('KPI backup save failed:', e) }
+
+      try {
+        if (formattedTasks.length) {
+          await taskApi.saveTasks(formattedTasks)
+        }
+      } catch (e) { console.warn('Task backup save failed:', e) }
+
+      try {
+        if (formattedEvents.length) {
+          await planningApi.saveEvents(formattedEvents)
+        }
+      } catch (e) { console.warn('Planning backup save failed:', e) }
+
       step.value = 'done'
     } catch (err) {
       console.error('Import error:', err.response?.data || err)
