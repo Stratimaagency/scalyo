@@ -4,7 +4,7 @@ import { authApi } from '../api'
 import { getPreference, setPreference } from '../composables/useStorage'
 
 export const usePreferencesStore = defineStore('preferences', () => {
-  const theme = ref(getPreference('theme') || 'dark')
+  const theme = ref(getPreference('theme') || 'light')
   const lang = ref(getPreference('lang') || 'fr')
   const currency = ref(getPreference('currency') || 'EUR')
 
