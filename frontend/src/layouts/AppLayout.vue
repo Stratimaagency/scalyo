@@ -3,48 +3,71 @@
     <!-- Desktop sidebar -->
     <aside class="sidebar-desktop">
       <div class="sidebar-logo">
-        <ScalyoLogo :markSize="38" :fontSize="20" :gap="10" :showSub="true" />
+        <ScalyoLogo :markSize="38" :fontSize="20" :gap="10" :showSub="isSmartMatrice" />
       </div>
       <nav class="sidebar-nav">
-        <template v-for="(group, gi) in navGroups" :key="gi">
-          <div class="nav-group-label">{{ group.label }}</div>
-          <router-link
-            v-for="item in group.items"
-            :key="item.key"
-            :to="{ name: item.routeName }"
-            class="nav-btn"
-            active-class="active"
-          >
-            <span class="nav-emoji">{{ item.emoji }}</span>
-            <span class="nav-label">{{ item.label }}</span>
-            <span v-if="item.locked" style="font-size: 11px; opacity: 0.5; margin-left: auto;">🔒</span>
-            <span
-              v-if="item.key === 'portfolio' && criticalCount > 0"
-              class="nav-badge-critical"
-            >{{ criticalCount }}</span>
-          </router-link>
+        <!-- Smart Matrice sub-nav -->
+        <template v-if="isSmartMatrice && smNavItems.length">
+          <template v-for="(group, gi) in smNavGroups" :key="'sm-'+gi">
+            <div class="nav-group-label">{{ group.label }}</div>
+            <button
+              v-for="item in group.items"
+              :key="item.key"
+              class="nav-btn"
+              :class="{ active: smCurrentView === item.key }"
+              @click="setSmView(item.key)"
+            >
+              <span class="nav-emoji">{{ item.emoji }}</span>
+              <span class="nav-label">{{ item.label }}</span>
+              <span v-if="item.key === 'tasks' && smTaskCount > 0" class="nav-badge-count">{{ smTaskCount }}</span>
+              <span v-if="item.key === 'projects' && smProjectCount > 0" class="nav-badge-count">{{ smProjectCount }}</span>
+            </button>
+          </template>
+        </template>
+
+        <!-- Global nav -->
+        <template v-else>
+          <template v-for="(group, gi) in navGroups" :key="gi">
+            <div class="nav-group-label">{{ group.label }}</div>
+            <router-link
+              v-for="item in group.items"
+              :key="item.key"
+              :to="{ name: item.routeName }"
+              class="nav-btn"
+              active-class="active"
+            >
+              <span class="nav-emoji">{{ item.emoji }}</span>
+              <span class="nav-label">{{ item.label }}</span>
+              <span v-if="item.locked" class="nav-lock">🔒</span>
+              <span v-if="item.key === 'portfolio' && criticalCount > 0" class="nav-badge-critical">{{ criticalCount }}</span>
+            </router-link>
+          </template>
         </template>
       </nav>
+
+      <!-- Footer -->
       <div class="sidebar-footer">
+        <!-- Profile switcher (Smart Matrice) -->
+        <div v-if="isSmartMatrice" class="sm-profile-switcher">
+          <div class="nav-group-label" style="padding-top: 0;">VUE ACTIVE</div>
+          <div class="sm-profile-pills">
+            <button class="sm-pill" :class="{ active: smProfile === 'moi' }" @click="setSmProfile('moi')">
+              {{ smUserName || 'Moi' }}
+            </button>
+            <button class="sm-pill" :class="{ active: smProfile === 'manager' }" @click="setSmProfile('manager')">Manager</button>
+            <button class="sm-pill" :class="{ active: smProfile === 'direction' }" @click="setSmProfile('direction')">Direction</button>
+          </div>
+        </div>
+
         <!-- Language switcher -->
         <div class="lang-switcher">
-          <button
-            v-for="l in ['fr', 'en', 'kr']"
-            :key="l"
-            class="lang-btn"
-            :class="{ active: prefsStore.lang === l }"
-            @click="prefsStore.setLang(l)"
-          >{{ langLabel(l) }}</button>
+          <button v-for="l in ['fr', 'en', 'kr']" :key="l" class="lang-btn"
+            :class="{ active: prefsStore.lang === l }" @click="prefsStore.setLang(l)">{{ langLabel(l) }}</button>
         </div>
-        <!-- Settings -->
-        <router-link :to="{ name: 'settings' }" class="nav-btn" active-class="active">
-          <span class="nav-emoji">⚙️</span>
-          <span class="nav-label">{{ t('settings') }}</span>
-          <span v-if="$route.name === 'settings'" class="nav-active-bar"></span>
-        </router-link>
+
         <!-- User info -->
         <div class="sidebar-user">
-          <div class="sidebar-user-avatar" :style="{ background: company?.color || 'var(--teal)' }">
+          <div class="sidebar-user-avatar" :style="{ background: 'var(--sm-grad)' }">
             {{ userInitial }}
           </div>
           <div class="sidebar-user-info">
@@ -53,9 +76,6 @@
               <span :style="{ color: planColor }">{{ company?.plan || 'Starter' }}</span>
               · {{ roleLabel }}
             </div>
-            <div v-if="trialDaysLeft !== null && !trialExpired" class="sidebar-trial-badge">
-              {{ t('trialDaysLeftMsg').replace('{days}', trialDaysLeft) }}
-            </div>
           </div>
           <button class="sidebar-logout-btn" :title="t('logout')" @click="logout">🚪</button>
         </div>
@@ -63,66 +83,22 @@
     </aside>
 
     <!-- Main content -->
-    <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
-      <div class="topbar-area">
-        <div class="topbar-left">
-          <div class="topbar-dot" :style="{ background: company?.color || 'var(--teal)' }"></div>
-          <span class="topbar-title">{{ company?.name || t('myCompany') }}</span>
-          <span class="topbar-role">· {{ roleLabel }}</span>
-        </div>
-        <div class="topbar-right">
-          <router-link
-            v-if="criticalCount > 0"
-            :to="{ name: 'portfolio' }"
-            class="topbar-critical-badge"
-          >
-            <span class="pulse">🚨</span>
-            {{ criticalCount }} {{ criticalLabel }}
-          </router-link>
-          <div class="topbar-online">
-            <span class="topbar-online-dot"></span>
-            <span class="topbar-online-text">{{ onlineLabel }}</span>
-          </div>
-        </div>
-      </div>
-      <main class="main-scroll" style="flex: 1; overflow-y: auto;">
-        <!-- Email verification banner -->
-        <div v-if="showVerifyBanner"
-          style="background: #FEF3C7; border-bottom: 1px solid #F59E0B; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; color: #92400E;">
+    <div class="main-wrapper">
+      <main class="main-scroll">
+        <!-- Banners -->
+        <div v-if="showVerifyBanner" class="banner banner--warn">
           <span>{{ t('verifyEmailBanner') }}</span>
           <div style="display: flex; gap: 6px; flex-shrink: 0;">
-            <button @click="checkVerified" style="background: #92400E; color: #fff; border: none; border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer;">
-              {{ checkMsg || t('verifyDone') }}
-            </button>
-            <button @click="resendVerification" style="background: #F59E0B; color: #fff; border: none; border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer;">
-              {{ resendMsg || t('verifyResend') }}
-            </button>
+            <button class="banner-btn" @click="checkVerified">{{ checkMsg || t('verifyDone') }}</button>
+            <button class="banner-btn banner-btn--alt" @click="resendVerification">{{ resendMsg || t('verifyResend') }}</button>
           </div>
         </div>
-        <!-- Trial expiry warning banner -->
-        <div v-if="trialDaysLeft !== null && trialDaysLeft <= 3 && trialDaysLeft > 0 && !trialExpired"
-          style="background: #FEF3C7; border-bottom: 1px solid #F59E0B; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; color: #92400E;">
-          <span>{{ t('trialBannerMsg').replace('{days}', trialDaysLeft) }}</span>
-          <router-link :to="{ name: 'settings' }" style="background: #92400E; color: #fff; border: none; border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none;">
-            {{ t('trialSubscribe') }}
-          </router-link>
-        </div>
-        <!-- Trial expired overlay -->
         <div v-if="trialExpired" class="trial-expired-overlay">
           <div class="trial-expired-card">
-            <div style="font-size: 48px; margin-bottom: 16px;">&#x23F0;</div>
+            <div style="font-size: 48px; margin-bottom: 16px;">⏰</div>
             <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 8px;">{{ t('trialExpiredTitle') }}</h2>
-            <p style="color: var(--muted); font-size: 14px; margin-bottom: 24px; max-width: 400px;">
-              {{ t('trialExpiredDesc') }}
-            </p>
-            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
-              <router-link :to="{ name: 'settings' }" class="btn btn-primary" style="padding: 12px 32px; font-size: 15px;">
-                {{ t('trialExpiredBtn') }}
-              </router-link>
-            </div>
-            <p style="color: var(--muted); font-size: 12px; margin-top: 16px;">
-              {{ t('trialExpiredHelp') }} <a href="mailto:support@scalyo.app" style="color: var(--teal);">support@scalyo.app</a>
-            </p>
+            <p style="color: var(--muted); font-size: 14px; margin-bottom: 24px;">{{ t('trialExpiredDesc') }}</p>
+            <router-link :to="{ name: 'settings' }" class="btn btn-primary" style="padding: 12px 32px;">{{ t('trialExpiredBtn') }}</router-link>
           </div>
         </div>
         <div v-else class="view-pad">
@@ -133,13 +109,8 @@
 
     <!-- Mobile bottom nav -->
     <nav class="bottom-nav">
-      <router-link
-        v-for="item in mobileNavItems"
-        :key="item.key"
-        :to="{ name: item.routeName }"
-        class="bottom-nav-item"
-        active-class="active"
-      >
+      <router-link v-for="item in mobileNavItems" :key="item.key"
+        :to="{ name: item.routeName }" class="bottom-nav-item" active-class="active">
         <span style="font-size: 20px;">{{ item.emoji }}</span>
         <span>{{ item.label }}</span>
       </router-link>
@@ -148,20 +119,21 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, inject, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { usePortfolioStore } from '../stores/portfolio'
+import { useSmartMatriceStore } from '../stores/smartMatrice'
 import { authApi } from '../api'
 import { useI18n } from '../i18n'
 import { useNavigation } from '../composables/useNavigation'
-import ScalyoIcon from '../components/ScalyoIcon.vue'
 import ScalyoLogo from '../components/ScalyoLogo.vue'
 
 const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()
 const portfolioStore = usePortfolioStore()
+const smStore = useSmartMatriceStore()
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
@@ -172,47 +144,42 @@ const showVerifyBanner = ref(authStore.user && !authStore.user.email_verified)
 const resendMsg = ref('')
 const checkMsg = ref('')
 
-async function resendVerification() {
-  try {
-    resendMsg.value = '...'
-    await authApi.resendVerification()
-    resendMsg.value = t('verifySent')
-    setTimeout(() => { resendMsg.value = '' }, 5000)
-  } catch {
-    resendMsg.value = t('verifyError')
-    setTimeout(() => { resendMsg.value = '' }, 3000)
-  }
-}
+// Smart Matrice detection
+const isSmartMatrice = computed(() => route.name === 'tasks')
 
-async function checkVerified() {
-  checkMsg.value = '...'
-  try {
-    const { data } = await authApi.getProfile()
-    if (data.email_verified) {
-      authStore.user = data
-      showVerifyBanner.value = false
-    } else {
-      checkMsg.value = t('verifyNotYet')
-      setTimeout(() => { checkMsg.value = '' }, 3000)
-    }
-  } catch {
-    checkMsg.value = t('verifyError')
-    setTimeout(() => { checkMsg.value = '' }, 3000)
-  }
-}
+// Inject SM nav from SmartMatrice.vue
+const smCurrentView = inject('sm-current-view', ref('projects'))
+const smNavItems = inject('sm-nav-items', [])
 
-onMounted(() => {
-  if (!portfolioStore.accounts.length) {
-    portfolioStore.fetchAccounts()
+const smNavGroups = computed(() => {
+  if (!smNavItems.length) return []
+  const groups = {}
+  for (const item of smNavItems) {
+    const g = item.group || 'AUTRE'
+    if (!groups[g]) groups[g] = { label: g, items: [] }
+    groups[g].items.push(item)
   }
+  return Object.values(groups)
 })
 
-// Filter out settings from main nav (it's in the footer)
-const mainNavItems = computed(() =>
-  navItems.value.filter(item => item.key !== 'settings')
-)
+function setSmView(key) {
+  smCurrentView.value = key
+}
 
-// Group nav items by category
+const smProfile = computed(() => smStore.profile)
+const smUserName = computed(() => smStore.userName || authStore.user?.display_name || '')
+function setSmProfile(p) { smStore.setProfile(p) }
+
+const smTaskCount = computed(() => {
+  const all = []
+  for (const pid in smStore.tasks) all.push(...smStore.tasks[pid])
+  return all.length
+})
+const smProjectCount = computed(() => smStore.projects.length)
+
+// Global nav groups
+const mainNavItems = computed(() => navItems.value.filter(item => item.key !== 'settings'))
+
 const navGroups = computed(() => {
   const items = mainNavItems.value
   const groups = [
@@ -220,122 +187,95 @@ const navGroups = computed(() => {
     { label: 'GESTION', keys: ['tasks', 'planning'] },
     { label: 'VUES', keys: ['wellbeing', 'coach', 'roadmap'] },
     { label: 'OUTILS', keys: ['email-studio', 'quotes', 'integrations', 'resources', 'tips'] },
-    { label: 'RÉGLAGES', keys: ['smart-import', 'feedback'] },
+    { label: 'IMPORT', keys: ['smart-import', 'feedback'] },
   ]
   return groups
-    .map(g => ({
-      label: g.label,
-      items: g.keys.map(k => items.find(i => i.key === k)).filter(Boolean),
-    }))
+    .map(g => ({ label: g.label, items: g.keys.map(k => items.find(i => i.key === k)).filter(Boolean) }))
     .filter(g => g.items.length > 0)
 })
 
-const criticalCount = computed(() =>
-  portfolioStore.accounts.filter(a => a.risk === 'critical').length
-)
-
-const userInitial = computed(() => {
-  const email = authStore.user?.email || 'U'
-  return email.charAt(0).toUpperCase()
-})
-
+const criticalCount = computed(() => portfolioStore.accounts.filter(a => a.risk === 'critical').length)
+const userInitial = computed(() => (authStore.user?.email || 'U').charAt(0).toUpperCase())
 const planColor = computed(() => {
   const plan = company.value?.plan || 'Starter'
-  if (plan === 'Growth') return 'var(--teal)'
-  if (plan === 'Elite') return 'var(--purple)'
-  return 'var(--muted)'
+  if (plan === 'Growth') return '#e8603a'
+  if (plan === 'Elite') return '#9b5acd'
+  return 'rgba(255,255,255,.4)'
 })
 
 const trialDaysLeft = computed(() => {
   const c = company.value
-  if (!c) return null
-  if (c.subscription_status === 'active' || c.subscription_status === 'paid') return null
-  if (c.trial_days_left !== undefined) return c.trial_days_left
-  return null
+  if (!c || c.subscription_status === 'active' || c.subscription_status === 'paid') return null
+  return c.trial_days_left ?? null
 })
-
 const trialExpired = computed(() => {
   const c = company.value
-  if (!c) return false
-  if (c.subscription_status === 'active' || c.subscription_status === 'paid') return false
+  if (!c || c.subscription_status === 'active' || c.subscription_status === 'paid') return false
   return c.trial_expired === true
 })
 
 const ROLE_KEYS = { manager: 'roleManager', csm: 'roleCSM', commercial: 'roleCommercial', kam: 'roleKAM' }
-const roleLabel = computed(() => {
-  const role = authStore.user?.role || 'csm'
-  return t(ROLE_KEYS[role] || 'roleCSM')
-})
-
+const roleLabel = computed(() => t(ROLE_KEYS[authStore.user?.role] || 'roleCSM'))
 const criticalLabel = computed(() => t('critical'))
-
 const onlineLabel = computed(() => t('online'))
 
-function langLabel(l) {
-  if (l === 'fr') return '🇫🇷 FR'
-  if (l === 'kr') return '🇰🇷 KR'
-  return '🇬🇧 EN'
+function langLabel(l) { return l === 'fr' ? '🇫🇷 FR' : l === 'kr' ? '🇰🇷 KR' : '🇬🇧 EN' }
+
+async function resendVerification() {
+  try { resendMsg.value = '...'; await authApi.resendVerification(); resendMsg.value = t('verifySent'); setTimeout(() => { resendMsg.value = '' }, 5000) }
+  catch { resendMsg.value = t('verifyError'); setTimeout(() => { resendMsg.value = '' }, 3000) }
+}
+async function checkVerified() {
+  checkMsg.value = '...'
+  try { const { data } = await authApi.getProfile(); if (data.email_verified) { authStore.user = data; showVerifyBanner.value = false } else { checkMsg.value = t('verifyNotYet'); setTimeout(() => { checkMsg.value = '' }, 3000) } }
+  catch { checkMsg.value = t('verifyError'); setTimeout(() => { checkMsg.value = '' }, 3000) }
 }
 
-function logout() {
-  authStore.logout()
-  router.push({ name: 'login' })
-}
+function logout() { authStore.logout(); router.push({ name: 'login' }) }
+
+onMounted(() => { if (!portfolioStore.accounts.length) portfolioStore.fetchAccounts() })
 </script>
 
 <style scoped>
+/* Nav groups */
 .nav-group-label {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.25);
-  padding: 14px 10px 4px;
-  font-family: 'DM Sans', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+  color: rgba(255,255,255,.25); padding: 14px 10px 4px; font-family: 'DM Sans', sans-serif;
 }
-.nav-group-label:first-child {
-  padding-top: 0;
-}
-.nav-emoji {
-  font-size: 16px;
-  width: 22px;
-  text-align: center;
-  flex-shrink: 0;
-  line-height: 1;
-}
+.nav-group-label:first-child { padding-top: 0; }
+.nav-emoji { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; line-height: 1; }
+.nav-lock { font-size: 11px; opacity: 0.5; margin-left: auto; }
 .nav-badge-critical {
-  background: var(--red);
-  color: #fff;
-  font-weight: 800;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 10px;
+  background: #dc2626; color: #fff; font-weight: 800; min-width: 18px; height: 18px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 10px; margin-left: auto;
 }
-.sidebar-trial-badge {
-  font-size: 10px;
-  color: #F59E0B;
-  font-weight: 700;
-  margin-top: 2px;
+.nav-badge-count {
+  background: rgba(255,255,255,.1); color: rgba(255,255,255,.5); font-weight: 700;
+  min-width: 20px; height: 18px; border-radius: 9px; display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0; font-size: 10px; margin-left: auto; padding: 0 5px;
 }
-.trial-expired-overlay {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px;
-  background: var(--bg);
+
+/* Profile switcher */
+.sm-profile-switcher { padding: 0 10px 8px; }
+.sm-profile-pills { display: flex; gap: 4px; }
+.sm-pill {
+  flex: 1; padding: 6px 0; border-radius: 20px; border: none;
+  font-size: 11px; font-weight: 600; cursor: pointer; text-align: center;
+  font-family: 'DM Sans', sans-serif; transition: all .15s;
+  background: rgba(255,255,255,.06); color: rgba(255,255,255,.45);
 }
-.trial-expired-card {
-  text-align: center;
-  max-width: 480px;
-  padding: 48px 32px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-}
+.sm-pill:hover { background: rgba(255,255,255,.1); }
+.sm-pill.active { background: var(--sm-grad); color: white; }
+
+/* Banners */
+.banner { padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; }
+.banner--warn { background: #FEF3C7; border-bottom: 1px solid #F59E0B; color: #92400E; }
+.banner-btn { background: #92400E; color: #fff; border: none; border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.banner-btn--alt { background: #F59E0B; }
+
+.sidebar-trial-badge { font-size: 10px; color: #F59E0B; font-weight: 700; margin-top: 2px; }
+.main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.trial-expired-overlay { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px; background: var(--bg); }
+.trial-expired-card { text-align: center; max-width: 480px; padding: 48px 32px; background: white; border: 1px solid var(--border); border-radius: 16px; }
 </style>
