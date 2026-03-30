@@ -9,22 +9,31 @@ set -e
 
 echo "🚀 Setup Scalyo Preprod..."
 
+# Aller dans le dossier workers-backend
+cd "$(dirname "$0")/../workers-backend"
+
+# Utiliser npx wrangler
+WRANGLER="npx wrangler"
+
 # 1. Créer la base D1 preprod
 echo ""
 echo "📦 Création de la base D1 preprod..."
-cd "$(dirname "$0")/../workers-backend"
 
-DB_OUTPUT=$(wrangler d1 create scalyo-db-preprod 2>&1)
+DB_OUTPUT=$($WRANGLER d1 create scalyo-db-preprod 2>&1) || true
 echo "$DB_OUTPUT"
 
 # Extraire le database_id
-DB_ID=$(echo "$DB_OUTPUT" | grep -o 'database_id = "[^"]*"' | head -1 | cut -d'"' -f2)
+DB_ID=$(echo "$DB_OUTPUT" | grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' | head -1)
 
 if [ -z "$DB_ID" ]; then
   echo "⚠️  Impossible d'extraire le database_id automatiquement."
   echo "    Copie le database_id depuis la sortie ci-dessus"
   echo "    et remplace REPLACE_WITH_PREPROD_DB_ID dans wrangler.toml"
-else
+  echo ""
+  read -p "Colle le database_id ici : " DB_ID
+fi
+
+if [ -n "$DB_ID" ]; then
   echo ""
   echo "✅ Database ID: $DB_ID"
   # Remplacer dans wrangler.toml
@@ -41,7 +50,7 @@ echo ""
 echo "📋 Lancement des migrations..."
 for f in migrations/*.sql; do
   echo "   ▸ $f"
-  wrangler d1 execute scalyo-db-preprod --env preprod --remote --file="$f"
+  $WRANGLER d1 execute scalyo-db-preprod --env preprod --remote --file="$f" || echo "   ⚠️  Erreur sur $f (peut-être déjà appliquée)"
 done
 
 echo ""
@@ -50,7 +59,7 @@ echo "✅ Migrations terminées"
 # 3. Déployer le Worker preprod
 echo ""
 echo "🔧 Déploiement Worker preprod..."
-wrangler deploy --env preprod
+$WRANGLER deploy --env preprod
 
 echo ""
 echo "============================================"
