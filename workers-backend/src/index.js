@@ -35,29 +35,168 @@ app.use('/api/auth/reset-password/*', rateLimitMiddleware({ maxRequests: 5, wind
 app.use('/api/auth/resend-verification/*', rateLimitMiddleware({ maxRequests: 3, windowMs: 60000 }))
 app.use('/api/coach/*', rateLimitMiddleware({ maxRequests: 20, windowMs: 60000 }))
 
-// Auth middleware at app level for ALL protected routes
-const protectedPaths = ['/api/kpis', '/api/tasks', '/api/planning', '/api/roadmap', '/api/coach', '/api/email-studio', '/api/feedback', '/api/quotes', '/api/import']
-for (const path of protectedPaths) {
-  app.use(`${path}/*`, authMiddleware(), companyRequired(), trialGuard())
-  app.use(`${path}`, authMiddleware(), companyRequired(), trialGuard())
-}
+// Auth middleware helper
+const mw = [authMiddleware(), companyRequired(), trialGuard()]
 
-// Mount all routes
+// Mount routes that use sub-paths (these work fine with app.route)
 app.route('/api/auth', auth)
 app.route('/api/portfolio', portfolio)
-app.route('/api/kpis', kpis)
-app.route('/api/tasks', tasks)
-app.route('/api/planning', planning)
 registerWellbeingRoutes(app)
-app.route('/api/roadmap', roadmap)
-app.route('/api/coach', coach)
-app.route('/api/email-studio', emailStudio)
 app.route('/api/billing', billing)
-app.route('/api/feedback', feedback)
-app.route('/api/quotes', quotes)
 app.route('/api/import/smart', smartImport)
 registerIntegrationRoutes(app)
 registerTeamRoutes(app)
+
+// Routes at root path — mount DIRECTLY to avoid Hono sub-router bug
+// === TASKS ===
+app.get('/api/tasks', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const db = c.env.DB
+  let board = await db.prepare('SELECT * FROM task_boards WHERE company_id = ?').bind(company_id).first()
+  if (!board) board = await db.prepare('INSERT INTO task_boards (company_id) VALUES (?) RETURNING *').bind(company_id).first()
+  return c.json({ id: board.id, tasks: JSON.parse(board.tasks || '[]'), updated_at: board.updated_at })
+})
+app.get('/api/tasks/', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const db = c.env.DB
+  let board = await db.prepare('SELECT * FROM task_boards WHERE company_id = ?').bind(company_id).first()
+  if (!board) board = await db.prepare('INSERT INTO task_boards (company_id) VALUES (?) RETURNING *').bind(company_id).first()
+  return c.json({ id: board.id, tasks: JSON.parse(board.tasks || '[]'), updated_at: board.updated_at })
+})
+app.post('/api/tasks/save', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const { tasks: tasksData } = await c.req.json()
+  const board = await c.env.DB.prepare(
+    `INSERT INTO task_boards (company_id, tasks, updated_at) VALUES (?, ?, datetime('now'))
+     ON CONFLICT(company_id) DO UPDATE SET tasks = excluded.tasks, updated_at = datetime('now') RETURNING *`
+  ).bind(company_id, JSON.stringify(tasksData || [])).first()
+  return c.json({ id: board.id, tasks: JSON.parse(board.tasks || '[]'), updated_at: board.updated_at })
+})
+app.post('/api/tasks/save/', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const { tasks: tasksData } = await c.req.json()
+  const board = await c.env.DB.prepare(
+    `INSERT INTO task_boards (company_id, tasks, updated_at) VALUES (?, ?, datetime('now'))
+     ON CONFLICT(company_id) DO UPDATE SET tasks = excluded.tasks, updated_at = datetime('now') RETURNING *`
+  ).bind(company_id, JSON.stringify(tasksData || [])).first()
+  return c.json({ id: board.id, tasks: JSON.parse(board.tasks || '[]'), updated_at: board.updated_at })
+})
+
+// === KPIS ===
+function parseKpiRow(row) {
+  return { id: row.id, period: row.period, kpis: JSON.parse(row.kpis || '{}'), goals: JSON.parse(row.goals || '{}'), custom_kpis: JSON.parse(row.custom_kpis || '[]'), history: JSON.parse(row.history || '{}'), updated_at: row.updated_at }
+}
+app.get('/api/kpis', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const { results } = await c.env.DB.prepare('SELECT * FROM kpi_data WHERE company_id = ?').bind(company_id).all()
+  return c.json(results.map(parseKpiRow))
+})
+app.get('/api/kpis/', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const { results } = await c.env.DB.prepare('SELECT * FROM kpi_data WHERE company_id = ?').bind(company_id).all()
+  return c.json(results.map(parseKpiRow))
+})
+app.post('/api/kpis/monthly', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const { period, kpis: kpisData } = await c.req.json()
+  if (!period || period.startsWith('__')) return c.json({ error: 'Invalid period' }, 400)
+  const row = await c.env.DB.prepare(
+    `INSERT INTO kpi_data (company_id, period, kpis, updated_at) VALUES (?, ?, ?, datetime('now'))
+     ON CONFLICT(company_id, period) DO UPDATE SET kpis = excluded.kpis, updated_at = datetime('now') RETURNING *`
+  ).bind(company_id, period, JSON.stringify(kpisData || {})).first()
+  return c.json(parseKpiRow(row))
+})
+app.post('/api/kpis/monthly/', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const { period, kpis: kpisData } = await c.req.json()
+  if (!period || period.startsWith('__')) return c.json({ error: 'Invalid period' }, 400)
+  const row = await c.env.DB.prepare(
+    `INSERT INTO kpi_data (company_id, period, kpis, updated_at) VALUES (?, ?, ?, datetime('now'))
+     ON CONFLICT(company_id, period) DO UPDATE SET kpis = excluded.kpis, updated_at = datetime('now') RETURNING *`
+  ).bind(company_id, period, JSON.stringify(kpisData || {})).first()
+  return c.json(parseKpiRow(row))
+})
+app.post('/api/kpis/custom', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const { custom_kpis, history } = await c.req.json()
+  const row = await c.env.DB.prepare(
+    `INSERT INTO kpi_data (company_id, period, custom_kpis, history, updated_at) VALUES (?, '__custom__', ?, ?, datetime('now'))
+     ON CONFLICT(company_id, period) DO UPDATE SET custom_kpis = excluded.custom_kpis, history = excluded.history, updated_at = datetime('now') RETURNING *`
+  ).bind(company_id, JSON.stringify(custom_kpis || []), JSON.stringify(history || {})).first()
+  return c.json(parseKpiRow(row))
+})
+app.post('/api/kpis/custom/', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const { custom_kpis, history } = await c.req.json()
+  const row = await c.env.DB.prepare(
+    `INSERT INTO kpi_data (company_id, period, custom_kpis, history, updated_at) VALUES (?, '__custom__', ?, ?, datetime('now'))
+     ON CONFLICT(company_id, period) DO UPDATE SET custom_kpis = excluded.custom_kpis, history = excluded.history, updated_at = datetime('now') RETURNING *`
+  ).bind(company_id, JSON.stringify(custom_kpis || []), JSON.stringify(history || {})).first()
+  return c.json(parseKpiRow(row))
+})
+app.post('/api/kpis/goals', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const { goals } = await c.req.json()
+  if (!goals) return c.json({ error: 'goals is required' }, 400)
+  const row = await c.env.DB.prepare(
+    `INSERT INTO kpi_data (company_id, period, goals, updated_at) VALUES (?, '__goals__', ?, datetime('now'))
+     ON CONFLICT(company_id, period) DO UPDATE SET goals = excluded.goals, updated_at = datetime('now') RETURNING *`
+  ).bind(company_id, JSON.stringify(goals)).first()
+  return c.json(parseKpiRow(row))
+})
+app.post('/api/kpis/goals/', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const { goals } = await c.req.json()
+  if (!goals) return c.json({ error: 'goals is required' }, 400)
+  const row = await c.env.DB.prepare(
+    `INSERT INTO kpi_data (company_id, period, goals, updated_at) VALUES (?, '__goals__', ?, datetime('now'))
+     ON CONFLICT(company_id, period) DO UPDATE SET goals = excluded.goals, updated_at = datetime('now') RETURNING *`
+  ).bind(company_id, JSON.stringify(goals)).first()
+  return c.json(parseKpiRow(row))
+})
+
+// === PLANNING ===
+app.get('/api/planning', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const db = c.env.DB
+  let cal = await db.prepare('SELECT * FROM calendar_events WHERE company_id = ?').bind(company_id).first()
+  if (!cal) cal = await db.prepare('INSERT INTO calendar_events (company_id) VALUES (?) RETURNING *').bind(company_id).first()
+  return c.json({ id: cal.id, events: JSON.parse(cal.events || '[]'), updated_at: cal.updated_at })
+})
+app.get('/api/planning/', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const db = c.env.DB
+  let cal = await db.prepare('SELECT * FROM calendar_events WHERE company_id = ?').bind(company_id).first()
+  if (!cal) cal = await db.prepare('INSERT INTO calendar_events (company_id) VALUES (?) RETURNING *').bind(company_id).first()
+  return c.json({ id: cal.id, events: JSON.parse(cal.events || '[]'), updated_at: cal.updated_at })
+})
+app.post('/api/planning/save', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const { events } = await c.req.json()
+  const cal = await c.env.DB.prepare(
+    `INSERT INTO calendar_events (company_id, events, updated_at) VALUES (?, ?, datetime('now'))
+     ON CONFLICT(company_id) DO UPDATE SET events = excluded.events, updated_at = datetime('now') RETURNING *`
+  ).bind(company_id, JSON.stringify(events || [])).first()
+  return c.json({ id: cal.id, events: JSON.parse(cal.events || '[]'), updated_at: cal.updated_at })
+})
+app.post('/api/planning/save/', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const { events } = await c.req.json()
+  const cal = await c.env.DB.prepare(
+    `INSERT INTO calendar_events (company_id, events, updated_at) VALUES (?, ?, datetime('now'))
+     ON CONFLICT(company_id) DO UPDATE SET events = excluded.events, updated_at = datetime('now') RETURNING *`
+  ).bind(company_id, JSON.stringify(events || [])).first()
+  return c.json({ id: cal.id, events: JSON.parse(cal.events || '[]'), updated_at: cal.updated_at })
+})
+
+// === ROADMAP ===
+app.route('/api/roadmap', roadmap)
+
+// === REMAINING sub-routers ===
+app.route('/api/coach', coach)
+app.route('/api/email-studio', emailStudio)
+app.route('/api/feedback', feedback)
+app.route('/api/quotes', quotes)
 
 // 404 fallback
 app.notFound((c) => c.json({ error: 'Not found', path: c.req.path, method: c.req.method }, 404))
