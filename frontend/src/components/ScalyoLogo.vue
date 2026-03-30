@@ -1,38 +1,41 @@
 <template>
   <div class="scalyo-logo" :style="{ gap: gap + 'px' }">
     <div class="scalyo-logo-mark" :style="{ width: markSize + 'px', height: markSize + 'px' }">
-      <svg :width="markSize" :height="markSize" :viewBox="'0 0 ' + markSize + ' ' + markSize" fill="none">
+      <svg :width="markSize" :height="markSize" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient :id="'heart-grad-'+uid" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient :id="'hg-'+uid" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#e8603a"/>
             <stop offset="35%" stop-color="#e8507a"/>
             <stop offset="70%" stop-color="#9b5acd"/>
             <stop offset="100%" stop-color="#e8a020"/>
           </linearGradient>
-          <linearGradient :id="'heart-shine-'+uid" x1="20%" y1="0%" x2="80%" y2="100%">
+          <!-- 3D shine top-left -->
+          <linearGradient :id="'hs-'+uid" x1="25%" y1="0%" x2="75%" y2="100%">
+            <stop offset="0%" stop-color="#fff" stop-opacity="0.45"/>
+            <stop offset="45%" stop-color="#fff" stop-opacity="0.08"/>
+            <stop offset="100%" stop-color="#000" stop-opacity="0.12"/>
+          </linearGradient>
+          <!-- 3D radial highlight -->
+          <radialGradient :id="'hr-'+uid" cx="35%" cy="30%" r="55%">
             <stop offset="0%" stop-color="#fff" stop-opacity="0.35"/>
             <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
-          </linearGradient>
+          </radialGradient>
+          <filter :id="'hd-'+uid">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#e8603a" flood-opacity="0.35"/>
+          </filter>
         </defs>
-        <!-- Heart shape -->
-        <path :d="heartPath" :fill="'url(#heart-grad-'+uid+')'" />
-        <!-- Shine overlay -->
-        <path :d="heartPath" :fill="'url(#heart-shine-'+uid+')'" />
-        <!-- S letter -->
-        <text
-          :x="markSize / 2"
-          :y="markSize * 0.6"
-          text-anchor="middle"
-          dominant-baseline="central"
-          :style="{
-            fontSize: Math.round(markSize * 0.42) + 'px',
-            fontFamily: 'Cormorant Garamond, Georgia, serif',
-            fontWeight: 700,
-            fontStyle: 'italic',
-            fill: 'white',
-            filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.15))',
-          }"
-        >S</text>
+        <!-- Heart body -->
+        <path d="M32 56 C32 56, 7 39, 7 24 C7 14, 14 8, 22 8 C27 8, 30.4 11, 32 14 C33.6 11, 37 8, 42 8 C50 8, 57 14, 57 24 C57 39, 32 56, 32 56Z"
+          :fill="'url(#hg-'+uid+')'" :filter="'url(#hd-'+uid+')'"/>
+        <!-- 3D shine -->
+        <path d="M32 56 C32 56, 7 39, 7 24 C7 14, 14 8, 22 8 C27 8, 30.4 11, 32 14 C33.6 11, 37 8, 42 8 C50 8, 57 14, 57 24 C57 39, 32 56, 32 56Z"
+          :fill="'url(#hs-'+uid+')'"/>
+        <path d="M32 56 C32 56, 7 39, 7 24 C7 14, 14 8, 22 8 C27 8, 30.4 11, 32 14 C33.6 11, 37 8, 42 8 C50 8, 57 14, 57 24 C57 39, 32 56, 32 56Z"
+          :fill="'url(#hr-'+uid+')'"/>
+        <!-- Big S -->
+        <text x="32" y="33.5" text-anchor="middle" dominant-baseline="central"
+          font-family="Georgia, 'Cormorant Garamond', serif" font-weight="700" font-style="italic"
+          font-size="32" fill="white" fill-opacity="0.95">S</text>
       </svg>
     </div>
     <span v-if="showText" class="scalyo-logo-text" :style="{ fontSize: fontSize + 'px' }">
@@ -42,28 +45,12 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-
 const uid = Math.random().toString(36).slice(2, 8)
-const props = defineProps({
+defineProps({
   markSize: { type: Number, default: 34 },
   fontSize: { type: Number, default: 22 },
   gap: { type: Number, default: 9 },
   showText: { type: Boolean, default: true },
-})
-
-// Heart SVG path scaled to markSize
-const heartPath = computed(() => {
-  const s = props.markSize
-  const scale = s / 100
-  // Heart centered in 100x100 viewbox, scaled
-  return `M ${50*scale} ${88*scale}
-    C ${50*scale} ${88*scale}, ${12*scale} ${60*scale}, ${12*scale} ${38*scale}
-    C ${12*scale} ${22*scale}, ${24*scale} ${12*scale}, ${38*scale} ${12*scale}
-    C ${46*scale} ${12*scale}, ${50*scale} ${18*scale}, ${50*scale} ${22*scale}
-    C ${50*scale} ${18*scale}, ${54*scale} ${12*scale}, ${62*scale} ${12*scale}
-    C ${76*scale} ${12*scale}, ${88*scale} ${22*scale}, ${88*scale} ${38*scale}
-    C ${88*scale} ${60*scale}, ${50*scale} ${88*scale}, ${50*scale} ${88*scale} Z`
 })
 </script>
 
