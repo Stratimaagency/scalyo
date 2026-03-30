@@ -2,10 +2,10 @@ import { Hono } from 'hono'
 import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 
 const quotes = new Hono()
-quotes.use('/*', authMiddleware(), companyRequired(), trialGuard())
+const mw = [authMiddleware(), companyRequired(), trialGuard()]
 
 // GET /api/quotes/
-quotes.get('/', async (c) => {
+quotes.get('/', ...mw, async (c) => {
   const user = c.get('user')
   const { company_id } = user
 
@@ -17,7 +17,7 @@ quotes.get('/', async (c) => {
 })
 
 // POST /api/quotes/
-quotes.post('/', async (c) => {
+quotes.post('/', ...mw, async (c) => {
   const user = c.get('user')
   const data = await c.req.json()
 
@@ -50,7 +50,7 @@ quotes.post('/', async (c) => {
 })
 
 // PATCH /api/quotes/:id/
-quotes.patch('/:id/', async (c) => {
+quotes.patch('/:id/', ...mw, async (c) => {
   const user = c.get('user')
   const id = c.req.param('id')
   const data = await c.req.json()
@@ -89,7 +89,7 @@ quotes.patch('/:id/', async (c) => {
 })
 
 // DELETE /api/quotes/:id/
-quotes.delete('/:id/', async (c) => {
+quotes.delete('/:id/', ...mw, async (c) => {
   const user = c.get('user')
   const id = c.req.param('id')
 
