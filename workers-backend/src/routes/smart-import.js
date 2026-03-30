@@ -244,7 +244,20 @@ smartImport.post('/execute', async (c) => {
     } catch (e) { results.errors.push(`Roadmap: ${e.message}`) }
   }
 
-  return c.json({ ok: true, imported: results, total: results.portfolio + results.kpis + results.tasks + results.roadmap })
+  // --- Planning events (JSON blob in calendar_events) ---
+  if (data.events?.length) {
+    try {
+      let cal = await db.prepare('SELECT * FROM calendar_events WHERE company_id = ?').bind(company_id).first()
+      const existing = cal ? JSON.parse(cal.events || '[]') : []
+      await db.prepare(
+        `INSERT INTO calendar_events (company_id, events, updated_at) VALUES (?, ?, datetime('now'))
+         ON CONFLICT(company_id) DO UPDATE SET events = excluded.events, updated_at = datetime('now')`
+      ).bind(company_id, JSON.stringify([...existing, ...data.events])).run()
+      results.events = data.events.length
+    } catch (e) { results.errors.push(`Events: ${e.message}`) }
+  }
+
+  return c.json({ ok: true, imported: results, total: results.portfolio + results.kpis + results.tasks + results.roadmap + (results.events || 0) })
 })
 
 export default smartImport
