@@ -84,7 +84,7 @@
           </div>
 
           <!-- Tasks in quadrant -->
-          <div style="flex: 1">
+          <div style="flex: 1; max-height: 400px; overflow-y: auto">
             <div
               v-if="quadrantActiveTasks(q.id).length === 0"
               :style="{
