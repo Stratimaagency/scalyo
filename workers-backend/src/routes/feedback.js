@@ -1,11 +1,9 @@
 import { Hono } from 'hono'
-import { authMiddleware, trialGuard } from '../middleware/auth.js'
 
 const feedback = new Hono()
-const mw = [authMiddleware(), trialGuard()]
 
 // POST /api/feedback/
-feedback.post('/', ...mw, async (c) => {
+feedback.post('/', async (c) => {
   const user = c.get('user')
   const { category, rating, description } = await c.req.json()
 

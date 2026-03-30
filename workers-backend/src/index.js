@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { corsMiddleware, corsHeaders } from './middleware/cors.js'
 import { rateLimitMiddleware } from './middleware/rateLimit.js'
+import { authMiddleware, companyRequired, trialGuard } from './middleware/auth.js'
 
 import auth from './routes/auth.js'
 import portfolio from './routes/portfolio.js'
@@ -33,6 +34,13 @@ app.use('/api/auth/forgot-password/*', rateLimitMiddleware({ maxRequests: 5, win
 app.use('/api/auth/reset-password/*', rateLimitMiddleware({ maxRequests: 5, windowMs: 60000 }))
 app.use('/api/auth/resend-verification/*', rateLimitMiddleware({ maxRequests: 3, windowMs: 60000 }))
 app.use('/api/coach/*', rateLimitMiddleware({ maxRequests: 20, windowMs: 60000 }))
+
+// Auth middleware at app level for ALL protected routes
+const protectedPaths = ['/api/kpis', '/api/tasks', '/api/planning', '/api/roadmap', '/api/coach', '/api/email-studio', '/api/feedback', '/api/quotes', '/api/import']
+for (const path of protectedPaths) {
+  app.use(`${path}/*`, authMiddleware(), companyRequired(), trialGuard())
+  app.use(`${path}`, authMiddleware(), companyRequired(), trialGuard())
+}
 
 // Mount all routes
 app.route('/api/auth', auth)

@@ -1,9 +1,6 @@
 import { Hono } from 'hono'
-import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 
 const kpis = new Hono()
-
-const mw = [authMiddleware(), companyRequired(), trialGuard()]
 
 function parseKpiRow(row) {
   return {
@@ -18,7 +15,7 @@ function parseKpiRow(row) {
 }
 
 // GET /api/kpis/
-kpis.get('/', ...mw, async (c) => {
+kpis.get('/', async (c) => {
   const { company_id } = c.get('user')
   const { results } = await c.env.DB.prepare(
     'SELECT * FROM kpi_data WHERE company_id = ?'
@@ -27,7 +24,7 @@ kpis.get('/', ...mw, async (c) => {
 })
 
 // POST /api/kpis/monthly/
-kpis.post('/monthly/', ...mw, async (c) => {
+kpis.post('/monthly/', async (c) => {
   const { company_id } = c.get('user')
   const { period, kpis: kpisData } = await c.req.json()
 
@@ -47,7 +44,7 @@ kpis.post('/monthly/', ...mw, async (c) => {
 })
 
 // POST /api/kpis/custom/
-kpis.post('/custom/', ...mw, async (c) => {
+kpis.post('/custom/', async (c) => {
   const { company_id } = c.get('user')
   const { custom_kpis, history } = await c.req.json()
 
@@ -63,7 +60,7 @@ kpis.post('/custom/', ...mw, async (c) => {
 })
 
 // POST /api/kpis/goals/
-kpis.post('/goals/', ...mw, async (c) => {
+kpis.post('/goals/', async (c) => {
   const { company_id } = c.get('user')
   const { goals } = await c.req.json()
 

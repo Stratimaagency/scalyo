@@ -1,13 +1,10 @@
 import { Hono } from 'hono'
-import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 import { planGate } from '../middleware/planGate.js'
 
 const planning = new Hono()
 
-const mw = [authMiddleware(), companyRequired(), trialGuard()]
-
 // GET /api/planning/
-planning.get('/', ...mw, async (c) => {
+planning.get('/', async (c) => {
   const { company_id } = c.get('user')
   let cal = await c.env.DB.prepare(
     'SELECT * FROM calendar_events WHERE company_id = ?'
@@ -23,7 +20,7 @@ planning.get('/', ...mw, async (c) => {
 })
 
 // POST /api/planning/save/ — Growth+ only
-planning.post('/save/', ...mw, planGate('Growth'), async (c) => {
+planning.post('/save/', planGate('Growth'), async (c) => {
   const { company_id } = c.get('user')
   const { events } = await c.req.json()
 
