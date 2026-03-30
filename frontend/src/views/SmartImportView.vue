@@ -1153,90 +1153,50 @@ async function doImport() {
       taskTitles: payload.tasks.map(t => t.title).slice(0, 5),
     })
 
-    const result = { portfolio: 0, kpis: 0, tasks: 0, roadmap: 0, errors: [] }
+    // === SINGLE API CALL — send EVERYTHING through /execute ===
+    // Format tasks and events for the backend
+    const now = new Date().toISOString()
+    const formattedTasks = payload.tasks.map((t, i) => ({
+      id: (Date.now() + i).toString(),
+      title: String(t.title || 'Sans titre'),
+      note: String(t.note || ''),
+      quadrant: t.quadrant || 'q1',
+      color: t.color || 'teal',
+      done: false,
+      dueDate: String(t.due || t.dueDate || ''),
+      account: String(t.account || ''),
+      createdAt: now,
+    }))
 
-    // 1. Import portfolio via smart-import endpoint (this works)
-    if (payload.portfolio.length) {
-      try {
-        const { data } = await smartImportApi.execute({ portfolio: payload.portfolio, kpis: {}, tasks: [], roadmap: [] })
-        result.portfolio = data.imported?.portfolio || payload.portfolio.length
-      } catch (e) {
-        result.errors.push('Portfolio: ' + (e.response?.data?.error || e.message))
-      }
+    const formattedEvents = (payload.events || []).map((ev, i) => ({
+      id: (Date.now() + 5000 + i).toString(),
+      title: String(ev.title || ''),
+      date: String(ev.date || ''),
+      startTime: String(ev.startTime || '09:00'),
+      endTime: String(ev.endTime || '10:00'),
+      color: ev.color || 'teal',
+      account: String(ev.account || ''),
+      notes: String(ev.notes || ''),
+    }))
+
+    try {
+      const { data } = await smartImportApi.execute({
+        portfolio: payload.portfolio,
+        kpis: payload.kpis,
+        tasks: formattedTasks,
+        roadmap: payload.roadmap || [],
+        events: formattedEvents,
+      })
+      console.log('Import result:', data)
+      importResult.value = data.imported || data
+      step.value = 'done'
+    } catch (err) {
+      console.error('Import error:', err.response?.data || err)
+      error.value = err.response?.data?.error || err.message || t('errorGeneric')
     }
-
-    // 2. Save KPIs via the SAME API that KPIView uses
-    if (payload.kpis && payload.kpis.mrr) {
-      try {
-        const period = new Date().toISOString().slice(0, 7)
-        await kpiApi.saveMonthly({ period, kpis: payload.kpis })
-        result.kpis = 1
-      } catch (e) {
-        result.errors.push('KPIs: ' + (e.response?.data?.error || e.message))
-      }
-    }
-
-    // 3. Save tasks via the SAME API that TaskBoardView uses
-    if (payload.tasks.length) {
-      try {
-        let existingTasks = []
-        try {
-          const { data: taskData } = await taskApi.getTasks()
-          existingTasks = taskData?.tasks || []
-        } catch { existingTasks = [] }
-
-        const now = new Date().toISOString()
-        const newTasks = payload.tasks.map((t, i) => ({
-          id: (Date.now() + i).toString(),
-          title: String(t.title || 'Sans titre'),
-          note: String(t.note || ''),
-          quadrant: t.quadrant || 'q1',
-          color: t.color || 'teal',
-          done: false,
-          dueDate: String(t.due || t.dueDate || ''),
-          account: String(t.account || ''),
-          createdAt: now,
-        }))
-        await taskApi.saveTasks([...existingTasks, ...newTasks])
-        result.tasks = newTasks.length
-      } catch (e) {
-        result.errors.push('Tasks: ' + (e?.message || 'erreur'))
-      }
-    }
-
-    // 4. Save planning events via the SAME API that PlanningView uses
-    if (payload.events && payload.events.length) {
-      try {
-        let existingEvents = []
-        try {
-          const { data: planData } = await planningApi.getEvents()
-          existingEvents = planData?.events || []
-        } catch { existingEvents = [] }
-
-        const newEvents = payload.events.map((ev, i) => ({
-          id: (Date.now() + 1000 + i).toString(),
-          title: String(ev.title || ''),
-          date: String(ev.date || ''),
-          startTime: String(ev.startTime || '09:00'),
-          endTime: String(ev.endTime || '10:00'),
-          color: ev.color || 'teal',
-          account: String(ev.account || ''),
-          notes: String(ev.notes || ''),
-        }))
-        await planningApi.saveEvents([...existingEvents, ...newEvents])
-        result.events = newEvents.length
-      } catch (e) {
-        result.errors.push('Planning: ' + (e?.message || 'erreur'))
-      }
-    }
-
-    console.log('Import complete:', result)
-    if (result.errors.length) console.error('Import errors:', result.errors)
-    importResult.value = result
-    step.value = 'done'
-  } catch (err) {
-    console.error('Import error:', err)
-    error.value = err.response?.data?.error || err.message || t('errorGeneric')
+  } catch (outerErr) {
+    console.error('Import outer error:', outerErr)
+    error.value = outerErr.message || t('errorGeneric')
   }
   importing.value = false
 }
