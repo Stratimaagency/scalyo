@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:preprod": "VITE_API_URL=https://scalyo-api-preprod.stratimaagency.workers.dev/api vite build",
     "preview": "vite preview",
     "test:e2e": "npx playwright test --reporter=list",
     "test:qa": "node qa-validator.mjs"
