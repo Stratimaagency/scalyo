@@ -30,7 +30,7 @@ const routes = [
       { path: 'dashboard', name: 'dashboard', component: () => import('../views/DashboardView.vue') },
       { path: 'portfolio', name: 'portfolio', component: () => import('../views/PortfolioView.vue') },
       { path: 'kpis', name: 'kpis', component: () => import('../views/KPIView.vue') },
-      { path: 'tasks', name: 'tasks', component: () => import('../views/TaskBoardView.vue') },
+      { path: 'tasks', name: 'tasks', component: () => import('../views/SmartMatrice.vue') },
       { path: 'planning', name: 'planning', component: () => import('../views/PlanningView.vue') },
       { path: 'wellbeing', name: 'wellbeing', component: () => import('../views/WellbeingView.vue') },
       { path: 'coach', name: 'coach', component: () => import('../views/CoachView.vue') },
@@ -44,7 +44,6 @@ const routes = [
       { path: 'integrations/:key', name: 'integration-detail', component: () => import('../views/IntegrationDetailView.vue'), props: true },
       { path: 'quotes', name: 'quotes', component: () => import('../views/QuotesView.vue') },
       { path: 'import', name: 'smart-import', component: () => import('../views/SmartImportView.vue') },
-      { path: 'smart-matrice', name: 'smart-matrice', component: () => import('../views/SmartMatrice.vue') },
     ],
   },
 ]

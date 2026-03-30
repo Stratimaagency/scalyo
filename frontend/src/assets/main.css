@@ -132,7 +132,7 @@
 html, body, #app {
   height: 100%;
   background: var(--bg);
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Inter', sans-serif;
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -149,13 +149,13 @@ html, body, #app {
 
 input, select, textarea {
   outline: none;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Inter', sans-serif;
   -webkit-appearance: none;
   appearance: none;
 }
 input:focus, select:focus, textarea:focus {
-  border-color: rgba(35, 131, 226, 0.5) !important;
-  box-shadow: 0 0 0 3px rgba(35, 131, 226, 0.08) !important;
+  border-color: rgba(232, 96, 58, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(232, 96, 58, 0.08) !important;
 }
 
 /* === BUTTONS === */
@@ -171,13 +171,13 @@ input:focus, select:focus, textarea:focus {
   cursor: pointer;
   transition: all 0.2s ease;
   letter-spacing: -0.2px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Inter', sans-serif;
 }
 .btn-primary {
-  background: var(--teal);
+  background: var(--sm-grad);
   color: #fff;
 }
-.btn-primary:hover { filter: brightness(1.08); }
+.btn-primary:hover { filter: brightness(1.05); }
 .btn-secondary {
   background: var(--surface);
   color: var(--text);
@@ -236,22 +236,22 @@ input:focus, select:focus, textarea:focus {
   transition: all 0.25s ease;
   width: 100%;
   text-align: left;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Inter', sans-serif;
   margin-bottom: 1px;
 }
 .nav-btn:hover { background: var(--nav-hover) !important; }
 .nav-btn.active {
-  background: var(--tealBg);
-  color: var(--teal);
-  border: 1px solid var(--tealBorder);
+  background: rgba(232, 96, 58, 0.08);
+  color: var(--sm-terra);
+  border: 1px solid rgba(232, 96, 58, 0.18);
   font-weight: 700;
 }
-.nav-icon { font-size: 14px; flex-shrink: 0; }
+.nav-emoji { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; line-height: 1; }
 .nav-label { flex: 1; }
 .nav-active-bar {
   width: 3px;
   height: 18px;
-  background: var(--teal);
+  background: var(--sm-grad-h);
   border-radius: 2px;
   flex-shrink: 0;
 }
@@ -277,13 +277,13 @@ input:focus, select:focus, textarea:focus {
   border: 1px solid var(--border);
   color: var(--muted);
   transition: all 0.15s;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Inter', sans-serif;
 }
 .lang-btn.active {
   font-weight: 700;
-  background: var(--tealBg);
-  border-color: var(--tealBorder);
-  color: var(--teal);
+  background: rgba(232, 96, 58, 0.08);
+  border-color: rgba(232, 96, 58, 0.18);
+  color: var(--sm-terra);
 }
 
 /* User info */
@@ -387,8 +387,8 @@ input:focus, select:focus, textarea:focus {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: var(--tealBg);
-  border: 1px solid var(--tealBorder);
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.18);
   border-radius: 20px;
   padding: 5px 12px;
 }
@@ -396,11 +396,11 @@ input:focus, select:focus, textarea:focus {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--teal);
+  background: #16a34a;
   animation: pulse 2s infinite;
 }
 .topbar-online-text {
-  color: var(--teal);
+  color: #16a34a;
   font-size: 11px;
   font-weight: 700;
 }
@@ -415,7 +415,7 @@ input:focus, select:focus, textarea:focus {
   padding: 16px;
   transition: border-color 0.25s ease;
 }
-.card:hover { border-color: var(--tealBorder); }
+.card:hover { border-color: rgba(232, 96, 58, 0.2); }
 .card-lift { transition: border-color 0.25s ease; }
 .card-lift:hover { border-color: var(--tealBorder) !important; }
 .card-danger {
@@ -470,7 +470,7 @@ input:focus, select:focus, textarea:focus {
   white-space: nowrap;
   border: none;
   background: transparent;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Inter', sans-serif;
 }
 .tab-item.active { background: var(--tab-active-bg); color: var(--tab-active-text); box-shadow: 0 1px 4px rgba(45, 42, 38, 0.06); }
 .tab-item:hover:not(.active) { color: var(--text); background: var(--surfaceHi); }
@@ -494,7 +494,7 @@ input:focus, select:focus, textarea:focus {
   padding: 9px 12px;
   color: var(--input-text);
   font-size: 13px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Inter', sans-serif;
   font-weight: 600;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
@@ -629,7 +629,7 @@ input:focus, select:focus, textarea:focus {
   transition: all 0.3s ease;
   cursor: pointer;
   border: none;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Inter', sans-serif;
   font-weight: 600;
   outline: none;
   letter-spacing: -0.01em;
@@ -859,7 +859,7 @@ input:focus, select:focus, textarea:focus {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Inter', sans-serif;
   transition: background 0.15s;
 }
 .bottom-nav-item.active { color: var(--teal); }
