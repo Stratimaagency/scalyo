@@ -36,7 +36,7 @@ export { corsHeaders }
 
 function corsHeaders(c) {
   const frontendUrl = c.env?.FRONTEND_URL || 'https://scalyo.pages.dev'
-  const allowedOrigins = [frontendUrl, 'https://scalyo.app', 'https://www.scalyo.app', 'http://localhost:5173', 'http://localhost:4173']
+  const allowedOrigins = [frontendUrl, 'https://scalyo.app', 'https://www.scalyo.app', 'https://preprod.scalyo.pages.dev', 'http://localhost:5173', 'http://localhost:4173']
   const origin = c.req.header('Origin')
   // Allow *.scalyo.pages.dev (Cloudflare Pages preview URLs) — only alphanumeric subdomains
   const isAllowed = allowedOrigins.includes(origin) || (origin && /^https:\/\/[a-z0-9-]+\.scalyo\.pages\.dev$/.test(origin))

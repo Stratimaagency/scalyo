@@ -4,12 +4,12 @@
       <svg :width="Math.round(markSize * 0.75)" :height="Math.round(markSize * 0.75)" viewBox="0 0 100 100" fill="none">
         <defs>
           <linearGradient :id="'lienA-'+uid" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#0d9488"/>
-            <stop offset="100%" stop-color="#5eead4"/>
+            <stop offset="0%" stop-color="#e8603a"/>
+            <stop offset="100%" stop-color="#e8507a"/>
           </linearGradient>
           <linearGradient :id="'lienB-'+uid" x1="100%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stop-color="#5eead4"/>
-            <stop offset="100%" stop-color="#0f766e"/>
+            <stop offset="0%" stop-color="#9b5acd"/>
+            <stop offset="100%" stop-color="#e8a020"/>
           </linearGradient>
         </defs>
         <!-- Courbe Client -->
@@ -19,8 +19,8 @@
         <path d="M 72 28 C 82 42, 82 58, 72 68 C 62 78, 52 80, 50 72 C 48 64, 46 58, 44 52"
           :stroke="'url(#lienB-'+uid+')'" stroke-width="8" fill="none" stroke-linecap="round"/>
         <!-- Point de connexion -->
-        <circle cx="50" cy="50" r="5" fill="#5eead4" opacity="0.9"/>
-        <circle cx="50" cy="50" r="10" fill="#5eead4" opacity="0.15"/>
+        <circle cx="50" cy="50" r="5" fill="#e8603a" opacity="0.9"/>
+        <circle cx="50" cy="50" r="10" fill="#e8603a" opacity="0.15"/>
       </svg>
     </div>
     <span v-if="showText" class="scalyo-logo-text" :style="{ fontSize: fontSize + 'px' }">
@@ -51,12 +51,13 @@ defineProps({
   flex-shrink: 0;
 }
 .scalyo-logo-text {
-  font-weight: 900;
-  letter-spacing: -0.8px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  letter-spacing: -0.5px;
   color: var(--text);
 }
 .scalyo-logo-accent {
-  background: linear-gradient(135deg, #0D9488, #2dd4bf);
+  background: linear-gradient(135deg, #e8603a, #e8507a, #9b5acd);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

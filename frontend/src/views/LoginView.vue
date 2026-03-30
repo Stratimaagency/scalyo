@@ -253,7 +253,7 @@ async function submit() {
   align-items: center;
   justify-content: center;
   background: var(--bg);
-  background-image: radial-gradient(ellipse 90% 60% at 50% -5%, rgba(77,182,160,0.06), transparent);
+  background-image: radial-gradient(ellipse 90% 60% at 50% -5%, rgba(232,96,58,0.06), transparent);
   padding: 20px;
 }
 .login-card {
@@ -286,21 +286,22 @@ async function submit() {
   transition: all 0.15s;
 }
 .plan-option:hover {
-  border-color: var(--teal);
+  border-color: var(--sm-terra);
 }
 .plan-option.active {
-  border-color: var(--teal);
-  background: rgba(77, 182, 160, 0.08);
+  border-color: var(--sm-terra);
+  background: rgba(232, 96, 58, 0.08);
 }
 .plan-option-name {
   font-weight: 800;
   font-size: 14px;
   margin-bottom: 2px;
+  font-family: 'Cormorant Garamond', serif;
 }
 .plan-option-price {
   font-size: 15px;
   font-weight: 700;
-  color: var(--teal);
+  color: var(--sm-terra);
   margin-bottom: 4px;
 }
 .plan-option-desc {

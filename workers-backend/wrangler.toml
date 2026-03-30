@@ -10,3 +10,18 @@ APP_URL = "https://scalyo-api.stratimaagency.workers.dev"
 binding = "DB"
 database_name = "scalyo-db"
 database_id = "79e02869-b288-4255-b654-95e74f601fe2"
+
+# ========================
+# PREPROD ENVIRONMENT
+# ========================
+[env.preprod]
+name = "scalyo-api-preprod"
+
+[env.preprod.vars]
+FRONTEND_URL = "https://preprod.scalyo.pages.dev"
+APP_URL = "https://scalyo-api-preprod.stratimaagency.workers.dev"
+
+[[env.preprod.d1_databases]]
+binding = "DB"
+database_name = "scalyo-db-preprod"
+database_id = "REPLACE_WITH_PREPROD_DB_ID"

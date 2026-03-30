@@ -114,6 +114,26 @@ export const billingApi = {
   getStatus: () => api.get('/billing/status/'),
 }
 
+// Smart Matrice
+export const smartMatriceApi = {
+  getProjects: () => api.get('/smart-matrice/'),
+  createProject: (data) => api.post('/smart-matrice/', data),
+  updateProject: (id, data) => api.patch(`/smart-matrice/${id}`, data),
+  deleteProject: (id) => api.delete(`/smart-matrice/${id}`),
+  getTasks: (projectId) => api.get(`/smart-matrice/${projectId}/tasks`),
+  createTask: (data) => api.post('/smart-matrice/tasks', data),
+  updateTask: (id, data) => api.patch(`/smart-matrice/tasks/${id}`, data),
+  deleteTask: (id) => api.delete(`/smart-matrice/tasks/${id}`),
+  createSubtask: (taskId, data) => api.post(`/smart-matrice/tasks/${taskId}/subtasks`, data),
+  updateSubtask: (id, data) => api.patch(`/smart-matrice/subtasks/${id}`, data),
+  deleteSubtask: (id) => api.delete(`/smart-matrice/subtasks/${id}`),
+  getTeamWorkload: () => api.get('/smart-matrice/team-workload'),
+  getStats: (projectId) => api.get(`/smart-matrice/stats/${projectId}`),
+  getConfig: () => api.get('/smart-matrice/config'),
+  updateConfig: (data) => api.patch('/smart-matrice/config', data),
+  importTasks: (data) => api.post('/smart-matrice/import', data),
+}
+
 // Integrations
 export const integrationsApi = {
   list: () => api.get('/integrations/'),

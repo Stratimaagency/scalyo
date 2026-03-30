@@ -794,6 +794,9 @@ export default {
   accountNameRequired: 'Le nom du compte est requis',
   nameRequired: 'Le nom est requis',
   errUnexpected: 'Une erreur inattendue est survenue',
+  // --- Smart Matrice ---
+  smartMatrice: 'Smart Matrice',
+
   // --- Smart Import ---
   smartImport: 'Import intelligent',
   smartImportTitle: 'Import intelligent',

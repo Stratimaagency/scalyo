@@ -13,9 +13,9 @@
           class="nav-btn"
           active-class="active"
         >
-          <span class="nav-icon"><ScalyoIcon :name="item.icon" :size="18" /></span>
+          <span class="nav-emoji">{{ item.emoji }}</span>
           <span class="nav-label">{{ item.label }}</span>
-          <span v-if="item.locked" style="font-size: 11px; opacity: 0.5; margin-left: auto;">&#x1F512;</span>
+          <span v-if="item.locked" style="font-size: 11px; opacity: 0.5; margin-left: auto;">🔒</span>
           <span
             v-if="item.key === 'portfolio' && criticalCount > 0"
             class="nav-badge-critical"
@@ -36,7 +36,7 @@
         </div>
         <!-- Settings -->
         <router-link :to="{ name: 'settings' }" class="nav-btn" active-class="active">
-          <span class="nav-icon"><ScalyoIcon name="gear" :size="18" /></span>
+          <span class="nav-emoji">⚙️</span>
           <span class="nav-label">{{ t('settings') }}</span>
           <span v-if="$route.name === 'settings'" class="nav-active-bar"></span>
         </router-link>
@@ -55,7 +55,7 @@
               {{ t('trialDaysLeftMsg').replace('{days}', trialDaysLeft) }}
             </div>
           </div>
-          <button class="sidebar-logout-btn" :title="t('logout')" @click="logout"><ScalyoIcon name="power" :size="16" /></button>
+          <button class="sidebar-logout-btn" :title="t('logout')" @click="logout">🚪</button>
         </div>
       </div>
     </aside>
@@ -74,7 +74,7 @@
             :to="{ name: 'portfolio' }"
             class="topbar-critical-badge"
           >
-            <span class="pulse"><ScalyoIcon name="siren" :size="16" /></span>
+            <span class="pulse">🚨</span>
             {{ criticalCount }} {{ criticalLabel }}
           </router-link>
           <div class="topbar-online">
@@ -138,7 +138,7 @@
         class="bottom-nav-item"
         active-class="active"
       >
-        <span style="font-size: 20px;"><ScalyoIcon :name="item.icon" :size="20" /></span>
+        <span style="font-size: 20px;">{{ item.emoji }}</span>
         <span>{{ item.label }}</span>
       </router-link>
     </nav>
@@ -264,6 +264,13 @@ function logout() {
 </script>
 
 <style scoped>
+.nav-emoji {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
 .nav-badge-critical {
   background: var(--red);
   color: #fff;
