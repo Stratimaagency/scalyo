@@ -1,8 +1,6 @@
 import { Hono } from 'hono'
-import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 
 const smartImport = new Hono()
-smartImport.use('/*', authMiddleware(), companyRequired(), trialGuard())
 
 const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions'
 

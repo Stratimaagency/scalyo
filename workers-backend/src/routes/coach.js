@@ -1,8 +1,6 @@
 import { Hono } from 'hono'
-import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 
 const coach = new Hono()
-const mw = [authMiddleware(), companyRequired(), trialGuard()]
 
 // Daily message limits per plan
 const DAILY_MSG_LIMITS = { Starter: 5, Growth: -1, Elite: -1 }
@@ -49,7 +47,7 @@ const MODEL = 'deepseek-chat'
 const MAX_TOKENS = 1024
 
 // POST /api/coach/chat/
-coach.post('/chat/', ...mw, async (c) => {
+coach.post('/chat/', async (c) => {
   // Check daily message limit by plan
   const limitErr = await checkCoachLimit(c)
   if (limitErr) return c.json(limitErr, 403)
@@ -101,7 +99,7 @@ coach.post('/chat/', ...mw, async (c) => {
 })
 
 // POST /api/coach/stream/
-coach.post('/stream/', ...mw, async (c) => {
+coach.post('/stream/', async (c) => {
   // Check daily message limit by plan
   const limitErr = await checkCoachLimit(c)
   if (limitErr) return c.json(limitErr, 403)
