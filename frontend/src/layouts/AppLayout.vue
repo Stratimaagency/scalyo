@@ -3,25 +3,27 @@
     <!-- Desktop sidebar -->
     <aside class="sidebar-desktop">
       <div class="sidebar-logo">
-        <ScalyoLogo :markSize="34" :fontSize="22" :gap="9" />
+        <ScalyoLogo :markSize="38" :fontSize="20" :gap="10" :showSub="true" />
       </div>
       <nav class="sidebar-nav">
-        <router-link
-          v-for="item in mainNavItems"
-          :key="item.key"
-          :to="{ name: item.routeName }"
-          class="nav-btn"
-          active-class="active"
-        >
-          <span class="nav-emoji">{{ item.emoji }}</span>
-          <span class="nav-label">{{ item.label }}</span>
-          <span v-if="item.locked" style="font-size: 11px; opacity: 0.5; margin-left: auto;">🔒</span>
-          <span
-            v-if="item.key === 'portfolio' && criticalCount > 0"
-            class="nav-badge-critical"
-          >{{ criticalCount }}</span>
-          <span v-if="$route.name === item.routeName" class="nav-active-bar"></span>
-        </router-link>
+        <template v-for="(group, gi) in navGroups" :key="gi">
+          <div class="nav-group-label">{{ group.label }}</div>
+          <router-link
+            v-for="item in group.items"
+            :key="item.key"
+            :to="{ name: item.routeName }"
+            class="nav-btn"
+            active-class="active"
+          >
+            <span class="nav-emoji">{{ item.emoji }}</span>
+            <span class="nav-label">{{ item.label }}</span>
+            <span v-if="item.locked" style="font-size: 11px; opacity: 0.5; margin-left: auto;">🔒</span>
+            <span
+              v-if="item.key === 'portfolio' && criticalCount > 0"
+              class="nav-badge-critical"
+            >{{ criticalCount }}</span>
+          </router-link>
+        </template>
       </nav>
       <div class="sidebar-footer">
         <!-- Language switcher -->
@@ -210,6 +212,24 @@ const mainNavItems = computed(() =>
   navItems.value.filter(item => item.key !== 'settings')
 )
 
+// Group nav items by category
+const navGroups = computed(() => {
+  const items = mainNavItems.value
+  const groups = [
+    { label: 'VUE D\'ENSEMBLE', keys: ['dashboard', 'portfolio', 'kpis'] },
+    { label: 'GESTION', keys: ['tasks', 'planning'] },
+    { label: 'VUES', keys: ['wellbeing', 'coach', 'roadmap'] },
+    { label: 'OUTILS', keys: ['email-studio', 'quotes', 'integrations', 'resources', 'tips'] },
+    { label: 'RÉGLAGES', keys: ['smart-import', 'feedback'] },
+  ]
+  return groups
+    .map(g => ({
+      label: g.label,
+      items: g.keys.map(k => items.find(i => i.key === k)).filter(Boolean),
+    }))
+    .filter(g => g.items.length > 0)
+})
+
 const criticalCount = computed(() =>
   portfolioStore.accounts.filter(a => a.risk === 'critical').length
 )
@@ -264,9 +284,21 @@ function logout() {
 </script>
 
 <style scoped>
+.nav-group-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+  padding: 14px 10px 4px;
+  font-family: 'DM Sans', sans-serif;
+}
+.nav-group-label:first-child {
+  padding-top: 0;
+}
 .nav-emoji {
-  font-size: 18px;
-  width: 24px;
+  font-size: 16px;
+  width: 22px;
   text-align: center;
   flex-shrink: 0;
   line-height: 1;
