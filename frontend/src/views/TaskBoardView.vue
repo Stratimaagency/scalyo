@@ -93,28 +93,32 @@
               }"
             >{{ t('taskDrop') }}</div>
 
-            <TaskCard
+            <!-- Simple task rows (not complex TaskCard) -->
+            <div
               v-for="task in quadrantActiveTasks(q.id)" :key="task.id"
-              :task="task"
-              @toggle="toggleTask"
-              @delete="deleteTask"
-              @edit="openEdit"
-              @move="moveTask"
-            />
+              :style="{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '8px 10px', marginBottom: '4px',
+                background: 'var(--surface)', borderRadius: '6px',
+                borderLeft: '3px solid ' + (task.color === 'red' ? '#EF4444' : task.color === 'orange' ? '#F97316' : task.color === 'blue' ? '#3B82F6' : '#4DB6A0'),
+                cursor: 'pointer', fontSize: '12px', transition: 'all .1s',
+              }"
+              @click="openEdit(task)"
+            >
+              <input type="checkbox" :checked="task.done" @click.stop="toggleTask(task.id)" style="cursor: pointer; accent-color: var(--teal); flex-shrink: 0;" />
+              <div style="flex: 1; min-width: 0;">
+                <div :style="{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: task.done ? 'line-through' : 'none' }">{{ task.title }}</div>
+                <div v-if="task.account" style="font-size: 10px; color: var(--muted);">{{ task.account }}</div>
+              </div>
+              <span v-if="task.dueDate" style="font-size: 10px; color: var(--muted); flex-shrink: 0;">{{ task.dueDate }}</span>
+              <button @click.stop="deleteTask(task.id)" style="background: none; border: none; cursor: pointer; color: var(--muted); font-size: 12px; padding: 2px; flex-shrink: 0; opacity: 0.5;">✕</button>
+            </div>
 
             <!-- Done tasks in this quadrant -->
-            <div v-if="quadrantDoneTasks(q.id).length > 0" style="margin-top: 8px; opacity: 0.6">
-              <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px">
-                {{ quadrantDoneTasks(q.id).length }} {{ t('taskDoneCount') }}
+            <div v-if="quadrantDoneTasks(q.id).length > 0" style="margin-top: 8px; opacity: 0.5">
+              <div style="font-size: 10px; color: var(--muted); margin-bottom: 4px;">
+                ✓ {{ quadrantDoneTasks(q.id).length }} {{ t('taskDone') }}
               </div>
-              <TaskCard
-                v-for="task in quadrantDoneTasks(q.id)" :key="task.id"
-                :task="task"
-                @toggle="toggleTask"
-                @delete="deleteTask"
-                @edit="openEdit"
-                @move="moveTask"
-              />
             </div>
           </div>
         </div>
