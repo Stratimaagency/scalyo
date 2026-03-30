@@ -252,8 +252,8 @@ async function submit() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg);
-  background-image: radial-gradient(ellipse 90% 60% at 50% -5%, rgba(232,96,58,0.06), transparent);
+  background: #faf6f1;
+  background-image: radial-gradient(ellipse 90% 60% at 50% -5%, rgba(232,96,58,0.08), transparent);
   padding: 20px;
 }
 .login-card {
