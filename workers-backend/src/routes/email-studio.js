@@ -3,10 +3,7 @@ import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.
 import { planGate } from '../middleware/planGate.js'
 
 const emailStudio = new Hono()
-emailStudio.use('/*', authMiddleware(), companyRequired(), trialGuard())
-
-// Send requires Growth+ plan
-emailStudio.use('/send/*', planGate('Growth'))
+const mw = [authMiddleware(), companyRequired(), trialGuard()]
 
 // --- Template Registry (in-memory, same as Django version) ---
 
@@ -96,13 +93,13 @@ function localizeTemplate(tpl, lang) {
 }
 
 // GET /api/email-studio/templates/
-emailStudio.get('/templates/', async (c) => {
+emailStudio.get('/templates/', ...mw, async (c) => {
   const lang = c.req.query('lang') || 'fr'
   return c.json(TEMPLATES.map(t => localizeTemplate(t, lang)))
 })
 
 // GET /api/email-studio/templates/:id/
-emailStudio.get('/templates/:id/', async (c) => {
+emailStudio.get('/templates/:id/', ...mw, async (c) => {
   const id = c.req.param('id')
   const lang = c.req.query('lang') || 'fr'
   const tpl = TEMPLATES.find(t => t.id === id)
@@ -111,7 +108,7 @@ emailStudio.get('/templates/:id/', async (c) => {
 })
 
 // POST /api/email-studio/send/
-emailStudio.post('/send/', async (c) => {
+emailStudio.post('/send/', ...mw, planGate('Growth'), async (c) => {
   const user = c.get('user')
   const data = await c.req.json()
 

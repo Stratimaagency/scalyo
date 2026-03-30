@@ -2,10 +2,12 @@ import { Hono } from 'hono'
 import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 
 const tasks = new Hono()
-tasks.use('/*', authMiddleware(), companyRequired(), trialGuard())
+
+// Apply middleware to each route individually
+const mw = [authMiddleware(), companyRequired(), trialGuard()]
 
 // GET /api/tasks/
-tasks.get('/', async (c) => {
+tasks.get('/', ...mw, async (c) => {
   const { company_id } = c.get('user')
   let board = await c.env.DB.prepare(
     'SELECT * FROM task_boards WHERE company_id = ?'
@@ -21,7 +23,7 @@ tasks.get('/', async (c) => {
 })
 
 // POST /api/tasks/save/
-tasks.post('/save/', async (c) => {
+tasks.post('/save/', ...mw, async (c) => {
   const { company_id } = c.get('user')
   const { tasks: tasksData } = await c.req.json()
 
