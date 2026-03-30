@@ -791,6 +791,9 @@ export default {
   accountNameRequired: '계정 이름이 필요합니다',
   nameRequired: '이름이 필요합니다',
   errUnexpected: '예기치 못한 오류가 발생했습니다',
+  // --- Smart Matrice ---
+  smartMatrice: '스마트 매트릭스',
+
   // --- Smart Import ---
   smartImport: '스마트 가져오기',
   smartImportTitle: '스마트 가져오기',

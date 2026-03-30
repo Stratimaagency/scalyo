@@ -1,3 +1,31 @@
+/* === GOOGLE FONTS — Smart Matrice === */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+/* === SMART MATRICE VARIABLES === */
+:root {
+  --sm-grad:   linear-gradient(135deg, #e8603a 0%, #e8507a 35%, #9b5acd 70%, #e8a020 100%);
+  --sm-grad-h: linear-gradient(90deg,  #e8603a 0%, #e8507a 40%, #9b5acd 75%, #e8a020 100%);
+  --sm-terra:  #e8603a;
+  --sm-rose:   #e8507a;
+  --sm-parme:  #9b5acd;
+  --sm-gold:   #e8a020;
+  --sm-bg:     #faf6f1;
+  --sm-white:  #ffffff;
+  --sm-bd:     #e8d8cc;
+  --sm-bd2:    #d4b89e;
+  --sm-t1:     #2d1b0e;
+  --sm-t2:     #5c3d26;
+  --sm-t3:     #9b7560;
+  --sm-ok:     #16a34a;  --sm-ok-p:   #dcfce7;
+  --sm-warn:   #d97706;  --sm-warn-p: #fef3c7;
+  --sm-err:    #dc2626;  --sm-err-p:  #fee2e2;
+  --sm-info:   #2563eb;  --sm-info-p: #dbeafe;
+  --sm-ai:     #9b5acd;  --sm-ai-p:   #f3e8ff;
+  --sm-r:      16px;
+  --sm-sh:     0 1px 3px rgba(45,27,14,.06), 0 2px 8px rgba(45,27,14,.05);
+  --sm-sh2:    0 6px 24px rgba(45,27,14,.10);
+}
+
 /* === CSS VARIABLES — THEME SYSTEM === */
 :root {
   --bg: #181B20;
