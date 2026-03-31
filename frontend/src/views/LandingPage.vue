@@ -2547,7 +2547,7 @@ footer {
 .plan-card{background:var(--bg2);border:1px solid var(--dline);border-radius:18px;padding:26px;text-align:left;position:relative;transition:all .2s;}
 .plan-card.featured{border-color:var(--teal);background:rgba(59,130,246,.04);}
 .plan-card:hover{transform:translateY(-2px);}
-.plan-pop{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--teal);color:#2d1b0e;font-size:10px;font-weight:800;padding:4px 14px;border-radius:100px;white-space:nowrap;}
+.plan-pop{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--teal);color:#ffffff;font-size:10px;font-weight:800;padding:4px 14px;border-radius:100px;white-space:nowrap;}
 .plan-name{font-size:14px;font-weight:800;margin-bottom:4px;}
 .plan-price{font-size:30px;font-weight:900;color:var(--teal);margin-bottom:4px;}
 .plan-price span{font-size:13px;font-weight:500;color:var(--dt3);}
