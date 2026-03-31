@@ -1439,7 +1439,7 @@ nav.scrolled {
   position: absolute; left: 50%; top: -100px;
   transform: translateX(-50%);
   width: 1400px; height: 900px;
-  background: radial-gradient(ellipse at 50% 30%, rgba(232,96,58,.18) 0%, rgba(232,80,122,.08) 30%, rgba(155,90,205,.05) 50%, rgba(232,160,32,.03) 65%, transparent 80%);
+  background: radial-gradient(ellipse at 50% 30%, rgba(232,96,58,.04) 0%, rgba(155,90,205,.02) 40%, transparent 65%);
   pointer-events: none; z-index: 0;
   animation: glow-pulse 6s ease-in-out infinite;
 }
@@ -1481,7 +1481,7 @@ nav.scrolled {
   content: '';
   position: absolute;
   inset: -30px -50px;
-  background: radial-gradient(ellipse at 50% 50%, var(--teal-glow) 0%, rgba(232,96,58,.08) 50%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 50%, rgba(232,96,58,.03) 0%, transparent 60%);
   border-radius: 50%;
   z-index: -1;
   animation: glow-pulse 6s ease-in-out infinite;
@@ -1554,7 +1554,7 @@ nav.scrolled {
 .screenshot-glow {
   position: absolute; bottom: -80px; left: 50%; transform: translateX(-50%);
   width: 80%; height: 400px;
-  background: radial-gradient(ellipse, rgba(232,96,58,.18), rgba(232,80,122,.08) 40%, rgba(155,90,205,.04) 60%, transparent 80%);
+  background: radial-gradient(ellipse, rgba(232,96,58,.04), rgba(155,90,205,.02) 50%, transparent 75%);
   pointer-events: none; filter: blur(12px);
 }
 .app-shell {
@@ -2135,7 +2135,7 @@ input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(232,9
 .end-glow {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
   width: 900px; height: 500px;
-  background: radial-gradient(ellipse, rgba(232,96,58,.10) 0%, rgba(232,80,122,.05) 30%, rgba(155,90,205,.03) 50%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(232,96,58,.03) 0%, rgba(155,90,205,.02) 40%, transparent 65%);
   pointer-events: none; animation: glow-pulse 6s ease-in-out infinite;
 }
 .end-inner { position: relative; z-index: 1; }
