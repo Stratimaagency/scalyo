@@ -899,11 +899,11 @@
 
       <div class="vs-highlights">
         <div class="vs-hl-card">
-          <div class="vs-hl-number">0 &euro;</div>
+          <div class="vs-hl-number">5+</div>
           <div class="vs-hl-text" v-html="t('sell_hl1')"></div>
         </div>
         <div class="vs-hl-card">
-          <div class="vs-hl-number">5 min</div>
+          <div class="vs-hl-number">3 clics</div>
           <div class="vs-hl-text" v-html="t('sell_hl2')"></div>
         </div>
         <div class="vs-hl-card">
@@ -1151,7 +1151,7 @@ function filterInteg(cat) {
 }
 
 // ── SELL ICONS ──
-const sellIcons = ['🔗', '⚡', '🛡️', '🤖', '💖', '💎', '📊', '🚀']
+const sellIcons = ['🎯', '🛡️', '🎓', '🤖', '📊', '💎', '🚀', '🔒']
 
 // ── ROI CALCULATOR ──
 const roi = reactive({ csm: 5, acc: 30, arr: 10000, churn: 10 })
