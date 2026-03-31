@@ -707,7 +707,7 @@ export const L = {
     integ_zoom_tag: "Scheduling & Recording",
     integ_calendly_tag: "Booking",
     integ_asana_tag: "Projects & Tasks",
-    integ_more: "+ Zendesk, Segment, Freshdesk, Notion, WhatsApp, Crisp and many more coming soon.",
+    integ_more: "+ Salesforce, Gmail, Outlook, Zoom and more integrations coming soon.",
     // Sales arguments
     sell_title: "Why choose Scalyo?",
     sell_subtitle: "The first platform that cares about CSMs as much as clients.",
@@ -1074,7 +1074,7 @@ export const L = {
     integ_zoom_tag: "일정 & 녹화",
     integ_calendly_tag: "예약",
     integ_asana_tag: "프로젝트 & 작업",
-    integ_more: "+ Zendesk, Segment, Freshdesk, Notion, WhatsApp, Crisp 등 곧 추가됩니다.",
+    integ_more: "+ Salesforce, Gmail, Outlook, Zoom 등 곧 추가됩니다.",
     // 판매 포인트
     sell_title: "왜 Scalyo를 선택해야 하나요?",
     sell_subtitle: "고객만큼 CSM도 소중히 여기는 최초의 플랫폼.",
