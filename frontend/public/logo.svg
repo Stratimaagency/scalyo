@@ -1,13 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#e8603a"/>
-      <stop offset="35%" stop-color="#e8507a"/>
-      <stop offset="70%" stop-color="#9b5acd"/>
-      <stop offset="100%" stop-color="#e8a020"/>
+    <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="18%" stop-color="#f97316"/>
+      <stop offset="33%" stop-color="#eab308"/>
+      <stop offset="50%" stop-color="#22c55e"/>
+      <stop offset="66%" stop-color="#06b6d4"/>
+      <stop offset="82%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
     </linearGradient>
   </defs>
-  <circle cx="32" cy="32" r="32" fill="url(#lg)"/>
+  <circle cx="32" cy="32" r="32" fill="url(#rg)"/>
   <text x="32" y="34" text-anchor="middle" dominant-baseline="central"
     font-family="Georgia, serif" font-weight="700" font-style="italic"
     font-size="36" fill="white">S</text>

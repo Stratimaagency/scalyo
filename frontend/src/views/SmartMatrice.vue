@@ -4,10 +4,13 @@
     <svg width="0" height="0" style="position:absolute">
       <defs>
         <linearGradient id="sm-cg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#e8603a"/>
-          <stop offset="35%" stop-color="#e8507a"/>
-          <stop offset="70%" stop-color="#9b5acd"/>
-          <stop offset="100%" stop-color="#e8a020"/>
+          <stop offset="0%" stop-color="#f43f5e"/>
+          <stop offset="18%" stop-color="#f97316"/>
+          <stop offset="33%" stop-color="#eab308"/>
+          <stop offset="50%" stop-color="#22c55e"/>
+          <stop offset="66%" stop-color="#06b6d4"/>
+          <stop offset="82%" stop-color="#3b82f6"/>
+          <stop offset="100%" stop-color="#8b5cf6"/>
         </linearGradient>
         <linearGradient id="sm-cg-g" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="#16a34a"/>

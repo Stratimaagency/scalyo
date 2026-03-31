@@ -3,14 +3,14 @@
 
 /* === PALETTE === */
 :root {
-  /* Gradients */
-  --sm-grad:   linear-gradient(135deg, #e8603a 0%, #e8507a 35%, #9b5acd 70%, #e8a020 100%);
-  --sm-grad-h: linear-gradient(90deg,  #e8603a 0%, #e8507a 40%, #9b5acd 75%, #e8a020 100%);
-  --sm-grad-pastel: linear-gradient(160deg, #e0f2f1 0%, #e8eaf6 40%, #f3e5f5 100%);
-  --sm-terra:  #e8603a;
-  --sm-rose:   #e8507a;
-  --sm-parme:  #9b5acd;
-  --sm-gold:   #e8a020;
+  /* Gradients — Rainbow moderne */
+  --sm-grad:   linear-gradient(135deg, #f43f5e 0%, #f97316 18%, #eab308 33%, #22c55e 50%, #06b6d4 66%, #3b82f6 82%, #8b5cf6 100%);
+  --sm-grad-h: linear-gradient(90deg,  #f43f5e 0%, #f97316 16%, #eab308 32%, #22c55e 48%, #06b6d4 64%, #3b82f6 80%, #8b5cf6 100%);
+  --sm-grad-pastel: linear-gradient(160deg, #fef2f2 0%, #fffbeb 20%, #ecfdf5 40%, #eff6ff 60%, #f5f3ff 80%, #fdf2f8 100%);
+  --sm-terra:  #f43f5e;
+  --sm-rose:   #f97316;
+  --sm-parme:  #3b82f6;
+  --sm-gold:   #eab308;
   --sm-bg:     #ffffff;
   --sm-white:  #ffffff;
   --sm-bd:     #dadce0;
@@ -91,10 +91,10 @@
   --surfaceHi: rgba(32, 33, 36, 0.04);
   --border: #dadce0;
   --borderHi: #c4c7cc;
-  --teal: #e8603a;
-  --tealBg: rgba(232, 96, 58, 0.06);
-  --tealBorder: rgba(232, 96, 58, 0.18);
-  --tealGlow: rgba(232, 96, 58, 0.06);
+  --teal: #3b82f6;
+  --tealBg: rgba(59, 130, 246, 0.06);
+  --tealBorder: rgba(59, 130, 246, 0.18);
+  --tealGlow: rgba(59, 130, 246, 0.06);
   --red: #EF4444;
   --redBg: rgba(239, 68, 68, 0.06);
   --redBorder: rgba(239, 68, 68, 0.18);
@@ -178,9 +178,9 @@ input:focus, select:focus, textarea:focus {
 .btn-primary {
   background: var(--sm-grad);
   color: #fff;
-  box-shadow: 0 4px 14px rgba(232, 96, 58, 0.3);
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
 }
-.btn-primary:hover { filter: brightness(1.05); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(232, 96, 58, 0.35); }
+.btn-primary:hover { filter: brightness(1.05); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35); }
 .btn-secondary {
   background: var(--surface);
   color: var(--text);
@@ -203,7 +203,7 @@ input:focus, select:focus, textarea:focus {
 .sidebar-desktop {
   width: 220px;
   height: 100vh;
-  background: linear-gradient(180deg, #f0fdf9 0%, #eef2ff 40%, #fdf2f8 100%);
+  background: linear-gradient(180deg, #eff6ff 0%, #f0fdf4 35%, #fffbeb 60%, #fef2f2 80%, #f5f3ff 100%);
   border-right: 1px solid rgba(0,0,0,.04);
   display: flex;
   flex-direction: column;
@@ -250,7 +250,7 @@ input:focus, select:focus, textarea:focus {
   color: #ffffff;
   border: 1px solid transparent;
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(232, 96, 58, 0.25);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
 }
 .nav-emoji { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; line-height: 1; }
 .nav-label { flex: 1; }
@@ -290,7 +290,7 @@ input:focus, select:focus, textarea:focus {
   background: var(--sm-grad);
   border-color: transparent;
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(232, 96, 58, 0.2);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 }
 
 /* User info */
@@ -424,7 +424,7 @@ input:focus, select:focus, textarea:focus {
   padding: 16px;
   transition: border-color 0.25s ease;
 }
-.card:hover { border-color: rgba(232, 96, 58, 0.25); box-shadow: 0 4px 16px rgba(232, 96, 58, 0.08); }
+.card:hover { border-color: rgba(59, 130, 246, 0.25); box-shadow: 0 4px 16px rgba(59, 130, 246, 0.08); }
 .card-lift { transition: border-color 0.25s ease; }
 .card-lift:hover { border-color: var(--tealBorder) !important; }
 .card-danger {

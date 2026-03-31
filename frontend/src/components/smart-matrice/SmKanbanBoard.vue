@@ -38,8 +38,8 @@ const props = defineProps({
 const emit = defineEmits(['update-status'])
 
 const columns = [
-  { status: 'todo',        label: 'À faire',   color: '#9b5acd', bg: 'rgba(155,90,205,.05)' },
-  { status: 'in_progress', label: 'En cours',   color: '#e8603a', bg: 'rgba(232,96,58,.05)' },
+  { status: 'todo',        label: 'À faire',   color: '#3b82f6', bg: 'rgba(155,90,205,.05)' },
+  { status: 'in_progress', label: 'En cours',   color: '#f43f5e', bg: 'rgba(232,96,58,.05)' },
   { status: 'blocked',     label: 'Bloqué',     color: '#2563eb', bg: 'rgba(37,99,235,.05)' },
   { status: 'done',        label: 'Terminé',    color: '#16a34a', bg: 'rgba(22,163,74,.05)' },
 ]

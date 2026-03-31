@@ -94,7 +94,7 @@ function eventStyle(evt) {
   const dur = evt.dur_estimated || 1
   const top = (h - 9) * SLOT_H
   const height = Math.max(dur * SLOT_H, 28)
-  const colors = ['#e8603a', '#e8507a', '#9b5acd', '#e8a020', '#16a34a', '#2563eb']
+  const colors = ['#f43f5e', '#f97316', '#3b82f6', '#8b5cf6', '#16a34a', '#2563eb']
   const color = colors[(evt.id || 0) % colors.length]
   return {
     top: top + 'px',
