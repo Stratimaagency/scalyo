@@ -133,8 +133,8 @@ function formatDate(d) {
   display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; color: var(--sm-t2);
 }
 .sm-team__card-task-status { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.sm-team__card-task-status--todo { background: #9b5acd; }
-.sm-team__card-task-status--in_progress { background: #e8603a; }
+.sm-team__card-task-status--todo { background: #3b82f6; }
+.sm-team__card-task-status--in_progress { background: #f43f5e; }
 .sm-team__card-task-status--blocked { background: #2563eb; }
 .sm-team__card-task-status--done { background: #16a34a; }
 .sm-team__card-task-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

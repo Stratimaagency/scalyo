@@ -64,8 +64,8 @@
         <svg class="sm-stats__velocity" viewBox="0 0 300 120" preserveAspectRatio="none">
           <defs>
             <linearGradient id="sm-vel-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#e8603a" stop-opacity="0.2"/>
-              <stop offset="100%" stop-color="#e8603a" stop-opacity="0"/>
+              <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.2"/>
+              <stop offset="100%" stop-color="#f43f5e" stop-opacity="0"/>
             </linearGradient>
           </defs>
           <polygon :points="areaPoints" fill="url(#sm-vel-fill)"/>
@@ -108,8 +108,8 @@ function formatDate(d) {
 }
 
 const statusColors = {
-  todo: { color: '#9b5acd', label: 'À faire' },
-  in_progress: { color: '#e8603a', label: 'En cours' },
+  todo: { color: '#3b82f6', label: 'À faire' },
+  in_progress: { color: '#f43f5e', label: 'En cours' },
   blocked: { color: '#2563eb', label: 'Bloqué' },
   done: { color: '#16a34a', label: 'Terminé' },
 }

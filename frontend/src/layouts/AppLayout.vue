@@ -198,8 +198,8 @@ const criticalCount = computed(() => portfolioStore.accounts.filter(a => a.risk 
 const userInitial = computed(() => (authStore.user?.email || 'U').charAt(0).toUpperCase())
 const planColor = computed(() => {
   const plan = company.value?.plan || 'Starter'
-  if (plan === 'Growth') return '#e8603a'
-  if (plan === 'Elite') return '#9b5acd'
+  if (plan === 'Growth') return '#f43f5e'
+  if (plan === 'Elite') return '#3b82f6'
   return 'rgba(255,255,255,.4)'
 })
 
@@ -251,7 +251,7 @@ onMounted(() => { if (!portfolioStore.accounts.length) portfolioStore.fetchAccou
   flex-shrink: 0; font-size: 10px; margin-left: auto;
 }
 .nav-badge-count {
-  background: linear-gradient(135deg, rgba(232,96,58,.1), rgba(155,90,205,.1)); color: #e8603a; font-weight: 700;
+  background: linear-gradient(135deg, rgba(232,96,58,.1), rgba(155,90,205,.1)); color: #f43f5e; font-weight: 700;
   min-width: 20px; height: 18px; border-radius: 9px; display: flex; align-items: center;
   justify-content: center; flex-shrink: 0; font-size: 10px; margin-left: auto; padding: 0 5px;
 }
