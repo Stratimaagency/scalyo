@@ -57,7 +57,7 @@ defineProps({
   font-family: 'DM Sans', sans-serif;
   font-weight: 800;
   letter-spacing: -0.3px;
-  color: #202124;
+  color: #0f172a;
 }
 .scalyo-logo-sub {
   font-family: 'DM Sans', sans-serif;
@@ -65,7 +65,7 @@ defineProps({
   font-weight: 600;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: #9aa0a6;
+  color: #64748b;
   margin-top: 1px;
 }
 </style>

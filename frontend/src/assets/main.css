@@ -15,9 +15,9 @@
   --sm-white:  #ffffff;
   --sm-bd:     #dadce0;
   --sm-bd2:    #c4c7cc;
-  --sm-t1:     #202124;
-  --sm-t2:     #5f6368;
-  --sm-t3:     #9aa0a6;
+  --sm-t1:     #0f172a;
+  --sm-t2:     #334155;
+  --sm-t3:     #64748b;
   --sm-ok:     #16a34a;  --sm-ok-p:   #dcfce7;
   --sm-warn:   #d97706;  --sm-warn-p: #fef3c7;
   --sm-err:    #dc2626;  --sm-err-p:  #fee2e2;
@@ -81,16 +81,16 @@
 
 [data-theme="light"] {
   --bg: #ffffff;
-  --bg1: #f8f9fa;
-  --bg2: #f1f3f4;
-  --bg3: #e8eaed;
-  --text: #202124;
-  --muted: #5f6368;
-  --faint: rgba(32, 33, 36, 0.18);
-  --surface: rgba(32, 33, 36, 0.02);
-  --surfaceHi: rgba(32, 33, 36, 0.04);
-  --border: #dadce0;
-  --borderHi: #c4c7cc;
+  --bg1: #f8fafc;
+  --bg2: #f1f5f9;
+  --bg3: #e2e8f0;
+  --text: #0f172a;
+  --muted: #475569;
+  --faint: rgba(15, 23, 42, 0.18);
+  --surface: rgba(15, 23, 42, 0.02);
+  --surfaceHi: rgba(15, 23, 42, 0.04);
+  --border: #e2e8f0;
+  --borderHi: #cbd5e1;
   --teal: #3b82f6;
   --tealBg: rgba(59, 130, 246, 0.06);
   --tealBorder: rgba(59, 130, 246, 0.18);
@@ -108,25 +108,25 @@
   --purpleBg: rgba(124, 58, 237, 0.06);
   --blue: #2563EB;
   --blueBg: rgba(37, 99, 235, 0.06);
-  --scroll-thumb: rgba(32, 33, 36, 0.1);
-  --scroll-thumb-h: rgba(32, 33, 36, 0.2);
-  --modal-bg: rgba(32, 33, 36, 0.3);
+  --scroll-thumb: rgba(15, 23, 42, 0.1);
+  --scroll-thumb-h: rgba(15, 23, 42, 0.2);
+  --modal-bg: rgba(15, 23, 42, 0.3);
   --modal-box: #ffffff;
-  --modal-box-border: #dadce0;
+  --modal-box-border: #e2e8f0;
   --tab-active-bg: #ffffff;
-  --tab-text: #5f6368;
-  --tab-active-text: #202124;
-  --chip-bg: #f1f3f4;
-  --chip-border: #dadce0;
-  --chip-text: #3c4043;
+  --tab-text: #475569;
+  --tab-active-text: #0f172a;
+  --chip-bg: #f1f5f9;
+  --chip-border: #e2e8f0;
+  --chip-text: #1e293b;
   --input-bg: #ffffff;
-  --input-border: #dadce0;
-  --input-text: #202124;
-  --tip-bg: rgba(66, 133, 244, 0.04);
-  --tip-border: rgba(66, 133, 244, 0.12);
-  --nav-hover: rgba(32, 33, 36, 0.04);
-  --skeleton1: #f1f3f4;
-  --skeleton2: #e8eaed;
+  --input-border: #e2e8f0;
+  --input-text: #0f172a;
+  --tip-bg: rgba(59, 130, 246, 0.04);
+  --tip-border: rgba(59, 130, 246, 0.12);
+  --nav-hover: rgba(15, 23, 42, 0.04);
+  --skeleton1: #f1f5f9;
+  --skeleton2: #e2e8f0;
 }
 
 /* === RESET === */
@@ -138,7 +138,7 @@ html, body, #app {
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.6;
   letter-spacing: -0.01em;
   transition: background 0.2s, color 0.2s;
@@ -218,9 +218,9 @@ input:focus, select:focus, textarea:focus {
   padding: 0 6px;
   margin-bottom: 28px;
   flex-shrink: 0;
-  color: #202124;
+  color: #0f172a;
 }
-.sidebar-logo .scalyo-logo-text { color: #202124; }
+.sidebar-logo .scalyo-logo-text { color: #0f172a; }
 
 .sidebar-nav { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 1px; overflow-y: auto; overflow-x: hidden; }
 .sidebar-footer { flex-shrink: 0; display: flex; flex-direction: column; gap: 2px; border-top: 1px solid rgba(0,0,0,.06); padding-top: 12px; }
@@ -233,8 +233,8 @@ input:focus, select:focus, textarea:focus {
   border-radius: 10px;
   border: 1px solid transparent;
   background: transparent;
-  color: #5f6368;
-  font-size: 13px;
+  color: #334155;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -244,7 +244,7 @@ input:focus, select:focus, textarea:focus {
   margin-bottom: 1px;
   text-decoration: none;
 }
-.nav-btn:hover { background: rgba(255,255,255,.6) !important; color: #202124; }
+.nav-btn:hover { background: rgba(255,255,255,.6) !important; color: #0f172a; }
 .nav-btn.active {
   background: var(--sm-grad);
   color: #ffffff;
@@ -281,7 +281,7 @@ input:focus, select:focus, textarea:focus {
   cursor: pointer;
   background: transparent;
   border: 1px solid rgba(0,0,0,.06);
-  color: #5f6368;
+  color: #475569;
   transition: all 0.15s;
   font-family: 'DM Sans', sans-serif;
 }
@@ -325,16 +325,16 @@ input:focus, select:focus, textarea:focus {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #202124;
+  color: #0f172a;
 }
 .sidebar-user-meta {
   font-size: 10px;
-  color: #5f6368;
+  color: #475569;
 }
 .sidebar-logout-btn {
   background: none;
   border: none;
-  color: #9aa0a6;
+  color: #64748b;
   cursor: pointer;
   font-size: 16px;
   padding: 4px;
