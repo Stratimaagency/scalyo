@@ -98,7 +98,7 @@ function transfer(memberId) {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 12px; cursor: pointer; transition: background .15s;
 }
-.sm-task__header:hover { background: rgba(232,96,58,.03); }
+.sm-task__header:hover { background: rgba(244,63,94,.03); }
 .sm-task__circle { flex-shrink: 0; }
 .sm-task__name { flex: 1; font-size: 14px; font-weight: 500; color: var(--sm-t1); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sm-task__pct { font-size: 12px; font-weight: 600; color: var(--sm-terra); min-width: 36px; text-align: right; }

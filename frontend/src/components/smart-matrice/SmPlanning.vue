@@ -139,7 +139,7 @@ function fmtTime(d) {
 .sm-planning__day {
   flex: 1; min-width: 100px; border-left: 1px solid var(--sm-bd);
 }
-.sm-planning__day--today { background: rgba(232,96,58,.03); }
+.sm-planning__day--today { background: rgba(244,63,94,.03); }
 .sm-planning__day-head {
   height: 48px; display: flex; flex-direction: column; align-items: center;
   justify-content: center; border-bottom: 1px solid var(--sm-bd);

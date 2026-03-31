@@ -203,7 +203,7 @@ async function confirmImport() {
   padding: 10px 14px; background: var(--sm-white); border: 1px solid var(--sm-bd);
   border-radius: 10px; font-size: 13px; color: var(--sm-t3);
 }
-.sm-import__step--active { border-color: var(--sm-terra); color: var(--sm-t1); background: rgba(232,96,58,.04); }
+.sm-import__step--active { border-color: var(--sm-terra); color: var(--sm-t1); background: rgba(244,63,94,.04); }
 .sm-import__step--done { color: var(--sm-ok); }
 .sm-import__step-num {
   width: 24px; height: 24px; border-radius: 50%; font-size: 12px; font-weight: 600;
@@ -220,14 +220,14 @@ async function confirmImport() {
   border: 1px solid var(--sm-bd); background: var(--sm-white); border-radius: 10px;
   padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--sm-t2);
 }
-.sm-import__source-btn--active { border-color: var(--sm-terra); background: rgba(232,96,58,.04); color: var(--sm-terra); }
+.sm-import__source-btn--active { border-color: var(--sm-terra); background: rgba(244,63,94,.04); color: var(--sm-terra); }
 
 /* Dropzone */
 .sm-import__dropzone {
   border: 2px dashed var(--sm-bd); border-radius: var(--sm-r);
   padding: 40px 20px; text-align: center; transition: all .2s;
 }
-.sm-import__dropzone--hover { border-color: var(--sm-terra); background: rgba(232,96,58,.04); }
+.sm-import__dropzone--hover { border-color: var(--sm-terra); background: rgba(244,63,94,.04); }
 .sm-import__dropzone-icon { font-size: 36px; display: block; margin-bottom: 8px; }
 .sm-import__dropzone p { color: var(--sm-t2); font-size: 14px; margin: 4px 0; }
 .sm-import__dropzone-or { font-size: 12px; color: var(--sm-t3); }

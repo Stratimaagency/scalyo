@@ -840,7 +840,7 @@
         <ul class="plan-features">
           <li><div class="pf-yes">&#x2713;</div>{{ t('feat_all_growth') }}</li>
           <li><div class="pf-yes">&#x2713;</div>{{ t('feat_playbooks') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_coaching') }}</li>
+          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_masterclass') }}</li>
           <li><div class="pf-yes">&#x2713;</div>{{ t('feat_onboarding') }}</li>
           <li><div class="pf-yes">&#x2713;</div>{{ t('feat_sla') }}</li>
           <li><div class="pf-yes">&#x2713;</div>{{ t('feat_multi') }}</li>
@@ -1371,7 +1371,7 @@ nav {
   transition: background .3s, border-bottom .3s;
 }
 nav.scrolled {
-  background: rgba(250,246,241,.92);
+  background: rgba(255,255,255,.92);
   backdrop-filter: blur(28px) saturate(2);
   -webkit-backdrop-filter: blur(28px) saturate(2);
   border-bottom: 1px solid transparent;
