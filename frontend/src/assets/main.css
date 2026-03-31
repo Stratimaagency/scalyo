@@ -345,7 +345,7 @@ input:focus, select:focus, textarea:focus {
 .sidebar-logout-btn:hover { color: var(--red); }
 
 /* Main */
-.main-scroll { flex: 1; overflow-y: auto; height: 100vh; }
+.main-scroll { flex: 1; overflow-y: auto; height: 100vh; background: #ffffff; color: #0f172a; }
 .topbar-area {
   padding: 10px 24px;
   display: flex;
@@ -414,7 +414,7 @@ input:focus, select:focus, textarea:focus {
   font-weight: 700;
 }
 .topbar-user { font-size: 13px; color: var(--muted); font-weight: 600; }
-.view-pad { padding: 20px 24px; }
+.view-pad { padding: 20px 24px; background: #ffffff; color: #0f172a; }
 
 /* Cards */
 .card {

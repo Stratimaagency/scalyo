@@ -59,6 +59,12 @@
           </div>
         </div>
 
+        <!-- Settings link -->
+        <router-link :to="{ name: 'settings' }" class="nav-btn" active-class="active">
+          <span class="nav-emoji">⚙️</span>
+          <span class="nav-label">{{ t('settings') }}</span>
+        </router-link>
+
         <!-- Language switcher -->
         <div class="lang-switcher">
           <button v-for="l in ['fr', 'en', 'kr']" :key="l" class="lang-btn"

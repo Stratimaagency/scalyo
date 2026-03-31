@@ -128,6 +128,17 @@ const mappedTasks = computed(() => {
   }).filter(t => t.name && t.name !== 'Sans nom')
 })
 
+function autoMapColumns() {
+  for (const col of detectedColumns.value) {
+    const lc = col.toLowerCase()
+    if (lc.includes('nom') || lc.includes('name') || lc.includes('titre') || lc.includes('title')) mapping[col] = 'name'
+    else if (lc.includes('group') || lc.includes('phase') || lc.includes('categ')) mapping[col] = 'group_name'
+    else if (lc.includes('statu') || lc.includes('état')) mapping[col] = 'status'
+    else if (lc.includes('durée') || lc.includes('duration') || lc.includes('estimé')) mapping[col] = 'dur_estimated'
+    else if (lc.includes('priorit')) mapping[col] = 'priority'
+  }
+}
+
 function onDrop(e) {
   dragOver.value = false
   const file = e.dataTransfer?.files?.[0]
@@ -141,6 +152,26 @@ function onFileSelect(e) {
 
 async function parseFile(file) {
   fileName.value = file.name
+
+  // Excel files (.xlsx, .xls)
+  if (file.name.match(/\.xlsx?$/i)) {
+    try {
+      const XLSX = await import('xlsx')
+      const buffer = await file.arrayBuffer()
+      const wb = XLSX.read(buffer, { type: 'array' })
+      const sheet = wb.Sheets[wb.SheetNames[0]]
+      const data = XLSX.utils.sheet_to_json(sheet, { defval: '' })
+      if (data.length) {
+        parsedRows.value = data
+        detectedColumns.value = Object.keys(data[0])
+        for (const col of detectedColumns.value) mapping[col] = ''
+        autoMapColumns()
+      }
+    } catch (e) {
+      console.error('Excel parse error:', e)
+    }
+    return
+  }
 
   if (file.name.endsWith('.json')) {
     const text = await file.text()
@@ -165,15 +196,7 @@ async function parseFile(file) {
   detectedColumns.value = headers
   for (const col of headers) mapping[col] = ''
 
-  // Auto-map obvious columns
-  for (const col of headers) {
-    const lc = col.toLowerCase()
-    if (lc.includes('nom') || lc.includes('name') || lc.includes('titre') || lc.includes('title')) mapping[col] = 'name'
-    else if (lc.includes('group') || lc.includes('phase') || lc.includes('categ')) mapping[col] = 'group_name'
-    else if (lc.includes('statu') || lc.includes('état')) mapping[col] = 'status'
-    else if (lc.includes('durée') || lc.includes('duration') || lc.includes('estimé')) mapping[col] = 'dur_estimated'
-    else if (lc.includes('priorit')) mapping[col] = 'priority'
-  }
+  autoMapColumns()
 
   const rows = []
   for (let i = 1; i < lines.length; i++) {
