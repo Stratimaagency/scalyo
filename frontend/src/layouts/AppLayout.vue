@@ -240,7 +240,7 @@ onMounted(() => { if (!portfolioStore.accounts.length) portfolioStore.fetchAccou
 /* Nav groups */
 .nav-group-label {
   font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
-  color: #9aa0a6; padding: 14px 10px 4px; font-family: 'DM Sans', sans-serif;
+  color: #64748b; padding: 14px 10px 4px; font-family: 'DM Sans', sans-serif;
 }
 .nav-group-label:first-child { padding-top: 0; }
 .nav-emoji { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; line-height: 1; }
@@ -263,9 +263,9 @@ onMounted(() => { if (!portfolioStore.accounts.length) portfolioStore.fetchAccou
   flex: 1; padding: 6px 0; border-radius: 20px; border: none;
   font-size: 11px; font-weight: 600; cursor: pointer; text-align: center;
   font-family: 'DM Sans', sans-serif; transition: all .2s;
-  background: rgba(255,255,255,.5); color: #5f6368;
+  background: rgba(255,255,255,.5); color: #475569;
 }
-.sm-pill:hover { background: rgba(255,255,255,.8); color: #202124; }
+.sm-pill:hover { background: rgba(255,255,255,.8); color: #0f172a; }
 .sm-pill.active { background: var(--sm-grad); color: white; box-shadow: 0 3px 10px rgba(232,96,58,.25); }
 
 /* Banners */

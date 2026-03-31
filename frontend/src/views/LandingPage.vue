@@ -1305,9 +1305,9 @@ onUnmounted(() => {
   --dk3: #ede4d9;
   --dk4: #dadce0;
   --dk5: #d4b89e;
-  --dt:  #202124;
-  --dt2: #5f6368;
-  --dt3: #9aa0a6;
+  --dt:  #0f172a;
+  --dt2: #475569;
+  --dt3: #64748b;
   --dline: #dadce0;
   --dline2: #c4c7cc;
 
@@ -1316,9 +1316,9 @@ onUnmounted(() => {
   --lk2: #ffffff;
   --lk3: #f5efe8;
   --lk4: #ede4d9;
-  --lt:  #202124;
-  --lt2: #5f6368;
-  --lt3: #9aa0a6;
+  --lt:  #0f172a;
+  --lt2: #475569;
+  --lt3: #64748b;
   --lline: #dadce0;
   --lline2: #c4c7cc;
 
