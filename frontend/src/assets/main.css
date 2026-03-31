@@ -13,11 +13,11 @@
   --sm-gold:   #e8a020;
   --sm-bg:     #ffffff;
   --sm-white:  #ffffff;
-  --sm-bd:     #e5e7eb;
-  --sm-bd2:    #d1d5db;
-  --sm-t1:     #1a1a2e;
-  --sm-t2:     #4b5563;
-  --sm-t3:     #9ca3af;
+  --sm-bd:     #dadce0;
+  --sm-bd2:    #c4c7cc;
+  --sm-t1:     #202124;
+  --sm-t2:     #5f6368;
+  --sm-t3:     #9aa0a6;
   --sm-ok:     #16a34a;  --sm-ok-p:   #dcfce7;
   --sm-warn:   #d97706;  --sm-warn-p: #fef3c7;
   --sm-err:    #dc2626;  --sm-err-p:  #fee2e2;
@@ -81,16 +81,16 @@
 
 [data-theme="light"] {
   --bg: #ffffff;
-  --bg1: #f9fafb;
-  --bg2: #f3f4f6;
-  --bg3: #e5e7eb;
-  --text: #1a1a2e;
-  --muted: #6b7280;
-  --faint: rgba(26, 26, 46, 0.2);
-  --surface: rgba(0, 0, 0, 0.02);
-  --surfaceHi: rgba(0, 0, 0, 0.04);
-  --border: #e5e7eb;
-  --borderHi: #d1d5db;
+  --bg1: #f8f9fa;
+  --bg2: #f1f3f4;
+  --bg3: #e8eaed;
+  --text: #202124;
+  --muted: #5f6368;
+  --faint: rgba(32, 33, 36, 0.18);
+  --surface: rgba(32, 33, 36, 0.02);
+  --surfaceHi: rgba(32, 33, 36, 0.04);
+  --border: #dadce0;
+  --borderHi: #c4c7cc;
   --teal: #e8603a;
   --tealBg: rgba(232, 96, 58, 0.06);
   --tealBorder: rgba(232, 96, 58, 0.18);
@@ -108,25 +108,25 @@
   --purpleBg: rgba(124, 58, 237, 0.06);
   --blue: #2563EB;
   --blueBg: rgba(37, 99, 235, 0.06);
-  --scroll-thumb: rgba(0, 0, 0, 0.1);
-  --scroll-thumb-h: rgba(0, 0, 0, 0.2);
-  --modal-bg: rgba(0, 0, 0, 0.3);
+  --scroll-thumb: rgba(32, 33, 36, 0.1);
+  --scroll-thumb-h: rgba(32, 33, 36, 0.2);
+  --modal-bg: rgba(32, 33, 36, 0.3);
   --modal-box: #ffffff;
-  --modal-box-border: #e5e7eb;
+  --modal-box-border: #dadce0;
   --tab-active-bg: #ffffff;
-  --tab-text: #6b7280;
-  --tab-active-text: #1a1a2e;
-  --chip-bg: #f3f4f6;
-  --chip-border: #e5e7eb;
-  --chip-text: #4b5563;
+  --tab-text: #5f6368;
+  --tab-active-text: #202124;
+  --chip-bg: #f1f3f4;
+  --chip-border: #dadce0;
+  --chip-text: #3c4043;
   --input-bg: #ffffff;
-  --input-border: #e5e7eb;
-  --input-text: #1a1a2e;
-  --tip-bg: rgba(99, 102, 241, 0.04);
-  --tip-border: rgba(99, 102, 241, 0.12);
-  --nav-hover: rgba(0, 0, 0, 0.03);
-  --skeleton1: #f3f4f6;
-  --skeleton2: #e5e7eb;
+  --input-border: #dadce0;
+  --input-text: #202124;
+  --tip-bg: rgba(66, 133, 244, 0.04);
+  --tip-border: rgba(66, 133, 244, 0.12);
+  --nav-hover: rgba(32, 33, 36, 0.04);
+  --skeleton1: #f1f3f4;
+  --skeleton2: #e8eaed;
 }
 
 /* === RESET === */
@@ -217,9 +217,9 @@ input:focus, select:focus, textarea:focus {
   padding: 0 6px;
   margin-bottom: 28px;
   flex-shrink: 0;
-  color: #1a1a2e;
+  color: #202124;
 }
-.sidebar-logo .scalyo-logo-text { color: #1a1a2e; }
+.sidebar-logo .scalyo-logo-text { color: #202124; }
 
 .sidebar-nav { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 1px; overflow-y: auto; overflow-x: hidden; }
 .sidebar-footer { flex-shrink: 0; display: flex; flex-direction: column; gap: 2px; border-top: 1px solid rgba(0,0,0,.06); padding-top: 12px; }
@@ -232,7 +232,7 @@ input:focus, select:focus, textarea:focus {
   border-radius: 10px;
   border: 1px solid transparent;
   background: transparent;
-  color: #4b5563;
+  color: #5f6368;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -243,10 +243,10 @@ input:focus, select:focus, textarea:focus {
   margin-bottom: 1px;
   text-decoration: none;
 }
-.nav-btn:hover { background: rgba(255,255,255,.5) !important; color: #1a1a2e; }
+.nav-btn:hover { background: rgba(255,255,255,.5) !important; color: #202124; }
 .nav-btn.active {
   background: #ffffff;
-  color: #1a1a2e;
+  color: #202124;
   border: 1px solid rgba(0,0,0,.06);
   font-weight: 700;
   box-shadow: 0 1px 4px rgba(0,0,0,.06);
@@ -280,7 +280,7 @@ input:focus, select:focus, textarea:focus {
   cursor: pointer;
   background: transparent;
   border: 1px solid rgba(0,0,0,.06);
-  color: #6b7280;
+  color: #5f6368;
   transition: all 0.15s;
   font-family: 'DM Sans', sans-serif;
 }
@@ -288,7 +288,7 @@ input:focus, select:focus, textarea:focus {
   font-weight: 700;
   background: #ffffff;
   border-color: rgba(0,0,0,.08);
-  color: #1a1a2e;
+  color: #202124;
   box-shadow: 0 1px 3px rgba(0,0,0,.06);
 }
 
@@ -324,16 +324,16 @@ input:focus, select:focus, textarea:focus {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #1a1a2e;
+  color: #202124;
 }
 .sidebar-user-meta {
   font-size: 10px;
-  color: #6b7280;
+  color: #5f6368;
 }
 .sidebar-logout-btn {
   background: none;
   border: none;
-  color: #9ca3af;
+  color: #9aa0a6;
   cursor: pointer;
   font-size: 16px;
   padding: 4px;

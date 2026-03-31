@@ -1305,22 +1305,22 @@ onUnmounted(() => {
   --dk3: #ede4d9;
   --dk4: #e8d8cc;
   --dk5: #d4b89e;
-  --dt:  #1a1a2e;
-  --dt2: #4b5563;
-  --dt3: #9ca3af;
-  --dline: #e8d8cc;
-  --dline2: #d4b89e;
+  --dt:  #202124;
+  --dt2: #5f6368;
+  --dt3: #9aa0a6;
+  --dline: #dadce0;
+  --dline2: #c4c7cc;
 
   /* cards on light */
   --lk: #ffffff;
   --lk2: #faf6f1;
   --lk3: #f5efe8;
   --lk4: #ede4d9;
-  --lt:  #2d1b0e;
-  --lt2: #5c3d26;
-  --lt3: #9b7560;
-  --lline: #e8d8cc;
-  --lline2: #d4b89e;
+  --lt:  #202124;
+  --lt2: #5f6368;
+  --lt3: #9aa0a6;
+  --lline: #dadce0;
+  --lline2: #c4c7cc;
 
   /* brand — Terra SM */
   --teal: #e8603a;
