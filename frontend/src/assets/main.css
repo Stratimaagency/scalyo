@@ -28,58 +28,8 @@
   --sm-sh2:    0 4px 20px rgba(0,0,0,.06);
 }
 
-/* === CSS VARIABLES — THEME SYSTEM === */
+/* === CSS VARIABLES — THEME SYSTEM (Light = default) === */
 :root {
-  --bg: #181B20;
-  --bg1: #1F2228;
-  --bg2: #262A30;
-  --bg3: #2E3238;
-  --text: #F0F6FC;
-  --muted: rgba(240, 246, 252, 0.50);
-  --faint: rgba(240, 246, 252, 0.14);
-  --surface: rgba(240, 246, 252, 0.04);
-  --surfaceHi: rgba(240, 246, 252, 0.06);
-  --border: rgba(240, 246, 252, 0.08);
-  --borderHi: rgba(240, 246, 252, 0.14);
-  --teal: #0D9488;
-  --tealBg: rgba(13, 148, 136, 0.10);
-  --tealBorder: rgba(13, 148, 136, 0.20);
-  --tealGlow: rgba(13, 148, 136, 0.08);
-  --red: #F87171;
-  --redBg: rgba(248, 113, 113, 0.08);
-  --redBorder: rgba(248, 113, 113, 0.18);
-  --amber: #FBBF24;
-  --amberBg: rgba(251, 191, 36, 0.08);
-  --amberBorder: rgba(251, 191, 36, 0.20);
-  --green: #4ADE80;
-  --greenBg: rgba(74, 222, 128, 0.08);
-  --greenBorder: rgba(74, 222, 128, 0.20);
-  --purple: #A78BFA;
-  --purpleBg: rgba(167, 139, 250, 0.08);
-  --blue: #60A5FA;
-  --blueBg: rgba(96, 165, 250, 0.07);
-  --scroll-thumb: rgba(240, 246, 252, 0.10);
-  --scroll-thumb-h: rgba(240, 246, 252, 0.18);
-  --modal-bg: rgba(24, 27, 32, 0.65);
-  --modal-box: #1F2228;
-  --modal-box-border: rgba(240, 246, 252, 0.10);
-  --tab-active-bg: #262A30;
-  --tab-text: rgba(240, 246, 252, 0.50);
-  --tab-active-text: #F0F6FC;
-  --chip-bg: rgba(240, 246, 252, 0.04);
-  --chip-border: rgba(240, 246, 252, 0.08);
-  --chip-text: rgba(240, 246, 252, 0.50);
-  --input-bg: rgba(240, 246, 252, 0.04);
-  --input-border: rgba(240, 246, 252, 0.08);
-  --input-text: #F0F6FC;
-  --tip-bg: rgba(240, 246, 252, 0.04);
-  --tip-border: rgba(240, 246, 252, 0.06);
-  --nav-hover: rgba(240, 246, 252, 0.04);
-  --skeleton1: rgba(240, 246, 252, 0.04);
-  --skeleton2: rgba(240, 246, 252, 0.06);
-}
-
-[data-theme="light"] {
   --bg: #ffffff;
   --bg1: #f8fafc;
   --bg2: #f1f5f9;
@@ -127,6 +77,56 @@
   --nav-hover: rgba(15, 23, 42, 0.04);
   --skeleton1: #f1f5f9;
   --skeleton2: #e2e8f0;
+}
+
+[data-theme="dark"] {
+  --bg: #181B20;
+  --bg1: #1F2228;
+  --bg2: #262A30;
+  --bg3: #2E3238;
+  --text: #F0F6FC;
+  --muted: rgba(240, 246, 252, 0.50);
+  --faint: rgba(240, 246, 252, 0.14);
+  --surface: rgba(240, 246, 252, 0.04);
+  --surfaceHi: rgba(240, 246, 252, 0.06);
+  --border: rgba(240, 246, 252, 0.08);
+  --borderHi: rgba(240, 246, 252, 0.14);
+  --teal: #0D9488;
+  --tealBg: rgba(13, 148, 136, 0.10);
+  --tealBorder: rgba(13, 148, 136, 0.20);
+  --tealGlow: rgba(13, 148, 136, 0.08);
+  --red: #F87171;
+  --redBg: rgba(248, 113, 113, 0.08);
+  --redBorder: rgba(248, 113, 113, 0.18);
+  --amber: #FBBF24;
+  --amberBg: rgba(251, 191, 36, 0.08);
+  --amberBorder: rgba(251, 191, 36, 0.20);
+  --green: #4ADE80;
+  --greenBg: rgba(74, 222, 128, 0.08);
+  --greenBorder: rgba(74, 222, 128, 0.20);
+  --purple: #A78BFA;
+  --purpleBg: rgba(167, 139, 250, 0.08);
+  --blue: #60A5FA;
+  --blueBg: rgba(96, 165, 250, 0.07);
+  --scroll-thumb: rgba(240, 246, 252, 0.10);
+  --scroll-thumb-h: rgba(240, 246, 252, 0.18);
+  --modal-bg: rgba(24, 27, 32, 0.65);
+  --modal-box: #1F2228;
+  --modal-box-border: rgba(240, 246, 252, 0.10);
+  --tab-active-bg: #262A30;
+  --tab-text: rgba(240, 246, 252, 0.50);
+  --tab-active-text: #F0F6FC;
+  --chip-bg: rgba(240, 246, 252, 0.04);
+  --chip-border: rgba(240, 246, 252, 0.08);
+  --chip-text: rgba(240, 246, 252, 0.50);
+  --input-bg: rgba(240, 246, 252, 0.04);
+  --input-border: rgba(240, 246, 252, 0.08);
+  --input-text: #F0F6FC;
+  --tip-bg: rgba(240, 246, 252, 0.04);
+  --tip-border: rgba(240, 246, 252, 0.06);
+  --nav-hover: rgba(240, 246, 252, 0.04);
+  --skeleton1: rgba(240, 246, 252, 0.04);
+  --skeleton2: rgba(240, 246, 252, 0.06);
 }
 
 /* === RESET === */
