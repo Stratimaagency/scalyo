@@ -156,8 +156,8 @@ input, select, textarea {
   appearance: none;
 }
 input:focus, select:focus, textarea:focus {
-  border-color: rgba(155, 90, 205, 0.5) !important;
-  box-shadow: 0 0 0 3px rgba(155, 90, 205, 0.1) !important;
+  border-color: rgba(139, 92, 246, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1) !important;
 }
 
 /* === BUTTONS === */

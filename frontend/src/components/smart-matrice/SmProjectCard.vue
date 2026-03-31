@@ -59,7 +59,7 @@ const trafficClass = computed(() => {
   font-family: 'DM Sans', sans-serif;
 }
 .sm-project-card:hover { box-shadow: var(--sm-sh2); transform: translateY(-1px); }
-.sm-project-card--selected { border-color: var(--sm-terra); box-shadow: 0 0 0 2px rgba(232,96,58,.15), var(--sm-sh2); }
+.sm-project-card--selected { border-color: var(--sm-terra); box-shadow: 0 0 0 2px rgba(244,63,94,.15), var(--sm-sh2); }
 .sm-project-card__header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .sm-project-card__emoji { font-size: 28px; flex-shrink: 0; }
 .sm-project-card__info { flex: 1; min-width: 0; }

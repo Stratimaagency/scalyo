@@ -251,7 +251,7 @@ onMounted(() => { if (!portfolioStore.accounts.length) portfolioStore.fetchAccou
   flex-shrink: 0; font-size: 10px; margin-left: auto;
 }
 .nav-badge-count {
-  background: linear-gradient(135deg, rgba(232,96,58,.1), rgba(155,90,205,.1)); color: #f43f5e; font-weight: 700;
+  background: linear-gradient(135deg, rgba(244,63,94,.1), rgba(139,92,246,.1)); color: #f43f5e; font-weight: 700;
   min-width: 20px; height: 18px; border-radius: 9px; display: flex; align-items: center;
   justify-content: center; flex-shrink: 0; font-size: 10px; margin-left: auto; padding: 0 5px;
 }
@@ -266,7 +266,7 @@ onMounted(() => { if (!portfolioStore.accounts.length) portfolioStore.fetchAccou
   background: rgba(255,255,255,.5); color: #475569;
 }
 .sm-pill:hover { background: rgba(255,255,255,.8); color: #0f172a; }
-.sm-pill.active { background: var(--sm-grad); color: white; box-shadow: 0 3px 10px rgba(232,96,58,.25); }
+.sm-pill.active { background: var(--sm-grad); color: white; box-shadow: 0 3px 10px rgba(244,63,94,.25); }
 
 /* Banners */
 .banner { padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; }

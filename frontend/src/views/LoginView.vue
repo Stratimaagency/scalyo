@@ -290,7 +290,7 @@ async function submit() {
 }
 .plan-option.active {
   border-color: var(--sm-terra);
-  background: rgba(232, 96, 58, 0.08);
+  background: rgba(244, 63, 94, 0.08);
 }
 .plan-option-name {
   font-weight: 800;
