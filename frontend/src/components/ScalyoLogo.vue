@@ -62,7 +62,7 @@ defineProps({
   font-weight: 600;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: rgba(255,255,255,.4);
+  color: #9ca3af;
   margin-top: 1px;
 }
 </style>
