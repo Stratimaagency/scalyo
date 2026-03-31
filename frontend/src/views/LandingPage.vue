@@ -1305,9 +1305,9 @@ onUnmounted(() => {
   --dk3: #ede4d9;
   --dk4: #e8d8cc;
   --dk5: #d4b89e;
-  --dt:  #2d1b0e;
-  --dt2: #5c3d26;
-  --dt3: #9b7560;
+  --dt:  #1a1a2e;
+  --dt2: #4b5563;
+  --dt3: #9ca3af;
   --dline: #e8d8cc;
   --dline2: #d4b89e;
 
