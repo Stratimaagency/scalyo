@@ -240,7 +240,7 @@ onMounted(() => { if (!portfolioStore.accounts.length) portfolioStore.fetchAccou
 /* Nav groups */
 .nav-group-label {
   font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
-  color: #9ca3af; padding: 14px 10px 4px; font-family: 'DM Sans', sans-serif;
+  color: #9aa0a6; padding: 14px 10px 4px; font-family: 'DM Sans', sans-serif;
 }
 .nav-group-label:first-child { padding-top: 0; }
 .nav-emoji { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; line-height: 1; }
@@ -251,7 +251,7 @@ onMounted(() => { if (!portfolioStore.accounts.length) portfolioStore.fetchAccou
   flex-shrink: 0; font-size: 10px; margin-left: auto;
 }
 .nav-badge-count {
-  background: rgba(0,0,0,.05); color: #6b7280; font-weight: 700;
+  background: linear-gradient(135deg, rgba(232,96,58,.1), rgba(155,90,205,.1)); color: #e8603a; font-weight: 700;
   min-width: 20px; height: 18px; border-radius: 9px; display: flex; align-items: center;
   justify-content: center; flex-shrink: 0; font-size: 10px; margin-left: auto; padding: 0 5px;
 }
@@ -262,11 +262,11 @@ onMounted(() => { if (!portfolioStore.accounts.length) portfolioStore.fetchAccou
 .sm-pill {
   flex: 1; padding: 6px 0; border-radius: 20px; border: none;
   font-size: 11px; font-weight: 600; cursor: pointer; text-align: center;
-  font-family: 'DM Sans', sans-serif; transition: all .15s;
-  background: rgba(0,0,0,.04); color: #6b7280;
+  font-family: 'DM Sans', sans-serif; transition: all .2s;
+  background: rgba(255,255,255,.5); color: #5f6368;
 }
-.sm-pill:hover { background: rgba(0,0,0,.06); }
-.sm-pill.active { background: var(--sm-grad); color: white; }
+.sm-pill:hover { background: rgba(255,255,255,.8); color: #202124; }
+.sm-pill.active { background: var(--sm-grad); color: white; box-shadow: 0 3px 10px rgba(232,96,58,.25); }
 
 /* Banners */
 .banner { padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; }
