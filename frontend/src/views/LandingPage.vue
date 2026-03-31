@@ -1301,26 +1301,26 @@ onUnmounted(() => {
 .landing {
   /* main palette — Warm crème light */
   --dk: #ffffff;
-  --dk2: #f5efe8;
-  --dk3: #ede4d9;
-  --dk4: #dadce0;
-  --dk5: #d4b89e;
+  --dk2: #ffffff;
+  --dk3: #f8fafc;
+  --dk4: #f1f5f9;
+  --dk5: #e2e8f0;
   --dt:  #0f172a;
   --dt2: #475569;
   --dt3: #64748b;
-  --dline: #dadce0;
-  --dline2: #c4c7cc;
+  --dline: #e2e8f0;
+  --dline2: #cbd5e1;
 
   /* cards on light */
   --lk: #ffffff;
-  --lk2: #ffffff;
-  --lk3: #f5efe8;
-  --lk4: #ede4d9;
+  --lk2: #f8fafc;
+  --lk3: #f1f5f9;
+  --lk4: #e2e8f0;
   --lt:  #0f172a;
   --lt2: #475569;
   --lt3: #64748b;
-  --lline: #dadce0;
-  --lline2: #c4c7cc;
+  --lline: #e2e8f0;
+  --lline2: #cbd5e1;
 
   /* brand — Terra SM */
   --teal: #3b82f6;
@@ -1575,14 +1575,14 @@ nav.scrolled {
 }
 /* Browser chrome */
 .app-topbar {
-  height: 48px; background: #ffffff; border-bottom: 1px solid #dadce0;
+  height: 48px; background: #ffffff; border-bottom: 1px solid #e2e8f0;
   display: flex; align-items: center; padding: 0 16px; gap: 12px;
 }
 .topbar-dots { display: flex; gap: 7px; }
 .td { width: 12px; height: 12px; border-radius: 50%; }
 .topbar-url {
   flex: 1; height: 30px;
-  background: rgba(32,33,36,.03); border-radius: 8px; border: 1px solid #dadce0;
+  background: rgba(32,33,36,.03); border-radius: 8px; border: 1px solid #e2e8f0;
   display: flex; align-items: center; justify-content: center; padding: 0 14px;
   font-size: 12px; color: var(--dt3); max-width: 280px; margin: 0 auto;
   letter-spacing: .01em;
@@ -1593,18 +1593,18 @@ nav.scrolled {
   display: flex; align-items: center; justify-content: center;
   color: var(--dt3); transition: all .15s;
 }
-.topbar-action-btn:hover { background: #dadce0; color: var(--dt2); }
+.topbar-action-btn:hover { background: #e2e8f0; color: var(--dt2); }
 /* App layout */
 .app-layout { display: flex; min-height: 540px; background: #ffffff; }
 /* Sidebar */
 .app-sidebar {
   width: 200px; flex-shrink: 0;
-  background: #ffffff; border-right: 1px solid #dadce0;
+  background: #ffffff; border-right: 1px solid #e2e8f0;
   padding: 0; display: flex; flex-direction: column;
 }
 .sb-brand {
   display: flex; align-items: center; gap: 10px;
-  padding: 16px 16px 12px; border-bottom: 1px solid #dadce0;
+  padding: 16px 16px 12px; border-bottom: 1px solid #e2e8f0;
 }
 .sb-logo-mark {
   width: 28px; height: 28px; border-radius: 8px;
@@ -1624,10 +1624,10 @@ nav.scrolled {
 }
 .sb-nav.active { background: rgba(59,130,246,.12); color: var(--teal); font-weight: 600; }
 .sb-ico { width: 16px; text-align: center; font-size: 10px; flex-shrink: 0; }
-.sb-divider { height: 1px; background: #dadce0; margin: 8px 16px; }
+.sb-divider { height: 1px; background: #e2e8f0; margin: 8px 16px; }
 .sb-user {
   margin-top: auto; padding: 12px 16px;
-  border-top: 1px solid #dadce0;
+  border-top: 1px solid #e2e8f0;
   display: flex; align-items: center; gap: 10px;
 }
 .sb-user-avatar {
@@ -1643,7 +1643,7 @@ nav.scrolled {
 .app-main { flex: 1; padding: 0; overflow: hidden; background: #ffffff; }
 .main-topbar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 24px; border-bottom: 1px solid #dadce0;
+  padding: 14px 24px; border-bottom: 1px solid #e2e8f0;
 }
 .main-topbar-left { display: flex; align-items: baseline; gap: 10px; }
 .main-page-title { font-size: 16px; font-weight: 700; color: var(--dt); }
@@ -1662,7 +1662,7 @@ nav.scrolled {
   padding: 20px 24px 0;
 }
 .kpi-card {
-  background: rgba(255,255,255,.5); border: 1px solid #dadce0;
+  background: rgba(255,255,255,.5); border: 1px solid #e2e8f0;
   border-radius: 16px; padding: 16px 18px;
   transition: all .2s;
 }
@@ -1719,7 +1719,7 @@ nav.scrolled {
 .alert-date { display: block; font-size: 10px; color: var(--dt3); }
 /* Chart card */
 .chart-card {
-  background: rgba(255,255,255,.5); border: 1px solid #dadce0;
+  background: rgba(255,255,255,.5); border: 1px solid #e2e8f0;
   border-radius: 16px; padding: 16px; flex: 1;
 }
 .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
@@ -1738,14 +1738,14 @@ nav.scrolled {
 }
 /* Roadmap card */
 .roadmap-card {
-  background: rgba(255,255,255,.5); border: 1px solid #dadce0;
+  background: rgba(255,255,255,.5); border: 1px solid #e2e8f0;
   border-radius: 16px; padding: 16px;
 }
 .roadmap-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
 .roadmap-title { display: block; font-size: 13px; font-weight: 700; color: var(--dt); }
 .roadmap-phase { display: block; font-size: 10px; color: var(--dt3); margin-top: 2px; }
 .roadmap-pct { font-size: 24px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace; }
-.roadmap-bar { height: 5px; background: #dadce0; border-radius: 3px; overflow: hidden; margin-bottom: 14px; }
+.roadmap-bar { height: 5px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-bottom: 14px; }
 .roadmap-fill { height: 100%; background: linear-gradient(90deg, #f43f5e 0%, #f97316 16%, #eab308 32%, #22c55e 48%, #06b6d4 64%, #3b82f6 80%, #8b5cf6 100%); border-radius: 3px; }
 .roadmap-items { display: flex; flex-direction: column; gap: 6px; }
 .roadmap-item {
@@ -1765,7 +1765,7 @@ nav.scrolled {
 .roadmap-item.pending { opacity: .5; }
 /* Wellbeing card */
 .wb-card {
-  background: rgba(255,255,255,.5); border: 1px solid #dadce0;
+  background: rgba(255,255,255,.5); border: 1px solid #e2e8f0;
   border-radius: 16px; padding: 16px; flex: 1;
 }
 .wb-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
@@ -1783,7 +1783,7 @@ nav.scrolled {
   font-size: 11px; font-weight: 700; flex-shrink: 0;
 }
 .wb-m-name { font-size: 12px; font-weight: 600; color: var(--dt); width: 60px; }
-.wb-m-bar { flex: 1; height: 4px; background: #dadce0; border-radius: 2px; overflow: hidden; }
+.wb-m-bar { flex: 1; height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden; }
 .wb-m-fill { height: 100%; border-radius: 2px; }
 .wb-m-val { font-size: 12px; font-weight: 700; width: 36px; text-align: right; }
 
@@ -1792,7 +1792,7 @@ nav.scrolled {
 ──────────────────────────────────── */
 .section-light { background: var(--dk); color: var(--dt); }
 .section-dark  { background: var(--dk); color: var(--dt); }
-.section-gray  { background: var(--dk2); color: var(--dt); }
+.section-gray  { background: #f8fafc; color: var(--dt); }
 
 .section { padding: 100px 24px; position: relative; }
 .section + .section::before {
