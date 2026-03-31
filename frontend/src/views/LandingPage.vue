@@ -1369,6 +1369,7 @@ nav {
   height: 60px; padding: 0 24px;
   display: flex; align-items: center; justify-content: space-between;
   transition: background .3s, border-bottom .3s;
+  background: #ffffff;
 }
 nav.scrolled {
   background: rgba(255,255,255,.92);
