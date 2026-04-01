@@ -602,10 +602,10 @@ const aiFeaturesLabel = computed(() =>
 )
 const aiCoachDesc = computed(() =>
   prefsStore.lang === 'en'
-    ? 'CS Coach and Nova Wellbeing are powered by DeepSeek — no configuration needed.'
+    ? 'CS Coach and Nova Wellbeing are powered by advanced AI — no configuration needed.'
     : prefsStore.lang === 'kr'
-    ? 'CS 코치와 Nova 웰빙은 DeepSeek으로 구동됩니다 — 별도 설정이 필요 없습니다.'
-    : 'Le Coach CS et Nova Bien-être sont propulsés par DeepSeek — aucune configuration requise.'
+    ? 'CS 코치와 Nova 웰빙은 고급 AI로 구동됩니다 — 별도 설정 불필요.'
+    : 'Le Coach CS et Nova Bien-être sont propulsés par une IA avancée — aucune configuration requise.'
 )
 
 const deleteConfirmText = ref('')
