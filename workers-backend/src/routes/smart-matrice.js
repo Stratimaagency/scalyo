@@ -40,21 +40,25 @@ smartMatrice.get('/', async (c) => {
 
 // POST / — create project
 smartMatrice.post('/', async (c) => {
-  const { company_id } = c.get('user')
+  const { company_id, id: user_id } = c.get('user')
   const body = await c.req.json()
+  const history = JSON.stringify([{ date: new Date().toISOString(), action: 'created', details: body.name || 'Nouveau projet', user_id }])
   const row = await c.env.DB.prepare(
-    `INSERT INTO sm_projects (company_id, name, description, emoji, color, start_date, end_date)
-     VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *`
+    `INSERT INTO sm_projects (company_id, name, description, emoji, color, start_date, end_date, target_end_date, state, history)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
   ).bind(
     company_id,
     body.name || 'Nouveau projet',
     body.description || '',
     body.emoji || '📁',
-    body.color || '#e8603a',
+    body.color || '#3b82f6',
     body.start_date || null,
-    body.end_date || null
+    body.end_date || null,
+    body.target_end_date || body.end_date || null,
+    body.state || 'active',
+    history
   ).first()
-  return c.json(row, 201)
+  return c.json({ ...row, history: JSON.parse(row.history || '[]') }, 201)
 })
 
 // PATCH /:id — update project
@@ -65,13 +69,36 @@ smartMatrice.patch('/:id', async (c) => {
 
   const fields = []
   const values = []
-  for (const key of ['name', 'description', 'emoji', 'color', 'status', 'start_date', 'end_date', 'sort_order']) {
+  const allowed = ['name', 'description', 'emoji', 'color', 'status', 'start_date', 'end_date', 'target_end_date', 'actual_end_date', 'sort_order', 'state']
+  for (const key of allowed) {
     if (body[key] !== undefined) {
       fields.push(`${key} = ?`)
       values.push(body[key])
     }
   }
+  // Pause mode
+  if (body.is_paused !== undefined) {
+    fields.push('is_paused = ?')
+    values.push(body.is_paused ? 1 : 0)
+    if (body.is_paused) {
+      fields.push("paused_at = datetime('now')")
+    } else {
+      // Calculate paused duration and add to total
+      fields.push('paused_at = NULL')
+    }
+  }
   if (!fields.length) return c.json({ error: 'Nothing to update' }, 400)
+
+  // Add history entry
+  const { id: user_id } = c.get('user')
+  const existing = await c.env.DB.prepare('SELECT history FROM sm_projects WHERE id = ? AND company_id = ?').bind(id, company_id).first()
+  if (existing) {
+    const hist = JSON.parse(existing.history || '[]')
+    const changes = Object.keys(body).filter(k => allowed.includes(k) || k === 'is_paused').join(', ')
+    hist.push({ date: new Date().toISOString(), action: 'updated', details: changes, user_id })
+    fields.push('history = ?')
+    values.push(JSON.stringify(hist.slice(-50))) // Keep last 50 entries
+  }
 
   fields.push("updated_at = datetime('now')")
   values.push(id, company_id)
@@ -81,7 +108,7 @@ smartMatrice.patch('/:id', async (c) => {
   ).bind(...values).first()
 
   if (!row) return c.json({ error: 'Project not found' }, 404)
-  return c.json(row)
+  return c.json({ ...row, is_paused: !!row.is_paused, history: JSON.parse(row.history || '[]') })
 })
 
 // DELETE /:id — delete project
@@ -132,13 +159,14 @@ smartMatrice.get('/:projectId/tasks', async (c) => {
 
 // POST /tasks — create task
 smartMatrice.post('/tasks', async (c) => {
-  const { company_id } = c.get('user')
+  const { company_id, id: user_id } = c.get('user')
   const body = await c.req.json()
   if (!body.project_id) return c.json({ error: 'project_id required' }, 400)
 
+  const history = JSON.stringify([{ date: new Date().toISOString(), action: 'created', details: body.name || 'Nouvelle tâche', user_id }])
   const row = await c.env.DB.prepare(
-    `INSERT INTO sm_tasks (project_id, company_id, name, group_name, status, priority, quadrant, start_date, end_date, dur_min, dur_max, dur_estimated, assigned_to, sort_order)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
+    `INSERT INTO sm_tasks (project_id, company_id, name, group_name, status, priority, quadrant, start_date, end_date, dur_min, dur_max, dur_estimated, assigned_to, sort_order, description, referent_name, waiting_for, history)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
   ).bind(
     body.project_id, company_id,
     body.name || 'Nouvelle tâche',
@@ -152,28 +180,49 @@ smartMatrice.post('/tasks', async (c) => {
     body.dur_max || null,
     body.dur_estimated || null,
     body.assigned_to || null,
-    body.sort_order || 0
+    body.sort_order || 0,
+    body.description || '',
+    body.referent_name || '',
+    body.waiting_for || '',
+    history
   ).first()
 
-  return c.json({ ...row, is_paused: false, subtasks: [], progress: 0 }, 201)
+  return c.json({ ...row, is_paused: false, subtasks: [], progress: 0, history: JSON.parse(row.history || '[]') }, 201)
 })
 
 // PATCH /tasks/:id — update task
 smartMatrice.patch('/tasks/:id', async (c) => {
-  const { company_id } = c.get('user')
+  const { company_id, id: user_id } = c.get('user')
   const id = parseInt(c.req.param('id'), 10)
   const body = await c.req.json()
 
-  const allowed = ['name', 'group_name', 'status', 'priority', 'quadrant', 'start_date', 'end_date', 'dur_min', 'dur_max', 'dur_estimated', 'dur_ai', 'dur_real', 'assigned_to', 'is_paused', 'sort_order']
+  const allowed = ['name', 'group_name', 'status', 'priority', 'quadrant', 'start_date', 'end_date', 'dur_min', 'dur_max', 'dur_estimated', 'dur_ai', 'dur_real', 'assigned_to', 'is_paused', 'sort_order', 'description', 'referent_name', 'waiting_for', 'actual_end_date', 'is_repetitive', 'cycle_count']
   const fields = []
   const values = []
   for (const key of allowed) {
     if (body[key] !== undefined) {
+      const boolKeys = ['is_paused', 'is_repetitive']
       fields.push(`${key} = ?`)
-      values.push(key === 'is_paused' ? (body[key] ? 1 : 0) : body[key])
+      values.push(boolKeys.includes(key) ? (body[key] ? 1 : 0) : body[key])
     }
   }
+  // Pause tracking
+  if (body.is_paused === true) {
+    fields.push("paused_at = datetime('now')")
+  } else if (body.is_paused === false) {
+    fields.push('paused_at = NULL')
+  }
   if (!fields.length) return c.json({ error: 'Nothing to update' }, 400)
+
+  // Add history entry
+  const existing = await c.env.DB.prepare('SELECT history FROM sm_tasks WHERE id = ? AND company_id = ?').bind(id, company_id).first()
+  if (existing) {
+    const hist = JSON.parse(existing.history || '[]')
+    const changes = Object.keys(body).filter(k => allowed.includes(k)).join(', ')
+    hist.push({ date: new Date().toISOString(), action: 'updated', details: changes, user_id })
+    fields.push('history = ?')
+    values.push(JSON.stringify(hist.slice(-50)))
+  }
 
   fields.push("updated_at = datetime('now')")
   values.push(id, company_id)
@@ -183,7 +232,7 @@ smartMatrice.patch('/tasks/:id', async (c) => {
   ).bind(...values).first()
 
   if (!row) return c.json({ error: 'Task not found' }, 404)
-  return c.json({ ...row, is_paused: !!row.is_paused })
+  return c.json({ ...row, is_paused: !!row.is_paused, is_repetitive: !!row.is_repetitive, history: JSON.parse(row.history || '[]') })
 })
 
 // DELETE /tasks/:id
@@ -330,8 +379,60 @@ smartMatrice.get('/stats/:projectId', async (c) => {
     if (t.status === 'done') byGroup[g].done++
   }
 
+  // Calculate end dates based on remaining work
+  const activeTasks = (tasks || []).filter(t => t.status !== 'done' && !t.is_paused)
+  const totalRemaining = { min: 0, estimated: 0, max: 0 }
+  for (const t of activeTasks) {
+    totalRemaining.min += t.dur_min || t.dur_estimated || 1
+    totalRemaining.estimated += t.dur_estimated || t.dur_min || 1
+    totalRemaining.max += t.dur_max || t.dur_estimated || 2
+  }
+
+  // Get config for hours per day
+  let config = await db.prepare('SELECT * FROM sm_config WHERE company_id = ?').bind(company_id).first()
+  const hoursPerDay = config?.hours_per_day || 8
+  const daysPerWeek = config?.days_per_week || 5
+  const dailyTasks = JSON.parse(config?.daily_tasks || '[]')
+  const dailyFixed = dailyTasks.reduce((s, dt) => s + (dt.duration || 0), 0)
+  const effectiveHoursPerDay = Math.max(1, hoursPerDay - dailyFixed)
+
+  const daysMin = Math.ceil(totalRemaining.min / effectiveHoursPerDay)
+  const daysEstimated = Math.ceil(totalRemaining.estimated / effectiveHoursPerDay)
+  const daysMax = Math.ceil(totalRemaining.max / effectiveHoursPerDay)
+
+  // Convert working days to calendar dates
+  function addWorkDays(fromDate, workDays, daysPerWeek) {
+    const d = new Date(fromDate || new Date())
+    let added = 0
+    while (added < workDays) {
+      d.setDate(d.getDate() + 1)
+      const dow = d.getDay()
+      if (daysPerWeek >= 7 || (dow !== 0 && (daysPerWeek >= 6 || dow !== 6))) added++
+    }
+    return d.toISOString().slice(0, 10)
+  }
+
+  const now = new Date().toISOString().slice(0, 10)
+  const dateBest = addWorkDays(now, daysMin, daysPerWeek)
+  const dateProbable = addWorkDays(now, daysEstimated, daysPerWeek)
+  const dateWorst = addWorkDays(now, daysMax, daysPerWeek)
+
+  // By assignee stats
+  const byAssignee = {}
+  for (const t of (tasks || [])) {
+    const name = t.referent_name || 'Non assigné'
+    if (!byAssignee[name]) byAssignee[name] = { total: 0, done: 0, hours: 0 }
+    byAssignee[name].total++
+    if (t.status === 'done') byAssignee[name].done++
+    byAssignee[name].hours += t.dur_estimated || 0
+  }
+
+  // Paused tasks count
+  const pausedCount = (tasks || []).filter(t => t.is_paused).length
+  const waitingCount = (tasks || []).filter(t => t.waiting_for).length
+
   return c.json({
-    project,
+    project: { ...project, history: JSON.parse(project.history || '[]'), is_paused: !!project.is_paused },
     task_count: (tasks || []).length,
     sub_total: subTotal,
     sub_done: subDone,
@@ -340,11 +441,20 @@ smartMatrice.get('/stats/:projectId', async (c) => {
     by_group: Object.entries(byGroup).map(([name, d]) => ({
       name, total: d.total, done: d.done, progress: d.total > 0 ? Math.round(d.done / d.total * 100) : 0
     })),
+    by_assignee: Object.entries(byAssignee).map(([name, d]) => ({ name, ...d })),
     dates: {
-      best: project.end_date,
-      probable: project.end_date,
-      worst: project.end_date,
-    }
+      best: dateBest,
+      probable: dateProbable,
+      worst: dateWorst,
+      target: project.target_end_date || project.end_date,
+      remaining_days: daysEstimated,
+    },
+    time: {
+      total_estimated: totalRemaining.estimated,
+      effective_hours_day: effectiveHoursPerDay,
+      paused_count: pausedCount,
+      waiting_count: waitingCount,
+    },
   })
 })
 
@@ -369,7 +479,7 @@ smartMatrice.patch('/config', async (c) => {
 
   const fields = []
   const values = []
-  for (const key of ['country', 'company_name', 'days_per_week', 'hours_per_day']) {
+  for (const key of ['country', 'company_name', 'days_per_week', 'hours_per_day', 'days_off_per_year', 'national_holidays', 'extra_days_off', 'company_type', 'contract_type', 'user_first_name']) {
     if (body[key] !== undefined) { fields.push(`${key} = ?`); values.push(body[key]) }
   }
   if (body.daily_tasks !== undefined) {

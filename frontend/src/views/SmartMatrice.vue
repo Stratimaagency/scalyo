@@ -1,6 +1,6 @@
 <template>
   <div class="sm-page">
-    <!-- SVG Gradient defs (global for all child components) -->
+    <!-- SVG Gradient defs -->
     <svg width="0" height="0" style="position:absolute">
       <defs>
         <linearGradient id="sm-cg" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -13,37 +13,52 @@
           <stop offset="100%" stop-color="#8b5cf6"/>
         </linearGradient>
         <linearGradient id="sm-cg-g" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#16a34a"/>
-          <stop offset="100%" stop-color="#4ade80"/>
+          <stop offset="0%" stop-color="#16a34a"/><stop offset="100%" stop-color="#4ade80"/>
         </linearGradient>
         <linearGradient id="sm-cg-b" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#2563eb"/>
-          <stop offset="100%" stop-color="#60a5fa"/>
-        </linearGradient>
-        <linearGradient id="sm-cg-z" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#94a3b8"/>
-          <stop offset="100%" stop-color="#cbd5e1"/>
+          <stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#60a5fa"/>
         </linearGradient>
       </defs>
     </svg>
 
     <!-- Topbar -->
     <header class="sm-topbar">
-      <h1 class="sm-topbar__title">{{ currentNavItem?.label || 'Projets' }}</h1>
+      <div class="sm-topbar__left">
+        <button v-if="store.selectedProject && currentView !== 'projects'" class="sm-back" @click="goToProjects">← {{ lt.back }}</button>
+        <h1 class="sm-topbar__title">{{ pageTitle }}</h1>
+        <span v-if="store.selectedProject && currentView !== 'projects'" class="sm-topbar__project">{{ store.selectedProject.emoji }} {{ store.selectedProject.name }}</span>
+      </div>
       <div class="sm-topbar__actions">
-        <button v-if="currentView === 'projects'" class="sm-topbar__btn sm-topbar__btn--secondary" @click="createTask">
-          + Tâche
-        </button>
-        <button v-if="currentView === 'projects'" class="sm-topbar__btn sm-topbar__btn--primary" @click="createProject">
-          ✨ Nouveau projet
-        </button>
+        <!-- Filters -->
+        <div v-if="showFilters" class="sm-filters">
+          <select v-model="filterStatus" class="sm-filter-select">
+            <option value="">{{ lt.allStatus }}</option>
+            <option value="todo">{{ lt.todo }}</option>
+            <option value="in_progress">{{ lt.inProgress }}</option>
+            <option value="blocked">{{ lt.blocked }}</option>
+            <option value="done">{{ lt.done }}</option>
+          </select>
+          <select v-if="store.team.length" v-model="filterAssignee" class="sm-filter-select">
+            <option value="">{{ lt.allMembers }}</option>
+            <option v-for="m in store.team" :key="m.id" :value="m.id">{{ m.display_name || m.email }}</option>
+          </select>
+          <select v-model="filterPriority" class="sm-filter-select">
+            <option value="">{{ lt.allPriority }}</option>
+            <option value="urgent">🔴 {{ lt.urgent }}</option>
+            <option value="priority">🟠 {{ lt.priority }}</option>
+            <option value="important">🟡 {{ lt.important }}</option>
+            <option value="normal">⚪ {{ lt.normal }}</option>
+          </select>
+        </div>
+        <button v-if="currentView === 'projects'" class="sm-btn sm-btn--primary" @click="showCreateProject = true">✨ {{ lt.newProject }}</button>
+        <button v-if="store.selectedProject && ['tasks','kanban','eisenhower'].includes(currentView)" class="sm-btn sm-btn--secondary" @click="showCreateTask = true">+ {{ lt.newTask }}</button>
       </div>
     </header>
 
-    <!-- Loading state -->
-    <div v-if="store.loading" class="sm-loading">Chargement…</div>
+    <!-- Loading -->
+    <div v-if="store.loading" class="sm-loading">{{ lt.loading }}</div>
 
-    <!-- Projects view -->
+    <!-- PROJECTS VIEW -->
     <div v-else-if="currentView === 'projects'" class="sm-content">
       <div v-if="store.projects.length" class="sm-projects-grid">
         <SmProjectCard v-for="p in store.projects" :key="p.id" :project="p"
@@ -51,70 +66,176 @@
           @select-project="selectProject" />
       </div>
       <div v-else class="sm-empty">
-        <p>Aucun projet. Créez votre premier projet pour démarrer.</p>
+        <div class="sm-empty__icon">📁</div>
+        <h3>{{ lt.noProjects }}</h3>
+        <p>{{ lt.noProjectsDesc }}</p>
+        <button class="sm-btn sm-btn--primary" @click="showCreateProject = true">✨ {{ lt.createFirst }}</button>
       </div>
     </div>
 
-    <!-- Tasks view (grouped) -->
+    <!-- TASKS VIEW (inside a project) -->
     <div v-else-if="currentView === 'tasks' && store.selectedProject" class="sm-content">
-      <div class="sm-project-header">
-        <span class="sm-project-header__emoji">{{ store.selectedProject.emoji }}</span>
-        <h2 class="sm-project-header__name">{{ store.selectedProject.name }}</h2>
-      </div>
-      <SmTaskGroup v-for="(tasks, groupName) in taskGroups" :key="groupName"
+      <SmTaskGroup v-for="(tasks, groupName) in filteredTaskGroups" :key="groupName"
         :group-name="groupName" :tasks="tasks" :team="store.team"
         @toggle-subtask="toggleSubtask" @delete-subtask="deleteSubtask"
         @add-subtask="addSubtask" @transfer="transferTask" />
-      <div v-if="!currentTasks.length" class="sm-empty"><p>Aucune tâche dans ce projet.</p></div>
+      <div v-if="!filteredTasks.length" class="sm-empty">
+        <p>{{ lt.noTasks }}</p>
+        <button class="sm-btn sm-btn--secondary" @click="showCreateTask = true">+ {{ lt.newTask }}</button>
+      </div>
     </div>
 
-    <!-- Kanban -->
+    <!-- KANBAN -->
     <div v-else-if="currentView === 'kanban' && store.selectedProject" class="sm-content">
-      <SmKanbanBoard :tasks="currentTasks" :team="store.team" @update-status="updateTaskStatus" />
+      <SmKanbanBoard :tasks="filteredTasks" :team="store.team" @update-status="updateTaskStatus" />
     </div>
 
-    <!-- Eisenhower -->
+    <!-- EISENHOWER -->
     <div v-else-if="currentView === 'eisenhower' && store.selectedProject" class="sm-content">
-      <SmEisenhower :tasks="currentTasks" :team="store.team"
+      <SmEisenhower :tasks="filteredTasks" :team="store.team"
         @update-quadrant="updateTaskQuadrant" @transfer="transferTask" />
     </div>
 
-    <!-- Planning -->
+    <!-- PLANNING (project tasks only if project selected, all otherwise) -->
     <div v-else-if="currentView === 'planning'" class="sm-content">
-      <SmPlanning :tasks="allTasksFlat" />
+      <SmPlanning :tasks="store.selectedProject ? filteredTasks : allTasksFlat" />
     </div>
 
-    <!-- Stats -->
+    <!-- STATS -->
     <div v-else-if="currentView === 'stats' && store.selectedProject" class="sm-content">
       <SmStatsDashboard :stats="store.stats" />
     </div>
 
-    <!-- Team -->
+    <!-- TEAM -->
     <div v-else-if="currentView === 'team'" class="sm-content">
       <SmTeamView :team="store.team" :tasks="allTasksFlat" />
     </div>
 
-    <!-- Config -->
+    <!-- CONFIG -->
     <div v-else-if="currentView === 'config'" class="sm-content">
       <SmConfigView />
     </div>
 
-    <!-- Import -->
+    <!-- IMPORT -->
     <div v-else-if="currentView === 'import'" class="sm-content">
       <SmImport @import="handleImport" />
     </div>
 
     <!-- No project selected -->
-    <div v-else-if="!store.selectedProject && ['tasks', 'kanban', 'eisenhower', 'stats'].includes(currentView)" class="sm-content sm-empty">
-      <p>Sélectionnez un projet d'abord dans la vue Projets.</p>
+    <div v-else-if="!store.selectedProject && ['tasks','kanban','eisenhower','stats'].includes(currentView)" class="sm-content sm-empty">
+      <div class="sm-empty__icon">📋</div>
+      <h3>{{ lt.selectProject }}</h3>
+      <p>{{ lt.selectProjectDesc }}</p>
+      <button class="sm-btn sm-btn--secondary" @click="currentView = 'projects'">{{ lt.goToProjects }}</button>
+    </div>
+
+    <!-- CREATE PROJECT MODAL -->
+    <div v-if="showCreateProject" class="sm-modal-overlay" @click.self="showCreateProject = false">
+      <div class="sm-modal">
+        <h3 class="sm-modal__title">✨ {{ lt.newProject }}</h3>
+        <div class="sm-modal__field">
+          <label>{{ lt.projectName }}</label>
+          <input v-model="newProject.name" :placeholder="lt.projectNameHint" autofocus />
+        </div>
+        <div class="sm-modal__field">
+          <label>{{ lt.description }}</label>
+          <textarea v-model="newProject.description" rows="3" :placeholder="lt.descriptionHint"></textarea>
+        </div>
+        <div class="sm-modal__row">
+          <div class="sm-modal__field">
+            <label>{{ lt.startDate }}</label>
+            <input v-model="newProject.start_date" type="date" />
+          </div>
+          <div class="sm-modal__field">
+            <label>{{ lt.targetDate }}</label>
+            <input v-model="newProject.target_end_date" type="date" />
+          </div>
+        </div>
+        <div class="sm-modal__field">
+          <label>{{ lt.state }}</label>
+          <select v-model="newProject.state">
+            <option value="active">🟢 {{ lt.active }}</option>
+            <option value="priority">🔴 {{ lt.priority }}</option>
+            <option value="urgent">⚡ {{ lt.urgent }}</option>
+            <option value="important">🟡 {{ lt.important }}</option>
+          </select>
+        </div>
+        <div class="sm-modal__actions">
+          <button class="sm-btn sm-btn--secondary" @click="showCreateProject = false">{{ lt.cancel }}</button>
+          <button class="sm-btn sm-btn--primary" @click="createProject" :disabled="!newProject.name.trim()">{{ lt.create }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CREATE TASK MODAL -->
+    <div v-if="showCreateTask" class="sm-modal-overlay" @click.self="showCreateTask = false">
+      <div class="sm-modal">
+        <h3 class="sm-modal__title">📝 {{ lt.newTask }}</h3>
+        <div class="sm-modal__field">
+          <label>{{ lt.taskName }}</label>
+          <input v-model="newTask.name" :placeholder="lt.taskNameHint" autofocus />
+        </div>
+        <div class="sm-modal__field">
+          <label>{{ lt.description }}</label>
+          <textarea v-model="newTask.description" rows="2" :placeholder="lt.taskDescHint"></textarea>
+        </div>
+        <div class="sm-modal__row">
+          <div class="sm-modal__field">
+            <label>{{ lt.group }}</label>
+            <input v-model="newTask.group_name" :placeholder="lt.groupHint" />
+          </div>
+          <div class="sm-modal__field">
+            <label>{{ lt.state }}</label>
+            <select v-model="newTask.priority">
+              <option value="normal">⚪ {{ lt.normal }}</option>
+              <option value="priority">🔴 {{ lt.priority }}</option>
+              <option value="urgent">⚡ {{ lt.urgent }}</option>
+              <option value="important">🟡 {{ lt.important }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="sm-modal__row">
+          <div class="sm-modal__field">
+            <label>{{ lt.estimatedDuration }} (h)</label>
+            <input v-model.number="newTask.dur_estimated" type="number" min="0" step="0.5" />
+          </div>
+          <div class="sm-modal__field">
+            <label>{{ lt.minDuration }} (h)</label>
+            <input v-model.number="newTask.dur_min" type="number" min="0" step="0.5" />
+          </div>
+          <div class="sm-modal__field">
+            <label>{{ lt.maxDuration }} (h)</label>
+            <input v-model.number="newTask.dur_max" type="number" min="0" step="0.5" />
+          </div>
+        </div>
+        <div class="sm-modal__row">
+          <div class="sm-modal__field">
+            <label>{{ lt.startDate }}</label>
+            <input v-model="newTask.start_date" type="date" />
+          </div>
+          <div class="sm-modal__field">
+            <label>{{ lt.endDate }}</label>
+            <input v-model="newTask.end_date" type="date" />
+          </div>
+        </div>
+        <div class="sm-modal__field">
+          <label>{{ lt.referent }}</label>
+          <input v-model="newTask.referent_name" :placeholder="lt.referentHint" />
+        </div>
+        <div class="sm-modal__actions">
+          <button class="sm-btn sm-btn--secondary" @click="showCreateTask = false">{{ lt.cancel }}</button>
+          <button class="sm-btn sm-btn--primary" @click="createTask" :disabled="!newTask.name.trim()">{{ lt.create }}</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, provide } from 'vue'
+import { ref, reactive, computed, onMounted, watch, provide } from 'vue'
 import { useSmartMatriceStore } from '../stores/smartMatrice'
 import { useAuthStore } from '../stores/auth'
+import { usePreferencesStore } from '../stores/preferences'
 
 import SmProjectCard from '../components/smart-matrice/SmProjectCard.vue'
 import SmTaskGroup from '../components/smart-matrice/SmTaskGroup.vue'
@@ -128,10 +249,9 @@ import SmImport from '../components/smart-matrice/SmImport.vue'
 
 const store = useSmartMatriceStore()
 const authStore = useAuthStore()
+const prefsStore = usePreferencesStore()
 
 const currentView = ref('projects')
-
-// Expose currentView to AppLayout for sidebar navigation
 provide('sm-current-view', currentView)
 
 const smNavItems = [
@@ -145,20 +265,31 @@ const smNavItems = [
   { key: 'config', emoji: '⚙️', label: 'Réglages', group: 'RÉGLAGES' },
   { key: 'import', emoji: '📥', label: 'Importer', group: 'RÉGLAGES' },
 ]
-
-// Provide nav items for AppLayout sidebar
 provide('sm-nav-items', smNavItems)
 
-const currentNavItem = computed(() => smNavItems.find(n => n.key === currentView.value))
+// Filters
+const filterStatus = ref('')
+const filterAssignee = ref('')
+const filterPriority = ref('')
+
+const showFilters = computed(() => ['tasks', 'kanban', 'eisenhower', 'planning', 'team'].includes(currentView.value))
 
 const currentTasks = computed(() => {
   if (!store.selectedProject) return []
   return store.tasks[store.selectedProject.id] || []
 })
 
-const taskGroups = computed(() => {
+const filteredTasks = computed(() => {
+  let list = currentTasks.value
+  if (filterStatus.value) list = list.filter(t => t.status === filterStatus.value)
+  if (filterAssignee.value) list = list.filter(t => t.assigned_to == filterAssignee.value)
+  if (filterPriority.value) list = list.filter(t => t.priority === filterPriority.value)
+  return list
+})
+
+const filteredTaskGroups = computed(() => {
   const groups = {}
-  for (const t of currentTasks.value) {
+  for (const t of filteredTasks.value) {
     const g = t.group_name || 'Sans groupe'
     if (!groups[g]) groups[g] = []
     groups[g].push(t)
@@ -168,18 +299,103 @@ const taskGroups = computed(() => {
 
 const allTasksFlat = computed(() => {
   const all = []
-  for (const pid in store.tasks) {
-    all.push(...store.tasks[pid])
-  }
+  for (const pid in store.tasks) all.push(...store.tasks[pid])
   return all
 })
 
+// Page title
+const currentNavItem = computed(() => smNavItems.find(n => n.key === currentView.value))
+const pageTitle = computed(() => currentNavItem.value?.label || 'Smart Matrice')
+
+// Modals
+const showCreateProject = ref(false)
+const showCreateTask = ref(false)
+const newProject = reactive({ name: '', description: '', start_date: '', target_end_date: '', state: 'active' })
+const newTask = reactive({ name: '', description: '', group_name: '', priority: 'normal', dur_estimated: null, dur_min: null, dur_max: null, start_date: '', end_date: '', referent_name: '' })
+
+// i18n
+const lang = computed(() => prefsStore.lang)
+const i18n = {
+  fr: { back: 'Retour', loading: 'Chargement…', allStatus: 'Tous les statuts', todo: 'À faire', inProgress: 'En cours', blocked: 'Bloqué', done: 'Terminé', allMembers: 'Toute l\'équipe', allPriority: 'Toutes priorités', urgent: 'Urgent', priority: 'Prioritaire', important: 'Important', normal: 'Normal', newProject: 'Nouveau projet', newTask: 'Nouvelle tâche', noProjects: 'Aucun projet', noProjectsDesc: 'Créez votre premier projet pour commencer à organiser vos tâches.', createFirst: 'Créer mon premier projet', noTasks: 'Aucune tâche dans ce projet.', selectProject: 'Sélectionnez un projet', selectProjectDesc: 'Choisissez un projet dans la vue Projets pour voir ses tâches.', goToProjects: 'Voir les projets', projectName: 'Nom du projet', projectNameHint: 'Ex: Refonte site web, Lancement produit...', description: 'Description', descriptionHint: 'Décrivez l\'objectif du projet...', startDate: 'Date de début', targetDate: 'Date cible de fin', endDate: 'Date de fin', state: 'État', active: 'Actif', cancel: 'Annuler', create: 'Créer', taskName: 'Nom de la tâche', taskNameHint: 'Ex: Rédiger cahier des charges...', taskDescHint: 'Décrivez la tâche...', group: 'Groupe / Phase', groupHint: 'Ex: Phase 1, Design, Dev...', estimatedDuration: 'Durée estimée', minDuration: 'Durée min', maxDuration: 'Durée max', referent: 'Référent', referentHint: 'Personne responsable...' },
+  en: { back: 'Back', loading: 'Loading…', allStatus: 'All statuses', todo: 'To do', inProgress: 'In progress', blocked: 'Blocked', done: 'Done', allMembers: 'All members', allPriority: 'All priorities', urgent: 'Urgent', priority: 'Priority', important: 'Important', normal: 'Normal', newProject: 'New project', newTask: 'New task', noProjects: 'No projects', noProjectsDesc: 'Create your first project to start organizing your tasks.', createFirst: 'Create my first project', noTasks: 'No tasks in this project.', selectProject: 'Select a project', selectProjectDesc: 'Choose a project from the Projects view to see its tasks.', goToProjects: 'View projects', projectName: 'Project name', projectNameHint: 'E.g.: Website redesign, Product launch...', description: 'Description', descriptionHint: 'Describe the project goal...', startDate: 'Start date', targetDate: 'Target end date', endDate: 'End date', state: 'State', active: 'Active', cancel: 'Cancel', create: 'Create', taskName: 'Task name', taskNameHint: 'E.g.: Write requirements doc...', taskDescHint: 'Describe the task...', group: 'Group / Phase', groupHint: 'E.g.: Phase 1, Design, Dev...', estimatedDuration: 'Estimated duration', minDuration: 'Min duration', maxDuration: 'Max duration', referent: 'Referent', referentHint: 'Responsible person...' },
+  kr: { back: '뒤로', loading: '로딩 중…', allStatus: '모든 상태', todo: '할 일', inProgress: '진행 중', blocked: '차단됨', done: '완료', allMembers: '모든 멤버', allPriority: '모든 우선순위', urgent: '긴급', priority: '우선', important: '중요', normal: '보통', newProject: '새 프로젝트', newTask: '새 작업', noProjects: '프로젝트 없음', noProjectsDesc: '첫 번째 프로젝트를 만들어 작업을 정리하세요.', createFirst: '첫 프로젝트 만들기', noTasks: '이 프로젝트에 작업이 없습니다.', selectProject: '프로젝트 선택', selectProjectDesc: '프로젝트 뷰에서 프로젝트를 선택하세요.', goToProjects: '프로젝트 보기', projectName: '프로젝트 이름', projectNameHint: '예: 웹사이트 리디자인, 제품 출시...', description: '설명', descriptionHint: '프로젝트 목표를 설명하세요...', startDate: '시작일', targetDate: '목표 종료일', endDate: '종료일', state: '상태', active: '활성', cancel: '취소', create: '만들기', taskName: '작업 이름', taskNameHint: '예: 요구사항 문서 작성...', taskDescHint: '작업을 설명하세요...', group: '그룹 / 단계', groupHint: '예: 1단계, 디자인, 개발...', estimatedDuration: '예상 기간', minDuration: '최소 기간', maxDuration: '최대 기간', referent: '담당자', referentHint: '책임자...' },
+}
+const lt = computed(() => i18n[lang.value] || i18n.fr)
+
+// Actions
+function goToProjects() { store.selectProject(null); currentView.value = 'projects' }
+
+function selectProject(project) {
+  store.selectProject(project)
+  currentView.value = 'tasks'
+}
+
+async function createProject() {
+  const p = await store.createProject({
+    name: newProject.name.trim(),
+    description: newProject.description,
+    start_date: newProject.start_date || null,
+    end_date: newProject.target_end_date || null,
+    target_end_date: newProject.target_end_date || null,
+    state: newProject.state,
+    emoji: '📁',
+  })
+  Object.assign(newProject, { name: '', description: '', start_date: '', target_end_date: '', state: 'active' })
+  showCreateProject.value = false
+  selectProject(p)
+}
+
+async function createTask() {
+  await store.createTask({
+    project_id: store.selectedProject.id,
+    name: newTask.name.trim(),
+    description: newTask.description,
+    group_name: newTask.group_name,
+    priority: newTask.priority,
+    status: 'todo',
+    dur_estimated: newTask.dur_estimated,
+    dur_min: newTask.dur_min,
+    dur_max: newTask.dur_max,
+    start_date: newTask.start_date || null,
+    end_date: newTask.end_date || null,
+    referent_name: newTask.referent_name,
+  })
+  Object.assign(newTask, { name: '', description: '', group_name: '', priority: 'normal', dur_estimated: null, dur_min: null, dur_max: null, start_date: '', end_date: '', referent_name: '' })
+  showCreateTask.value = false
+}
+
+async function toggleSubtask(taskId, subId) { await store.toggleSubtask(taskId, subId) }
+async function deleteSubtask(taskId, subId) { await store.deleteSubtask(taskId, subId) }
+async function addSubtask(taskId, name) { await store.addSubtask(taskId, name) }
+async function transferTask(taskId, memberId) { await store.transferTask(taskId, memberId) }
+
+async function updateTaskStatus(taskId, status) {
+  await store.updateTask(taskId, { status })
+  // Sync: if done → also set quadrant to 4 (eliminate)
+  if (status === 'done') await store.updateTask(taskId, { quadrant: 4 })
+}
+
+async function updateTaskQuadrant(taskId, quadrant) {
+  await store.updateTask(taskId, { quadrant })
+  // Sync: quadrant 4 (eliminate) → status done
+  if (quadrant === 4) await store.updateTask(taskId, { status: 'done' })
+}
+
+async function handleImport(tasks) {
+  if (!store.selectedProject) {
+    const p = await store.createProject({ name: 'Projet importé', emoji: '📥' })
+    store.selectProject(p)
+    await store.importTasks(p.id, tasks)
+  } else {
+    await store.importTasks(store.selectedProject.id, tasks)
+  }
+  currentView.value = 'tasks'
+}
+
+// Init
 onMounted(async () => {
   store.userName = authStore.user?.display_name || ''
-  await Promise.all([
-    store.fetchProjects(),
-    store.fetchTeam(),
-  ])
+  await Promise.all([store.fetchProjects(), store.fetchTeam()])
 })
 
 watch(() => store.selectedProject, async (p) => {
@@ -192,68 +408,66 @@ watch(() => store.selectedProject, async (p) => {
 watch(currentView, async (v) => {
   if (v === 'stats' && store.selectedProject) await store.fetchStats(store.selectedProject.id)
 })
-
-function selectProject(project) {
-  store.selectProject(project)
-  currentView.value = 'tasks'
-}
-
-async function createProject() {
-  await store.createProject({ name: 'Nouveau projet', emoji: '📁' })
-}
-
-async function createTask() {
-  if (!store.selectedProject) return
-  await store.createTask({ project_id: store.selectedProject.id, name: 'Nouvelle tâche', status: 'todo' })
-}
-
-async function toggleSubtask(taskId, subId) { await store.toggleSubtask(taskId, subId) }
-async function deleteSubtask(taskId, subId) { await store.deleteSubtask(taskId, subId) }
-async function addSubtask(taskId, name) { await store.addSubtask(taskId, name) }
-async function transferTask(taskId, memberId) { await store.transferTask(taskId, memberId) }
-async function updateTaskStatus(taskId, status) { await store.updateTask(taskId, { status }) }
-async function updateTaskQuadrant(taskId, quadrant) { await store.updateTask(taskId, { quadrant }) }
-
-async function handleImport(tasks) {
-  if (!store.selectedProject) {
-    const p = await store.createProject({ name: 'Projet importé', emoji: '📥' })
-    store.selectProject(p)
-    await store.importTasks(p.id, tasks)
-  } else {
-    await store.importTasks(store.selectedProject.id, tasks)
-  }
-  currentView.value = 'tasks'
-}
 </script>
 
 <style scoped>
 .sm-page { font-family: 'DM Sans', sans-serif; }
-.sm-topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 0 20px; margin-bottom: 4px;
+.sm-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 0 20px; gap: 16px; flex-wrap: wrap; }
+.sm-topbar__left { display: flex; align-items: center; gap: 12px; }
+.sm-topbar__title { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 26px; color: var(--sm-t1); margin: 0; }
+.sm-topbar__project { font-size: 14px; color: var(--sm-t3); }
+.sm-topbar__actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sm-back { border: none; background: none; color: var(--sm-t3); font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 4px 0; }
+.sm-back:hover { color: var(--sm-t1); }
+
+/* Filters */
+.sm-filters { display: flex; gap: 8px; }
+.sm-filter-select {
+  border: 1px solid var(--sm-bd); background: #fff; border-radius: 8px;
+  padding: 6px 10px; font-size: 12px; font-family: 'DM Sans', sans-serif;
+  color: var(--sm-t1); outline: none; cursor: pointer;
 }
-.sm-topbar__title {
-  font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 24px;
-  color: var(--sm-t1); margin: 0;
-}
-.sm-topbar__actions { display: flex; gap: 8px; }
-.sm-topbar__btn {
+.sm-filter-select:focus { border-color: #3b82f6; }
+
+/* Buttons */
+.sm-btn {
   border: none; border-radius: 10px; padding: 9px 20px;
   font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif;
-  transition: all .15s;
+  transition: all .15s; white-space: nowrap;
 }
-.sm-topbar__btn--primary { background: var(--sm-grad); color: white; }
-.sm-topbar__btn--primary:hover { opacity: .9; }
-.sm-topbar__btn--secondary { background: var(--sm-white); border: 1px solid var(--sm-bd); color: var(--sm-t1); }
-.sm-topbar__btn--secondary:hover { border-color: var(--sm-terra); color: var(--sm-terra); }
+.sm-btn--primary { background: var(--sm-grad); color: white; box-shadow: 0 3px 12px rgba(59,130,246,.2); }
+.sm-btn--primary:hover { transform: translateY(-1px); box-shadow: 0 5px 18px rgba(59,130,246,.25); }
+.sm-btn--primary:disabled { opacity: .5; transform: none; }
+.sm-btn--secondary { background: #fff; border: 1px solid var(--sm-bd); color: var(--sm-t1); }
+.sm-btn--secondary:hover { border-color: #3b82f6; color: #3b82f6; }
+
+/* Content */
 .sm-content { }
-.sm-loading { padding: 40px; text-align: center; color: var(--sm-t3); font-size: 14px; }
-.sm-empty { text-align: center; padding: 60px 20px; color: var(--sm-t3); font-size: 14px; }
-.sm-projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-.sm-project-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-.sm-project-header__emoji { font-size: 28px; }
-.sm-project-header__name {
-  font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 24px;
-  color: var(--sm-t1); margin: 0;
+.sm-loading { padding: 40px; text-align: center; color: var(--sm-t3); font-size: 15px; }
+.sm-empty { text-align: center; padding: 80px 20px; }
+.sm-empty__icon { font-size: 48px; margin-bottom: 12px; }
+.sm-empty h3 { font-size: 18px; font-weight: 700; color: var(--sm-t1); margin: 0 0 6px; }
+.sm-empty p { font-size: 14px; color: var(--sm-t3); margin: 0 0 20px; }
+.sm-projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+
+/* Modals */
+.sm-modal-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,.3); z-index: 100;
+  display: flex; align-items: center; justify-content: center; padding: 24px;
 }
+.sm-modal {
+  background: #fff; border-radius: 16px; padding: 28px 32px;
+  width: 100%; max-width: 560px; box-shadow: 0 20px 60px rgba(0,0,0,.12);
+}
+.sm-modal__title { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 22px; color: var(--sm-t1); margin: 0 0 20px; }
+.sm-modal__field { margin-bottom: 14px; display: flex; flex-direction: column; gap: 5px; }
+.sm-modal__field label { font-size: 12px; font-weight: 600; color: var(--sm-t2); }
+.sm-modal__field input, .sm-modal__field textarea, .sm-modal__field select {
+  border: 1px solid var(--sm-bd); background: #fff; border-radius: 10px;
+  padding: 10px 14px; font-size: 14px; font-family: 'DM Sans', sans-serif;
+  color: var(--sm-t1); outline: none; resize: vertical;
+}
+.sm-modal__field input:focus, .sm-modal__field textarea:focus, .sm-modal__field select:focus { border-color: #3b82f6; }
+.sm-modal__row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.sm-modal__actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 </style>
