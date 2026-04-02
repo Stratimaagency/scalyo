@@ -1,7 +1,7 @@
 <template>
   <PlanGate requiredPlan="Growth" :moduleName="t('planning')">
   <div class="fade-in" style="display: flex; flex-direction: column; height: 100%; overflow: hidden">
-    <div v-if="loading" style="display: flex; justify-content: center; align-items: center; padding: 60px 0; color: var(--muted); font-size: 14px">
+    <div v-if="loading" style="display: flex; justify-content: center; align-items: center; padding: 60px 0; color: #334155; font-size: 14px">
       {{ t('loading') }}
     </div>
     <template v-else>
@@ -14,7 +14,7 @@
           <span style="font-size: 13px; font-weight: 700; min-width: 180px; text-align: center">{{ headerTitle }}</span>
           <button @click="nextPeriod" style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; width: 28px; height: 28px; cursor: pointer; color: var(--text); font-size: 14px; display: flex; align-items: center; justify-content: center">&rsaquo;</button>
         </div>
-        <button @click="goToday" style="font-size: 11px; padding: 5px 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); cursor: pointer; font-weight: 600">{{ t('today') }}</button>
+        <button @click="goToday" style="font-size: 11px; padding: 5px 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); color: #334155; cursor: pointer; font-weight: 600">{{ t('today') }}</button>
       </div>
       <div style="display: flex; gap: 8px; align-items: center">
         <!-- View toggle -->
@@ -41,7 +41,7 @@
               background: isTodayDate(d) ? 'rgba(77,182,160,0.08)' : 'transparent',
               borderRadius: isTodayDate(d) ? '8px 8px 0 0' : '0'
             }">
-            <div style="font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase">{{ dayNames[i] }}</div>
+            <div style="font-size: 10px; font-weight: 600; color: #334155; text-transform: uppercase">{{ dayNames[i] }}</div>
             <div :style="{
               fontSize: '20px', fontWeight: 900,
               color: isTodayDate(d) ? 'var(--teal)' : 'var(--text)',
@@ -53,7 +53,7 @@
         </div>
         <!-- Time slots -->
         <div v-for="h in hours" :key="'h' + h" style="display: grid; grid-template-columns: 60px repeat(7, 1fr); border-bottom: 1px solid var(--border)">
-          <div style="font-size: 10px; color: var(--muted); padding: 6px 8px 0 0; text-align: right; padding-top: 4px">{{ h }}:00</div>
+          <div style="font-size: 10px; color: #334155; padding: 6px 8px 0 0; text-align: right; padding-top: 4px">{{ h }}:00</div>
           <div v-for="(d, i) in weekDays" :key="'ws' + h + '-' + i"
             @click="openAddEvent(toDateStr(d))"
             @mouseenter="$event.currentTarget.style.background = 'rgba(77,182,160,0.08)'"
@@ -85,7 +85,7 @@
       <!-- MONTH VIEW -->
       <div v-if="view === 'month'" style="margin-top: 16px">
         <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; margin-bottom: 4px">
-          <div v-for="d in dayNames" :key="'dn' + d" style="text-align: center; font-size: 10px; font-weight: 700; color: var(--muted); padding: 6px 0; text-transform: uppercase">{{ d }}</div>
+          <div v-for="d in dayNames" :key="'dn' + d" style="text-align: center; font-size: 10px; font-weight: 700; color: #334155; padding: 6px 0; text-transform: uppercase">{{ d }}</div>
         </div>
         <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px">
           <template v-for="(d, i) in monthDays" :key="'md' + i">
@@ -117,7 +117,7 @@
                   borderRadius: '3px', padding: '1px 5px', marginBottom: '2px',
                   overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'
                 }">{{ ev.title }}</div>
-              <div v-if="getEventsForDay(d).length > 3" style="font-size: 9px; color: var(--muted)">+{{ getEventsForDay(d).length - 3 }} {{ t('more') }}</div>
+              <div v-if="getEventsForDay(d).length > 3" style="font-size: 9px; color: #334155">+{{ getEventsForDay(d).length - 3 }} {{ t('more') }}</div>
             </div>
           </template>
         </div>
@@ -131,7 +131,7 @@
         <div style="text-align: center; margin-bottom: 20px">
           <div style="font-size: 36px; margin-bottom: 8px">&#x2705;</div>
           <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 4px">{{ t('savedBang') }}</h3>
-          <p style="font-size: 12px; color: var(--muted)">{{ t('addToCalendar') }}</p>
+          <p style="font-size: 12px; color: #334155">{{ t('addToCalendar') }}</p>
         </div>
         <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px">
           <a :href="buildGoogleLink(savedEvent)" target="_blank" rel="noopener"
@@ -148,7 +148,7 @@
           </button>
         </div>
         <button @click="closeModal"
-          style="width: 100%; padding: 10px; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 600">
+          style="width: 100%; padding: 10px; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); color: #334155; cursor: pointer; font-size: 13px; font-weight: 600">
           {{ t('close') }}
         </button>
       </template>
@@ -160,21 +160,21 @@
 
         <div style="display: flex; gap: 8px; margin-bottom: 12px">
           <div style="flex: 1.5">
-            <div style="font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 4px">{{ t('dateLabel') }}</div>
+            <div style="font-size: 11px; font-weight: 700; color: #334155; margin-bottom: 4px">{{ t('dateLabel') }}</div>
             <input type="date" v-model="formDate" :style="{ ...inputStyleNoMb }" />
           </div>
           <div style="flex: 1">
-            <div style="font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 4px">{{ t('startTime') }}</div>
+            <div style="font-size: 11px; font-weight: 700; color: #334155; margin-bottom: 4px">{{ t('startTime') }}</div>
             <input type="time" v-model="formTime" :style="{ ...inputStyleNoMb }" />
           </div>
           <div style="flex: 1">
-            <div style="font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 4px">{{ t('endTime') }}</div>
+            <div style="font-size: 11px; font-weight: 700; color: #334155; margin-bottom: 4px">{{ t('endTime') }}</div>
             <input type="time" v-model="formEndTime" :style="{ ...inputStyleNoMb }" />
           </div>
         </div>
 
         <div style="margin-bottom: 12px">
-          <div style="font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px">{{ t('eventColor') }}</div>
+          <div style="font-size: 11px; font-weight: 700; color: #334155; margin-bottom: 6px">{{ t('eventColor') }}</div>
           <div style="display: flex; gap: 6px">
             <button v-for="clr in EVENT_COLORS" :key="clr.id" @click="formColor = clr.id"
               :style="{
@@ -201,7 +201,7 @@
             {{ t('delete') }}
           </button>
           <button @click="closeModal"
-            style="flex: 1; padding: 11px; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 600">
+            style="flex: 1; padding: 11px; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); color: #334155; cursor: pointer; font-size: 13px; font-weight: 600">
             {{ t('cancel') }}
           </button>
           <button @click="handleSave" :disabled="!formTitle.trim() || !formDate"

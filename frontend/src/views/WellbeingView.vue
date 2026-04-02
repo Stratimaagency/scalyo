@@ -10,7 +10,7 @@
         </div>
         <div style="flex: 1">
           <div style="font-weight: 800; font-size: 15px">Nova — {{ t('wellbeing') }}</div>
-          <div style="font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 6px">
+          <div style="font-size: 11px; color: #334155; display: flex; align-items: center; gap: 6px">
             <span class="pulse" style="width: 6px; height: 6px; border-radius: 50%; background: var(--green)"></span>
             {{ t('wbConf') }}
           </div>
@@ -39,7 +39,7 @@
         <!-- Score / Burnout / Charge indicators -->
         <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px">
           <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center">
-            <span style="font-size: 12px; color: var(--muted)">💚 {{ t('wellbeingScore') }}</span>
+            <span style="font-size: 12px; color: #334155">💚 {{ t('wellbeingScore') }}</span>
             <span style="font-size: 15px; font-weight: 900" :style="{ color: scoreColor }">{{ wbData.score }}/100</span>
           </div>
           <div style="padding: 4px 0">
@@ -50,18 +50,18 @@
             />
           </div>
           <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center">
-            <span style="font-size: 12px; color: var(--muted)">🧠 {{ t('burnoutRisk') }}</span>
+            <span style="font-size: 12px; color: #334155">🧠 {{ t('burnoutRisk') }}</span>
             <span style="font-size: 12px; font-weight: 800" :style="{ color: burnoutColor }">{{ burnoutLabel }}</span>
           </div>
           <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center">
-            <span style="font-size: 12px; color: var(--muted)">⚡ {{ t('workload') }}</span>
+            <span style="font-size: 12px; color: #334155">⚡ {{ t('workload') }}</span>
             <span style="font-size: 15px; font-weight: 900" :style="{ color: wbData.charge > 85 ? 'var(--red)' : wbData.charge > 70 ? 'var(--amber)' : 'var(--green)' }">{{ wbData.charge }}%</span>
           </div>
         </div>
 
         <!-- Per-CSM detail cards -->
         <template v-if="team.length > 0">
-          <div style="font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px">
+          <div style="font-size: 12px; font-weight: 800; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px">
             {{ t('wbDetail') }}
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px">
@@ -85,7 +85,7 @@
                 </div>
                 <div>
                   <div style="font-weight: 800; font-size: 13px">{{ member.name }}</div>
-                  <div style="font-size: 10px; color: var(--muted)">{{ member.accounts || 0 }} {{ t('accounts') }}</div>
+                  <div style="font-size: 10px; color: #334155">{{ member.accounts || 0 }} {{ t('accounts') }}</div>
                 </div>
                 <span
                   style="margin-left: auto; font-size: 10px; padding: 2px 8px; border-radius: 12px; font-weight: 700"
@@ -100,7 +100,7 @@
               </div>
               <HealthBar :val="100 - (member.charge || 70)" />
               <div style="display: flex; justify-content: space-between; margin-top: 5px">
-                <span style="font-size: 10px; color: var(--muted)">{{ t('workload') }}: {{ member.charge || 70 }}%</span>
+                <span style="font-size: 10px; color: #334155">{{ t('workload') }}: {{ member.charge || 70 }}%</span>
                 <span
                   style="font-size: 10px"
                   :style="{ color: (member.sat || 7) >= 8 ? 'var(--green)' : (member.sat || 7) >= 6 ? 'var(--amber)' : 'var(--red)' }"
@@ -110,7 +110,7 @@
               </div>
               <!-- Team member list -->
               <div v-if="member.members?.length" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border)">
-                <div v-for="(tm, j) in member.members" :key="j" style="font-size: 11px; color: var(--muted); padding: 2px 0">
+                <div v-for="(tm, j) in member.members" :key="j" style="font-size: 11px; color: #334155; padding: 2px 0">
                   • {{ tm }}
                 </div>
               </div>
@@ -125,10 +125,10 @@
             🔋 {{ t('wbManage') }}
           </h4>
           <div style="display: flex; flex-direction: column; gap: 6px">
-            <div style="font-size: 12px; color: var(--muted); line-height: 1.7; padding: 8px 12px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border)">
+            <div style="font-size: 12px; color: #334155; line-height: 1.7; padding: 8px 12px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border)">
               • {{ t('wbDecompress') }} — {{ t('trackWorkload') }}
             </div>
-            <div style="font-size: 12px; color: var(--muted); line-height: 1.7; padding: 8px 12px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border)">
+            <div style="font-size: 12px; color: #334155; line-height: 1.7; padding: 8px 12px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border)">
               • {{ t('wbTalkSomeone') }} — {{ t('wbHelpline') }}
             </div>
           </div>
@@ -176,12 +176,12 @@
           <button
             v-for="(q, i) in quickChips" :key="i"
             @click="sendNova(q)"
-            style="font-size: 11px; padding: 5px 12px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); cursor: pointer"
+            style="font-size: 11px; padding: 5px 12px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); color: #334155; cursor: pointer"
           >{{ q }}</button>
         </div>
 
         <!-- Confidentiality notice -->
-        <div style="padding: 6px 20px 0; font-size: 10px; color: var(--muted); text-align: center">
+        <div style="padding: 6px 20px 0; font-size: 10px; color: #334155; text-align: center">
           🔒 {{ t('wbConf') }}
         </div>
 
@@ -209,7 +209,7 @@
         <AppCard glow style="margin-bottom: 16px; text-align: center; padding: 28px 20px">
           <div style="margin-bottom: 10px"><ScalyoIcon name="star" :size="36" /></div>
           <h3 style="font-weight: 800; margin-bottom: 6px">{{ t('wbBookSession') }}</h3>
-          <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px">{{ t('wbBookHow') }}</p>
+          <p style="font-size: 12px; color: #334155; margin-bottom: 16px">{{ t('wbBookHow') }}</p>
           <button
             class="btn btn-primary"
             style="padding: 10px 24px; border-radius: 10px; font-weight: 700; font-size: 13px"
@@ -230,7 +230,7 @@
               <span style="font-size: 16px">{{ feat.icon }}</span>
               <div>
                 <div style="font-size: 12px; font-weight: 700; color: var(--text)">{{ feat.title }}</div>
-                <div style="font-size: 11px; color: var(--muted)">{{ feat.desc }}</div>
+                <div style="font-size: 11px; color: #334155">{{ feat.desc }}</div>
               </div>
             </div>
           </div>
@@ -239,7 +239,7 @@
         <!-- Weekly KPI format -->
         <AppCard style="margin-bottom: 12px">
           <h4 style="font-weight: 800; margin-bottom: 8px">📊 {{ t('wbKpiWeekly') }}</h4>
-          <p style="font-size: 12px; color: var(--muted); line-height: 1.7">
+          <p style="font-size: 12px; color: #334155; line-height: 1.7">
             {{ t('wbFormat') }}
           </p>
         </AppCard>
@@ -248,10 +248,10 @@
         <AppCard style="margin-bottom: 12px">
           <h4 style="font-weight: 800; margin-bottom: 8px">📅 {{ t('wbFollowUp') }}</h4>
           <div style="display: flex; flex-direction: column; gap: 6px">
-            <div style="font-size: 12px; color: var(--muted); line-height: 1.7; padding: 8px 12px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border)">
+            <div style="font-size: 12px; color: #334155; line-height: 1.7; padding: 8px 12px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border)">
               • {{ prefsStore.lang === 'en' ? 'Monthly: performance review + goal adjustment' : prefsStore.lang === 'kr' ? '월간: 성과 리뷰 + 목표 조정' : 'Mensuel : revue de performance + ajustement des objectifs' }}
             </div>
-            <div style="font-size: 12px; color: var(--muted); line-height: 1.7; padding: 8px 12px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border)">
+            <div style="font-size: 12px; color: #334155; line-height: 1.7; padding: 8px 12px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border)">
               • {{ prefsStore.lang === 'en' ? 'Quarterly: deep-dive session + career development' : prefsStore.lang === 'kr' ? '분기별: 심층 세션 + 경력 개발' : 'Trimestriel : session approfondie + développement de carrière' }}
             </div>
           </div>
@@ -262,7 +262,7 @@
           <h4 style="font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 6px">
             💬 {{ t('wbTalkSomeone') }}
           </h4>
-          <p style="font-size: 12px; color: var(--muted); line-height: 1.7; margin-bottom: 10px">
+          <p style="font-size: 12px; color: #334155; line-height: 1.7; margin-bottom: 10px">
             {{ t('wbHelpline') }}
           </p>
           <div style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text)">
@@ -281,20 +281,20 @@
     <div style="width: 300px; flex-shrink: 0; display: flex; flex-direction: column; overflow: hidden">
       <!-- Side panel header: Team Indicators -->
       <div style="padding: 16px 16px 12px; border-bottom: 1px solid var(--border); background: var(--bg1)">
-        <div style="font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px">
+        <div style="font-size: 12px; font-weight: 800; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px">
           {{ t('teamWellbeing') }}
         </div>
         <div style="display: flex; flex-direction: column; gap: 8px">
           <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center">
-            <span style="font-size: 12px; color: var(--muted)">💚 {{ t('wellbeingScore') }}</span>
+            <span style="font-size: 12px; color: #334155">💚 {{ t('wellbeingScore') }}</span>
             <span style="font-size: 15px; font-weight: 900" :style="{ color: scoreColor }">{{ wbData.score }}/100</span>
           </div>
           <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center">
-            <span style="font-size: 12px; color: var(--muted)">🧠 {{ t('burnoutRisk') }}</span>
+            <span style="font-size: 12px; color: #334155">🧠 {{ t('burnoutRisk') }}</span>
             <span style="font-size: 12px; font-weight: 800" :style="{ color: burnoutColor }">{{ burnoutLabel }}</span>
           </div>
           <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center">
-            <span style="font-size: 12px; color: var(--muted)">⚡ {{ t('workload') }}</span>
+            <span style="font-size: 12px; color: #334155">⚡ {{ t('workload') }}</span>
             <span style="font-size: 15px; font-weight: 900" :style="{ color: wbData.charge > 85 ? 'var(--red)' : wbData.charge > 70 ? 'var(--amber)' : 'var(--green)' }">{{ wbData.charge }}%</span>
           </div>
         </div>
@@ -302,7 +302,7 @@
 
       <!-- Side panel body: Resources & quick actions -->
       <div style="flex: 1; overflow-y: auto; padding: 14px 16px">
-        <div style="font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px">
+        <div style="font-size: 12px; font-weight: 800; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px">
           {{ t('resources') }}
         </div>
         <div style="display: flex; flex-direction: column; gap: 8px">
@@ -315,7 +315,7 @@
               <span style="font-size: 18px">{{ r.icon }}</span>
               <div>
                 <div style="font-size: 12px; font-weight: 800; color: var(--text)">{{ r.title }}</div>
-                <div style="font-size: 11px; color: var(--muted)">{{ r.desc }}</div>
+                <div style="font-size: 11px; color: #334155">{{ r.desc }}</div>
               </div>
             </div>
           </button>

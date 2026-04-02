@@ -1,7 +1,7 @@
 <template>
   <PlanGate requiredPlan="Growth" moduleName="Roadmap">
   <div class="fade-in" style="padding: 24px 28px; height: 100%; overflow-y: auto">
-    <div v-if="loading" style="display: flex; justify-content: center; align-items: center; padding: 60px 0; color: var(--muted); font-size: 14px">
+    <div v-if="loading" style="display: flex; justify-content: center; align-items: center; padding: 60px 0; color: #334155; font-size: 14px">
       {{ t('loading') }}
     </div>
     <template v-else>
@@ -18,7 +18,7 @@
         {{ t('rmAddItem') }}
       </button>
     </div>
-    <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px">
+    <p style="font-size: 13px; color: #334155; margin-bottom: 16px">
       {{ roadmap.phase || t('roadmapPhaseDefault') }}
     </p>
 
@@ -114,7 +114,7 @@
     <!-- Progress bar -->
     <div style="margin-bottom: 20px">
       <div style="display: flex; justify-content: space-between; margin-bottom: 6px">
-        <span style="font-size: 13px; color: var(--muted)">{{ t('rmProgress') }}</span>
+        <span style="font-size: 13px; color: #334155">{{ t('rmProgress') }}</span>
         <span style="font-size: 13px; font-weight: 700">{{ progress }}%</span>
       </div>
       <HealthBar :val="progress" />
@@ -124,7 +124,7 @@
     <div v-for="phase in displayPhases" :key="phase.num" style="margin-bottom: 20px">
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px">
         <span style="font-size: 14px; font-weight: 800">{{ phaseTitle(phase.num) }}</span>
-        <span style="font-size: 11px; color: var(--muted); font-weight: 600">
+        <span style="font-size: 11px; color: #334155; font-weight: 600">
           {{ phaseDoneCount(phase.num) }}/{{ phaseItemCount(phase.num) }}
         </span>
       </div>
@@ -171,13 +171,13 @@
           <!-- Phase badge -->
           <span
             v-if="item.phase"
-            style="font-size: 10px; color: var(--muted); flex-shrink: 0; font-weight: 600"
+            style="font-size: 10px; color: #334155; flex-shrink: 0; font-weight: 600"
           >P{{ item.phase }}</span>
 
           <!-- Due badge -->
           <span
             v-if="item.due"
-            style="font-size: 11px; color: var(--muted); flex-shrink: 0"
+            style="font-size: 11px; color: #334155; flex-shrink: 0"
           >{{ item.due }}</span>
 
           <!-- Actions -->
@@ -205,7 +205,7 @@
     </div>
 
     <!-- Empty state when no items match -->
-    <p v-if="filtered.length === 0" style="color: var(--muted); font-size: 13px">
+    <p v-if="filtered.length === 0" style="color: #334155; font-size: 13px">
       {{ t('rmNoMatch') }}
     </p>
 
@@ -449,7 +449,7 @@ onMounted(async () => {
   cursor: pointer;
   border: 1px solid var(--border);
   background: var(--surface);
-  color: var(--muted);
+  color: #334155;
   font-weight: 500;
   transition: all 0.12s;
 }
@@ -466,7 +466,7 @@ onMounted(async () => {
 
 .filter-label {
   font-size: 11px;
-  color: var(--muted);
+  color: #334155;
   font-weight: 700;
 }
 .filter-divider {
@@ -501,7 +501,7 @@ onMounted(async () => {
   border-radius: 6px;
   background: none;
   border: none;
-  color: var(--muted);
+  color: #334155;
   cursor: pointer;
   transition: opacity 0.12s;
 }

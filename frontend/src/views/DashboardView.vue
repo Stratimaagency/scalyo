@@ -6,7 +6,7 @@
         <h1 style="font-size: 24px; font-weight: 900; letter-spacing: -0.6px; margin-bottom: 5px;">
           {{ t('overview') }} <ScalyoIcon name="wave" :size="24" style="margin-left: 4px" />
         </h1>
-        <p style="color: var(--muted); font-size: 13px;">{{ company?.name }} · {{ todayFormatted }}</p>
+        <p style="color: #334155; font-size: 13px;">{{ company?.name }} · {{ todayFormatted }}</p>
       </div>
       <div style="display: flex; gap: 8px;">
         <span class="tag" :style="{ background: planBg, color: planColorVal, border: '1px solid ' + planBorder }">
@@ -54,14 +54,14 @@
             </div>
             <div>
               <div style="font-weight: 700; font-size: 13px;">{{ acc.name }}</div>
-              <div style="font-size: 13px; color: var(--muted);">
+              <div style="font-size: 13px; color: #334155;">
                 {{ Array.isArray(acc.issues) && acc.issues[0] ? acc.issues[0] : t('criticalSituation') }}
               </div>
             </div>
           </div>
           <div style="text-align: right;">
             <div style="font-size: 12px; font-weight: 700; color: var(--red);">{{ fmtAccountARR(acc) }}</div>
-            <div style="font-size: 13px; color: var(--muted);">
+            <div style="font-size: 13px; color: #334155;">
               {{ t('renewal') }} {{ acc.renewal || 'N/A' }}
             </div>
           </div>
@@ -78,7 +78,7 @@
             <div style="font-weight: 800; font-size: 15px; margin-bottom: 2px;">
               <ScalyoIcon name="map" :size="18" style="margin-right: 4px" /> {{ t('roadmap90Title') }}
             </div>
-            <div style="font-size: 12px; color: var(--muted);">{{ roadmapPhase }}</div>
+            <div style="font-size: 12px; color: #334155;">{{ roadmapPhase }}</div>
           </div>
           <div style="display: flex; align-items: center; gap: 12px;">
             <div style="text-align: right;">
@@ -101,7 +101,7 @@
               {{ item.text || item.label }}
             </span>
           </div>
-          <p v-if="!roadmapTotal" style="font-size: 13px; color: var(--muted); text-align: center; padding: 8px;">
+          <p v-if="!roadmapTotal" style="font-size: 13px; color: #334155; text-align: center; padding: 8px;">
             {{ t('noRoadmapItems') }}
           </p>
         </div>
@@ -114,7 +114,7 @@
             <ScalyoIcon name="heart" :size="18" style="margin-right: 4px" /> {{ t('teamWellbeing') }}
           </div>
           <router-link :to="{ name: 'wellbeing' }" class="btn-base"
-            style="font-size: 13px; padding: 5px 12px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); text-decoration: none;">
+            style="font-size: 13px; padding: 5px 12px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); color: #334155; text-decoration: none;">
             {{ t('detailBtn') }} →
           </router-link>
         </div>
@@ -123,7 +123,7 @@
             <div :style="{ fontSize: '28px', fontWeight: 900, fontFamily: 'JetBrains Mono, monospace', color: wellbeingScoreColor }">
               {{ wellbeingScore }}
             </div>
-            <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">
+            <div style="font-size: 12px; color: #334155; margin-top: 2px;">
               {{ t('scoreLabel') }}
             </div>
           </div>
@@ -131,7 +131,7 @@
             <div :style="{ fontSize: '16px', fontWeight: 800, color: burnoutColor }">
               {{ burnoutLabel }}
             </div>
-            <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">
+            <div style="font-size: 12px; color: #334155; margin-top: 2px;">
               {{ t('burnoutRisk') }}
             </div>
           </div>
@@ -154,7 +154,7 @@
             <HealthBar :val="100 - (m.charge || 70)" size="sm" />
           </div>
         </div>
-        <p v-if="!teamMembers.length" style="font-size: 12px; color: var(--muted); text-align: center; padding: 8px 0;">
+        <p v-if="!teamMembers.length" style="font-size: 12px; color: #334155; text-align: center; padding: 8px 0;">
           {{ t('noTeamMembers') }}
         </p>
       </div>
@@ -171,22 +171,22 @@
           <div style="font-weight: 800; font-size: 13px; margin-bottom: 8px;">{{ s.csm }}</div>
           <div style="display: flex; flex-direction: column; gap: 5px;">
             <div style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: var(--muted); display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="briefcase" :size="13" /> {{ t('accounts') }}</span>
+              <span style="color: #334155; display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="briefcase" :size="13" /> {{ t('accounts') }}</span>
               <span style="font-weight: 700;">{{ s.count }}</span>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: var(--muted); display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="money" :size="13" /> ARR</span>
+              <span style="color: #334155; display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="money" :size="13" /> ARR</span>
               <span style="font-weight: 700; color: var(--teal);">{{ fmtCurrency(s.arr) }}</span>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: var(--muted); display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="heart" :size="13" /> {{ t('health') }}</span>
+              <span style="color: #334155; display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="heart" :size="13" /> {{ t('health') }}</span>
               <span style="font-weight: 700;"
                 :style="{ color: s.health >= 70 ? 'var(--green)' : s.health >= 40 ? 'var(--amber)' : 'var(--red)' }">
                 {{ s.health }}/100
               </span>
             </div>
             <div v-if="s.crit > 0" style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: var(--muted); display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="siren" :size="13" /> {{ t('filterCritical') }}</span>
+              <span style="color: #334155; display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="siren" :size="13" /> {{ t('filterCritical') }}</span>
               <span style="font-weight: 700; color: var(--red);">{{ s.crit }}</span>
             </div>
           </div>
@@ -208,7 +208,7 @@
           <ScalyoIcon name="lightbulb" :size="16" />
           {{ t('healthMethodTitle') }}
         </summary>
-        <p style="font-size: 12px; color: var(--muted); line-height: 1.7; margin-top: 10px;">
+        <p style="font-size: 12px; color: #334155; line-height: 1.7; margin-top: 10px;">
           {{ t('healthMethodDesc') }}
         </p>
       </details>

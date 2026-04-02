@@ -59,7 +59,7 @@
 
       <!-- CSM filter (shown when >2 CSMs) -->
       <div v-if="csmList.length > 2" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 13px; color: var(--muted); font-weight: 700;">{{ t('filterCsm') }}:</span>
+        <span style="font-size: 13px; color: #334155; font-weight: 700;">{{ t('filterCsm') }}:</span>
         <select v-model="csmFilter" @change="persistCsmFilter"
           style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; color: var(--text); font-size: 12px; cursor: pointer;">
           <option value="">{{ t('allCsm') }}</option>
@@ -85,12 +85,12 @@
             </div>
             <div style="min-width: 0;">
               <div style="font-weight: 700; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ acc.name }}</div>
-              <div style="font-size: 13px; color: var(--muted);">{{ acc.csm || t('unassigned') }} · {{ fmtMRR(acc.mrr ?? acc.arr) }}</div>
+              <div style="font-size: 13px; color: #334155;">{{ acc.csm || t('unassigned') }} · {{ fmtMRR(acc.mrr ?? acc.arr) }}</div>
             </div>
           </div>
           <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
             <RiskPill :risk="acc.risk" />
-            <div style="font-size: 12px; color: var(--muted);">Score {{ acc.health || 70 }}</div>
+            <div style="font-size: 12px; color: #334155;">Score {{ acc.health || 70 }}</div>
           </div>
         </div>
       </template>
@@ -110,7 +110,7 @@
           </div>
           <div style="min-width: 0;">
             <div style="font-weight: 800; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ selectedAccount.name }}</div>
-            <div style="font-size: 12px; color: var(--muted);">{{ selectedAccount.industry || '\u2014' }} · {{ selectedAccount.csm || t('unassigned') }}</div>
+            <div style="font-size: 12px; color: #334155;">{{ selectedAccount.industry || '\u2014' }} · {{ selectedAccount.csm || t('unassigned') }}</div>
           </div>
         </div>
         <div style="display: flex; gap: 6px; flex-shrink: 0;">
@@ -142,21 +142,21 @@
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px;">
             <div style="background: var(--surface); border-radius: 12px; padding: 12px; text-align: center;">
               <div style="font-size: 15px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">{{ fmtMRR(selectedAccount.mrr ?? selectedAccount.arr) }}</div>
-              <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">MRR</div>
+              <div style="font-size: 12px; color: #334155; margin-top: 2px;">MRR</div>
             </div>
             <div style="background: var(--surface); border-radius: 12px; padding: 12px; text-align: center;">
               <div style="font-size: 15px; font-weight: 900; font-family: 'JetBrains Mono', monospace;">{{ selectedAccount.health || 70 }}</div>
-              <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">{{ t('health') }}</div>
+              <div style="font-size: 12px; color: #334155; margin-top: 2px;">{{ t('health') }}</div>
             </div>
             <div style="background: var(--surface); border-radius: 12px; padding: 12px; text-align: center;">
               <RiskPill :risk="selectedAccount.risk" />
-              <div style="font-size: 12px; color: var(--muted); margin-top: 5px;">{{ riskLabel(selectedAccount.risk) }}</div>
+              <div style="font-size: 12px; color: #334155; margin-top: 5px;">{{ riskLabel(selectedAccount.risk) }}</div>
             </div>
           </div>
 
           <!-- Health bar -->
           <div style="margin-bottom: 14px;">
-            <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 5px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #334155; margin-bottom: 5px;">
               <span>{{ t('healthScore') }}</span>
               <span style="font-weight: 700; color: var(--text);">{{ selectedAccount.health || 70 }}/100</span>
             </div>
@@ -164,7 +164,7 @@
           </div>
 
           <!-- Renewal -->
-          <div style="margin-bottom: 14px; font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; padding: 10px 14px; background: var(--surface); border-radius: 10px;">
+          <div style="margin-bottom: 14px; font-size: 12px; color: #334155; display: flex; justify-content: space-between; padding: 10px 14px; background: var(--surface); border-radius: 10px;">
             <span>{{ t('renewal') }}</span>
             <span style="font-weight: 700;" :style="{ color: isRenewalOverdue(selectedAccount.renewal) ? 'var(--red)' : 'var(--green)' }">{{ selectedAccount.renewal || 'N/A' }}</span>
           </div>
@@ -181,84 +181,84 @@
           </div>
 
           <!-- Notes -->
-          <div v-if="selectedAccount.notes" style="background: var(--surface); border-radius: 12px; padding: 14px; font-size: 13px; color: var(--muted); margin-bottom: 16px;">
+          <div v-if="selectedAccount.notes" style="background: var(--surface); border-radius: 12px; padding: 14px; font-size: 13px; color: #334155; margin-bottom: 16px;">
             {{ selectedAccount.notes }}
           </div>
         </template>
 
         <!-- 360° tab — All modules linked -->
         <template v-if="detailTab === '360'">
-          <div v-if="loading360" style="text-align: center; padding: 20px; color: var(--muted); font-size: 13px;">{{ t('loading') }}</div>
+          <div v-if="loading360" style="text-align: center; padding: 20px; color: #334155; font-size: 13px;">{{ t('loading') }}</div>
           <div v-else style="padding-top: 4px; padding-bottom: 20px;">
 
             <!-- KPIs snapshot -->
             <div style="margin-bottom: 16px;">
-              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">📊 KPIs</div>
+              <div style="font-weight: 700; font-size: 12px; color: #334155; text-transform: uppercase; margin-bottom: 8px;">📊 KPIs</div>
               <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
                 <div style="background: var(--surface); border-radius: 8px; padding: 10px; text-align: center;">
                   <div style="font-size: 16px; font-weight: 900; font-family: 'JetBrains Mono', monospace; color: var(--teal);">{{ fmtARR(selectedAccount.arr || (selectedAccount.mrr || 0) * 12) }}</div>
-                  <div style="font-size: 9px; color: var(--muted);">ARR</div>
+                  <div style="font-size: 9px; color: #334155;">ARR</div>
                 </div>
                 <div style="background: var(--surface); border-radius: 8px; padding: 10px; text-align: center;">
                   <div style="font-size: 16px; font-weight: 900; font-family: 'JetBrains Mono', monospace;" :style="{ color: (selectedAccount.health || 0) >= 70 ? 'var(--green)' : (selectedAccount.health || 0) >= 50 ? '#f59e0b' : 'var(--red)' }">{{ selectedAccount.health || 0 }}</div>
-                  <div style="font-size: 9px; color: var(--muted);">Health</div>
+                  <div style="font-size: 9px; color: #334155;">Health</div>
                 </div>
                 <div style="background: var(--surface); border-radius: 8px; padding: 10px; text-align: center;">
                   <RiskPill :risk="selectedAccount.risk || 'low'" />
-                  <div style="font-size: 9px; color: var(--muted); margin-top: 4px;">{{ t('smartImportRisk') }}</div>
+                  <div style="font-size: 9px; color: #334155; margin-top: 4px;">{{ t('smartImportRisk') }}</div>
                 </div>
               </div>
             </div>
 
             <!-- Infos client -->
             <div style="margin-bottom: 16px;">
-              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">👤 {{ t('contact') }}</div>
+              <div style="font-weight: 700; font-size: 12px; color: #334155; text-transform: uppercase; margin-bottom: 8px;">👤 {{ t('contact') }}</div>
               <div style="background: var(--surface); border-radius: 8px; padding: 12px; font-size: 13px;">
                 <div v-if="selectedAccount.contact" style="margin-bottom: 4px;"><strong>{{ selectedAccount.contact }}</strong></div>
                 <div v-if="selectedAccount.contact_email" style="color: var(--teal);">{{ selectedAccount.contact_email }}</div>
-                <div v-if="selectedAccount.industry" style="color: var(--muted); margin-top: 4px;">{{ t('industry') }}: {{ selectedAccount.industry }}</div>
-                <div v-if="selectedAccount.csm" style="color: var(--muted); margin-top: 4px;">CSM: {{ selectedAccount.csm }}</div>
+                <div v-if="selectedAccount.industry" style="color: #334155; margin-top: 4px;">{{ t('industry') }}: {{ selectedAccount.industry }}</div>
+                <div v-if="selectedAccount.csm" style="color: #334155; margin-top: 4px;">CSM: {{ selectedAccount.csm }}</div>
                 <div v-if="selectedAccount.renewal" style="margin-top: 4px;" :style="{ color: isRenewalOverdue(selectedAccount.renewal) ? 'var(--red)' : 'var(--muted)' }">{{ t('renewalLabel') }}: {{ selectedAccount.renewal }}</div>
-                <div v-if="!selectedAccount.contact && !selectedAccount.contact_email" style="color: var(--muted); font-style: italic;">{{ t('copilNoContact') }}</div>
+                <div v-if="!selectedAccount.contact && !selectedAccount.contact_email" style="color: #334155; font-style: italic;">{{ t('copilNoContact') }}</div>
               </div>
             </div>
 
             <!-- Tasks liées -->
             <div style="margin-bottom: 16px;">
-              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">✅ {{ t('tasks') }} ({{ clientTasks.length }})</div>
+              <div style="font-weight: 700; font-size: 12px; color: #334155; text-transform: uppercase; margin-bottom: 8px;">✅ {{ t('tasks') }} ({{ clientTasks.length }})</div>
               <div v-if="clientTasks.length">
                 <div v-for="(task, i) in clientTasks.slice(0, 8)" :key="i" style="display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border);">
                   <span style="width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;" :style="{ background: task.color === 'red' ? 'var(--red)' : task.color === 'orange' ? '#f59e0b' : 'var(--teal)' }"></span>
                   <div style="flex: 1; min-width: 0;">
                     <div style="font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ task.title }}</div>
-                    <div v-if="task.due" style="font-size: 12px; color: var(--muted);">{{ task.due }}</div>
+                    <div v-if="task.due" style="font-size: 12px; color: #334155;">{{ task.due }}</div>
                   </div>
-                  <span style="font-size: 12px; padding: 2px 6px; border-radius: 4px; background: var(--surface); color: var(--muted);">{{ task.status || task.quadrant }}</span>
+                  <span style="font-size: 12px; padding: 2px 6px; border-radius: 4px; background: var(--surface); color: #334155;">{{ task.status || task.quadrant }}</span>
                 </div>
               </div>
-              <div v-else style="font-size: 12px; color: var(--muted); font-style: italic; padding: 8px 0;">{{ t('copilNoTasks') }}</div>
+              <div v-else style="font-size: 12px; color: #334155; font-style: italic; padding: 8px 0;">{{ t('copilNoTasks') }}</div>
             </div>
 
             <!-- Événements / RDV -->
             <div style="margin-bottom: 16px;">
-              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">📅 {{ t('planning') }} ({{ clientEvents.length }})</div>
+              <div style="font-weight: 700; font-size: 12px; color: #334155; text-transform: uppercase; margin-bottom: 8px;">📅 {{ t('planning') }} ({{ clientEvents.length }})</div>
               <div v-if="clientEvents.length">
                 <div v-for="(ev, i) in clientEvents.slice(0, 5)" :key="i" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
                   <div style="font-size: 12px; font-weight: 600;">{{ ev.title }}</div>
-                  <div style="font-size: 13px; color: var(--muted);">{{ ev.date }} {{ ev.startTime || '' }}</div>
+                  <div style="font-size: 13px; color: #334155;">{{ ev.date }} {{ ev.startTime || '' }}</div>
                 </div>
               </div>
-              <div v-else style="font-size: 12px; color: var(--muted); font-style: italic; padding: 8px 0;">{{ t('copilNoEvents') }}</div>
+              <div v-else style="font-size: 12px; color: #334155; font-style: italic; padding: 8px 0;">{{ t('copilNoEvents') }}</div>
             </div>
 
             <!-- Devis liés -->
             <div style="margin-bottom: 16px;">
-              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">📄 {{ t('quotes') }} ({{ clientQuotes.length }})</div>
+              <div style="font-weight: 700; font-size: 12px; color: #334155; text-transform: uppercase; margin-bottom: 8px;">📄 {{ t('quotes') }} ({{ clientQuotes.length }})</div>
               <div v-if="clientQuotes.length">
                 <div v-for="(q, i) in clientQuotes.slice(0, 5)" :key="i" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
                   <div>
                     <div style="font-size: 12px; font-weight: 600;">{{ q.title }}</div>
-                    <div style="font-size: 12px; color: var(--muted);">{{ q.date }}</div>
+                    <div style="font-size: 12px; color: #334155;">{{ q.date }}</div>
                   </div>
                   <div style="text-align: right;">
                     <div style="font-size: 12px; font-weight: 700; font-family: 'JetBrains Mono', monospace;">{{ q.amount }}€</div>
@@ -266,19 +266,19 @@
                   </div>
                 </div>
               </div>
-              <div v-else style="font-size: 12px; color: var(--muted); font-style: italic; padding: 8px 0;">{{ t('copilNoQuotes') }}</div>
+              <div v-else style="font-size: 12px; color: #334155; font-style: italic; padding: 8px 0;">{{ t('copilNoQuotes') }}</div>
             </div>
 
             <!-- Notes -->
             <div v-if="selectedAccount.notes" style="margin-bottom: 16px;">
-              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">📝 {{ t('notes') }}</div>
-              <div style="background: var(--surface); border-radius: 8px; padding: 12px; font-size: 13px; color: var(--muted); line-height: 1.6;">{{ selectedAccount.notes }}</div>
+              <div style="font-weight: 700; font-size: 12px; color: #334155; text-transform: uppercase; margin-bottom: 8px;">📝 {{ t('notes') }}</div>
+              <div style="background: var(--surface); border-radius: 8px; padding: 12px; font-size: 13px; color: #334155; line-height: 1.6;">{{ selectedAccount.notes }}</div>
             </div>
 
             <!-- Situation résumé -->
             <div style="background: var(--tealBg); border: 1px solid var(--tealBorder); border-radius: 10px; padding: 14px;">
               <div style="font-weight: 700; font-size: 12px; color: var(--teal); margin-bottom: 6px;">🧠 {{ t('copilSituation') }}</div>
-              <div style="font-size: 12px; color: var(--muted); line-height: 1.6;">
+              <div style="font-size: 12px; color: #334155; line-height: 1.6;">
                 {{ selectedAccount.name }} — {{ selectedAccount.risk === 'critical' ? t('copilSituationCritical') : selectedAccount.risk === 'medium' ? t('copilSituationWatch') : t('copilSituationHealthy') }}
                 {{ clientTasks.length ? t('copilSituationTasks').replace('{n}', clientTasks.length) : '' }}
                 {{ clientEvents.length ? t('copilSituationEvents').replace('{n}', clientEvents.length) : '' }}
@@ -302,8 +302,8 @@
                   <div style="font-size: 13px; font-weight: 600;" :style="{ textDecoration: todo.done ? 'line-through' : 'none', opacity: todo.done ? 0.5 : 1 }">
                     {{ todo.label }}
                   </div>
-                  <div v-if="todo.date" style="font-size: 13px; color: var(--muted); margin-top: 2px;">{{ todo.date }}</div>
-                  <div v-if="todo.notes" style="font-size: 13px; color: var(--muted); margin-top: 2px; font-style: italic;">{{ todo.notes }}</div>
+                  <div v-if="todo.date" style="font-size: 13px; color: #334155; margin-top: 2px;">{{ todo.date }}</div>
+                  <div v-if="todo.notes" style="font-size: 13px; color: #334155; margin-top: 2px; font-style: italic;">{{ todo.notes }}</div>
                 </div>
                 <input type="date" :value="todo.date" @change="updateTodoDate(todo, $event.target.value)"
                   style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; font-size: 13px; color: var(--text); cursor: pointer;" />
@@ -328,7 +328,7 @@
                     style="width: 100%; background: transparent; border: none; font-size: 13px; font-weight: 600; color: var(--text); outline: none; padding: 0;"
                     :style="{ textDecoration: task.done ? 'line-through' : 'none', opacity: task.done ? 0.5 : 1 }" />
                   <input v-model="task.notes" placeholder="Notes..."
-                    style="width: 100%; background: transparent; border: none; font-size: 13px; color: var(--muted); outline: none; padding: 0; margin-top: 2px; font-style: italic;" />
+                    style="width: 100%; background: transparent; border: none; font-size: 13px; color: #334155; outline: none; padding: 0; margin-top: 2px; font-style: italic;" />
                 </div>
                 <input type="date" v-model="task.date"
                   style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; font-size: 13px; color: var(--text); cursor: pointer;" />
@@ -336,7 +336,7 @@
                   <ScalyoIcon name="close" :size="10" /> {{ t('removeTask') }}
                 </button>
               </div>
-              <div v-if="!freeTasks.length" style="font-size: 12px; color: var(--muted); padding: 8px 0; text-align: center;">
+              <div v-if="!freeTasks.length" style="font-size: 12px; color: #334155; padding: 8px 0; text-align: center;">
                 {{ t('noCustomTasks') }}
               </div>
             </div>
@@ -443,7 +443,7 @@
         <input ref="fileInput" type="file" accept=".csv" style="display: none" @change="handleFileSelect" />
         <div style="margin-bottom: 12px;"><ScalyoIcon name="folder" :size="36" /></div>
         <div style="font-weight: 700;">{{ t('importDropTitle') || 'Drop your CSV file here or click to browse' }}</div>
-        <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">{{ t('importDropHint') || 'Supported: CSV' }}</div>
+        <div style="font-size: 12px; color: #334155; margin-top: 6px;">{{ t('importDropHint') || 'Supported: CSV' }}</div>
       </div>
 
       <!-- Column mapping preview -->
@@ -468,7 +468,7 @@
               </tbody>
             </table>
           </div>
-          <div style="font-size: 13px; color: var(--muted); margin-top: 6px;">
+          <div style="font-size: 13px; color: #334155; margin-top: 6px;">
             {{ importPreview.length }} {{ t('importRowsDetected') || 'rows detected' }}.
           </div>
         </div>
@@ -484,7 +484,7 @@
         <div style="background: var(--surface); border-radius: 8px; height: 8px; overflow: hidden; margin-bottom: 8px;">
           <div style="height: 100%; background: var(--teal); border-radius: 8px; transition: width .3s;" :style="{ width: importProgress + '%' }"></div>
         </div>
-        <div style="font-size: 12px; color: var(--muted);">{{ importDone }}/{{ importTotal }} {{ t('portfolio').toLowerCase() }}</div>
+        <div style="font-size: 12px; color: #334155;">{{ importDone }}/{{ importTotal }} {{ t('portfolio').toLowerCase() }}</div>
       </div>
     </AppModal>
 
@@ -492,7 +492,7 @@
     <AppModal v-if="showBulkDelete" :title="t('bulkDeleteTitle')" @close="closeBulkDelete">
       <!-- Step 1: Choose what to delete -->
       <div v-if="bulkDeleteStep === 1">
-        <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">{{ t('bulkDeleteDesc') }}</p>
+        <p style="font-size: 13px; color: #334155; margin-bottom: 16px;">{{ t('bulkDeleteDesc') }}</p>
 
         <!-- Delete all -->
         <div class="card" style="padding: 14px; margin-bottom: 8px; cursor: pointer; border: 2px solid transparent;" :style="{ borderColor: bulkDeleteMode === 'all' ? 'var(--red)' : 'transparent' }" @click="bulkDeleteMode = 'all'">
@@ -500,7 +500,7 @@
             <input type="radio" v-model="bulkDeleteMode" value="all" />
             <div>
               <div style="font-weight: 700; font-size: 14px; color: var(--red);">🗑️ {{ t('bulkDeleteAll') }}</div>
-              <div style="font-size: 12px; color: var(--muted);">{{ portfolioStore.accounts.length }} {{ t('portfolio').toLowerCase() }}</div>
+              <div style="font-size: 12px; color: #334155;">{{ portfolioStore.accounts.length }} {{ t('portfolio').toLowerCase() }}</div>
             </div>
           </div>
         </div>
@@ -511,7 +511,7 @@
             <input type="radio" v-model="bulkDeleteMode" value="filtered" />
             <div>
               <div style="font-weight: 700; font-size: 14px;">🔍 {{ t('bulkDeleteFiltered') }}</div>
-              <div style="font-size: 12px; color: var(--muted);">{{ filteredAccounts.length }} {{ t('portfolio').toLowerCase() }} ({{ filter || t('search') }})</div>
+              <div style="font-size: 12px; color: #334155;">{{ filteredAccounts.length }} {{ t('portfolio').toLowerCase() }} ({{ filter || t('search') }})</div>
             </div>
           </div>
         </div>
@@ -522,7 +522,7 @@
             <input type="radio" v-model="bulkDeleteMode" value="selected" />
             <div>
               <div style="font-weight: 700; font-size: 14px;">☑️ {{ t('bulkDeleteSelected') }}</div>
-              <div style="font-size: 12px; color: var(--muted);">{{ t('bulkDeleteSelectedDesc') }}</div>
+              <div style="font-size: 12px; color: #334155;">{{ t('bulkDeleteSelectedDesc') }}</div>
             </div>
           </div>
         </div>
@@ -531,7 +531,7 @@
         <div v-if="bulkDeleteMode === 'selected'" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 16px;">
           <label v-for="acc in filteredAccounts" :key="acc.id" style="display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; cursor: pointer;">
             <input type="checkbox" :value="acc.id" v-model="bulkDeleteIds" />
-            {{ acc.name }} <span style="color: var(--muted); font-size: 13px;">· {{ acc.csm || '—' }}</span>
+            {{ acc.name }} <span style="color: #334155; font-size: 13px;">· {{ acc.csm || '—' }}</span>
           </label>
         </div>
 
@@ -549,7 +549,7 @@
           </p>
         </div>
 
-        <p style="font-size: 13px; color: var(--muted); margin-bottom: 8px;">{{ t('bulkDeleteTypeConfirm') }}</p>
+        <p style="font-size: 13px; color: #334155; margin-bottom: 8px;">{{ t('bulkDeleteTypeConfirm') }}</p>
         <input v-model="bulkDeleteConfirmText" :placeholder="t('bulkDeleteTypePlaceholder')" style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: var(--text); font-size: 14px; margin-bottom: 16px;" />
 
         <div style="display: flex; gap: 8px;">
