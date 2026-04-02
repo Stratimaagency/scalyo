@@ -418,13 +418,14 @@ input:focus, select:focus, textarea:focus {
 
 /* Cards */
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 16px;
-  transition: border-color 0.25s ease;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.04);
+  transition: all 0.2s ease;
 }
-.card:hover { border-color: rgba(59, 130, 246, 0.25); box-shadow: 0 4px 16px rgba(59, 130, 246, 0.08); }
+.card:hover { border-color: #cbd5e1; box-shadow: 0 4px 20px rgba(0,0,0,.06); transform: translateY(-1px); }
 .card-lift { transition: border-color 0.25s ease; }
 .card-lift:hover { border-color: var(--tealBorder) !important; }
 .card-danger {
