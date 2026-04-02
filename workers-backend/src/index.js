@@ -18,7 +18,7 @@ import quotes from './routes/quotes.js'
 import smartImport from './routes/smart-import.js'
 import { registerIntegrationRoutes } from './routes/integrations.js'
 import { registerTeamRoutes } from './routes/team.js'
-import smartMatrice from './routes/smart-matrice.js'
+import { registerSmartMatriceRoutes } from './routes/smart-matrice.js'
 import modules from './routes/modules.js'
 
 const app = new Hono()
@@ -49,113 +49,8 @@ app.route('/api/import/smart', smartImport)
 registerIntegrationRoutes(app)
 registerTeamRoutes(app)
 
-// Smart Matrice — mounted DIRECTLY to avoid Hono sub-router bug
-app.get('/api/smart-matrice', ...mw, async (c) => {
-  const { company_id } = c.get('user')
-  const db = c.env.DB
-  const { results: projects } = await db.prepare(`
-    SELECT p.*, COALESCE(tc.task_count, 0) as task_count
-    FROM sm_projects p
-    LEFT JOIN (SELECT project_id, COUNT(*) as task_count FROM sm_tasks GROUP BY project_id) tc ON tc.project_id = p.id
-    WHERE p.company_id = ? ORDER BY p.sort_order ASC, p.created_at DESC
-  `).bind(company_id).all()
-  return c.json(projects || [])
-})
-app.get('/api/smart-matrice/', ...mw, async (c) => {
-  const { company_id } = c.get('user')
-  const db = c.env.DB
-  const { results: projects } = await db.prepare(`
-    SELECT p.*, COALESCE(tc.task_count, 0) as task_count
-    FROM sm_projects p
-    LEFT JOIN (SELECT project_id, COUNT(*) as task_count FROM sm_tasks GROUP BY project_id) tc ON tc.project_id = p.id
-    WHERE p.company_id = ? ORDER BY p.sort_order ASC, p.created_at DESC
-  `).bind(company_id).all()
-  return c.json(projects || [])
-})
-app.post('/api/smart-matrice', ...mw, async (c) => {
-  const { company_id, id: user_id } = c.get('user')
-  const body = await c.req.json()
-  const history = JSON.stringify([{ date: new Date().toISOString(), action: 'created', details: body.name || 'Nouveau projet', user_id }])
-  const row = await c.env.DB.prepare(
-    `INSERT INTO sm_projects (company_id, name, description, emoji, color, start_date, end_date, target_end_date, state, history)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
-  ).bind(company_id, body.name || 'Nouveau projet', body.description || '', body.emoji || '📁', body.color || '#3b82f6',
-    body.start_date || null, body.end_date || null, body.target_end_date || null, body.state || 'active', history).first()
-  return c.json(row, 201)
-})
-app.post('/api/smart-matrice/', ...mw, async (c) => {
-  const { company_id, id: user_id } = c.get('user')
-  const body = await c.req.json()
-  const history = JSON.stringify([{ date: new Date().toISOString(), action: 'created', details: body.name || 'Nouveau projet', user_id }])
-  const row = await c.env.DB.prepare(
-    `INSERT INTO sm_projects (company_id, name, description, emoji, color, start_date, end_date, target_end_date, state, history)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
-  ).bind(company_id, body.name || 'Nouveau projet', body.description || '', body.emoji || '📁', body.color || '#3b82f6',
-    body.start_date || null, body.end_date || null, body.target_end_date || null, body.state || 'active', history).first()
-  return c.json(row, 201)
-})
-app.post('/api/smart-matrice/tasks', ...mw, async (c) => {
-  const { company_id, id: user_id } = c.get('user')
-  const body = await c.req.json()
-  if (!body.project_id) return c.json({ error: 'project_id required' }, 400)
-  const history = JSON.stringify([{ date: new Date().toISOString(), action: 'created', details: body.name || 'Nouvelle tâche', user_id }])
-  const row = await c.env.DB.prepare(
-    `INSERT INTO sm_tasks (project_id, company_id, name, group_name, status, priority, history)
-     VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *`
-  ).bind(body.project_id, company_id, body.name || 'Nouvelle tâche', body.group_name || '', body.status || 'todo', body.priority || 'normal', history).first()
-  return c.json(row, 201)
-})
-app.post('/api/smart-matrice/tasks/', ...mw, async (c) => {
-  const { company_id, id: user_id } = c.get('user')
-  const body = await c.req.json()
-  if (!body.project_id) return c.json({ error: 'project_id required' }, 400)
-  const history = JSON.stringify([{ date: new Date().toISOString(), action: 'created', details: body.name || 'Nouvelle tâche', user_id }])
-  const row = await c.env.DB.prepare(
-    `INSERT INTO sm_tasks (project_id, company_id, name, group_name, status, priority, history)
-     VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *`
-  ).bind(body.project_id, company_id, body.name || 'Nouvelle tâche', body.group_name || '', body.status || 'todo', body.priority || 'normal', history).first()
-  return c.json(row, 201)
-})
-// GET /api/smart-matrice/:projectId/tasks — get tasks for a project
-app.get('/api/smart-matrice/:projectId/tasks', ...mw, async (c) => {
-  const { company_id } = c.get('user')
-  const projectId = parseInt(c.req.param('projectId'), 10)
-  const { results: tasks } = await c.env.DB.prepare(
-    'SELECT * FROM sm_tasks WHERE project_id = ? AND company_id = ? ORDER BY sort_order ASC, created_at ASC'
-  ).bind(projectId, company_id).all()
-  const taskIds = (tasks || []).map(t => t.id)
-  let subtaskMap = {}
-  if (taskIds.length) {
-    const placeholders = taskIds.map(() => '?').join(',')
-    const { results: subs } = await c.env.DB.prepare(
-      `SELECT * FROM sm_subtasks WHERE task_id IN (${placeholders}) ORDER BY sort_order ASC`
-    ).bind(...taskIds).all()
-    for (const s of (subs || [])) {
-      if (!subtaskMap[s.task_id]) subtaskMap[s.task_id] = []
-      subtaskMap[s.task_id].push(s)
-    }
-  }
-  return c.json((tasks || []).map(t => {
-    const subs = subtaskMap[t.id] || []
-    return { ...t, subtasks: subs.map(s => ({ ...s, done: !!s.done })), progress: subs.length ? Math.round(subs.filter(s => s.done).length / subs.length * 100) : 0 }
-  }))
-})
-// GET /api/smart-matrice/team-workload
-app.get('/api/smart-matrice/team-workload', ...mw, async (c) => {
-  const { company_id } = c.get('user')
-  const db = c.env.DB
-  const { results: members } = await db.prepare('SELECT id, email, display_name, role FROM users WHERE company_id = ?').bind(company_id).all()
-  const { results: taskStats } = await db.prepare(`
-    SELECT assigned_to, COUNT(*) as task_count, SUM(CASE WHEN status = 'done' THEN 1 ELSE 0 END) as done_count
-    FROM sm_tasks WHERE company_id = ? GROUP BY assigned_to
-  `).bind(company_id).all()
-  const statsMap = {}
-  for (const s of (taskStats || [])) { if (s.assigned_to) statsMap[s.assigned_to] = s }
-  return c.json((members || []).map(m => ({
-    ...m, initials: (m.display_name || m.email || '').slice(0, 2).toUpperCase(),
-    ...(statsMap[m.id] || { task_count: 0, done_count: 0 }),
-  })))
-})
+// Smart Matrice — all routes registered directly on app
+registerSmartMatriceRoutes(app)
 
 // Modules (Health, CSM Workload, Projects, OKR, Playbooks)
 app.route('/api/modules', modules)
