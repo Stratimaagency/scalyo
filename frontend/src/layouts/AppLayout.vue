@@ -6,41 +6,36 @@
         <ScalyoLogo :markSize="38" :fontSize="20" :gap="10" :showSub="isSmartMatrice" />
       </div>
       <nav class="sidebar-nav">
-        <!-- Smart Matrice sub-nav -->
-        <template v-if="isSmartMatrice && smNavItems.length">
-          <template v-for="(group, gi) in smNavGroups" :key="'sm-'+gi">
-            <div class="nav-group-label">{{ group.label }}</div>
-            <button
-              v-for="item in group.items"
-              :key="item.key"
+        <!-- Global nav with SM sub-nav inline -->
+        <template v-for="(group, gi) in navGroups" :key="gi">
+          <div class="nav-group-label">{{ group.label }}</div>
+          <template v-for="item in group.items" :key="item.key">
+            <router-link
+              :to="{ name: item.routeName }"
               class="nav-btn"
-              :class="{ active: smCurrentView === item.key }"
-              @click="setSmView(item.key)"
+              active-class="active"
             >
               <span class="nav-emoji">{{ item.emoji }}</span>
               <span class="nav-label">{{ item.label }}</span>
-              <span v-if="item.key === 'tasks' && smTaskCount > 0" class="nav-badge-count">{{ smTaskCount }}</span>
-              <span v-if="item.key === 'projects' && smProjectCount > 0" class="nav-badge-count">{{ smProjectCount }}</span>
-            </button>
+              <span v-if="item.locked" class="nav-lock">🔒</span>
+              <span v-if="item.key === 'portfolio' && criticalCount > 0" class="nav-badge-critical">{{ criticalCount }}</span>
+            </router-link>
+            <!-- SM sub-nav: appears right under Smart Matrice when on that page -->
+            <template v-if="item.key === 'tasks' && isSmartMatrice">
+              <button
+                v-for="sm in smNavItems"
+                :key="'sm-' + sm.key"
+                class="nav-btn nav-btn--sub"
+                :class="{ active: smCurrentView === sm.key }"
+                @click="setSmView(sm.key)"
+              >
+                <span class="nav-emoji">{{ sm.emoji }}</span>
+                <span class="nav-label">{{ sm.label }}</span>
+                <span v-if="sm.key === 'tasks' && smTaskCount > 0" class="nav-badge-count">{{ smTaskCount }}</span>
+                <span v-if="sm.key === 'projects' && smProjectCount > 0" class="nav-badge-count">{{ smProjectCount }}</span>
+              </button>
+            </template>
           </template>
-          <div style="border-top: 1px solid rgba(0,0,0,.06); margin: 8px 12px;"></div>
-        </template>
-
-        <!-- Global nav — always visible -->
-        <template v-for="(group, gi) in navGroups" :key="gi">
-          <div class="nav-group-label">{{ group.label }}</div>
-          <router-link
-            v-for="item in group.items"
-            :key="item.key"
-            :to="{ name: item.routeName }"
-            class="nav-btn"
-            active-class="active"
-          >
-            <span class="nav-emoji">{{ item.emoji }}</span>
-            <span class="nav-label">{{ item.label }}</span>
-            <span v-if="item.locked" class="nav-lock">🔒</span>
-            <span v-if="item.key === 'portfolio' && criticalCount > 0" class="nav-badge-critical">{{ criticalCount }}</span>
-          </router-link>
         </template>
       </nav>
 
