@@ -166,7 +166,7 @@
 import { ref, computed } from 'vue'
 import * as XLSX from 'xlsx'
 import { useI18n } from '../i18n'
-import { smartImportApi, kpiApi, taskApi, planningApi } from '../api'
+import { smartImportApi, kpiApi, taskApi, planningApi, smartMatriceApi } from '../api'
 import { usePortfolioStore } from '../stores/portfolio'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
 
@@ -1193,6 +1193,40 @@ async function doImport() {
 
       // Force refresh portfolio store so dashboard shows new data
       try { usePortfolioStore().fetchAccounts() } catch {}
+
+      // Sync to modules: Clients Store, Smart Matrice, Tasks Store
+      try {
+        const { useClientsStore } = await import('../stores/clients')
+        const { useTasksStore } = await import('../stores/tasks')
+        const clientsStore = useClientsStore()
+        const tasksStore = useTasksStore()
+
+        // Refresh clients from API (will pick up new accounts)
+        await clientsStore.fetchClients()
+
+        // Create SM projects for each imported account (onboarding)
+        if (payload.portfolio?.length) {
+          for (const acc of payload.portfolio.slice(0, 10)) {
+            try {
+              await smartMatriceApi.createProject({
+                name: `Onboarding ${acc.name || 'Client'}`,
+                color: '#4285F4',
+                emoji: '🚀',
+              })
+            } catch { /* SM project creation optional */ }
+          }
+          // Refresh SM store
+          try {
+            const { useSmartMatriceStore } = await import('../stores/smartMatrice')
+            useSmartMatriceStore().fetchProjects()
+          } catch {}
+        }
+
+        // Refresh tasks store (Gantt, Playbooks, OKR)
+        await tasksStore.fetchAll()
+      } catch (syncErr) {
+        console.warn('Module sync after import:', syncErr)
+      }
 
       // Also try to save KPIs and tasks via their own APIs as backup
       try {

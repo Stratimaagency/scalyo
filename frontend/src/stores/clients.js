@@ -70,6 +70,18 @@ export const useClientsStore = defineStore('clients', () => {
     const idx = clients.value.findIndex(c => c.id === clientId)
     if (idx !== -1) {
       clients.value[idx] = { ...clients.value[idx], healthScore: newScore, status: newScore >= 75 ? 'healthy' : newScore >= 60 ? 'neutral' : 'at-risk' }
+
+      // Sync back to portfolio store
+      import('./portfolio').then(({ usePortfolioStore }) => {
+        try {
+          const portfolioStore = usePortfolioStore()
+          const acc = portfolioStore.accounts.find(a => a.id === clientId || a.name === clients.value[idx].name)
+          if (acc) {
+            acc.health = newScore
+            acc.risk = newScore >= 75 ? 'low' : newScore >= 60 ? 'medium' : 'critical'
+          }
+        } catch { /* */ }
+      }).catch(() => {})
     }
   }
 

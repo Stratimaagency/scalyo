@@ -15,6 +15,15 @@ export const usePortfolioStore = defineStore('portfolio', () => {
       console.error('fetchAccounts error:', e)
     }
     loading.value = false
+
+    // Sync to clients store (for Health Tracker, Manager Dashboard, etc.)
+    try {
+      const { useClientsStore } = await import('./clients')
+      const clientsStore = useClientsStore()
+      if (accounts.value.length && !clientsStore.lastUpdated) {
+        await clientsStore.fetchClients()
+      }
+    } catch { /* clients store not ready */ }
   }
 
   async function createAccount(data) {

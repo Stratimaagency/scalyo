@@ -72,11 +72,54 @@ export const useTasksStore = defineStore('tasks', () => {
         playbookProgress.value = JSON.parse(JSON.stringify(seedPlaybookProgress))
       }
     } catch {
-      // Seed fallback
       projects.value = JSON.parse(JSON.stringify(seedProjects))
       playbooks.value = JSON.parse(JSON.stringify(seedPlaybooks))
       okrs.value = JSON.parse(JSON.stringify(seedOKRs))
       playbookProgress.value = JSON.parse(JSON.stringify(seedPlaybookProgress))
+    }
+
+    // Merge Smart Matrice projects into Gantt timeline
+    await mergeSmartMatriceProjects()
+  }
+
+  async function mergeSmartMatriceProjects() {
+    try {
+      const { useSmartMatriceStore } = await import('./smartMatrice')
+      const smStore = useSmartMatriceStore()
+      if (!smStore.projects.length) await smStore.fetchProjects()
+
+      const smProjectIds = new Set(projects.value.filter(p => p._fromSM).map(p => p._smId))
+
+      for (const smProj of smStore.projects) {
+        if (smProjectIds.has(smProj.id)) continue
+
+        // Fetch tasks for this SM project
+        const smTasks = smStore.tasks[smProj.id] || []
+        if (!smTasks.length) {
+          try { await smStore.fetchTasks(smProj.id) } catch {}
+        }
+        const tasks = (smStore.tasks[smProj.id] || []).map((t, i) => ({
+          id: `sm-${smProj.id}-${t.id || i}`,
+          title: t.title || t.name || 'Tâche',
+          startWeek: currentWeek.value - 1 + i,
+          durationWeeks: 1,
+          done: t.status === 'done',
+          tag: t.group_name || '',
+        }))
+
+        projects.value.push({
+          id: `sm-proj-${smProj.id}`,
+          _fromSM: true,
+          _smId: smProj.id,
+          name: smProj.name,
+          emoji: smProj.emoji || '📋',
+          color: smProj.color || '#4285F4',
+          clientName: '',
+          tasks,
+        })
+      }
+    } catch {
+      // SM store not available
     }
   }
 
