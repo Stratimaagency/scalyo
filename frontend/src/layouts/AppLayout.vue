@@ -121,6 +121,9 @@
         <span>{{ item.label }}</span>
       </router-link>
     </nav>
+
+    <!-- Test Panel -->
+    <TestPanel />
   </div>
 </template>
 
@@ -131,6 +134,7 @@ import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { usePortfolioStore } from '../stores/portfolio'
 import { useSmartMatriceStore } from '../stores/smartMatrice'
+import TestPanel from '../components/dev/TestPanel.vue'
 import { authApi } from '../api'
 import { useI18n } from '../i18n'
 import { useNavigation } from '../composables/useNavigation'

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from '../api/client'
+import { seedClients } from '../tests/seed'
 
 export const useClientsStore = defineStore('clients', () => {
   const clients = ref([])
@@ -9,6 +10,7 @@ export const useClientsStore = defineStore('clients', () => {
 
   const atRiskClients = computed(() => clients.value.filter(c => c.status === 'at-risk'))
   const healthyClients = computed(() => clients.value.filter(c => c.status === 'healthy'))
+  const neutralClients = computed(() => clients.value.filter(c => c.status === 'neutral'))
   const avgHealthScore = computed(() => {
     if (!clients.value.length) return 0
     return Math.round(clients.value.reduce((a, c) => a + c.healthScore, 0) / clients.value.length)
@@ -26,10 +28,18 @@ export const useClientsStore = defineStore('clients', () => {
     loading.value = true
     try {
       const { data } = await api.get('/clients/health')
-      clients.value = data.data || []
-      lastUpdated.value = new Date()
+      const apiData = data.data || []
+      if (apiData.length) {
+        clients.value = apiData
+        lastUpdated.value = new Date()
+        return
+      }
     } catch {
-      // Fallback: build from portfolio store if API not ready
+      // API not ready
+    }
+
+    // Fallback: portfolio store
+    try {
       const { usePortfolioStore } = await import('./portfolio')
       const portfolioStore = usePortfolioStore()
       if (portfolioStore.accounts.length) {
@@ -45,10 +55,19 @@ export const useClientsStore = defineStore('clients', () => {
           issues: [],
         }))
         lastUpdated.value = new Date()
+        return
       }
-    } finally {
-      loading.value = false
+    } catch {
+      // portfolio not loaded
     }
+
+    // Final fallback: seed data
+    if (!clients.value.length) {
+      clients.value = JSON.parse(JSON.stringify(seedClients))
+      lastUpdated.value = new Date()
+    }
+
+    loading.value = false
   }
 
   function updateClientHealth(clientId, newScore) {
@@ -59,5 +78,5 @@ export const useClientsStore = defineStore('clients', () => {
     }
   }
 
-  return { clients, loading, lastUpdated, atRiskClients, healthyClients, avgHealthScore, totalARR, clientsByCSM, fetchClients, updateClientHealth }
+  return { clients, loading, lastUpdated, atRiskClients, healthyClients, neutralClients, avgHealthScore, totalARR, clientsByCSM, fetchClients, updateClientHealth }
 })

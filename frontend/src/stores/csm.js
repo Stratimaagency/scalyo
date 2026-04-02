@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useClientsStore } from './clients'
 import api from '../api/client'
+import { seedCSMs } from '../tests/seed'
 
 export const useCSMStore = defineStore('csm', () => {
   const csms = ref([])
@@ -9,11 +10,18 @@ export const useCSMStore = defineStore('csm', () => {
 
   const workloadByCSM = computed(() => {
     const clientsStore = useClientsStore()
-    return csms.value.map(csm => ({
-      ...csm,
-      clients: clientsStore.clientsByCSM[csm.id] || [],
-      atRiskCount: (clientsStore.clientsByCSM[csm.id] || []).filter(c => c.status === 'at-risk').length,
-    }))
+    return csms.value.map(csm => {
+      const csmClients = clientsStore.clientsByCSM[csm.id] || []
+      return {
+        ...csm,
+        clients: csmClients,
+        clientCount: csmClients.length || csm.clientCount || 0,
+        atRiskCount: csmClients.filter(c => c.status === 'at-risk').length,
+        avgHealth: csmClients.length
+          ? Math.round(csmClients.reduce((a, c) => a + c.healthScore, 0) / csmClients.length)
+          : (csm.avgHealth || 0),
+      }
+    })
   })
 
   const overloadedCSMs = computed(() => workloadByCSM.value.filter(c => c.workloadPct >= 85))
@@ -26,24 +34,21 @@ export const useCSMStore = defineStore('csm', () => {
     loading.value = true
     try {
       const { data } = await api.get('/csms/workload')
-      csms.value = data.data || []
+      const apiData = data.data || []
+      if (apiData.length) {
+        csms.value = apiData
+        return
+      }
     } catch {
-      // Fallback: build from clients store
-      const clientsStore = useClientsStore()
-      const csmMap = {}
-      clientsStore.clients.forEach(c => {
-        const name = c.csmName || 'Non assigné'
-        if (!csmMap[name]) csmMap[name] = { id: c.csmId || name, name, workloadPct: 0, clientCount: 0 }
-        csmMap[name].clientCount++
-      })
-      const total = Object.keys(csmMap).length || 1
-      Object.values(csmMap).forEach(c => {
-        c.workloadPct = Math.min(100, Math.round((c.clientCount / (total * 3)) * 100))
-      })
-      csms.value = Object.values(csmMap)
-    } finally {
-      loading.value = false
+      // API not ready
     }
+
+    // Fallback: seed data
+    if (!csms.value.length) {
+      csms.value = JSON.parse(JSON.stringify(seedCSMs))
+    }
+
+    loading.value = false
   }
 
   return { csms, loading, workloadByCSM, overloadedCSMs, teamAvgLoad, fetchCSMs }

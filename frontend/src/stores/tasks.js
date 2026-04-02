@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useClientsStore } from './clients'
 import api from '../api/client'
+import { seedProjects, seedPlaybooks, seedOKRs, seedPlaybookProgress } from '../tests/seed'
 
 export const useTasksStore = defineStore('tasks', () => {
   const projects = ref([])
@@ -59,11 +60,23 @@ export const useTasksStore = defineStore('tasks', () => {
         api.get('/playbooks').catch(() => ({ data: { data: [] } })),
         api.get('/okrs').catch(() => ({ data: { data: [] } })),
       ])
-      projects.value = projRes.data.data || []
-      playbooks.value = pbRes.data.data || []
-      okrs.value = okrRes.data.data || []
+      const p = projRes.data.data || []
+      const b = pbRes.data.data || []
+      const o = okrRes.data.data || []
+
+      projects.value = p.length ? p : JSON.parse(JSON.stringify(seedProjects))
+      playbooks.value = b.length ? b : JSON.parse(JSON.stringify(seedPlaybooks))
+      okrs.value = o.length ? o : JSON.parse(JSON.stringify(seedOKRs))
+
+      if (!Object.keys(playbookProgress.value).length) {
+        playbookProgress.value = JSON.parse(JSON.stringify(seedPlaybookProgress))
+      }
     } catch {
-      // API not ready yet
+      // Seed fallback
+      projects.value = JSON.parse(JSON.stringify(seedProjects))
+      playbooks.value = JSON.parse(JSON.stringify(seedPlaybooks))
+      okrs.value = JSON.parse(JSON.stringify(seedOKRs))
+      playbookProgress.value = JSON.parse(JSON.stringify(seedPlaybookProgress))
     }
   }
 
@@ -71,7 +84,7 @@ export const useTasksStore = defineStore('tasks', () => {
     const key = `${playbookId}`
     const curr = playbookProgress.value[key] || []
     const next = curr.includes(stepIndex) ? curr.filter(i => i !== stepIndex) : [...curr, stepIndex]
-    playbookProgress.value[key] = next
+    playbookProgress.value = { ...playbookProgress.value, [key]: next }
     try {
       await api.post('/playbooks/progress', { playbookId, stepIndex, done: next.includes(stepIndex) })
     } catch {
