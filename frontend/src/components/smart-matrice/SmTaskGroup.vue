@@ -27,6 +27,7 @@
         @delete-subtask="(tid, sid) => $emit('delete-subtask', tid, sid)"
         @add-subtask="(tid, name) => $emit('add-subtask', tid, name)"
         @transfer="(tid, mid) => $emit('transfer', tid, mid)"
+        @edit-task="(task) => $emit('edit-task', task)"
       />
     </div>
   </div>
@@ -42,7 +43,7 @@ const props = defineProps({
   team: { type: Array, default: () => [] },
 })
 
-defineEmits(['toggle-subtask', 'delete-subtask', 'add-subtask', 'transfer'])
+defineEmits(['toggle-subtask', 'delete-subtask', 'add-subtask', 'transfer', 'edit-task'])
 
 const collapsed = ref(false)
 const circ = computed(() => 2 * Math.PI * 19)

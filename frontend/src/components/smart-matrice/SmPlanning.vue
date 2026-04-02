@@ -24,10 +24,10 @@
           <span class="sm-planning__day-num" :class="{ 'sm-planning__day-num--today': isToday(day.date) }">{{ day.num }}</span>
         </div>
         <div class="sm-planning__day-slots">
-          <div v-for="h in hours" :key="h" class="sm-planning__slot"></div>
+          <div v-for="h in hours" :key="h" class="sm-planning__slot" @click="emit('create-event', { date: day.date, hour: h })"></div>
           <!-- Events -->
           <div v-for="evt in eventsForDay(day.date)" :key="evt.id" class="sm-planning__event"
-            :style="eventStyle(evt)" :title="evt.name">
+            :style="eventStyle(evt)" :title="evt.name" @click.stop="emit('edit-event', evt)">
             <span class="sm-planning__event-time">{{ fmtTime(evt.start_date) }}</span>
             <span class="sm-planning__event-name">{{ evt.name }}</span>
           </div>
@@ -43,6 +43,8 @@ import { ref, computed } from 'vue'
 const props = defineProps({
   tasks: { type: Array, default: () => [] },
 })
+
+const emit = defineEmits(['create-event', 'edit-event'])
 
 const hours = [9, 10, 11, 12, 13, 14, 15, 16, 17]
 const SLOT_H = 56

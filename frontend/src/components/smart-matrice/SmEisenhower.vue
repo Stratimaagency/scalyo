@@ -10,7 +10,7 @@
     <div class="sm-eisen__quad sm-eisen__quad--q1"
       @dragover.prevent @drop="onDrop($event, 1)">
       <div class="sm-eisen__quad-label">🔴 Faire maintenant</div>
-      <div v-for="task in q(1)" :key="task.id" class="sm-eisen__item" draggable="true" @dragstart="onDragStart($event, task)">
+      <div v-for="task in q(1)" :key="task.id" class="sm-eisen__item" draggable="true" @dragstart="onDragStart($event, task)" @click="$emit('edit-task', task)">
         <span class="sm-eisen__item-name">{{ task.name }}</span>
         <button class="sm-eisen__item-transfer" @click.stop="startTransfer(task)" title="Transférer">↗</button>
       </div>
@@ -20,7 +20,7 @@
     <div class="sm-eisen__quad sm-eisen__quad--q2"
       @dragover.prevent @drop="onDrop($event, 2)">
       <div class="sm-eisen__quad-label">🟢 Planifier</div>
-      <div v-for="task in q(2)" :key="task.id" class="sm-eisen__item" draggable="true" @dragstart="onDragStart($event, task)">
+      <div v-for="task in q(2)" :key="task.id" class="sm-eisen__item" draggable="true" @dragstart="onDragStart($event, task)" @click="$emit('edit-task', task)">
         <span class="sm-eisen__item-name">{{ task.name }}</span>
         <button class="sm-eisen__item-transfer" @click.stop="startTransfer(task)" title="Transférer">↗</button>
       </div>
@@ -32,7 +32,7 @@
     <div class="sm-eisen__quad sm-eisen__quad--q3"
       @dragover.prevent @drop="onDrop($event, 3)">
       <div class="sm-eisen__quad-label">🔵 Déléguer</div>
-      <div v-for="task in q(3)" :key="task.id" class="sm-eisen__item" draggable="true" @dragstart="onDragStart($event, task)">
+      <div v-for="task in q(3)" :key="task.id" class="sm-eisen__item" draggable="true" @dragstart="onDragStart($event, task)" @click="$emit('edit-task', task)">
         <span class="sm-eisen__item-name">{{ task.name }}</span>
         <button class="sm-eisen__item-transfer" @click.stop="startTransfer(task)" title="Transférer">↗</button>
       </div>
@@ -42,7 +42,7 @@
     <div class="sm-eisen__quad sm-eisen__quad--q4"
       @dragover.prevent @drop="onDrop($event, 4)">
       <div class="sm-eisen__quad-label">⚪ Éliminer</div>
-      <div v-for="task in q(4)" :key="task.id" class="sm-eisen__item" draggable="true" @dragstart="onDragStart($event, task)">
+      <div v-for="task in q(4)" :key="task.id" class="sm-eisen__item" draggable="true" @dragstart="onDragStart($event, task)" @click="$emit('edit-task', task)">
         <span class="sm-eisen__item-name">{{ task.name }}</span>
         <button class="sm-eisen__item-transfer" @click.stop="startTransfer(task)" title="Transférer">↗</button>
       </div>
@@ -70,7 +70,7 @@ const props = defineProps({
   team: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(['update-quadrant', 'transfer'])
+const emit = defineEmits(['update-quadrant', 'transfer', 'edit-task'])
 
 const transferringTask = ref(null)
 

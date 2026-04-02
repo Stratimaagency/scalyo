@@ -1,6 +1,6 @@
 <template>
   <div class="sm-task" :class="{ 'sm-task--paused': task.is_paused }">
-    <div class="sm-task__header" @click="expanded = !expanded">
+    <div class="sm-task__header" @click="$emit('edit-task', task)">
       <svg class="sm-task__circle" width="28" height="28" viewBox="0 0 28 28">
         <circle cx="14" cy="14" r="12" fill="none" stroke="var(--sm-bd)" stroke-width="2.5" />
         <circle cx="14" cy="14" r="12" fill="none" stroke="url(#sm-cg)" stroke-width="2.5"
@@ -15,7 +15,7 @@
         {{ assignedMember.initials }}
       </span>
       <button class="sm-task__transfer" @click.stop="showTransfer = !showTransfer" title="Transférer">↗</button>
-      <svg class="sm-task__chevron" :class="{ 'sm-task__chevron--open': expanded }" width="16" height="16" viewBox="0 0 16 16">
+      <svg class="sm-task__chevron" :class="{ 'sm-task__chevron--open': expanded }" width="16" height="16" viewBox="0 0 16 16" @click.stop="expanded = !expanded">
         <path d="M4 6l4 4 4-4" fill="none" stroke="var(--sm-t3)" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
     </div>
@@ -56,7 +56,7 @@ const props = defineProps({
   team: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(['toggle-subtask', 'delete-subtask', 'add-subtask', 'transfer'])
+const emit = defineEmits(['toggle-subtask', 'delete-subtask', 'add-subtask', 'transfer', 'edit-task'])
 
 const expanded = ref(false)
 const adding = ref(false)

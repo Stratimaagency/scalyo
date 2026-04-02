@@ -10,7 +10,8 @@
         @dragover.prevent @drop="onDrop($event, col.status)">
         <div v-for="task in tasksFor(col.status)" :key="task.id"
           class="sm-kanban__card" draggable="true"
-          @dragstart="onDragStart($event, task)">
+          @dragstart="onDragStart($event, task)"
+          @click="$emit('edit-task', task)">
           <div class="sm-kanban__card-top">
             <span class="sm-kanban__card-name">{{ task.name }}</span>
             <span v-if="getAssigned(task)" class="sm-kanban__card-avatar">{{ getAssigned(task).initials }}</span>
@@ -35,7 +36,7 @@ const props = defineProps({
   team: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(['update-status'])
+const emit = defineEmits(['update-status', 'edit-task'])
 
 const columns = [
   { status: 'todo',        label: 'À faire',   color: '#3b82f6', bg: 'rgba(139,92,246,.05)' },

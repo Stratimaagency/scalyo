@@ -78,7 +78,8 @@
       <SmTaskGroup v-for="(tasks, groupName) in filteredTaskGroups" :key="groupName"
         :group-name="groupName" :tasks="tasks" :team="store.team"
         @toggle-subtask="toggleSubtask" @delete-subtask="deleteSubtask"
-        @add-subtask="addSubtask" @transfer="transferTask" />
+        @add-subtask="addSubtask" @transfer="transferTask"
+        @edit-task="openEditTask" />
       <div v-if="!filteredTasks.length" class="sm-empty">
         <p>{{ lt.noTasks }}</p>
         <button class="sm-btn sm-btn--secondary" @click="showCreateTask = true">+ {{ lt.newTask }}</button>
@@ -87,18 +88,18 @@
 
     <!-- KANBAN -->
     <div v-else-if="currentView === 'kanban'" class="sm-content">
-      <SmKanbanBoard :tasks="store.selectedProject ? filteredTasks : allTasksFlat" :team="store.team" @update-status="updateTaskStatus" />
+      <SmKanbanBoard :tasks="store.selectedProject ? filteredTasks : allTasksFlat" :team="store.team" @update-status="updateTaskStatus" @edit-task="openEditTask" />
     </div>
 
     <!-- EISENHOWER -->
     <div v-else-if="currentView === 'eisenhower'" class="sm-content">
       <SmEisenhower :tasks="store.selectedProject ? filteredTasks : allTasksFlat" :team="store.team"
-        @update-quadrant="updateTaskQuadrant" @transfer="transferTask" />
+        @update-quadrant="updateTaskQuadrant" @transfer="transferTask" @edit-task="openEditTask" />
     </div>
 
     <!-- PLANNING (project tasks only if project selected, all otherwise) -->
     <div v-else-if="currentView === 'planning'" class="sm-content">
-      <SmPlanning :tasks="store.selectedProject ? filteredTasks : allTasksFlat" />
+      <SmPlanning :tasks="store.selectedProject ? filteredTasks : allTasksFlat" @create-event="handlePlanningCreateEvent" @edit-event="handlePlanningEditEvent" />
     </div>
 
     <!-- STATS -->
@@ -163,6 +164,75 @@
         <div class="sm-modal__actions">
           <button class="sm-btn sm-btn--secondary" @click="showCreateProject = false">{{ lt.cancel }}</button>
           <button class="sm-btn sm-btn--primary" @click="createProject" :disabled="!newProject.name.trim()">{{ lt.create }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDIT TASK MODAL -->
+    <div v-if="showEditTask" class="sm-modal-overlay" @click.self="showEditTask = false">
+      <div class="sm-modal">
+        <h3 class="sm-modal__title">✏️ {{ lt.editTask }}</h3>
+        <div class="sm-modal__field">
+          <label>{{ lt.taskName }}</label>
+          <input v-model="editTask.name" :placeholder="lt.taskNameHint" autofocus />
+        </div>
+        <div class="sm-modal__field">
+          <label>{{ lt.description }}</label>
+          <textarea v-model="editTask.description" rows="2" :placeholder="lt.taskDescHint"></textarea>
+        </div>
+        <div class="sm-modal__row">
+          <div class="sm-modal__field">
+            <label>{{ lt.group }}</label>
+            <input v-model="editTask.group_name" :placeholder="lt.groupHint" />
+          </div>
+          <div class="sm-modal__field">
+            <label>{{ lt.state }}</label>
+            <select v-model="editTask.priority">
+              <option value="normal">⚪ {{ lt.normal }}</option>
+              <option value="priority">🔴 {{ lt.priority }}</option>
+              <option value="urgent">⚡ {{ lt.urgent }}</option>
+              <option value="important">🟡 {{ lt.important }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="sm-modal__row">
+          <div class="sm-modal__field">
+            <label>{{ lt.status }}</label>
+            <select v-model="editTask.status">
+              <option value="todo">{{ lt.todo }}</option>
+              <option value="in_progress">{{ lt.inProgress }}</option>
+              <option value="blocked">{{ lt.blocked }}</option>
+              <option value="done">{{ lt.done }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="sm-modal__row">
+          <div class="sm-modal__field">
+            <label>{{ lt.estimatedDuration }} (h)</label>
+            <input v-model.number="editTask.dur_estimated" type="number" min="0" step="0.5" />
+          </div>
+          <div class="sm-modal__field">
+            <label>{{ lt.minDuration }} (h)</label>
+            <input v-model.number="editTask.dur_min" type="number" min="0" step="0.5" />
+          </div>
+          <div class="sm-modal__field">
+            <label>{{ lt.maxDuration }} (h)</label>
+            <input v-model.number="editTask.dur_max" type="number" min="0" step="0.5" />
+          </div>
+        </div>
+        <div class="sm-modal__row">
+          <div class="sm-modal__field">
+            <label>{{ lt.startDate }}</label>
+            <input v-model="editTask.start_date" type="date" />
+          </div>
+          <div class="sm-modal__field">
+            <label>{{ lt.endDate }}</label>
+            <input v-model="editTask.end_date" type="date" />
+          </div>
+        </div>
+        <div class="sm-modal__actions">
+          <button class="sm-btn sm-btn--secondary" @click="showEditTask = false">{{ lt.cancel }}</button>
+          <button class="sm-btn sm-btn--primary" @click="saveEditTask" :disabled="!editTask.name.trim()">{{ lt.save }}</button>
         </div>
       </div>
     </div>
@@ -312,15 +382,17 @@ const pageTitle = computed(() => currentNavItem.value?.label || 'Smart Matrice')
 // Modals
 const showCreateProject = ref(false)
 const showCreateTask = ref(false)
+const showEditTask = ref(false)
 const newProject = reactive({ name: '', description: '', start_date: '', target_end_date: '', state: 'active' })
 const newTask = reactive({ name: '', description: '', group_name: '', priority: 'normal', dur_estimated: null, dur_min: null, dur_max: null, start_date: '', end_date: '', referent_name: '' })
+const editTask = reactive({ id: null, name: '', description: '', group_name: '', priority: 'normal', status: 'todo', dur_estimated: null, dur_min: null, dur_max: null, start_date: '', end_date: '' })
 
 // i18n
 const lang = computed(() => prefsStore.lang)
 const i18n = {
-  fr: { back: 'Retour', loading: 'Chargement…', allStatus: 'Tous les statuts', todo: 'À faire', inProgress: 'En cours', blocked: 'Bloqué', done: 'Terminé', allMembers: 'Toute l\'équipe', allPriority: 'Toutes priorités', urgent: 'Urgent', priority: 'Prioritaire', important: 'Important', normal: 'Normal', newProject: 'Nouveau projet', newTask: 'Nouvelle tâche', noProjects: 'Aucun projet', noProjectsDesc: 'Créez votre premier projet pour commencer à organiser vos tâches.', createFirst: 'Créer mon premier projet', noTasks: 'Aucune tâche dans ce projet.', selectProject: 'Sélectionnez un projet', selectProjectDesc: 'Choisissez un projet dans la vue Projets pour voir ses tâches.', goToProjects: 'Voir les projets', projectName: 'Nom du projet', projectNameHint: 'Ex: Refonte site web, Lancement produit...', description: 'Description', descriptionHint: 'Décrivez l\'objectif du projet...', startDate: 'Date de début', targetDate: 'Date cible de fin', endDate: 'Date de fin', state: 'État', active: 'Actif', cancel: 'Annuler', create: 'Créer', taskName: 'Nom de la tâche', taskNameHint: 'Ex: Rédiger cahier des charges...', taskDescHint: 'Décrivez la tâche...', group: 'Groupe / Phase', groupHint: 'Ex: Phase 1, Design, Dev...', estimatedDuration: 'Durée estimée', minDuration: 'Durée min', maxDuration: 'Durée max', referent: 'Référent', referentHint: 'Personne responsable...' },
-  en: { back: 'Back', loading: 'Loading…', allStatus: 'All statuses', todo: 'To do', inProgress: 'In progress', blocked: 'Blocked', done: 'Done', allMembers: 'All members', allPriority: 'All priorities', urgent: 'Urgent', priority: 'Priority', important: 'Important', normal: 'Normal', newProject: 'New project', newTask: 'New task', noProjects: 'No projects', noProjectsDesc: 'Create your first project to start organizing your tasks.', createFirst: 'Create my first project', noTasks: 'No tasks in this project.', selectProject: 'Select a project', selectProjectDesc: 'Choose a project from the Projects view to see its tasks.', goToProjects: 'View projects', projectName: 'Project name', projectNameHint: 'E.g.: Website redesign, Product launch...', description: 'Description', descriptionHint: 'Describe the project goal...', startDate: 'Start date', targetDate: 'Target end date', endDate: 'End date', state: 'State', active: 'Active', cancel: 'Cancel', create: 'Create', taskName: 'Task name', taskNameHint: 'E.g.: Write requirements doc...', taskDescHint: 'Describe the task...', group: 'Group / Phase', groupHint: 'E.g.: Phase 1, Design, Dev...', estimatedDuration: 'Estimated duration', minDuration: 'Min duration', maxDuration: 'Max duration', referent: 'Referent', referentHint: 'Responsible person...' },
-  kr: { back: '뒤로', loading: '로딩 중…', allStatus: '모든 상태', todo: '할 일', inProgress: '진행 중', blocked: '차단됨', done: '완료', allMembers: '모든 멤버', allPriority: '모든 우선순위', urgent: '긴급', priority: '우선', important: '중요', normal: '보통', newProject: '새 프로젝트', newTask: '새 작업', noProjects: '프로젝트 없음', noProjectsDesc: '첫 번째 프로젝트를 만들어 작업을 정리하세요.', createFirst: '첫 프로젝트 만들기', noTasks: '이 프로젝트에 작업이 없습니다.', selectProject: '프로젝트 선택', selectProjectDesc: '프로젝트 뷰에서 프로젝트를 선택하세요.', goToProjects: '프로젝트 보기', projectName: '프로젝트 이름', projectNameHint: '예: 웹사이트 리디자인, 제품 출시...', description: '설명', descriptionHint: '프로젝트 목표를 설명하세요...', startDate: '시작일', targetDate: '목표 종료일', endDate: '종료일', state: '상태', active: '활성', cancel: '취소', create: '만들기', taskName: '작업 이름', taskNameHint: '예: 요구사항 문서 작성...', taskDescHint: '작업을 설명하세요...', group: '그룹 / 단계', groupHint: '예: 1단계, 디자인, 개발...', estimatedDuration: '예상 기간', minDuration: '최소 기간', maxDuration: '최대 기간', referent: '담당자', referentHint: '책임자...' },
+  fr: { back: 'Retour', loading: 'Chargement…', allStatus: 'Tous les statuts', todo: 'À faire', inProgress: 'En cours', blocked: 'Bloqué', done: 'Terminé', allMembers: 'Toute l\'équipe', allPriority: 'Toutes priorités', urgent: 'Urgent', priority: 'Prioritaire', important: 'Important', normal: 'Normal', newProject: 'Nouveau projet', newTask: 'Nouvelle tâche', editTask: 'Modifier la tâche', save: 'Enregistrer', status: 'Statut', noProjects: 'Aucun projet', noProjectsDesc: 'Créez votre premier projet pour commencer à organiser vos tâches.', createFirst: 'Créer mon premier projet', noTasks: 'Aucune tâche dans ce projet.', selectProject: 'Sélectionnez un projet', selectProjectDesc: 'Choisissez un projet dans la vue Projets pour voir ses tâches.', goToProjects: 'Voir les projets', projectName: 'Nom du projet', projectNameHint: 'Ex: Refonte site web, Lancement produit...', description: 'Description', descriptionHint: 'Décrivez l\'objectif du projet...', startDate: 'Date de début', targetDate: 'Date cible de fin', endDate: 'Date de fin', state: 'État', active: 'Actif', cancel: 'Annuler', create: 'Créer', taskName: 'Nom de la tâche', taskNameHint: 'Ex: Rédiger cahier des charges...', taskDescHint: 'Décrivez la tâche...', group: 'Groupe / Phase', groupHint: 'Ex: Phase 1, Design, Dev...', estimatedDuration: 'Durée estimée', minDuration: 'Durée min', maxDuration: 'Durée max', referent: 'Référent', referentHint: 'Personne responsable...' },
+  en: { back: 'Back', loading: 'Loading…', allStatus: 'All statuses', todo: 'To do', inProgress: 'In progress', blocked: 'Blocked', done: 'Done', allMembers: 'All members', allPriority: 'All priorities', urgent: 'Urgent', priority: 'Priority', important: 'Important', normal: 'Normal', newProject: 'New project', newTask: 'New task', editTask: 'Edit task', save: 'Save', status: 'Status', noProjects: 'No projects', noProjectsDesc: 'Create your first project to start organizing your tasks.', createFirst: 'Create my first project', noTasks: 'No tasks in this project.', selectProject: 'Select a project', selectProjectDesc: 'Choose a project from the Projects view to see its tasks.', goToProjects: 'View projects', projectName: 'Project name', projectNameHint: 'E.g.: Website redesign, Product launch...', description: 'Description', descriptionHint: 'Describe the project goal...', startDate: 'Start date', targetDate: 'Target end date', endDate: 'End date', state: 'State', active: 'Active', cancel: 'Cancel', create: 'Create', taskName: 'Task name', taskNameHint: 'E.g.: Write requirements doc...', taskDescHint: 'Describe the task...', group: 'Group / Phase', groupHint: 'E.g.: Phase 1, Design, Dev...', estimatedDuration: 'Estimated duration', minDuration: 'Min duration', maxDuration: 'Max duration', referent: 'Referent', referentHint: 'Responsible person...' },
+  kr: { back: '뒤로', loading: '로딩 중…', allStatus: '모든 상태', todo: '할 일', inProgress: '진행 중', blocked: '차단됨', done: '완료', allMembers: '모든 멤버', allPriority: '모든 우선순위', urgent: '긴급', priority: '우선', important: '중요', normal: '보통', newProject: '새 프로젝트', newTask: '새 작업', editTask: '작업 수정', save: '저장', status: '상태', noProjects: '프로젝트 없음', noProjectsDesc: '첫 번째 프로젝트를 만들어 작업을 정리하세요.', createFirst: '첫 프로젝트 만들기', noTasks: '이 프로젝트에 작업이 없습니다.', selectProject: '프로젝트 선택', selectProjectDesc: '프로젝트 뷰에서 프로젝트를 선택하세요.', goToProjects: '프로젝트 보기', projectName: '프로젝트 이름', projectNameHint: '예: 웹사이트 리디자인, 제품 출시...', description: '설명', descriptionHint: '프로젝트 목표를 설명하세요...', startDate: '시작일', targetDate: '목표 종료일', endDate: '종료일', state: '상태', active: '활성', cancel: '취소', create: '만들기', taskName: '작업 이름', taskNameHint: '예: 요구사항 문서 작성...', taskDescHint: '작업을 설명하세요...', group: '그룹 / 단계', groupHint: '예: 1단계, 디자인, 개발...', estimatedDuration: '예상 기간', minDuration: '최소 기간', maxDuration: '최대 기간', referent: '담당자', referentHint: '책임자...' },
 }
 const lt = computed(() => i18n[lang.value] || i18n.fr)
 
@@ -364,6 +436,50 @@ async function createTask() {
   })
   Object.assign(newTask, { name: '', description: '', group_name: '', priority: 'normal', dur_estimated: null, dur_min: null, dur_max: null, start_date: '', end_date: '', referent_name: '' })
   showCreateTask.value = false
+}
+
+function openEditTask(task) {
+  Object.assign(editTask, {
+    id: task.id,
+    name: task.name || '',
+    description: task.description || '',
+    group_name: task.group_name || '',
+    priority: task.priority || 'normal',
+    status: task.status || 'todo',
+    dur_estimated: task.dur_estimated || null,
+    dur_min: task.dur_min || null,
+    dur_max: task.dur_max || null,
+    start_date: task.start_date || '',
+    end_date: task.end_date || '',
+  })
+  showEditTask.value = true
+}
+
+async function saveEditTask() {
+  await store.updateTask(editTask.id, {
+    name: editTask.name.trim(),
+    description: editTask.description,
+    group_name: editTask.group_name,
+    priority: editTask.priority,
+    status: editTask.status,
+    dur_estimated: editTask.dur_estimated,
+    dur_min: editTask.dur_min,
+    dur_max: editTask.dur_max,
+    start_date: editTask.start_date || null,
+    end_date: editTask.end_date || null,
+  })
+  showEditTask.value = false
+}
+
+function handlePlanningCreateEvent({ date, hour }) {
+  const dateStr = date.toISOString().slice(0, 10)
+  const hourStr = String(hour).padStart(2, '0')
+  Object.assign(newTask, { name: '', description: '', group_name: '', priority: 'normal', dur_estimated: 1, dur_min: null, dur_max: null, start_date: dateStr + 'T' + hourStr + ':00', end_date: '', referent_name: '' })
+  showCreateTask.value = true
+}
+
+function handlePlanningEditEvent(task) {
+  openEditTask(task)
 }
 
 async function toggleSubtask(taskId, subId) { await store.toggleSubtask(taskId, subId) }
