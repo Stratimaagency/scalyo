@@ -9,7 +9,7 @@ modules.get('/clients/health', ...mw, async (c) => {
   const { company_id } = c.get('user')
   const db = c.env.DB
   const { results } = await db.prepare(
-    'SELECT id, name, health, arr, mrr, csm, assigned_csm_id, renewal, status FROM accounts WHERE company_id = ?'
+    'SELECT id, name, health, arr, mrr, csm, renewal, risk FROM accounts WHERE company_id = ?'
   ).bind(company_id).all()
 
   const data = (results || []).map(a => ({
@@ -18,7 +18,7 @@ modules.get('/clients/health', ...mw, async (c) => {
     healthScore: a.health || 0,
     status: (a.health || 0) >= 75 ? 'healthy' : (a.health || 0) >= 60 ? 'neutral' : 'at-risk',
     arrValue: a.arr || (a.mrr ? a.mrr * 12 : 0),
-    csmId: a.assigned_csm_id || null,
+    csmId: a.csm || null,
     csmName: a.csm || '',
     renewal: a.renewal || null,
     issues: [],
@@ -42,14 +42,14 @@ modules.get('/csms/workload', ...mw, async (c) => {
   const { company_id } = c.get('user')
   const db = c.env.DB
   const { results: accounts } = await db.prepare(
-    'SELECT csm, assigned_csm_id, health, arr, mrr FROM accounts WHERE company_id = ?'
+    'SELECT csm, health, arr, mrr FROM accounts WHERE company_id = ?'
   ).bind(company_id).all()
 
   const csmMap = {}
   ;(accounts || []).forEach(a => {
     const name = a.csm || 'Non assigné'
     if (!csmMap[name]) {
-      csmMap[name] = { id: a.assigned_csm_id || name, name, clientCount: 0, totalArr: 0, avgHealth: 0, healthSum: 0, atRisk: 0 }
+      csmMap[name] = { id: name, name, clientCount: 0, totalArr: 0, avgHealth: 0, healthSum: 0, atRisk: 0 }
     }
     csmMap[name].clientCount++
     csmMap[name].totalArr += a.arr || (a.mrr ? a.mrr * 12 : 0)
