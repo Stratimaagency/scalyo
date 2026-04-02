@@ -49,8 +49,73 @@ app.route('/api/import/smart', smartImport)
 registerIntegrationRoutes(app)
 registerTeamRoutes(app)
 
-// Smart Matrice
-app.route('/api/smart-matrice', smartMatrice)
+// Smart Matrice — mounted DIRECTLY to avoid Hono sub-router bug
+app.get('/api/smart-matrice', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const db = c.env.DB
+  const { results: projects } = await db.prepare(`
+    SELECT p.*, COALESCE(tc.task_count, 0) as task_count
+    FROM sm_projects p
+    LEFT JOIN (SELECT project_id, COUNT(*) as task_count FROM sm_tasks GROUP BY project_id) tc ON tc.project_id = p.id
+    WHERE p.company_id = ? ORDER BY p.sort_order ASC, p.created_at DESC
+  `).bind(company_id).all()
+  return c.json(projects || [])
+})
+app.get('/api/smart-matrice/', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const db = c.env.DB
+  const { results: projects } = await db.prepare(`
+    SELECT p.*, COALESCE(tc.task_count, 0) as task_count
+    FROM sm_projects p
+    LEFT JOIN (SELECT project_id, COUNT(*) as task_count FROM sm_tasks GROUP BY project_id) tc ON tc.project_id = p.id
+    WHERE p.company_id = ? ORDER BY p.sort_order ASC, p.created_at DESC
+  `).bind(company_id).all()
+  return c.json(projects || [])
+})
+app.post('/api/smart-matrice', ...mw, async (c) => {
+  const { company_id, id: user_id } = c.get('user')
+  const body = await c.req.json()
+  const history = JSON.stringify([{ date: new Date().toISOString(), action: 'created', details: body.name || 'Nouveau projet', user_id }])
+  const row = await c.env.DB.prepare(
+    `INSERT INTO sm_projects (company_id, name, description, emoji, color, start_date, end_date, target_end_date, state, history)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
+  ).bind(company_id, body.name || 'Nouveau projet', body.description || '', body.emoji || '📁', body.color || '#3b82f6',
+    body.start_date || null, body.end_date || null, body.target_end_date || null, body.state || 'active', history).first()
+  return c.json(row, 201)
+})
+app.post('/api/smart-matrice/', ...mw, async (c) => {
+  const { company_id, id: user_id } = c.get('user')
+  const body = await c.req.json()
+  const history = JSON.stringify([{ date: new Date().toISOString(), action: 'created', details: body.name || 'Nouveau projet', user_id }])
+  const row = await c.env.DB.prepare(
+    `INSERT INTO sm_projects (company_id, name, description, emoji, color, start_date, end_date, target_end_date, state, history)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
+  ).bind(company_id, body.name || 'Nouveau projet', body.description || '', body.emoji || '📁', body.color || '#3b82f6',
+    body.start_date || null, body.end_date || null, body.target_end_date || null, body.state || 'active', history).first()
+  return c.json(row, 201)
+})
+app.post('/api/smart-matrice/tasks', ...mw, async (c) => {
+  const { company_id, id: user_id } = c.get('user')
+  const body = await c.req.json()
+  if (!body.project_id) return c.json({ error: 'project_id required' }, 400)
+  const history = JSON.stringify([{ date: new Date().toISOString(), action: 'created', details: body.name || 'Nouvelle tâche', user_id }])
+  const row = await c.env.DB.prepare(
+    `INSERT INTO sm_tasks (project_id, company_id, name, group_name, status, priority, history)
+     VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *`
+  ).bind(body.project_id, company_id, body.name || 'Nouvelle tâche', body.group_name || '', body.status || 'todo', body.priority || 'normal', history).first()
+  return c.json(row, 201)
+})
+app.post('/api/smart-matrice/tasks/', ...mw, async (c) => {
+  const { company_id, id: user_id } = c.get('user')
+  const body = await c.req.json()
+  if (!body.project_id) return c.json({ error: 'project_id required' }, 400)
+  const history = JSON.stringify([{ date: new Date().toISOString(), action: 'created', details: body.name || 'Nouvelle tâche', user_id }])
+  const row = await c.env.DB.prepare(
+    `INSERT INTO sm_tasks (project_id, company_id, name, group_name, status, priority, history)
+     VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *`
+  ).bind(body.project_id, company_id, body.name || 'Nouvelle tâche', body.group_name || '', body.status || 'todo', body.priority || 'normal', history).first()
+  return c.json(row, 201)
+})
 
 // Modules (Health, CSM Workload, Projects, OKR, Playbooks)
 app.route('/api/modules', modules)
