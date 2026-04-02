@@ -43,11 +43,8 @@ export const useCSMStore = defineStore('csm', () => {
       // API not ready
     }
 
-    // Fallback: seed data
-    if (!csms.value.length) {
-      csms.value = JSON.parse(JSON.stringify(seedCSMs))
-    }
-
+    // Always fallback to seed
+    csms.value = JSON.parse(JSON.stringify(seedCSMs))
     loading.value = false
   }
 

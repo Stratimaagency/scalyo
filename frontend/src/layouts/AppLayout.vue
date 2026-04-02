@@ -135,6 +135,7 @@ import { usePreferencesStore } from '../stores/preferences'
 import { usePortfolioStore } from '../stores/portfolio'
 import { useSmartMatriceStore } from '../stores/smartMatrice'
 import TestPanel from '../components/dev/TestPanel.vue'
+import { useManagerStore } from '../stores/manager'
 import { authApi } from '../api'
 import { useI18n } from '../i18n'
 import { useNavigation } from '../composables/useNavigation'
@@ -245,7 +246,13 @@ async function checkVerified() {
 
 function logout() { authStore.logout(); router.push({ name: 'login' }) }
 
-onMounted(() => { if (!portfolioStore.accounts.length) portfolioStore.fetchAccounts() })
+const managerStore = useManagerStore()
+
+onMounted(async () => {
+  if (!portfolioStore.accounts.length) portfolioStore.fetchAccounts()
+  // Load module stores (clients, csm, tasks, okrs, playbooks)
+  await managerStore.fetchAll()
+})
 </script>
 
 <style scoped>

@@ -61,20 +61,15 @@ export const useClientsStore = defineStore('clients', () => {
       // portfolio not loaded
     }
 
-    // Final fallback: seed data
-    if (!clients.value.length) {
-      clients.value = JSON.parse(JSON.stringify(seedClients))
-      lastUpdated.value = new Date()
-    }
-
-    loading.value = false
+    // Final fallback: always use seed data
+    clients.value = JSON.parse(JSON.stringify(seedClients))
+    lastUpdated.value = new Date()
   }
 
   function updateClientHealth(clientId, newScore) {
     const idx = clients.value.findIndex(c => c.id === clientId)
     if (idx !== -1) {
-      clients.value[idx].healthScore = newScore
-      clients.value[idx].status = newScore >= 75 ? 'healthy' : newScore >= 60 ? 'neutral' : 'at-risk'
+      clients.value[idx] = { ...clients.value[idx], healthScore: newScore, status: newScore >= 75 ? 'healthy' : newScore >= 60 ? 'neutral' : 'at-risk' }
     }
   }
 
