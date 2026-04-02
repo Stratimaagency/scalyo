@@ -184,7 +184,7 @@ const configForm = reactive({
 // ── Integrations list ──────────────────────────────────
 const integrations = computed(() => [
   // CRM
-  { key: 'hubspot', name: 'HubSpot', icon: '🟠', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23FF7A59' d='M267.4 211.6c-25.1 23.7-40.8 57.3-40.8 94.6 0 37.3 15.7 70.9 40.8 94.6l-100.2 50.1c-12.4-7.9-27-12.5-42.6-12.5-44.1 0-79.8 35.7-79.8 79.8 0 44.1 35.7 79.8 79.8 79.8 44.1 0 79.8-35.7 79.8-79.8 0-10.2-1.9-20-5.4-29l97.8-48.9c29.3 22.4 65.9 35.7 105.6 35.7 95.1 0 172.2-77.1 172.2-172.2S497.5 131.8 402.4 131.8c-39.7 0-76.3 13.4-105.6 35.7l-97.8-48.9c3.5-9 5.4-18.7 5.4-29 0-44.1-35.7-79.8-79.8-79.8S44.8 45.5 44.8 89.6c0 44.1 35.7 79.8 79.8 79.8 15.6 0 30.2-4.5 42.6-12.5l100.2 54.7zM402.4 363.8c-31.7 0-57.4-25.7-57.4-57.4s25.7-57.4 57.4-57.4 57.4 25.7 57.4 57.4-25.7 57.4-57.4 57.4z'/%3E%3C/svg%3E", color: '#FF7A59', available: true,
+  { key: 'hubspot', name: 'HubSpot', icon: '🟠', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cdefs%3E%3CradialGradient id='hs' cx='35%25' cy='30%25' r='65%25'%3E%3Cstop offset='0%25' stop-color='%23FF9E7A'/%3E%3Cstop offset='100%25' stop-color='%23FF5C35'/%3E%3C/radialGradient%3E%3Cfilter id='hsf'%3E%3CfeDropShadow dx='0' dy='2' stdDeviation='3' flood-color='%23FF5C35' flood-opacity='.4'/%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='40' cy='40' r='36' fill='url(%23hs)' filter='url(%23hsf)'/%3E%3Ccircle cx='40' cy='40' r='36' fill='none' stroke='rgba(255,255,255,.2)' stroke-width='1'/%3E%3Cpath d='M43 28v-5a4 4 0 10-6 0v5a12 12 0 00-5 20l-4 4a3 3 0 104 4l4-4a12 12 0 0012-1 12 12 0 000-20V28zm-3 24a6 6 0 110-12 6 6 0 010 12z' fill='%23fff' fill-opacity='.95'/%3E%3C/svg%3E", color: '#FF5C35', available: true,
     desc: L('Importe automatiquement vos contacts et deals dans le portefeuille.',
             'Automatically imports your contacts and deals into the portfolio.',
             '연락처와 거래를 포트폴리오에 자동으로 가져옵니다.'),
@@ -195,7 +195,7 @@ const integrations = computed(() => [
           '1. Open <a href="https://app.hubspot.com/settings" target="_blank">app.hubspot.com/settings</a>\n2. Left menu: Integrations → Private Apps\n3. Click "Create a private app" → Name: Scalyo\n4. "Scopes" tab: check contacts, companies, deals\n5. Click Create → Copy the token (starts with pat-...)',
           '1. <a href="https://app.hubspot.com/settings" target="_blank">app.hubspot.com/settings</a>를 여세요\n2. 왼쪽 메뉴: 통합 → 비공개 앱\n3. "비공개 앱 만들기" 클릭 → 이름: Scalyo\n4. "범위" 탭: 연락처, 회사, 거래를 선택하세요\n5. 만들기 클릭 → 토큰을 복사하세요 (pat-로 시작)') },
     ]},
-  { key: 'pipedrive', name: 'Pipedrive', icon: '🟢', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='24' fill='%2325C16F'/%3E%3Cpath d='M24 10c-5.5 0-10 4.5-10 10v8c0 5.5 4.5 10 10 10s10-4.5 10-10v-8c0-5.5-4.5-10-10-10zm4 18c0 2.2-1.8 4-4 4s-4-1.8-4-4v-8c0-2.2 1.8-4 4-4s4 1.8 4 4v8z' fill='%23fff'/%3E%3C/svg%3E", color: '#25C16F', available: true,
+  { key: 'pipedrive', name: 'Pipedrive', icon: '🟢', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cdefs%3E%3CradialGradient id='pd' cx='35%25' cy='30%25' r='65%25'%3E%3Cstop offset='0%25' stop-color='%2345E898'/%3E%3Cstop offset='100%25' stop-color='%23017737'/%3E%3C/radialGradient%3E%3Cfilter id='pdf'%3E%3CfeDropShadow dx='0' dy='2' stdDeviation='3' flood-color='%23017737' flood-opacity='.4'/%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='40' cy='40' r='36' fill='url(%23pd)' filter='url(%23pdf)'/%3E%3Cpath d='M34 22c-6 0-10 5-10 11v4c0 6 4 11 10 11h2v8h8v-8h2c6 0 10-5 10-11v-4c0-6-4-11-10-11H34zm2 8h8c2 0 4 2 4 4v2c0 2-2 4-4 4h-8c-2 0-4-2-4-4v-2c0-2 2-4 4-4z' fill='%23fff' fill-opacity='.95'/%3E%3C/svg%3E", color: '#017737', available: true,
     desc: L('Importe vos contacts et deals dans le portefeuille.',
             'Imports your contacts and deals into the portfolio.',
             '연락처와 거래를 포트폴리오에 가져옵니다.'),
@@ -206,7 +206,7 @@ const integrations = computed(() => [
           '1. Open <a href="https://app.pipedrive.com/settings/api" target="_blank">app.pipedrive.com/settings/api</a>\n2. You will see "Your personal API token"\n3. Copy and paste it here',
           '1. <a href="https://app.pipedrive.com/settings/api" target="_blank">app.pipedrive.com/settings/api</a>를 여세요\n2. "개인 API 토큰"이 표시됩니다\n3. 복사하여 여기에 붙여넣으세요') },
     ]},
-  { key: 'intercom', name: 'Intercom', icon: '💬', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='10' fill='%23286EFA'/%3E%3Cpath d='M12 14v14c0 1 .5 2 1.5 2.7L24 38l10.5-7.3c1-.7 1.5-1.7 1.5-2.7V14' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='16' y1='18' x2='16' y2='28' stroke='%23fff' stroke-width='2.5' stroke-linecap='round'/%3E%3Cline x1='22' y1='16' x2='22' y2='28' stroke='%23fff' stroke-width='2.5' stroke-linecap='round'/%3E%3Cline x1='28' y1='16' x2='28' y2='28' stroke='%23fff' stroke-width='2.5' stroke-linecap='round'/%3E%3Cline x1='34' y1='18' x2='34' y2='28' stroke='%23fff' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E", color: '#286EFA', available: true,
+  { key: 'intercom', name: 'Intercom', icon: '💬', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cdefs%3E%3CradialGradient id='ic' cx='35%25' cy='25%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%235BA0FA'/%3E%3Cstop offset='100%25' stop-color='%23185BDB'/%3E%3C/radialGradient%3E%3Cfilter id='icf'%3E%3CfeDropShadow dx='0' dy='2' stdDeviation='3' flood-color='%23185BDB' flood-opacity='.4'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='4' y='4' width='72' height='72' rx='18' fill='url(%23ic)' filter='url(%23icf)'/%3E%3Cline x1='24' y1='26' x2='24' y2='42' stroke='%23fff' stroke-width='4' stroke-linecap='round' opacity='.95'/%3E%3Cline x1='33' y1='22' x2='33' y2='42' stroke='%23fff' stroke-width='4' stroke-linecap='round' opacity='.95'/%3E%3Cline x1='42' y1='22' x2='42' y2='42' stroke='%23fff' stroke-width='4' stroke-linecap='round' opacity='.95'/%3E%3Cline x1='51' y1='26' x2='51' y2='42' stroke='%23fff' stroke-width='4' stroke-linecap='round' opacity='.95'/%3E%3Cpath d='M20 46c0 0 8 10 18 10s18-10 18-10' fill='none' stroke='%23fff' stroke-width='3.5' stroke-linecap='round' opacity='.9'/%3E%3C/svg%3E", color: '#286EFA', available: true,
     desc: L('Importe vos contacts et conversations dans le portefeuille.',
             'Imports your contacts and conversations into the portfolio.',
             '연락처와 대화를 포트폴리오에 가져옵니다.'),
@@ -219,7 +219,7 @@ const integrations = computed(() => [
     ]},
 
   // Support
-  { key: 'zendesk', name: 'Zendesk', icon: '🎫', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M22 8v20L6 40V20z' fill='%2303363D'/%3E%3Ccircle cx='14' cy='14' r='8' fill='%2303363D'/%3E%3Cpath d='M26 40V20l16-12v20z' fill='%2303363D'/%3E%3Ccircle cx='34' cy='34' r='8' fill='%2303363D'/%3E%3C/svg%3E", color: '#03363D', available: true,
+  { key: 'zendesk', name: 'Zendesk', icon: '🎫', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cdefs%3E%3CradialGradient id='zd' cx='35%25' cy='25%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%2378D9B2'/%3E%3Cstop offset='100%25' stop-color='%2303363D'/%3E%3C/radialGradient%3E%3Cfilter id='zdf'%3E%3CfeDropShadow dx='0' dy='2' stdDeviation='3' flood-color='%2303363D' flood-opacity='.4'/%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='40' cy='40' r='36' fill='url(%23zd)' filter='url(%23zdf)'/%3E%3Cpath d='M38 20v18L22 50' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' opacity='.95'/%3E%3Ccircle cx='30' cy='24' r='6' fill='%23fff' fill-opacity='.9'/%3E%3Cpath d='M42 50V32l16-12' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' opacity='.95'/%3E%3Ccircle cx='50' cy='48' r='6' fill='%23fff' fill-opacity='.9'/%3E%3C/svg%3E", color: '#03363D', available: true,
     desc: L('Importe vos tickets de support et contacts clients.',
             'Imports your support tickets and customer contacts.',
             '지원 티켓과 고객 연락처를 가져옵니다.'),
@@ -236,7 +236,7 @@ const integrations = computed(() => [
           'Check your Zendesk URL: if it\'s <strong>acme</strong>.zendesk.com, enter <strong>acme</strong>.\nOnly enter the word before ".zendesk.com".',
           'Zendesk URL을 확인하세요: <strong>acme</strong>.zendesk.com이면 <strong>acme</strong>를 입력하세요.\n".zendesk.com" 앞의 단어만 입력하세요.') },
     ]},
-  { key: 'jira', name: 'Jira', icon: '🔷', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cdefs%3E%3ClinearGradient id='jg' x1='98%25' y1='0%25' x2='58%25' y2='90%25'%3E%3Cstop offset='18%25' stop-color='%230052CC'/%3E%3Cstop offset='100%25' stop-color='%232684FF'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill='url(%23jg)' d='M43.5 23.2L25.8 5.5 24 3.7 8.7 19 3 24.7a1.9 1.9 0 000 2.6L15.3 39.7 24 48.4l15.3-15.3.5-.5 3.7-3.7a1.9 1.9 0 000-2.7zM24 30.9l-6.9-6.9L24 17.1l6.9 6.9L24 30.9z'/%3E%3C/svg%3E", color: '#0052CC', available: true,
+  { key: 'jira', name: 'Jira', icon: '🔷', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cdefs%3E%3CradialGradient id='jr' cx='30%25' cy='25%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%234C9AFF'/%3E%3Cstop offset='100%25' stop-color='%230052CC'/%3E%3C/radialGradient%3E%3Cfilter id='jrf'%3E%3CfeDropShadow dx='0' dy='2' stdDeviation='3' flood-color='%230052CC' flood-opacity='.4'/%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='40' cy='40' r='36' fill='url(%23jr)' filter='url(%23jrf)'/%3E%3Cpath d='M56 38L42 24l-4-4L22 36l-6 6a2 2 0 000 3l13 13 9 9 16-16-1-1 4-4a2 2 0 000-3L56 38zM38 48l-7-7 7-7 7 7-7 7z' fill='%23fff' fill-opacity='.95'/%3E%3C/svg%3E", color: '#0052CC', available: true,
     desc: L('Importe vos tickets et tâches dans le Task Board.',
             'Imports your tickets and tasks into the Task Board.',
             '티켓과 작업을 Task Board에 가져옵니다.'),
@@ -255,7 +255,7 @@ const integrations = computed(() => [
     ]},
 
   // Productivity
-  { key: 'notion', name: 'Notion', icon: '📝', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='8' fill='%23fff' stroke='%23000' stroke-width='2'/%3E%3Cpath d='M14 10h14l8 6v22H14z' fill='none' stroke='%23000' stroke-width='2'/%3E%3Cpath d='M18 18h12M18 24h12M18 30h8' stroke='%23000' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E", color: '#000000', available: true,
+  { key: 'notion', name: 'Notion', icon: '📝', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cdefs%3E%3CradialGradient id='nt' cx='35%25' cy='25%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%23555'/%3E%3Cstop offset='100%25' stop-color='%23111'/%3E%3C/radialGradient%3E%3Cfilter id='ntf'%3E%3CfeDropShadow dx='0' dy='2' stdDeviation='3' flood-color='%23000' flood-opacity='.35'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='4' y='4' width='72' height='72' rx='18' fill='url(%23nt)' filter='url(%23ntf)'/%3E%3Cpath d='M24 20h18l6 5v26H28l-10-6V20z' fill='none' stroke='%23fff' stroke-width='3' stroke-linejoin='round' opacity='.95'/%3E%3Cpath d='M29 30h16M29 37h16M29 44h10' stroke='%23fff' stroke-width='2.5' stroke-linecap='round' opacity='.8'/%3E%3C/svg%3E", color: '#000000', available: true,
     desc: L('Importe vos bases de données et pages dans Scalyo.',
             'Imports your databases and pages into Scalyo.',
             '데이터베이스와 페이지를 Scalyo에 가져옵니다.'),
@@ -266,7 +266,7 @@ const integrations = computed(() => [
           '1. Open <a href="https://www.notion.so/profile/integrations" target="_blank">notion.so/profile/integrations</a>\n2. Click "New integration" → Name: Scalyo → Submit\n3. Copy the "Internal integration secret" (starts with secret_...)\n4. <strong>IMPORTANT</strong>: Go back to Notion → open the page or database to sync → click <strong>...</strong> (top right) → <strong>Connections</strong> → <strong>Connect to → Scalyo</strong>\nWithout step 4, Scalyo won\'t see any data.',
           '1. <a href="https://www.notion.so/profile/integrations" target="_blank">notion.so/profile/integrations</a>를 여세요\n2. "새 통합" 클릭 → 이름: Scalyo → 제출\n3. "내부 통합 시크릿"을 복사하세요 (secret_로 시작)\n4. <strong>중요</strong>: Notion으로 돌아가서 → 동기화할 페이지 또는 데이터베이스를 열고 → <strong>...</strong>(오른쪽 상단) 클릭 → <strong>연결</strong> → <strong>연결 대상 → Scalyo</strong>\n4단계 없이는 Scalyo가 데이터를 볼 수 없습니다.') },
     ]},
-  { key: 'asana', name: 'Asana', icon: '🔶', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='12' r='8' fill='%23F06A6A'/%3E%3Ccircle cx='12' cy='32' r='8' fill='%23F06A6A'/%3E%3Ccircle cx='36' cy='32' r='8' fill='%23F06A6A'/%3E%3C/svg%3E", color: '#F06A6A', available: true,
+  { key: 'asana', name: 'Asana', icon: '🔶', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cdefs%3E%3CradialGradient id='as1' cx='40%25' cy='30%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%23FF9A8A'/%3E%3Cstop offset='100%25' stop-color='%23F06A6A'/%3E%3C/radialGradient%3E%3Cfilter id='asf'%3E%3CfeDropShadow dx='0' dy='2' stdDeviation='2.5' flood-color='%23F06A6A' flood-opacity='.35'/%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='40' cy='22' r='11' fill='url(%23as1)' filter='url(%23asf)'/%3E%3Ccircle cx='22' cy='50' r='11' fill='url(%23as1)' filter='url(%23asf)'/%3E%3Ccircle cx='58' cy='50' r='11' fill='url(%23as1)' filter='url(%23asf)'/%3E%3C/svg%3E", color: '#F06A6A', available: true,
     desc: L('Importe vos tâches et projets dans le Task Board.',
             'Imports your tasks and projects into the Task Board.',
             '작업과 프로젝트를 Task Board에 가져옵니다.'),
@@ -279,7 +279,7 @@ const integrations = computed(() => [
     ]},
 
   // Calendar
-  { key: 'calendly', name: 'Calendly', icon: '📅', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='6' y='8' width='36' height='34' rx='6' fill='%23006BFF'/%3E%3Crect x='6' y='8' width='36' height='10' rx='6' fill='%23004FC4'/%3E%3Ccircle cx='24' cy='30' r='6' fill='%23fff'/%3E%3Crect x='14' y='6' width='3' height='6' rx='1.5' fill='%23fff'/%3E%3Crect x='31' y='6' width='3' height='6' rx='1.5' fill='%23fff'/%3E%3C/svg%3E", color: '#006BFF', available: true,
+  { key: 'calendly', name: 'Calendly', icon: '📅', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cdefs%3E%3CradialGradient id='cal' cx='35%25' cy='25%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%234DA3FF'/%3E%3Cstop offset='100%25' stop-color='%23006BFF'/%3E%3C/radialGradient%3E%3Cfilter id='calf'%3E%3CfeDropShadow dx='0' dy='2' stdDeviation='3' flood-color='%23006BFF' flood-opacity='.4'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='10' y='14' width='60' height='56' rx='14' fill='url(%23cal)' filter='url(%23calf)'/%3E%3Crect x='10' y='14' width='60' height='18' rx='14' fill='rgba(0,0,0,.15)'/%3E%3Crect x='24' y='8' width='5' height='14' rx='2.5' fill='%23fff' opacity='.9'/%3E%3Crect x='51' y='8' width='5' height='14' rx='2.5' fill='%23fff' opacity='.9'/%3E%3Ccircle cx='40' cy='50' r='10' fill='%23fff' fill-opacity='.95'/%3E%3Cpath d='M36 50l3 3 6-6' fill='none' stroke='%23006BFF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E", color: '#006BFF', available: true,
     desc: L('Importe vos rendez-vous dans le planning.',
             'Imports your appointments into the calendar.',
             '예약 일정을 캘린더에 가져옵니다.'),
@@ -292,7 +292,7 @@ const integrations = computed(() => [
     ]},
 
   // Notifications
-  { key: 'slack', name: 'Slack', icon: '💜', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M12.5 27a3.5 3.5 0 11-3.5-3.5H12.5V27zm1.75 0a3.5 3.5 0 117 0v8.75a3.5 3.5 0 11-7 0V27z' fill='%23E01E5A'/%3E%3Cpath d='M21 12.5a3.5 3.5 0 113.5-3.5V12.5H21zm0 1.75a3.5 3.5 0 110 7h-8.75a3.5 3.5 0 010-7H21z' fill='%2336C5F0'/%3E%3Cpath d='M35.5 21a3.5 3.5 0 113.5 3.5H35.5V21zm-1.75 0a3.5 3.5 0 11-7 0v-8.75a3.5 3.5 0 117 0V21z' fill='%232EB67D'/%3E%3Cpath d='M27 35.5a3.5 3.5 0 11-3.5 3.5V35.5H27zm0-1.75a3.5 3.5 0 110-7h8.75a3.5 3.5 0 010 7H27z' fill='%23ECB22E'/%3E%3C/svg%3E", color: '#4A154B', available: true,
+  { key: 'slack', name: 'Slack', icon: '💜', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cdefs%3E%3Cfilter id='slf'%3E%3CfeDropShadow dx='0' dy='2' stdDeviation='3' flood-color='%234A154B' flood-opacity='.3'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='4' y='4' width='72' height='72' rx='18' fill='%234A154B' filter='url(%23slf)'/%3E%3Cpath d='M26 44a5 5 0 01-5-5 5 5 0 015-5h5v5a5 5 0 01-5 5zm2.5 0a5 5 0 0110 0v12.5a5 5 0 01-10 0V44z' fill='%23E01E5A'/%3E%3Cpath d='M33.5 26a5 5 0 015-5 5 5 0 015 5v5h-5a5 5 0 01-5-5zm0 2.5a5 5 0 010 10H21a5 5 0 010-10h12.5z' fill='%2336C5F0'/%3E%3Cpath d='M51 33.5a5 5 0 015 5 5 5 0 01-5 5h-5v-5a5 5 0 015-5zm-2.5 0a5 5 0 01-10 0V21a5 5 0 0110 0v12.5z' fill='%232EB67D'/%3E%3Cpath d='M43.5 51a5 5 0 01-5 5 5 5 0 01-5-5v-5h5a5 5 0 015 5zm0-2.5a5 5 0 010-10H56a5 5 0 010 10H43.5z' fill='%23ECB22E'/%3E%3C/svg%3E", color: '#4A154B', available: true,
     desc: L('Recevez des alertes quand un compte client est en danger.',
             'Receive alerts when a customer account is at risk.',
             '고객 계정이 위험할 때 알림을 받으세요.'),
@@ -307,7 +307,7 @@ const integrations = computed(() => [
                 'Leave empty to use the webhook\'s default channel.',
                 '비워두시면 웹훅의 기본 채널이 사용됩니다.') },
     ]},
-  { key: 'teams', name: 'Microsoft Teams', icon: '🟦', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='32' cy='14' r='6' fill='%235B5FC7'/%3E%3Crect x='26' y='18' width='18' height='16' rx='3' fill='%235B5FC7'/%3E%3Ccircle cx='18' cy='16' r='8' fill='%237B83EB'/%3E%3Crect x='4' y='20' width='28' height='20' rx='4' fill='%237B83EB'/%3E%3Cpath d='M12 28h12M18 25v6' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E", color: '#5B5FC7', available: true,
+  { key: 'teams', name: 'Microsoft Teams', icon: '🟦', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cdefs%3E%3CradialGradient id='tm' cx='35%25' cy='25%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%23A0A4F5'/%3E%3Cstop offset='100%25' stop-color='%235B5FC7'/%3E%3C/radialGradient%3E%3Cfilter id='tmf'%3E%3CfeDropShadow dx='0' dy='2' stdDeviation='3' flood-color='%235B5FC7' flood-opacity='.4'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='4' y='4' width='72' height='72' rx='18' fill='url(%23tm)' filter='url(%23tmf)'/%3E%3Ccircle cx='50' cy='24' r='8' fill='rgba(255,255,255,.25)'/%3E%3Crect x='42' y='30' width='22' height='18' rx='4' fill='rgba(255,255,255,.25)'/%3E%3Ccircle cx='32' cy='26' r='10' fill='%23fff' fill-opacity='.95'/%3E%3Crect x='14' y='32' width='36' height='26' rx='5' fill='%23fff' fill-opacity='.95'/%3E%3Cpath d='M24 42h16M32 38v8' stroke='%235B5FC7' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E", color: '#5B5FC7', available: true,
     desc: L('Recevez des alertes quand un compte client est en danger.',
             'Receive alerts when a customer account is at risk.',
             '고객 계정이 위험할 때 알림을 받으세요.'),
@@ -551,11 +551,23 @@ onMounted(() => {
   display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
 }
 .integ-icon-wrap {
-  width: 44px; height: 44px; border-radius: 12px;
+  width: 56px; height: 56px; border-radius: 16px;
   display: grid; place-items: center; flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(0,0,0,.12), 0 1px 3px rgba(0,0,0,.08), inset 0 1px 1px rgba(255,255,255,.25);
+  position: relative;
+  overflow: hidden;
 }
-.integ-card-icon { font-size: 22px; }
-.integ-card-logo { width: 28px; height: 28px; object-fit: contain; }
+.integ-icon-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 100%);
+  border-radius: 16px 16px 0 0;
+  pointer-events: none;
+}
+.integ-card-icon { font-size: 26px; position: relative; z-index: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,.15)); }
+.integ-card-logo { width: 38px; height: 38px; object-fit: contain; position: relative; z-index: 1; filter: drop-shadow(0 2px 6px rgba(0,0,0,.25)); }
 .integ-card-desc {
   font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 12px;
 }
