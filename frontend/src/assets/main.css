@@ -30,21 +30,21 @@
 
 /* === CSS VARIABLES — THEME SYSTEM (Light = default) === */
 :root {
-  --bg: #ffffff;
-  --bg1: #f8fafc;
-  --bg2: #f1f5f9;
-  --bg3: #e2e8f0;
+  --bg: #f0f4f8;
+  --bg1: #e8edf3;
+  --bg2: #dfe5ee;
+  --bg3: #d0d7e2;
   --text: #0f172a;
-  --muted: #334155;
+  --muted: #475569;
   --faint: rgba(15, 23, 42, 0.3);
-  --surface: rgba(15, 23, 42, 0.02);
-  --surfaceHi: rgba(15, 23, 42, 0.04);
-  --border: #e2e8f0;
-  --borderHi: #cbd5e1;
-  --teal: #3b82f6;
-  --tealBg: rgba(59, 130, 246, 0.06);
-  --tealBorder: rgba(59, 130, 246, 0.18);
-  --tealGlow: rgba(59, 130, 246, 0.06);
+  --surface: #ffffff;
+  --surfaceHi: #f8fafc;
+  --border: #d0d7e2;
+  --borderHi: #b8c2d0;
+  --teal: #1e3a5f;
+  --tealBg: rgba(30, 58, 95, 0.06);
+  --tealBorder: rgba(30, 58, 95, 0.18);
+  --tealGlow: rgba(30, 58, 95, 0.06);
   --red: #EF4444;
   --redBg: rgba(239, 68, 68, 0.06);
   --redBorder: rgba(239, 68, 68, 0.18);
@@ -345,14 +345,14 @@ input:focus, select:focus, textarea:focus {
 .sidebar-logout-btn:hover { color: var(--red); }
 
 /* Main */
-.main-scroll { flex: 1; overflow-y: auto; height: 100vh; background: #ffffff; color: #0f172a; }
+.main-scroll { flex: 1; overflow-y: auto; height: 100vh; background: var(--bg); color: var(--text); }
 .topbar-area {
   padding: 10px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--border);
-  background: #ffffff;
+  background: var(--surface);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -414,17 +414,18 @@ input:focus, select:focus, textarea:focus {
   font-weight: 700;
 }
 .topbar-user { font-size: 13px; color: var(--muted); font-weight: 600; }
-.view-pad { padding: 20px 24px; background: #ffffff; color: #0f172a; }
+.view-pad { padding: 20px 24px; background: var(--bg); color: var(--text); }
 
 /* Cards */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 16px;
-  transition: border-color 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 2px 8px rgba(0,0,0,.03);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
-.card:hover { border-color: rgba(59, 130, 246, 0.25); box-shadow: 0 4px 16px rgba(59, 130, 246, 0.08); }
+.card:hover { border-color: var(--tealBorder); box-shadow: 0 4px 16px rgba(30, 58, 95, 0.08); }
 .card-lift { transition: border-color 0.25s ease; }
 .card-lift:hover { border-color: var(--tealBorder) !important; }
 .card-danger {
