@@ -18,27 +18,12 @@
     <!-- ===== VUE EXECUTIVE (auto-computed from portfolio) ===== -->
     <template v-if="tab === 'executive'">
       <!-- North Star Metrics -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 20px;">
-        <div class="card" style="padding: 16px; text-align: center;">
-          <div style="font-size: 10px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">ARR Total</div>
-          <div style="font-size: 24px; font-weight: 900; font-family: 'JetBrains Mono', monospace; color: var(--teal);">{{ fmtKpiCurrency(computed_arr) }}</div>
-        </div>
-        <div class="card" style="padding: 16px; text-align: center;">
-          <div style="font-size: 10px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">MRR</div>
-          <div style="font-size: 24px; font-weight: 900; font-family: 'JetBrains Mono', monospace; color: var(--teal);">{{ fmtKpiCurrency(computed_mrr) }}</div>
-        </div>
-        <div class="card" style="padding: 16px; text-align: center;">
-          <div style="font-size: 10px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">NRR</div>
-          <div style="font-size: 24px; font-weight: 900; font-family: 'JetBrains Mono', monospace;" :style="{ color: kpis.nrr >= 100 ? 'var(--green)' : 'var(--red)' }">{{ kpis.nrr || 100 }}%</div>
-        </div>
-        <div class="card" style="padding: 16px; text-align: center;">
-          <div style="font-size: 10px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">GRR</div>
-          <div style="font-size: 24px; font-weight: 900; font-family: 'JetBrains Mono', monospace;" :style="{ color: kpis.grr >= 90 ? 'var(--green)' : 'var(--amber)' }">{{ kpis.grr || 90 }}%</div>
-        </div>
-        <div class="card" style="padding: 16px; text-align: center;">
-          <div style="font-size: 10px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">NPS</div>
-          <div style="font-size: 24px; font-weight: 900; font-family: 'JetBrains Mono', monospace;" :style="{ color: kpis.nps >= 30 ? 'var(--green)' : kpis.nps >= 0 ? 'var(--amber)' : 'var(--red)' }">{{ kpis.nps || 0 }}</div>
-        </div>
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px;">
+        <KpiCard label="ARR TOTAL" :value="fmtKpiCurrency(computed_arr)" icon="money" color="var(--teal)" />
+        <KpiCard label="MRR" :value="fmtKpiCurrency(computed_mrr)" icon="money" color="var(--teal)" />
+        <KpiCard label="NRR" :value="(kpis.nrr || 100) + '%'" icon="chart-up" :color="kpis.nrr >= 100 ? 'var(--green)' : 'var(--red)'" />
+        <KpiCard label="GRR" :value="(kpis.grr || 90) + '%'" icon="shield" :color="kpis.grr >= 90 ? 'var(--green)' : 'var(--amber)'" />
+        <KpiCard label="NPS" :value="String(kpis.nps || 0)" icon="survey" :color="kpis.nps >= 30 ? 'var(--green)' : kpis.nps >= 0 ? 'var(--amber)' : 'var(--red)'" />
       </div>
 
       <!-- Secondary metrics -->
@@ -67,22 +52,10 @@
       </div>
 
       <!-- ARPU & Unit Economics -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 16px;">
-        <div class="card" style="padding: 16px;">
-          <div style="font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase;">ARPU</div>
-          <div style="font-size: 20px; font-weight: 900; font-family: 'JetBrains Mono', monospace; color: var(--teal);">{{ fmtKpiCurrency(arpu) }}</div>
-          <div style="font-size: 11px; color: var(--muted);">{{ t('copilArpuDesc') }}</div>
-        </div>
-        <div class="card" style="padding: 16px;">
-          <div style="font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase;">{{ t('copilChurnRate') }}</div>
-          <div style="font-size: 20px; font-weight: 900; font-family: 'JetBrains Mono', monospace;" :style="{ color: churnRate <= 5 ? 'var(--green)' : 'var(--red)' }">{{ churnRate }}%</div>
-          <div style="font-size: 11px; color: var(--muted);">{{ t('copilLogoChurn') }}</div>
-        </div>
-        <div class="card" style="padding: 16px;">
-          <div style="font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase;">{{ t('copilCsEfficiency') }}</div>
-          <div style="font-size: 20px; font-weight: 900; font-family: 'JetBrains Mono', monospace; color: var(--teal);">{{ fmtKpiCurrency(arrPerCsm) }}</div>
-          <div style="font-size: 11px; color: var(--muted);">{{ t('copilArrPerCsm') }}</div>
-        </div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">
+        <KpiCard label="ARPU" :value="fmtKpiCurrency(arpu)" icon="briefcase" color="var(--teal)" :sub="t('copilArpuDesc')" />
+        <KpiCard :label="t('copilChurnRate')" :value="churnRate + '%'" icon="siren" :color="churnRate <= 5 ? 'var(--green)' : 'var(--red)'" :sub="t('copilLogoChurn')" />
+        <KpiCard :label="t('copilCsEfficiency')" :value="fmtKpiCurrency(arrPerCsm)" icon="chart-up" color="var(--teal)" :sub="t('copilArrPerCsm')" />
       </div>
     </template>
 
