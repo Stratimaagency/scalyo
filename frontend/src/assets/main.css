@@ -3,7 +3,19 @@
 
 /* === PALETTE === */
 :root {
-  /* Gradients — Rainbow moderne */
+  /* Google Design System Colors */
+  --g-blue: #4285F4;   --g-blue-l: #E8F0FE;
+  --g-red: #EA4335;    --g-red-l: #FCE8E6;
+  --g-yellow: #FBBC05; --g-yellow-l: #FEF7E0;
+  --g-green: #34A853;  --g-green-l: #E6F4EA;
+  --g-gray: #5F6368;   --g-bg: #F8F9FA;
+  --g-white: #FFFFFF;
+  --g-card-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  --g-card-radius: 16px;
+  --g-hero-radius: 20px;
+  --g-hero-grad: linear-gradient(135deg, #EA4335 0%, #FBBC05 25%, #34A853 50%, #4285F4 100%);
+
+  /* Gradients — Rainbow */
   --sm-grad:   linear-gradient(135deg, #f43f5e 0%, #f97316 18%, #eab308 33%, #22c55e 50%, #06b6d4 66%, #3b82f6 82%, #8b5cf6 100%);
   --sm-grad-h: linear-gradient(90deg,  #f43f5e 0%, #f97316 16%, #eab308 32%, #22c55e 48%, #06b6d4 64%, #3b82f6 80%, #8b5cf6 100%);
   --sm-grad-pastel: linear-gradient(160deg, #fef2f2 0%, #fffbeb 20%, #ecfdf5 40%, #eff6ff 60%, #f5f3ff 80%, #fdf2f8 100%);
@@ -11,31 +23,31 @@
   --sm-rose:   #f97316;
   --sm-parme:  #3b82f6;
   --sm-gold:   #eab308;
-  --sm-bg:     #ffffff;
+  --sm-bg:     #F8F9FA;
   --sm-white:  #ffffff;
   --sm-bd:     #dadce0;
   --sm-bd2:    #c4c7cc;
-  --sm-t1:     #0f172a;
-  --sm-t2:     #334155;
-  --sm-t3:     #64748b;
-  --sm-ok:     #16a34a;  --sm-ok-p:   #dcfce7;
-  --sm-warn:   #d97706;  --sm-warn-p: #fef3c7;
-  --sm-err:    #dc2626;  --sm-err-p:  #fee2e2;
-  --sm-info:   #2563eb;  --sm-info-p: #dbeafe;
+  --sm-t1:     #202124;
+  --sm-t2:     #5F6368;
+  --sm-t3:     #9AA0A6;
+  --sm-ok:     #34A853;  --sm-ok-p:   #E6F4EA;
+  --sm-warn:   #FBBC05;  --sm-warn-p: #FEF7E0;
+  --sm-err:    #EA4335;  --sm-err-p:  #FCE8E6;
+  --sm-info:   #4285F4;  --sm-info-p: #E8F0FE;
   --sm-ai:     #9b5acd;  --sm-ai-p:   #f3e8ff;
   --sm-r:      16px;
-  --sm-sh:     0 1px 3px rgba(0,0,0,.04), 0 2px 8px rgba(0,0,0,.03);
-  --sm-sh2:    0 4px 20px rgba(0,0,0,.06);
+  --sm-sh:     0 2px 16px rgba(0,0,0,0.07);
+  --sm-sh2:    0 4px 24px rgba(0,0,0,0.10);
 }
 
 /* === CSS VARIABLES — THEME SYSTEM (Light = default) === */
 :root {
-  --bg: #ffffff;
-  --bg1: #f8fafc;
-  --bg2: #f1f5f9;
-  --bg3: #e2e8f0;
-  --text: #0f172a;
-  --muted: #334155;
+  --bg: #F8F9FA;
+  --bg1: #FFFFFF;
+  --bg2: #F1F3F4;
+  --bg3: #E8EAED;
+  --text: #202124;
+  --muted: #5F6368;
   --faint: rgba(15, 23, 42, 0.3);
   --surface: rgba(15, 23, 42, 0.02);
   --surfaceHi: rgba(15, 23, 42, 0.04);
@@ -418,14 +430,14 @@ input:focus, select:focus, textarea:focus {
 
 /* Cards */
 .card {
-  background: #ffffff;
-  border: 1.5px solid #e2e8f0;
+  background: #FFFFFF;
+  border: none;
   border-radius: 16px;
   padding: 18px 20px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.04);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
   transition: all 0.2s ease;
 }
-.card:hover { border-color: #cbd5e1; box-shadow: 0 4px 20px rgba(0,0,0,.06); transform: translateY(-1px); }
+.card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.10); transform: translateY(-1px); }
 .card-lift { transition: border-color 0.25s ease; }
 .card-lift:hover { border-color: var(--tealBorder) !important; }
 .card-danger {
