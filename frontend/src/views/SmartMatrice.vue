@@ -488,15 +488,28 @@ async function addSubtask(taskId, name) { await store.addSubtask(taskId, name) }
 async function transferTask(taskId, memberId) { await store.transferTask(taskId, memberId) }
 
 async function updateTaskStatus(taskId, status) {
-  await store.updateTask(taskId, { status })
-  // Sync: if done → also set quadrant to 4 (eliminate)
-  if (status === 'done') await store.updateTask(taskId, { quadrant: 4 })
+  const updates = { status }
+  // Sync Kanban → Eisenhower
+  if (status === 'done') updates.quadrant = 4
+  else if (status === 'in_progress' && !getCurrentQuadrant(taskId)) updates.quadrant = 1
+  else if (status === 'blocked') updates.quadrant = 3
+  await store.updateTask(taskId, updates)
 }
 
 async function updateTaskQuadrant(taskId, quadrant) {
-  await store.updateTask(taskId, { quadrant })
-  // Sync: quadrant 4 (eliminate) → status done
-  if (quadrant === 4) await store.updateTask(taskId, { status: 'done' })
+  const updates = { quadrant }
+  // Sync Eisenhower → Kanban
+  if (quadrant === 4) updates.status = 'done'
+  else if (quadrant === 1) updates.status = 'in_progress'
+  else if (quadrant === 3) updates.status = 'todo'
+  else if (quadrant === 2) updates.status = 'todo'
+  await store.updateTask(taskId, updates)
+}
+
+function getCurrentQuadrant(taskId) {
+  const allTasks = store.selectedProject ? (store.tasks[store.selectedProject.id] || []) : []
+  const task = allTasks.find(t => t.id === taskId)
+  return task?.quadrant || 0
 }
 
 async function handleImport(tasks) {

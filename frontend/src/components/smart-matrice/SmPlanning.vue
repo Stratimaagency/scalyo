@@ -34,6 +34,18 @@
         </div>
       </div>
     </div>
+
+    <!-- Unplanned tasks -->
+    <div v-if="unplannedTasks.length" class="sm-planning__unplanned">
+      <h4 class="sm-planning__unplanned-title">Tâches non planifiées ({{ unplannedTasks.length }})</h4>
+      <div class="sm-planning__unplanned-list">
+        <div v-for="t in unplannedTasks" :key="t.id" class="sm-planning__unplanned-item"
+          @click="emit('edit-event', t)">
+          <span class="sm-planning__unplanned-name">{{ t.name }}</span>
+          <span class="sm-planning__unplanned-status">{{ t.status || 'todo' }}</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -86,10 +98,15 @@ function isToday(date) {
 function eventsForDay(date) {
   const ds = date.toISOString().slice(0, 10)
   return props.tasks.filter(t => {
-    if (!t.start_date) return false
-    return t.start_date.slice(0, 10) === ds
+    if (!t.start_date && !t.end_date) return false
+    const taskDate = (t.start_date || t.end_date || '').slice(0, 10)
+    return taskDate === ds
   })
 }
+
+const unplannedTasks = computed(() => {
+  return props.tasks.filter(t => !t.start_date && !t.end_date)
+})
 
 function eventStyle(evt) {
   const h = evt.start_date ? parseInt(evt.start_date.slice(11, 13)) || 9 : 9
@@ -161,4 +178,13 @@ function fmtTime(d) {
 }
 .sm-planning__event-time { font-weight: 600; display: block; font-size: 10px; opacity: .85; }
 .sm-planning__event-name { font-weight: 500; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Unplanned tasks */
+.sm-planning__unplanned { margin-top: 16px; background: var(--sm-white); border: 1px solid var(--sm-bd); border-radius: var(--sm-r); padding: 14px; }
+.sm-planning__unplanned-title { font-size: 13px; font-weight: 700; color: var(--sm-t1); margin: 0 0 4px; }
+.sm-planning__unplanned-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.sm-planning__unplanned-item { display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--sm-bd); background: var(--sm-bg); cursor: pointer; font-size: 12px; color: var(--sm-t1); transition: all .12s; }
+.sm-planning__unplanned-item:hover { border-color: var(--sm-terra); background: rgba(244,63,94,.04); }
+.sm-planning__unplanned-name { font-weight: 500; }
+.sm-planning__unplanned-status { font-size: 10px; color: var(--sm-t3); background: var(--sm-white); border-radius: 10px; padding: 1px 6px; }
 </style>
