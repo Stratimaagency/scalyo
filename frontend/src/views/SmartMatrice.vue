@@ -51,7 +51,7 @@
           </select>
         </div>
         <button v-if="currentView === 'projects'" class="sm-btn sm-btn--primary" @click="showCreateProject = true">✨ {{ lt.newProject }}</button>
-        <button v-if="store.selectedProject && ['tasks','kanban','eisenhower'].includes(currentView)" class="sm-btn sm-btn--secondary" @click="showCreateTask = true">+ {{ lt.newTask }}</button>
+        <button v-if="['tasks','kanban','eisenhower'].includes(currentView)" class="sm-btn sm-btn--secondary" @click="showCreateTask = true">+ {{ lt.newTask }}</button>
       </div>
     </header>
 
@@ -73,8 +73,8 @@
       </div>
     </div>
 
-    <!-- TASKS VIEW (inside a project) -->
-    <div v-else-if="currentView === 'tasks' && store.selectedProject" class="sm-content">
+    <!-- TASKS VIEW -->
+    <div v-else-if="currentView === 'tasks'" class="sm-content">
       <SmTaskGroup v-for="(tasks, groupName) in filteredTaskGroups" :key="groupName"
         :group-name="groupName" :tasks="tasks" :team="store.team"
         @toggle-subtask="toggleSubtask" @delete-subtask="deleteSubtask"
@@ -86,13 +86,13 @@
     </div>
 
     <!-- KANBAN -->
-    <div v-else-if="currentView === 'kanban' && store.selectedProject" class="sm-content">
-      <SmKanbanBoard :tasks="filteredTasks" :team="store.team" @update-status="updateTaskStatus" />
+    <div v-else-if="currentView === 'kanban'" class="sm-content">
+      <SmKanbanBoard :tasks="store.selectedProject ? filteredTasks : allTasksFlat" :team="store.team" @update-status="updateTaskStatus" />
     </div>
 
     <!-- EISENHOWER -->
-    <div v-else-if="currentView === 'eisenhower' && store.selectedProject" class="sm-content">
-      <SmEisenhower :tasks="filteredTasks" :team="store.team"
+    <div v-else-if="currentView === 'eisenhower'" class="sm-content">
+      <SmEisenhower :tasks="store.selectedProject ? filteredTasks : allTasksFlat" :team="store.team"
         @update-quadrant="updateTaskQuadrant" @transfer="transferTask" />
     </div>
 
@@ -102,7 +102,7 @@
     </div>
 
     <!-- STATS -->
-    <div v-else-if="currentView === 'stats' && store.selectedProject" class="sm-content">
+    <div v-else-if="currentView === 'stats'" class="sm-content">
       <SmStatsDashboard :stats="store.stats" />
     </div>
 
@@ -121,12 +121,12 @@
       <SmImport @import="handleImport" />
     </div>
 
-    <!-- No project selected -->
-    <div v-else-if="!store.selectedProject && ['tasks','kanban','eisenhower','stats'].includes(currentView)" class="sm-content sm-empty">
+    <!-- No project selected fallback — auto-create -->
+    <div v-else-if="!store.selectedProject && !store.projects.length && ['tasks','kanban','eisenhower','stats'].includes(currentView)" class="sm-content sm-empty">
       <div class="sm-empty__icon">📋</div>
-      <h3>{{ lt.selectProject }}</h3>
-      <p>{{ lt.selectProjectDesc }}</p>
-      <button class="sm-btn sm-btn--secondary" @click="currentView = 'projects'">{{ lt.goToProjects }}</button>
+      <h3>{{ lt.noProjects }}</h3>
+      <p>{{ lt.noProjectsDesc }}</p>
+      <button class="sm-btn sm-btn--primary" @click="showCreateProject = true">✨ {{ lt.createFirst }}</button>
     </div>
 
     <!-- CREATE PROJECT MODAL -->
@@ -396,6 +396,10 @@ async function handleImport(tasks) {
 onMounted(async () => {
   store.userName = authStore.user?.display_name || ''
   await Promise.all([store.fetchProjects(), store.fetchTeam()])
+  // Auto-select first project so all views work immediately
+  if (store.projects.length && !store.selectedProject) {
+    store.selectProject(store.projects[0])
+  }
 })
 
 watch(() => store.selectedProject, async (p) => {
