@@ -398,7 +398,11 @@ onMounted(async () => {
   await Promise.all([store.fetchProjects(), store.fetchTeam()])
   // Auto-select first project so all views work immediately
   if (store.projects.length && !store.selectedProject) {
-    store.selectProject(store.projects[0])
+    await store.selectProject(store.projects[0])
+  }
+  // Default to tasks view if a project is selected
+  if (store.selectedProject && currentView.value === 'projects') {
+    currentView.value = 'projects'
   }
 })
 

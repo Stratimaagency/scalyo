@@ -200,8 +200,12 @@ export const useSmartMatriceStore = defineStore('smartMatrice', {
       this.profile = profile
     },
 
-    selectProject(project) {
+    async selectProject(project) {
       this.selectedProject = project
+      if (project?.id) {
+        await this.fetchTasks(project.id)
+        try { await this.fetchStats(project.id) } catch {}
+      }
     },
   },
 })
