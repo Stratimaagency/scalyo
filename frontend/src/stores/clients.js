@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from '../api/client'
-import { seedClients } from '../tests/seed'
 
 export const useClientsStore = defineStore('clients', () => {
   const clients = ref([])
@@ -32,11 +31,10 @@ export const useClientsStore = defineStore('clients', () => {
       if (apiData.length) {
         clients.value = apiData
         lastUpdated.value = new Date()
+        loading.value = false
         return
       }
-    } catch {
-      // API not ready
-    }
+    } catch { /* API not ready */ }
 
     // Fallback: portfolio store
     try {
@@ -49,38 +47,29 @@ export const useClientsStore = defineStore('clients', () => {
           healthScore: a.health || 0,
           status: (a.health || 0) >= 75 ? 'healthy' : (a.health || 0) >= 60 ? 'neutral' : 'at-risk',
           arrValue: a.arr || (a.mrr ? a.mrr * 12 : 0),
-          csmId: a.assigned_csm_id || null,
+          csmId: a.csm || null,
           csmName: a.csm || '',
           renewal: a.renewal || null,
           issues: [],
         }))
         lastUpdated.value = new Date()
-        return
       }
-    } catch {
-      // portfolio not loaded
-    }
+    } catch { /* portfolio not loaded */ }
 
-    // Final fallback: always use seed data
-    clients.value = JSON.parse(JSON.stringify(seedClients))
-    lastUpdated.value = new Date()
+    loading.value = false
   }
 
   function updateClientHealth(clientId, newScore) {
     const idx = clients.value.findIndex(c => c.id === clientId)
     if (idx !== -1) {
       clients.value[idx] = { ...clients.value[idx], healthScore: newScore, status: newScore >= 75 ? 'healthy' : newScore >= 60 ? 'neutral' : 'at-risk' }
-
-      // Sync back to portfolio store
+      // Sync back to portfolio
       import('./portfolio').then(({ usePortfolioStore }) => {
         try {
           const portfolioStore = usePortfolioStore()
           const acc = portfolioStore.accounts.find(a => a.id === clientId || a.name === clients.value[idx].name)
-          if (acc) {
-            acc.health = newScore
-            acc.risk = newScore >= 75 ? 'low' : newScore >= 60 ? 'medium' : 'critical'
-          }
-        } catch { /* */ }
+          if (acc) { acc.health = newScore; acc.risk = newScore >= 75 ? 'low' : newScore >= 60 ? 'medium' : 'critical' }
+        } catch {}
       }).catch(() => {})
     }
   }

@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useClientsStore } from './clients'
 import api from '../api/client'
-import { seedProjects, seedPlaybooks, seedOKRs, seedPlaybookProgress } from '../tests/seed'
 
 export const useTasksStore = defineStore('tasks', () => {
   const projects = ref([])
@@ -60,22 +59,11 @@ export const useTasksStore = defineStore('tasks', () => {
         api.get('/modules/playbooks').catch(() => ({ data: { data: [] } })),
         api.get('/modules/okrs').catch(() => ({ data: { data: [] } })),
       ])
-      const p = projRes.data.data || []
-      const b = pbRes.data.data || []
-      const o = okrRes.data.data || []
-
-      projects.value = p.length ? p : JSON.parse(JSON.stringify(seedProjects))
-      playbooks.value = b.length ? b : JSON.parse(JSON.stringify(seedPlaybooks))
-      okrs.value = o.length ? o : JSON.parse(JSON.stringify(seedOKRs))
-
-      if (!Object.keys(playbookProgress.value).length) {
-        playbookProgress.value = JSON.parse(JSON.stringify(seedPlaybookProgress))
-      }
+      projects.value = projRes.data.data || []
+      playbooks.value = pbRes.data.data || []
+      okrs.value = okrRes.data.data || []
     } catch {
-      projects.value = JSON.parse(JSON.stringify(seedProjects))
-      playbooks.value = JSON.parse(JSON.stringify(seedPlaybooks))
-      okrs.value = JSON.parse(JSON.stringify(seedOKRs))
-      playbookProgress.value = JSON.parse(JSON.stringify(seedPlaybookProgress))
+      // API not ready
     }
 
     // Merge Smart Matrice projects into Gantt timeline
@@ -92,8 +80,6 @@ export const useTasksStore = defineStore('tasks', () => {
 
       for (const smProj of smStore.projects) {
         if (smProjectIds.has(smProj.id)) continue
-
-        // Fetch tasks for this SM project
         const smTasks = smStore.tasks[smProj.id] || []
         if (!smTasks.length) {
           try { await smStore.fetchTasks(smProj.id) } catch {}
@@ -118,9 +104,7 @@ export const useTasksStore = defineStore('tasks', () => {
           tasks,
         })
       }
-    } catch {
-      // SM store not available
-    }
+    } catch { /* SM store not available */ }
   }
 
   async function togglePlaybookStep(playbookId, stepIndex) {
@@ -130,9 +114,7 @@ export const useTasksStore = defineStore('tasks', () => {
     playbookProgress.value = { ...playbookProgress.value, [key]: next }
     try {
       await api.post('/modules/playbooks/progress', { playbookId, stepIndex, done: next.includes(stepIndex) })
-    } catch {
-      // API not ready
-    }
+    } catch { /* API not ready */ }
   }
 
   return { projects, playbooks, playbookProgress, okrs, currentWeek, urgentTasks, lateTasksByClient, activeChurnPlaybooks, globalOKRScore, fetchAll, togglePlaybookStep }

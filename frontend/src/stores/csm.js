@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useClientsStore } from './clients'
 import api from '../api/client'
-import { seedCSMs } from '../tests/seed'
 
 export const useCSMStore = defineStore('csm', () => {
   const csms = ref([])
@@ -34,17 +33,8 @@ export const useCSMStore = defineStore('csm', () => {
     loading.value = true
     try {
       const { data } = await api.get('/modules/csms/workload')
-      const apiData = data.data || []
-      if (apiData.length) {
-        csms.value = apiData
-        return
-      }
-    } catch {
-      // API not ready
-    }
-
-    // Always fallback to seed
-    csms.value = JSON.parse(JSON.stringify(seedCSMs))
+      csms.value = data.data || []
+    } catch { /* API not ready */ }
     loading.value = false
   }
 
