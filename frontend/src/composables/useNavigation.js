@@ -3,27 +3,31 @@ import { useI18n } from '../i18n'
 import { useAuthStore } from '../stores/auth'
 
 const ALL_NAV_ITEMS = [
-  { key: 'dashboard', icon: 'dashboard', emoji: '✨', roles: ['manager', 'csm', 'commercial', 'kam'] },
-  { key: 'portfolio', icon: 'briefcase', emoji: '💎', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  // Tableau de bord
+  { key: 'dashboard', icon: 'dashboard', emoji: '🏠', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'manager-dashboard', icon: 'dashboard', emoji: '📊', roles: ['manager'] },
+  // Clients
+  { key: 'portfolio', icon: 'briefcase', emoji: '💼', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'health-tracker', icon: 'heart', emoji: '❤️', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'playbook-runner', icon: 'refresh', emoji: '🔄', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  // Performance
   { key: 'kpis', icon: 'chart-up', emoji: '📈', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'okr-tracker', icon: 'target', emoji: '🎯', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'roadmap', icon: 'map', emoji: '🗺️', roles: ['manager', 'csm', 'commercial', 'kam'], minPlan: 'Growth' },
+  // Projets
   { key: 'tasks', icon: 'check-circle', emoji: '🚀', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'gantt-timeline', icon: 'calendar', emoji: '📅', roles: ['manager', 'csm', 'commercial', 'kam'] },
   { key: 'planning', icon: 'calendar', emoji: '🗓️', roles: ['manager', 'csm', 'commercial', 'kam'], minPlan: 'Growth' },
+  // Équipe
+  { key: 'workload', icon: 'chart-up', emoji: '⚖️', roles: ['manager', 'csm', 'commercial', 'kam'] },
   { key: 'wellbeing', icon: 'heart', emoji: '💖', roles: ['manager', 'csm', 'commercial', 'kam'] },
   { key: 'coach', icon: 'robot', emoji: '🪄', roles: ['manager', 'csm', 'commercial', 'kam'] },
-  { key: 'roadmap', icon: 'map', emoji: '🗺️', roles: ['manager', 'csm', 'commercial', 'kam'], minPlan: 'Growth' },
+  // Outils
   { key: 'email-studio', icon: 'envelope', emoji: '💌', roles: ['manager', 'csm', 'commercial', 'kam'], minPlan: 'Growth' },
   { key: 'quotes', icon: 'document', emoji: '✍️', roles: ['manager', 'csm', 'commercial', 'kam'], minPlan: 'Growth' },
-  { key: 'integrations', icon: 'bolt', emoji: '⚡', roles: ['manager', 'csm', 'commercial', 'kam'], minPlan: 'Growth' },
-  { key: 'resources', icon: 'books', emoji: '📚', roles: ['manager', 'csm', 'commercial', 'kam'] },
   { key: 'smart-import', icon: 'upload', emoji: '📥', roles: ['manager', 'csm', 'commercial', 'kam'] },
-  { key: 'tips', icon: 'lightbulb', emoji: '💡', roles: ['manager', 'csm', 'commercial', 'kam'] },
-  // Modules
-  { key: 'health-tracker', icon: 'heart', emoji: '❤️', roles: ['manager', 'csm', 'commercial', 'kam'] },
-  { key: 'gantt-timeline', icon: 'calendar', emoji: '📅', roles: ['manager', 'csm', 'commercial', 'kam'] },
-  { key: 'okr-tracker', icon: 'target', emoji: '🎯', roles: ['manager', 'csm', 'commercial', 'kam'] },
-  { key: 'workload', icon: 'chart-up', emoji: '⚖️', roles: ['manager', 'csm', 'commercial', 'kam'] },
-  { key: 'playbook-runner', icon: 'refresh', emoji: '🔄', roles: ['manager', 'csm', 'commercial', 'kam'] },
-  { key: 'manager-dashboard', icon: 'dashboard', emoji: '📊', roles: ['manager'] },
+  { key: 'integrations', icon: 'bolt', emoji: '⚡', roles: ['manager', 'csm', 'commercial', 'kam'], minPlan: 'Growth' },
+  // Paramètres (reste en bas)
   { key: 'settings', icon: 'gear', emoji: '⚙️', roles: ['manager', 'csm', 'commercial', 'kam'] },
 ]
 
