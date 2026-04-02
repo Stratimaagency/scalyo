@@ -54,7 +54,7 @@
         <div class="card-top">
           <div class="health-circle">
             <svg viewBox="0 0 80 80" class="circle-svg">
-              <circle cx="40" cy="40" r="34" fill="none" stroke="var(--sm-bd)" stroke-width="6" />
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#E8EAED" stroke-width="6" />
               <circle
                 cx="40" cy="40" r="34"
                 fill="none"
@@ -100,7 +100,7 @@
           <div class="detail-header">
             <div class="health-circle health-circle-lg">
               <svg viewBox="0 0 100 100" class="circle-svg">
-                <circle cx="50" cy="50" r="42" fill="none" stroke="var(--sm-bd)" stroke-width="7" />
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#E8EAED" stroke-width="7" />
                 <circle
                   cx="50" cy="50" r="42"
                   fill="none"
@@ -189,9 +189,9 @@ const filteredClients = computed(() => {
 })
 
 function healthColor(score) {
-  if (score >= 75) return 'var(--sm-ok)'
-  if (score >= 60) return 'var(--sm-warn)'
-  return 'var(--sm-err)'
+  if (score >= 75) return '#34A853'
+  if (score >= 60) return '#FBBC05'
+  return '#EA4335'
 }
 
 function formatARR(val) {
@@ -211,11 +211,12 @@ function formatDate(d) {
 .health-tracker {
   max-width: 1200px;
   padding: 24px 28px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', 'Google Sans', 'Segoe UI', sans-serif;
+  background: #F8F9FA;
 }
 
 .hero {
-  background: var(--sm-grad);
+  background: linear-gradient(135deg, #EA4335, #FBBC05, #34A853, #4285F4);
   color: #fff;
   border-radius: 20px;
   padding: 28px 32px;
@@ -239,17 +240,18 @@ function formatDate(d) {
 .search-input {
   width: 100%;
   padding: 12px 18px;
-  border: 1px solid var(--sm-bd);
-  border-radius: var(--sm-r);
+  border: none;
+  border-radius: 16px;
   font-size: 14px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', 'Google Sans', 'Segoe UI', sans-serif;
   background: #fff;
   box-sizing: border-box;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
   outline: none;
-  transition: border-color 0.2s;
+  transition: box-shadow 0.2s;
 }
 .search-input:focus {
-  border-color: var(--sm-parme);
+  box-shadow: 0 2px 16px rgba(66,133,244,0.18);
 }
 
 .tabs {
@@ -263,23 +265,22 @@ function formatDate(d) {
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  border: 1px solid var(--sm-bd);
-  border-radius: 999px;
+  border: none;
+  border-radius: 100px;
   background: #fff;
   font-size: 13px;
   font-weight: 600;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', 'Google Sans', 'Segoe UI', sans-serif;
   cursor: pointer;
   transition: all 0.2s;
-  color: var(--sm-t2);
+  color: #5F6368;
 }
 .tab-pill:hover {
-  border-color: var(--sm-parme);
+  background: rgba(66,133,244,0.08);
 }
 .tab-pill.active {
-  background: var(--sm-t1);
+  background: #4285F4;
   color: #fff;
-  border-color: var(--sm-t1);
 }
 .tab-count {
   font-size: 11px;
@@ -298,14 +299,14 @@ function formatDate(d) {
   gap: 10px;
   justify-content: center;
   padding: 60px 0;
-  color: var(--sm-t3);
+  color: #5F6368;
   font-size: 14px;
 }
 .spinner {
   width: 20px;
   height: 20px;
-  border: 3px solid var(--sm-bd);
-  border-top-color: var(--sm-parme);
+  border: 3px solid #E8EAED;
+  border-top-color: #4285F4;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -323,12 +324,12 @@ function formatDate(d) {
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px;
   font-weight: 700;
-  color: var(--sm-t1);
+  color: #202124;
   margin: 0 0 6px;
 }
 .empty-sub {
   font-size: 13px;
-  color: var(--sm-t3);
+  color: #5F6368;
   margin: 0;
 }
 
@@ -339,16 +340,16 @@ function formatDate(d) {
 }
 
 .client-card {
-  background: #fff;
-  border: 1px solid var(--sm-bd);
+  background: #FFFFFF;
+  border: none;
   border-radius: 16px;
-  box-shadow: var(--sm-sh);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
   padding: 20px;
   cursor: pointer;
   transition: box-shadow 0.2s, transform 0.15s;
 }
 .client-card:hover {
-  box-shadow: var(--sm-sh2);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
   transform: translateY(-2px);
 }
 
@@ -381,7 +382,7 @@ function formatDate(d) {
   justify-content: center;
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 800;
 }
 .health-number-lg {
   font-size: 30px;
@@ -394,7 +395,7 @@ function formatDate(d) {
 .client-name {
   font-size: 15px;
   font-weight: 700;
-  color: var(--sm-t1);
+  color: #202124;
   margin: 0 0 4px;
   white-space: nowrap;
   overflow: hidden;
@@ -402,7 +403,7 @@ function formatDate(d) {
 }
 .client-industry {
   font-size: 12px;
-  color: var(--sm-t3);
+  color: #5F6368;
   font-weight: 500;
 }
 
@@ -410,7 +411,7 @@ function formatDate(d) {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 10px;
-  border-top: 1px solid var(--sm-bd);
+  border-top: 1px solid #E8EAED;
   padding-top: 14px;
 }
 .card-meta {
@@ -419,21 +420,21 @@ function formatDate(d) {
   gap: 3px;
 }
 .meta-label {
-  font-size: 10px;
-  color: var(--sm-t3);
+  font-size: 13px;
+  color: #5F6368;
   text-transform: uppercase;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
 }
 .meta-value {
   font-size: 13px;
   font-weight: 600;
-  color: var(--sm-t1);
+  color: #202124;
 }
 .arr-value {
   font-family: 'Cormorant Garamond', serif;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 /* Detail panel */
@@ -450,7 +451,7 @@ function formatDate(d) {
   width: 440px;
   max-width: 90vw;
   height: 100vh;
-  background: #fff;
+  background: #FFFFFF;
   padding: 32px;
   overflow-y: auto;
   box-shadow: -8px 0 30px rgba(0,0,0,0.08);
@@ -464,7 +465,7 @@ function formatDate(d) {
   border: none;
   font-size: 28px;
   cursor: pointer;
-  color: var(--sm-t3);
+  color: #5F6368;
   line-height: 1;
 }
 .detail-header {
@@ -479,11 +480,11 @@ function formatDate(d) {
   font-size: 24px;
   font-weight: 700;
   margin: 0 0 4px;
-  color: var(--sm-t1);
+  color: #202124;
 }
 .detail-industry {
   font-size: 13px;
-  color: var(--sm-t3);
+  color: #5F6368;
   margin: 0;
 }
 .detail-grid {
@@ -499,6 +500,6 @@ function formatDate(d) {
 .detail-val {
   font-size: 16px;
   font-weight: 700;
-  color: var(--sm-t1);
+  color: #202124;
 }
 </style>

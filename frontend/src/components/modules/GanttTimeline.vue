@@ -9,15 +9,15 @@
     <!-- Legend -->
     <div class="legend">
       <div class="legend-item">
-        <span class="legend-dot" style="background: var(--sm-ok);" />
+        <span class="legend-dot" style="background: #34A853;" />
         <span>En cours</span>
       </div>
       <div class="legend-item">
-        <span class="legend-dot" style="background: var(--sm-warn);" />
+        <span class="legend-dot" style="background: #FBBC05;" />
         <span>A risque</span>
       </div>
       <div class="legend-item">
-        <span class="legend-dot" style="background: var(--sm-err);" />
+        <span class="legend-dot" style="background: #EA4335;" />
         <span>En retard</span>
       </div>
     </div>
@@ -153,11 +153,12 @@ function taskStatus(task) {
 .gantt-timeline {
   max-width: 1200px;
   padding: 24px 28px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', 'Google Sans', 'Segoe UI', sans-serif;
+  background: #F8F9FA;
 }
 
 .hero {
-  background: var(--sm-grad);
+  background: linear-gradient(135deg, #EA4335, #FBBC05, #34A853, #4285F4);
   color: #fff;
   border-radius: 20px;
   padding: 28px 32px;
@@ -180,10 +181,10 @@ function taskStatus(task) {
   gap: 20px;
   margin-bottom: 20px;
   padding: 12px 18px;
-  background: #fff;
-  border: 1px solid var(--sm-bd);
+  background: #FFFFFF;
+  border: none;
   border-radius: 16px;
-  box-shadow: var(--sm-sh);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
 }
 .legend-item {
   display: flex;
@@ -191,7 +192,7 @@ function taskStatus(task) {
   gap: 6px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--sm-t2);
+  color: #5F6368;
 }
 .legend-dot {
   width: 10px;
@@ -209,16 +210,16 @@ function taskStatus(task) {
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px;
   font-weight: 700;
-  color: var(--sm-t1);
+  color: #202124;
   margin: 0 0 6px;
 }
-.empty-sub { font-size: 13px; color: var(--sm-t3); margin: 0; }
+.empty-sub { font-size: 13px; color: #5F6368; margin: 0; }
 
 .timeline-wrapper {
-  background: #fff;
-  border: 1px solid var(--sm-bd);
+  background: #FFFFFF;
+  border: none;
   border-radius: 16px;
-  box-shadow: var(--sm-sh);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
   overflow-x: auto;
   padding: 4px;
 }
@@ -231,13 +232,14 @@ function taskStatus(task) {
 
 .grid-header {
   padding: 10px 8px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--sm-t3);
+  letter-spacing: 0.04em;
+  color: #5F6368;
   text-align: center;
-  border-bottom: 1px solid var(--sm-bd);
-  background: #fafbfc;
+  border-bottom: 1px solid #E8EAED;
+  background: #F8F9FA;
 }
 .grid-header.grid-label {
   text-align: left;
@@ -245,8 +247,8 @@ function taskStatus(task) {
 }
 
 .week-header.current-week {
-  background: var(--sm-info-p);
-  color: var(--sm-info);
+  background: rgba(66,133,244,0.1);
+  color: #4285F4;
   font-weight: 800;
   border-radius: 6px 6px 0 0;
 }
@@ -264,21 +266,21 @@ function taskStatus(task) {
 .project-name {
   font-size: 13px;
   font-weight: 700;
-  color: var(--sm-t1);
+  color: #202124;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .project-client {
   font-size: 11px;
-  color: var(--sm-t3);
+  color: #5F6368;
 }
 .task-label {
   padding-left: 28px;
 }
 .task-name {
   font-size: 12px;
-  color: var(--sm-t2);
+  color: #5F6368;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -292,14 +294,14 @@ function taskStatus(task) {
   min-height: 32px;
 }
 .current-week-col {
-  background: rgba(37, 99, 235, 0.04);
+  background: rgba(66, 133, 244, 0.04);
 }
 
 .project-bar {
   width: 100%;
   height: 8px;
   border-radius: 4px;
-  background: var(--sm-grad-h);
+  background: linear-gradient(90deg, #EA4335, #FBBC05, #34A853, #4285F4);
   opacity: 0.4;
 }
 
@@ -309,12 +311,12 @@ function taskStatus(task) {
   border-radius: 4px;
 }
 .task-bar.on-track {
-  background: var(--sm-ok);
+  background: #34A853;
 }
 .task-bar.at-risk {
-  background: var(--sm-warn);
+  background: #FBBC05;
 }
 .task-bar.late {
-  background: var(--sm-err);
+  background: #EA4335;
 }
 </style>

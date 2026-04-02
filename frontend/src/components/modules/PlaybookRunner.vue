@@ -147,9 +147,9 @@ function typeBadgeLabel(type) {
 }
 
 function progressColor(pct) {
-  if (pct >= 70) return 'var(--sm-ok)'
-  if (pct >= 40) return 'var(--sm-warn)'
-  return 'var(--sm-t3)'
+  if (pct >= 70) return '#34A853'
+  if (pct >= 40) return '#FBBC05'
+  return '#5F6368'
 }
 </script>
 
@@ -157,11 +157,12 @@ function progressColor(pct) {
 .playbook-runner {
   max-width: 1200px;
   padding: 24px 28px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', 'Google Sans', 'Segoe UI', sans-serif;
+  background: #F8F9FA;
 }
 
 .hero {
-  background: var(--sm-grad);
+  background: linear-gradient(135deg, #EA4335, #FBBC05, #34A853, #4285F4);
   color: #fff;
   border-radius: 20px;
   padding: 28px 32px;
@@ -190,23 +191,22 @@ function progressColor(pct) {
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  border: 1px solid var(--sm-bd);
-  border-radius: 999px;
+  border: none;
+  border-radius: 100px;
   background: #fff;
   font-size: 13px;
   font-weight: 600;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', 'Google Sans', 'Segoe UI', sans-serif;
   cursor: pointer;
   transition: all 0.2s;
-  color: var(--sm-t2);
+  color: #5F6368;
 }
 .filter-pill:hover {
-  border-color: var(--sm-parme);
+  background: rgba(66,133,244,0.08);
 }
 .filter-pill.active {
-  background: var(--sm-t1);
+  background: #4285F4;
   color: #fff;
-  border-color: var(--sm-t1);
 }
 .filter-count {
   font-size: 11px;
@@ -228,10 +228,10 @@ function progressColor(pct) {
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px;
   font-weight: 700;
-  color: var(--sm-t1);
+  color: #202124;
   margin: 0 0 6px;
 }
-.empty-sub { font-size: 13px; color: var(--sm-t3); margin: 0; }
+.empty-sub { font-size: 13px; color: #5F6368; margin: 0; }
 
 .playbook-list {
   display: flex;
@@ -240,10 +240,10 @@ function progressColor(pct) {
 }
 
 .playbook-card {
-  background: #fff;
-  border: 1px solid var(--sm-bd);
+  background: #FFFFFF;
+  border: none;
   border-radius: 16px;
-  box-shadow: var(--sm-sh);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
   padding: 22px 24px;
 }
 
@@ -256,7 +256,7 @@ function progressColor(pct) {
 .pb-name {
   font-size: 16px;
   font-weight: 700;
-  color: var(--sm-t1);
+  color: #202124;
   margin: 0 0 8px;
 }
 .pb-type-badge {
@@ -269,32 +269,32 @@ function progressColor(pct) {
   letter-spacing: 0.3px;
 }
 .badge-churn {
-  background: var(--sm-err-p);
-  color: var(--sm-err);
+  background: rgba(234,67,53,0.1);
+  color: #EA4335;
 }
 .badge-onboarding {
-  background: var(--sm-info-p);
-  color: var(--sm-info);
+  background: rgba(66,133,244,0.1);
+  color: #4285F4;
 }
 .badge-expansion {
-  background: var(--sm-ok-p);
-  color: var(--sm-ok);
+  background: rgba(52,168,83,0.1);
+  color: #34A853;
 }
 .badge-default {
   background: rgba(0,0,0,0.05);
-  color: var(--sm-t3);
+  color: #5F6368;
 }
 
 .pb-progress-num {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 32px;
+  font-weight: 800;
   line-height: 1;
 }
 
 .pb-bar-track {
   height: 8px;
-  background: var(--sm-bd);
+  background: #E8EAED;
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 18px;
@@ -302,7 +302,7 @@ function progressColor(pct) {
 .pb-bar-fill {
   height: 100%;
   border-radius: 4px;
-  background: var(--sm-grad-h);
+  background: linear-gradient(90deg, #EA4335, #FBBC05, #34A853, #4285F4);
   transition: width 0.4s ease;
 }
 
@@ -310,11 +310,11 @@ function progressColor(pct) {
   margin-bottom: 16px;
 }
 .meta-label {
-  font-size: 10px;
-  color: var(--sm-t3);
+  font-size: 13px;
+  color: #5F6368;
   text-transform: uppercase;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
   display: block;
   margin-bottom: 8px;
 }
@@ -328,12 +328,12 @@ function progressColor(pct) {
   font-weight: 600;
   padding: 4px 12px;
   border-radius: 999px;
-  background: var(--sm-info-p);
-  color: var(--sm-info);
+  background: rgba(66,133,244,0.1);
+  color: #4285F4;
 }
 
 .pb-steps {
-  border-top: 1px solid var(--sm-bd);
+  border-top: 1px solid #E8EAED;
   padding-top: 16px;
 }
 .steps-list {
@@ -350,13 +350,14 @@ function progressColor(pct) {
   cursor: pointer;
   transition: background 0.15s;
   font-size: 13px;
-  color: var(--sm-t2);
+  color: #5F6368;
 }
 .step-item:hover {
   background: rgba(0,0,0,0.02);
 }
 .step-item.done {
-  color: var(--sm-t3);
+  color: #5F6368;
+  opacity: 0.6;
 }
 .step-item.done .step-text {
   text-decoration: line-through;
@@ -364,7 +365,7 @@ function progressColor(pct) {
 .step-checkbox {
   width: 16px;
   height: 16px;
-  accent-color: var(--sm-ok);
+  accent-color: #4285F4;
   flex-shrink: 0;
   cursor: pointer;
 }

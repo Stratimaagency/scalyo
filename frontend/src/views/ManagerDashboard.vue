@@ -26,21 +26,21 @@
       </div>
       <div class="kpi-card">
         <span class="kpi-label">CLIENTS SAINS</span>
-        <span class="kpi-number" style="color: var(--sm-ok);">{{ dashboard.healthyCount || 0 }}</span>
+        <span class="kpi-number" style="color: #34A853;">{{ dashboard.healthyCount || 0 }}</span>
       </div>
       <div class="kpi-card">
         <span class="kpi-label">A RISQUE</span>
-        <span class="kpi-number" :style="{ color: (dashboard.atRiskCount || 0) > 0 ? 'var(--sm-err)' : 'var(--sm-ok)' }">
+        <span class="kpi-number" :style="{ color: (dashboard.atRiskCount || 0) > 0 ? '#EA4335' : '#34A853' }">
           {{ dashboard.atRiskCount || 0 }}
         </span>
       </div>
       <div class="kpi-card">
         <span class="kpi-label">ARR TOTAL</span>
-        <span class="kpi-number" style="color: var(--sm-parme);">{{ formatARR(dashboard.totalARR) }}</span>
+        <span class="kpi-number" style="color: #4285F4;">{{ formatARR(dashboard.totalARR) }}</span>
       </div>
       <div class="kpi-card">
         <span class="kpi-label">CHARGE EQUIPE</span>
-        <span class="kpi-number" :style="{ color: (dashboard.teamAvgLoad || 0) > 85 ? 'var(--sm-err)' : 'var(--sm-ok)' }">
+        <span class="kpi-number" :style="{ color: (dashboard.teamAvgLoad || 0) > 85 ? '#EA4335' : '#34A853' }">
           {{ dashboard.teamAvgLoad || 0 }}%
         </span>
       </div>
@@ -69,7 +69,7 @@
             <tr v-for="csm in sortedCSMs" :key="csm.id">
               <td>
                 <div class="csm-cell">
-                  <div class="csm-avatar" :style="{ background: csm.workloadPct >= 85 ? 'var(--sm-err)' : 'var(--sm-parme)' }">
+                  <div class="csm-avatar" :style="{ background: csm.workloadPct >= 85 ? '#EA4335' : '#4285F4' }">
                     {{ initials(csm.name) }}
                   </div>
                   <span class="csm-name-cell">{{ csm.name }}</span>
@@ -80,12 +80,12 @@
                 <span :style="{ color: healthColor(avgClientHealth(csm)) }">{{ avgClientHealth(csm) }}</span>
               </td>
               <td class="num-cell">
-                <span :style="{ color: csm.workloadPct >= 85 ? 'var(--sm-err)' : csm.workloadPct >= 70 ? 'var(--sm-warn)' : 'var(--sm-ok)' }">
+                <span :style="{ color: csm.workloadPct >= 85 ? '#EA4335' : csm.workloadPct >= 70 ? '#FBBC05' : '#34A853' }">
                   {{ csm.workloadPct || 0 }}%
                 </span>
               </td>
               <td class="num-cell">
-                <span :style="{ color: atRiskCount(csm) > 0 ? 'var(--sm-err)' : 'var(--sm-ok)' }">
+                <span :style="{ color: atRiskCount(csm) > 0 ? '#EA4335' : '#34A853' }">
                   {{ atRiskCount(csm) }}
                 </span>
               </td>
@@ -196,11 +196,11 @@
                 class="load-bar-fill"
                 :style="{
                   width: Math.min(csm.workloadPct || 0, 100) + '%',
-                  background: csm.workloadPct >= 85 ? 'var(--sm-err)' : 'var(--sm-grad-h)'
+                  background: csm.workloadPct >= 85 ? '#EA4335' : 'linear-gradient(90deg, #EA4335, #FBBC05, #34A853, #4285F4)'
                 }"
               />
             </div>
-            <span class="load-pct" :style="{ color: csm.workloadPct >= 85 ? 'var(--sm-err)' : 'var(--sm-t2)' }">
+            <span class="load-pct" :style="{ color: csm.workloadPct >= 85 ? '#EA4335' : '#5F6368' }">
               {{ csm.workloadPct || 0 }}%
             </span>
           </div>
@@ -287,21 +287,21 @@ function atRiskCount(csm) {
 }
 
 function healthColor(score) {
-  if (score >= 75) return 'var(--sm-ok)'
-  if (score >= 60) return 'var(--sm-warn)'
-  return 'var(--sm-err)'
+  if (score >= 75) return '#34A853'
+  if (score >= 60) return '#FBBC05'
+  return '#EA4335'
 }
 
 function healthBg(score) {
-  if (score >= 75) return 'var(--sm-ok-p)'
-  if (score >= 60) return 'var(--sm-warn-p)'
-  return 'var(--sm-err-p)'
+  if (score >= 75) return 'rgba(52,168,83,0.1)'
+  if (score >= 60) return 'rgba(251,188,5,0.1)'
+  return 'rgba(234,67,53,0.1)'
 }
 
 function scoreColor(pct) {
-  if (pct >= 70) return 'var(--sm-ok)'
-  if (pct >= 40) return 'var(--sm-warn)'
-  return 'var(--sm-err)'
+  if (pct >= 70) return '#34A853'
+  if (pct >= 40) return '#FBBC05'
+  return '#EA4335'
 }
 
 function formatARR(val) {
@@ -355,11 +355,12 @@ function typeBadgeLabel(type) {
 .manager-dashboard {
   max-width: 1200px;
   padding: 24px 28px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', 'Google Sans', 'Segoe UI', sans-serif;
+  background: #F8F9FA;
 }
 
 .hero {
-  background: var(--sm-grad);
+  background: linear-gradient(135deg, #EA4335, #FBBC05, #34A853, #4285F4);
   color: #fff;
   border-radius: 20px;
   padding: 28px 32px;
@@ -379,16 +380,17 @@ function typeBadgeLabel(type) {
 
 /* Alert bar */
 .alert-bar {
-  background: var(--sm-err-p);
-  border: 1px solid var(--sm-err);
+  background: rgba(234,67,53,0.1);
+  border: none;
   border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(234,67,53,0.12);
   padding: 18px 22px;
   margin-bottom: 20px;
 }
 .alert-header {
   font-size: 14px;
   font-weight: 800;
-  color: var(--sm-err);
+  color: #EA4335;
   margin-bottom: 10px;
 }
 .alert-item {
@@ -397,8 +399,8 @@ function typeBadgeLabel(type) {
   gap: 8px;
   padding: 6px 0;
   font-size: 13px;
-  color: var(--sm-t1);
-  border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+  color: #202124;
+  border-bottom: 1px solid rgba(234, 67, 53, 0.1);
 }
 .alert-item:last-child { border-bottom: none; }
 .alert-icon { flex-shrink: 0; }
@@ -412,10 +414,10 @@ function typeBadgeLabel(type) {
   margin-bottom: 24px;
 }
 .kpi-card {
-  background: #fff;
-  border: 1px solid var(--sm-bd);
+  background: #FFFFFF;
+  border: none;
   border-radius: 16px;
-  box-shadow: var(--sm-sh);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
   padding: 18px 14px;
   text-align: center;
   display: flex;
@@ -424,37 +426,37 @@ function typeBadgeLabel(type) {
   gap: 4px;
 }
 .kpi-label {
-  font-size: 10px;
-  color: var(--sm-t3);
+  font-size: 13px;
+  color: #5F6368;
   text-transform: uppercase;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
 }
 .kpi-number {
   font-family: 'Cormorant Garamond', serif;
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
-  color: var(--sm-t1);
+  color: #202124;
 }
 .kpi-gradient {
-  background: var(--sm-grad);
+  background: linear-gradient(135deg, #EA4335, #FBBC05, #34A853, #4285F4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 .kpi-unit {
   font-size: 12px;
-  color: var(--sm-t3);
+  color: #5F6368;
   font-weight: 500;
 }
 
 /* Section card */
 .section-card {
-  background: #fff;
-  border: 1px solid var(--sm-bd);
+  background: #FFFFFF;
+  border: none;
   border-radius: 16px;
-  box-shadow: var(--sm-sh);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
   padding: 22px 24px;
   margin-bottom: 16px;
 }
@@ -462,12 +464,12 @@ function typeBadgeLabel(type) {
   font-family: 'Cormorant Garamond', serif;
   font-size: 20px;
   font-weight: 700;
-  color: var(--sm-t1);
+  color: #202124;
   margin: 0 0 16px;
 }
 .section-empty {
   font-size: 13px;
-  color: var(--sm-t3);
+  color: #5F6368;
   text-align: center;
   padding: 20px 0;
 }
@@ -491,20 +493,20 @@ function typeBadgeLabel(type) {
 }
 .perf-table th {
   text-align: left;
-  font-size: 10px;
-  color: var(--sm-t3);
+  font-size: 13px;
+  color: #5F6368;
   text-transform: uppercase;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
   padding: 8px 10px;
-  border-bottom: 1px solid var(--sm-bd);
+  border-bottom: 1px solid #E8EAED;
 }
 .perf-table th.sortable {
   cursor: pointer;
   user-select: none;
 }
 .perf-table th.sortable:hover {
-  color: var(--sm-t1);
+  color: #202124;
 }
 .perf-table td {
   padding: 10px;
@@ -536,7 +538,7 @@ function typeBadgeLabel(type) {
 .csm-name-cell {
   font-weight: 700;
   font-size: 13px;
-  color: var(--sm-t1);
+  color: #202124;
 }
 
 /* Portfolio mini */
@@ -549,7 +551,7 @@ function typeBadgeLabel(type) {
 .sub-label {
   font-size: 12px;
   font-weight: 700;
-  color: var(--sm-t2);
+  color: #5F6368;
   display: block;
   margin-bottom: 8px;
 }
@@ -570,11 +572,11 @@ function typeBadgeLabel(type) {
 .mini-client-name {
   font-size: 13px;
   font-weight: 700;
-  color: var(--sm-t1);
+  color: #202124;
 }
 .mini-client-arr {
   font-size: 11px;
-  color: var(--sm-t3);
+  color: #5F6368;
 }
 .mini-health {
   font-size: 12px;
@@ -603,7 +605,7 @@ function typeBadgeLabel(type) {
 .okr-mini-title {
   font-size: 13px;
   font-weight: 700;
-  color: var(--sm-t1);
+  color: #202124;
   flex: 1;
   margin-right: 8px;
   white-space: nowrap;
@@ -613,18 +615,18 @@ function typeBadgeLabel(type) {
 .okr-mini-score {
   font-family: 'Cormorant Garamond', serif;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 800;
   flex-shrink: 0;
 }
 .okr-mini-bar-track {
-  height: 6px;
-  background: var(--sm-bd);
-  border-radius: 3px;
+  height: 8px;
+  background: #E8EAED;
+  border-radius: 4px;
   overflow: hidden;
 }
 .okr-mini-bar-fill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: 4px;
   transition: width 0.4s ease;
 }
 
@@ -637,22 +639,22 @@ function typeBadgeLabel(type) {
   border-radius: 999px;
   text-transform: uppercase;
 }
-.badge-churn { background: var(--sm-err-p); color: var(--sm-err); }
-.badge-onboarding { background: var(--sm-info-p); color: var(--sm-info); }
-.badge-expansion { background: var(--sm-ok-p); color: var(--sm-ok); }
-.badge-default { background: rgba(0,0,0,0.05); color: var(--sm-t3); }
+.badge-churn { background: rgba(234,67,53,0.1); color: #EA4335; }
+.badge-onboarding { background: rgba(66,133,244,0.1); color: #4285F4; }
+.badge-expansion { background: rgba(52,168,83,0.1); color: #34A853; }
+.badge-default { background: rgba(0,0,0,0.05); color: #5F6368; }
 
 .pb-mini-bar-track {
-  height: 6px;
-  background: var(--sm-bd);
-  border-radius: 3px;
+  height: 8px;
+  background: #E8EAED;
+  border-radius: 4px;
   overflow: hidden;
   min-width: 80px;
 }
 .pb-mini-bar-fill {
   height: 100%;
-  border-radius: 3px;
-  background: var(--sm-grad-h);
+  border-radius: 4px;
+  background: linear-gradient(90deg, #EA4335, #FBBC05, #34A853, #4285F4);
   transition: width 0.4s ease;
 }
 
@@ -670,7 +672,7 @@ function typeBadgeLabel(type) {
 .load-name {
   font-size: 12px;
   font-weight: 700;
-  color: var(--sm-t2);
+  color: #5F6368;
   width: 80px;
   flex-shrink: 0;
   white-space: nowrap;
@@ -680,7 +682,7 @@ function typeBadgeLabel(type) {
 .load-bar-track {
   flex: 1;
   height: 8px;
-  background: var(--sm-bd);
+  background: #E8EAED;
   border-radius: 4px;
   overflow: hidden;
 }

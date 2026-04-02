@@ -10,13 +10,13 @@
     <div class="summary-row">
       <div class="summary-card">
         <span class="summary-label">CHARGE MOYENNE</span>
-        <span class="summary-number" :style="{ color: avgLoad > 85 ? 'var(--sm-err)' : avgLoad > 70 ? 'var(--sm-warn)' : 'var(--sm-ok)' }">
+        <span class="summary-number" :style="{ color: avgLoad > 85 ? '#EA4335' : avgLoad > 70 ? '#FBBC05' : '#34A853' }">
           {{ avgLoad }}%
         </span>
       </div>
       <div class="summary-card">
         <span class="summary-label">CSM SURCHARGES</span>
-        <span class="summary-number" :style="{ color: overloadedCount > 0 ? 'var(--sm-err)' : 'var(--sm-ok)' }">
+        <span class="summary-number" :style="{ color: overloadedCount > 0 ? '#EA4335' : '#34A853' }">
           {{ overloadedCount }}
         </span>
       </div>
@@ -48,7 +48,7 @@
         :class="{ overloaded: csm.workloadPct >= 85 }"
       >
         <div class="csm-top">
-          <div class="csm-avatar" :style="{ background: csm.workloadPct >= 85 ? 'var(--sm-err)' : 'var(--sm-parme)' }">
+          <div class="csm-avatar" :style="{ background: csm.workloadPct >= 85 ? '#EA4335' : '#4285F4' }">
             {{ initials(csm.name) }}
           </div>
           <div class="csm-info">
@@ -61,7 +61,7 @@
         <div class="workload-section">
           <div class="workload-header">
             <span class="meta-label">CHARGE</span>
-            <span class="workload-pct" :style="{ color: csm.workloadPct >= 85 ? 'var(--sm-err)' : csm.workloadPct >= 70 ? 'var(--sm-warn)' : 'var(--sm-ok)' }">
+            <span class="workload-pct" :style="{ color: csm.workloadPct >= 85 ? '#EA4335' : csm.workloadPct >= 70 ? '#FBBC05' : '#34A853' }">
               {{ csm.workloadPct || 0 }}%
             </span>
           </div>
@@ -70,7 +70,7 @@
               class="workload-fill"
               :style="{
                 width: Math.min(csm.workloadPct || 0, 100) + '%',
-                background: csm.workloadPct >= 85 ? 'var(--sm-err)' : 'var(--sm-grad-h)'
+                background: csm.workloadPct >= 85 ? '#EA4335' : 'linear-gradient(90deg, #EA4335, #FBBC05, #34A853, #4285F4)'
               }"
             />
           </div>
@@ -84,7 +84,7 @@
           </div>
           <div class="stat-item">
             <span class="meta-label">A RISQUE</span>
-            <span class="stat-val" :style="{ color: atRiskCount(csm) > 0 ? 'var(--sm-err)' : 'var(--sm-ok)' }">
+            <span class="stat-val" :style="{ color: atRiskCount(csm) > 0 ? '#EA4335' : '#34A853' }">
               {{ atRiskCount(csm) }}
             </span>
           </div>
@@ -134,15 +134,15 @@ function atRiskCount(csm) {
 }
 
 function healthBadgeBg(score) {
-  if (score >= 75) return 'var(--sm-ok-p)'
-  if (score >= 60) return 'var(--sm-warn-p)'
-  return 'var(--sm-err-p)'
+  if (score >= 75) return 'rgba(52,168,83,0.1)'
+  if (score >= 60) return 'rgba(251,188,5,0.1)'
+  return 'rgba(234,67,53,0.1)'
 }
 
 function healthBadgeColor(score) {
-  if (score >= 75) return 'var(--sm-ok)'
-  if (score >= 60) return 'var(--sm-warn)'
-  return 'var(--sm-err)'
+  if (score >= 75) return '#34A853'
+  if (score >= 60) return '#FBBC05'
+  return '#EA4335'
 }
 </script>
 
@@ -150,11 +150,12 @@ function healthBadgeColor(score) {
 .workload-view {
   max-width: 1200px;
   padding: 24px 28px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', 'Google Sans', 'Segoe UI', sans-serif;
+  background: #F8F9FA;
 }
 
 .hero {
-  background: var(--sm-grad);
+  background: linear-gradient(135deg, #EA4335, #FBBC05, #34A853, #4285F4);
   color: #fff;
   border-radius: 20px;
   padding: 28px 32px;
@@ -179,10 +180,10 @@ function healthBadgeColor(score) {
   margin-bottom: 24px;
 }
 .summary-card {
-  background: #fff;
-  border: 1px solid var(--sm-bd);
+  background: #FFFFFF;
+  border: none;
   border-radius: 16px;
-  box-shadow: var(--sm-sh);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
   padding: 22px;
   text-align: center;
   display: flex;
@@ -190,17 +191,17 @@ function healthBadgeColor(score) {
   gap: 6px;
 }
 .summary-label {
-  font-size: 12px;
-  color: var(--sm-t3);
+  font-size: 13px;
+  color: #5F6368;
   text-transform: uppercase;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
 }
 .summary-number {
   font-family: 'Cormorant Garamond', serif;
   font-size: 40px;
-  font-weight: 700;
-  color: var(--sm-t1);
+  font-weight: 800;
+  color: #202124;
   line-height: 1;
 }
 
@@ -210,14 +211,14 @@ function healthBadgeColor(score) {
   gap: 10px;
   justify-content: center;
   padding: 60px 0;
-  color: var(--sm-t3);
+  color: #5F6368;
   font-size: 14px;
 }
 .spinner {
   width: 20px;
   height: 20px;
-  border: 3px solid var(--sm-bd);
-  border-top-color: var(--sm-parme);
+  border: 3px solid #E8EAED;
+  border-top-color: #4285F4;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -232,10 +233,10 @@ function healthBadgeColor(score) {
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px;
   font-weight: 700;
-  color: var(--sm-t1);
+  color: #202124;
   margin: 0 0 6px;
 }
-.empty-sub { font-size: 13px; color: var(--sm-t3); margin: 0; }
+.empty-sub { font-size: 13px; color: #5F6368; margin: 0; }
 
 .csm-grid {
   display: grid;
@@ -244,19 +245,18 @@ function healthBadgeColor(score) {
 }
 
 .csm-card {
-  background: #fff;
-  border: 1px solid var(--sm-bd);
+  background: #FFFFFF;
+  border: none;
   border-radius: 16px;
-  box-shadow: var(--sm-sh);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
   padding: 22px;
   transition: box-shadow 0.2s;
 }
 .csm-card:hover {
-  box-shadow: var(--sm-sh2);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
 }
 .csm-card.overloaded {
-  border-color: var(--sm-err);
-  border-width: 2px;
+  box-shadow: 0 2px 16px rgba(234,67,53,0.15);
 }
 
 .csm-top {
@@ -284,12 +284,12 @@ function healthBadgeColor(score) {
 .csm-name {
   font-size: 15px;
   font-weight: 700;
-  color: var(--sm-t1);
+  color: #202124;
   margin: 0 0 2px;
 }
 .csm-role {
   font-size: 12px;
-  color: var(--sm-t3);
+  color: #5F6368;
 }
 
 .workload-section {
@@ -302,20 +302,20 @@ function healthBadgeColor(score) {
   margin-bottom: 6px;
 }
 .meta-label {
-  font-size: 10px;
-  color: var(--sm-t3);
+  font-size: 13px;
+  color: #5F6368;
   text-transform: uppercase;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
 }
 .workload-pct {
   font-family: 'Cormorant Garamond', serif;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 800;
 }
 .workload-track {
   height: 8px;
-  background: var(--sm-bd);
+  background: #E8EAED;
   border-radius: 4px;
   overflow: hidden;
 }
@@ -331,7 +331,7 @@ function healthBadgeColor(score) {
   gap: 12px;
   margin-bottom: 14px;
   padding-bottom: 14px;
-  border-bottom: 1px solid var(--sm-bd);
+  border-bottom: 1px solid #E8EAED;
 }
 .stat-item {
   display: flex;
@@ -341,8 +341,8 @@ function healthBadgeColor(score) {
 .stat-val {
   font-family: 'Cormorant Garamond', serif;
   font-size: 24px;
-  font-weight: 700;
-  color: var(--sm-t1);
+  font-weight: 800;
+  color: #202124;
   line-height: 1;
 }
 
@@ -362,7 +362,7 @@ function healthBadgeColor(score) {
 .client-mini-name {
   font-size: 12px;
   font-weight: 600;
-  color: var(--sm-t2);
+  color: #5F6368;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -376,13 +376,13 @@ function healthBadgeColor(score) {
 }
 .client-more {
   font-size: 11px;
-  color: var(--sm-t3);
+  color: #5F6368;
   text-align: center;
   padding: 4px 0;
 }
 .no-clients {
   font-size: 12px;
-  color: var(--sm-t3);
+  color: #5F6368;
   text-align: center;
   padding: 8px 0;
 }

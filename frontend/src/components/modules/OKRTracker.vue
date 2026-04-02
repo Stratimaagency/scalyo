@@ -100,9 +100,9 @@ function okrProgress(okr) {
 }
 
 function scoreColor(pct) {
-  if (pct >= 70) return 'var(--sm-ok)'
-  if (pct >= 40) return 'var(--sm-warn)'
-  return 'var(--sm-err)'
+  if (pct >= 70) return '#34A853'
+  if (pct >= 40) return '#FBBC05'
+  return '#EA4335'
 }
 
 function startEdit(okr, i, kr) {
@@ -121,11 +121,12 @@ function saveKR(okr, i) {
 .okr-tracker {
   max-width: 1200px;
   padding: 24px 28px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', 'Google Sans', 'Segoe UI', sans-serif;
+  background: #F8F9FA;
 }
 
 .hero {
-  background: var(--sm-grad);
+  background: linear-gradient(135deg, #EA4335, #FBBC05, #34A853, #4285F4);
   color: #fff;
   border-radius: 20px;
   padding: 28px 32px;
@@ -144,10 +145,10 @@ function saveKR(okr, i) {
 }
 
 .global-score-card {
-  background: #fff;
-  border: 1px solid var(--sm-bd);
+  background: #FFFFFF;
+  border: none;
   border-radius: 16px;
-  box-shadow: var(--sm-sh);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
   padding: 28px 32px;
   margin-bottom: 24px;
   text-align: center;
@@ -159,17 +160,17 @@ function saveKR(okr, i) {
   gap: 8px;
 }
 .global-label {
-  font-size: 12px;
-  color: var(--sm-t3);
+  font-size: 13px;
+  color: #5F6368;
   text-transform: uppercase;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
 }
 .global-number {
   font-family: 'Cormorant Garamond', serif;
   font-size: 56px;
-  font-weight: 700;
-  background: var(--sm-grad);
+  font-weight: 800;
+  background: linear-gradient(135deg, #EA4335, #FBBC05, #34A853, #4285F4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -179,7 +180,7 @@ function saveKR(okr, i) {
   width: 100%;
   max-width: 400px;
   height: 8px;
-  background: var(--sm-bd);
+  background: #E8EAED;
   border-radius: 4px;
   overflow: hidden;
   margin-top: 4px;
@@ -187,7 +188,7 @@ function saveKR(okr, i) {
 .global-bar-fill {
   height: 100%;
   border-radius: 4px;
-  background: var(--sm-grad-h);
+  background: linear-gradient(90deg, #EA4335, #FBBC05, #34A853, #4285F4);
   transition: width 0.4s ease;
 }
 
@@ -200,10 +201,10 @@ function saveKR(okr, i) {
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px;
   font-weight: 700;
-  color: var(--sm-t1);
+  color: #202124;
   margin: 0 0 6px;
 }
-.empty-sub { font-size: 13px; color: var(--sm-t3); margin: 0; }
+.empty-sub { font-size: 13px; color: #5F6368; margin: 0; }
 
 .okr-list {
   display: flex;
@@ -212,10 +213,10 @@ function saveKR(okr, i) {
 }
 
 .okr-card {
-  background: #fff;
-  border: 1px solid var(--sm-bd);
+  background: #FFFFFF;
+  border: none;
   border-radius: 16px;
-  box-shadow: var(--sm-sh);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
   padding: 22px 24px;
 }
 
@@ -228,18 +229,18 @@ function saveKR(okr, i) {
 .okr-title {
   font-size: 16px;
   font-weight: 700;
-  color: var(--sm-t1);
+  color: #202124;
   margin: 0 0 4px;
 }
 .okr-owner {
   font-size: 12px;
-  color: var(--sm-t3);
+  color: #5F6368;
   font-weight: 500;
 }
 .okr-score {
   font-family: 'Cormorant Garamond', serif;
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -262,7 +263,7 @@ function saveKR(okr, i) {
 .kr-name {
   font-size: 13px;
   font-weight: 600;
-  color: var(--sm-t2);
+  color: #5F6368;
 }
 .kr-values {
   display: flex;
@@ -274,7 +275,7 @@ function saveKR(okr, i) {
   font-weight: 700;
 }
 .kr-target {
-  color: var(--sm-t3);
+  color: #5F6368;
   font-weight: 500;
 }
 .kr-edit-btn {
@@ -292,21 +293,21 @@ function saveKR(okr, i) {
 .kr-input {
   width: 60px;
   padding: 3px 6px;
-  border: 1px solid var(--sm-bd);
+  border: 1px solid #E8EAED;
   border-radius: 6px;
   font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', 'Google Sans', 'Segoe UI', sans-serif;
   font-weight: 700;
   text-align: center;
   outline: none;
 }
 .kr-input:focus {
-  border-color: var(--sm-parme);
+  border-color: #4285F4;
 }
 
 .kr-bar-track {
   height: 8px;
-  background: var(--sm-bd);
+  background: #E8EAED;
   border-radius: 4px;
   overflow: hidden;
 }
