@@ -192,7 +192,7 @@ function healthBadgeColor(score) {
 }
 .summary-label {
   font-size: 13px;
-  color: #5F6368;
+  color: #2d3748;
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -201,7 +201,7 @@ function healthBadgeColor(score) {
   font-family: 'Cormorant Garamond', serif;
   font-size: 40px;
   font-weight: 800;
-  color: #202124;
+  color: #1a1f36;
   line-height: 1;
 }
 
@@ -211,7 +211,7 @@ function healthBadgeColor(score) {
   gap: 10px;
   justify-content: center;
   padding: 60px 0;
-  color: #5F6368;
+  color: #2d3748;
   font-size: 14px;
 }
 .spinner {
@@ -233,10 +233,10 @@ function healthBadgeColor(score) {
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px;
   font-weight: 700;
-  color: #202124;
+  color: #1a1f36;
   margin: 0 0 6px;
 }
-.empty-sub { font-size: 13px; color: #5F6368; margin: 0; }
+.empty-sub { font-size: 13px; color: #2d3748; margin: 0; }
 
 .csm-grid {
   display: grid;
@@ -284,12 +284,12 @@ function healthBadgeColor(score) {
 .csm-name {
   font-size: 15px;
   font-weight: 700;
-  color: #202124;
+  color: #1a1f36;
   margin: 0 0 2px;
 }
 .csm-role {
   font-size: 12px;
-  color: #5F6368;
+  color: #2d3748;
 }
 
 .workload-section {
@@ -303,7 +303,7 @@ function healthBadgeColor(score) {
 }
 .meta-label {
   font-size: 13px;
-  color: #5F6368;
+  color: #2d3748;
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -342,7 +342,7 @@ function healthBadgeColor(score) {
   font-family: 'Cormorant Garamond', serif;
   font-size: 24px;
   font-weight: 800;
-  color: #202124;
+  color: #1a1f36;
   line-height: 1;
 }
 
@@ -362,7 +362,7 @@ function healthBadgeColor(score) {
 .client-mini-name {
   font-size: 12px;
   font-weight: 600;
-  color: #5F6368;
+  color: #2d3748;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -376,13 +376,13 @@ function healthBadgeColor(score) {
 }
 .client-more {
   font-size: 11px;
-  color: #5F6368;
+  color: #2d3748;
   text-align: center;
   padding: 4px 0;
 }
 .no-clients {
   font-size: 12px;
-  color: #5F6368;
+  color: #2d3748;
   text-align: center;
   padding: 8px 0;
 }

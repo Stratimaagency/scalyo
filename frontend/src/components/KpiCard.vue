@@ -2,14 +2,14 @@
   <div class="kpi-card">
     <div class="kpi-card__top">
       <span class="kpi-card__label">{{ label }}</span>
-      <div class="kpi-card__icon" :style="{ background: iconBg, color: iconColor }">
+      <div class="kpi-card__icon" :style="{ background: iconBg, color: iconFg }">
         <ScalyoIcon :name="icon" :size="18" />
       </div>
     </div>
-    <div class="kpi-card__value" :style="{ color: color || '#202124' }">{{ value }}</div>
-    <div v-if="sub" class="kpi-card__sub" :style="{ color: subColor }">
-      <span v-if="trend === 'up'" class="kpi-card__trend kpi-card__trend--up">▲</span>
-      <span v-if="trend === 'down'" class="kpi-card__trend kpi-card__trend--down">▼</span>
+    <div class="kpi-card__value" :style="{ color: valueFg }">{{ value }}</div>
+    <div v-if="sub" class="kpi-card__sub">
+      <span v-if="trend === 'up'" style="color: #34A853;">▲</span>
+      <span v-if="trend === 'down'" style="color: #EA4335;">▼</span>
       {{ sub }}
     </div>
   </div>
@@ -28,35 +28,33 @@ const props = defineProps({
   trend: String,
 })
 
-const colorMap = {
-  'var(--teal)': { bg: '#E8F0FE', fg: '#4285F4' },
-  'var(--green)': { bg: '#E6F4EA', fg: '#34A853' },
-  'var(--red)': { bg: '#FCE8E6', fg: '#EA4335' },
-  'var(--amber)': { bg: '#FEF7E0', fg: '#FBBC05' },
-  'var(--purple)': { bg: '#F3E8FF', fg: '#9b5acd' },
-  'var(--blue)': { bg: '#E8F0FE', fg: '#4285F4' },
+const palette = {
+  'var(--teal)':   { bg: '#E8F0FE', fg: '#4285F4', val: '#4285F4' },
+  'var(--green)':  { bg: '#E6F4EA', fg: '#34A853', val: '#34A853' },
+  'var(--red)':    { bg: '#FCE8E6', fg: '#EA4335', val: '#EA4335' },
+  'var(--amber)':  { bg: '#FEF7E0', fg: '#FBBC05', val: '#d97706' },
+  'var(--purple)': { bg: '#F3E8FF', fg: '#7C3AED', val: '#7C3AED' },
+  'var(--blue)':   { bg: '#E8F0FE', fg: '#4285F4', val: '#4285F4' },
 }
 
-const iconBg = computed(() => colorMap[props.color]?.bg || '#E8F0FE')
-const iconColor = computed(() => colorMap[props.color]?.fg || '#4285F4')
-const subColor = computed(() => {
-  if (props.trend === 'up') return '#34A853'
-  if (props.trend === 'down') return '#EA4335'
-  return '#5F6368'
-})
+const p = computed(() => palette[props.color] || palette['var(--teal)'])
+const iconBg = computed(() => p.value.bg)
+const iconFg = computed(() => p.value.fg)
+const valueFg = computed(() => p.value.val)
 </script>
 
 <style scoped>
 .kpi-card {
   background: #FFFFFF;
+  border: 2px solid #f0e6d3;
   border-radius: 16px;
   padding: 20px 22px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(251,188,5,0.06);
   transition: all 0.2s;
-  min-width: 0;
 }
 .kpi-card:hover {
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  border-color: #e8d5b5;
+  box-shadow: 0 6px 28px rgba(0,0,0,0.08);
   transform: translateY(-2px);
 }
 .kpi-card__top {
@@ -66,10 +64,10 @@ const subColor = computed(() => {
   margin-bottom: 14px;
 }
 .kpi-card__label {
-  font-family: 'DM Sans', 'Google Sans', 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 13px;
-  font-weight: 700;
-  color: #5F6368;
+  font-weight: 800;
+  color: #1a1f36;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -82,23 +80,19 @@ const subColor = computed(() => {
   justify-content: center;
 }
 .kpi-card__value {
-  font-family: 'Cormorant Garamond', 'Google Sans', serif;
+  font-family: 'Cormorant Garamond', serif;
   font-size: 32px;
   font-weight: 800;
   line-height: 1;
-  color: #202124;
 }
 .kpi-card__sub {
-  font-family: 'DM Sans', 'Google Sans', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 13px;
-  font-weight: 500;
-  color: #5F6368;
+  font-weight: 600;
+  color: #2d3748;
   margin-top: 8px;
   display: flex;
   align-items: center;
   gap: 4px;
 }
-.kpi-card__trend { font-size: 11px; }
-.kpi-card__trend--up { color: #34A853; }
-.kpi-card__trend--down { color: #EA4335; }
 </style>

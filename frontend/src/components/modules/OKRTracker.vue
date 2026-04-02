@@ -161,7 +161,7 @@ function saveKR(okr, i) {
 }
 .global-label {
   font-size: 13px;
-  color: #5F6368;
+  color: #2d3748;
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -201,10 +201,10 @@ function saveKR(okr, i) {
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px;
   font-weight: 700;
-  color: #202124;
+  color: #1a1f36;
   margin: 0 0 6px;
 }
-.empty-sub { font-size: 13px; color: #5F6368; margin: 0; }
+.empty-sub { font-size: 13px; color: #2d3748; margin: 0; }
 
 .okr-list {
   display: flex;
@@ -229,12 +229,12 @@ function saveKR(okr, i) {
 .okr-title {
   font-size: 16px;
   font-weight: 700;
-  color: #202124;
+  color: #1a1f36;
   margin: 0 0 4px;
 }
 .okr-owner {
   font-size: 12px;
-  color: #5F6368;
+  color: #2d3748;
   font-weight: 500;
 }
 .okr-score {
@@ -263,7 +263,7 @@ function saveKR(okr, i) {
 .kr-name {
   font-size: 13px;
   font-weight: 600;
-  color: #5F6368;
+  color: #2d3748;
 }
 .kr-values {
   display: flex;
@@ -275,7 +275,7 @@ function saveKR(okr, i) {
   font-weight: 700;
 }
 .kr-target {
-  color: #5F6368;
+  color: #2d3748;
   font-weight: 500;
 }
 .kr-edit-btn {

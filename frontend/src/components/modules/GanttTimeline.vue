@@ -192,7 +192,7 @@ function taskStatus(task) {
   gap: 6px;
   font-size: 13px;
   font-weight: 600;
-  color: #5F6368;
+  color: #2d3748;
 }
 .legend-dot {
   width: 10px;
@@ -210,10 +210,10 @@ function taskStatus(task) {
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px;
   font-weight: 700;
-  color: #202124;
+  color: #1a1f36;
   margin: 0 0 6px;
 }
-.empty-sub { font-size: 13px; color: #5F6368; margin: 0; }
+.empty-sub { font-size: 13px; color: #2d3748; margin: 0; }
 
 .timeline-wrapper {
   background: #FFFFFF;
@@ -236,7 +236,7 @@ function taskStatus(task) {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #5F6368;
+  color: #2d3748;
   text-align: center;
   border-bottom: 1px solid #E8EAED;
   background: #F8F9FA;
@@ -266,21 +266,21 @@ function taskStatus(task) {
 .project-name {
   font-size: 13px;
   font-weight: 700;
-  color: #202124;
+  color: #1a1f36;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .project-client {
   font-size: 11px;
-  color: #5F6368;
+  color: #2d3748;
 }
 .task-label {
   padding-left: 28px;
 }
 .task-name {
   font-size: 12px;
-  color: #5F6368;
+  color: #2d3748;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

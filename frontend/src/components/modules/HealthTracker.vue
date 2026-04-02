@@ -273,7 +273,7 @@ function formatDate(d) {
   font-family: 'DM Sans', 'Google Sans', 'Segoe UI', sans-serif;
   cursor: pointer;
   transition: all 0.2s;
-  color: #5F6368;
+  color: #2d3748;
 }
 .tab-pill:hover {
   background: rgba(66,133,244,0.08);
@@ -299,7 +299,7 @@ function formatDate(d) {
   gap: 10px;
   justify-content: center;
   padding: 60px 0;
-  color: #5F6368;
+  color: #2d3748;
   font-size: 14px;
 }
 .spinner {
@@ -324,12 +324,12 @@ function formatDate(d) {
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px;
   font-weight: 700;
-  color: #202124;
+  color: #1a1f36;
   margin: 0 0 6px;
 }
 .empty-sub {
   font-size: 13px;
-  color: #5F6368;
+  color: #2d3748;
   margin: 0;
 }
 
@@ -395,7 +395,7 @@ function formatDate(d) {
 .client-name {
   font-size: 15px;
   font-weight: 700;
-  color: #202124;
+  color: #1a1f36;
   margin: 0 0 4px;
   white-space: nowrap;
   overflow: hidden;
@@ -403,7 +403,7 @@ function formatDate(d) {
 }
 .client-industry {
   font-size: 12px;
-  color: #5F6368;
+  color: #2d3748;
   font-weight: 500;
 }
 
@@ -421,7 +421,7 @@ function formatDate(d) {
 }
 .meta-label {
   font-size: 13px;
-  color: #5F6368;
+  color: #2d3748;
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -429,7 +429,7 @@ function formatDate(d) {
 .meta-value {
   font-size: 13px;
   font-weight: 600;
-  color: #202124;
+  color: #1a1f36;
 }
 .arr-value {
   font-family: 'Cormorant Garamond', serif;
@@ -465,7 +465,7 @@ function formatDate(d) {
   border: none;
   font-size: 28px;
   cursor: pointer;
-  color: #5F6368;
+  color: #2d3748;
   line-height: 1;
 }
 .detail-header {
@@ -480,11 +480,11 @@ function formatDate(d) {
   font-size: 24px;
   font-weight: 700;
   margin: 0 0 4px;
-  color: #202124;
+  color: #1a1f36;
 }
 .detail-industry {
   font-size: 13px;
-  color: #5F6368;
+  color: #2d3748;
   margin: 0;
 }
 .detail-grid {
@@ -500,6 +500,6 @@ function formatDate(d) {
 .detail-val {
   font-size: 16px;
   font-weight: 700;
-  color: #202124;
+  color: #1a1f36;
 }
 </style>

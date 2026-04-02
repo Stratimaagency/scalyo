@@ -399,7 +399,7 @@ function typeBadgeLabel(type) {
   gap: 8px;
   padding: 6px 0;
   font-size: 13px;
-  color: #202124;
+  color: #1a1f36;
   border-bottom: 1px solid rgba(234, 67, 53, 0.1);
 }
 .alert-item:last-child { border-bottom: none; }
@@ -427,7 +427,7 @@ function typeBadgeLabel(type) {
 }
 .kpi-label {
   font-size: 13px;
-  color: #5F6368;
+  color: #2d3748;
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -437,7 +437,7 @@ function typeBadgeLabel(type) {
   font-size: 32px;
   font-weight: 800;
   line-height: 1;
-  color: #202124;
+  color: #1a1f36;
 }
 .kpi-gradient {
   background: linear-gradient(135deg, #EA4335, #FBBC05, #34A853, #4285F4);
@@ -447,7 +447,7 @@ function typeBadgeLabel(type) {
 }
 .kpi-unit {
   font-size: 12px;
-  color: #5F6368;
+  color: #2d3748;
   font-weight: 500;
 }
 
@@ -464,12 +464,12 @@ function typeBadgeLabel(type) {
   font-family: 'Cormorant Garamond', serif;
   font-size: 20px;
   font-weight: 700;
-  color: #202124;
+  color: #1a1f36;
   margin: 0 0 16px;
 }
 .section-empty {
   font-size: 13px;
-  color: #5F6368;
+  color: #2d3748;
   text-align: center;
   padding: 20px 0;
 }
@@ -494,7 +494,7 @@ function typeBadgeLabel(type) {
 .perf-table th {
   text-align: left;
   font-size: 13px;
-  color: #5F6368;
+  color: #2d3748;
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -506,7 +506,7 @@ function typeBadgeLabel(type) {
   user-select: none;
 }
 .perf-table th.sortable:hover {
-  color: #202124;
+  color: #1a1f36;
 }
 .perf-table td {
   padding: 10px;
@@ -538,7 +538,7 @@ function typeBadgeLabel(type) {
 .csm-name-cell {
   font-weight: 700;
   font-size: 13px;
-  color: #202124;
+  color: #1a1f36;
 }
 
 /* Portfolio mini */
@@ -551,7 +551,7 @@ function typeBadgeLabel(type) {
 .sub-label {
   font-size: 12px;
   font-weight: 700;
-  color: #5F6368;
+  color: #2d3748;
   display: block;
   margin-bottom: 8px;
 }
@@ -572,11 +572,11 @@ function typeBadgeLabel(type) {
 .mini-client-name {
   font-size: 13px;
   font-weight: 700;
-  color: #202124;
+  color: #1a1f36;
 }
 .mini-client-arr {
   font-size: 11px;
-  color: #5F6368;
+  color: #2d3748;
 }
 .mini-health {
   font-size: 12px;
@@ -605,7 +605,7 @@ function typeBadgeLabel(type) {
 .okr-mini-title {
   font-size: 13px;
   font-weight: 700;
-  color: #202124;
+  color: #1a1f36;
   flex: 1;
   margin-right: 8px;
   white-space: nowrap;
@@ -642,7 +642,7 @@ function typeBadgeLabel(type) {
 .badge-churn { background: rgba(234,67,53,0.1); color: #EA4335; }
 .badge-onboarding { background: rgba(66,133,244,0.1); color: #4285F4; }
 .badge-expansion { background: rgba(52,168,83,0.1); color: #34A853; }
-.badge-default { background: rgba(0,0,0,0.05); color: #5F6368; }
+.badge-default { background: rgba(0,0,0,0.05); color: #2d3748; }
 
 .pb-mini-bar-track {
   height: 8px;
@@ -672,7 +672,7 @@ function typeBadgeLabel(type) {
 .load-name {
   font-size: 12px;
   font-weight: 700;
-  color: #5F6368;
+  color: #2d3748;
   width: 80px;
   flex-shrink: 0;
   white-space: nowrap;
