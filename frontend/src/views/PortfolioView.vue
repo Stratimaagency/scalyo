@@ -15,15 +15,15 @@
         </h2>
         <div style="display: flex; gap: 6px;">
           <button class="btn-base" @click="openAddModal"
-            style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--greenBg, var(--tealBg)); border: 1px solid var(--greenBorder, var(--tealBorder)); color: var(--green, var(--teal));">
+            style="font-size: 13px; padding: 6px 13px; border-radius: 20px; background: var(--greenBg, var(--tealBg)); border: 1px solid var(--greenBorder, var(--tealBorder)); color: var(--green, var(--teal));">
             + {{ t('add') }}
           </button>
           <button class="btn-base" @click="showImport = true"
-            style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--tealBg); border: 1px solid var(--tealBorder); color: var(--teal);">
+            style="font-size: 13px; padding: 6px 13px; border-radius: 20px; background: var(--tealBg); border: 1px solid var(--tealBorder); color: var(--teal);">
             <ScalyoIcon name="upload" :size="12" /> {{ t('importPortfolio') }}
           </button>
           <button v-if="isManager && portfolioStore.accounts.length > 0" class="btn-base" @click="showBulkDelete = true"
-            style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--redBg); border: 1px solid var(--redBorder); color: var(--red);">
+            style="font-size: 13px; padding: 6px 13px; border-radius: 20px; background: var(--redBg); border: 1px solid var(--redBorder); color: var(--red);">
             <ScalyoIcon name="trash" :size="12" /> {{ t('bulkDelete') }}
           </button>
         </div>
@@ -59,7 +59,7 @@
 
       <!-- CSM filter (shown when >2 CSMs) -->
       <div v-if="csmList.length > 2" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 11px; color: var(--muted); font-weight: 700;">{{ t('filterCsm') }}:</span>
+        <span style="font-size: 13px; color: var(--muted); font-weight: 700;">{{ t('filterCsm') }}:</span>
         <select v-model="csmFilter" @change="persistCsmFilter"
           style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; color: var(--text); font-size: 12px; cursor: pointer;">
           <option value="">{{ t('allCsm') }}</option>
@@ -85,12 +85,12 @@
             </div>
             <div style="min-width: 0;">
               <div style="font-weight: 700; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ acc.name }}</div>
-              <div style="font-size: 11px; color: var(--muted);">{{ acc.csm || t('unassigned') }} · {{ fmtMRR(acc.mrr ?? acc.arr) }}</div>
+              <div style="font-size: 13px; color: var(--muted);">{{ acc.csm || t('unassigned') }} · {{ fmtMRR(acc.mrr ?? acc.arr) }}</div>
             </div>
           </div>
           <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
             <RiskPill :risk="acc.risk" />
-            <div style="font-size: 10px; color: var(--muted);">Score {{ acc.health || 70 }}</div>
+            <div style="font-size: 12px; color: var(--muted);">Score {{ acc.health || 70 }}</div>
           </div>
         </div>
       </template>
@@ -142,15 +142,15 @@
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px;">
             <div style="background: var(--surface); border-radius: 12px; padding: 12px; text-align: center;">
               <div style="font-size: 15px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">{{ fmtMRR(selectedAccount.mrr ?? selectedAccount.arr) }}</div>
-              <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">MRR</div>
+              <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">MRR</div>
             </div>
             <div style="background: var(--surface); border-radius: 12px; padding: 12px; text-align: center;">
               <div style="font-size: 15px; font-weight: 900; font-family: 'JetBrains Mono', monospace;">{{ selectedAccount.health || 70 }}</div>
-              <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">{{ t('health') }}</div>
+              <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">{{ t('health') }}</div>
             </div>
             <div style="background: var(--surface); border-radius: 12px; padding: 12px; text-align: center;">
               <RiskPill :risk="selectedAccount.risk" />
-              <div style="font-size: 10px; color: var(--muted); margin-top: 5px;">{{ riskLabel(selectedAccount.risk) }}</div>
+              <div style="font-size: 12px; color: var(--muted); margin-top: 5px;">{{ riskLabel(selectedAccount.risk) }}</div>
             </div>
           </div>
 
@@ -231,9 +231,9 @@
                   <span style="width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;" :style="{ background: task.color === 'red' ? 'var(--red)' : task.color === 'orange' ? '#f59e0b' : 'var(--teal)' }"></span>
                   <div style="flex: 1; min-width: 0;">
                     <div style="font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ task.title }}</div>
-                    <div v-if="task.due" style="font-size: 10px; color: var(--muted);">{{ task.due }}</div>
+                    <div v-if="task.due" style="font-size: 12px; color: var(--muted);">{{ task.due }}</div>
                   </div>
-                  <span style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--surface); color: var(--muted);">{{ task.status || task.quadrant }}</span>
+                  <span style="font-size: 12px; padding: 2px 6px; border-radius: 4px; background: var(--surface); color: var(--muted);">{{ task.status || task.quadrant }}</span>
                 </div>
               </div>
               <div v-else style="font-size: 12px; color: var(--muted); font-style: italic; padding: 8px 0;">{{ t('copilNoTasks') }}</div>
@@ -245,7 +245,7 @@
               <div v-if="clientEvents.length">
                 <div v-for="(ev, i) in clientEvents.slice(0, 5)" :key="i" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
                   <div style="font-size: 12px; font-weight: 600;">{{ ev.title }}</div>
-                  <div style="font-size: 11px; color: var(--muted);">{{ ev.date }} {{ ev.startTime || '' }}</div>
+                  <div style="font-size: 13px; color: var(--muted);">{{ ev.date }} {{ ev.startTime || '' }}</div>
                 </div>
               </div>
               <div v-else style="font-size: 12px; color: var(--muted); font-style: italic; padding: 8px 0;">{{ t('copilNoEvents') }}</div>
@@ -258,11 +258,11 @@
                 <div v-for="(q, i) in clientQuotes.slice(0, 5)" :key="i" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
                   <div>
                     <div style="font-size: 12px; font-weight: 600;">{{ q.title }}</div>
-                    <div style="font-size: 10px; color: var(--muted);">{{ q.date }}</div>
+                    <div style="font-size: 12px; color: var(--muted);">{{ q.date }}</div>
                   </div>
                   <div style="text-align: right;">
                     <div style="font-size: 12px; font-weight: 700; font-family: 'JetBrains Mono', monospace;">{{ q.amount }}€</div>
-                    <span style="font-size: 10px; padding: 1px 6px; border-radius: 4px;" :style="{ background: q.status === 'won' ? 'var(--greenBg)' : q.status === 'lost' ? 'var(--redBg)' : 'var(--surface)', color: q.status === 'won' ? 'var(--green)' : q.status === 'lost' ? 'var(--red)' : 'var(--muted)' }">{{ q.status }}</span>
+                    <span style="font-size: 12px; padding: 1px 6px; border-radius: 4px;" :style="{ background: q.status === 'won' ? 'var(--greenBg)' : q.status === 'lost' ? 'var(--redBg)' : 'var(--surface)', color: q.status === 'won' ? 'var(--green)' : q.status === 'lost' ? 'var(--red)' : 'var(--muted)' }">{{ q.status }}</span>
                   </div>
                 </div>
               </div>
@@ -302,11 +302,11 @@
                   <div style="font-size: 13px; font-weight: 600;" :style="{ textDecoration: todo.done ? 'line-through' : 'none', opacity: todo.done ? 0.5 : 1 }">
                     {{ todo.label }}
                   </div>
-                  <div v-if="todo.date" style="font-size: 11px; color: var(--muted); margin-top: 2px;">{{ todo.date }}</div>
-                  <div v-if="todo.notes" style="font-size: 11px; color: var(--muted); margin-top: 2px; font-style: italic;">{{ todo.notes }}</div>
+                  <div v-if="todo.date" style="font-size: 13px; color: var(--muted); margin-top: 2px;">{{ todo.date }}</div>
+                  <div v-if="todo.notes" style="font-size: 13px; color: var(--muted); margin-top: 2px; font-style: italic;">{{ todo.notes }}</div>
                 </div>
                 <input type="date" :value="todo.date" @change="updateTodoDate(todo, $event.target.value)"
-                  style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; font-size: 11px; color: var(--text); cursor: pointer;" />
+                  style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; font-size: 13px; color: var(--text); cursor: pointer;" />
               </div>
             </div>
 
@@ -315,7 +315,7 @@
               <div style="font-weight: 700; font-size: 13px; margin-bottom: 10px; color: var(--text); display: flex; justify-content: space-between; align-items: center;">
                 <span>{{ t('customTasks') }}</span>
                 <button class="btn-base" @click="addFreeTask"
-                  style="font-size: 11px; padding: 3px 10px; border-radius: 16px; background: var(--tealBg); border: 1px solid var(--tealBorder); color: var(--teal);">
+                  style="font-size: 13px; padding: 3px 10px; border-radius: 16px; background: var(--tealBg); border: 1px solid var(--tealBorder); color: var(--teal);">
                   + {{ t('addFreeTask') }}
                 </button>
               </div>
@@ -328,11 +328,11 @@
                     style="width: 100%; background: transparent; border: none; font-size: 13px; font-weight: 600; color: var(--text); outline: none; padding: 0;"
                     :style="{ textDecoration: task.done ? 'line-through' : 'none', opacity: task.done ? 0.5 : 1 }" />
                   <input v-model="task.notes" placeholder="Notes..."
-                    style="width: 100%; background: transparent; border: none; font-size: 11px; color: var(--muted); outline: none; padding: 0; margin-top: 2px; font-style: italic;" />
+                    style="width: 100%; background: transparent; border: none; font-size: 13px; color: var(--muted); outline: none; padding: 0; margin-top: 2px; font-style: italic;" />
                 </div>
                 <input type="date" v-model="task.date"
-                  style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; font-size: 11px; color: var(--text); cursor: pointer;" />
-                <button @click="removeFreeTask(idx)" style="background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--red); cursor: pointer; padding: 4px 8px; font-size: 11px; display: flex; align-items: center; gap: 3px;">
+                  style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; font-size: 13px; color: var(--text); cursor: pointer;" />
+                <button @click="removeFreeTask(idx)" style="background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--red); cursor: pointer; padding: 4px 8px; font-size: 13px; display: flex; align-items: center; gap: 3px;">
                   <ScalyoIcon name="close" :size="10" /> {{ t('removeTask') }}
                 </button>
               </div>
@@ -454,7 +454,7 @@
             <table style="width: 100%; border-collapse: collapse;">
               <thead>
                 <tr>
-                  <th v-for="col in importHeaders" :key="col" style="text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--border); font-weight: 700; color: var(--teal); font-size: 11px; text-transform: uppercase;">
+                  <th v-for="col in importHeaders" :key="col" style="text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--border); font-weight: 700; color: var(--teal); font-size: 13px; text-transform: uppercase;">
                     {{ col }}
                   </th>
                 </tr>
@@ -468,7 +468,7 @@
               </tbody>
             </table>
           </div>
-          <div style="font-size: 11px; color: var(--muted); margin-top: 6px;">
+          <div style="font-size: 13px; color: var(--muted); margin-top: 6px;">
             {{ importPreview.length }} {{ t('importRowsDetected') || 'rows detected' }}.
           </div>
         </div>
@@ -531,7 +531,7 @@
         <div v-if="bulkDeleteMode === 'selected'" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 16px;">
           <label v-for="acc in filteredAccounts" :key="acc.id" style="display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; cursor: pointer;">
             <input type="checkbox" :value="acc.id" v-model="bulkDeleteIds" />
-            {{ acc.name }} <span style="color: var(--muted); font-size: 11px;">· {{ acc.csm || '—' }}</span>
+            {{ acc.name }} <span style="color: var(--muted); font-size: 13px;">· {{ acc.csm || '—' }}</span>
           </label>
         </div>
 

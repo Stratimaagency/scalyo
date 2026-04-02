@@ -54,14 +54,14 @@
             </div>
             <div>
               <div style="font-weight: 700; font-size: 13px;">{{ acc.name }}</div>
-              <div style="font-size: 11px; color: var(--muted);">
+              <div style="font-size: 13px; color: var(--muted);">
                 {{ Array.isArray(acc.issues) && acc.issues[0] ? acc.issues[0] : t('criticalSituation') }}
               </div>
             </div>
           </div>
           <div style="text-align: right;">
             <div style="font-size: 12px; font-weight: 700; color: var(--red);">{{ fmtAccountARR(acc) }}</div>
-            <div style="font-size: 11px; color: var(--muted);">
+            <div style="font-size: 13px; color: var(--muted);">
               {{ t('renewal') }} {{ acc.renewal || 'N/A' }}
             </div>
           </div>
@@ -85,7 +85,7 @@
               <div style="font-size: 28px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">{{ roadmapProgress }}%</div>
             </div>
             <router-link :to="{ name: 'roadmap' }" class="btn-base"
-              style="font-size: 11px; padding: 5px 12px; border-radius: 20px; background: var(--tealBg); border: 1px solid var(--tealBorder); color: var(--teal); text-decoration: none;">
+              style="font-size: 13px; padding: 5px 12px; border-radius: 20px; background: var(--tealBg); border: 1px solid var(--tealBorder); color: var(--teal); text-decoration: none;">
               {{ t('manageBtn') }} →
             </router-link>
           </div>
@@ -114,7 +114,7 @@
             <ScalyoIcon name="heart" :size="18" style="margin-right: 4px" /> {{ t('teamWellbeing') }}
           </div>
           <router-link :to="{ name: 'wellbeing' }" class="btn-base"
-            style="font-size: 11px; padding: 5px 12px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); text-decoration: none;">
+            style="font-size: 13px; padding: 5px 12px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); text-decoration: none;">
             {{ t('detailBtn') }} →
           </router-link>
         </div>
@@ -123,7 +123,7 @@
             <div :style="{ fontSize: '28px', fontWeight: 900, fontFamily: 'JetBrains Mono, monospace', color: wellbeingScoreColor }">
               {{ wellbeingScore }}
             </div>
-            <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">
+            <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">
               {{ t('scoreLabel') }}
             </div>
           </div>
@@ -131,7 +131,7 @@
             <div :style="{ fontSize: '16px', fontWeight: 800, color: burnoutColor }">
               {{ burnoutLabel }}
             </div>
-            <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">
+            <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">
               {{ t('burnoutRisk') }}
             </div>
           </div>
@@ -139,14 +139,14 @@
         <!-- Team members preview (up to 3) -->
         <div v-for="(m, i) in teamMembers.slice(0, 3)" :key="i"
           style="display: flex; align-items: center; gap: 9px; margin-bottom: 9px;">
-          <div style="width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0;"
+          <div style="width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0;"
             :style="{ background: (m.charge || 70) > 85 ? 'var(--red)' : (m.charge || 70) > 70 ? 'var(--amber)' : 'var(--teal)', color: '#fff' }">
             {{ (m.name || '?')[0] }}
           </div>
           <div style="flex: 1; min-width: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
               <span style="font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ m.name }}</span>
-              <span style="font-size: 11px; font-weight: 700; flex-shrink: 0;"
+              <span style="font-size: 13px; font-weight: 700; flex-shrink: 0;"
                 :style="{ color: (m.charge || 70) > 85 ? 'var(--red)' : (m.charge || 70) > 70 ? 'var(--amber)' : 'var(--green)' }">
                 {{ m.charge || 70 }}%
               </span>

@@ -20,23 +20,23 @@
       <!-- North Star Metrics -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 20px;">
         <div class="card" style="padding: 16px; text-align: center;">
-          <div style="font-size: 10px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">ARR Total</div>
+          <div style="font-size: 12px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">ARR Total</div>
           <div style="font-size: 24px; font-weight: 900; font-family: 'JetBrains Mono', monospace; color: var(--teal);">{{ fmtKpiCurrency(computed_arr) }}</div>
         </div>
         <div class="card" style="padding: 16px; text-align: center;">
-          <div style="font-size: 10px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">MRR</div>
+          <div style="font-size: 12px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">MRR</div>
           <div style="font-size: 24px; font-weight: 900; font-family: 'JetBrains Mono', monospace; color: var(--teal);">{{ fmtKpiCurrency(computed_mrr) }}</div>
         </div>
         <div class="card" style="padding: 16px; text-align: center;">
-          <div style="font-size: 10px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">NRR</div>
+          <div style="font-size: 12px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">NRR</div>
           <div style="font-size: 24px; font-weight: 900; font-family: 'JetBrains Mono', monospace;" :style="{ color: kpis.nrr >= 100 ? 'var(--green)' : 'var(--red)' }">{{ kpis.nrr || 100 }}%</div>
         </div>
         <div class="card" style="padding: 16px; text-align: center;">
-          <div style="font-size: 10px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">GRR</div>
+          <div style="font-size: 12px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">GRR</div>
           <div style="font-size: 24px; font-weight: 900; font-family: 'JetBrains Mono', monospace;" :style="{ color: kpis.grr >= 90 ? 'var(--green)' : 'var(--amber)' }">{{ kpis.grr || 90 }}%</div>
         </div>
         <div class="card" style="padding: 16px; text-align: center;">
-          <div style="font-size: 10px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">NPS</div>
+          <div style="font-size: 12px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px;">NPS</div>
           <div style="font-size: 24px; font-weight: 900; font-family: 'JetBrains Mono', monospace;" :style="{ color: kpis.nps >= 30 ? 'var(--green)' : kpis.nps >= 0 ? 'var(--amber)' : 'var(--red)' }">{{ kpis.nps || 0 }}</div>
         </div>
       </div>
@@ -69,19 +69,19 @@
       <!-- ARPU & Unit Economics -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 16px;">
         <div class="card" style="padding: 16px;">
-          <div style="font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase;">ARPU</div>
+          <div style="font-size: 13px; color: var(--muted); font-weight: 700; text-transform: uppercase;">ARPU</div>
           <div style="font-size: 20px; font-weight: 900; font-family: 'JetBrains Mono', monospace; color: var(--teal);">{{ fmtKpiCurrency(arpu) }}</div>
-          <div style="font-size: 11px; color: var(--muted);">{{ t('copilArpuDesc') }}</div>
+          <div style="font-size: 13px; color: var(--muted);">{{ t('copilArpuDesc') }}</div>
         </div>
         <div class="card" style="padding: 16px;">
-          <div style="font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase;">{{ t('copilChurnRate') }}</div>
+          <div style="font-size: 13px; color: var(--muted); font-weight: 700; text-transform: uppercase;">{{ t('copilChurnRate') }}</div>
           <div style="font-size: 20px; font-weight: 900; font-family: 'JetBrains Mono', monospace;" :style="{ color: churnRate <= 5 ? 'var(--green)' : 'var(--red)' }">{{ churnRate }}%</div>
-          <div style="font-size: 11px; color: var(--muted);">{{ t('copilLogoChurn') }}</div>
+          <div style="font-size: 13px; color: var(--muted);">{{ t('copilLogoChurn') }}</div>
         </div>
         <div class="card" style="padding: 16px;">
-          <div style="font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase;">{{ t('copilCsEfficiency') }}</div>
+          <div style="font-size: 13px; color: var(--muted); font-weight: 700; text-transform: uppercase;">{{ t('copilCsEfficiency') }}</div>
           <div style="font-size: 20px; font-weight: 900; font-family: 'JetBrains Mono', monospace; color: var(--teal);">{{ fmtKpiCurrency(arrPerCsm) }}</div>
-          <div style="font-size: 11px; color: var(--muted);">{{ t('copilArrPerCsm') }}</div>
+          <div style="font-size: 13px; color: var(--muted);">{{ t('copilArrPerCsm') }}</div>
         </div>
       </div>
     </template>
@@ -102,7 +102,7 @@
                 style="width: 100%; background: var(--surface); border: 1px solid var(--tealBorder); border-radius: 10px; padding: 10px 14px 10px 36px; color: var(--text); font-size: 13px;" />
               <ScalyoIcon name="search" :size="14" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--teal);" />
             </div>
-            <button v-if="selectedClient" class="btn btn-secondary" style="font-size: 11px; padding: 8px 14px; white-space: nowrap;" @click="clearClient">✕ {{ t('kpiClearClient') }}</button>
+            <button v-if="selectedClient" class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px; white-space: nowrap;" @click="clearClient">✕ {{ t('kpiClearClient') }}</button>
           </div>
           <div v-if="selectedClient" style="margin-top: 8px; padding: 8px 14px; background: var(--tealBg); border: 1px solid var(--tealBorder); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
             <span style="font-weight: 700; font-size: 13px;">{{ selectedClient.name }} <span style="font-size: 12px; color: var(--muted); margin-left: 8px;">{{ selectedClient.csm || '—' }}</span></span>
@@ -112,7 +112,7 @@
             <div v-for="acc in clientResults" :key="acc.id" @click="selectClient(acc)" style="padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;" @mouseenter="$event.target.style.background='var(--surface)'" @mouseleave="$event.target.style.background='transparent'">
               <div>
                 <div style="font-weight: 600; font-size: 13px;">{{ acc.name }}</div>
-                <div style="font-size: 11px; color: var(--muted);">{{ acc.csm || '—' }} · Health {{ acc.health || 0 }}/100</div>
+                <div style="font-size: 13px; color: var(--muted);">{{ acc.csm || '—' }} · Health {{ acc.health || 0 }}/100</div>
               </div>
               <div style="font-weight: 700; font-size: 13px; font-family: 'JetBrains Mono', monospace;">{{ fmtKpiCurrency(acc.arr || acc.mrr * 12 || 0) }}</div>
             </div>
@@ -215,12 +215,12 @@
               <div style="width: 8px; height: 8px; border-radius: 50%;" :style="{ background: acc.risk === 'critical' ? 'var(--red)' : acc.risk === 'medium' ? '#f59e0b' : 'var(--green)' }"></div>
               <div>
                 <div style="font-weight: 700; font-size: 13px;">{{ acc.name }}</div>
-                <div style="font-size: 11px; color: var(--muted);">{{ acc.csm || '—' }} · Health {{ acc.health || 0 }}</div>
+                <div style="font-size: 13px; color: var(--muted);">{{ acc.csm || '—' }} · Health {{ acc.health || 0 }}</div>
               </div>
             </div>
             <div style="text-align: right;">
               <div style="font-weight: 700; font-family: 'JetBrains Mono', monospace;">{{ fmtKpiCurrency(acc.arr || 0) }}</div>
-              <div style="font-size: 11px; color: var(--muted);">{{ acc.renewal || '—' }}</div>
+              <div style="font-size: 13px; color: var(--muted);">{{ acc.renewal || '—' }}</div>
             </div>
           </div>
         </div>
@@ -250,7 +250,7 @@
               <button class="btn btn-secondary" style="font-size: 12px; padding: 6px 14px; color: var(--red);" @click="deleteCustomKpi(i)">{{ t('delete') }}</button>
             </div>
           </div>
-          <div v-if="kpi.goal && kpi.goal > 0" style="font-size: 11px; color: var(--muted); margin-top: 6px">
+          <div v-if="kpi.goal && kpi.goal > 0" style="font-size: 13px; color: var(--muted); margin-top: 6px">
             {{ t('target') }}{{ kpi.goal }} ({{ Math.round((kpi.value / kpi.goal) * 100) }}% {{ t('reached') }})
           </div>
         </AppCard>
