@@ -33,7 +33,7 @@ export const useCSMStore = defineStore('csm', () => {
   async function fetchCSMs() {
     loading.value = true
     try {
-      const { data } = await api.get('/csms/workload')
+      const { data } = await api.get('/modules/csms/workload')
       const apiData = data.data || []
       if (apiData.length) {
         csms.value = apiData

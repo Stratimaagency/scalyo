@@ -53,7 +53,7 @@ registerTeamRoutes(app)
 app.route('/api/smart-matrice', smartMatrice)
 
 // Modules (Health, CSM Workload, Projects, OKR, Playbooks)
-app.route('/api', modules)
+app.route('/api/modules', modules)
 
 // Routes at root path — mount DIRECTLY to avoid Hono sub-router bug
 // === TASKS ===

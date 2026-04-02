@@ -27,7 +27,7 @@ export const useClientsStore = defineStore('clients', () => {
   async function fetchClients() {
     loading.value = true
     try {
-      const { data } = await api.get('/clients/health')
+      const { data } = await api.get('/modules/clients/health')
       const apiData = data.data || []
       if (apiData.length) {
         clients.value = apiData

@@ -56,9 +56,9 @@ export const useTasksStore = defineStore('tasks', () => {
   async function fetchAll() {
     try {
       const [projRes, pbRes, okrRes] = await Promise.all([
-        api.get('/projects').catch(() => ({ data: { data: [] } })),
-        api.get('/playbooks').catch(() => ({ data: { data: [] } })),
-        api.get('/okrs').catch(() => ({ data: { data: [] } })),
+        api.get('/modules/projects').catch(() => ({ data: { data: [] } })),
+        api.get('/modules/playbooks').catch(() => ({ data: { data: [] } })),
+        api.get('/modules/okrs').catch(() => ({ data: { data: [] } })),
       ])
       const p = projRes.data.data || []
       const b = pbRes.data.data || []
@@ -129,7 +129,7 @@ export const useTasksStore = defineStore('tasks', () => {
     const next = curr.includes(stepIndex) ? curr.filter(i => i !== stepIndex) : [...curr, stepIndex]
     playbookProgress.value = { ...playbookProgress.value, [key]: next }
     try {
-      await api.post('/playbooks/progress', { playbookId, stepIndex, done: next.includes(stepIndex) })
+      await api.post('/modules/playbooks/progress', { playbookId, stepIndex, done: next.includes(stepIndex) })
     } catch {
       // API not ready
     }
