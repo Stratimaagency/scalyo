@@ -189,11 +189,11 @@ const mainNavItems = computed(() => navItems.value.filter(item => item.key !== '
 const navGroups = computed(() => {
   const items = mainNavItems.value
   const groups = [
-    { label: 'VUE D\'ENSEMBLE', keys: ['dashboard', 'portfolio', 'kpis'] },
-    { label: 'GESTION', keys: ['tasks', 'planning'] },
-    { label: 'VUES', keys: ['wellbeing', 'coach', 'roadmap'] },
-    { label: 'OUTILS', keys: ['email-studio', 'quotes', 'integrations', 'resources', 'tips'] },
-    { label: 'IMPORT', keys: ['smart-import', 'feedback'] },
+    { label: 'VUE D\'ENSEMBLE', keys: ['dashboard', 'portfolio', 'kpis', 'health-tracker'] },
+    { label: 'GESTION', keys: ['tasks', 'planning', 'timeline', 'okr'] },
+    { label: 'ÉQUIPE', keys: ['wellbeing', 'workload', 'playbooks', 'manager-dashboard'] },
+    { label: 'OUTILS', keys: ['coach', 'email-studio', 'quotes', 'roadmap', 'integrations'] },
+    { label: 'RESSOURCES', keys: ['resources', 'tips', 'smart-import', 'feedback'] },
   ]
   return groups
     .map(g => ({ label: g.label, items: g.keys.map(k => items.find(i => i.key === k)).filter(Boolean) }))

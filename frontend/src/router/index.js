@@ -44,6 +44,12 @@ const routes = [
       { path: 'integrations/:key', name: 'integration-detail', component: () => import('../views/IntegrationDetailView.vue'), props: true },
       { path: 'quotes', name: 'quotes', component: () => import('../views/QuotesView.vue') },
       { path: 'import', name: 'smart-import', component: () => import('../views/SmartImportView.vue') },
+      { path: 'health-tracker', name: 'health-tracker', component: () => import('../components/modules/HealthTracker.vue') },
+      { path: 'timeline', name: 'timeline', component: () => import('../components/modules/GanttTimeline.vue') },
+      { path: 'okr', name: 'okr', component: () => import('../components/modules/OKRTracker.vue') },
+      { path: 'workload', name: 'workload', component: () => import('../components/modules/WorkloadView.vue') },
+      { path: 'playbooks', name: 'playbooks', component: () => import('../components/modules/PlaybookRunner.vue') },
+      { path: 'manager', name: 'manager-dashboard', component: () => import('../views/ManagerDashboard.vue') },
     ],
   },
 ]

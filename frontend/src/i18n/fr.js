@@ -794,6 +794,14 @@ export default {
   accountNameRequired: 'Le nom du compte est requis',
   nameRequired: 'Le nom est requis',
   errUnexpected: 'Une erreur inattendue est survenue',
+  // --- Nouveaux modules ---
+  healthTracker: 'Health Tracker',
+  timeline: 'Timeline',
+  okr: 'OKR Tracker',
+  workload: 'Charge équipe',
+  playbooks: 'Playbooks',
+  managerDashboard: 'Vue Manager',
+
   // --- Smart Matrice ---
   smartMatrice: 'Smart Matrice',
 

@@ -792,6 +792,12 @@ export default {
   nameRequired: '이름이 필요합니다',
   errUnexpected: '예기치 못한 오류가 발생했습니다',
   // --- Smart Matrice ---
+  healthTracker: '헬스 트래커',
+  timeline: '타임라인',
+  okr: 'OKR 트래커',
+  workload: '팀 업무량',
+  playbooks: '플레이북',
+  managerDashboard: '매니저 뷰',
   smartMatrice: '스마트 매트릭스',
 
   // --- Smart Import ---

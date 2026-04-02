@@ -144,3 +144,32 @@ export const integrationsApi = {
   fetchData: (key) => api.get(`/integrations/${key}/data`),
   performAction: (key, action, payload) => api.post(`/integrations/${key}/action`, { action, payload }),
 }
+
+// Clients Health
+export const clientsHealthApi = {
+  getAll: () => api.get('/clients/health'),
+  updateHealth: (id, score) => api.post(`/clients/${id}/health`, { score }),
+}
+
+// CSM Workload
+export const csmApi = {
+  getWorkload: () => api.get('/csms/workload'),
+}
+
+// CS Projects (separate from Smart Matrice projects)
+export const csProjectsApi = {
+  getAll: () => api.get('/cs-projects/'),
+}
+
+// Playbooks
+export const playbooksApi = {
+  getAll: () => api.get('/playbooks/'),
+  getProgress: () => api.get('/playbooks/progress'),
+  updateProgress: (data) => api.post('/playbooks/progress', data),
+}
+
+// OKRs
+export const okrsApi = {
+  getAll: () => api.get('/okrs/'),
+  updateKR: (okrId, krId, data) => api.put(`/okrs/${okrId}/kr/${krId}`, data),
+}

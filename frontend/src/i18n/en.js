@@ -795,6 +795,12 @@ export default {
   nameRequired: 'Name is required',
   errUnexpected: 'An unexpected error occurred',
   // --- Smart Matrice ---
+  healthTracker: 'Health Tracker',
+  timeline: 'Timeline',
+  okr: 'OKR Tracker',
+  workload: 'Team Workload',
+  playbooks: 'Playbooks',
+  managerDashboard: 'Manager View',
   smartMatrice: 'Smart Matrix',
 
   // --- Smart Import ---
