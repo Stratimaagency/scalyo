@@ -838,6 +838,42 @@ input:focus, select:focus, textarea:focus {
   .topbar-area { padding: 14px 32px; }
 }
 
+/* === MODULES — Shared styles === */
+.mod-page { max-width: 1200px; padding: 4px 0; }
+.mod-hero { background: linear-gradient(135deg, #4285F4 0%, #34A853 50%, #FBBC05 100%); border-radius: 20px; padding: 28px 32px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; color: #fff; }
+.mod-title { font-size: 24px; font-weight: 900; letter-spacing: -0.5px; color: #fff; }
+.mod-subtitle { font-size: 13px; color: rgba(255,255,255,.85); margin-top: 4px; }
+.mod-hero-score { text-align: right; }
+.mod-big-num { font-size: 42px; font-weight: 900; line-height: 1; }
+.mod-big-label { font-size: 12px; font-weight: 600; margin-top: 4px; color: rgba(255,255,255,.85); }
+.mod-kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.mod-kpi-card { background: #fff; border-radius: 16px; padding: 18px 20px; box-shadow: 0 2px 16px rgba(0,0,0,.07); }
+.mod-kpi-label { font-size: 11px; font-weight: 700; color: #5F6368; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+.mod-kpi-val { font-size: 26px; font-weight: 900; line-height: 1.1; }
+.mod-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 2px 16px rgba(0,0,0,.07); margin-bottom: 16px; }
+.mod-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.mod-section-title { font-size: 16px; font-weight: 800; color: #202124; }
+.mod-link { font-size: 12px; font-weight: 700; color: #4285F4; text-decoration: none; }
+.mod-link:hover { text-decoration: underline; }
+.mod-search { background: #F8F9FA; border: 1px solid #E8EAED; border-radius: 10px; padding: 8px 14px; font-size: 13px; width: 240px; outline: none; font-family: 'DM Sans', sans-serif; }
+.mod-search:focus { border-color: #4285F4; box-shadow: 0 0 0 3px rgba(66,133,244,.12); }
+.mod-empty { text-align: center; padding: 40px 20px; color: #5F6368; font-size: 14px; }
+.mod-table-wrap { overflow-x: auto; }
+.mod-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.mod-table th { text-align: left; padding: 10px 8px; font-weight: 700; color: #5F6368; border-bottom: 2px solid #E8EAED; font-size: 11px; text-transform: uppercase; }
+.mod-table td { padding: 10px 8px; border-bottom: 1px solid #F1F3F4; }
+.mod-table tr:hover td { background: #F8F9FA; }
+.mod-pill { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+.mod-pill--healthy { background: #E6F4EA; color: #34A853; }
+.mod-pill--neutral { background: #FEF7E0; color: #FBBC05; }
+.mod-pill--at-risk { background: #FCE8E6; color: #EA4335; }
+.mod-health-bar-wrap { display: inline-block; width: 60px; height: 6px; background: #E8EAED; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
+.mod-health-bar { height: 100%; border-radius: 3px; }
+.mod-progress-bar { height: 8px; background: #E8EAED; border-radius: 4px; overflow: hidden; }
+.mod-progress-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+.mod-alert { padding: 14px 18px; border-radius: 12px; margin-bottom: 16px; font-size: 13px; font-weight: 700; }
+.mod-alert--warn { background: #FEF7E0; border: 1px solid #FBBC05; color: #795500; }
+
 /* Bottom nav */
 .bottom-nav {
   position: fixed;

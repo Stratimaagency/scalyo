@@ -19,6 +19,7 @@ import smartImport from './routes/smart-import.js'
 import { registerIntegrationRoutes } from './routes/integrations.js'
 import { registerTeamRoutes } from './routes/team.js'
 import smartMatrice from './routes/smart-matrice.js'
+import modules from './routes/modules.js'
 
 const app = new Hono()
 
@@ -50,6 +51,9 @@ registerTeamRoutes(app)
 
 // Smart Matrice
 app.route('/api/smart-matrice', smartMatrice)
+
+// Modules (Health, CSM Workload, Projects, OKR, Playbooks)
+app.route('/api', modules)
 
 // Routes at root path — mount DIRECTLY to avoid Hono sub-router bug
 // === TASKS ===

@@ -17,6 +17,13 @@ const ALL_NAV_ITEMS = [
   { key: 'resources', icon: 'books', emoji: '📚', roles: ['manager', 'csm', 'commercial', 'kam'] },
   { key: 'smart-import', icon: 'upload', emoji: '📥', roles: ['manager', 'csm', 'commercial', 'kam'] },
   { key: 'tips', icon: 'lightbulb', emoji: '💡', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  // Modules
+  { key: 'health-tracker', icon: 'heart', emoji: '❤️', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'gantt-timeline', icon: 'calendar', emoji: '📅', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'okr-tracker', icon: 'target', emoji: '🎯', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'workload', icon: 'chart-up', emoji: '⚖️', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'playbook-runner', icon: 'refresh', emoji: '🔄', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'manager-dashboard', icon: 'dashboard', emoji: '📊', roles: ['manager'] },
   { key: 'settings', icon: 'gear', emoji: '⚙️', roles: ['manager', 'csm', 'commercial', 'kam'] },
 ]
 
@@ -38,6 +45,12 @@ const LABEL_KEYS = {
   'smart-import': 'smartImport',
   tips: 'tips',
   settings: 'settings',
+  'health-tracker': 'healthTracker',
+  'gantt-timeline': 'ganttTimeline',
+  'okr-tracker': 'okrTracker',
+  'workload': 'workload',
+  'playbook-runner': 'playbookRunner',
+  'manager-dashboard': 'managerDashboard',
 }
 
 export function useNavigation() {

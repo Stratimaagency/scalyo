@@ -192,6 +192,8 @@ const navGroups = computed(() => {
     { label: 'VUE D\'ENSEMBLE', keys: ['dashboard', 'portfolio', 'kpis'] },
     { label: 'GESTION', keys: ['tasks', 'planning'] },
     { label: 'VUES', keys: ['wellbeing', 'coach', 'roadmap'] },
+    { label: 'MODULES', keys: ['health-tracker', 'gantt-timeline', 'okr-tracker', 'workload', 'playbook-runner'] },
+    { label: 'MANAGER', keys: ['manager-dashboard'] },
     { label: 'OUTILS', keys: ['email-studio', 'quotes', 'integrations', 'resources', 'tips'] },
     { label: 'IMPORT', keys: ['smart-import', 'feedback'] },
   ]
