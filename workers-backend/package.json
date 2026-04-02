@@ -5,8 +5,10 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
+    "deploy:preprod": "wrangler deploy --env preprod",
     "db:migrate": "wrangler d1 execute scalyo-db --local --file=./migrations/0001_init.sql",
-    "db:migrate:remote": "wrangler d1 execute scalyo-db --remote --file=./migrations/0001_init.sql"
+    "db:migrate:remote": "wrangler d1 execute scalyo-db --remote --file=./migrations/0001_init.sql",
+    "db:migrate:preprod": "for f in migrations/*.sql; do echo \"▸ $f\" && wrangler d1 execute scalyo-db-preprod --env preprod --remote --file=\"$f\"; done"
   },
   "dependencies": {
     "hono": "^4.4.0",
