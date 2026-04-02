@@ -201,7 +201,7 @@ const navGroups = computed(() => {
     { label: 'TABLEAU DE BORD', keys: ['dashboard', 'manager-dashboard'] },
     { label: 'CLIENTS', keys: ['portfolio', 'health-tracker', 'playbook-runner'] },
     { label: 'PERFORMANCE', keys: ['kpis', 'okr-tracker', 'roadmap'] },
-    { label: 'PROJETS', keys: ['tasks', 'gantt-timeline', 'planning'] },
+    { label: 'PROJETS', keys: ['tasks'] },
     { label: 'ÉQUIPE', keys: ['workload', 'wellbeing', 'coach'] },
     { label: 'OUTILS', keys: ['email-studio', 'quotes', 'smart-import', 'integrations'] },
   ]

@@ -35,13 +35,20 @@
           </div>
         </div>
 
+        <!-- Client workload from CSM store -->
+        <div v-if="m.csmClients?.length" style="display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+          <span style="font-size: 10px; font-weight: 700; color: var(--sm-t3);">{{ m.csmClients.length }} clients</span>
+          <span v-if="m.csmAtRisk" style="font-size: 10px; font-weight: 700; color: var(--sm-err);">{{ m.csmAtRisk }} à risque</span>
+          <span v-if="m.csmAvgHealth" style="font-size: 10px; font-weight: 700;" :style="{ color: m.csmAvgHealth >= 75 ? 'var(--sm-ok)' : m.csmAvgHealth >= 60 ? 'var(--sm-warn)' : 'var(--sm-err)' }">Santé {{ m.csmAvgHealth }}/100</span>
+        </div>
+
         <!-- Workload bar -->
         <div class="sm-team__card-load">
           <span class="sm-team__card-load-label">Charge</span>
           <div class="sm-team__card-load-bar-wrap">
-            <div class="sm-team__card-load-bar" :style="{ width: workloadPct(m) + '%' }"></div>
+            <div class="sm-team__card-load-bar" :style="{ width: (m.csmWorkloadPct || workloadPct(m)) + '%' }"></div>
           </div>
-          <span class="sm-team__card-load-pct">{{ workloadPct(m) }}%</span>
+          <span class="sm-team__card-load-pct">{{ m.csmWorkloadPct || workloadPct(m) }}%</span>
         </div>
 
         <!-- Task list for this member -->
@@ -58,18 +65,37 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useCSMStore } from '../../stores/csm'
+import { useClientsStore } from '../../stores/clients'
 
 const props = defineProps({
   team: { type: Array, default: () => [] },
   tasks: { type: Array, default: () => [] },
 })
 
+const csmStore = useCSMStore()
+const clientsStore = useClientsStore()
+
 const selectedMember = ref(null)
 
+// Merge SM team data with CSM workload store
+const enrichedTeam = computed(() => {
+  return props.team.map(m => {
+    const csmData = csmStore.workloadByCSM.find(c => c.name === (m.display_name || m.email))
+    return {
+      ...m,
+      csmClients: csmData?.clients || [],
+      csmAtRisk: csmData?.atRiskCount || 0,
+      csmAvgHealth: csmData?.avgHealth || 0,
+      csmWorkloadPct: csmData?.workloadPct || workloadPct(m),
+    }
+  })
+})
+
 const filteredMembers = computed(() => {
-  if (!selectedMember.value) return props.team
-  return props.team.filter(m => m.id === selectedMember.value)
+  if (!selectedMember.value) return enrichedTeam.value
+  return enrichedTeam.value.filter(m => m.id === selectedMember.value)
 })
 
 function memberTasks(memberId) {
@@ -82,6 +108,11 @@ function workloadPct(m) {
   const done = m.done_count || 0
   return Math.min(100, Math.round((total - done) / Math.max(total, 1) * 100))
 }
+
+onMounted(async () => {
+  if (!clientsStore.clients.length) await clientsStore.fetchClients()
+  if (!csmStore.csms.length) await csmStore.fetchCSMs()
+})
 
 function formatDate(d) {
   if (!d) return '—'
