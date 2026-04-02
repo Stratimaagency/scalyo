@@ -23,25 +23,24 @@
               <span v-if="item.key === 'projects' && smProjectCount > 0" class="nav-badge-count">{{ smProjectCount }}</span>
             </button>
           </template>
+          <div style="border-top: 1px solid rgba(0,0,0,.06); margin: 8px 12px;"></div>
         </template>
 
-        <!-- Global nav -->
-        <template v-else>
-          <template v-for="(group, gi) in navGroups" :key="gi">
-            <div class="nav-group-label">{{ group.label }}</div>
-            <router-link
-              v-for="item in group.items"
-              :key="item.key"
-              :to="{ name: item.routeName }"
-              class="nav-btn"
-              active-class="active"
-            >
-              <span class="nav-emoji">{{ item.emoji }}</span>
-              <span class="nav-label">{{ item.label }}</span>
-              <span v-if="item.locked" class="nav-lock">🔒</span>
-              <span v-if="item.key === 'portfolio' && criticalCount > 0" class="nav-badge-critical">{{ criticalCount }}</span>
-            </router-link>
-          </template>
+        <!-- Global nav — always visible -->
+        <template v-for="(group, gi) in navGroups" :key="gi">
+          <div class="nav-group-label">{{ group.label }}</div>
+          <router-link
+            v-for="item in group.items"
+            :key="item.key"
+            :to="{ name: item.routeName }"
+            class="nav-btn"
+            active-class="active"
+          >
+            <span class="nav-emoji">{{ item.emoji }}</span>
+            <span class="nav-label">{{ item.label }}</span>
+            <span v-if="item.locked" class="nav-lock">🔒</span>
+            <span v-if="item.key === 'portfolio' && criticalCount > 0" class="nav-badge-critical">{{ criticalCount }}</span>
+          </router-link>
         </template>
       </nav>
 
