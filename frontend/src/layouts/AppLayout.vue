@@ -128,7 +128,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, inject, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
@@ -158,9 +158,21 @@ const checkMsg = ref('')
 // Smart Matrice detection
 const isSmartMatrice = computed(() => route.name === 'tasks')
 
-// Inject SM nav from SmartMatrice.vue
-const smCurrentView = inject('sm-current-view', ref('projects'))
-const smNavItems = inject('sm-nav-items', [])
+// SM nav — read from store (shared state)
+const smCurrentView = computed({
+  get: () => smStore.currentView,
+  set: (v) => { smStore.currentView = v }
+})
+const smNavItems = [
+  { key: 'projects', emoji: '📁', label: 'Projets', group: 'VUE D\'ENSEMBLE' },
+  { key: 'stats', emoji: '📊', label: 'Stats', group: 'VUE D\'ENSEMBLE' },
+  { key: 'tasks', emoji: '⚡', label: 'Tâches', group: 'GESTION' },
+  { key: 'planning', emoji: '📅', label: 'Planning', group: 'GESTION' },
+  { key: 'kanban', emoji: '🔥', label: 'Kanban', group: 'VUES' },
+  { key: 'eisenhower', emoji: '🎯', label: 'Priorités', group: 'VUES' },
+  { key: 'team', emoji: '👥', label: 'Équipe', group: 'VUES' },
+  { key: 'config', emoji: '⚙️', label: 'Réglages', group: 'RÉGLAGES' },
+]
 
 const smNavGroups = computed(() => {
   if (!smNavItems.length) return []

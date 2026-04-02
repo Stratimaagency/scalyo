@@ -11,6 +11,7 @@ export const useSmartMatriceStore = defineStore('smartMatrice', {
     profile: 'moi',  // 'moi' | 'manager' | 'direction'
     userName: '',
     selectedProject: null,
+    currentView: 'projects',  // shared SM view state
     loading: false,
     error: null,
   }),

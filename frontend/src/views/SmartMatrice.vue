@@ -232,7 +232,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch, provide } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useSmartMatriceStore } from '../stores/smartMatrice'
 import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
@@ -251,8 +251,10 @@ const store = useSmartMatriceStore()
 const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()
 
-const currentView = ref('projects')
-provide('sm-current-view', currentView)
+const currentView = computed({
+  get: () => store.currentView,
+  set: (v) => { store.currentView = v }
+})
 
 const smNavItems = [
   { key: 'projects', emoji: '📁', label: 'Projets', group: 'VUE D\'ENSEMBLE' },
@@ -265,7 +267,7 @@ const smNavItems = [
   { key: 'config', emoji: '⚙️', label: 'Réglages', group: 'RÉGLAGES' },
   { key: 'import', emoji: '📥', label: 'Importer', group: 'RÉGLAGES' },
 ]
-provide('sm-nav-items', smNavItems)
+// smNavItems defined in AppLayout via store
 
 // Filters
 const filterStatus = ref('')
