@@ -24,4 +24,4 @@ APP_URL = "https://scalyo-api-preprod.stratimaagency.workers.dev"
 [[env.preprod.d1_databases]]
 binding = "DB"
 database_name = "scalyo-db-preprod"
-database_id = "REPLACE_WITH_PREPROD_DB_ID"
+database_id = "9bbf3835-af0c-4176-8060-954b2e4c3205"
