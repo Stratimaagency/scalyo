@@ -64,19 +64,20 @@
               background: isTodayDate(d) ? 'rgba(77,182,160,0.02)' : 'transparent',
               cursor: 'pointer', transition: 'background .12s', position: 'relative'
             }">
-            <div v-for="ev in getHourEvents(d, h)" :key="ev.id"
+            <div v-for="ev in getHourEvents(d, h)" :key="ev.id + '-' + h"
               @click.stop="openEditEvent(ev)"
               :style="{
                 background: getEventColor(ev.color).hex + '22',
-                border: '1px solid ' + getEventColor(ev.color).hex + '55',
+                border: ev._isStart ? '1px solid ' + getEventColor(ev.color).hex + '55' : 'none',
                 borderLeft: '3px solid ' + getEventColor(ev.color).hex,
-                borderRadius: '5px',
+                borderRadius: ev._isStart ? '5px 5px 0 0' : '0 0 5px 5px',
                 padding: '3px 6px', fontSize: '10px', fontWeight: 600,
                 color: getEventColor(ev.color).hex,
-                marginBottom: '2px', cursor: 'pointer',
-                overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'
+                marginBottom: '0', cursor: 'pointer',
+                overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+                minHeight: '100%',
               }">
-              {{ ev.time ? ' ' + ev.time + ' ' : ' ' }}{{ ev.title }}
+              <template v-if="ev._isStart">{{ ev.time }} — {{ ev.endTime }} {{ ev.title }}</template>
             </div>
           </div>
         </div>
@@ -392,8 +393,13 @@ function getEventsForDay(d) {
 
 function getHourEvents(d, h) {
   return getEventsForDay(d).filter(e => {
-    const eh = parseInt(e.time?.split(':')[0] || '9')
-    return eh === h
+    const startH = parseInt(e.time?.split(':')[0] || '9')
+    const endH = parseInt(e.endTime?.split(':')[0] || String(startH + 1))
+    return h >= startH && h < endH
+  }).map(e => {
+    const startH = parseInt(e.time?.split(':')[0] || '9')
+    const endH = parseInt(e.endTime?.split(':')[0] || String(startH + 1))
+    return { ...e, _isStart: h === startH, _spanHours: endH - startH }
   })
 }
 
