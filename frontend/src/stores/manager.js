@@ -38,7 +38,7 @@ export const useManagerStore = defineStore('manager', () => {
       ...tasksStore.urgentTasks.map(t => ({
         type: 'urgent-task', severity: 'medium',
         message: `📌 Tâche urgente sur client à risque : ${t.title} (${t.clientName})`,
-        route: { name: 'gantt-timeline' }
+        route: { name: 'tasks' }
       }))
     ].sort((a, b) => a.severity === 'high' ? -1 : 1)
   }))
