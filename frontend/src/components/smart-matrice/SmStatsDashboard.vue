@@ -1,134 +1,184 @@
 <template>
-  <div class="sm-stats" v-if="stats">
-    <!-- Hero dates -->
-    <div class="sm-stats__dates">
-      <div class="sm-stats__date-card sm-stats__date-card--best">
-        <span class="sm-stats__date-label">🟢 Au mieux</span>
-        <span class="sm-stats__date-value">{{ formatDate(stats.dates?.best) }}</span>
-        <span class="sm-stats__date-sub" v-if="stats.dates?.best">{{ daysUntil(stats.dates.best) }}</span>
-      </div>
-      <div class="sm-stats__date-card sm-stats__date-card--probable">
-        <span class="sm-stats__date-label">⭐ Probable</span>
-        <span class="sm-stats__date-value">{{ formatDate(stats.dates?.probable) }}</span>
-        <span class="sm-stats__date-sub" v-if="stats.dates?.probable">{{ daysUntil(stats.dates.probable) }}</span>
-      </div>
-      <div class="sm-stats__date-card sm-stats__date-card--worst">
-        <span class="sm-stats__date-label">🔴 Au pire</span>
-        <span class="sm-stats__date-value">{{ formatDate(stats.dates?.worst) }}</span>
-        <span class="sm-stats__date-sub" v-if="stats.dates?.worst">{{ daysUntil(stats.dates.worst) }}</span>
-      </div>
-    </div>
+  <div class="sms" v-if="stats">
 
-    <!-- KPI strip -->
-    <div class="sm-stats__kpi-row">
-      <div class="sm-stats__kpi"><span class="sm-stats__kpi-val">{{ stats.task_count || 0 }}</span><span class="sm-stats__kpi-label">Tâches</span></div>
-      <div class="sm-stats__kpi"><span class="sm-stats__kpi-val" style="color: var(--sm-ok)">{{ stats.sub_done || 0 }}</span><span class="sm-stats__kpi-label">Terminées</span></div>
-      <div class="sm-stats__kpi"><span class="sm-stats__kpi-val" style="color: var(--sm-warn)">{{ stats.by_status?.in_progress || 0 }}</span><span class="sm-stats__kpi-label">En cours</span></div>
-      <div class="sm-stats__kpi"><span class="sm-stats__kpi-val" style="color: var(--sm-err)">{{ stats.by_status?.blocked || 0 }}</span><span class="sm-stats__kpi-label">Bloquées</span></div>
-      <div class="sm-stats__kpi"><span class="sm-stats__kpi-val" style="color: var(--sm-terra)">{{ stats.progress || 0 }}%</span><span class="sm-stats__kpi-label">Avancement</span></div>
-    </div>
-
-    <!-- Progress by group -->
-    <div class="sm-stats__section" v-if="stats.by_group?.length">
-      <h4 class="sm-stats__section-title">Avancement par phase</h4>
-      <div v-for="g in stats.by_group" :key="g.name" class="sm-stats__phase">
-        <div class="sm-stats__phase-header">
-          <span>{{ g.name }}</span>
-          <span class="sm-stats__phase-pct">{{ g.progress }}%</span>
-        </div>
-        <div class="sm-stats__phase-bar-wrap">
-          <div class="sm-stats__phase-bar" :style="{ width: g.progress + '%' }"></div>
-        </div>
+    <!-- Row 1: Prediction hero + Progress -->
+    <div class="sms-hero">
+      <div class="sms-hero__left">
+        <div class="sms-hero__label">Date de fin estimée</div>
+        <div class="sms-hero__date">{{ formatDate(stats.dates?.probable) }}</div>
+        <div class="sms-hero__sub">{{ daysUntil(stats.dates?.probable) }}</div>
       </div>
-    </div>
-
-    <div class="sm-stats__row">
-      <!-- Donut SVG -->
-      <div class="sm-stats__donut-wrap">
-        <h4 class="sm-stats__section-title">Répartition des tâches</h4>
-        <svg class="sm-stats__donut" width="160" height="160" viewBox="0 0 160 160">
-          <circle v-for="(seg, i) in donutSegments" :key="i"
-            cx="80" cy="80" r="60" fill="none"
-            :stroke="seg.color" stroke-width="24"
-            :stroke-dasharray="seg.dash" :stroke-dashoffset="seg.offset"
-            transform="rotate(-90 80 80)" />
-          <text x="80" y="76" text-anchor="middle" class="sm-stats__donut-total">{{ stats.task_count }}</text>
-          <text x="80" y="94" text-anchor="middle" class="sm-stats__donut-label">tâches</text>
+      <div class="sms-hero__progress">
+        <svg viewBox="0 0 120 120" class="sms-hero__ring">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(0,0,0,.06)" stroke-width="10"/>
+          <circle cx="60" cy="60" r="50" fill="none" :stroke="progressColor" stroke-width="10"
+            stroke-linecap="round" :stroke-dasharray="314" :stroke-dashoffset="314 - (stats.progress || 0) / 100 * 314"
+            transform="rotate(-90 60 60)"/>
+          <text x="60" y="56" text-anchor="middle" class="sms-hero__ring-val">{{ stats.progress || 0 }}%</text>
+          <text x="60" y="72" text-anchor="middle" class="sms-hero__ring-label">avancement</text>
         </svg>
-        <div class="sm-stats__donut-legend">
-          <span v-for="(seg, i) in donutSegments" :key="i" class="sm-stats__legend-item">
-            <span class="sm-stats__legend-dot" :style="{ background: seg.color }"></span>
-            {{ seg.label }}: {{ seg.count }}
-          </span>
+      </div>
+      <div class="sms-hero__dates">
+        <div class="sms-hero__date-item sms-hero__date-item--best">
+          <span class="sms-hero__date-dot" style="background:#16a34a"></span>
+          <div><div class="sms-hero__date-lbl">Au mieux</div><div class="sms-hero__date-val">{{ formatDateShort(stats.dates?.best) }}</div></div>
+        </div>
+        <div class="sms-hero__date-item sms-hero__date-item--worst">
+          <span class="sms-hero__date-dot" style="background:#dc2626"></span>
+          <div><div class="sms-hero__date-lbl">Au pire</div><div class="sms-hero__date-val">{{ formatDateShort(stats.dates?.worst) }}</div></div>
+        </div>
+        <div class="sms-hero__date-item" v-if="stats.dates?.target">
+          <span class="sms-hero__date-dot" style="background:#3b82f6"></span>
+          <div><div class="sms-hero__date-lbl">Cible</div><div class="sms-hero__date-val">{{ formatDateShort(stats.dates.target) }}</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: KPI Cards with trends -->
+    <div class="sms-kpis">
+      <div class="sms-kpi">
+        <div class="sms-kpi__icon" style="background:rgba(59,130,246,.1);color:#3b82f6">📋</div>
+        <div class="sms-kpi__data">
+          <div class="sms-kpi__val">{{ stats.task_count || 0 }}</div>
+          <div class="sms-kpi__label">Tâches totales</div>
+        </div>
+      </div>
+      <div class="sms-kpi">
+        <div class="sms-kpi__icon" style="background:rgba(22,163,74,.1);color:#16a34a">✅</div>
+        <div class="sms-kpi__data">
+          <div class="sms-kpi__val" style="color:#16a34a">{{ stats.by_status?.done || 0 }}</div>
+          <div class="sms-kpi__label">Terminées</div>
+        </div>
+        <div class="sms-kpi__pct" v-if="stats.task_count">{{ Math.round((stats.by_status?.done || 0) / stats.task_count * 100) }}%</div>
+      </div>
+      <div class="sms-kpi">
+        <div class="sms-kpi__icon" style="background:rgba(244,63,94,.1);color:#f43f5e">⚡</div>
+        <div class="sms-kpi__data">
+          <div class="sms-kpi__val" style="color:#f43f5e">{{ stats.by_status?.in_progress || 0 }}</div>
+          <div class="sms-kpi__label">En cours</div>
+        </div>
+      </div>
+      <div class="sms-kpi">
+        <div class="sms-kpi__icon" style="background:rgba(37,99,235,.1);color:#2563eb">⏸</div>
+        <div class="sms-kpi__data">
+          <div class="sms-kpi__val" style="color:#2563eb">{{ stats.by_status?.blocked || 0 }}</div>
+          <div class="sms-kpi__label">Bloquées</div>
+        </div>
+      </div>
+      <div class="sms-kpi" v-if="stats.dates?.remaining_days !== undefined">
+        <div class="sms-kpi__icon" style="background:rgba(217,119,6,.1);color:#d97706">⏱</div>
+        <div class="sms-kpi__data">
+          <div class="sms-kpi__val" style="color:#d97706">{{ stats.dates.remaining_days }}j</div>
+          <div class="sms-kpi__label">Jours restants</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3: Funnel (progression par phase) + Donut -->
+    <div class="sms-row">
+      <!-- Funnel: progression par phase -->
+      <div class="sms-card" v-if="stats.by_group?.length">
+        <h4 class="sms-card__title">Progression par phase</h4>
+        <div class="sms-funnel">
+          <div v-for="(g, i) in stats.by_group" :key="g.name" class="sms-funnel__step">
+            <div class="sms-funnel__step-head">
+              <span class="sms-funnel__step-num">{{ i + 1 }}</span>
+              <span class="sms-funnel__step-name">{{ g.name }}</span>
+              <span class="sms-funnel__step-pct" :style="{ color: g.progress >= 100 ? '#16a34a' : g.progress > 0 ? '#f43f5e' : '#94a3b8' }">{{ g.progress }}%</span>
+            </div>
+            <div class="sms-funnel__bar">
+              <div class="sms-funnel__fill" :style="{ width: g.progress + '%', background: g.progress >= 100 ? '#16a34a' : 'var(--sm-grad-h)' }"></div>
+            </div>
+            <div class="sms-funnel__meta">{{ g.done }}/{{ g.total }} tâches</div>
+          </div>
         </div>
       </div>
 
-      <!-- Velocity curve -->
-      <div class="sm-stats__velocity-wrap">
-        <h4 class="sm-stats__section-title">Vélocité</h4>
-        <svg class="sm-stats__velocity" viewBox="0 0 300 120" preserveAspectRatio="none">
+      <!-- Donut chart -->
+      <div class="sms-card">
+        <h4 class="sms-card__title">Répartition</h4>
+        <div class="sms-donut-wrap">
+          <svg class="sms-donut" width="140" height="140" viewBox="0 0 140 140">
+            <circle v-for="(seg, i) in donutSegments" :key="i"
+              cx="70" cy="70" r="52" fill="none"
+              :stroke="seg.color" stroke-width="20"
+              :stroke-dasharray="seg.dash" :stroke-dashoffset="seg.offset"
+              transform="rotate(-90 70 70)" />
+            <text x="70" y="66" text-anchor="middle" class="sms-donut__total">{{ stats.task_count }}</text>
+            <text x="70" y="82" text-anchor="middle" class="sms-donut__label">tâches</text>
+          </svg>
+          <div class="sms-donut__legend">
+            <div v-for="(seg, i) in donutSegments" :key="i" class="sms-donut__legend-item">
+              <span class="sms-donut__legend-dot" :style="{ background: seg.color }"></span>
+              <span class="sms-donut__legend-name">{{ seg.label }}</span>
+              <span class="sms-donut__legend-val">{{ seg.count }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 4: Velocity + By assignee -->
+    <div class="sms-row">
+      <!-- Velocity -->
+      <div class="sms-card">
+        <h4 class="sms-card__title">Vélocité</h4>
+        <svg class="sms-velocity" viewBox="0 0 300 100" preserveAspectRatio="none">
           <defs>
-            <linearGradient id="sm-vel-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.2"/>
+            <linearGradient id="sms-vel-g" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.15"/>
               <stop offset="100%" stop-color="#f43f5e" stop-opacity="0"/>
             </linearGradient>
           </defs>
-          <polygon :points="areaPoints" fill="url(#sm-vel-fill)"/>
-          <polyline :points="linePoints" fill="none" stroke="url(#sm-cg)" stroke-width="2.5" stroke-linecap="round"/>
-          <circle v-for="(pt, i) in velocityPoints" :key="i" :cx="pt.x" :cy="pt.y" r="3" fill="var(--sm-terra)"/>
+          <polygon :points="areaPoints" fill="url(#sms-vel-g)"/>
+          <polyline :points="linePoints" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round"/>
+          <circle v-for="(pt, i) in velocityPoints" :key="i" :cx="pt.x" :cy="pt.y" r="3" fill="#f43f5e"/>
         </svg>
-      </div>
-    </div>
-
-    <!-- By assignee -->
-    <div class="sm-stats__section" v-if="stats.by_assignee?.length">
-      <h4 class="sm-stats__section-title">Charge par personne</h4>
-      <div v-for="a in stats.by_assignee" :key="a.name" class="sm-stats__assignee">
-        <div class="sm-stats__assignee-info">
-          <span class="sm-stats__assignee-avatar">{{ (a.name || '?')[0] }}</span>
-          <span class="sm-stats__assignee-name">{{ a.name }}</span>
+        <div class="sms-velocity__labels">
+          <span v-for="(pt, i) in velocityPoints" :key="i">S{{ i + 1 }}</span>
         </div>
-        <div class="sm-stats__assignee-bar-wrap">
-          <div class="sm-stats__assignee-bar" :style="{ width: (a.total ? Math.round(a.done / a.total * 100) : 0) + '%' }"></div>
+      </div>
+
+      <!-- By assignee -->
+      <div class="sms-card" v-if="stats.by_assignee?.length">
+        <h4 class="sms-card__title">Charge par personne</h4>
+        <div class="sms-assignees">
+          <div v-for="a in stats.by_assignee" :key="a.name" class="sms-assignee">
+            <div class="sms-assignee__avatar">{{ (a.name || '?')[0] }}</div>
+            <div class="sms-assignee__info">
+              <div class="sms-assignee__name">{{ a.name }}</div>
+              <div class="sms-assignee__bar-wrap">
+                <div class="sms-assignee__bar" :style="{ width: (a.total ? Math.round(a.done / a.total * 100) : 0) + '%' }"></div>
+              </div>
+            </div>
+            <div class="sms-assignee__nums">{{ a.done }}/{{ a.total }}</div>
+          </div>
         </div>
-        <span class="sm-stats__assignee-nums">{{ a.done }}/{{ a.total }}</span>
       </div>
     </div>
 
-    <!-- Global progress -->
-    <div class="sm-stats__global">
-      <h4 class="sm-stats__section-title">Progression globale</h4>
-      <div class="sm-stats__global-bar-wrap">
-        <div class="sm-stats__global-bar" :style="{ width: stats.progress + '%' }"></div>
+    <!-- Row 5: Time metrics -->
+    <div class="sms-time" v-if="stats.time">
+      <div class="sms-time__item">
+        <div class="sms-time__val">{{ stats.time.total_estimated || 0 }}h</div>
+        <div class="sms-time__label">Temps restant</div>
       </div>
-      <div class="sm-stats__global-nums">
-        <span>{{ stats.sub_done }}/{{ stats.sub_total }} sous-tâches</span>
-        <span class="sm-stats__global-pct">{{ stats.progress }}%</span>
+      <div class="sms-time__item">
+        <div class="sms-time__val">{{ stats.time.effective_hours_day || 8 }}h</div>
+        <div class="sms-time__label">Heures/jour</div>
       </div>
-    </div>
-
-    <!-- Time info -->
-    <div class="sm-stats__time" v-if="stats.time">
-      <div class="sm-stats__time-item">
-        <span class="sm-stats__time-label">Temps estimé restant</span>
-        <span class="sm-stats__time-val">{{ stats.time.total_estimated || 0 }}h</span>
+      <div class="sms-time__item" v-if="stats.time.paused_count">
+        <div class="sms-time__val" style="color:#2563eb">{{ stats.time.paused_count }}</div>
+        <div class="sms-time__label">En pause</div>
       </div>
-      <div class="sm-stats__time-item">
-        <span class="sm-stats__time-label">Heures effectives/jour</span>
-        <span class="sm-stats__time-val">{{ stats.time.effective_hours_day || 8 }}h</span>
-      </div>
-      <div class="sm-stats__time-item">
-        <span class="sm-stats__time-label">Jours restants</span>
-        <span class="sm-stats__time-val">{{ stats.dates?.remaining_days || '—' }}j</span>
-      </div>
-      <div class="sm-stats__time-item" v-if="stats.time.paused_count">
-        <span class="sm-stats__time-label">En pause</span>
-        <span class="sm-stats__time-val" style="color: var(--sm-info)">{{ stats.time.paused_count }}</span>
+      <div class="sms-time__item" v-if="stats.time.waiting_count">
+        <div class="sms-time__val" style="color:#d97706">{{ stats.time.waiting_count }}</div>
+        <div class="sms-time__label">En attente</div>
       </div>
     </div>
   </div>
 
-  <div v-else class="sm-stats__empty">
+  <div v-else class="sms-empty">
     <p style="font-size: 40px; margin-bottom: 12px;">📊</p>
     <p style="font-weight: 700;">Sélectionnez un projet pour voir les statistiques</p>
   </div>
@@ -137,25 +187,33 @@
 <script setup>
 import { computed } from 'vue'
 
-const props = defineProps({
-  stats: { type: Object, default: null },
-})
+const props = defineProps({ stats: { type: Object, default: null } })
 
 function formatDate(d) {
   if (!d) return '—'
   return new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
 }
-
+function formatDateShort(d) {
+  if (!d) return '—'
+  return new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+}
 function daysUntil(d) {
   if (!d) return ''
   const diff = Math.ceil((new Date(d) - new Date()) / 86400000)
-  if (diff < 0) return `il y a ${-diff}j`
+  if (diff < 0) return `${-diff}j de retard`
   if (diff === 0) return "aujourd'hui"
-  return `dans ${diff}j`
+  return `dans ${diff} jours`
 }
 
+const progressColor = computed(() => {
+  const p = props.stats?.progress || 0
+  if (p >= 80) return '#16a34a'
+  if (p >= 50) return '#f43f5e'
+  return '#d97706'
+})
+
 const statusColors = {
-  todo: { color: '#3b82f6', label: 'À faire' },
+  todo: { color: '#94a3b8', label: 'À faire' },
   in_progress: { color: '#f43f5e', label: 'En cours' },
   blocked: { color: '#2563eb', label: 'Bloqué' },
   done: { color: '#16a34a', label: 'Terminé' },
@@ -164,10 +222,11 @@ const statusColors = {
 const donutSegments = computed(() => {
   const bs = props.stats?.by_status || {}
   const total = Object.values(bs).reduce((a, b) => a + b, 0) || 1
-  const circ = 2 * Math.PI * 60
+  const circ = 2 * Math.PI * 52
   let offset = 0
   const segs = []
   for (const [status, count] of Object.entries(bs)) {
+    if (!count) continue
     const pct = count / total
     const dash = pct * circ
     segs.push({ color: statusColors[status]?.color || '#ccc', label: statusColors[status]?.label || status, count, dash: `${dash} ${circ - dash}`, offset: -offset })
@@ -178,70 +237,93 @@ const donutSegments = computed(() => {
 
 const velocityPoints = computed(() => {
   const progress = props.stats?.progress || 0
-  return [10, 15, 22, 30, 45, 55, 60, progress].map((v, i, arr) => ({
+  return [5, 12, 20, 30, 42, 55, 65, progress].map((v, i, arr) => ({
     x: (i / (arr.length - 1)) * 280 + 10,
-    y: 110 - (v / 100) * 100,
+    y: 90 - (v / 100) * 80,
   }))
 })
 const linePoints = computed(() => velocityPoints.value.map(p => `${p.x},${p.y}`).join(' '))
 const areaPoints = computed(() => {
   const pts = velocityPoints.value
   if (!pts.length) return ''
-  return `${pts[0].x},110 ` + pts.map(p => `${p.x},${p.y}`).join(' ') + ` ${pts[pts.length - 1].x},110`
+  return `${pts[0].x},95 ` + pts.map(p => `${p.x},${p.y}`).join(' ') + ` ${pts[pts.length - 1].x},95`
 })
 </script>
 
 <style scoped>
-.sm-stats { font-family: 'DM Sans', sans-serif; }
-.sm-stats__empty { text-align: center; padding: 40px; color: var(--sm-t3); }
-.sm-stats__dates { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-.sm-stats__date-card { background: var(--sm-white); border: 1px solid var(--sm-bd); border-radius: var(--sm-r); padding: 16px; text-align: center; }
-.sm-stats__date-card--probable { border-color: var(--sm-terra); background: rgba(244,63,94,.04); }
-.sm-stats__date-label { display: block; font-size: 11px; color: var(--sm-t3); margin-bottom: 4px; font-weight: 600; }
-.sm-stats__date-value { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 18px; color: var(--sm-t1); display: block; }
-.sm-stats__date-sub { font-size: 11px; color: var(--sm-t3); display: block; margin-top: 2px; }
+.sms { font-family: 'DM Sans', sans-serif; }
+.sms-empty { text-align: center; padding: 40px; color: var(--sm-t3); }
 
-.sm-stats__kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
-.sm-stats__kpi { background: var(--sm-white); border: 1px solid var(--sm-bd); border-radius: 10px; padding: 12px; text-align: center; }
-.sm-stats__kpi-val { display: block; font-size: 24px; font-weight: 800; color: var(--sm-t1); letter-spacing: -.5px; }
-.sm-stats__kpi-label { display: block; font-size: 10px; color: var(--sm-t3); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
+/* Hero */
+.sms-hero { display: flex; align-items: center; gap: 24px; background: var(--sm-white); border: 1px solid var(--sm-bd); border-radius: 16px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+.sms-hero__left { flex: 1; }
+.sms-hero__label { font-size: 11px; font-weight: 600; color: var(--sm-t3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+.sms-hero__date { font-size: 26px; font-weight: 800; color: var(--sm-t1); letter-spacing: -.5px; }
+.sms-hero__sub { font-size: 13px; color: var(--sm-t3); margin-top: 2px; }
+.sms-hero__progress { flex-shrink: 0; }
+.sms-hero__ring { width: 100px; height: 100px; }
+.sms-hero__ring-val { font-size: 22px; font-weight: 900; fill: var(--sm-t1); }
+.sms-hero__ring-label { font-size: 10px; fill: var(--sm-t3); }
+.sms-hero__dates { display: flex; flex-direction: column; gap: 8px; }
+.sms-hero__date-item { display: flex; align-items: center; gap: 8px; }
+.sms-hero__date-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.sms-hero__date-lbl { font-size: 10px; color: var(--sm-t3); font-weight: 500; }
+.sms-hero__date-val { font-size: 13px; font-weight: 700; color: var(--sm-t1); }
 
-.sm-stats__section { margin-bottom: 20px; }
-.sm-stats__section-title { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 16px; color: var(--sm-t1); margin: 0 0 12px; }
-.sm-stats__phase { margin-bottom: 10px; }
-.sm-stats__phase-header { display: flex; justify-content: space-between; font-size: 13px; color: var(--sm-t2); margin-bottom: 4px; }
-.sm-stats__phase-pct { font-weight: 600; color: var(--sm-terra); }
-.sm-stats__phase-bar-wrap { height: 6px; background: var(--sm-bd); border-radius: 3px; overflow: hidden; }
-.sm-stats__phase-bar { height: 100%; background: var(--sm-grad-h); border-radius: 3px; transition: width .4s; }
-.sm-stats__row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-@media (max-width: 700px) { .sm-stats__row { grid-template-columns: 1fr; } }
-.sm-stats__donut-wrap { text-align: center; }
-.sm-stats__donut { display: block; margin: 0 auto 12px; }
-.sm-stats__donut-total { font-size: 28px; font-weight: 900; fill: var(--sm-t1); }
-.sm-stats__donut-label { font-size: 12px; fill: var(--sm-t3); }
-.sm-stats__donut-legend { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-.sm-stats__legend-item { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--sm-t2); }
-.sm-stats__legend-dot { width: 10px; height: 10px; border-radius: 3px; }
-.sm-stats__velocity-wrap { min-height: 120px; }
-.sm-stats__velocity { width: 100%; height: 120px; }
+/* KPIs */
+.sms-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.sms-kpi { display: flex; align-items: center; gap: 10px; background: var(--sm-white); border: 1px solid var(--sm-bd); border-radius: 12px; padding: 14px; }
+.sms-kpi__icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.sms-kpi__data { flex: 1; min-width: 0; }
+.sms-kpi__val { font-size: 22px; font-weight: 800; color: var(--sm-t1); line-height: 1; }
+.sms-kpi__label { font-size: 10px; color: var(--sm-t3); font-weight: 500; margin-top: 2px; }
+.sms-kpi__pct { font-size: 12px; font-weight: 800; color: #16a34a; background: rgba(22,163,74,.08); padding: 2px 6px; border-radius: 6px; }
 
-/* Assignee section */
-.sm-stats__assignee { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.sm-stats__assignee-info { display: flex; align-items: center; gap: 8px; min-width: 120px; }
-.sm-stats__assignee-avatar { width: 26px; height: 26px; border-radius: 8px; background: var(--sm-grad); color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0; }
-.sm-stats__assignee-name { font-size: 12px; font-weight: 600; color: var(--sm-t1); }
-.sm-stats__assignee-bar-wrap { flex: 1; height: 6px; background: var(--sm-bd); border-radius: 3px; overflow: hidden; }
-.sm-stats__assignee-bar { height: 100%; background: var(--sm-grad-h); border-radius: 3px; transition: width .4s; }
-.sm-stats__assignee-nums { font-size: 11px; font-weight: 700; color: var(--sm-t2); min-width: 40px; text-align: right; }
+/* Row grid */
+.sms-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+@media (max-width: 700px) { .sms-row { grid-template-columns: 1fr; } }
 
-.sm-stats__global { margin-bottom: 20px; }
-.sm-stats__global-bar-wrap { height: 10px; background: var(--sm-bd); border-radius: 5px; overflow: hidden; }
-.sm-stats__global-bar { height: 100%; background: var(--sm-grad-h); border-radius: 5px; transition: width .4s; }
-.sm-stats__global-nums { display: flex; justify-content: space-between; font-size: 12px; color: var(--sm-t3); margin-top: 4px; }
-.sm-stats__global-pct { font-weight: 800; color: var(--sm-terra); }
+/* Card */
+.sms-card { background: var(--sm-white); border: 1px solid var(--sm-bd); border-radius: 12px; padding: 18px; }
+.sms-card__title { font-size: 14px; font-weight: 700; color: var(--sm-t1); margin: 0 0 14px; }
 
-.sm-stats__time { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-.sm-stats__time-item { background: var(--sm-white); border: 1px solid var(--sm-bd); border-radius: 10px; padding: 12px; }
-.sm-stats__time-label { display: block; font-size: 10px; color: var(--sm-t3); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
-.sm-stats__time-val { font-size: 20px; font-weight: 800; color: var(--sm-t1); }
+/* Funnel */
+.sms-funnel { display: flex; flex-direction: column; gap: 12px; }
+.sms-funnel__step-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.sms-funnel__step-num { width: 20px; height: 20px; border-radius: 50%; background: var(--sm-bg); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: var(--sm-t2); flex-shrink: 0; }
+.sms-funnel__step-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--sm-t1); }
+.sms-funnel__step-pct { font-size: 13px; font-weight: 800; }
+.sms-funnel__bar { height: 6px; background: rgba(0,0,0,.04); border-radius: 3px; overflow: hidden; }
+.sms-funnel__fill { height: 100%; border-radius: 3px; transition: width .4s; }
+.sms-funnel__meta { font-size: 10px; color: var(--sm-t3); margin-top: 2px; }
+
+/* Donut */
+.sms-donut-wrap { display: flex; align-items: center; gap: 20px; }
+.sms-donut__total { font-size: 26px; font-weight: 900; fill: var(--sm-t1); }
+.sms-donut__label { font-size: 11px; fill: var(--sm-t3); }
+.sms-donut__legend { display: flex; flex-direction: column; gap: 6px; }
+.sms-donut__legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.sms-donut__legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.sms-donut__legend-name { color: var(--sm-t2); flex: 1; }
+.sms-donut__legend-val { font-weight: 800; color: var(--sm-t1); }
+
+/* Velocity */
+.sms-velocity { width: 100%; height: 100px; }
+.sms-velocity__labels { display: flex; justify-content: space-between; font-size: 9px; color: var(--sm-t3); font-weight: 500; padding: 4px 10px 0; }
+
+/* Assignees */
+.sms-assignees { display: flex; flex-direction: column; gap: 10px; }
+.sms-assignee { display: flex; align-items: center; gap: 10px; }
+.sms-assignee__avatar { width: 28px; height: 28px; border-radius: 8px; background: var(--sm-grad); color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0; }
+.sms-assignee__info { flex: 1; min-width: 0; }
+.sms-assignee__name { font-size: 12px; font-weight: 600; color: var(--sm-t1); margin-bottom: 3px; }
+.sms-assignee__bar-wrap { height: 5px; background: rgba(0,0,0,.04); border-radius: 3px; overflow: hidden; }
+.sms-assignee__bar { height: 100%; background: var(--sm-grad-h); border-radius: 3px; transition: width .4s; }
+.sms-assignee__nums { font-size: 11px; font-weight: 700; color: var(--sm-t2); min-width: 35px; text-align: right; }
+
+/* Time */
+.sms-time { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+.sms-time__item { background: var(--sm-white); border: 1px solid var(--sm-bd); border-radius: 10px; padding: 14px; text-align: center; }
+.sms-time__val { font-size: 22px; font-weight: 800; color: var(--sm-t1); }
+.sms-time__label { font-size: 10px; color: var(--sm-t3); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-top: 2px; }
 </style>
