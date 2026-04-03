@@ -1004,4 +1004,22 @@ export default {
   stAllFilter: 'Tout',
   stSelectProject: 'Sélectionnez un projet pour voir les statistiques',
   stTasks: 'tâches',
+  // Table headers & misc
+  thClient: 'Client',
+  thScore: 'Score',
+  thStatus: 'Statut',
+  thARR: 'ARR',
+  thCSM: 'CSM',
+  thRenewal: 'Renouvellement',
+  searchPlaceholder: 'Rechercher...',
+  loadingText: 'Chargement...',
+  cancelBtn: 'Annuler',
+  // Widget labels
+  wdgDates: 'Dates',
+  wdgKPIs: 'KPIs',
+  wdgPhases: 'Phases',
+  wdgDistribution: 'Répartition',
+  wdgVelocity: 'Vélocité',
+  wdgTeam: 'Équipe',
+  wdgTime: 'Temps',
 }

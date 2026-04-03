@@ -92,7 +92,7 @@
           <span class="sm-eisen__transfer-avatar">{{ m.initials }}</span>
           {{ m.display_name || m.email }}
         </div>
-        <button class="sm-eisen__transfer-cancel" @click="transferringTask = null">Annuler</button>
+        <button class="sm-eisen__transfer-cancel" @click="transferringTask = null">{{ t('cancelBtn') }}</button>
       </div>
     </div>
   </div>

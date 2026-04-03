@@ -42,20 +42,20 @@
     <div class="mod-card">
       <div class="mod-card-header">
         <h3 class="mod-section-title">🏢 {{ t('htAllClients') }}</h3>
-        <input v-model="search" placeholder="🔍 Rechercher..." class="mod-search" />
+        <input v-model="search" :placeholder="'🔍 ' + t('searchPlaceholder')" class="mod-search" />
       </div>
-      <div v-if="clientsStore.loading" class="mod-empty">Chargement...</div>
+      <div v-if="clientsStore.loading" class="mod-empty">{{ t('loadingText') }}</div>
       <div v-else-if="!filteredClients.length" class="mod-empty">{{ t('noClientsFound') }}</div>
       <div v-else class="mod-table-wrap">
         <table class="mod-table">
           <thead>
             <tr>
-              <th>Client</th>
-              <th>Score</th>
-              <th>Statut</th>
-              <th>ARR</th>
-              <th>CSM</th>
-              <th>Renouvellement</th>
+              <th>{{ t('thClient') }}</th>
+              <th>{{ t('thScore') }}</th>
+              <th>{{ t('thStatus') }}</th>
+              <th>{{ t('thARR') }}</th>
+              <th>{{ t('thCSM') }}</th>
+              <th>{{ t('thRenewal') }}</th>
               <th v-if="lateTasksByClient">{{ t('lateTasksCol') }}</th>
             </tr>
           </thead>

@@ -242,13 +242,13 @@ const filteredTasks = computed(() => {
 
 // Widget visibility
 const widgets = [
-  { key: 'hero', icon: '📅', label: 'Dates' },
-  { key: 'kpis', icon: '📊', label: 'KPIs' },
-  { key: 'funnel', icon: '🔄', label: 'Phases' },
-  { key: 'donut', icon: '🍩', label: 'Répartition' },
-  { key: 'velocity', icon: '📈', label: 'Vélocité' },
-  { key: 'assignees', icon: '👥', label: 'Équipe' },
-  { key: 'time', icon: '⏱', label: 'Temps' },
+  { key: 'hero', icon: '📅', label: t('wdgDates') },
+  { key: 'kpis', icon: '📊', label: t('wdgKPIs') },
+  { key: 'funnel', icon: '🔄', label: t('wdgPhases') },
+  { key: 'donut', icon: '🍩', label: t('wdgDistribution') },
+  { key: 'velocity', icon: '📈', label: t('wdgVelocity') },
+  { key: 'assignees', icon: '👥', label: t('wdgTeam') },
+  { key: 'time', icon: '⏱', label: t('wdgTime') },
 ]
 const visibleWidgets = reactive({ hero: true, kpis: true, funnel: true, donut: true, velocity: true, assignees: true, time: true })
 
