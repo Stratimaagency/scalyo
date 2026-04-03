@@ -44,6 +44,9 @@ portfolio.get('/accounts/', async (c) => {
   const accounts = results.map(a => ({
     ...a,
     issues: JSON.parse(a.issues || '[]'),
+    tags: JSON.parse(a.tags || '[]'),
+    contacts: JSON.parse(a.contacts || '[]'),
+    interactions: JSON.parse(a.interactions || '[]'),
   }))
 
   return c.json(accounts)
@@ -141,7 +144,7 @@ portfolio.patch('/accounts/:id/', async (c) => {
     if (!account) return c.json({ error: 'Not found' }, 404)
   }
 
-  const allowed = ['name', 'csm', 'mrr', 'arr', 'industry', 'usage', 'health', 'risk', 'plan', 'contact', 'contact_email', 'notes', 'onboarding_date', 'renewal_date', 'renewal']
+  const allowed = ['name', 'csm', 'mrr', 'arr', 'industry', 'usage', 'health', 'risk', 'plan', 'contact', 'contact_email', 'notes', 'onboarding_date', 'renewal_date', 'renewal', 'phone', 'website', 'address', 'company_size', 'contract_start', 'contract_end', 'contract_value', 'logo_url', 'nps', 'last_contact_date']
   const sets = []
   const values = []
 
@@ -158,10 +161,10 @@ portfolio.patch('/accounts/:id/', async (c) => {
     values.push((parseFloat(data.mrr) || 0) * 12)
   }
 
-  if (data.issues !== undefined) {
-    sets.push('issues = ?')
-    values.push(JSON.stringify(data.issues))
-  }
+  if (data.issues !== undefined) { sets.push('issues = ?'); values.push(JSON.stringify(data.issues)) }
+  if (data.tags !== undefined) { sets.push('tags = ?'); values.push(JSON.stringify(data.tags)) }
+  if (data.contacts !== undefined) { sets.push('contacts = ?'); values.push(JSON.stringify(data.contacts)) }
+  if (data.interactions !== undefined) { sets.push('interactions = ?'); values.push(JSON.stringify(data.interactions)) }
 
   if (sets.length === 0) return c.json({ error: 'No valid fields' }, 400)
 
