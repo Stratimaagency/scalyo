@@ -54,14 +54,19 @@ export const useTasksStore = defineStore('tasks', () => {
 
   async function fetchAll() {
     try {
-      const [projRes, pbRes, okrRes] = await Promise.all([
+      const [projRes, pbRes, okrRes, progRes] = await Promise.all([
         api.get('/modules/projects').catch(() => ({ data: { data: [] } })),
         api.get('/modules/playbooks').catch(() => ({ data: { data: [] } })),
         api.get('/modules/okrs').catch(() => ({ data: { data: [] } })),
+        api.get('/modules/playbooks/progress').catch(() => ({ data: { data: {} } })),
       ])
       projects.value = projRes.data.data || []
       playbooks.value = pbRes.data.data || []
       okrs.value = okrRes.data.data || []
+      const apiProgress = progRes.data.data || {}
+      if (Object.keys(apiProgress).length) {
+        playbookProgress.value = apiProgress
+      }
     } catch {
       // API not ready
     }
