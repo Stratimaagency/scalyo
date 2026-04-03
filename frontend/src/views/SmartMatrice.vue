@@ -223,11 +223,11 @@
         <div class="sm-modal__row">
           <div class="sm-modal__field">
             <label>{{ lt.startDate }}</label>
-            <input v-model="editTask.start_date" type="date" />
+            <input v-model="editTask.start_date" type="datetime-local" />
           </div>
           <div class="sm-modal__field">
             <label>{{ lt.endDate }}</label>
-            <input v-model="editTask.end_date" type="date" />
+            <input v-model="editTask.end_date" type="datetime-local" />
           </div>
         </div>
         <div class="sm-modal__actions">
@@ -281,11 +281,11 @@
         <div class="sm-modal__row">
           <div class="sm-modal__field">
             <label>{{ lt.startDate }}</label>
-            <input v-model="newTask.start_date" type="date" />
+            <input v-model="newTask.start_date" type="datetime-local" />
           </div>
           <div class="sm-modal__field">
             <label>{{ lt.endDate }}</label>
-            <input v-model="newTask.end_date" type="date" />
+            <input v-model="newTask.end_date" type="datetime-local" />
           </div>
         </div>
         <div class="sm-modal__field">
