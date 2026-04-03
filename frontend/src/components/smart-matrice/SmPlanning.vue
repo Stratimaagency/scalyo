@@ -8,6 +8,20 @@
         <button class="smp-nav__btn" @click="shiftWeek(1)">&rarr;</button>
         <span class="smp-nav__title">{{ weekLabel }}</span>
       </div>
+      <div class="smp-nav__right" v-if="plannedTasks.length">
+        <button class="smp-export smp-export--google" @click="exportToGoogle" title="Ajouter à Google Calendar">
+          <span class="smp-export__icon">G</span> Google
+        </button>
+        <button class="smp-export smp-export--outlook" @click="exportToOutlook" title="Ajouter à Outlook">
+          <span class="smp-export__icon">O</span> Outlook
+        </button>
+        <button class="smp-export smp-export--apple" @click="exportICS" title="Télécharger .ics (Apple Calendar, etc.)">
+          <span class="smp-export__icon">📅</span> .ics
+        </button>
+        <button class="smp-export smp-export--all" @click="exportAllICS" title="Exporter toute la semaine">
+          ⬇ Tout exporter
+        </button>
+      </div>
     </div>
 
     <!-- Calendar grid -->
@@ -193,14 +207,105 @@ function startResize(e, evt, dateStr) {
   document.addEventListener('mousemove', onMouseMove)
   document.addEventListener('mouseup', onMouseUp)
 }
+
+// === EXPORT FUNCTIONS ===
+
+const plannedTasks = computed(() => props.tasks.filter(t => t.start_date))
+
+function getTaskDate(t) { return (t.start_date || '').slice(0, 10) }
+function getTaskStartTime(t) { return (t.start_date || '').slice(11, 16) || '09:00' }
+function getTaskEndTime(t) {
+  if (t.end_date) return t.end_date.slice(11, 16)
+  const h = parseInt(getTaskStartTime(t).split(':')[0]) + (t.dur_estimated || 1)
+  return String(Math.floor(h)).padStart(2, '0') + ':' + String(Math.round((h % 1) * 60)).padStart(2, '0')
+}
+
+function toICSDate(dateStr, timeStr) {
+  if (!dateStr) return ''
+  const [y, m, d] = dateStr.split('-')
+  const [h, mi] = (timeStr || '09:00').split(':')
+  return y + m + d + 'T' + h + mi + '00'
+}
+
+function exportToGoogle() {
+  for (const t of plannedTasks.value) {
+    const start = toICSDate(getTaskDate(t), getTaskStartTime(t))
+    const end = toICSDate(getTaskDate(t), getTaskEndTime(t))
+    const p = new URLSearchParams({
+      action: 'TEMPLATE', text: t.name, dates: `${start}/${end}`,
+      details: t.description || ''
+    })
+    window.open(`https://www.google.com/calendar/render?${p.toString()}`, '_blank')
+  }
+}
+
+function exportToOutlook() {
+  for (const t of plannedTasks.value) {
+    const start = `${getTaskDate(t)}T${getTaskStartTime(t)}:00`
+    const end = `${getTaskDate(t)}T${getTaskEndTime(t)}:00`
+    const p = new URLSearchParams({
+      path: '/calendar/action/compose', rru: 'addevent',
+      subject: t.name, startdt: start, enddt: end,
+      body: t.description || ''
+    })
+    window.open(`https://outlook.live.com/calendar/0/deeplink/compose?${p.toString()}`, '_blank')
+  }
+}
+
+function buildICSContent(tasks) {
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Scalyo//Planning//FR']
+  for (const t of tasks) {
+    lines.push('BEGIN:VEVENT')
+    lines.push('UID:scalyo-' + t.id + '@scalyo.app')
+    lines.push('DTSTAMP:' + toICSDate(new Date().toISOString().slice(0, 10), '00:00'))
+    lines.push('DTSTART:' + toICSDate(getTaskDate(t), getTaskStartTime(t)))
+    lines.push('DTEND:' + toICSDate(getTaskDate(t), getTaskEndTime(t)))
+    lines.push('SUMMARY:' + (t.name || ''))
+    if (t.description) lines.push('DESCRIPTION:' + t.description.replace(/\n/g, '\\n'))
+    lines.push('END:VEVENT')
+  }
+  lines.push('END:VCALENDAR')
+  return lines.join('\r\n')
+}
+
+function downloadFile(content, filename) {
+  const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url; a.download = filename; a.click()
+  URL.revokeObjectURL(url)
+}
+
+function exportICS() {
+  if (!plannedTasks.value.length) return
+  const t = plannedTasks.value[0]
+  downloadFile(buildICSContent([t]), (t.name || 'event').replace(/[^a-z0-9]/gi, '_') + '.ics')
+}
+
+function exportAllICS() {
+  if (!plannedTasks.value.length) return
+  downloadFile(buildICSContent(plannedTasks.value), 'scalyo-planning.ics')
+}
 </script>
 
 <style scoped>
 .smp { font-family: 'DM Sans', sans-serif; }
 
 /* Navigation */
-.smp-nav { display: flex; align-items: center; margin-bottom: 16px; }
+.smp-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
 .smp-nav__left { display: flex; align-items: center; gap: 8px; }
+.smp-nav__right { display: flex; align-items: center; gap: 6px; }
+.smp-export { display: flex; align-items: center; gap: 4px; border: 1px solid var(--sm-bd); background: var(--sm-white); border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .12s; }
+.smp-export:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+.smp-export__icon { font-weight: 800; font-size: 12px; }
+.smp-export--google { color: #EA4335; border-color: rgba(234,67,53,.2); }
+.smp-export--google:hover { background: rgba(234,67,53,.06); }
+.smp-export--outlook { color: #0078D4; border-color: rgba(0,120,212,.2); }
+.smp-export--outlook:hover { background: rgba(0,120,212,.06); }
+.smp-export--apple { color: var(--sm-t2); }
+.smp-export--apple:hover { background: var(--sm-bg); }
+.smp-export--all { color: var(--sm-terra); border-color: rgba(244,63,94,.2); }
+.smp-export--all:hover { background: rgba(244,63,94,.06); }
 .smp-nav__btn { border: 1px solid var(--sm-bd); background: var(--sm-white); border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 14px; color: var(--sm-t2); display: flex; align-items: center; justify-content: center; }
 .smp-nav__btn:hover { background: var(--sm-bg); }
 .smp-nav__today { border: 1px solid var(--sm-bd); background: var(--sm-white); border-radius: 8px; padding: 5px 14px; font-size: 12px; font-weight: 600; color: var(--sm-terra); cursor: pointer; }
