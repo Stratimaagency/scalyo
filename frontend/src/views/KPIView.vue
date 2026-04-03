@@ -271,6 +271,9 @@
             <ScalyoIcon name="dashboard" :size="14" style="margin-right: 6px;" />
             {{ t('copilExportPdf') }}
           </button>
+          <button class="btn btn-primary" @click="exportPPT" style="background: #c45c3a;">
+            📊 PPT
+          </button>
           <button class="btn btn-secondary" @click="shareCopil">
             {{ t('copilShare') }}
           </button>
@@ -578,6 +581,72 @@ function toggleAction(sectionIdx, actionIdx) {
 // Export PDF
 function exportPdf() {
   window.print()
+}
+
+// Export PPT
+async function exportPPT() {
+  if (!session.value) return
+  const s = session.value
+  const PptxGenJS = (await import('pptxgenjs')).default
+  const pptx = new PptxGenJS()
+  pptx.layout = 'LAYOUT_16x9'
+  const brandColor = (s.brand_color || '#3b82f6').replace('#', '')
+  const brandSecondary = (s.brand_color_secondary || '#1e3a5f').replace('#', '')
+
+  // Slide 1: Title
+  const slide1 = pptx.addSlide()
+  slide1.addText(s.title || 'COPIL', { x: 0.5, y: 1.2, w: 9, fontSize: 32, bold: true, color: brandSecondary })
+  slide1.addText(`${s.client_name || ''} — ${s.period || ''}`, { x: 0.5, y: 2.2, w: 9, fontSize: 18, color: '666666' })
+  if (s.presentation_date) {
+    slide1.addText(s.presentation_date, { x: 0.5, y: 2.8, w: 9, fontSize: 14, color: '999999' })
+  }
+
+  // Generate slides from sections
+  for (const section of (s.sections || [])) {
+    const slide = pptx.addSlide()
+    slide.addText(section.title || '', { x: 0.5, y: 0.3, w: 9, fontSize: 22, bold: true, color: brandSecondary })
+
+    if (section.type === 'kpis' && section.data) {
+      const kpiData = section.data
+      const kpis = [
+        { label: 'ARR', value: kpiData.arr || '—' },
+        { label: 'MRR', value: kpiData.mrr || '—' },
+        { label: 'Health Score', value: kpiData.health || '—' },
+        { label: 'NPS', value: kpiData.nps || '—' },
+        { label: 'Churn Rate', value: kpiData.churn || '—' },
+        { label: 'Renewal', value: kpiData.renewal || '—' },
+      ]
+      kpis.forEach((kpi, i) => {
+        const col = i % 3
+        const row = Math.floor(i / 3)
+        slide.addText(String(kpi.value), { x: 0.5 + col * 3.2, y: 1.2 + row * 1.5, w: 2.8, h: 0.8, fontSize: 28, bold: true, color: brandColor, align: 'center' })
+        slide.addText(kpi.label, { x: 0.5 + col * 3.2, y: 1.9 + row * 1.5, w: 2.8, fontSize: 12, color: '999999', align: 'center' })
+      })
+    } else if (section.type === 'actions' && section.data?.actions) {
+      section.data.actions.forEach((action, i) => {
+        const y = 1.2 + i * 0.5
+        const icon = action.status === 'done' ? '✅' : '⬜'
+        slide.addText(`${icon} ${action.title || ''}`, { x: 0.5, y, w: 5, fontSize: 14, color: action.status === 'done' ? '16a34a' : '333333' })
+        slide.addText(action.owner || '', { x: 5.5, y, w: 2, fontSize: 12, color: '666666' })
+        slide.addText(action.due || '', { x: 7.5, y, w: 2, fontSize: 12, color: '999999' })
+      })
+    } else if (section.type === 'notes' && section.data?.text) {
+      slide.addText(section.data.text, { x: 0.5, y: 1.2, w: 9, h: 3.5, fontSize: 14, color: '333333', valign: 'top', wrap: true })
+    } else if (section.type === 'health' && section.data) {
+      const d = section.data
+      slide.addText(`Score: ${d.health || '—'}/100`, { x: 0.5, y: 1.2, w: 4, fontSize: 24, bold: true, color: brandColor })
+      slide.addText(`Usage: ${d.usage || '—'}%`, { x: 0.5, y: 2, w: 4, fontSize: 16, color: '666666' })
+      slide.addText(`Tickets: ${d.tickets || '—'}`, { x: 0.5, y: 2.6, w: 4, fontSize: 16, color: '666666' })
+      slide.addText(`Engagement: ${d.engagement || '—'}%`, { x: 0.5, y: 3.2, w: 4, fontSize: 16, color: '666666' })
+    } else if (section.type === 'custom' && section.data) {
+      slide.addText(section.data.content || '', { x: 0.5, y: 1.2, w: 9, h: 3.5, fontSize: 14, color: '333333', valign: 'top', wrap: true })
+    }
+
+    slide.addText('Généré par Scalyo', { x: 0.5, y: 5.1, w: 9, fontSize: 10, color: 'BBBBBB', align: 'center' })
+  }
+
+  const filename = (s.title || 'COPIL').replace(/[^a-zA-Z0-9à-üÀ-Ü ]/g, '').slice(0, 40)
+  await pptx.writeFile({ fileName: `${filename}.pptx` })
 }
 
 // Share

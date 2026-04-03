@@ -126,6 +126,7 @@
           <button class="okr-btn-sm okr-btn-danger" @click="confirmDelete(okr)">{{ t('okrDeleteObjective') }}</button>
           <button class="okr-btn-sm" @click="copyOkrSummary(okr)">{{ copiedId === okr.id ? t('okrCopied') : t('okrCopyClipboard') }}</button>
           <button class="okr-btn-sm" @click="printOkr(okr)">{{ t('okrPrint') }}</button>
+          <button class="okr-btn-sm" @click="exportPPT(okr)">📊 PPT</button>
         </div>
       </div>
     </div>
@@ -427,6 +428,51 @@ async function printOkr(okr) {
   await nextTick()
   window.print()
   printingOkr.value = null
+}
+
+async function exportPPT(okr) {
+  const PptxGenJS = (await import('pptxgenjs')).default
+  const pptx = new PptxGenJS()
+  pptx.layout = 'LAYOUT_16x9'
+
+  // Slide 1: Title
+  const slide1 = pptx.addSlide()
+  slide1.addText(`${okr.emoji || '🎯'} ${okr.objective}`, { x: 0.5, y: 1.5, w: 9, fontSize: 28, bold: true, color: '1e3a5f' })
+  slide1.addText(`${okr.period || ''} — ${okr.owner || ''}`, { x: 0.5, y: 2.3, w: 9, fontSize: 16, color: '666666' })
+  const score = okrScore(okr)
+  const scoreColor = score >= 70 ? '16a34a' : score >= 40 ? 'd97706' : 'dc2626'
+  slide1.addText(`${score}%`, { x: 7, y: 0.5, w: 2.5, h: 1, fontSize: 48, bold: true, color: scoreColor, align: 'center' })
+  slide1.addText('Score global', { x: 7, y: 1.3, w: 2.5, fontSize: 12, color: '999999', align: 'center' })
+
+  // Slide 2: Key Results
+  const slide2 = pptx.addSlide()
+  slide2.addText('Résultats clés', { x: 0.5, y: 0.3, w: 9, fontSize: 22, bold: true, color: '1e3a5f' })
+
+  const krs = okr.keyResults || []
+  krs.forEach((kr, i) => {
+    const y = 1 + i * 0.9
+    const pct = kr.target ? Math.min(Math.round((kr.current / kr.target) * 100), 100) : 0
+    const krColor = pct >= 70 ? '16a34a' : pct >= 40 ? 'd97706' : 'dc2626'
+
+    slide2.addText(kr.title || '', { x: 0.5, y, w: 5, fontSize: 14, color: '333333' })
+    slide2.addText(`${kr.current || 0} / ${kr.target || 0} ${kr.unit || ''}`, { x: 5.5, y, w: 2, fontSize: 14, color: '666666', align: 'right' })
+    slide2.addText(`${pct}%`, { x: 8, y, w: 1.5, fontSize: 16, bold: true, color: krColor, align: 'center' })
+
+    // Progress bar background
+    slide2.addShape(pptx.shapes.RECTANGLE, { x: 0.5, y: y + 0.4, w: 9, h: 0.15, fill: { color: 'E8EAED' }, rectRadius: 0.05 })
+    // Progress bar fill
+    if (pct > 0) {
+      slide2.addShape(pptx.shapes.RECTANGLE, { x: 0.5, y: y + 0.4, w: 9 * pct / 100, h: 0.15, fill: { color: krColor }, rectRadius: 0.05 })
+    }
+  })
+
+  // Footer on both slides
+  ;[slide1, slide2].forEach(s => {
+    s.addText('Généré par Scalyo', { x: 0.5, y: 5.1, w: 9, fontSize: 10, color: 'BBBBBB', align: 'center' })
+  })
+
+  const filename = (okr.objective || 'OKR').replace(/[^a-zA-Z0-9à-üÀ-Ü ]/g, '').slice(0, 40)
+  await pptx.writeFile({ fileName: `${filename}.pptx` })
 }
 
 // ---------- LIFECYCLE ----------
