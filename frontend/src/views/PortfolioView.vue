@@ -490,6 +490,15 @@
       <AppField :label="t('renewal')" v-model="newAcc.renewal" />
       <AppField :label="t('contact')" v-model="newAcc.contact" />
       <AppField :label="t('emailPro')" v-model="newAcc.contact_email" type="email" />
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <AppField :label="t('crmPhone')" v-model="newAcc.phone" type="tel" />
+        <AppField :label="t('crmWebsite')" v-model="newAcc.website" placeholder="www.exemple.com" />
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <AppField :label="t('crmCompanySize')" v-model="newAcc.company_size" placeholder="1-10, 11-50, 51-200..." />
+        <AppField :label="t('crmNPS')" v-model="newAcc.nps" type="number" placeholder="0-100" />
+      </div>
+      <AppField :label="t('crmAddress')" v-model="newAcc.address" />
       <AppField :label="t('notes')" v-model="newAcc.notes" type="textarea" />
 
       <div style="display: flex; gap: 8px; margin-top: 16px;">
@@ -689,7 +698,7 @@ const freeTasks = ref([])
 const DRAFT_ADD_KEY = 'scalyo_draft_add_account'
 const DRAFT_EDIT_KEY = 'scalyo_draft_edit_account'
 
-const defaultNewAcc = () => ({ name: '', csm: '', mrr: 0, health: 70, risk: 'low', industry: '', contact: '', contact_email: '', notes: '', renewal: '' })
+const defaultNewAcc = () => ({ name: '', csm: '', mrr: 0, health: 70, risk: 'low', industry: '', contact: '', contact_email: '', notes: '', renewal: '', phone: '', website: '', company_size: '', address: '', nps: null })
 const newAcc = ref(defaultNewAcc())
 
 // ─── Industry sectors ───
