@@ -75,6 +75,38 @@
       </div>
     </div>
 
+    <!-- Daily Wellbeing Tip -->
+    <div class="wb-tip-card" :style="{ background: tipBg, borderColor: tipBorder }">
+      <div class="wb-tip-header">
+        <span class="wb-tip-icon">{{ tipIcon }}</span>
+        <span class="wb-tip-label">{{ t('wbDailyTip') }}</span>
+        <button class="wb-tip-refresh" @click="nextTip">↻</button>
+      </div>
+      <p class="wb-tip-text">{{ currentTip }}</p>
+    </div>
+
+    <!-- Mood history (visual) -->
+    <div v-if="moodHistory.length" class="wb-section">
+      <h3 class="wb-section-title">📊 {{ t('wbMoodHistory') }}</h3>
+      <div class="wb-mood-history">
+        <div v-for="(day, i) in moodHistory" :key="i" class="wb-mood-day">
+          <span class="wb-mood-day-emoji">{{ moods.find(m => m.value === day.mood)?.emoji || '😐' }}</span>
+          <span class="wb-mood-day-label">{{ day.label }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick encouragements -->
+    <div class="wb-encouragements">
+      <button v-for="enc in encouragements" :key="enc.emoji" class="wb-enc-btn" @click="showEncouragement(enc)">
+        <span class="wb-enc-emoji">{{ enc.emoji }}</span>
+        <span class="wb-enc-text">{{ enc.text }}</span>
+      </button>
+    </div>
+
+    <!-- Toast -->
+    <div v-if="toastMsg" class="wb-toast" :class="{ 'wb-toast--show': toastMsg }">{{ toastMsg }}</div>
+
     <!-- Nova AI Chat -->
     <div class="wb-section">
       <h3 class="wb-section-title">💬 Nova — {{ t('novaAi') }}</h3>
@@ -133,6 +165,45 @@ const moods = [
   { value: 4, emoji: '😊', label: t('healthy') || 'Bien' },
   { value: 5, emoji: '🤩', label: t('htMoodPositive') || 'Au top !' },
 ]
+
+const toastMsg = ref('')
+function showToast(msg) { toastMsg.value = msg; setTimeout(() => toastMsg.value = '', 3000) }
+
+// Tips
+const tipIndex = ref(0)
+const tips = computed(() => [
+  t('wbTip1') || 'Prenez 5 minutes pour respirer profondément entre deux calls.',
+  t('wbTip2') || 'Un client difficile ? Notez 3 choses positives sur cette relation.',
+  t('wbTip3') || 'Bloquez 30 min dans votre agenda pour ne rien faire — votre cerveau vous remerciera.',
+  t('wbTip4') || 'Parlez à un collègue de ce qui vous pèse — vous n\'êtes pas seul(e).',
+  t('wbTip5') || 'Célébrez vos petites victoires, pas seulement les grosses.',
+  t('wbTip6') || 'Buvez un grand verre d\'eau maintenant. Votre corps en a besoin.',
+  t('wbTip7') || 'Marchez 5 minutes — même autour du bureau ça change tout.',
+])
+const currentTip = computed(() => tips.value[tipIndex.value % tips.value.length])
+const tipIcon = computed(() => ['🌱', '💡', '🧘', '💬', '🎉', '💧', '🚶'][tipIndex.value % 7])
+const tipBg = computed(() => 'rgba(52,168,83,.06)')
+const tipBorder = computed(() => 'rgba(52,168,83,.2)')
+function nextTip() { tipIndex.value = (tipIndex.value + 1) % tips.value.length }
+
+// Mood history (simulated from current score)
+const moodHistory = computed(() => {
+  const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven']
+  const score = wbData.value.score
+  return days.map((label, i) => ({
+    label,
+    mood: Math.max(1, Math.min(5, Math.round((score + (i - 2) * 5) / 20)))
+  }))
+})
+
+// Encouragements
+const encouragements = computed(() => [
+  { emoji: '💪', text: t('wbEncStrength') || 'Vous êtes plus fort(e) que vous ne pensez' },
+  { emoji: '🌟', text: t('wbEncStar') || 'Votre travail fait la différence' },
+  { emoji: '☕', text: t('wbEncPause') || 'Accordez-vous une pause méritée' },
+  { emoji: '🤝', text: t('wbEncTeam') || 'N\'hésitez pas à demander de l\'aide' },
+])
+function showEncouragement(enc) { showToast(enc.emoji + ' ' + enc.text) }
 
 const wbData = ref({ score: 70, burnout: 'none', charge: 70, trend: '+0', alerts: [], team: [] })
 
@@ -260,4 +331,30 @@ watch(() => messages.value.length, async () => { await nextTick(); bottomRef.val
 /* Helplines */
 .wb-helplines { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
 .wb-helpline { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; font-size: 12px; color: var(--text); }
+
+/* Tip card */
+.wb-tip-card { border: 1px solid; border-radius: 16px; padding: 16px 20px; margin-bottom: 20px; }
+.wb-tip-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.wb-tip-icon { font-size: 20px; }
+.wb-tip-label { font-size: 12px; font-weight: 700; color: var(--green); flex: 1; }
+.wb-tip-refresh { border: none; background: none; font-size: 16px; cursor: pointer; color: var(--green); transition: transform .2s; }
+.wb-tip-refresh:hover { transform: rotate(180deg); }
+.wb-tip-text { font-size: 14px; color: var(--text); line-height: 1.6; font-weight: 500; }
+
+/* Mood history */
+.wb-mood-history { display: flex; gap: 8px; justify-content: center; }
+.wb-mood-day { display: flex; flex-direction: column; align-items: center; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 16px; min-width: 60px; }
+.wb-mood-day-emoji { font-size: 24px; }
+.wb-mood-day-label { font-size: 10px; font-weight: 600; color: var(--muted); }
+
+/* Encouragements */
+.wb-encouragements { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.wb-enc-btn { display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 10px 16px; cursor: pointer; transition: all .15s; flex: 1; min-width: 150px; font-family: 'DM Sans', sans-serif; }
+.wb-enc-btn:hover { border-color: var(--green); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(52,168,83,.12); }
+.wb-enc-emoji { font-size: 20px; }
+.wb-enc-text { font-size: 12px; font-weight: 600; color: var(--text); }
+
+/* Toast */
+.wb-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1a1a2e; color: #fff; padding: 12px 24px; border-radius: 12px; font-size: 13px; font-weight: 600; opacity: 0; transition: all .3s; pointer-events: none; z-index: 999; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+.wb-toast--show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
