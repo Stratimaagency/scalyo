@@ -21,24 +21,21 @@
               <div v-for="task in group" :key="task.id" class="sm-kanban__card"
                 draggable="true" @dragstart="onDragStart($event, task)">
 
-                <!-- Task header -->
                 <div class="sm-kanban__card-top" @click="$emit('edit-task', task)">
                   <span class="sm-kanban__card-name">{{ task.name }}</span>
                   <span v-if="getAssigned(task)" class="sm-kanban__card-avatar">{{ getAssigned(task).initials }}</span>
                 </div>
 
-                <!-- Progress bar -->
                 <div class="sm-kanban__card-bar-wrap">
                   <div class="sm-kanban__card-bar" :style="{ width: (task.progress || 0) + '%' }"></div>
                 </div>
 
-                <!-- Meta -->
                 <div class="sm-kanban__card-meta">
                   <span>{{ doneSubtasks(task) }}/{{ totalSubtasks(task) }} sous-tâches</span>
                   <span v-if="task.end_date" class="sm-kanban__card-date">{{ formatDate(task.end_date) }}</span>
                 </div>
 
-                <!-- Subtasks (expandable) -->
+                <!-- Subtasks expandable -->
                 <div v-if="totalSubtasks(task) > 0">
                   <button class="sm-kanban__subtask-toggle" @click.stop="toggleTask(task.id)">
                     {{ openTasks[task.id] ? '▾' : '▸' }} {{ totalSubtasks(task) }} sous-tâches
@@ -127,18 +124,14 @@ function onDrop(e, status) {
 .sm-kanban__col-title { font-size: 13px; font-weight: 600; color: var(--sm-t1); margin: 0; flex: 1; }
 .sm-kanban__col-count { font-size: 11px; font-weight: 600; color: var(--col-accent); background: rgba(0,0,0,.04); padding: 2px 7px; border-radius: 8px; }
 .sm-kanban__col-body { flex: 1; padding: 10px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
-
-/* Group header */
 .sm-kanban__group { margin-bottom: 4px; }
 .sm-kanban__group-head { display: flex; align-items: center; gap: 5px; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; color: var(--sm-t2); }
 .sm-kanban__group-head:hover { background: rgba(0,0,0,.03); }
 .sm-kanban__group-chevron { font-size: 9px; color: var(--sm-t3); width: 12px; }
 .sm-kanban__group-name { flex: 1; }
 .sm-kanban__group-count { font-size: 9px; color: var(--sm-t3); background: rgba(0,0,0,.04); padding: 1px 5px; border-radius: 6px; }
-
-/* Task card */
 .sm-kanban__card { background: var(--sm-white); border: 1px solid var(--sm-bd); border-radius: 10px; padding: 10px 12px; cursor: grab; transition: box-shadow .15s; margin-left: 8px; }
-.sm-kanban__card:hover { box-shadow: var(--sm-sh); }
+.sm-kanban__card:hover { box-shadow: var(--sm-sh); border-color: var(--sm-terra); }
 .sm-kanban__card:active { cursor: grabbing; }
 .sm-kanban__card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; cursor: pointer; }
 .sm-kanban__card-name { flex: 1; font-size: 12px; font-weight: 600; color: var(--sm-t1); }
@@ -147,8 +140,6 @@ function onDrop(e, status) {
 .sm-kanban__card-bar { height: 100%; background: var(--sm-grad-h); border-radius: 2px; transition: width .3s; }
 .sm-kanban__card-meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--sm-t3); }
 .sm-kanban__card-date { color: var(--sm-warn); }
-
-/* Subtask toggle */
 .sm-kanban__subtask-toggle { border: none; background: none; font-size: 10px; font-weight: 600; color: var(--sm-info); cursor: pointer; padding: 4px 0 0; }
 .sm-kanban__subtask-toggle:hover { text-decoration: underline; }
 .sm-kanban__subtasks { padding: 4px 0 0 4px; }
@@ -156,6 +147,5 @@ function onDrop(e, status) {
 .sm-kanban__subtask--done { opacity: .5; text-decoration: line-through; }
 .sm-kanban__subtask-check { font-size: 10px; width: 14px; flex-shrink: 0; }
 .sm-kanban__subtask-name { flex: 1; }
-
 .sm-kanban__empty { font-size: 12px; color: var(--sm-t3); text-align: center; padding: 24px 0; }
 </style>
