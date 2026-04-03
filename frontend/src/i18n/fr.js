@@ -916,7 +916,7 @@ export default {
   scoreAvg: 'Score moyen',
   clients: 'clients',
   atRisk: 'à risque',
-  // Health Tracker
+  // Santé Clients
   htTitle: 'Santé Clients',
   htSubtitle: 'Vue complète sur la santé de votre portefeuille',
   htAllClients: 'Tous les clients',
