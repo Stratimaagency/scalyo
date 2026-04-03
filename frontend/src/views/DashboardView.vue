@@ -1,10 +1,10 @@
 <template>
   <div class="fade-in" style="max-width: 1100px; padding: 26px 30px;">
-    <!-- Header -->
+    <!-- Welcome Header -->
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 26px;">
       <div>
         <h1 style="font-size: 24px; font-weight: 900; letter-spacing: -0.6px; margin-bottom: 5px;">
-          {{ t('overview') }} <ScalyoIcon name="wave" :size="24" style="margin-left: 4px" />
+          {{ greeting }}, {{ userName }} <ScalyoIcon name="wave" :size="24" style="margin-left: 4px" />
         </h1>
         <p style="color: var(--muted); font-size: 13px;">{{ company?.name }} · {{ todayFormatted }}</p>
       </div>
@@ -18,184 +18,167 @@
       </div>
     </div>
 
+    <!-- Today's Focus -->
+    <div v-if="focusItems.length" class="card" style="margin-bottom: 18px; padding: 18px;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+        <ScalyoIcon name="target" :size="18" />
+        <span style="font-weight: 800; font-size: 15px;">{{ t('dashTodayFocus') }}</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div v-for="(item, i) in focusItems" :key="i"
+          style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; background: var(--surface); cursor: pointer; transition: opacity .15s;"
+          @click="item.route && $router.push(item.route)">
+          <ScalyoIcon :name="item.icon" :size="16" style="flex-shrink: 0;" />
+          <span style="font-size: 13px; font-weight: 600; flex: 1;">{{ item.label }}</span>
+          <span style="font-size: 12px; color: var(--muted);">→</span>
+        </div>
+      </div>
+    </div>
+    <div v-else-if="accounts.length" class="card" style="margin-bottom: 18px; padding: 18px; text-align: center;">
+      <ScalyoIcon name="check-circle" :size="18" style="margin-right: 4px" />
+      <span style="font-weight: 700; color: var(--green);">{{ t('dashNoPriority') }}</span>
+    </div>
+
     <!-- KPI Cards -->
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
-      <KpiCard :label="t('portfolioARR')" :value="fmtARR" icon="money" color="var(--teal)"
-        :sub="accounts.length + ' ' + t('activeAccounts')" />
-      <KpiCard :label="t('avgHealth')" :value="avgHealth + '/100'" icon="heart" :color="healthColor"
-        :sub="healthSub" />
-      <KpiCard :label="t('criticalAccounts')" :value="String(criticalCount)" icon="siren"
-        :color="criticalCount === 0 ? 'var(--green)' : 'var(--red)'"
-        :sub="criticalSub" />
-      <KpiCard :label="t('roadmap90')" :value="roadmapProgress + '%'"
-        icon="map" color="var(--teal)" :sub="roadmapDone + '/' + roadmapTotal + ' ' + t('steps')" />
-    </div>
-
-    <!-- Critical accounts alert -->
-    <div v-if="criticalAccounts.length > 0" class="card card-danger" style="margin-bottom: 18px; padding: 18px;">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <ScalyoIcon name="siren" :size="20" />
-          <span style="font-weight: 800; font-size: 15px; color: var(--red);">
-            {{ criticalAccounts.length }} {{ criticalAccounts.length > 1 ? t('accountsCriticalAlert') : t('accountCriticalAlert') }}
-          </span>
-        </div>
-        <router-link :to="{ name: 'portfolio' }" class="btn-base"
-          style="font-size: 12px; padding: 6px 16px; border-radius: 20px; background: var(--redBg); border: 1px solid var(--redBorder); color: var(--red); text-decoration: none;">
-          {{ t('viewPortfolio') }}
-        </router-link>
-      </div>
-      <div style="display: flex; flex-direction: column; gap: 7px;">
-        <div v-for="acc in criticalAccounts.slice(0, 3)" :key="acc.id"
-          style="display: flex; align-items: center; justify-content: space-between; background: rgba(235,87,87,0.06); border-radius: 12px; padding: 10px 14px;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0;">
-              {{ (acc.name || '?')[0] }}
-            </div>
-            <div>
-              <div style="font-weight: 700; font-size: 13px;">{{ acc.name }}</div>
-              <div style="font-size: 11px; color: var(--muted);">
-                {{ Array.isArray(acc.issues) && acc.issues[0] ? acc.issues[0] : t('criticalSituation') }}
-              </div>
-            </div>
-          </div>
-          <div style="text-align: right;">
-            <div style="font-size: 12px; font-weight: 700; color: var(--red);">{{ fmtAccountARR(acc) }}</div>
-            <div style="font-size: 11px; color: var(--muted);">
-              {{ t('renewal') }} {{ acc.renewal || 'N/A' }}
-            </div>
-          </div>
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+      <span style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em;">KPIs</span>
+      <div style="position: relative;">
+        <button @click="showKpiSettings = !showKpiSettings"
+          style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center;">
+          <ScalyoIcon name="gear" :size="16" />
+        </button>
+        <div v-if="showKpiSettings"
+          style="position: absolute; right: 0; top: 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; z-index: 10; min-width: 180px; box-shadow: 0 4px 16px rgba(0,0,0,.08);">
+          <label v-for="kpi in allKpis" :key="kpi.key"
+            style="display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 12px; cursor: pointer;">
+            <input type="checkbox" :checked="visibleKpis.includes(kpi.key)" @change="toggleKpi(kpi.key)" />
+            {{ kpi.label }}
+          </label>
         </div>
       </div>
     </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px;">
+      <KpiCard v-for="kpi in displayedKpis" :key="kpi.key"
+        :label="kpi.label" :value="kpi.value" :icon="kpi.icon" :color="kpi.color" :sub="kpi.sub" />
+    </div>
 
-    <!-- Bottom grid: Roadmap + Wellbeing -->
-    <div style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px;">
-      <!-- Roadmap card -->
-      <div class="card card-lift" style="padding: 20px;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-          <div>
-            <div style="font-weight: 800; font-size: 15px; margin-bottom: 2px;">
-              <ScalyoIcon name="map" :size="18" style="margin-right: 4px" /> {{ t('roadmap90Title') }}
-            </div>
-            <div style="font-size: 12px; color: var(--muted);">{{ roadmapPhase }}</div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="text-align: right;">
-              <div style="font-size: 28px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace;">{{ roadmapProgress }}%</div>
-            </div>
-            <router-link :to="{ name: 'roadmap' }" class="btn-base"
-              style="font-size: 11px; padding: 5px 12px; border-radius: 20px; background: var(--tealBg); border: 1px solid var(--tealBorder); color: var(--teal); text-decoration: none;">
-              {{ t('manageBtn') }} →
-            </router-link>
-          </div>
-        </div>
-        <HealthBar :val="roadmapProgress" />
-        <!-- Roadmap items preview (up to 4) -->
-        <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 6px;">
-          <div v-for="(item, i) in roadmapItems.slice(0, 4)" :key="item.id || i"
-            style="display: flex; align-items: center; gap: 10px; padding: 8px 11px; border-radius: 9px; background: var(--surface);">
-            <ScalyoIcon :name="item.done ? 'check-circle' : 'square'" :size="16" style="flex-shrink: 0" />
-            <span style="font-size: 13px; flex: 1;"
-              :style="{ color: item.done ? 'var(--muted)' : 'var(--text)', textDecoration: item.done ? 'line-through' : 'none' }">
-              {{ item.text || item.label }}
-            </span>
-          </div>
-          <p v-if="!roadmapTotal" style="font-size: 13px; color: var(--muted); text-align: center; padding: 8px;">
-            {{ t('noRoadmapItems') }}
-          </p>
-        </div>
-      </div>
-
-      <!-- Wellbeing card -->
+    <!-- Client Health Overview + My Tasks -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px;">
+      <!-- Client Health Overview -->
       <div class="card" style="padding: 20px;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-          <div style="font-weight: 800; font-size: 15px;">
-            <ScalyoIcon name="heart" :size="18" style="margin-right: 4px" /> {{ t('teamWellbeing') }}
+          <div style="font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 6px;">
+            <ScalyoIcon name="heart" :size="18" />
+            {{ t('dashClientHealth') }}
           </div>
-          <router-link :to="{ name: 'wellbeing' }" class="btn-base"
+          <router-link :to="{ name: 'health-tracker' }" class="btn-base"
             style="font-size: 11px; padding: 5px 12px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); text-decoration: none;">
-            {{ t('detailBtn') }} →
+            {{ t('dashGoToHealthTracker') }} →
           </router-link>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
-          <div style="text-align: center; background: var(--surface); border-radius: 11px; padding: 13px;">
-            <div :style="{ fontSize: '28px', fontWeight: 900, fontFamily: 'JetBrains Mono, monospace', color: wellbeingScoreColor }">
-              {{ wellbeingScore }}
-            </div>
-            <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">
-              {{ t('scoreLabel') }}
-            </div>
+        <!-- Distribution bar -->
+        <div v-if="accounts.length" style="margin-bottom: 14px;">
+          <div style="display: flex; height: 10px; border-radius: 5px; overflow: hidden; gap: 2px;">
+            <div :style="{ flex: healthyCount, background: 'var(--green)' }"></div>
+            <div :style="{ flex: neutralCount, background: 'var(--amber)' }"></div>
+            <div :style="{ flex: criticalCount || 0.01, background: 'var(--red)' }"></div>
           </div>
-          <div style="text-align: center; background: var(--surface); border-radius: 11px; padding: 13px;">
-            <div :style="{ fontSize: '16px', fontWeight: 800, color: burnoutColor }">
-              {{ burnoutLabel }}
+          <div style="display: flex; gap: 16px; margin-top: 8px; font-size: 12px;">
+            <span style="display: flex; align-items: center; gap: 4px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--green);"></span>
+              {{ t('dashHealthy') }} {{ healthyCount }}
+            </span>
+            <span style="display: flex; align-items: center; gap: 4px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--amber);"></span>
+              {{ t('dashNeutral') }} {{ neutralCount }}
+            </span>
+            <span style="display: flex; align-items: center; gap: 4px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--red);"></span>
+              {{ t('dashAtRisk') }} {{ criticalCount }}
+            </span>
+          </div>
+        </div>
+        <!-- Top 3 at-risk -->
+        <div v-if="criticalAccounts.length" style="margin-top: 10px;">
+          <div style="font-size: 12px; font-weight: 700; color: var(--red); margin-bottom: 8px;">{{ t('dashTopAtRisk') }}</div>
+          <div v-for="acc in criticalAccounts.slice(0, 3)" :key="acc.id"
+            style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 9px; background: var(--surface); margin-bottom: 5px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">
+                {{ (acc.name || '?')[0] }}
+              </div>
+              <div>
+                <div style="font-weight: 700; font-size: 12px;">{{ acc.name }}</div>
+                <div style="font-size: 11px; color: var(--muted);">{{ acc.csm || '—' }}</div>
+              </div>
             </div>
-            <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">
-              {{ t('burnoutRisk') }}
+            <div style="text-align: right;">
+              <div style="font-size: 12px; font-weight: 700; color: var(--red);">{{ acc.health || 0 }}/100</div>
+              <div style="font-size: 10px; color: var(--muted);">{{ t('renewal') }} {{ acc.renewal || 'N/A' }}</div>
             </div>
           </div>
         </div>
-        <!-- Team members preview (up to 3) -->
-        <div v-for="(m, i) in teamMembers.slice(0, 3)" :key="i"
-          style="display: flex; align-items: center; gap: 9px; margin-bottom: 9px;">
-          <div style="width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0;"
-            :style="{ background: (m.charge || 70) > 85 ? 'var(--red)' : (m.charge || 70) > 70 ? 'var(--amber)' : 'var(--teal)', color: '#fff' }">
-            {{ (m.name || '?')[0] }}
+        <div v-else-if="accounts.length" style="text-align: center; padding: 12px; color: var(--green); font-weight: 700; font-size: 13px;">
+          <ScalyoIcon name="check-circle" :size="16" style="margin-right: 4px" /> {{ t('noRisk') }}
+        </div>
+      </div>
+
+      <!-- My Tasks -->
+      <div class="card" style="padding: 20px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+          <div style="font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 6px;">
+            <ScalyoIcon name="clipboard" :size="18" />
+            {{ t('dashMyTasks') }}
           </div>
-          <div style="flex: 1; min-width: 0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <span style="font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ m.name }}</span>
-              <span style="font-size: 11px; font-weight: 700; flex-shrink: 0;"
-                :style="{ color: (m.charge || 70) > 85 ? 'var(--red)' : (m.charge || 70) > 70 ? 'var(--amber)' : 'var(--green)' }">
-                {{ m.charge || 70 }}%
-              </span>
+          <router-link :to="{ name: 'tasks' }" class="btn-base"
+            style="font-size: 11px; padding: 5px 12px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); text-decoration: none;">
+            {{ t('dashSeeAll') }} →
+          </router-link>
+        </div>
+        <div v-if="myTasks.length" style="display: flex; flex-direction: column; gap: 5px;">
+          <div v-for="task in myTasks.slice(0, 8)" :key="task.id || task.name"
+            style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 9px; background: var(--surface); cursor: pointer;"
+            @click="$router.push({ name: 'tasks' })">
+            <span style="width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;"
+              :style="{ background: task.priority === 'high' ? 'var(--red)' : task.priority === 'medium' ? 'var(--amber)' : 'var(--green)' }"></span>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ task.name || task.title }}</div>
+              <div style="font-size: 11px; color: var(--muted);">{{ task.projectName || '' }}</div>
             </div>
-            <HealthBar :val="100 - (m.charge || 70)" size="sm" />
+            <div v-if="task.due || task.dueDate" style="font-size: 11px; color: var(--muted); flex-shrink: 0;">
+              {{ task.due || task.dueDate }}
+            </div>
           </div>
         </div>
-        <p v-if="!teamMembers.length" style="font-size: 12px; color: var(--muted); text-align: center; padding: 8px 0;">
-          {{ t('noTeamMembers') }}
-        </p>
+        <div v-else style="text-align: center; padding: 20px; color: var(--muted); font-size: 13px;">
+          {{ t('dashNoTasks') }}
+        </div>
       </div>
     </div>
 
-    <!-- CSM Team View (manager only) -->
-    <div v-if="authStore.user?.role === 'manager' && csmStats.length >= 2" style="margin-top: 20px;">
-      <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.3px; display: flex; align-items: center; gap: 6px;">
-        <ScalyoIcon name="people" :size="18" /> {{ t('csmTeamView') }}
-      </h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px;">
-        <div v-for="s in csmStats" :key="s.csm"
-          style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px;">
-          <div style="font-weight: 800; font-size: 13px; margin-bottom: 8px;">{{ s.csm }}</div>
-          <div style="display: flex; flex-direction: column; gap: 5px;">
-            <div style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: var(--muted); display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="briefcase" :size="13" /> {{ t('accounts') }}</span>
-              <span style="font-weight: 700;">{{ s.count }}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: var(--muted); display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="money" :size="13" /> ARR</span>
-              <span style="font-weight: 700; color: var(--teal);">{{ fmtCurrency(s.arr) }}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: var(--muted); display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="heart" :size="13" /> {{ t('health') }}</span>
-              <span style="font-weight: 700;"
-                :style="{ color: s.health >= 70 ? 'var(--green)' : s.health >= 40 ? 'var(--amber)' : 'var(--red)' }">
-                {{ s.health }}/100
-              </span>
-            </div>
-            <div v-if="s.crit > 0" style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: var(--muted); display: flex; align-items: center; gap: 4px;"><ScalyoIcon name="siren" :size="13" /> {{ t('filterCritical') }}</span>
-              <span style="font-weight: 700; color: var(--red);">{{ s.crit }}</span>
-            </div>
-          </div>
-        </div>
+    <!-- Quick Actions -->
+    <div style="margin-bottom: 18px;">
+      <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px;">
+        {{ t('dashQuickActions') }}
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="dash-action-btn" @click="$router.push({ name: 'tasks' })">
+          <ScalyoIcon name="clipboard" :size="15" /> {{ t('dashNewTask') }}
+        </button>
+        <button class="dash-action-btn" @click="$router.push({ name: 'portfolio' })">
+          <ScalyoIcon name="briefcase" :size="15" /> {{ t('dashAddClient') }}
+        </button>
+        <button class="dash-action-btn" @click="$router.push({ name: 'portfolio' })">
+          <ScalyoIcon name="upload" :size="15" /> {{ t('dashImportData') }}
+        </button>
+        <button class="dash-action-btn" @click="$router.push({ name: 'portfolio' })">
+          <ScalyoIcon name="briefcase" :size="15" /> {{ t('dashViewPortfolio') }}
+        </button>
       </div>
     </div>
 
     <!-- No risk message -->
-    <div v-if="!criticalAccounts.length && accounts.length" class="card" style="margin-top: 14px; border-color: var(--greenBorder);">
+    <div v-if="!criticalAccounts.length && accounts.length" class="card" style="border-color: var(--greenBorder);">
       <div style="text-align: center; padding: 20px; font-weight: 700; color: var(--green);">
         <ScalyoIcon name="check-circle" :size="18" style="margin-right: 4px" /> {{ t('noRisk') }}
       </div>
@@ -223,23 +206,34 @@ import { computed, onMounted, ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { usePortfolioStore } from '../stores/portfolio'
 import { usePreferencesStore } from '../stores/preferences'
+import { useSmartMatriceStore } from '../stores/smartMatrice'
 import { useI18n } from '../i18n'
-import { wellbeingApi, roadmapApi } from '../api'
+import { wellbeingApi } from '../api'
 import KpiCard from '../components/KpiCard.vue'
-import HealthBar from '../components/HealthBar.vue'
 import EmptyState from '../components/EmptyState.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const authStore = useAuthStore()
 const portfolioStore = usePortfolioStore()
 const prefsStore = usePreferencesStore()
+const smStore = useSmartMatriceStore()
 const { t } = useI18n()
-const wellbeing = ref(null)
-const roadmap = ref({ phase: '', progress: 0, items: [] })
+
+const showKpiSettings = ref(false)
+const visibleKpis = ref(['arr', 'health', 'critical', 'nps', 'churn', 'active'])
 
 const lang = computed(() => prefsStore.lang)
 const company = computed(() => authStore.company)
 const accounts = computed(() => portfolioStore.accounts)
+const userName = computed(() => authStore.user?.name || authStore.user?.email?.split('@')[0] || '')
+
+// Greeting based on time of day
+const greeting = computed(() => {
+  const h = new Date().getHours()
+  if (h < 12) return t('dashGreetingMorning')
+  if (h < 18) return t('dashGreetingAfternoon')
+  return t('dashGreetingEvening')
+})
 
 const currencySymbol = computed(() => {
   const c = prefsStore.currency
@@ -261,24 +255,7 @@ function fmtCurrency(value) {
 
 onMounted(async () => {
   await portfolioStore.fetchAccounts()
-  try {
-    const { data } = await wellbeingApi.get()
-    wellbeing.value = data
-  } catch (e) {
-    console.warn('Dashboard: wellbeing load failed', e.message)
-  }
-  try {
-    const { data } = await roadmapApi.get()
-    if (data) {
-      roadmap.value = {
-        phase: data.phase || t('roadmapPhaseDefault'),
-        progress: data.progress || 0,
-        items: Array.isArray(data.items) ? data.items : [],
-      }
-    }
-  } catch (e) {
-    console.warn('Dashboard: roadmap load failed', e.message)
-  }
+  try { await smStore.fetchProjects() } catch (e) { console.warn('Dashboard: SM projects load failed', e.message) }
 })
 
 const todayFormatted = computed(() => {
@@ -286,23 +263,11 @@ const todayFormatted = computed(() => {
   return new Date().toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 })
 
-// Roadmap
-const roadmapProgress = computed(() => roadmap.value.progress)
-const roadmapPhase = computed(() => roadmap.value.phase || t('roadmapPhaseDefault'))
-const roadmapTotal = computed(() => roadmap.value.items.length)
-const roadmapDone = computed(() => roadmap.value.items.filter(i => i.done).length)
-const roadmapItems = computed(() => roadmap.value.items)
-
-// Portfolio
-const fmtARR = computed(() => {
-  const total = accounts.value.reduce((s, a) => s + (parseFloat(a.mrr || a.arr) || 0), 0)
-  return fmtCurrency(total * 12)
+// Portfolio metrics
+const totalARR = computed(() => {
+  return accounts.value.reduce((s, a) => s + (parseFloat(a.mrr || a.arr) || 0), 0) * 12
 })
-
-function fmtAccountARR(acc) {
-  const mrr = parseFloat(acc.mrr || acc.arr) || 0
-  return fmtCurrency(mrr * 12)
-}
+const fmtARR = computed(() => fmtCurrency(totalARR.value))
 
 const avgHealth = computed(() => {
   if (!accounts.value.length) return 0
@@ -317,56 +282,103 @@ const healthSub = computed(() => {
   return t('actionRequired')
 })
 
-const criticalCount = computed(() => accounts.value.filter(a => a.risk === 'critical').length)
-const criticalAccounts = computed(() => accounts.value.filter(a => a.risk === 'critical'))
+const criticalCount = computed(() => accounts.value.filter(a => a.risk === 'critical' || (a.health || 70) < 60).length)
+const criticalAccounts = computed(() => accounts.value.filter(a => a.risk === 'critical' || (a.health || 70) < 60))
+const healthyCount = computed(() => accounts.value.filter(a => (a.health || 70) >= 75).length)
+const neutralCount = computed(() => accounts.value.filter(a => {
+  const h = a.health || 70
+  return h >= 60 && h < 75
+}).length)
 
 const criticalSub = computed(() => {
   if (criticalCount.value > 0) {
     const arrRisk = criticalAccounts.value.reduce((s, a) => s + (parseFloat(a.mrr || a.arr) || 0), 0) * 12
-    const fmtRisk = fmtCurrency(arrRisk)
-    return `${fmtRisk} ARR ${t('atRisk')}`
+    return `${fmtCurrency(arrRisk)} ARR ${t('atRisk')}`
   }
   return t('noRisk')
 })
 
-// Wellbeing - default to 70 as in reference
-const wellbeingScore = computed(() => wellbeing.value?.score || 70)
-const teamMembers = computed(() => {
-  const team = wellbeing.value?.team
-  return Array.isArray(team) ? team : []
-})
-
-const wellbeingScoreColor = computed(() => {
-  const s = wellbeingScore.value
-  if (s >= 70) return 'var(--green)'
-  if (s >= 50) return 'var(--amber)'
-  return 'var(--red)'
-})
-
-const burnoutLevel = computed(() => wellbeing.value?.burnout || 'none')
-const burnoutColor = computed(() => {
-  const b = burnoutLevel.value
-  if (b === 'low') return 'var(--green)'
-  if (b === 'high') return 'var(--red)'
-  return 'var(--amber)'
-})
-const burnoutLabel = computed(() => {
-  const b = burnoutLevel.value
-  const key = b === 'low' ? 'burnoutLow' : b === 'high' ? 'burnoutHigh' : b === 'moderate' ? 'burnoutModerate' : 'burnoutNone'
-  return t(key)
-})
-
-// CSM team view (manager only)
-const csmStats = computed(() => {
-  const csms = [...new Set(accounts.value.map(a => a.csm).filter(Boolean))]
-  return csms.map(csm => {
-    const acc = accounts.value.filter(a => a.csm === csm)
-    const arr = acc.reduce((s, a) => s + (parseFloat(a.mrr || a.arr) || 0) * 12, 0)
-    const health = acc.length ? Math.round(acc.reduce((s, a) => s + (a.health || 70), 0) / acc.length) : 0
-    const crit = acc.filter(a => a.risk === 'critical').length
-    return { csm, count: acc.length, arr, health, crit }
+// Tasks from SM store
+const myTasks = computed(() => {
+  const allTasks = []
+  for (const pid in smStore.tasks) {
+    const project = smStore.projects.find(p => p.id === pid || p.id === Number(pid))
+    const projectName = project?.name || ''
+    for (const task of (smStore.tasks[pid] || [])) {
+      if (task.status === 'done') continue
+      allTasks.push({ ...task, projectName })
+    }
+  }
+  // Sort: in_progress first, then by priority
+  return allTasks.sort((a, b) => {
+    if (a.status === 'in_progress' && b.status !== 'in_progress') return -1
+    if (b.status === 'in_progress' && a.status !== 'in_progress') return 1
+    const prio = { high: 0, medium: 1, low: 2 }
+    return (prio[a.priority] || 2) - (prio[b.priority] || 2)
   })
 })
+
+// Upcoming renewals (next 30 days)
+const upcomingRenewals = computed(() => {
+  const now = new Date()
+  const in30 = new Date(now.getTime() + 30 * 86400000)
+  return accounts.value.filter(a => {
+    if (!a.renewal) return false
+    const d = new Date(a.renewal)
+    return d >= now && d <= in30
+  })
+})
+
+// Today's focus items
+const focusItems = computed(() => {
+  const items = []
+  const todayStr = new Date().toISOString().slice(0, 10)
+
+  // Tasks due today
+  const dueTodayCount = myTasks.value.filter(t => t.due === todayStr || t.dueDate === todayStr).length
+  if (dueTodayCount) {
+    items.push({ icon: 'clipboard', label: `${dueTodayCount} ${t('dashTasksDueToday')}`, route: { name: 'tasks' } })
+  }
+
+  // Overdue tasks
+  const overdueCount = myTasks.value.filter(t => {
+    const d = t.due || t.dueDate
+    return d && d < todayStr
+  }).length
+  if (overdueCount) {
+    items.push({ icon: 'warning', label: `${overdueCount} ${t('dashOverdueTasks')}`, route: { name: 'tasks' } })
+  }
+
+  // Upcoming renewals
+  if (upcomingRenewals.value.length) {
+    items.push({ icon: 'calendar', label: `${upcomingRenewals.value.length} ${t('dashUpcomingRenewals')}`, route: { name: 'portfolio' } })
+  }
+
+  // Critical clients
+  if (criticalCount.value) {
+    items.push({ icon: 'siren', label: `${criticalCount.value} ${t('dashCriticalClients')}`, route: { name: 'health-tracker' } })
+  }
+
+  return items
+})
+
+// KPI definitions
+const allKpis = computed(() => [
+  { key: 'arr', label: t('portfolioARR'), value: fmtARR.value, icon: 'money', color: 'var(--teal)', sub: accounts.value.length + ' ' + t('activeAccounts') },
+  { key: 'health', label: t('avgHealth'), value: avgHealth.value + '/100', icon: 'heart', color: healthColor.value, sub: healthSub.value },
+  { key: 'critical', label: t('criticalAccounts'), value: String(criticalCount.value), icon: 'siren', color: criticalCount.value === 0 ? 'var(--green)' : 'var(--red)', sub: criticalSub.value },
+  { key: 'nps', label: t('dashNps'), value: '—', icon: 'star', color: 'var(--teal)', sub: '' },
+  { key: 'churn', label: t('dashChurnRate'), value: '—', icon: 'chart-up', color: 'var(--green)', sub: '' },
+  { key: 'active', label: t('dashActiveAccounts'), value: String(accounts.value.length), icon: 'briefcase', color: 'var(--teal)', sub: fmtARR.value + ' ARR' },
+])
+
+const displayedKpis = computed(() => allKpis.value.filter(k => visibleKpis.value.includes(k.key)))
+
+function toggleKpi(key) {
+  const idx = visibleKpis.value.indexOf(key)
+  if (idx >= 0) visibleKpis.value.splice(idx, 1)
+  else visibleKpis.value.push(key)
+}
 
 // Plan tag styling
 const planColorVal = computed(() => {
@@ -392,3 +404,25 @@ const roleColorVal = computed(() => authStore.user?.role === 'manager' ? 'var(--
 const roleBg = computed(() => authStore.user?.role === 'manager' ? 'var(--purpleBg)' : 'var(--blueBg)')
 const roleBorder = computed(() => authStore.user?.role === 'manager' ? 'var(--purpleBorder, rgba(184,168,212,0.2))' : 'var(--blueBorder, rgba(139,168,196,0.2))')
 </script>
+
+<style scoped>
+.dash-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.dash-action-btn:hover {
+  background: var(--tealBg);
+  border-color: var(--tealBorder);
+  color: var(--teal);
+}
+</style>
