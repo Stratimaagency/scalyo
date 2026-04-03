@@ -9,17 +9,8 @@
         <span class="smp-nav__title">{{ weekLabel }}</span>
       </div>
       <div class="smp-nav__right" v-if="plannedTasks.length">
-        <button class="smp-export smp-export--google" @click="exportToGoogle" title="Ajouter à Google Calendar">
-          <span class="smp-export__icon">G</span> Google
-        </button>
-        <button class="smp-export smp-export--outlook" @click="exportToOutlook" title="Ajouter à Outlook">
-          <span class="smp-export__icon">O</span> Outlook
-        </button>
-        <button class="smp-export smp-export--apple" @click="exportICS" title="Télécharger .ics (Apple Calendar, etc.)">
-          <span class="smp-export__icon">📅</span> .ics
-        </button>
-        <button class="smp-export smp-export--all" @click="exportAllICS" title="Exporter toute la semaine">
-          ⬇ Tout exporter
+        <button class="smp-export smp-export--all" @click="exportAllICS" title="Télécharger la semaine (.ics — compatible Google, Outlook, Apple)">
+          📅 Exporter la semaine
         </button>
       </div>
     </div>
@@ -58,6 +49,8 @@
               <span class="smp-event__time">{{ fmtHour(evt.start_date) }} — {{ fmtEndHour(evt) }}</span>
               <span class="smp-event__name">{{ evt.name }}</span>
             </div>
+            <!-- Export single event button -->
+            <button class="smp-event__export" @click.stop="exportSingleEvent(evt)" title="Exporter vers mon calendrier">📅</button>
             <!-- Resize handle -->
             <div class="smp-event__resize" @mousedown.stop.prevent="startResize($event, evt, day.dateStr)"></div>
           </div>
@@ -227,29 +220,8 @@ function toICSDate(dateStr, timeStr) {
   return y + m + d + 'T' + h + mi + '00'
 }
 
-function exportToGoogle() {
-  for (const t of plannedTasks.value) {
-    const start = toICSDate(getTaskDate(t), getTaskStartTime(t))
-    const end = toICSDate(getTaskDate(t), getTaskEndTime(t))
-    const p = new URLSearchParams({
-      action: 'TEMPLATE', text: t.name, dates: `${start}/${end}`,
-      details: t.description || ''
-    })
-    window.open(`https://www.google.com/calendar/render?${p.toString()}`, '_blank')
-  }
-}
-
-function exportToOutlook() {
-  for (const t of plannedTasks.value) {
-    const start = `${getTaskDate(t)}T${getTaskStartTime(t)}:00`
-    const end = `${getTaskDate(t)}T${getTaskEndTime(t)}:00`
-    const p = new URLSearchParams({
-      path: '/calendar/action/compose', rru: 'addevent',
-      subject: t.name, startdt: start, enddt: end,
-      body: t.description || ''
-    })
-    window.open(`https://outlook.live.com/calendar/0/deeplink/compose?${p.toString()}`, '_blank')
-  }
+function exportSingleEvent(t) {
+  downloadFile(buildICSContent([t]), (t.name || 'event').replace(/[^a-z0-9]/gi, '_') + '.ics')
 }
 
 function buildICSContent(tasks) {
@@ -276,12 +248,6 @@ function downloadFile(content, filename) {
   URL.revokeObjectURL(url)
 }
 
-function exportICS() {
-  if (!plannedTasks.value.length) return
-  const t = plannedTasks.value[0]
-  downloadFile(buildICSContent([t]), (t.name || 'event').replace(/[^a-z0-9]/gi, '_') + '.ics')
-}
-
 function exportAllICS() {
   if (!plannedTasks.value.length) return
   downloadFile(buildICSContent(plannedTasks.value), 'scalyo-planning.ics')
@@ -298,12 +264,6 @@ function exportAllICS() {
 .smp-export { display: flex; align-items: center; gap: 4px; border: 1px solid var(--sm-bd); background: var(--sm-white); border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .12s; }
 .smp-export:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,.1); }
 .smp-export__icon { font-weight: 800; font-size: 12px; }
-.smp-export--google { color: #EA4335; border-color: rgba(234,67,53,.2); }
-.smp-export--google:hover { background: rgba(234,67,53,.06); }
-.smp-export--outlook { color: #0078D4; border-color: rgba(0,120,212,.2); }
-.smp-export--outlook:hover { background: rgba(0,120,212,.06); }
-.smp-export--apple { color: var(--sm-t2); }
-.smp-export--apple:hover { background: var(--sm-bg); }
 .smp-export--all { color: var(--sm-terra); border-color: rgba(244,63,94,.2); }
 .smp-export--all:hover { background: rgba(244,63,94,.06); }
 .smp-nav__btn { border: 1px solid var(--sm-bd); background: var(--sm-white); border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 14px; color: var(--sm-t2); display: flex; align-items: center; justify-content: center; }
@@ -346,6 +306,13 @@ function exportAllICS() {
 .smp-event__content { padding: 4px 6px; flex: 1; min-height: 0; overflow: hidden; }
 .smp-event__time { display: block; font-size: 10px; font-weight: 700; opacity: .85; }
 .smp-event__name { display: block; font-size: 11px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.smp-event__export {
+  position: absolute; top: 3px; right: 3px; border: none; background: rgba(255,255,255,.3);
+  border-radius: 4px; cursor: pointer; font-size: 10px; padding: 1px 4px; opacity: 0;
+  transition: opacity .15s;
+}
+.smp-event:hover .smp-event__export { opacity: 1; }
+.smp-event__export:hover { background: rgba(255,255,255,.6); }
 .smp-event__resize {
   height: 6px; cursor: ns-resize; background: rgba(255,255,255,.3); border-radius: 0 0 6px 6px;
   display: flex; align-items: center; justify-content: center;
