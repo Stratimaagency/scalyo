@@ -1334,4 +1334,5 @@ export default {
   htRedistributeMsg: 'Pensez à redistribuer les clients de {name}',
   htClientList: 'Clients assignés',
   htNoClients: 'Aucun client assigné',
+  wbHowAreYou: 'Comment vous sentez-vous aujourd\'hui ?',
 }

@@ -1318,4 +1318,5 @@ export default {
   htRedistributeMsg: 'Consider rebalancing {name}\'s portfolio',
   htClientList: 'Assigned clients',
   htNoClients: 'No clients assigned',
+  wbHowAreYou: 'How are you feeling today?',
 }

@@ -1315,4 +1315,5 @@ export default {
   htRedistributeMsg: '{name}님의 고객을 재배분하는 것을 고려하세요',
   htClientList: '담당 고객',
   htNoClients: '담당 고객 없음',
+  wbHowAreYou: '오늘 기분이 어떠세요?',
 }
