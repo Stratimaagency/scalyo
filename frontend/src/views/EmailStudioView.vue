@@ -2,21 +2,29 @@
   <PlanGate requiredPlan="Growth" moduleName="Email Studio">
   <div class="fade-in" style="display: flex; height: 100%; overflow: hidden">
     <!-- Sidebar -->
-    <div style="width: 260px; border-right: 1px solid var(--border); overflow: auto; padding: 20px 14px; flex-shrink: 0">
-      <h2 style="font-size: 18px; font-weight: 900; margin-bottom: 10px">✉️ {{ t('emailStudioTitle') }}</h2>
-      <p style="font-size: 11px; color: var(--muted); margin-bottom: 14px;">{{ t('emailStudioSubtitle') }}</p>
+    <div class="es-sidebar">
+      <!-- Gradient header -->
+      <div class="es-sidebar-hero">
+        <div class="es-hero-icon">✉️</div>
+        <div>
+          <h2 class="es-hero-title">{{ t('emailStudioTitle') }}</h2>
+          <p class="es-hero-sub">{{ t('emailStudioSubtitle') }}</p>
+        </div>
+      </div>
 
       <!-- Role filter -->
-      <div style="display: flex; gap: 4px; margin-bottom: 10px;">
-        <button v-for="r in ['all', 'csm', 'commercial', 'kam']" :key="r" class="btn-base"
-          :style="{ fontSize: '10px', padding: '3px 10px', borderRadius: '20px', background: activeRole === r ? 'var(--teal)' : 'var(--surface)', border: '1px solid ' + (activeRole === r ? 'var(--teal)' : 'var(--border)'), color: activeRole === r ? '#fff' : 'var(--muted)', cursor: 'pointer', fontWeight: 700 }"
+      <div style="display: flex; gap: 4px; margin-bottom: 10px; padding: 0 14px;">
+        <button v-for="r in ['all', 'csm', 'commercial', 'kam']" :key="r" class="es-role-btn"
+          :class="{ 'es-role-btn--on': activeRole === r }"
           @click="activeRole = r">
-          {{ r === 'all' ? t('emailRoleAll') : r === 'csm' ? t('emailRoleCSM') : r === 'commercial' ? t('emailRoleCommercial') : t('emailRoleKAM') }}
+          {{ roleEmoji(r) }} {{ r === 'all' ? t('emailRoleAll') : r === 'csm' ? t('emailRoleCSM') : r === 'commercial' ? t('emailRoleCommercial') : t('emailRoleKAM') }}
         </button>
       </div>
 
       <!-- Search -->
-      <input v-model="searchQuery" :placeholder="t('emailSearch')" style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; color: var(--text); font-size: 12px; margin-bottom: 10px; outline: none;" />
+      <div style="padding: 0 14px; margin-bottom: 10px;">
+        <input v-model="searchQuery" :placeholder="'🔍 ' + t('emailSearch')" class="es-search" />
+      </div>
 
       <!-- Category filter pills -->
       <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px">
@@ -40,27 +48,23 @@
       </div>
 
       <!-- Template list -->
+      <div style="padding: 0 14px;">
       <div
         v-for="tpl in filteredTemplates"
         :key="tpl.id"
-        class="row-item"
-        :style="{
-          padding: '11px 12px',
-          borderRadius: '11px',
-          marginBottom: '5px',
-          cursor: 'pointer',
-          background: selected?.id === tpl.id ? 'var(--teal-bg)' : undefined,
-          border: '1px solid ' + (selected?.id === tpl.id ? 'var(--teal-border)' : 'transparent')
-        }"
+        class="es-tpl-card"
+        :class="{ 'es-tpl-card--on': selected?.id === tpl.id }"
         @click="selectTemplate(tpl)"
       >
-        <div style="font-size: 10px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px">
-          {{ tpl.cat }}
+        <div class="es-tpl-top">
+          <span class="es-tpl-emoji">{{ tpl.emoji || '📧' }}</span>
+          <span class="es-tpl-cat" :style="{ background: catColor(tpl.cat) + '15', color: catColor(tpl.cat) }">{{ tpl.cat }}</span>
         </div>
-        <div :style="{ fontSize: '13px', fontWeight: 700, color: selected?.id === tpl.id ? 'var(--teal)' : 'var(--text)' }">
+        <div class="es-tpl-title" :class="{ 'es-tpl-title--on': selected?.id === tpl.id }">
           {{ tpl.title }}
         </div>
       </div>
+    </div>
     </div>
 
     <!-- Main content -->
@@ -722,6 +726,21 @@ const filteredTemplates = computed(() => {
   return list
 })
 
+function roleEmoji(r) { return r === 'csm' ? '💼' : r === 'commercial' ? '🎯' : r === 'kam' ? '📈' : '✨' }
+function catColor(cat) {
+  const c = cat.toLowerCase()
+  if (c.includes('onboarding')) return '#3b82f6'
+  if (c.includes('qbr')) return '#8b5cf6'
+  if (c.includes('risque') || c.includes('risk') || c.includes('위험')) return '#ef4444'
+  if (c.includes('renouv') || c.includes('renewal') || c.includes('갱신')) return '#f97316'
+  if (c.includes('suivi') || c.includes('follow') || c.includes('후속')) return '#06b6d4'
+  if (c.includes('nps')) return '#eab308'
+  if (c.includes('prospect') || c.includes('영업')) return '#ec4899'
+  if (c.includes('expans') || c.includes('확장')) return '#22c55e'
+  if (c.includes('négoci') || c.includes('negoti') || c.includes('협상')) return '#f43f5e'
+  return '#6366f1'
+}
+
 const allLabel = computed(() => {
   if (lang.value === 'en') return 'All'
   if (lang.value === 'kr') return '전체'
@@ -803,3 +822,27 @@ watch(lang, () => {
   activeCat.value = 'all'
 }, { immediate: true })
 </script>
+
+<style scoped>
+.es-sidebar { width: 280px; border-right: 1px solid var(--border); overflow: auto; flex-shrink: 0; }
+.es-sidebar-hero { background: linear-gradient(135deg, #f43f5e 0%, #f97316 30%, #eab308 60%, #22c55e 80%, #3b82f6 100%); padding: 18px 16px; display: flex; align-items: center; gap: 12px; color: #fff; margin-bottom: 14px; }
+.es-hero-icon { font-size: 28px; width: 44px; height: 44px; background: rgba(255,255,255,.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.es-hero-title { font-size: 16px; font-weight: 900; margin: 0; color: #fff; }
+.es-hero-sub { font-size: 10px; opacity: .85; margin-top: 2px; }
+
+.es-role-btn { font-size: 10px; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); cursor: pointer; font-weight: 600; font-family: 'DM Sans', sans-serif; transition: all .12s; }
+.es-role-btn:hover { border-color: #f43f5e; color: #f43f5e; }
+.es-role-btn--on { background: linear-gradient(135deg, #f43f5e, #f97316); color: #fff !important; border-color: transparent; box-shadow: 0 2px 8px rgba(244,63,94,.25); }
+
+.es-search { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; color: var(--text); font-size: 12px; outline: none; font-family: 'DM Sans', sans-serif; }
+.es-search:focus { border-color: #f43f5e; box-shadow: 0 0 0 3px rgba(244,63,94,.08); }
+
+.es-tpl-card { padding: 10px 12px; border-radius: 12px; margin-bottom: 6px; cursor: pointer; border: 1px solid transparent; transition: all .15s; }
+.es-tpl-card:hover { background: rgba(244,63,94,.04); border-color: rgba(244,63,94,.15); transform: translateX(2px); }
+.es-tpl-card--on { background: linear-gradient(135deg, rgba(244,63,94,.08), rgba(249,115,22,.08)); border-color: rgba(244,63,94,.25); box-shadow: 0 2px 8px rgba(244,63,94,.1); }
+.es-tpl-top { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.es-tpl-emoji { font-size: 16px; }
+.es-tpl-cat { font-size: 9px; font-weight: 700; padding: 1px 7px; border-radius: 8px; text-transform: uppercase; letter-spacing: .04em; }
+.es-tpl-title { font-size: 12px; font-weight: 600; color: var(--text); }
+.es-tpl-title--on { color: #f43f5e; font-weight: 800; }
+</style>
