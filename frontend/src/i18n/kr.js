@@ -244,7 +244,6 @@ export default {
   renewal: '갱신',
   // Wellbeing
   wellbeingScore: '웰빙 점수',
-  workload: '업무 부하',
   teamScore: '팀 점수',
   trackWorkload: '업무 부하 추적 및 관리',
   novaTitle: 'Nova',

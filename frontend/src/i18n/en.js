@@ -244,7 +244,6 @@ export default {
   renewal: 'Renewal',
   // Wellbeing
   wellbeingScore: 'Wellbeing Score',
-  workload: 'Workload',
   teamScore: 'Team Score',
   trackWorkload: 'Track and manage workload',
   novaTitle: 'Nova',
