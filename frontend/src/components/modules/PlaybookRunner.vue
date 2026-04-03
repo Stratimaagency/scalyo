@@ -3,7 +3,7 @@
     <div class="mod-hero">
       <div>
         <h1 class="mod-title">🔄 Playbooks</h1>
-        <p class="mod-subtitle">Processus guidés pour chaque situation client</p>
+        <p class="mod-subtitle">{{ t('pbSubtitle') }}</p>
       </div>
       <div class="mod-hero-score">
         <div class="mod-big-num" style="color: #4285F4">{{ tasksStore.playbooks.length }}</div>
@@ -13,14 +13,14 @@
 
     <!-- Active churn playbooks alert -->
     <div v-if="tasksStore.activeChurnPlaybooks.length" class="mod-alert mod-alert--warn">
-      <span>⚡ {{ tasksStore.activeChurnPlaybooks.length }} playbook(s) actif(s) sur des clients à risque</span>
+      <span>⚡ {{ tasksStore.activeChurnPlaybooks.length }} {{ t('pbActiveAlert') }}</span>
     </div>
 
     <div class="mod-card" v-if="!tasksStore.playbooks.length">
       <div class="mod-empty">
         <p style="font-size: 40px; margin-bottom: 12px;">🔄</p>
-        <p style="font-weight: 700; margin-bottom: 8px;">Aucun playbook disponible</p>
-        <p style="color: #5F6368">Les playbooks apparaîtront ici quand l'API sera connectée.</p>
+        <p style="font-weight: 700; margin-bottom: 8px;">{{ t('pbNoPlaybooks') }}</p>
+        <p style="color: #5F6368">{{ t('pbNoPlaybooksHint') }}</p>
       </div>
     </div>
 
@@ -71,6 +71,9 @@ import { onMounted } from 'vue'
 import { useTasksStore } from '../../stores/tasks'
 import { useClientsStore } from '../../stores/clients'
 import { useCSMStore } from '../../stores/csm'
+import { useI18n } from '../../i18n'
+
+const { t } = useI18n()
 
 const tasksStore = useTasksStore()
 const clientsStore = useClientsStore()

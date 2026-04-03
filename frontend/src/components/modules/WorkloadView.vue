@@ -3,37 +3,37 @@
     <div class="mod-hero">
       <div>
         <h1 class="mod-title">⚖️ Workload Équipe</h1>
-        <p class="mod-subtitle">Charge de travail par CSM</p>
+        <p class="mod-subtitle">{{ t('wlSubtitle') }}</p>
       </div>
       <div class="mod-hero-score">
         <div class="mod-big-num" :style="{ color: loadColor(csmStore.teamAvgLoad) }">{{ csmStore.teamAvgLoad }}%</div>
-        <div class="mod-big-label">Charge moy.</div>
+        <div class="mod-big-label">{{ t('wlAvgLoad') }}</div>
       </div>
     </div>
 
     <!-- KPIs -->
     <div class="mod-kpi-row">
       <div class="mod-kpi-card">
-        <div class="mod-kpi-label">👥 Total CSM</div>
+        <div class="mod-kpi-label">👥 {{ t('wlTotalCSM') }}</div>
         <div class="mod-kpi-val" style="color: #4285F4">{{ csmStore.csms.length }}</div>
       </div>
       <div class="mod-kpi-card">
-        <div class="mod-kpi-label">⚖️ Charge moy.</div>
+        <div class="mod-kpi-label">⚖️ {{ t('wlAvgLoad') }}</div>
         <div class="mod-kpi-val" :style="{ color: loadColor(csmStore.teamAvgLoad) }">{{ csmStore.teamAvgLoad }}%</div>
       </div>
       <div class="mod-kpi-card">
-        <div class="mod-kpi-label">🔴 Surchargés</div>
+        <div class="mod-kpi-label">🔴 {{ t('wlOverloaded') }}</div>
         <div class="mod-kpi-val" style="color: #EA4335">{{ csmStore.overloadedCSMs.length }}</div>
       </div>
       <div class="mod-kpi-card">
-        <div class="mod-kpi-label">📊 Clients total</div>
+        <div class="mod-kpi-label">📊 {{ t('wlTotalClients') }}</div>
         <div class="mod-kpi-val" style="color: #34A853">{{ clientsStore.clients.length }}</div>
       </div>
     </div>
 
     <!-- Workload chart -->
     <div class="mod-card" v-if="csmStore.workloadByCSM.length">
-      <h3 class="mod-section-title">📊 Charge par CSM</h3>
+      <h3 class="mod-section-title">📊 {{ t('wlLoadByCSM') }}</h3>
       <apexchart type="bar" height="300" :options="chartOpts" :series="chartSeries" />
     </div>
 
@@ -44,7 +44,7 @@
           <div class="workload-avatar" :style="{ background: loadColor(csm.workloadPct) }">{{ (csm.name || '?')[0] }}</div>
           <div>
             <div style="font-weight: 800; font-size: 15px">{{ csm.name }}</div>
-            <div style="font-size: 12px; color: #5F6368">{{ csm.clients.length }} clients</div>
+            <div style="font-size: 12px; color: #5F6368">{{ csm.clients.length }} {{ t('clients') }}</div>
           </div>
           <div class="workload-pct" :style="{ color: loadColor(csm.workloadPct) }">{{ csm.workloadPct }}%</div>
         </div>
@@ -52,8 +52,8 @@
           <div class="mod-progress-fill" :style="{ width: csm.workloadPct + '%', background: loadGrad(csm.workloadPct) }"></div>
         </div>
         <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: #5F6368">
-          <span>{{ csm.atRiskCount }} à risque</span>
-          <span>{{ csm.clients.length }} / 15 clients</span>
+          <span>{{ csm.atRiskCount }} {{ t('atRisk') }}</span>
+          <span>{{ csm.clients.length }} / 15 {{ t('clients') }}</span>
         </div>
       </div>
     </div>
@@ -61,7 +61,7 @@
     <div v-if="!csmStore.csms.length && !csmStore.loading" class="mod-card">
       <div class="mod-empty">
         <p style="font-size: 40px; margin-bottom: 12px;">⚖️</p>
-        <p style="font-weight: 700;">Ajoutez des clients pour voir la charge</p>
+        <p style="font-weight: 700;">{{ t('wlNoClients') }}</p>
       </div>
     </div>
   </div>
@@ -71,6 +71,9 @@
 import { computed, onMounted } from 'vue'
 import { useCSMStore } from '../../stores/csm'
 import { useClientsStore } from '../../stores/clients'
+import { useI18n } from '../../i18n'
+
+const { t } = useI18n()
 
 const csmStore = useCSMStore()
 const clientsStore = useClientsStore()

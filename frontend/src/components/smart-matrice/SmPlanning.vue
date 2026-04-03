@@ -10,7 +10,7 @@
       </div>
       <div class="smp-nav__right" v-if="plannedTasks.length">
         <button class="smp-export smp-export--all" @click="exportAllICS" title="Télécharger la semaine (.ics — compatible Google, Outlook, Apple)">
-          📅 Exporter la semaine
+          📅 {{ t('plExportWeek') }}
         </button>
       </div>
     </div>
@@ -60,8 +60,8 @@
 
     <!-- Unplanned tasks -->
     <div v-if="unplannedTasks.length" class="smp-unplanned">
-      <h4 class="smp-unplanned__title">📋 Tâches non planifiées ({{ unplannedTasks.length }})</h4>
-      <p class="smp-unplanned__hint">Glissez une tâche sur le calendrier pour la planifier</p>
+      <h4 class="smp-unplanned__title">📋 {{ t('plUnplanned') }} ({{ unplannedTasks.length }})</h4>
+      <p class="smp-unplanned__hint">{{ t('plDragHint') }}</p>
       <div class="smp-unplanned__list">
         <div v-for="t in unplannedTasks" :key="t.id" class="smp-unplanned__item"
           draggable="true" @dragstart="dragStart($event, t)"
@@ -77,6 +77,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from '../../i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   tasks: { type: Array, default: () => [] },

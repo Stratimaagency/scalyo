@@ -8,13 +8,13 @@
       </div>
       <div class="mod-hero-score">
         <div class="mod-big-num" :style="{ color: scoreColor(d.avgHealthScore) }">{{ d.avgHealthScore }}</div>
-        <div class="mod-big-label">Score santé global</div>
+        <div class="mod-big-label">{{ t('mgrGlobalHealth') }}</div>
       </div>
     </div>
 
     <!-- Alerts -->
     <div v-if="d.alerts.length" class="mgr-alerts">
-      <div class="mgr-alerts-header">⚠️ {{ d.alerts.length }} alerte(s) critique(s)</div>
+      <div class="mgr-alerts-header">⚠️ {{ d.alerts.length }} {{ t('mgrCriticalAlerts') }}</div>
       <div v-for="(alert, i) in d.alerts.slice(0, 5)" :key="i" class="mgr-alert-row"
         @click="alert.route && $router.push(alert.route)">
         {{ alert.message }}
@@ -23,20 +23,20 @@
 
     <!-- KPI Row -->
     <div class="mod-kpi-row">
-      <div class="mod-kpi-card"><div class="mod-kpi-label">💙 Score santé</div><div class="mod-kpi-val" :style="{ color: scoreColor(d.avgHealthScore) }">{{ d.avgHealthScore }}/100</div></div>
-      <div class="mod-kpi-card"><div class="mod-kpi-label">✅ Clients sains</div><div class="mod-kpi-val" style="color:#34A853">{{ d.healthyCount }}</div></div>
-      <div class="mod-kpi-card"><div class="mod-kpi-label">⚠️ À risque</div><div class="mod-kpi-val" style="color:#EA4335">{{ d.atRiskCount }}</div></div>
-      <div class="mod-kpi-card"><div class="mod-kpi-label">💰 ARR total</div><div class="mod-kpi-val" style="color:#4285F4">{{ fmtCurrency(d.totalARR) }}</div></div>
-      <div class="mod-kpi-card"><div class="mod-kpi-label">⚖️ Charge équipe</div><div class="mod-kpi-val" :style="{ color: loadColor(d.teamAvgLoad) }">{{ d.teamAvgLoad }}%</div></div>
-      <div class="mod-kpi-card"><div class="mod-kpi-label">🎯 Score OKR</div><div class="mod-kpi-val" :style="{ color: okrColor(d.globalOKRScore) }">{{ d.globalOKRScore }}%</div></div>
+      <div class="mod-kpi-card"><div class="mod-kpi-label">💙 {{ t('mgrHealthScore') }}</div><div class="mod-kpi-val" :style="{ color: scoreColor(d.avgHealthScore) }">{{ d.avgHealthScore }}/100</div></div>
+      <div class="mod-kpi-card"><div class="mod-kpi-label">✅ {{ t('mgrHealthyClients') }}</div><div class="mod-kpi-val" style="color:#34A853">{{ d.healthyCount }}</div></div>
+      <div class="mod-kpi-card"><div class="mod-kpi-label">⚠️ {{ t('mgrAtRisk') }}</div><div class="mod-kpi-val" style="color:#EA4335">{{ d.atRiskCount }}</div></div>
+      <div class="mod-kpi-card"><div class="mod-kpi-label">💰 {{ t('mgrTotalARR') }}</div><div class="mod-kpi-val" style="color:#4285F4">{{ fmtCurrency(d.totalARR) }}</div></div>
+      <div class="mod-kpi-card"><div class="mod-kpi-label">⚖️ {{ t('mgrTeamLoad') }}</div><div class="mod-kpi-val" :style="{ color: loadColor(d.teamAvgLoad) }">{{ d.teamAvgLoad }}%</div></div>
+      <div class="mod-kpi-card"><div class="mod-kpi-label">🎯 {{ t('mgrOKRScore') }}</div><div class="mod-kpi-val" :style="{ color: okrColor(d.globalOKRScore) }">{{ d.globalOKRScore }}%</div></div>
     </div>
 
     <div class="mgr-grid">
       <!-- Performance par CSM -->
       <div class="mod-card mgr-wide">
         <div class="mod-card-header">
-          <h3 class="mod-section-title">👥 Performance par CSM</h3>
-          <router-link :to="{ name: 'workload' }" class="mod-link">Voir détail →</router-link>
+          <h3 class="mod-section-title">👥 {{ t('mgrCSMPerf') }}</h3>
+          <router-link :to="{ name: 'workload' }" class="mod-link">{{ t('mgrSeeDetail') }} →</router-link>
         </div>
         <div v-if="csmStore.workloadByCSM.length" class="mod-table-wrap">
           <table class="mod-table">
@@ -61,19 +61,19 @@
             </tbody>
           </table>
         </div>
-        <div v-else class="mod-empty">Aucune donnée CSM</div>
+        <div v-else class="mod-empty">{{ t('mgrNoCSMData') }}</div>
       </div>
 
       <!-- État du portefeuille -->
       <div class="mod-card">
         <div class="mod-card-header">
-          <h3 class="mod-section-title">❤️ État du portefeuille</h3>
-          <router-link :to="{ name: 'health-tracker' }" class="mod-link">Voir tout →</router-link>
+          <h3 class="mod-section-title">❤️ {{ t('mgrPortfolioStatus') }}</h3>
+          <router-link :to="{ name: 'health-tracker' }" class="mod-link">{{ t('mgrSeeAll') }} →</router-link>
         </div>
         <apexchart v-if="clientsStore.clients.length" type="donut" height="200" :options="donutOpts" :series="donutSeries" />
         <div style="margin-top:14px">
           <div style="font-weight:700;font-size:13px;margin-bottom:8px;color:#EA4335" v-if="clientsStore.atRiskClients.length">
-            Top clients à risque
+            {{ t('mgrTopAtRisk') }}
           </div>
           <div v-for="c in clientsStore.atRiskClients.slice(0,3)" :key="c.id" class="mgr-client-row">
             <span style="font-weight:700">{{ c.name }}</span>
@@ -85,8 +85,8 @@
       <!-- OKR Équipe -->
       <div class="mod-card">
         <div class="mod-card-header">
-          <h3 class="mod-section-title">🎯 OKR Équipe</h3>
-          <router-link :to="{ name: 'okr-tracker' }" class="mod-link">Voir tout →</router-link>
+          <h3 class="mod-section-title">🎯 {{ t('mgrTeamOKRs') }}</h3>
+          <router-link :to="{ name: 'okr-tracker' }" class="mod-link">{{ t('mgrSeeAll') }} →</router-link>
         </div>
         <div v-if="tasksStore.okrs.length">
           <div v-for="okr in tasksStore.okrs.slice(0,4)" :key="okr.id" class="mgr-okr-mini">
@@ -99,22 +99,22 @@
             </div>
           </div>
         </div>
-        <div v-else class="mod-empty">Aucun OKR défini</div>
+        <div v-else class="mod-empty">{{ t('mgrNoOKRs') }}</div>
       </div>
 
       <!-- Playbooks actifs -->
       <div class="mod-card">
         <div class="mod-card-header">
-          <h3 class="mod-section-title">🔄 Playbooks actifs</h3>
-          <router-link :to="{ name: 'playbook-runner' }" class="mod-link">Voir tout →</router-link>
+          <h3 class="mod-section-title">🔄 {{ t('mgrActivePlaybooks') }}</h3>
+          <router-link :to="{ name: 'playbook-runner' }" class="mod-link">{{ t('mgrSeeAll') }} →</router-link>
         </div>
         <div v-if="tasksStore.playbooks.length">
           <div v-for="pb in tasksStore.playbooks.slice(0,4)" :key="pb.id" class="mgr-pb-row">
             <span style="font-weight:700">{{ pb.emoji || '📋' }} {{ pb.name }}</span>
-            <span style="font-size:12px;color:#5F6368">{{ pb.clients?.length || 0 }} clients</span>
+            <span style="font-size:12px;color:#5F6368">{{ pb.clients?.length || 0 }} {{ t('clients') }}</span>
           </div>
         </div>
-        <div v-else class="mod-empty">Aucun playbook</div>
+        <div v-else class="mod-empty">{{ t('mgrNoPlaybooks') }}</div>
       </div>
     </div>
   </div>
@@ -126,6 +126,9 @@ import { useManagerStore } from '../stores/manager'
 import { useClientsStore } from '../stores/clients'
 import { useCSMStore } from '../stores/csm'
 import { useTasksStore } from '../stores/tasks'
+import { useI18n } from '../i18n'
+
+const { t } = useI18n()
 
 const managerStore = useManagerStore()
 const clientsStore = useClientsStore()
@@ -148,7 +151,7 @@ function okrPct(okr) {
 
 const donutOpts = computed(() => ({
   chart: { fontFamily: "'DM Sans', sans-serif" },
-  labels: ['Sain', 'Neutre', 'À risque'],
+  labels: [t('htStatusHealthy'), t('htRiskMedium'), t('htStatusAtRisk')],
   colors: ['#34A853', '#FBBC05', '#EA4335'],
   legend: { position: 'bottom', fontSize: '12px' },
   dataLabels: { enabled: true, formatter: (v) => Math.round(v) + '%' },

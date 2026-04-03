@@ -2,8 +2,8 @@
   <div class="sm-eisen-wrap">
     <!-- Unsorted tasks panel (left sidebar) -->
     <div class="sm-eisen__inbox">
-      <h4 class="sm-eisen__inbox-title">📋 Tâches à trier ({{ unsortedTasks.length }})</h4>
-      <p class="sm-eisen__inbox-hint">Glissez les tâches dans les quadrants</p>
+      <h4 class="sm-eisen__inbox-title">📋 {{ t('eisUnsorted') }} ({{ unsortedTasks.length }})</h4>
+      <p class="sm-eisen__inbox-hint">{{ t('eisDragHint') }}</p>
 
       <!-- Group by project or group_name -->
       <div v-for="(group, gName) in unsortedGrouped" :key="gName" class="sm-eisen__inbox-group">
@@ -19,15 +19,15 @@
             <span class="sm-eisen__inbox-item-name">{{ task.name }}</span>
             <!-- Quick assign buttons -->
             <div class="sm-eisen__inbox-quick">
-              <button @click.stop="quickAssign(task, 1)" title="Faire maintenant">🔴</button>
-              <button @click.stop="quickAssign(task, 2)" title="Planifier">🟢</button>
-              <button @click.stop="quickAssign(task, 3)" title="Déléguer">🔵</button>
-              <button @click.stop="quickAssign(task, 4)" title="Éliminer">⚪</button>
+              <button @click.stop="quickAssign(task, 1)" :title="t('eisDoNow')">🔴</button>
+              <button @click.stop="quickAssign(task, 2)" :title="t('eisSchedule')">🟢</button>
+              <button @click.stop="quickAssign(task, 3)" :title="t('eisDelegate')">🔵</button>
+              <button @click.stop="quickAssign(task, 4)" :title="t('eisEliminate')">⚪</button>
             </div>
           </div>
         </div>
       </div>
-      <div v-if="!unsortedTasks.length" class="sm-eisen__inbox-empty">Toutes les tâches sont triées</div>
+      <div v-if="!unsortedTasks.length" class="sm-eisen__inbox-empty">{{ t('eisAllSorted') }}</div>
     </div>
 
     <!-- Eisenhower matrix -->
@@ -39,55 +39,55 @@
 
       <!-- Q1: Urgent + Important = FAIRE -->
       <div class="sm-eisen__quad sm-eisen__quad--q1" @dragover.prevent @dragenter.prevent="dragOver = 1" @dragleave="dragOver = null" @drop="onDrop($event, 1)" :class="{ 'sm-eisen__quad--hover': dragOver === 1 }">
-        <div class="sm-eisen__quad-label">🔴 Faire maintenant</div>
+        <div class="sm-eisen__quad-label">🔴 {{ t('eisDoNow') }}</div>
         <div v-for="task in q(1)" :key="task.id" class="sm-eisen__item" draggable="true" @dragstart="onDragStart($event, task)" @click="$emit('edit-task', task)">
           <span class="sm-eisen__item-name">{{ task.name }}</span>
           <span class="sm-eisen__item-status" :class="'sm-eisen__item-status--' + task.status">{{ statusLabel(task.status) }}</span>
-          <button class="sm-eisen__item-transfer" @click.stop="startTransfer(task)" title="Transférer">↗</button>
+          <button class="sm-eisen__item-transfer" @click.stop="startTransfer(task)" :title="t('eisTransferTitle')">↗</button>
         </div>
-        <div v-if="!q(1).length" class="sm-eisen__drop-hint">Glissez ici</div>
+        <div v-if="!q(1).length" class="sm-eisen__drop-hint">{{ t('eisDragHere') }}</div>
       </div>
 
       <!-- Q2: Important + Pas urgent = PLANIFIER -->
       <div class="sm-eisen__quad sm-eisen__quad--q2" @dragover.prevent @dragenter.prevent="dragOver = 2" @dragleave="dragOver = null" @drop="onDrop($event, 2)" :class="{ 'sm-eisen__quad--hover': dragOver === 2 }">
-        <div class="sm-eisen__quad-label">🟢 Planifier</div>
+        <div class="sm-eisen__quad-label">🟢 {{ t('eisSchedule') }}</div>
         <div v-for="task in q(2)" :key="task.id" class="sm-eisen__item" draggable="true" @dragstart="onDragStart($event, task)" @click="$emit('edit-task', task)">
           <span class="sm-eisen__item-name">{{ task.name }}</span>
           <span class="sm-eisen__item-status" :class="'sm-eisen__item-status--' + task.status">{{ statusLabel(task.status) }}</span>
-          <button class="sm-eisen__item-transfer" @click.stop="startTransfer(task)" title="Transférer">↗</button>
+          <button class="sm-eisen__item-transfer" @click.stop="startTransfer(task)" :title="t('eisTransferTitle')">↗</button>
         </div>
-        <div v-if="!q(2).length" class="sm-eisen__drop-hint">Glissez ici</div>
+        <div v-if="!q(2).length" class="sm-eisen__drop-hint">{{ t('eisDragHere') }}</div>
       </div>
 
       <div class="sm-eisen__header sm-eisen__header--left">⬇ Pas important</div>
 
       <!-- Q3: Urgent + Pas important = DELEGUER -->
       <div class="sm-eisen__quad sm-eisen__quad--q3" @dragover.prevent @dragenter.prevent="dragOver = 3" @dragleave="dragOver = null" @drop="onDrop($event, 3)" :class="{ 'sm-eisen__quad--hover': dragOver === 3 }">
-        <div class="sm-eisen__quad-label">🔵 Déléguer</div>
+        <div class="sm-eisen__quad-label">🔵 {{ t('eisDelegate') }}</div>
         <div v-for="task in q(3)" :key="task.id" class="sm-eisen__item" draggable="true" @dragstart="onDragStart($event, task)" @click="$emit('edit-task', task)">
           <span class="sm-eisen__item-name">{{ task.name }}</span>
           <span class="sm-eisen__item-status" :class="'sm-eisen__item-status--' + task.status">{{ statusLabel(task.status) }}</span>
-          <button class="sm-eisen__item-transfer" @click.stop="startTransfer(task)" title="Transférer">↗</button>
+          <button class="sm-eisen__item-transfer" @click.stop="startTransfer(task)" :title="t('eisTransferTitle')">↗</button>
         </div>
-        <div v-if="!q(3).length" class="sm-eisen__drop-hint">Glissez ici</div>
+        <div v-if="!q(3).length" class="sm-eisen__drop-hint">{{ t('eisDragHere') }}</div>
       </div>
 
       <!-- Q4: Pas urgent + Pas important = ELIMINER -->
       <div class="sm-eisen__quad sm-eisen__quad--q4" @dragover.prevent @dragenter.prevent="dragOver = 4" @dragleave="dragOver = null" @drop="onDrop($event, 4)" :class="{ 'sm-eisen__quad--hover': dragOver === 4 }">
-        <div class="sm-eisen__quad-label">⚪ Éliminer</div>
+        <div class="sm-eisen__quad-label">⚪ {{ t('eisEliminate') }}</div>
         <div v-for="task in q(4)" :key="task.id" class="sm-eisen__item" draggable="true" @dragstart="onDragStart($event, task)" @click="$emit('edit-task', task)">
           <span class="sm-eisen__item-name">{{ task.name }}</span>
           <span class="sm-eisen__item-status" :class="'sm-eisen__item-status--' + task.status">{{ statusLabel(task.status) }}</span>
-          <button class="sm-eisen__item-transfer" @click.stop="startTransfer(task)" title="Transférer">↗</button>
+          <button class="sm-eisen__item-transfer" @click.stop="startTransfer(task)" :title="t('eisTransferTitle')">↗</button>
         </div>
-        <div v-if="!q(4).length" class="sm-eisen__drop-hint">Glissez ici</div>
+        <div v-if="!q(4).length" class="sm-eisen__drop-hint">{{ t('eisDragHere') }}</div>
       </div>
     </div>
 
     <!-- Transfer overlay -->
     <div v-if="transferringTask" class="sm-eisen__transfer-overlay" @click.self="transferringTask = null">
       <div class="sm-eisen__transfer-box">
-        <h4>Transférer « {{ transferringTask.name }} »</h4>
+        <h4>{{ t('eisTransferTitle') }} « {{ transferringTask.name }} »</h4>
         <div v-for="m in team" :key="m.id" class="sm-eisen__transfer-item" @click="doTransfer(m.id)">
           <span class="sm-eisen__transfer-avatar">{{ m.initials }}</span>
           {{ m.display_name || m.email }}
@@ -100,6 +100,9 @@
 
 <script setup>
 import { ref, computed, reactive } from 'vue'
+import { useI18n } from '../../i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   tasks: { type: Array, required: true },
@@ -125,10 +128,10 @@ const unsortedTasks = computed(() => {
 // Group unsorted by group_name
 const unsortedGrouped = computed(() => {
   const groups = {}
-  for (const t of unsortedTasks.value) {
-    const g = t.group_name || 'Sans groupe'
+  for (const tk of unsortedTasks.value) {
+    const g = tk.group_name || t('defaultGroup')
     if (!groups[g]) { groups[g] = []; if (openGroups[g] === undefined) openGroups[g] = true }
-    groups[g].push(t)
+    groups[g].push(tk)
   }
   return groups
 })

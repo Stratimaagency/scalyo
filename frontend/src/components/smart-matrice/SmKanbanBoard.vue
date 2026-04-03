@@ -31,14 +31,14 @@
                 </div>
 
                 <div class="sm-kanban__card-meta">
-                  <span>{{ doneSubtasks(task) }}/{{ totalSubtasks(task) }} sous-tâches</span>
+                  <span>{{ doneSubtasks(task) }}/{{ totalSubtasks(task) }} {{ t('subtasksLabel') }}</span>
                   <span v-if="task.end_date" class="sm-kanban__card-date">{{ formatDate(task.end_date) }}</span>
                 </div>
 
                 <!-- Subtasks expandable -->
                 <div v-if="totalSubtasks(task) > 0">
                   <button class="sm-kanban__subtask-toggle" @click.stop="toggleTask(task.id)">
-                    {{ openTasks[task.id] ? '▾' : '▸' }} {{ totalSubtasks(task) }} sous-tâches
+                    {{ openTasks[task.id] ? '▾' : '▸' }} {{ totalSubtasks(task) }} {{ t('subtasksLabel') }}
                   </button>
                   <div v-if="openTasks[task.id]" class="sm-kanban__subtasks">
                     <div v-for="sub in (task.subtasks || [])" :key="sub.id" class="sm-kanban__subtask"
@@ -53,7 +53,7 @@
           </div>
         </template>
 
-        <div v-if="!tasksFor(col.status).length" class="sm-kanban__empty">Aucune tâche</div>
+        <div v-if="!tasksFor(col.status).length" class="sm-kanban__empty">{{ t('kbNoTasks') }}</div>
       </div>
     </div>
   </div>
@@ -61,6 +61,9 @@
 
 <script setup>
 import { reactive } from 'vue'
+import { useI18n } from '../../i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   tasks: { type: Array, required: true },
@@ -73,10 +76,10 @@ const openGroups = reactive({})
 const openTasks = reactive({})
 
 const columns = [
-  { status: 'todo',        label: 'À faire',   color: '#3b82f6', bg: 'rgba(139,92,246,.05)' },
-  { status: 'in_progress', label: 'En cours',   color: '#f43f5e', bg: 'rgba(244,63,94,.05)' },
-  { status: 'blocked',     label: 'Bloqué',     color: '#2563eb', bg: 'rgba(37,99,235,.05)' },
-  { status: 'done',        label: 'Terminé',    color: '#16a34a', bg: 'rgba(22,163,74,.05)' },
+  { status: 'todo',        label: t('statusTodo'),       color: '#3b82f6', bg: 'rgba(139,92,246,.05)' },
+  { status: 'in_progress', label: t('statusInProgress'), color: '#f43f5e', bg: 'rgba(244,63,94,.05)' },
+  { status: 'blocked',     label: t('statusBlocked'),    color: '#2563eb', bg: 'rgba(37,99,235,.05)' },
+  { status: 'done',        label: t('statusDone'),       color: '#16a34a', bg: 'rgba(22,163,74,.05)' },
 ]
 
 function tasksFor(status) {
@@ -85,10 +88,10 @@ function tasksFor(status) {
 
 function groupedTasksFor(status) {
   const groups = {}
-  for (const t of tasksFor(status)) {
-    const g = t.group_name || 'Sans groupe'
+  for (const tk of tasksFor(status)) {
+    const g = tk.group_name || t('defaultGroup')
     if (!groups[g]) groups[g] = []
-    groups[g].push(t)
+    groups[g].push(tk)
   }
   return groups
 }

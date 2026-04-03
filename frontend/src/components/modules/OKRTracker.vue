@@ -3,19 +3,19 @@
     <div class="mod-hero">
       <div>
         <h1 class="mod-title">🎯 OKR Tracker</h1>
-        <p class="mod-subtitle">Objectifs et résultats clés de l'équipe</p>
+        <p class="mod-subtitle">{{ t('okrSubtitle') }}</p>
       </div>
       <div class="mod-hero-score">
         <div class="mod-big-num" :style="{ color: okrColor(tasksStore.globalOKRScore) }">{{ tasksStore.globalOKRScore }}%</div>
-        <div class="mod-big-label">Score global</div>
+        <div class="mod-big-label">{{ t('okrGlobalScore') }}</div>
       </div>
     </div>
 
     <div class="mod-card" v-if="!tasksStore.okrs.length">
       <div class="mod-empty">
         <p style="font-size: 40px; margin-bottom: 12px;">🎯</p>
-        <p style="font-weight: 700; margin-bottom: 8px;">Aucun OKR défini</p>
-        <p style="color: #5F6368">Créez vos objectifs pour suivre la performance de l'équipe.</p>
+        <p style="font-weight: 700; margin-bottom: 8px;">{{ t('okrNoOKRs') }}</p>
+        <p style="color: #5F6368">{{ t('okrNoOKRsHint') }}</p>
       </div>
     </div>
 
@@ -47,6 +47,9 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useTasksStore } from '../../stores/tasks'
+import { useI18n } from '../../i18n'
+
+const { t } = useI18n()
 
 const tasksStore = useTasksStore()
 

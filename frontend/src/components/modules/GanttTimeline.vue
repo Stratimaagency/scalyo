@@ -3,7 +3,7 @@
     <div class="mod-hero">
       <div>
         <h1 class="mod-title">📅 Timeline Projets</h1>
-        <p class="mod-subtitle">Vue Gantt de vos projets et tâches</p>
+        <p class="mod-subtitle">{{ t('gtSubtitle') }}</p>
       </div>
       <div class="mod-hero-score">
         <div class="mod-big-num" style="color: #4285F4">{{ tasksStore.projects.length }}</div>
@@ -14,8 +14,8 @@
     <div class="mod-card" v-if="!tasksStore.projects.length">
       <div class="mod-empty">
         <p style="font-size: 40px; margin-bottom: 12px;">📅</p>
-        <p style="font-weight: 700; margin-bottom: 8px;">Aucun projet pour le moment</p>
-        <p style="color: #5F6368">Les projets apparaîtront ici avec leur timeline.</p>
+        <p style="font-weight: 700; margin-bottom: 8px;">{{ t('gtNoProjects') }}</p>
+        <p style="color: #5F6368">{{ t('gtNoProjectsHint') }}</p>
       </div>
     </div>
 
@@ -24,7 +24,7 @@
       <div class="mod-card" style="overflow-x: auto">
         <div class="gantt-wrap">
           <div class="gantt-header">
-            <div class="gantt-label-col">Projet / Tâche</div>
+            <div class="gantt-label-col">{{ t('gtProjectTask') }}</div>
             <div class="gantt-weeks">
               <div v-for="w in weeks" :key="w" class="gantt-week-cell" :class="{ 'gantt-current': w === currentWeek }">
                 S{{ w }}
@@ -65,6 +65,9 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { useTasksStore } from '../../stores/tasks'
+import { useI18n } from '../../i18n'
+
+const { t } = useI18n()
 
 const tasksStore = useTasksStore()
 const currentWeek = computed(() => tasksStore.currentWeek)

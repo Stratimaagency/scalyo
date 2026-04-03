@@ -4,11 +4,11 @@
     <!-- Toolbar: filters + widget toggles -->
     <div class="sms-toolbar">
       <div class="sms-toolbar__filters">
-        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': !activeFilter }" @click="activeFilter = null">Tout</button>
-        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': activeFilter === 'done' }" @click="toggleFilter('done')" style="--f-color:#16a34a">✅ Terminées</button>
-        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': activeFilter === 'in_progress' }" @click="toggleFilter('in_progress')" style="--f-color:#f43f5e">⚡ En cours</button>
-        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': activeFilter === 'blocked' }" @click="toggleFilter('blocked')" style="--f-color:#2563eb">⏸ Bloquées</button>
-        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': activeFilter === 'todo' }" @click="toggleFilter('todo')" style="--f-color:#94a3b8">📋 À faire</button>
+        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': !activeFilter }" @click="activeFilter = null">{{ t('stAllFilter') }}</button>
+        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': activeFilter === 'done' }" @click="toggleFilter('done')" style="--f-color:#16a34a">✅ {{ t('statusDone') }}</button>
+        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': activeFilter === 'in_progress' }" @click="toggleFilter('in_progress')" style="--f-color:#f43f5e">⚡ {{ t('statusInProgress') }}</button>
+        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': activeFilter === 'blocked' }" @click="toggleFilter('blocked')" style="--f-color:#2563eb">⏸ {{ t('statusBlocked') }}</button>
+        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': activeFilter === 'todo' }" @click="toggleFilter('todo')" style="--f-color:#94a3b8">📋 {{ t('statusTodo') }}</button>
       </div>
       <div class="sms-toolbar__toggles">
         <button v-for="w in widgets" :key="w.key" class="sms-toolbar__toggle" :class="{ 'sms-toolbar__toggle--off': !visibleWidgets[w.key] }" @click="visibleWidgets[w.key] = !visibleWidgets[w.key]" :title="w.label">{{ w.icon }}</button>
@@ -29,13 +29,13 @@
           <span class="sms-filtered__assignee" v-if="t.referent_name">{{ t.referent_name }}</span>
         </div>
       </div>
-      <div v-else class="sms-filtered__empty">Aucune tâche</div>
+      <div v-else class="sms-filtered__empty">{{ t('kbNoTasks') }}</div>
     </div>
 
     <!-- Row 1: Prediction hero + Progress -->
     <div class="sms-hero" v-if="visibleWidgets.hero">
       <div class="sms-hero__left">
-        <div class="sms-hero__label">Date de fin estimée</div>
+        <div class="sms-hero__label">{{ t('stEstimatedEnd') }}</div>
         <div class="sms-hero__date">{{ formatDate(stats.dates?.probable) }}</div>
         <div class="sms-hero__sub">{{ daysUntil(stats.dates?.probable) }}</div>
       </div>
@@ -46,21 +46,21 @@
             stroke-linecap="round" :stroke-dasharray="314" :stroke-dashoffset="314 - (stats.progress || 0) / 100 * 314"
             transform="rotate(-90 60 60)"/>
           <text x="60" y="56" text-anchor="middle" class="sms-hero__ring-val">{{ stats.progress || 0 }}%</text>
-          <text x="60" y="72" text-anchor="middle" class="sms-hero__ring-label">avancement</text>
+          <text x="60" y="72" text-anchor="middle" class="sms-hero__ring-label">{{ t('stProgress') }}</text>
         </svg>
       </div>
       <div class="sms-hero__dates">
         <div class="sms-hero__date-item sms-hero__date-item--best">
           <span class="sms-hero__date-dot" style="background:#16a34a"></span>
-          <div><div class="sms-hero__date-lbl">Au mieux</div><div class="sms-hero__date-val">{{ formatDateShort(stats.dates?.best) }}</div></div>
+          <div><div class="sms-hero__date-lbl">{{ t('stBestCase') }}</div><div class="sms-hero__date-val">{{ formatDateShort(stats.dates?.best) }}</div></div>
         </div>
         <div class="sms-hero__date-item sms-hero__date-item--worst">
           <span class="sms-hero__date-dot" style="background:#dc2626"></span>
-          <div><div class="sms-hero__date-lbl">Au pire</div><div class="sms-hero__date-val">{{ formatDateShort(stats.dates?.worst) }}</div></div>
+          <div><div class="sms-hero__date-lbl">{{ t('stWorstCase') }}</div><div class="sms-hero__date-val">{{ formatDateShort(stats.dates?.worst) }}</div></div>
         </div>
         <div class="sms-hero__date-item" v-if="stats.dates?.target">
           <span class="sms-hero__date-dot" style="background:#3b82f6"></span>
-          <div><div class="sms-hero__date-lbl">Cible</div><div class="sms-hero__date-val">{{ formatDateShort(stats.dates.target) }}</div></div>
+          <div><div class="sms-hero__date-lbl">{{ t('stTarget') }}</div><div class="sms-hero__date-val">{{ formatDateShort(stats.dates.target) }}</div></div>
         </div>
       </div>
     </div>
@@ -71,14 +71,14 @@
         <div class="sms-kpi__icon" style="background:rgba(59,130,246,.1);color:#3b82f6">📋</div>
         <div class="sms-kpi__data">
           <div class="sms-kpi__val">{{ stats.task_count || 0 }}</div>
-          <div class="sms-kpi__label">Tâches totales</div>
+          <div class="sms-kpi__label">{{ t('stTotalTasks') }}</div>
         </div>
       </div>
       <div class="sms-kpi" @click="toggleFilter('done')" :class="{ 'sms-kpi--active': activeFilter === 'done' }" style="cursor:pointer">
         <div class="sms-kpi__icon" style="background:rgba(22,163,74,.1);color:#16a34a">✅</div>
         <div class="sms-kpi__data">
           <div class="sms-kpi__val" style="color:#16a34a">{{ stats.by_status?.done || 0 }}</div>
-          <div class="sms-kpi__label">Terminées</div>
+          <div class="sms-kpi__label">{{ t('statusDone') }}</div>
         </div>
         <div class="sms-kpi__pct" v-if="stats.task_count">{{ Math.round((stats.by_status?.done || 0) / stats.task_count * 100) }}%</div>
       </div>
@@ -86,21 +86,21 @@
         <div class="sms-kpi__icon" style="background:rgba(244,63,94,.1);color:#f43f5e">⚡</div>
         <div class="sms-kpi__data">
           <div class="sms-kpi__val" style="color:#f43f5e">{{ stats.by_status?.in_progress || 0 }}</div>
-          <div class="sms-kpi__label">En cours</div>
+          <div class="sms-kpi__label">{{ t('statusInProgress') }}</div>
         </div>
       </div>
       <div class="sms-kpi" @click="toggleFilter('blocked')" :class="{ 'sms-kpi--active': activeFilter === 'blocked' }" style="cursor:pointer">
         <div class="sms-kpi__icon" style="background:rgba(37,99,235,.1);color:#2563eb">⏸</div>
         <div class="sms-kpi__data">
           <div class="sms-kpi__val" style="color:#2563eb">{{ stats.by_status?.blocked || 0 }}</div>
-          <div class="sms-kpi__label">Bloquées</div>
+          <div class="sms-kpi__label">{{ t('statusBlocked') }}</div>
         </div>
       </div>
       <div class="sms-kpi" v-if="stats.dates?.remaining_days !== undefined">
         <div class="sms-kpi__icon" style="background:rgba(217,119,6,.1);color:#d97706">⏱</div>
         <div class="sms-kpi__data">
           <div class="sms-kpi__val" style="color:#d97706">{{ stats.dates.remaining_days }}j</div>
-          <div class="sms-kpi__label">Jours restants</div>
+          <div class="sms-kpi__label">{{ t('stDaysRemaining') }}</div>
         </div>
       </div>
     </div>
@@ -109,7 +109,7 @@
     <div class="sms-row" v-if="visibleWidgets.funnel || visibleWidgets.donut">
       <!-- Funnel: progression par phase -->
       <div class="sms-card" v-if="stats.by_group?.length && visibleWidgets.funnel">
-        <h4 class="sms-card__title">Progression par phase</h4>
+        <h4 class="sms-card__title">{{ t('stProgressByPhase') }}</h4>
         <div class="sms-funnel">
           <div v-for="(g, i) in stats.by_group" :key="g.name" class="sms-funnel__step">
             <div class="sms-funnel__step-head">
@@ -120,14 +120,14 @@
             <div class="sms-funnel__bar">
               <div class="sms-funnel__fill" :style="{ width: g.progress + '%', background: g.progress >= 100 ? '#16a34a' : 'var(--sm-grad-h)' }"></div>
             </div>
-            <div class="sms-funnel__meta">{{ g.done }}/{{ g.total }} tâches</div>
+            <div class="sms-funnel__meta">{{ g.done }}/{{ g.total }} {{ t('stTasks') }}</div>
           </div>
         </div>
       </div>
 
       <!-- Donut chart -->
       <div class="sms-card">
-        <h4 class="sms-card__title">Répartition</h4>
+        <h4 class="sms-card__title">{{ t('stDistribution') }}</h4>
         <div class="sms-donut-wrap">
           <svg class="sms-donut" width="140" height="140" viewBox="0 0 140 140">
             <circle v-for="(seg, i) in donutSegments" :key="i"
@@ -136,7 +136,7 @@
               :stroke-dasharray="seg.dash" :stroke-dashoffset="seg.offset"
               transform="rotate(-90 70 70)" />
             <text x="70" y="66" text-anchor="middle" class="sms-donut__total">{{ stats.task_count }}</text>
-            <text x="70" y="82" text-anchor="middle" class="sms-donut__label">tâches</text>
+            <text x="70" y="82" text-anchor="middle" class="sms-donut__label">{{ t('stTasks') }}</text>
           </svg>
           <div class="sms-donut__legend">
             <div v-for="(seg, i) in donutSegments" :key="i" class="sms-donut__legend-item">
@@ -153,7 +153,7 @@
     <div class="sms-row" v-if="visibleWidgets.velocity || visibleWidgets.assignees">
       <!-- Velocity -->
       <div class="sms-card">
-        <h4 class="sms-card__title">Vélocité</h4>
+        <h4 class="sms-card__title">{{ t('stVelocity') }}</h4>
         <svg class="sms-velocity" viewBox="0 0 300 100" preserveAspectRatio="none">
           <defs>
             <linearGradient id="sms-vel-g" x1="0" y1="0" x2="0" y2="1">
@@ -172,7 +172,7 @@
 
       <!-- By assignee -->
       <div class="sms-card" v-if="stats.by_assignee?.length">
-        <h4 class="sms-card__title">Charge par personne</h4>
+        <h4 class="sms-card__title">{{ t('stLoadByPerson') }}</h4>
         <div class="sms-assignees">
           <div v-for="a in stats.by_assignee" :key="a.name" class="sms-assignee">
             <div class="sms-assignee__avatar">{{ (a.name || '?')[0] }}</div>
@@ -192,31 +192,34 @@
     <div class="sms-time" v-if="stats.time && visibleWidgets.time">
       <div class="sms-time__item">
         <div class="sms-time__val">{{ stats.time.total_estimated || 0 }}h</div>
-        <div class="sms-time__label">Temps restant</div>
+        <div class="sms-time__label">{{ t('stTimeRemaining') }}</div>
       </div>
       <div class="sms-time__item">
         <div class="sms-time__val">{{ stats.time.effective_hours_day || 8 }}h</div>
-        <div class="sms-time__label">Heures/jour</div>
+        <div class="sms-time__label">{{ t('stHoursPerDay') }}</div>
       </div>
       <div class="sms-time__item" v-if="stats.time.paused_count">
         <div class="sms-time__val" style="color:#2563eb">{{ stats.time.paused_count }}</div>
-        <div class="sms-time__label">En pause</div>
+        <div class="sms-time__label">{{ t('stPaused') }}</div>
       </div>
       <div class="sms-time__item" v-if="stats.time.waiting_count">
         <div class="sms-time__val" style="color:#d97706">{{ stats.time.waiting_count }}</div>
-        <div class="sms-time__label">En attente</div>
+        <div class="sms-time__label">{{ t('stWaiting') }}</div>
       </div>
     </div>
   </div>
 
   <div v-else class="sms-empty">
     <p style="font-size: 40px; margin-bottom: 12px;">📊</p>
-    <p style="font-weight: 700;">Sélectionnez un projet pour voir les statistiques</p>
+    <p style="font-weight: 700;">{{ t('stSelectProject') }}</p>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
+import { useI18n } from '../../i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   stats: { type: Object, default: null },
@@ -229,7 +232,7 @@ function toggleFilter(status) {
   activeFilter.value = activeFilter.value === status ? null : status
 }
 const filterLabel = computed(() => {
-  const labels = { done: 'Terminées', in_progress: 'En cours', blocked: 'Bloquées', todo: 'À faire' }
+  const labels = { done: t('statusDone'), in_progress: t('statusInProgress'), blocked: t('statusBlocked'), todo: t('statusTodo') }
   return labels[activeFilter.value] || ''
 })
 const filteredTasks = computed(() => {
@@ -273,10 +276,10 @@ const progressColor = computed(() => {
 })
 
 const statusColors = {
-  todo: { color: '#94a3b8', label: 'À faire' },
-  in_progress: { color: '#f43f5e', label: 'En cours' },
-  blocked: { color: '#2563eb', label: 'Bloqué' },
-  done: { color: '#16a34a', label: 'Terminé' },
+  todo: { color: '#94a3b8', label: t('statusTodo') },
+  in_progress: { color: '#f43f5e', label: t('statusInProgress') },
+  blocked: { color: '#2563eb', label: t('statusBlocked') },
+  done: { color: '#16a34a', label: t('statusDone') },
 }
 
 const donutSegments = computed(() => {
