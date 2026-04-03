@@ -969,6 +969,8 @@ export default {
   eisAllSorted: '모든 작업의 우선순위가 지정되었습니다',
   eisDragHere: '여기에 놓으세요',
   eisTransferTitle: '담당자 변경',
+  plCalendarView: '캘린더',
+  plGanttView: '일정 타임라인',
   plExportWeek: '이번 주 내보내기',
   plUnplanned: '일정 미등록 작업',
   plDragHint: '작업을 캘린더로 끌어다 놓아 일정을 잡으세요',

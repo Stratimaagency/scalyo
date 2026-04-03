@@ -5,8 +5,8 @@
       <div class="smp-top__left">
         <!-- View switcher -->
         <div class="smp-views">
-          <button class="smp-views__btn" :class="{ 'smp-views__btn--on': view === 'calendar' }" @click="view = 'calendar'">📅 {{ t('planning') }}</button>
-          <button class="smp-views__btn" :class="{ 'smp-views__btn--on': view === 'gantt' }" @click="view = 'gantt'">📊 Gantt</button>
+          <button class="smp-views__btn" :class="{ 'smp-views__btn--on': view === 'calendar' }" @click="view = 'calendar'">📅 {{ t('plCalendarView') }}</button>
+          <button class="smp-views__btn" :class="{ 'smp-views__btn--on': view === 'gantt' }" @click="view = 'gantt'">📊 {{ t('plGanttView') }}</button>
         </div>
         <!-- Filters -->
         <div class="smp-filters">

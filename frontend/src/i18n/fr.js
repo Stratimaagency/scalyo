@@ -980,6 +980,8 @@ export default {
   eisDragHere: 'Glissez ici',
   eisTransferTitle: 'Transférer',
   // Planning SM
+  plCalendarView: 'Calendrier',
+  plGanttView: 'Vue Gantt',
   plExportWeek: 'Exporter la semaine',
   plUnplanned: 'Tâches non planifiées',
   plDragHint: 'Glissez une tâche sur le calendrier',

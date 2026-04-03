@@ -972,6 +972,8 @@ export default {
   eisAllSorted: 'All tasks have been prioritized',
   eisDragHere: 'Drop here',
   eisTransferTitle: 'Reassign',
+  plCalendarView: 'Calendar',
+  plGanttView: 'Timeline',
   plExportWeek: 'Export this week',
   plUnplanned: 'Unscheduled tasks',
   plDragHint: 'Drag a task onto the calendar to schedule it',
