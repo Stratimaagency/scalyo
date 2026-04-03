@@ -99,7 +99,7 @@
 
     <!-- PLANNING (project tasks only if project selected, all otherwise) -->
     <div v-else-if="currentView === 'planning'" class="sm-content">
-      <SmPlanning :tasks="store.selectedProject ? filteredTasks : allTasksFlat" @create-event="handlePlanningCreateEvent" @edit-event="handlePlanningEditEvent" />
+      <SmPlanning :tasks="store.selectedProject ? filteredTasks : allTasksFlat" @create-event="handlePlanningCreateEvent" @edit-event="handlePlanningEditEvent" @move-event="handlePlanningMoveEvent" />
     </div>
 
     <!-- STATS -->
@@ -480,6 +480,15 @@ function handlePlanningCreateEvent({ date, hour }) {
 
 function handlePlanningEditEvent(task) {
   openEditTask(task)
+}
+
+async function handlePlanningMoveEvent({ task, start_date, dur_estimated }) {
+  const updates = {}
+  if (start_date) updates.start_date = start_date
+  if (dur_estimated !== undefined) updates.dur_estimated = dur_estimated
+  if (Object.keys(updates).length) {
+    await store.updateTask(task.id, updates)
+  }
 }
 
 async function toggleSubtask(taskId, subId) { await store.toggleSubtask(taskId, subId) }
