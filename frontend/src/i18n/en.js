@@ -137,7 +137,7 @@ export default {
   renewalAlertDesc: 'Reminder 60 days before each renewal',
   appearanceTitle: 'Appearance & Language',
   coachTitle: 'AI Customer Success Coach',
-  coachStatus: 'Online · CS Expert',
+  coachStatus: 'AI · Your Customer Success assistant',
   errEmailPass: 'Email and password are required.',
   errInvalidCreds: 'Incorrect email or password.',
   errNetwork: 'Network error. Check your connection.',

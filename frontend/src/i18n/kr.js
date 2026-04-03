@@ -138,7 +138,7 @@ export default {
   renewalAlertDesc: '갱신 60일 전 알림',
   appearanceTitle: '외관 및 언어',
   coachTitle: 'AI 고객 성공 코치',
-  coachStatus: '온라인 · CS 전문가',
+  coachStatus: 'AI · 고객 성공 어시스턴트',
   errEmailPass: '이메일과 비밀번호를 입력해주세요.',
   errInvalidCreds: '이메일 또는 비밀번호가 틀립니다.',
   errNetwork: '네트워크 오류. 연결을 확인해주세요.',
