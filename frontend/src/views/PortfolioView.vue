@@ -210,17 +210,82 @@
               </div>
             </div>
 
-            <!-- Infos client -->
+            <!-- CRM Info -->
             <div style="margin-bottom: 16px;">
-              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">👤 {{ t('contact') }}</div>
-              <div style="background: var(--surface); border-radius: 8px; padding: 12px; font-size: 13px;">
-                <div v-if="selectedAccount.contact" style="margin-bottom: 4px;"><strong>{{ selectedAccount.contact }}</strong></div>
-                <div v-if="selectedAccount.contact_email" style="color: var(--teal);">{{ selectedAccount.contact_email }}</div>
-                <div v-if="selectedAccount.industry" style="color: var(--muted); margin-top: 4px;">{{ t('industry') }}: {{ selectedAccount.industry }}</div>
-                <div v-if="selectedAccount.csm" style="color: var(--muted); margin-top: 4px;">CSM: {{ selectedAccount.csm }}</div>
-                <div v-if="selectedAccount.renewal" style="margin-top: 4px;" :style="{ color: isRenewalOverdue(selectedAccount.renewal) ? 'var(--red)' : 'var(--muted)' }">{{ t('renewalLabel') }}: {{ selectedAccount.renewal }}</div>
-                <div v-if="!selectedAccount.contact && !selectedAccount.contact_email" style="color: var(--muted); font-style: italic;">{{ t('copilNoContact') }}</div>
+              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">👤 {{ t('crmOverview') }}</div>
+              <div style="background: var(--surface); border-radius: 8px; padding: 12px; font-size: 13px; display: flex; flex-direction: column; gap: 6px;">
+                <div v-if="selectedAccount.contact"><strong>{{ selectedAccount.contact }}</strong></div>
+                <div v-if="selectedAccount.contact_email" style="color: var(--teal);">📧 {{ selectedAccount.contact_email }}</div>
+                <div v-if="selectedAccount.phone" style="color: var(--text);">📞 {{ selectedAccount.phone }}</div>
+                <div v-if="selectedAccount.website" style="color: var(--teal);">🌐 <a :href="selectedAccount.website.startsWith('http') ? selectedAccount.website : 'https://' + selectedAccount.website" target="_blank" style="color: var(--teal); text-decoration: none;">{{ selectedAccount.website }}</a></div>
+                <div v-if="selectedAccount.industry" style="color: var(--muted);">{{ t('crmIndustry') }}: {{ selectedAccount.industry }}</div>
+                <div v-if="selectedAccount.company_size" style="color: var(--muted);">{{ t('crmCompanySize') }}: {{ selectedAccount.company_size }}</div>
+                <div v-if="selectedAccount.address" style="color: var(--muted);">📍 {{ selectedAccount.address }}</div>
+                <div v-if="selectedAccount.csm" style="color: var(--muted);">CSM: {{ selectedAccount.csm }}</div>
+                <div v-if="selectedAccount.renewal" :style="{ color: isRenewalOverdue(selectedAccount.renewal) ? 'var(--red)' : 'var(--muted)' }">{{ t('renewalLabel') }}: {{ selectedAccount.renewal }}</div>
+                <div v-if="selectedAccount.nps !== undefined && selectedAccount.nps !== null" style="color: var(--muted);">NPS: <strong :style="{ color: selectedAccount.nps >= 50 ? 'var(--green)' : selectedAccount.nps >= 0 ? 'var(--amber)' : 'var(--red)' }">{{ selectedAccount.nps }}</strong></div>
               </div>
+            </div>
+
+            <!-- Tags -->
+            <div style="margin-bottom: 16px;">
+              <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">🏷️ {{ t('crmTags') }}</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px;">
+                <span v-for="(tag, i) in (selectedAccount.tags || [])" :key="i"
+                  style="font-size: 11px; padding: 2px 8px; border-radius: 12px; background: var(--tealBg); color: var(--teal); font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                  {{ tag }}
+                  <button @click="removeTag(i)" style="border: none; background: none; color: var(--teal); cursor: pointer; font-size: 12px; padding: 0;">×</button>
+                </span>
+              </div>
+              <input v-model="newTag" :placeholder="t('crmAddTag')" @keydown.enter="addTag"
+                style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; font-size: 11px; color: var(--text); outline: none;" />
+            </div>
+
+            <!-- Contacts multiples -->
+            <div style="margin-bottom: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase;">👥 {{ t('crmContacts') }} ({{ (selectedAccount.contacts || []).length }})</div>
+                <button @click="addContact" style="font-size: 10px; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--tealBorder); background: var(--tealBg); color: var(--teal); cursor: pointer; font-weight: 600;">+ {{ t('crmAddContact') }}</button>
+              </div>
+              <div v-for="(c, i) in (selectedAccount.contacts || [])" :key="i"
+                style="background: var(--surface); border-radius: 8px; padding: 8px 10px; margin-bottom: 4px; font-size: 12px; display: flex; align-items: center; gap: 8px;">
+                <div style="flex: 1;">
+                  <div style="font-weight: 600;">{{ c.name }} <span style="color: var(--muted); font-weight: 400;">· {{ c.role || '' }}</span></div>
+                  <div style="color: var(--teal); font-size: 11px;">{{ c.email || '' }} {{ c.phone ? '· ' + c.phone : '' }}</div>
+                </div>
+                <button @click="removeContact(i)" style="border: none; background: none; color: var(--muted); cursor: pointer; font-size: 14px;">×</button>
+              </div>
+            </div>
+
+            <!-- Interactions / Timeline -->
+            <div style="margin-bottom: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase;">📅 {{ t('crmTimeline') }} ({{ (selectedAccount.interactions || []).length }})</div>
+                <button @click="showAddInteraction = !showAddInteraction" style="font-size: 10px; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--tealBorder); background: var(--tealBg); color: var(--teal); cursor: pointer; font-weight: 600;">+ {{ t('crmAddInteraction') }}</button>
+              </div>
+              <!-- Add interaction form -->
+              <div v-if="showAddInteraction" style="background: var(--surface); border-radius: 8px; padding: 10px; margin-bottom: 8px;">
+                <div style="display: flex; gap: 4px; margin-bottom: 6px;">
+                  <button v-for="itype in ['call', 'email', 'meeting', 'note']" :key="itype" @click="newInteractionType = itype"
+                    :style="{ padding: '3px 8px', borderRadius: '6px', border: '1px solid ' + (newInteractionType === itype ? 'var(--teal)' : 'var(--border)'), background: newInteractionType === itype ? 'var(--tealBg)' : 'transparent', color: newInteractionType === itype ? 'var(--teal)' : 'var(--muted)', fontSize: '10px', fontWeight: 600, cursor: 'pointer' }">
+                    {{ interactionIcon(itype) }} {{ t('crmInteraction' + itype.charAt(0).toUpperCase() + itype.slice(1)) }}
+                  </button>
+                </div>
+                <input v-model="newInteractionSummary" :placeholder="t('crmInteractionSummary')" @keydown.enter="saveInteraction"
+                  style="width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; color: var(--text); outline: none; margin-bottom: 6px;" />
+                <button @click="saveInteraction" :disabled="!newInteractionSummary.trim()"
+                  style="font-size: 11px; padding: 4px 12px; border-radius: 6px; border: none; background: var(--teal); color: #fff; cursor: pointer; font-weight: 600;">{{ t('add') }}</button>
+              </div>
+              <!-- Interaction list -->
+              <div v-for="(inter, i) in (selectedAccount.interactions || []).slice().reverse().slice(0, 10)" :key="i"
+                style="display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12px;">
+                <span style="font-size: 14px; flex-shrink: 0;">{{ interactionIcon(inter.type) }}</span>
+                <div style="flex: 1;">
+                  <div style="font-weight: 500;">{{ inter.summary }}</div>
+                  <div style="font-size: 10px; color: var(--muted);">{{ inter.date }}</div>
+                </div>
+              </div>
+              <div v-if="!(selectedAccount.interactions || []).length" style="font-size: 12px; color: var(--muted); font-style: italic; padding: 8px 0;">{{ t('crmNoAccountsHint') }}</div>
             </div>
 
             <!-- Tasks liées -->
@@ -715,6 +780,67 @@ const standardTodos = computed(() => {
     }
   })
 })
+
+// ─── CRM: Tags ───
+const newTag = ref('')
+function addTag() {
+  if (!newTag.value.trim() || !selectedAccount.value) return
+  const tags = [...(selectedAccount.value.tags || []), newTag.value.trim()]
+  selectedAccount.value.tags = tags
+  newTag.value = ''
+  portfolioStore.updateAccount(selectedAccount.value.id, { tags })
+}
+function removeTag(idx) {
+  if (!selectedAccount.value) return
+  const tags = [...(selectedAccount.value.tags || [])]
+  tags.splice(idx, 1)
+  selectedAccount.value.tags = tags
+  portfolioStore.updateAccount(selectedAccount.value.id, { tags })
+}
+
+// ─── CRM: Contacts multiples ───
+function addContact() {
+  if (!selectedAccount.value) return
+  const name = prompt(t('crmContactName'))
+  if (!name) return
+  const role = prompt(t('crmContactRole')) || ''
+  const email = prompt(t('crmContactEmail')) || ''
+  const phone = prompt(t('crmContactPhone')) || ''
+  const contacts = [...(selectedAccount.value.contacts || []), { name, role, email, phone }]
+  selectedAccount.value.contacts = contacts
+  portfolioStore.updateAccount(selectedAccount.value.id, { contacts })
+}
+function removeContact(idx) {
+  if (!selectedAccount.value) return
+  const contacts = [...(selectedAccount.value.contacts || [])]
+  contacts.splice(idx, 1)
+  selectedAccount.value.contacts = contacts
+  portfolioStore.updateAccount(selectedAccount.value.id, { contacts })
+}
+
+// ─── CRM: Interactions / Timeline ───
+const showAddInteraction = ref(false)
+const newInteractionType = ref('call')
+const newInteractionSummary = ref('')
+function interactionIcon(type) {
+  if (type === 'call') return '📞'
+  if (type === 'email') return '📧'
+  if (type === 'meeting') return '🤝'
+  return '📝'
+}
+function saveInteraction() {
+  if (!newInteractionSummary.value.trim() || !selectedAccount.value) return
+  const interactions = [...(selectedAccount.value.interactions || []), {
+    type: newInteractionType.value,
+    summary: newInteractionSummary.value.trim(),
+    date: new Date().toISOString().slice(0, 10),
+  }]
+  selectedAccount.value.interactions = interactions
+  selectedAccount.value.last_contact_date = new Date().toISOString().slice(0, 10)
+  portfolioStore.updateAccount(selectedAccount.value.id, { interactions, last_contact_date: selectedAccount.value.last_contact_date })
+  newInteractionSummary.value = ''
+  showAddInteraction.value = false
+}
 
 // ─── Team members for CSM dropdown ───
 const teamMembers = ref([])
