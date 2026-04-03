@@ -41,18 +41,6 @@
 
       <!-- Footer -->
       <div class="sidebar-footer">
-        <!-- Profile switcher (Smart Matrice) -->
-        <div v-if="isSmartMatrice" class="sm-profile-switcher">
-          <div class="nav-group-label" style="padding-top: 0;">VUE ACTIVE</div>
-          <div class="sm-profile-pills">
-            <button class="sm-pill" :class="{ active: smProfile === 'moi' }" @click="setSmProfile('moi')">
-              {{ smUserName || 'Moi' }}
-            </button>
-            <button class="sm-pill" :class="{ active: smProfile === 'manager' }" @click="setSmProfile('manager')">Manager</button>
-            <button class="sm-pill" :class="{ active: smProfile === 'direction' }" @click="setSmProfile('direction')">Direction</button>
-          </div>
-        </div>
-
         <!-- Settings link -->
         <router-link :to="{ name: 'settings' }" class="nav-btn" active-class="active">
           <span class="nav-emoji">⚙️</span>
