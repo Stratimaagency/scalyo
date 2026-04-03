@@ -19,7 +19,7 @@ const ALL_NAV_ITEMS = [
   { key: 'gantt-timeline', icon: 'calendar', emoji: '📅', roles: ['manager', 'csm', 'commercial', 'kam'] },
   { key: 'planning', icon: 'calendar', emoji: '🗓️', roles: ['manager', 'csm', 'commercial', 'kam'], minPlan: 'Growth' },
   // Équipe
-  { key: 'workload', icon: 'chart-up', emoji: '⚖️', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'workload', icon: 'chart-up', emoji: '💚', roles: ['manager', 'csm', 'commercial', 'kam'] },
   { key: 'wellbeing', icon: 'heart', emoji: '💖', roles: ['manager', 'csm', 'commercial', 'kam'] },
   { key: 'coach', icon: 'robot', emoji: '🪄', roles: ['manager', 'csm', 'commercial', 'kam'] },
   // Outils

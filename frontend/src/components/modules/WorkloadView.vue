@@ -2,7 +2,7 @@
   <div class="mod-page fade-in">
     <div class="mod-hero">
       <div>
-        <h1 class="mod-title">⚖️ Workload Équipe</h1>
+        <h1 class="mod-title">💚 {{ t('workload') }}</h1>
         <p class="mod-subtitle">{{ t('wlSubtitle') }}</p>
       </div>
       <div class="mod-hero-score">
