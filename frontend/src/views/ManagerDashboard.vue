@@ -29,14 +29,35 @@
       </div>
     </div>
 
+    <!-- Filters -->
+    <div style="display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
+      <select v-model="filterCSM" style="border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 600; color: var(--text); font-family: 'DM Sans', sans-serif; outline: none;">
+        <option value="">{{ t('mgrAllCSMs') }}</option>
+        <option v-for="csm in csmStore.workloadByCSM" :key="csm.id" :value="csm.name">{{ csm.name }}</option>
+      </select>
+      <select v-model="filterStress" style="border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 600; color: var(--text); font-family: 'DM Sans', sans-serif; outline: none;">
+        <option value="">{{ t('mgrAllStress') }}</option>
+        <option value="high">🔴 {{ t('mgrStressBurnout') }}</option>
+        <option value="medium">🟡 {{ t('mgrStressAttention') }}</option>
+        <option value="low">🟢 {{ t('mgrStressGood') }}</option>
+      </select>
+      <select v-model="filterRisk" style="border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 600; color: var(--text); font-family: 'DM Sans', sans-serif; outline: none;">
+        <option value="">{{ t('mgrAllRisk') }}</option>
+        <option value="at-risk">⚠️ {{ t('mgrAtRisk') }}</option>
+        <option value="healthy">✅ {{ t('mgrHealthyClients') }}</option>
+      </select>
+      <button v-if="filterCSM || filterStress || filterRisk" @click="filterCSM = ''; filterStress = ''; filterRisk = ''"
+        style="border: none; background: none; color: var(--muted); font-size: 11px; cursor: pointer; font-weight: 600;">✕ {{ t('mgrClearFilters') }}</button>
+    </div>
+
     <!-- Team Wellbeing Section -->
     <div style="margin-bottom: 20px;">
       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
         <ScalyoIcon name="heart" :size="18" />
         <h2 style="font-size: 16px; font-weight: 800; letter-spacing: -0.3px;">{{ t('mgrTeamWellbeing') }}</h2>
       </div>
-      <div v-if="teamWellbeing.length" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;">
-        <div v-for="member in teamWellbeing" :key="member.id || member.name"
+      <div v-if="filteredWellbeing.length" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;">
+        <div v-for="member in filteredWellbeing" :key="member.id || member.name"
           class="card card-lift" style="padding: 16px;">
           <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
             <div style="width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0;"
@@ -239,6 +260,9 @@ const prefsStore = usePreferencesStore()
 const d = computed(() => managerStore.dashboard)
 const sortField = ref('name')
 const sortAsc = ref(true)
+const filterCSM = ref('')
+const filterStress = ref('')
+const filterRisk = ref('')
 
 const lang = computed(() => prefsStore.lang)
 const todayStr = computed(() => {
@@ -299,6 +323,16 @@ const teamWellbeing = computed(() => {
   }))
 })
 
+// Filtered wellbeing
+const filteredWellbeing = computed(() => {
+  let list = teamWellbeing.value
+  if (filterCSM.value) list = list.filter(m => m.name === filterCSM.value)
+  if (filterStress.value) list = list.filter(m => m.stressLevel === filterStress.value)
+  if (filterRisk.value === 'at-risk') list = list.filter(m => m.atRiskCount > 0)
+  if (filterRisk.value === 'healthy') list = list.filter(m => m.atRiskCount === 0)
+  return list
+})
+
 // CSM Performance data
 const csmPerf = computed(() => {
   return csmStore.workloadByCSM.map(csm => ({
@@ -318,7 +352,8 @@ function sortBy(field) {
 }
 
 const sortedCsmPerf = computed(() => {
-  const list = [...csmPerf.value]
+  let list = [...csmPerf.value]
+  if (filterCSM.value) list = list.filter(c => c.name === filterCSM.value)
   const dir = sortAsc.value ? 1 : -1
   return list.sort((a, b) => {
     const va = a[sortField.value]

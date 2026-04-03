@@ -1006,6 +1006,11 @@ export default {
   stAllFilter: 'Tout',
   stSelectProject: 'Sélectionnez un projet pour voir les statistiques',
   stTasks: 'tâches',
+  // Manager filters
+  mgrAllCSMs: 'Tous les CSM',
+  mgrAllStress: 'Tous les niveaux',
+  mgrAllRisk: 'Tous les statuts',
+  mgrClearFilters: 'Effacer les filtres',
   // Table headers & misc
   thClient: 'Client',
   thScore: 'Score',
