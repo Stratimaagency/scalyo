@@ -142,7 +142,7 @@ watch(() => messages.value.length, scrollToBottom)
 </script>
 
 <style scoped>
-.coach { max-width: 700px; margin: 0 auto; padding: 20px; height: 100%; display: flex; flex-direction: column; font-family: 'DM Sans', sans-serif; }
+.coach { max-width: 100%; margin: 0; padding: 20px 28px; height: 100%; display: flex; flex-direction: column; font-family: 'DM Sans', sans-serif; }
 
 /* Hero */
 .coach-hero { display: flex; align-items: center; gap: 14px; padding: 18px 20px; background: linear-gradient(135deg, rgba(59,130,246,.08), rgba(139,92,246,.08)); border: 1px solid rgba(59,130,246,.15); border-radius: 16px; margin-bottom: 16px; }
@@ -157,12 +157,12 @@ watch(() => messages.value.length, scrollToBottom)
 .coach-upgrade { margin-top: 4px; font-size: 11px; padding: 4px 10px; border-radius: 8px; background: var(--teal); color: #fff; border: none; cursor: pointer; font-weight: 700; }
 
 /* Chat */
-.coach-chat { flex: 1; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; min-height: 400px; }
+.coach-chat { flex: 1; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; min-height: 500px; }
 .coach-messages { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
 .coach-msg { display: flex; gap: 8px; align-items: flex-end; }
 .coach-msg--user { justify-content: flex-end; }
 .coach-msg-avatar { width: 30px; height: 30px; border-radius: 10px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
-.coach-msg-bubble { max-width: 80%; background: var(--bg); border: 1px solid var(--border); border-radius: 16px 16px 16px 4px; padding: 12px 16px; font-size: 13px; line-height: 1.7; white-space: pre-wrap; color: var(--text); }
+.coach-msg-bubble { max-width: 85%; background: var(--bg); border: 1px solid var(--border); border-radius: 16px 16px 16px 4px; padding: 12px 16px; font-size: 13px; line-height: 1.7; white-space: pre-wrap; color: var(--text); }
 .coach-msg-bubble--user { background: linear-gradient(135deg, rgba(59,130,246,.1), rgba(139,92,246,.1)); border: 1px solid rgba(59,130,246,.2); border-radius: 16px 16px 4px 16px; color: var(--text); }
 .coach-typing { display: flex; gap: 4px; padding: 14px 18px; }
 .coach-typing span { width: 6px; height: 6px; background: #8b5cf6; border-radius: 50%; animation: coach-bounce .5s infinite alternate; }
