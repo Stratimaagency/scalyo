@@ -1017,6 +1017,15 @@ export default {
   loadingText: 'Chargement...',
   cancelBtn: 'Annuler',
   // Widget labels
+  // SM sub-nav
+  smNavProjects: 'Projets',
+  smNavStats: 'Statistiques',
+  smNavTasks: 'Tâches',
+  smNavPlanning: 'Planning',
+  smNavKanban: 'Kanban',
+  smNavPriorities: 'Priorités',
+  smNavTeam: 'Équipe',
+  smNavSettings: 'Réglages',
   wdgDates: 'Dates',
   wdgKPIs: 'KPIs',
   wdgPhases: 'Phases',

@@ -143,27 +143,18 @@ const smCurrentView = computed({
   get: () => smStore.currentView,
   set: (v) => { smStore.currentView = v }
 })
-const smNavItems = [
-  { key: 'projects', emoji: '📁', label: 'Projets', group: 'VUE D\'ENSEMBLE' },
-  { key: 'stats', emoji: '📊', label: 'Stats', group: 'VUE D\'ENSEMBLE' },
-  { key: 'tasks', emoji: '⚡', label: 'Tâches', group: 'GESTION' },
-  { key: 'planning', emoji: '📅', label: 'Planning', group: 'GESTION' },
-  { key: 'kanban', emoji: '🔥', label: 'Kanban', group: 'VUES' },
-  { key: 'eisenhower', emoji: '🎯', label: 'Priorités', group: 'VUES' },
-  { key: 'team', emoji: '👥', label: 'Équipe', group: 'VUES' },
-  { key: 'config', emoji: '⚙️', label: 'Réglages', group: 'RÉGLAGES' },
-]
+const smNavItems = computed(() => [
+  { key: 'projects', emoji: '📁', label: t('smNavProjects') },
+  { key: 'stats', emoji: '📊', label: t('smNavStats') },
+  { key: 'tasks', emoji: '⚡', label: t('smNavTasks') },
+  { key: 'planning', emoji: '📅', label: t('smNavPlanning') },
+  { key: 'kanban', emoji: '🔥', label: t('smNavKanban') },
+  { key: 'eisenhower', emoji: '🎯', label: t('smNavPriorities') },
+  { key: 'team', emoji: '👥', label: t('smNavTeam') },
+  { key: 'config', emoji: '⚙️', label: t('smNavSettings') },
+])
 
-const smNavGroups = computed(() => {
-  if (!smNavItems.length) return []
-  const groups = {}
-  for (const item of smNavItems) {
-    const g = item.group || 'AUTRE'
-    if (!groups[g]) groups[g] = { label: g, items: [] }
-    groups[g].items.push(item)
-  }
-  return Object.values(groups)
-})
+// smNavGroups removed — sub-nav is flat list now
 
 function setSmView(key) {
   smCurrentView.value = key
