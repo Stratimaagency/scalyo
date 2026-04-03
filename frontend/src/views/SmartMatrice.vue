@@ -104,7 +104,7 @@
 
     <!-- STATS -->
     <div v-else-if="currentView === 'stats'" class="sm-content">
-      <SmStatsDashboard :stats="store.stats" />
+      <SmStatsDashboard :stats="store.stats" :tasks="store.selectedProject ? filteredTasks : allTasksFlat" />
     </div>
 
     <!-- TEAM -->

@@ -1,8 +1,39 @@
 <template>
   <div class="sms" v-if="stats">
 
+    <!-- Toolbar: filters + widget toggles -->
+    <div class="sms-toolbar">
+      <div class="sms-toolbar__filters">
+        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': !activeFilter }" @click="activeFilter = null">Tout</button>
+        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': activeFilter === 'done' }" @click="toggleFilter('done')" style="--f-color:#16a34a">✅ Terminées</button>
+        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': activeFilter === 'in_progress' }" @click="toggleFilter('in_progress')" style="--f-color:#f43f5e">⚡ En cours</button>
+        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': activeFilter === 'blocked' }" @click="toggleFilter('blocked')" style="--f-color:#2563eb">⏸ Bloquées</button>
+        <button class="sms-toolbar__btn" :class="{ 'sms-toolbar__btn--active': activeFilter === 'todo' }" @click="toggleFilter('todo')" style="--f-color:#94a3b8">📋 À faire</button>
+      </div>
+      <div class="sms-toolbar__toggles">
+        <button v-for="w in widgets" :key="w.key" class="sms-toolbar__toggle" :class="{ 'sms-toolbar__toggle--off': !visibleWidgets[w.key] }" @click="visibleWidgets[w.key] = !visibleWidgets[w.key]" :title="w.label">{{ w.icon }}</button>
+      </div>
+    </div>
+
+    <!-- Filtered task list (shown when a KPI filter is active) -->
+    <div v-if="activeFilter" class="sms-filtered">
+      <div class="sms-filtered__head">
+        <h4>{{ filterLabel }} ({{ filteredTasks.length }})</h4>
+        <button class="sms-filtered__close" @click="activeFilter = null">✕ Fermer</button>
+      </div>
+      <div v-if="filteredTasks.length" class="sms-filtered__list">
+        <div v-for="t in filteredTasks" :key="t.id" class="sms-filtered__item">
+          <span class="sms-filtered__dot" :style="{ background: statusColors[t.status]?.color || '#ccc' }"></span>
+          <span class="sms-filtered__name">{{ t.name }}</span>
+          <span class="sms-filtered__group" v-if="t.group_name">{{ t.group_name }}</span>
+          <span class="sms-filtered__assignee" v-if="t.referent_name">{{ t.referent_name }}</span>
+        </div>
+      </div>
+      <div v-else class="sms-filtered__empty">Aucune tâche</div>
+    </div>
+
     <!-- Row 1: Prediction hero + Progress -->
-    <div class="sms-hero">
+    <div class="sms-hero" v-if="visibleWidgets.hero">
       <div class="sms-hero__left">
         <div class="sms-hero__label">Date de fin estimée</div>
         <div class="sms-hero__date">{{ formatDate(stats.dates?.probable) }}</div>
@@ -34,16 +65,16 @@
       </div>
     </div>
 
-    <!-- Row 2: KPI Cards with trends -->
-    <div class="sms-kpis">
-      <div class="sms-kpi">
+    <!-- Row 2: KPI Cards (clickable to filter) -->
+    <div class="sms-kpis" v-if="visibleWidgets.kpis">
+      <div class="sms-kpi" @click="activeFilter = null" :class="{ 'sms-kpi--active': !activeFilter }" style="cursor:pointer">
         <div class="sms-kpi__icon" style="background:rgba(59,130,246,.1);color:#3b82f6">📋</div>
         <div class="sms-kpi__data">
           <div class="sms-kpi__val">{{ stats.task_count || 0 }}</div>
           <div class="sms-kpi__label">Tâches totales</div>
         </div>
       </div>
-      <div class="sms-kpi">
+      <div class="sms-kpi" @click="toggleFilter('done')" :class="{ 'sms-kpi--active': activeFilter === 'done' }" style="cursor:pointer">
         <div class="sms-kpi__icon" style="background:rgba(22,163,74,.1);color:#16a34a">✅</div>
         <div class="sms-kpi__data">
           <div class="sms-kpi__val" style="color:#16a34a">{{ stats.by_status?.done || 0 }}</div>
@@ -51,14 +82,14 @@
         </div>
         <div class="sms-kpi__pct" v-if="stats.task_count">{{ Math.round((stats.by_status?.done || 0) / stats.task_count * 100) }}%</div>
       </div>
-      <div class="sms-kpi">
+      <div class="sms-kpi" @click="toggleFilter('in_progress')" :class="{ 'sms-kpi--active': activeFilter === 'in_progress' }" style="cursor:pointer">
         <div class="sms-kpi__icon" style="background:rgba(244,63,94,.1);color:#f43f5e">⚡</div>
         <div class="sms-kpi__data">
           <div class="sms-kpi__val" style="color:#f43f5e">{{ stats.by_status?.in_progress || 0 }}</div>
           <div class="sms-kpi__label">En cours</div>
         </div>
       </div>
-      <div class="sms-kpi">
+      <div class="sms-kpi" @click="toggleFilter('blocked')" :class="{ 'sms-kpi--active': activeFilter === 'blocked' }" style="cursor:pointer">
         <div class="sms-kpi__icon" style="background:rgba(37,99,235,.1);color:#2563eb">⏸</div>
         <div class="sms-kpi__data">
           <div class="sms-kpi__val" style="color:#2563eb">{{ stats.by_status?.blocked || 0 }}</div>
@@ -75,9 +106,9 @@
     </div>
 
     <!-- Row 3: Funnel (progression par phase) + Donut -->
-    <div class="sms-row">
+    <div class="sms-row" v-if="visibleWidgets.funnel || visibleWidgets.donut">
       <!-- Funnel: progression par phase -->
-      <div class="sms-card" v-if="stats.by_group?.length">
+      <div class="sms-card" v-if="stats.by_group?.length && visibleWidgets.funnel">
         <h4 class="sms-card__title">Progression par phase</h4>
         <div class="sms-funnel">
           <div v-for="(g, i) in stats.by_group" :key="g.name" class="sms-funnel__step">
@@ -119,7 +150,7 @@
     </div>
 
     <!-- Row 4: Velocity + By assignee -->
-    <div class="sms-row">
+    <div class="sms-row" v-if="visibleWidgets.velocity || visibleWidgets.assignees">
       <!-- Velocity -->
       <div class="sms-card">
         <h4 class="sms-card__title">Vélocité</h4>
@@ -158,7 +189,7 @@
     </div>
 
     <!-- Row 5: Time metrics -->
-    <div class="sms-time" v-if="stats.time">
+    <div class="sms-time" v-if="stats.time && visibleWidgets.time">
       <div class="sms-time__item">
         <div class="sms-time__val">{{ stats.time.total_estimated || 0 }}h</div>
         <div class="sms-time__label">Temps restant</div>
@@ -185,9 +216,38 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, reactive, computed } from 'vue'
 
-const props = defineProps({ stats: { type: Object, default: null } })
+const props = defineProps({
+  stats: { type: Object, default: null },
+  tasks: { type: Array, default: () => [] },
+})
+
+// Filters
+const activeFilter = ref(null)
+function toggleFilter(status) {
+  activeFilter.value = activeFilter.value === status ? null : status
+}
+const filterLabel = computed(() => {
+  const labels = { done: 'Terminées', in_progress: 'En cours', blocked: 'Bloquées', todo: 'À faire' }
+  return labels[activeFilter.value] || ''
+})
+const filteredTasks = computed(() => {
+  if (!activeFilter.value) return props.tasks
+  return props.tasks.filter(t => t.status === activeFilter.value)
+})
+
+// Widget visibility
+const widgets = [
+  { key: 'hero', icon: '📅', label: 'Dates' },
+  { key: 'kpis', icon: '📊', label: 'KPIs' },
+  { key: 'funnel', icon: '🔄', label: 'Phases' },
+  { key: 'donut', icon: '🍩', label: 'Répartition' },
+  { key: 'velocity', icon: '📈', label: 'Vélocité' },
+  { key: 'assignees', icon: '👥', label: 'Équipe' },
+  { key: 'time', icon: '⏱', label: 'Temps' },
+]
+const visibleWidgets = reactive({ hero: true, kpis: true, funnel: true, donut: true, velocity: true, assignees: true, time: true })
 
 function formatDate(d) {
   if (!d) return '—'
@@ -253,6 +313,35 @@ const areaPoints = computed(() => {
 <style scoped>
 .sms { font-family: 'DM Sans', sans-serif; }
 .sms-empty { text-align: center; padding: 40px; color: var(--sm-t3); }
+
+/* Toolbar */
+.sms-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
+.sms-toolbar__filters { display: flex; gap: 4px; flex-wrap: wrap; }
+.sms-toolbar__btn { border: 1px solid var(--sm-bd); background: var(--sm-white); border-radius: 8px; padding: 5px 12px; font-size: 11px; font-weight: 600; color: var(--sm-t2); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .12s; }
+.sms-toolbar__btn:hover { border-color: var(--sm-terra); }
+.sms-toolbar__btn--active { background: var(--sm-grad); color: white; border-color: transparent; }
+.sms-toolbar__toggles { display: flex; gap: 3px; }
+.sms-toolbar__toggle { border: 1px solid var(--sm-bd); background: var(--sm-white); border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; transition: all .12s; }
+.sms-toolbar__toggle:hover { border-color: var(--sm-terra); }
+.sms-toolbar__toggle--off { opacity: .3; }
+
+/* Filtered task list */
+.sms-filtered { background: var(--sm-white); border: 1px solid var(--sm-bd); border-radius: 12px; padding: 14px; margin-bottom: 16px; }
+.sms-filtered__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.sms-filtered__head h4 { font-size: 14px; font-weight: 700; color: var(--sm-t1); margin: 0; }
+.sms-filtered__close { border: none; background: none; color: var(--sm-t3); font-size: 12px; cursor: pointer; font-weight: 600; }
+.sms-filtered__close:hover { color: var(--sm-terra); }
+.sms-filtered__list { display: flex; flex-direction: column; gap: 4px; max-height: 300px; overflow-y: auto; }
+.sms-filtered__item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--sm-bd); font-size: 12px; }
+.sms-filtered__item:hover { background: var(--sm-bg); }
+.sms-filtered__dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.sms-filtered__name { flex: 1; font-weight: 600; color: var(--sm-t1); }
+.sms-filtered__group { font-size: 10px; color: var(--sm-t3); background: var(--sm-bg); padding: 1px 6px; border-radius: 6px; }
+.sms-filtered__assignee { font-size: 10px; color: var(--sm-ai); }
+.sms-filtered__empty { font-size: 12px; color: var(--sm-t3); text-align: center; padding: 12px; }
+
+/* KPI active state */
+.sms-kpi--active { border-color: var(--sm-terra); box-shadow: 0 0 0 2px rgba(244,63,94,.15); }
 
 /* Hero */
 .sms-hero { display: flex; align-items: center; gap: 24px; background: var(--sm-white); border: 1px solid var(--sm-bd); border-radius: 16px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
