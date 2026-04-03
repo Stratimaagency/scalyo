@@ -257,4 +257,76 @@ modules.get('/projects', ...mw, async (c) => {
   }
 })
 
+// === COPIL SESSIONS ===
+modules.get('/copil', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  try {
+    const { results } = await c.env.DB.prepare(
+      'SELECT * FROM copil_sessions WHERE company_id = ? ORDER BY updated_at DESC'
+    ).bind(company_id).all()
+    return c.json({ data: (results || []).map(r => ({ ...r, sections: JSON.parse(r.sections || '[]'), collaborators: JSON.parse(r.collaborators || '[]') })) })
+  } catch { return c.json({ data: [] }) }
+})
+
+modules.get('/copil/:id', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const id = parseInt(c.req.param('id'), 10)
+  const row = await c.env.DB.prepare('SELECT * FROM copil_sessions WHERE id = ? AND company_id = ?').bind(id, company_id).first()
+  if (!row) return c.json({ error: 'Not found' }, 404)
+  return c.json({ ...row, sections: JSON.parse(row.sections || '[]'), collaborators: JSON.parse(row.collaborators || '[]') })
+})
+
+modules.post('/copil', ...mw, async (c) => {
+  const { company_id, id: user_id } = c.get('user')
+  const body = await c.req.json()
+  const defaultSections = [
+    { id: 's1', type: 'kpis', title: 'KPIs Client', content: {}, order: 0 },
+    { id: 's2', type: 'health', title: 'Santé & Risques', content: {}, order: 1 },
+    { id: 's3', type: 'actions', title: 'Actions & Roadmap', content: {}, order: 2 },
+    { id: 's4', type: 'notes', title: 'Notes & Recommandations', content: { text: '' }, order: 3 },
+  ]
+  const row = await c.env.DB.prepare(
+    `INSERT INTO copil_sessions (company_id, user_id, title, client_name, client_id, status, presentation_date, period, brand_color, brand_color_secondary, sections, notes, collaborators)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
+  ).bind(
+    company_id, user_id,
+    body.title || 'Nouveau COPIL',
+    body.client_name || '', body.client_id || null,
+    body.status || 'draft',
+    body.presentation_date || null,
+    body.period || '',
+    body.brand_color || '#3b82f6',
+    body.brand_color_secondary || '#1e3a5f',
+    JSON.stringify(body.sections || defaultSections),
+    body.notes || '',
+    JSON.stringify(body.collaborators || [])
+  ).first()
+  return c.json({ ...row, sections: JSON.parse(row.sections || '[]'), collaborators: JSON.parse(row.collaborators || '[]') }, 201)
+})
+
+modules.patch('/copil/:id', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const id = parseInt(c.req.param('id'), 10)
+  const body = await c.req.json()
+  const fields = [], values = []
+  for (const key of ['title', 'client_name', 'client_id', 'status', 'presentation_date', 'period', 'brand_color', 'brand_color_secondary', 'notes']) {
+    if (body[key] !== undefined) { fields.push(`${key} = ?`); values.push(body[key]) }
+  }
+  if (body.sections) { fields.push('sections = ?'); values.push(JSON.stringify(body.sections)) }
+  if (body.collaborators) { fields.push('collaborators = ?'); values.push(JSON.stringify(body.collaborators)) }
+  if (!fields.length) return c.json({ error: 'Nothing to update' }, 400)
+  fields.push("updated_at = datetime('now')")
+  values.push(id, company_id)
+  const row = await c.env.DB.prepare(`UPDATE copil_sessions SET ${fields.join(', ')} WHERE id = ? AND company_id = ? RETURNING *`).bind(...values).first()
+  if (!row) return c.json({ error: 'Not found' }, 404)
+  return c.json({ ...row, sections: JSON.parse(row.sections || '[]'), collaborators: JSON.parse(row.collaborators || '[]') })
+})
+
+modules.delete('/copil/:id', ...mw, async (c) => {
+  const { company_id } = c.get('user')
+  const id = parseInt(c.req.param('id'), 10)
+  await c.env.DB.prepare('DELETE FROM copil_sessions WHERE id = ? AND company_id = ?').bind(id, company_id).run()
+  return c.json({ ok: true })
+})
+
 export default modules
