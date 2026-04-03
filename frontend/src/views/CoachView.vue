@@ -67,7 +67,7 @@ const typingIndex = ref(-1)
 const typingProgress = ref({})
 
 const isStarter = computed(() => (authStore.company?.plan || 'Starter') === 'Starter')
-const dailyLimit = computed(() => isStarter.value ? 5 : 999)
+const dailyLimit = computed(() => isStarter.value ? 5 : 50)
 const dailyCount = ref(0)
 
 const quickSuggestions = computed(() => {
