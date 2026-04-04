@@ -52,9 +52,15 @@
         </button>
       </div>
 
-      <!-- Daily counter -->
-      <div style="text-align: right; font-size: 11px; color: var(--muted); margin-top: 6px">
-        {{ dailyCount }}/{{ dailyLimit }} {{ t('messagestoday') }}
+      <!-- Daily counter + clear -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px">
+        <button v-if="messages.length > 1" @click="clearHistory" style="font-size: 11px; color: var(--red); background: none; border: none; cursor: pointer; padding: 2px 6px; border-radius: 4px; opacity: .7; transition: opacity .2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.7">
+          🗑️ Effacer l'historique
+        </button>
+        <span v-else></span>
+        <span style="font-size: 11px; color: var(--muted)">
+          {{ dailyCount }}/{{ dailyLimit }} {{ t('messagestoday') }}
+        </span>
       </div>
     </AppCard>
   </div>
@@ -206,6 +212,12 @@ function findKBAnswer(text) {
     }
   }
   return null
+}
+
+function clearHistory() {
+  if (!confirm('Effacer tout l\'historique de conversation ? Cette action est irréversible.')) return
+  messages.value = [{ role: 'assistant', content: t('coachWelcome') }]
+  localStorage.removeItem('scalyo_coach_messages')
 }
 
 // Send message

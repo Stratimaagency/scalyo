@@ -6,6 +6,7 @@
         <h3 class="sm-project-card__name">{{ project.name }}</h3>
         <p class="sm-project-card__desc" v-if="project.description">{{ project.description }}</p>
       </div>
+      <button class="sm-project-card__delete" @click.stop="$emit('delete-project', project)" title="Supprimer">🗑️</button>
       <svg class="sm-project-card__circle" width="38" height="38" viewBox="0 0 38 38">
         <circle cx="19" cy="19" r="17" fill="none" stroke="var(--sm-bd)" stroke-width="3" />
         <circle cx="19" cy="19" r="17" fill="none" stroke="url(#sm-cg)" stroke-width="3"
@@ -34,7 +35,7 @@ const props = defineProps({
   selected: { type: Boolean, default: false },
 })
 
-defineEmits(['select-project'])
+defineEmits(['select-project', 'delete-project'])
 
 const progress = computed(() => props.project.progress || 0)
 const circumference = computed(() => 2 * Math.PI * 17)
@@ -79,4 +80,10 @@ const trafficClass = computed(() => {
 .sm-project-card__light--green { color: var(--sm-ok); }
 .sm-project-card__light--orange { color: var(--sm-warn); }
 .sm-project-card__light--red { color: var(--sm-err); }
+.sm-project-card__delete {
+  background: none; border: none; cursor: pointer; font-size: 14px; opacity: 0; transition: opacity .2s;
+  padding: 4px; border-radius: 6px; flex-shrink: 0;
+}
+.sm-project-card__delete:hover { background: rgba(239,68,68,.1); }
+.sm-project-card:hover .sm-project-card__delete { opacity: 1; }
 </style>

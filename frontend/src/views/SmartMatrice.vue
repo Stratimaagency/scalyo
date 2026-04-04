@@ -63,7 +63,8 @@
       <div v-if="store.projects.length" class="sm-projects-grid">
         <SmProjectCard v-for="p in store.projects" :key="p.id" :project="p"
           :selected="store.selectedProject?.id === p.id"
-          @select-project="selectProject" />
+          @select-project="selectProject"
+          @delete-project="confirmDeleteProject" />
       </div>
       <div v-else class="sm-empty">
         <div class="sm-empty__icon">📁</div>
@@ -402,6 +403,15 @@ function goToProjects() { store.selectProject(null); currentView.value = 'projec
 function selectProject(project) {
   store.selectProject(project)
   currentView.value = 'tasks'
+}
+
+async function confirmDeleteProject(project) {
+  if (!confirm(`Supprimer le projet "${project.name}" et toutes ses tâches ? Cette action est irréversible.`)) return
+  try {
+    await store.deleteProject(project.id)
+  } catch (e) {
+    console.error('Delete project error:', e)
+  }
 }
 
 async function createProject() {
