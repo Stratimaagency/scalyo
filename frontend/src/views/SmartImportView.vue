@@ -1218,65 +1218,8 @@ async function doImport() {
         // Refresh clients from API (will pick up new accounts)
         await clientsStore.fetchClients()
 
-        // Create SM projects for each imported account (with onboarding tasks)
-        if (payload.portfolio?.length) {
-          const onboardingTasks = [
-            { name: 'Kick-off call', group_name: 'Onboarding', status: 'todo' },
-            { name: 'Configuration initiale', group_name: 'Onboarding', status: 'todo' },
-            { name: 'Formation équipe client', group_name: 'Onboarding', status: 'todo' },
-            { name: 'Import données client', group_name: 'Setup', status: 'todo' },
-            { name: 'Revue J+30', group_name: 'Suivi', status: 'todo' },
-          ]
-
-          for (const acc of payload.portfolio.slice(0, 10)) {
-            try {
-              const projRes = await smartMatriceApi.createProject({
-                name: `Onboarding ${acc.name || 'Client'}`,
-                color: '#4285F4',
-                emoji: '🚀',
-                description: `Onboarding automatique — ${acc.name}. CSM: ${acc.csm || 'N/A'}`,
-              })
-              const projectId = projRes.data?.id
-              if (projectId) {
-                for (const task of onboardingTasks) {
-                  try {
-                    await smartMatriceApi.createTask({ ...task, project_id: projectId })
-                  } catch (te) { console.warn('SM task error:', te.message) }
-                }
-              }
-              console.log(`[SM] Projet créé: Onboarding ${acc.name}, id=${projectId}`)
-            } catch (e) {
-              console.warn(`[SM] Échec projet ${acc.name}:`, e.response?.data || e.message)
-            }
-          }
-
-          // Aussi créer un projet depuis les tâches AI
-          if (formattedTasks.length) {
-            try {
-              const analysisProj = await smartMatriceApi.createProject({
-                name: 'Actions post-import',
-                color: '#EA4335',
-                emoji: '⚡',
-                description: 'Tâches générées par l\'analyse AI de l\'import',
-              })
-              const apId = analysisProj.data?.id
-              if (apId) {
-                for (const t of formattedTasks.slice(0, 20)) {
-                  try {
-                    await smartMatriceApi.createTask({
-                      name: t.title,
-                      group_name: t.quadrant === 'q1' ? 'Urgent' : 'Important',
-                      status: 'todo',
-                      project_id: apId,
-                    })
-                  } catch {}
-                }
-                console.log(`[SM] Projet Actions post-import créé, id=${apId}, ${formattedTasks.length} tâches`)
-              }
-            } catch (e) { console.warn('[SM] Actions post-import failed:', e.response?.data || e.message) }
-          }
-
-          // Refresh SM store
+        // Refresh SM store if smart_matrice data was imported
+        if (payload.smart_matrice?.length) {
           try {
             const { useSmartMatriceStore } = await import('../stores/smartMatrice')
             const smStore = useSmartMatriceStore()

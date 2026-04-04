@@ -61,13 +61,24 @@ async function listProjects(c) {
 async function createProject(c) {
   const { company_id, id: user_id } = c.get('user')
   const body = await c.req.json()
-  const history = JSON.stringify([{ date: new Date().toISOString(), action: 'created', details: body.name || 'Nouveau projet', user_id }])
-  const row = await c.env.DB.prepare(
-    `INSERT INTO sm_projects (company_id, name, description, emoji, color, start_date, end_date, target_end_date, state, history)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
-  ).bind(company_id, body.name || 'Nouveau projet', body.description || '', body.emoji || '📁', body.color || '#3b82f6',
-    body.start_date || null, body.end_date || null, body.target_end_date || body.end_date || null, body.state || 'active', history).first()
-  return c.json({ ...row, history: JSON.parse(row.history || '[]') }, 201)
+  try {
+    // Try with V2 columns (history, state, target_end_date)
+    const history = JSON.stringify([{ date: new Date().toISOString(), action: 'created', details: body.name || 'Nouveau projet', user_id }])
+    const row = await c.env.DB.prepare(
+      `INSERT INTO sm_projects (company_id, name, description, emoji, color, start_date, end_date, target_end_date, state, history)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
+    ).bind(company_id, body.name || 'Nouveau projet', body.description || '', body.emoji || '📁', body.color || '#3b82f6',
+      body.start_date || null, body.end_date || null, body.target_end_date || body.end_date || null, body.state || 'active', history).first()
+    return c.json({ ...row, history: JSON.parse(row.history || '[]') }, 201)
+  } catch {
+    // Fallback for V1 schema (no history/state columns)
+    const row = await c.env.DB.prepare(
+      `INSERT INTO sm_projects (company_id, name, description, emoji, color, start_date, end_date, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
+    ).bind(company_id, body.name || 'Nouveau projet', body.description || '', body.emoji || '📁', body.color || '#3b82f6',
+      body.start_date || null, body.end_date || null, body.state || body.status || 'active').first()
+    return c.json(row, 201)
+  }
 }
 
 async function updateProject(c) {
