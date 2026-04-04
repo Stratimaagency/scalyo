@@ -808,7 +808,7 @@ export default {
   smartImportTitle: 'Import intelligent',
   smartImportDesc: 'Importez un fichier Excel complexe — Scalyo analyse et distribue automatiquement les données.',
   smartImportDrop: 'Glissez votre fichier ou cliquez pour sélectionner',
-  smartImportFormats: 'Formats acceptés : .xlsx, .xls, .csv — Plusieurs feuilles, formules, analyses',
+  smartImportFormats: 'Tous formats : Excel, CSV, PDF, Word, PowerPoint, JSON, Notion, TXT — Analyse intelligente automatique',
   smartImportChoose: 'Choisir un fichier',
   smartImportAnalyzing: 'Analyse en cours...',
   smartImportReading: 'Lecture des feuilles, détection des données, mapping intelligent...',

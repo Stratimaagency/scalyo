@@ -805,7 +805,7 @@ export default {
   smartImportTitle: '스마트 가져오기',
   smartImportDesc: '복잡한 Excel 파일을 가져오세요 — Scalyo가 자동으로 분석하고 데이터를 분배합니다.',
   smartImportDrop: '파일을 드래그하거나 클릭하여 선택하세요',
-  smartImportFormats: '지원 형식: .xlsx, .xls, .csv — 다중 시트, 수식, 분석',
+  smartImportFormats: '모든 형식: Excel, CSV, PDF, Word, PowerPoint, JSON, Notion, TXT — 자동 스마트 분석',
   smartImportChoose: '파일 선택',
   smartImportAnalyzing: '분석 중...',
   smartImportReading: '시트 읽기, 데이터 감지, 스마트 매핑 중...',

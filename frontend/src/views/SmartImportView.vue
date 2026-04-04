@@ -17,7 +17,7 @@
       <label class="btn btn-primary" style="cursor: pointer; display: inline-flex; align-items: center; gap: 8px; padding: 12px 32px;">
         <ScalyoIcon name="upload" :size="18" />
         {{ t('smartImportChoose') }}
-        <input type="file" accept=".xlsx,.xls,.csv" @change="onFileSelect" style="display: none;" />
+        <input type="file" accept=".xlsx,.xls,.csv,.pdf,.docx,.doc,.pptx,.ppt,.txt,.md,.json,.pages,.numbers,.tsv,.xml,.html" @change="onFileSelect" style="display: none;" />
       </label>
     </div>
 
@@ -165,6 +165,12 @@
 <script setup>
 import { ref, computed } from 'vue'
 import * as XLSX from 'xlsx'
+import * as pdfjsLib from 'pdfjs-dist'
+import mammoth from 'mammoth'
+import JSZip from 'jszip'
+
+// PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`
 import { useI18n } from '../i18n'
 import { smartImportApi, kpiApi, taskApi, planningApi, smartMatriceApi } from '../api'
 import { usePortfolioStore } from '../stores/portfolio'
@@ -249,14 +255,194 @@ function onFileSelect(e) {
   if (file) processFile(file)
 }
 
+// ========== MULTI-FORMAT PARSERS ==========
+
+function getFileExtension(filename) {
+  return (filename || '').split('.').pop().toLowerCase()
+}
+
+async function parsePDF(buffer) {
+  const pdf = await pdfjsLib.getDocument({ data: buffer }).promise
+  const sheets = {}
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i)
+    const content = await page.getTextContent()
+    const lines = []
+    let currentLine = []
+    let lastY = null
+    for (const item of content.items) {
+      if (lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
+        if (currentLine.length) lines.push(currentLine.join('\t'))
+        currentLine = []
+      }
+      currentLine.push(item.str)
+      lastY = item.transform[5]
+    }
+    if (currentLine.length) lines.push(currentLine.join('\t'))
+
+    // Convert lines to table rows
+    const rows = lines.filter(l => l.trim()).map(line => {
+      const parts = line.split('\t').map(p => p.trim()).filter(Boolean)
+      const row = {}
+      parts.forEach((p, idx) => { row[`col_${idx}`] = p })
+      return row
+    })
+    if (rows.length > 1) sheets[`Page ${i}`] = rows
+  }
+  // Merge all pages into one sheet if only simple content
+  if (Object.keys(sheets).length > 3) {
+    const all = Object.values(sheets).flat()
+    return { 'Document PDF': all }
+  }
+  return Object.keys(sheets).length ? sheets : { 'Document PDF': [{ col_0: 'Document vide ou non-tabulaire' }] }
+}
+
+async function parseDOCX(buffer) {
+  const result = await mammoth.extractRawText({ arrayBuffer: buffer })
+  const lines = result.value.split('\n').filter(l => l.trim())
+  // Try to detect tables: lines with consistent tab/pipe separators
+  const rows = []
+  for (const line of lines) {
+    const parts = line.includes('\t') ? line.split('\t') : line.includes('|') ? line.split('|') : [line]
+    const row = {}
+    parts.forEach((p, idx) => { row[`col_${idx}`] = p.trim() })
+    if (Object.values(row).some(v => v)) rows.push(row)
+  }
+  return { 'Document Word': rows }
+}
+
+async function parsePPTX(buffer) {
+  const zip = await JSZip.loadAsync(buffer)
+  const slides = []
+  for (const [path, file] of Object.entries(zip.files)) {
+    if (path.match(/ppt\/slides\/slide\d+\.xml$/)) {
+      const xml = await file.async('text')
+      // Extract text from XML tags <a:t>...</a:t>
+      const texts = [...xml.matchAll(/<a:t[^>]*>([^<]+)<\/a:t>/g)].map(m => m[1])
+      if (texts.length) slides.push(texts)
+    }
+  }
+  // Convert slides to rows
+  const rows = slides.flatMap((texts, i) => {
+    return texts.map(t => ({ slide: `Slide ${i + 1}`, content: t }))
+  })
+  return { 'Présentation': rows.length ? rows : [{ col_0: 'Présentation vide' }] }
+}
+
+function parseCSV(text) {
+  const lines = text.split('\n').filter(l => l.trim())
+  if (!lines.length) return { 'CSV': [] }
+  const separator = lines[0].includes(';') ? ';' : lines[0].includes('\t') ? '\t' : ','
+  const headers = lines[0].split(separator).map(h => h.trim().replace(/^["']|["']$/g, ''))
+  const rows = lines.slice(1).map(line => {
+    const vals = line.split(separator).map(v => v.trim().replace(/^["']|["']$/g, ''))
+    const row = {}
+    headers.forEach((h, i) => { row[h || `col_${i}`] = vals[i] || '' })
+    return row
+  }).filter(r => Object.values(r).some(v => v))
+  return { 'CSV': rows }
+}
+
+function parseTXT(text) {
+  const lines = text.split('\n').filter(l => l.trim())
+  // Detect if it's structured (tabs, pipes, markdown table)
+  const hasTable = lines.some(l => l.includes('\t') || (l.includes('|') && l.split('|').length > 2))
+  if (hasTable) {
+    const separator = lines[0].includes('\t') ? '\t' : '|'
+    const headers = lines[0].split(separator).map(h => h.trim()).filter(Boolean)
+    const dataLines = lines.filter(l => !l.match(/^[-|: ]+$/)) // skip markdown separators
+    const rows = dataLines.slice(1).map(line => {
+      const vals = line.split(separator).map(v => v.trim())
+      const row = {}
+      headers.forEach((h, i) => { row[h || `col_${i}`] = vals[i] || '' })
+      return row
+    }).filter(r => Object.values(r).some(v => v))
+    return { 'Texte': rows }
+  }
+  // Unstructured text — each line is a task/item
+  const rows = lines.map(l => ({ content: l.trim() })).filter(r => r.content.length > 2)
+  return { 'Texte': rows }
+}
+
+function parseJSON(text) {
+  const data = JSON.parse(text)
+  // Handle Notion exports (array of objects)
+  if (Array.isArray(data)) {
+    return { 'JSON': data.map(item => {
+      if (typeof item === 'object') return item
+      return { value: String(item) }
+    })}
+  }
+  // Handle nested object with arrays
+  const sheets = {}
+  for (const [key, val] of Object.entries(data)) {
+    if (Array.isArray(val) && val.length && typeof val[0] === 'object') {
+      sheets[key] = val
+    }
+  }
+  return Object.keys(sheets).length ? sheets : { 'JSON': [data] }
+}
+
+async function parseToSheets(file) {
+  const ext = getFileExtension(file.name)
+  const buffer = await file.arrayBuffer()
+
+  switch (ext) {
+    case 'xlsx': case 'xls': case 'numbers': {
+      const wb = XLSX.read(buffer, { type: 'array', cellFormula: false, cellDates: true })
+      const sheets = {}
+      for (const name of wb.SheetNames) {
+        const allTables = extractAllTables(wb.Sheets[name])
+        for (let i = 0; i < allTables.length; i++) {
+          const key = allTables.length > 1 ? `${name}_${i}` : name
+          if (allTables[i].length) sheets[key] = allTables[i]
+        }
+      }
+      return sheets
+    }
+    case 'csv': case 'tsv': {
+      const text = new TextDecoder().decode(buffer)
+      return parseCSV(text)
+    }
+    case 'pdf': return await parsePDF(buffer)
+    case 'docx': case 'doc': return await parseDOCX(buffer)
+    case 'pptx': case 'ppt': return await parsePPTX(buffer)
+    case 'json': {
+      const text = new TextDecoder().decode(buffer)
+      return parseJSON(text)
+    }
+    case 'txt': case 'md': case 'markdown': case 'xml': case 'html': {
+      const text = new TextDecoder().decode(buffer)
+      return parseTXT(text)
+    }
+    default: {
+      // Try as text first, then as Excel
+      try {
+        const text = new TextDecoder().decode(buffer)
+        if (text.includes(',') || text.includes('\t') || text.includes('|')) return parseCSV(text)
+        return parseTXT(text)
+      } catch {
+        const wb = XLSX.read(buffer, { type: 'array', cellFormula: false, cellDates: true })
+        const sheets = {}
+        for (const name of wb.SheetNames) {
+          sheets[name] = XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: '' })
+        }
+        return sheets
+      }
+    }
+  }
+}
+
+// ========== MAIN PROCESS ==========
+
 async function processFile(file) {
   error.value = ''
   step.value = 'analyzing'
-  analysisStatus.value = t('smartImportReading')
+  analysisStatus.value = `Lecture de ${file.name} (${getFileExtension(file.name).toUpperCase()})...`
 
   try {
-    const buffer = await file.arrayBuffer()
-    const wb = XLSX.read(buffer, { type: 'array', cellFormula: false, cellDates: true })
+    // Parse any file format into sheets of rows
+    const parsedSheets = await parseToSheets(file)
 
     const rawData = {}
     const mappedSheets = []
@@ -264,16 +450,13 @@ async function processFile(file) {
     const tasks = []
     const teamData = []
 
-    // Parse each sheet — try multiple start rows for complex layouts
-    for (const sheetName of wb.SheetNames) {
-      const sheet = wb.Sheets[sheetName]
-      const allTables = extractAllTables(sheet)
-
-      for (const rows of allTables) {
-        if (!rows.length) continue
+    // Analyze each parsed sheet
+    for (const [sheetName, rows] of Object.entries(parsedSheets)) {
+      {
+        if (!rows || !rows.length) continue
         const headers = Object.keys(rows[0])
         const headersLower = headers.map(h => h.toLowerCase().trim())
-        const key = sheetName + (allTables.length > 1 ? `_${allTables.indexOf(rows)}` : '')
+        const key = sheetName
         rawData[key] = rows
 
         const sheetLower = sheetName.toLowerCase()
