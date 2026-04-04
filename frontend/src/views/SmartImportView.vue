@@ -165,27 +165,6 @@
 <script setup>
 import { ref, computed } from 'vue'
 import * as XLSX from 'xlsx'
-
-// Lazy-loaded parsers (heavy libraries loaded only when needed)
-let pdfjsLib = null
-let mammoth = null
-let JSZip = null
-
-async function loadPdfJs() {
-  if (!pdfjsLib) {
-    pdfjsLib = await import('pdfjs-dist')
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`
-  }
-  return pdfjsLib
-}
-async function loadMammoth() {
-  if (!mammoth) { mammoth = (await import('mammoth')).default || (await import('mammoth')) }
-  return mammoth
-}
-async function loadJSZip() {
-  if (!JSZip) { JSZip = (await import('jszip')).default || (await import('jszip')) }
-  return JSZip
-}
 import { useI18n } from '../i18n'
 import { smartImportApi, kpiApi, taskApi, planningApi, smartMatriceApi } from '../api'
 import { usePortfolioStore } from '../stores/portfolio'
@@ -277,73 +256,64 @@ function getFileExtension(filename) {
 }
 
 async function parsePDF(buffer) {
-  const pdfjs = await loadPdfJs()
-  const pdf = await pdfjs.getDocument({ data: buffer }).promise
-  const sheets = {}
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i)
-    const content = await page.getTextContent()
-    const lines = []
-    let currentLine = []
-    let lastY = null
-    for (const item of content.items) {
-      if (lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
-        if (currentLine.length) lines.push(currentLine.join('\t'))
-        currentLine = []
+  try {
+    const pdfjsLib = await import('pdfjs-dist')
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`
+    const pdf = await pdfjsLib.getDocument({ data: buffer }).promise
+    const allRows = []
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i)
+      const content = await page.getTextContent()
+      const lines = []
+      let currentLine = [], lastY = null
+      for (const item of content.items) {
+        if (lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
+          if (currentLine.length) lines.push(currentLine.join('\t'))
+          currentLine = []
+        }
+        currentLine.push(item.str)
+        lastY = item.transform[5]
       }
-      currentLine.push(item.str)
-      lastY = item.transform[5]
+      if (currentLine.length) lines.push(currentLine.join('\t'))
+      for (const line of lines) {
+        const parts = line.split('\t').map(p => p.trim()).filter(Boolean)
+        if (parts.length) { const row = {}; parts.forEach((p, idx) => { row[`col_${idx}`] = p }); allRows.push(row) }
+      }
     }
-    if (currentLine.length) lines.push(currentLine.join('\t'))
-
-    // Convert lines to table rows
-    const rows = lines.filter(l => l.trim()).map(line => {
-      const parts = line.split('\t').map(p => p.trim()).filter(Boolean)
-      const row = {}
-      parts.forEach((p, idx) => { row[`col_${idx}`] = p })
-      return row
-    })
-    if (rows.length > 1) sheets[`Page ${i}`] = rows
-  }
-  // Merge all pages into one sheet if only simple content
-  if (Object.keys(sheets).length > 3) {
-    const all = Object.values(sheets).flat()
-    return { 'Document PDF': all }
-  }
-  return Object.keys(sheets).length ? sheets : { 'Document PDF': [{ col_0: 'Document vide ou non-tabulaire' }] }
+    return { 'Document PDF': allRows.length ? allRows : [{ col_0: 'Document vide' }] }
+  } catch (e) { console.error('PDF parse error:', e); return { 'PDF': [{ col_0: 'Erreur lecture PDF: ' + e.message }] } }
 }
 
 async function parseDOCX(buffer) {
-  const mam = await loadMammoth()
-  const result = await mam.extractRawText({ arrayBuffer: buffer })
-  const lines = result.value.split('\n').filter(l => l.trim())
-  // Try to detect tables: lines with consistent tab/pipe separators
-  const rows = []
-  for (const line of lines) {
-    const parts = line.includes('\t') ? line.split('\t') : line.includes('|') ? line.split('|') : [line]
-    const row = {}
-    parts.forEach((p, idx) => { row[`col_${idx}`] = p.trim() })
-    if (Object.values(row).some(v => v)) rows.push(row)
-  }
-  return { 'Document Word': rows }
+  try {
+    const mam = await import('mammoth')
+    const mammothLib = mam.default || mam
+    const result = await mammothLib.extractRawText({ arrayBuffer: buffer })
+    const lines = result.value.split('\n').filter(l => l.trim())
+    const rows = lines.map(line => {
+      const parts = line.includes('\t') ? line.split('\t') : line.includes('|') ? line.split('|') : [line]
+      const row = {}; parts.forEach((p, idx) => { row[`col_${idx}`] = p.trim() }); return row
+    }).filter(r => Object.values(r).some(v => v))
+    return { 'Document Word': rows }
+  } catch (e) { console.error('DOCX parse error:', e); return { 'Word': [{ col_0: 'Erreur lecture Word: ' + e.message }] } }
 }
 
 async function parsePPTX(buffer) {
-  const zip = await (await loadJSZip()).loadAsync(buffer)
-  const slides = []
-  for (const [path, file] of Object.entries(zip.files)) {
-    if (path.match(/ppt\/slides\/slide\d+\.xml$/)) {
-      const xml = await file.async('text')
-      // Extract text from XML tags <a:t>...</a:t>
-      const texts = [...xml.matchAll(/<a:t[^>]*>([^<]+)<\/a:t>/g)].map(m => m[1])
-      if (texts.length) slides.push(texts)
+  try {
+    const JSZipMod = await import('jszip')
+    const JSZipLib = JSZipMod.default || JSZipMod
+    const zip = await JSZipLib.loadAsync(buffer)
+    const slides = []
+    for (const [path, file] of Object.entries(zip.files)) {
+      if (path.match(/ppt\/slides\/slide\d+\.xml$/)) {
+        const xml = await file.async('text')
+        const texts = [...xml.matchAll(/<a:t[^>]*>([^<]+)<\/a:t>/g)].map(m => m[1])
+        if (texts.length) slides.push(texts)
+      }
     }
-  }
-  // Convert slides to rows
-  const rows = slides.flatMap((texts, i) => {
-    return texts.map(t => ({ slide: `Slide ${i + 1}`, content: t }))
-  })
-  return { 'Présentation': rows.length ? rows : [{ col_0: 'Présentation vide' }] }
+    const rows = slides.flatMap((texts, i) => texts.map(t => ({ slide: `Slide ${i + 1}`, content: t })))
+    return { 'Présentation': rows.length ? rows : [{ col_0: 'Présentation vide' }] }
+  } catch (e) { console.error('PPTX parse error:', e); return { 'PPT': [{ col_0: 'Erreur lecture PowerPoint: ' + e.message }] } }
 }
 
 function parseCSV(text) {
@@ -552,6 +522,7 @@ async function processFile(file) {
 
     console.log('After extraction — KPIs:', kpis, 'Tasks:', tasks.length, 'Team:', teamData.length)
     if (tasks.length) console.log('Task titles:', tasks.map(t => t.title))
+    console.log('[DEBUG] Step 1: extraction done')
 
     // --- Generate summary ---
     let summary = ''
@@ -568,6 +539,7 @@ async function processFile(file) {
     const smCount = mappedSheets.filter(s => s.module === 'smart_matrice').reduce((s, sh) => s + sh.totalRows, 0)
     if (smCount) summary += `${smCount} tâches projet (Smart Matrice). `
 
+    console.log('[DEBUG] Step 2: summary done')
     // === DATA CLEANING & DEDUPLICATION ===
     const cleaningReport = { duplicates: 0, emptyRows: 0, cleaned: 0 }
 
@@ -626,17 +598,21 @@ async function processFile(file) {
     if (cleaningReport.emptyRows > 0) summary += `${cleaningReport.emptyRows} lignes vides ignorées. `
     if (cleaningReport.cleaned > 0) summary += `${cleaningReport.cleaned} en-têtes/totaux exclus. `
 
+    console.log('[DEBUG] Step 3: cleaning done')
     allSheetData.value = rawData
     aiMapping.value = finalSheets
     computedKpis.value = Object.keys(kpis).length ? kpis : {}
     generatedTasks.value = uniqueTasks
     aiSummary.value = summary || 'Fichier analysé. Vérifiez le mapping ci-dessous avant d\'importer.'
 
+    console.log('[DEBUG] Step 4: state set')
     // Try AI enrichment in background (non-blocking)
     tryAiEnrichment(Object.keys(parsedSheets), rawData)
 
     step.value = 'preview'
+    console.log('[DEBUG] Step 5: done, showing preview')
   } catch (err) {
+    console.error('[DEBUG] processFile CRASHED:', err, err.stack)
     error.value = err.message || t('errorGeneric')
     step.value = 'upload'
   }
