@@ -165,12 +165,27 @@
 <script setup>
 import { ref, computed } from 'vue'
 import * as XLSX from 'xlsx'
-import * as pdfjsLib from 'pdfjs-dist'
-import mammoth from 'mammoth'
-import JSZip from 'jszip'
 
-// PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`
+// Lazy-loaded parsers (heavy libraries loaded only when needed)
+let pdfjsLib = null
+let mammoth = null
+let JSZip = null
+
+async function loadPdfJs() {
+  if (!pdfjsLib) {
+    pdfjsLib = await import('pdfjs-dist')
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`
+  }
+  return pdfjsLib
+}
+async function loadMammoth() {
+  if (!mammoth) { mammoth = (await import('mammoth')).default || (await import('mammoth')) }
+  return mammoth
+}
+async function loadJSZip() {
+  if (!JSZip) { JSZip = (await import('jszip')).default || (await import('jszip')) }
+  return JSZip
+}
 import { useI18n } from '../i18n'
 import { smartImportApi, kpiApi, taskApi, planningApi, smartMatriceApi } from '../api'
 import { usePortfolioStore } from '../stores/portfolio'
@@ -262,7 +277,8 @@ function getFileExtension(filename) {
 }
 
 async function parsePDF(buffer) {
-  const pdf = await pdfjsLib.getDocument({ data: buffer }).promise
+  const pdfjs = await loadPdfJs()
+  const pdf = await pdfjs.getDocument({ data: buffer }).promise
   const sheets = {}
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i)
@@ -298,7 +314,8 @@ async function parsePDF(buffer) {
 }
 
 async function parseDOCX(buffer) {
-  const result = await mammoth.extractRawText({ arrayBuffer: buffer })
+  const mam = await loadMammoth()
+  const result = await mam.extractRawText({ arrayBuffer: buffer })
   const lines = result.value.split('\n').filter(l => l.trim())
   // Try to detect tables: lines with consistent tab/pipe separators
   const rows = []
@@ -312,7 +329,7 @@ async function parseDOCX(buffer) {
 }
 
 async function parsePPTX(buffer) {
-  const zip = await JSZip.loadAsync(buffer)
+  const zip = await (await loadJSZip()).loadAsync(buffer)
   const slides = []
   for (const [path, file] of Object.entries(zip.files)) {
     if (path.match(/ppt\/slides\/slide\d+\.xml$/)) {
