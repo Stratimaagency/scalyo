@@ -600,7 +600,7 @@ async function processFile(file) {
     aiSummary.value = summary || 'Fichier analysé. Vérifiez le mapping ci-dessous avant d\'importer.'
 
     // Try AI enrichment in background (non-blocking)
-    tryAiEnrichment(wb.SheetNames, rawData)
+    tryAiEnrichment(Object.keys(parsedSheets), rawData)
 
     step.value = 'preview'
   } catch (err) {
