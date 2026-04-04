@@ -5,8 +5,10 @@
       <div class="smp-top__left">
         <!-- View switcher -->
         <div class="smp-views">
-          <button class="smp-views__btn" :class="{ 'smp-views__btn--on': view === 'calendar' }" @click="view = 'calendar'">📅 {{ t('plCalendarView') }}</button>
-          <button class="smp-views__btn" :class="{ 'smp-views__btn--on': view === 'gantt' }" @click="view = 'gantt'">📊 {{ t('plGanttView') }}</button>
+          <button class="smp-views__btn" :class="{ 'smp-views__btn--on': view === 'calendar' }" @click="view = 'calendar'">📅 Semaine</button>
+          <button class="smp-views__btn" :class="{ 'smp-views__btn--on': view === 'month' }" @click="view = 'month'">🗓️ Mois</button>
+          <button class="smp-views__btn" :class="{ 'smp-views__btn--on': view === 'year' }" @click="view = 'year'">📆 Année</button>
+          <button class="smp-views__btn" :class="{ 'smp-views__btn--on': view === 'gantt' }" @click="view = 'gantt'">📊 Gantt</button>
         </div>
         <!-- Filters -->
         <div class="smp-filters">
@@ -30,6 +32,18 @@
           <button class="smp-nav__today" @click="goToday">{{ t('today') }}</button>
           <button class="smp-nav__btn" @click="shiftWeek(1)">&rarr;</button>
           <span class="smp-nav__title">{{ weekLabel }}</span>
+        </template>
+        <template v-if="view === 'month'">
+          <button class="smp-nav__btn" @click="monthOffset--">&larr;</button>
+          <button class="smp-nav__today" @click="monthOffset = 0">{{ t('today') }}</button>
+          <button class="smp-nav__btn" @click="monthOffset++">&rarr;</button>
+          <span class="smp-nav__title">{{ monthLabel }}</span>
+        </template>
+        <template v-if="view === 'year'">
+          <button class="smp-nav__btn" @click="yearOffset--">&larr;</button>
+          <button class="smp-nav__today" @click="yearOffset = 0">{{ t('today') }}</button>
+          <button class="smp-nav__btn" @click="yearOffset++">&rarr;</button>
+          <span class="smp-nav__title">{{ yearLabel }}</span>
         </template>
         <button v-if="plannedTasks.length" class="smp-export" @click="exportAllICS">📅 {{ t('plExportWeek') }}</button>
       </div>
@@ -107,6 +121,54 @@
         </template>
 
         <div v-if="!filtered.length" class="smp-gantt__empty">{{ t('kbNoTasks') }}</div>
+      </div>
+    </template>
+
+    <!-- =================== MONTH VIEW =================== -->
+    <template v-if="view === 'month'">
+      <div class="smp-month">
+        <div class="smp-month__header">
+          <div v-for="d in ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']" :key="d" class="smp-month__dayname">{{ d }}</div>
+        </div>
+        <div class="smp-month__grid">
+          <div v-for="(cell, i) in monthCells" :key="i"
+            class="smp-month__cell"
+            :class="{ 'smp-month__cell--other': !cell.inMonth, 'smp-month__cell--today': cell.isToday }"
+            @click="cell.inMonth && createAtSlot(cell.date, 9)">
+            <div class="smp-month__num">{{ cell.day }}</div>
+            <div v-for="evt in cell.events.slice(0, 3)" :key="evt.id"
+              class="smp-month__event"
+              :class="'smp-month__event--' + (evt.status || 'todo')"
+              @click.stop="emit('edit-event', evt)">
+              {{ evt.name?.slice(0, 20) }}
+            </div>
+            <div v-if="cell.events.length > 3" class="smp-month__more">+{{ cell.events.length - 3 }}</div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- =================== YEAR VIEW =================== -->
+    <template v-if="view === 'year'">
+      <div class="smp-year">
+        <div v-for="m in 12" :key="m" class="smp-year__month">
+          <h4 class="smp-year__title">{{ monthNames[m - 1] }}</h4>
+          <div class="smp-year__mini-grid">
+            <div v-for="(cell, i) in yearMonthCells(m - 1)" :key="i"
+              class="smp-year__cell"
+              :class="{
+                'smp-year__cell--other': !cell.inMonth,
+                'smp-year__cell--today': cell.isToday,
+                'smp-year__cell--has': cell.count > 0
+              }"
+              :title="cell.count ? cell.count + ' tâche(s)' : ''">
+              <span v-if="cell.inMonth">{{ cell.day }}</span>
+            </div>
+          </div>
+          <div class="smp-year__count" v-if="yearMonthTaskCount(m - 1)">
+            {{ yearMonthTaskCount(m - 1) }} tâche(s)
+          </div>
+        </div>
       </div>
     </template>
 
@@ -210,6 +272,79 @@ function startResize(e, evt) {
   function onMove(me) { evt.dur_estimated = Math.max(0.5, Math.round((startDur + (me.clientY - startY) / SLOT_H) * 2) / 2) }
   function onUp() { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); emit('move-event', { task: evt, dur_estimated: evt.dur_estimated }) }
   document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp)
+}
+
+// === MONTH VIEW ===
+const monthOffset = ref(0)
+const currentMonth = computed(() => {
+  const d = new Date(today.getFullYear(), today.getMonth() + monthOffset.value, 1)
+  return d
+})
+const monthLabel = computed(() => {
+  return currentMonth.value.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+})
+const monthCells = computed(() => {
+  const year = currentMonth.value.getFullYear()
+  const month = currentMonth.value.getMonth()
+  const firstDay = new Date(year, month, 1)
+  const lastDay = new Date(year, month + 1, 0)
+  const startDow = (firstDay.getDay() + 6) % 7 // Monday = 0
+  const cells = []
+
+  // Previous month padding
+  for (let i = startDow - 1; i >= 0; i--) {
+    const d = new Date(year, month, -i)
+    cells.push({ day: d.getDate(), date: d, inMonth: false, isToday: false, events: [] })
+  }
+
+  // Current month
+  for (let day = 1; day <= lastDay.getDate(); day++) {
+    const d = new Date(year, month, day)
+    const dateStr = d.toISOString().slice(0, 10)
+    const events = filtered.value.filter(tk => (tk.start_date || '').slice(0, 10) === dateStr)
+    cells.push({ day, date: d, inMonth: true, isToday: d.toDateString() === today.toDateString(), events })
+  }
+
+  // Next month padding (fill to 42 cells = 6 rows)
+  while (cells.length < 42) {
+    const d = new Date(year, month + 1, cells.length - startDow - lastDay.getDate() + 1)
+    cells.push({ day: d.getDate(), date: d, inMonth: false, isToday: false, events: [] })
+  }
+
+  return cells
+})
+
+// === YEAR VIEW ===
+const yearOffset = ref(0)
+const yearLabel = computed(() => String(today.getFullYear() + yearOffset.value))
+const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+
+function yearMonthCells(monthIdx) {
+  const year = today.getFullYear() + yearOffset.value
+  const firstDay = new Date(year, monthIdx, 1)
+  const lastDay = new Date(year, monthIdx + 1, 0)
+  const startDow = (firstDay.getDay() + 6) % 7
+  const cells = []
+
+  for (let i = startDow - 1; i >= 0; i--) {
+    cells.push({ day: 0, inMonth: false, isToday: false, count: 0 })
+  }
+
+  for (let day = 1; day <= lastDay.getDate(); day++) {
+    const d = new Date(year, monthIdx, day)
+    const dateStr = d.toISOString().slice(0, 10)
+    const count = filtered.value.filter(tk => (tk.start_date || '').slice(0, 10) === dateStr).length
+    cells.push({ day, inMonth: true, isToday: d.toDateString() === today.toDateString(), count })
+  }
+
+  while (cells.length < 42) cells.push({ day: 0, inMonth: false, isToday: false, count: 0 })
+  return cells
+}
+
+function yearMonthTaskCount(monthIdx) {
+  const year = today.getFullYear() + yearOffset.value
+  const prefix = `${year}-${String(monthIdx + 1).padStart(2, '0')}`
+  return filtered.value.filter(tk => (tk.start_date || '').startsWith(prefix)).length
 }
 
 // === GANTT ===
@@ -375,4 +510,49 @@ function exportAllICS() { if (plannedTasks.value.length) downloadFile(buildICSCo
 .smp-unplanned__dot--done { background: var(--sm-ok); }
 .smp-unplanned__name { flex: 1; font-weight: 500; }
 .smp-unplanned__dur { font-size: 10px; color: var(--sm-t3); font-weight: 600; }
+
+/* === MONTH VIEW === */
+.smp-month { border: 1px solid var(--sm-bd); border-radius: 12px; overflow: hidden; }
+.smp-month__header { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--sm-bg); border-bottom: 1px solid var(--sm-bd); }
+.smp-month__dayname { padding: 8px; text-align: center; font-size: 11px; font-weight: 700; color: var(--sm-t3); text-transform: uppercase; letter-spacing: .5px; }
+.smp-month__grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+.smp-month__cell {
+  min-height: 90px; padding: 6px; border-right: 1px solid var(--sm-bd); border-bottom: 1px solid var(--sm-bd);
+  cursor: pointer; transition: background .15s; position: relative;
+}
+.smp-month__cell:nth-child(7n) { border-right: none; }
+.smp-month__cell:hover { background: rgba(59,130,246,.04); }
+.smp-month__cell--other { opacity: .35; }
+.smp-month__cell--today { background: rgba(59,130,246,.06); }
+.smp-month__cell--today .smp-month__num { background: #3b82f6; color: #fff; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+.smp-month__num { font-size: 12px; font-weight: 700; color: var(--sm-t1); margin-bottom: 4px; }
+.smp-month__event {
+  font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-bottom: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; cursor: pointer;
+}
+.smp-month__event--todo { background: #f3f4f6; color: #6b7280; }
+.smp-month__event--in_progress, .smp-month__event--doing { background: #fef3c7; color: #d97706; }
+.smp-month__event--blocked { background: #dbeafe; color: #2563eb; }
+.smp-month__event--done { background: #d1fae5; color: #059669; }
+.smp-month__more { font-size: 10px; color: var(--sm-t3); font-weight: 600; }
+
+/* === YEAR VIEW === */
+.smp-year { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+@media (max-width: 900px) { .smp-year { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px) { .smp-year { grid-template-columns: repeat(2, 1fr); } }
+.smp-year__month {
+  background: var(--sm-white); border: 1px solid var(--sm-bd); border-radius: 10px;
+  padding: 12px; transition: box-shadow .2s;
+}
+.smp-year__month:hover { box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+.smp-year__title { font-size: 13px; font-weight: 800; color: var(--sm-t1); margin: 0 0 8px; text-align: center; }
+.smp-year__mini-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
+.smp-year__cell {
+  aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: var(--sm-t3); border-radius: 3px;
+}
+.smp-year__cell--other { visibility: hidden; }
+.smp-year__cell--today { background: #3b82f6; color: #fff !important; font-weight: 800; }
+.smp-year__cell--has { background: #d1fae5; color: #059669; font-weight: 700; }
+.smp-year__count { text-align: center; margin-top: 6px; font-size: 11px; color: var(--sm-t3); font-weight: 600; }
 </style>

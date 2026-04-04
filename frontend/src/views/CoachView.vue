@@ -39,7 +39,10 @@
         <button v-for="q in quickSuggestions" :key="q" class="coach-chip" @click="send(q)">{{ q }}</button>
       </div>
 
-      <!-- Input -->
+      <!-- Clear + Input -->
+      <div v-if="messages.length > 1" class="coach-clear-bar">
+        <button @click="clearHistory" class="coach-clear-btn">🗑️ Effacer l'historique</button>
+      </div>
       <div class="coach-input-area">
         <textarea v-model="input" class="coach-input" rows="1" :placeholder="t('coachPlaceholder')"
           :disabled="dailyCount >= dailyLimit" @keydown.enter.prevent="send(input)"></textarea>
@@ -66,79 +69,197 @@ const chatContainer = ref(null)
 const typingIndex = ref(-1)
 const typingProgress = ref({})
 
+const PLAN_LIMITS = { Starter: 5, Growth: 50, Elite: 50 }
+const dailyLimit = computed(() => PLAN_LIMITS[authStore.company?.plan || 'Starter'] || 5)
 const isStarter = computed(() => (authStore.company?.plan || 'Starter') === 'Starter')
-const dailyLimit = computed(() => isStarter.value ? 5 : 50)
-const dailyCount = ref(0)
+const STORAGE_KEY = 'scalyo_coach_messages'
+const COUNT_KEY = 'scalyo_coach_count'
+
+// Knowledge base (CS Coach responses)
+const CS_COACH_RESPONSES = {
+  churn: {
+    trigger: ['churn', 'churner', 'partir', 'résilier', 'perte', 'perdre', 'quitter', 'cancel', 'cancellation', 'losing client', 'leave', 'at risk', 'prevent churn'],
+    fr: `**Stratégie anti-churn — Framework d'intervention**\n\n1. **Détection précoce (J−60)** : Alertes sur 3 signaux clés :\n   • Baisse usage > 30% sur 2 semaines\n   • Silence email > 10 jours\n   • NPS < 6 à la dernière mesure\n\n2. **Triage du risque** :\n   • Risque faible → email de vérification + rapport d'usage\n   • Risque moyen → appel CSM dans les 5 jours\n   • Risque élevé → escalade manager + plan de remédiation\n\n3. **Appel d'urgence** : Préparez 3 questions ouvertes sur la valeur perçue, pas sur le produit.\n\n4. **Plan de sauvetage** : Objectif SMART sur 30 jours, sponsor identifié, point hebdo.`,
+    en: `**Anti-Churn Strategy — Intervention Framework**\n\n1. **Early detection (D−60)**: Alerts on 3 key signals:\n   • Usage drop > 30% over 2 weeks\n   • Email silence > 10 days\n   • NPS < 6 at last measurement\n\n2. **Risk triage**:\n   • Low risk → usage report + check-in email\n   • Medium risk → CSM call within 5 days\n   • High risk → manager escalation + rescue plan\n\n3. **Emergency call**: Prepare 3 open-ended questions about perceived value.\n\n4. **Rescue plan**: SMART goal over 30 days, sponsor identified, weekly touchpoint.`,
+    kr: `**이탈 방지 전략 — 개입 프레임워크**\n\n1. **조기 감지 (D-60)**: 3가지 핵심 신호 알림:\n   • 2주간 사용량 30% 이상 감소\n   • 이메일 침묵 10일 이상\n   • 마지막 측정 NPS < 6\n\n2. **위험 분류**:\n   • 낮은 위험 → 사용 보고서 + 확인 이메일\n   • 중간 위험 → 5일 내 CSM 통화\n   • 높은 위험 → 매니저 에스컬레이션 + 구조 계획`
+  },
+  onboarding: {
+    trigger: ['onboarding', 'accueil', 'démarrage', 'activation', 'nouveau client', 'new client', 'getting started', 'kickoff', 'onboard'],
+    fr: `**Framework Onboarding B2B — J0 à J60**\n\n**J0 → J7 (Activation)** :\n• Email de bienvenue < 2h après signature\n• Appel kick-off dans les 48h\n• Configuration de base + 1er quick win identifié\n\n**J8 → J30 (Adoption)** :\n• Formation utilisateurs clés (2h max, enregistrée)\n• Définir 3 KPIs de succès avec le client\n• Check-in hebdomadaire (30 min)\n\n**J31 → J60 (Expansion)** :\n• Premier rapport d'usage partagé\n• NPS check informel\n• Identification des utilisateurs champions`,
+    en: `**B2B Onboarding Framework — Day 0 to Day 60**\n\n**D0 → D7 (Activation)**:\n• Welcome email < 2h after signing\n• Kickoff call within 48h\n• Basic setup + first quick win identified\n\n**D8 → D30 (Adoption)**:\n• Train key users (2h max, recorded)\n• Define 3 success KPIs with the client\n• Weekly check-in (30 min)\n\n**D31 → D60 (Expansion)**:\n• First usage report shared\n• Informal NPS check\n• Champion users identified`,
+    kr: `**B2B 온보딩 프레임워크 — 0일에서 60일까지**\n\n**D0 → D7 (활성화)**:\n• 서명 후 2시간 이내 환영 이메일\n• 48시간 내 킥오프 콜\n• 기본 설정 + 첫 번째 퀵 윈 확인`
+  },
+  nps: {
+    trigger: ['nps', 'satisfaction', 'score', 'promoteur', 'détracteur', 'promoter', 'detractor', 'survey', 'net promoter'],
+    fr: `**Améliorer son NPS — Plan d'action 60 jours**\n\n**Les 3 causes fréquentes** :\n1. Écart entre valeur promise et valeur perçue\n2. Points de friction non résolus\n3. Manque de contact proactif\n\n**Plan 60 jours** :\n\n*Semaines 1-2* : Fermer la boucle avec les détracteurs (0-6)\n→ Appel personnalisé, plan d'action documenté\n\n*Semaines 3-4* : Activer les passifs (7-8)\n→ Ressources ciblées, invitation événement\n\n*Semaines 5-6* : Transformer les promoteurs en ambassadeurs\n→ Programme de référencement, témoignage`,
+    en: `**Improving NPS — 60-day Action Plan**\n\n*Weeks 1-2*: Close the loop with detractors (0-6)\n*Weeks 3-4*: Activate passives (7-8)\n*Weeks 5-6*: Turn promoters into advocates`,
+    kr: `**NPS 개선 — 60일 실행 계획**\n\n*1-2주차*: 비추천자와 루프 닫기\n*3-4주차*: 수동적 사용자 활성화\n*5-6주차*: 추천자를 옹호자로 전환`
+  },
+  qbr: {
+    trigger: ['qbr', 'bilan', 'trimestriel', 'revue', 'quarterly', 'business review', 'meeting', 'exec review'],
+    fr: `**Structure QBR B2B — Revue Trimestrielle**\n\n**Durée recommandée** : 45 minutes\n\n1. **Résultats du trimestre** (10 min)\n2. **Points d'attention** (10 min)\n3. **Objectifs trimestre suivant** (15 min)\n4. **Roadmap & innovations** (5 min)\n5. **Questions ouvertes** (5 min)`,
+    en: `**B2B QBR Structure**\n\n1. Quarter results (10 min)\n2. Key points (10 min)\n3. Next quarter goals (15 min)\n4. Roadmap (5 min)\n5. Open questions (5 min)`,
+    kr: `**B2B QBR 구조**\n\n1. 분기 결과 (10분)\n2. 핵심 포인트 (10분)\n3. 다음 분기 목표 (15분)\n4. 로드맵 (5분)\n5. 개방형 질문 (5분)`
+  },
+  expansion: {
+    trigger: ['expansion', 'upsell', 'upgrade', 'cross-sell', 'développer', 'croissance', 'grow account', 'expand'],
+    fr: `**Stratégie d'expansion — PACT Framework**\n\n**P — Patience** : Adoption prouvée (score > 70, NPS ≥ 7)\n**A — Ancrage valeur** : ROI AVANT upgrade\n**C — Contexte business** : Besoin émergent identifié\n**T — Timing** : Après succès, avant renouvellement, changement orga`,
+    en: `**Expansion Strategy — PACT Framework**\n\n**P — Patience**: Proven adoption first\n**A — Anchor value**: ROI before upgrade\n**C — Context**: Address emerging need\n**T — Timing**: After success, before renewal, during change`,
+    kr: `**확장 전략 — PACT 프레임워크**\n\n**P — 인내**: 채택 입증 후\n**A — 가치 고정**: 업그레이드 전 ROI\n**C — 맥락**: 신규 니즈 대응\n**T — 타이밍**: 성공 후, 갱신 전, 변화 시`
+  },
+  burnout: {
+    trigger: ['burnout', 'épuisement', 'stress', 'surcharge', 'charge', 'fatigue', 'wellbeing', 'team stress', 'overload', 'exhaustion'],
+    fr: `**Prévention du burnout CSM**\n\n**Signaux d'alerte** :\n• Satisfaction < 6/10\n• Augmentation des erreurs\n• Comptes critiques > 30%\n\n**Actions manager** :\n→ Check-in mensuel ressenti\n→ Redistribution proactive\n→ Célébrer les victoires\n\n**Actions CSM** :\n→ 2h/semaine sans meetings\n→ Batching urgences\n→ Documenter comptes complexes\n\n**Indicateur** : Charge > 80% sur 4+ semaines = critique.`,
+    en: `**CSM Burnout Prevention**\n\n**Signals**: Satisfaction < 6/10, errors, critical accounts > 30%\n**Manager**: Monthly 1:1 on feelings, redistribute, celebrate\n**CSM**: Block 2h/week, batch urgents, document complex accounts\n**Key**: Workload > 80% for 4+ weeks = critical.`,
+    kr: `**CSM 번아웃 예방**\n\n**신호**: 만족도 < 6/10, 오류 증가, 위험 계정 > 30%\n**매니저**: 감정 중심 1:1, 재분배, 축하\n**CSM**: 주 2시간 딥워크, 배치 처리, 문서화`
+  }
+}
+
+const defaultResponses = {
+  fr: `**Bonjour ! Je suis votre Coach CS.** 🪄\n\nJe peux vous aider sur :\n\n• **Anti-churn** : Protocoles, scripts, plans de sauvetage\n• **Onboarding** : Structure D0→D60, KPIs d'activation\n• **NPS** : Amélioration du score, closing the loop\n• **QBR** : Structure, agenda, questions clés\n• **Expansion** : Identification des opportunités\n• **Bien-être** : Prévention burnout\n\nPosez-moi votre question !`,
+  en: `**Hello! I'm your CS Coach.** 🪄\n\nI can help you with:\n\n• **Anti-churn**: Protocols, scripts, rescue plans\n• **Onboarding**: D0→D60 structure, activation KPIs\n• **NPS**: Score improvement, closing the loop\n• **QBR**: Structure, agenda, key questions\n• **Expansion**: Opportunity identification\n• **Wellbeing**: Burnout prevention\n\nAsk me anything!`,
+  kr: `**안녕하세요! CS 코치입니다.** 🪄\n\n도움을 드릴 수 있는 분야:\n\n• **이탈 방지**: 프로토콜, 스크립트, 구출 계획\n• **온보딩**: D0→D60 구조\n• **NPS**: 점수 개선\n• **QBR**: 구조, 의제, 핵심 질문\n• **확장**: 기회 식별\n\n무엇이든 물어보세요!`
+}
 
 const quickSuggestions = computed(() => {
-  const l = lang.value
-  if (l === 'en') return ['How to reduce churn?', 'QBR best practices', 'NPS improvement plan', 'Handle a difficult client', 'Expansion strategy']
-  if (l === 'kr') return ['이탈률을 줄이려면?', 'QBR 모범 사례', 'NPS 개선 계획', '어려운 고객 대응법', '확장 전략']
-  return ['Comment réduire le churn ?', 'Préparer un QBR efficace', 'Plan d\'amélioration NPS', 'Gérer un client difficile', 'Stratégie d\'expansion']
+  if (lang.value === 'kr') return ['이탈률 줄이는 방법?', 'QBR 구성하기', 'NPS 점수 개선', '번아웃 예방', '확장 전략']
+  if (lang.value === 'en') return ['How to reduce churn?', 'Structure a QBR', 'Improve NPS score', 'Prevent burnout', 'Expansion strategy']
+  return ['Comment réduire le churn ?', 'Structurer un QBR', 'Améliorer le NPS', 'Prévenir le burnout', "Stratégie d'expansion"]
 })
 
-const welcomeMessage = computed(() => {
-  const l = lang.value
-  if (l === 'en') return `**Hi! I'm your CS Coach.** 🪄\n\nI can help you with:\n\n• **Anti-churn**: Protocols, scripts, rescue plans\n• **Onboarding**: D0→D60 structure, activation KPIs\n• **NPS**: Score improvement, closing the loop\n• **QBR**: Structure, agenda, key questions\n• **Expansion**: Opportunity identification\n\nAsk me anything!`
-  if (l === 'kr') return `**안녕하세요! CS 코치입니다.** 🪄\n\n도움을 드릴 수 있는 분야:\n\n• **이탈 방지**: 프로토콜, 스크립트, 구출 계획\n• **온보딩**: D0→D60 구조\n• **NPS**: 점수 개선\n• **QBR**: 구조, 의제, 핵심 질문\n• **확장**: 기회 식별\n\n무엇이든 물어보세요!`
-  return `**Bonjour ! Je suis votre Coach CS.** 🪄\n\nJe peux vous aider sur :\n\n• **Anti-churn** : Protocoles, scripts, plans de sauvetage\n• **Onboarding** : Structure D0→D60, KPIs d'activation\n• **NPS** : Amélioration du score, closing the loop\n• **QBR** : Structure, agenda, questions clés\n• **Expansion** : Identification des opportunités\n\nPosez-moi votre question !`
-})
+// Daily count
+const dailyCount = ref(0)
+function loadDailyCount() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(COUNT_KEY) || '{}')
+    const today = new Date().toISOString().slice(0, 10)
+    dailyCount.value = saved.date === today ? (saved.count || 0) : 0
+  } catch { dailyCount.value = 0 }
+}
+function incrementDailyCount() {
+  const today = new Date().toISOString().slice(0, 10)
+  dailyCount.value++
+  localStorage.setItem(COUNT_KEY, JSON.stringify({ date: today, count: dailyCount.value }))
+}
 
+// Persistence
+function loadMessages() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) {
+      const parsed = JSON.parse(saved)
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed
+    }
+  } catch {}
+  return [{ role: 'assistant', content: defaultResponses[lang.value] || defaultResponses.fr }]
+}
+
+function saveMessages() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.value)) } catch {}
+}
+
+// Typewriter effect
 function displayedText(index) {
   const msg = messages.value[index]
   if (!msg || msg.role === 'user') return msg?.content || ''
-  if (typingProgress.value[index] !== undefined) {
+  if (typingProgress.value[index] !== undefined && typingProgress.value[index] < msg.content.length) {
     return msg.content.slice(0, typingProgress.value[index])
   }
   return msg.content
 }
 
-onMounted(() => {
-  messages.value = [{ role: 'assistant', content: welcomeMessage.value }]
-  const today = new Date().toDateString()
-  const stored = localStorage.getItem('scalyo_coach_daily')
-  if (stored) {
-    try { const d = JSON.parse(stored); if (d.date === today) dailyCount.value = d.count } catch {}
+let typewriterTimer = null
+
+function typewriterEffect(index, text) {
+  if (typewriterTimer) clearTimeout(typewriterTimer)
+  typingProgress.value[index] = 0
+  const step = () => {
+    if (typingProgress.value[index] < text.length) {
+      typingProgress.value[index] += Math.min(3, text.length - typingProgress.value[index])
+      scrollToBottom()
+      typewriterTimer = setTimeout(step, 8)
+    } else {
+      typewriterTimer = null
+    }
   }
+  step()
+}
+
+onUnmounted(() => {
+  if (typewriterTimer) clearTimeout(typewriterTimer)
 })
 
+function scrollToBottom() {
+  nextTick(() => { if (chatContainer.value) chatContainer.value.scrollTop = chatContainer.value.scrollHeight })
+}
+
+// Find KB answer
+function findKBAnswer(text) {
+  const lower = text.toLowerCase()
+  for (const [, val] of Object.entries(CS_COACH_RESPONSES)) {
+    if (val.trigger && val.trigger.some(t => lower.includes(t))) {
+      return val[lang.value] || val.fr
+    }
+  }
+  return null
+}
+
+function clearHistory() {
+  if (!confirm('Effacer tout l\'historique de conversation ? Cette action est irréversible.')) return
+  messages.value = [{ role: 'assistant', content: defaultResponses[lang.value] || defaultResponses.fr }]
+  localStorage.removeItem(STORAGE_KEY)
+  saveMessages()
+}
+
+// Send message
 async function send(text) {
   const msg = typeof text === 'string' ? text.trim() : input.value.trim()
   if (!msg || loading.value || dailyCount.value >= dailyLimit.value) return
   input.value = ''
   messages.value.push({ role: 'user', content: msg })
   loading.value = true
-  dailyCount.value++
-  localStorage.setItem('scalyo_coach_daily', JSON.stringify({ date: new Date().toDateString(), count: dailyCount.value }))
+  incrementDailyCount()
   await nextTick()
   scrollToBottom()
 
+  // Try KB first
+  const kbAnswer = findKBAnswer(msg)
+  if (kbAnswer) {
+    messages.value.push({ role: 'assistant', content: kbAnswer })
+    const idx = messages.value.length - 1
+    loading.value = false
+    typewriterEffect(idx, kbAnswer)
+    saveMessages()
+    return
+  }
+
+  // Fallback to API
   try {
     const chatMessages = messages.value.filter(m => m.role !== 'system').map(m => ({ role: m.role, content: m.content }))
-    const { data } = await coachApi.chat(chatMessages)
-    const content = data.content || data.message || 'Sorry, I could not generate a response.'
+    const { data } = await coachApi.chat(chatMessages, 'coach')
+    const content = data.content || data.message || defaultResponses[lang.value] || defaultResponses.fr
     messages.value.push({ role: 'assistant', content })
     typewriterEffect(messages.value.length - 1, content)
   } catch (e) {
-    messages.value.push({ role: 'assistant', content: '❌ ' + (e.response?.data?.error || 'Connection error. Please try again.') })
+    const errMsg = e.response?.data?.error || e.message || 'Connection error'
+    messages.value.push({ role: 'assistant', content: `❌ ${errMsg}` })
   }
   loading.value = false
+  saveMessages()
 }
 
-function typewriterEffect(index, text) {
-  typingProgress.value[index] = 0
-  let pos = 0
-  const interval = setInterval(() => {
-    pos += 2
-    if (pos >= text.length) { pos = text.length; clearInterval(interval); delete typingProgress.value[index] }
-    typingProgress.value[index] = pos
-    scrollToBottom()
-  }, 10)
-}
-
-function scrollToBottom() { nextTick(() => { if (chatContainer.value) chatContainer.value.scrollTop = chatContainer.value.scrollHeight }) }
+// Reset messages when language changes
+watch(lang, () => {
+  messages.value = [{ role: 'assistant', content: defaultResponses[lang.value] || defaultResponses.fr }]
+  saveMessages()
+})
 
 watch(() => messages.value.length, scrollToBottom)
+
+onMounted(() => {
+  messages.value = loadMessages()
+  loadDailyCount()
+})
 </script>
 
 <style scoped>
@@ -174,6 +295,11 @@ watch(() => messages.value.length, scrollToBottom)
 .coach-suggestions { padding: 10px 18px; display: flex; gap: 6px; flex-wrap: wrap; border-top: 1px solid var(--border); }
 .coach-chip { font-size: 11px; padding: 6px 14px; border-radius: 20px; background: var(--bg); border: 1px solid var(--border); color: var(--muted); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .12s; font-weight: 500; }
 .coach-chip:hover { border-color: #8b5cf6; color: #8b5cf6; background: rgba(139,92,246,.06); }
+
+/* Clear bar */
+.coach-clear-bar { padding: 4px 18px 0; display: flex; justify-content: flex-end; }
+.coach-clear-btn { font-size: 11px; color: var(--muted); background: none; border: none; cursor: pointer; padding: 2px 8px; border-radius: 6px; opacity: .6; transition: all .15s; }
+.coach-clear-btn:hover { opacity: 1; color: #ef4444; background: rgba(239,68,68,.06); }
 
 /* Input */
 .coach-input-area { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; gap: 8px; background: var(--bg); }

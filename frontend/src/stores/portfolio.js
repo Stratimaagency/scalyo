@@ -6,12 +6,16 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   const accounts = ref([])
   const loading = ref(false)
 
+  const error = ref(null)
+
   async function fetchAccounts(params = {}) {
     loading.value = true
+    error.value = null
     try {
       const { data } = await portfolioApi.getAccounts(params)
       accounts.value = data.results || data
     } catch (e) {
+      error.value = e.response?.data?.error || e.message
       console.error('fetchAccounts error:', e)
     }
     loading.value = false
@@ -55,5 +59,5 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     return portfolioApi.importAccounts(data)
   }
 
-  return { accounts, loading, fetchAccounts, createAccount, updateAccount, deleteAccount, bulkDeleteAccounts, importAccounts }
+  return { accounts, loading, error, fetchAccounts, createAccount, updateAccount, deleteAccount, bulkDeleteAccounts, importAccounts }
 })

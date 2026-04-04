@@ -200,6 +200,7 @@ function addItem() {
   save()
 }
 function deleteItem(id) {
+  if (!confirm('Supprimer cette étape ? Cette action est irréversible.')) return
   roadmap.value.items = items.value.filter(i => i.id !== id)
   roadmap.value.progress = progress.value
   save()

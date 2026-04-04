@@ -15,8 +15,13 @@ EXTRAIS LE MAXIMUM de chaque feuille. Ne marque JAMAIS "skip" sauf si la feuille
 
 ## MODULES SCALYO
 
-### portfolio — comptes clients (1 ligne = 1 compte)
+### portfolio — comptes CLIENTS réels (1 ligne = 1 entreprise cliente)
 Champs : name (obligatoire), csm, arr, mrr, health (0-100), risk (low/medium/critical), industry, contact, contact_email, notes, renewal
+ATTENTION : Ce module est UNIQUEMENT pour des comptes clients (entreprises, sociétés). PAS pour des tâches, sprints, phases de projet, ou actions internes.
+
+### smart_matrice — projets et tâches internes (sprints, phases, actions, livrables)
+Champs : project_name (obligatoire), tasks (array de {name, group_name, status, priority})
+Utilise ce module quand les lignes représentent des tâches, actions, sprints, phases de projet, fonctionnalités à développer, livrables, etc.
 
 ### kpis — indicateurs extraits de tableaux de synthèse/dashboard
 Champs : mrr, nps, churn_rate, csat, renewal_rate, total_arr, avg_health, adoption_rate, total_clients, at_risk_revenue
@@ -30,10 +35,13 @@ Champs : name, seniority, clients, arr, health, critical, risk_count, churn_rate
 ## CE QUE TU DOIS FAIRE
 
 ### 1. MAPPER chaque feuille
-- Feuille avec liste de clients/comptes → "portfolio"
+- Feuille avec liste de CLIENTS/COMPTES (entreprises, sociétés, contacts commerciaux) → "portfolio"
+- Feuille avec des TÂCHES, SPRINTS, PHASES, ACTIONS, LIVRABLES, FONCTIONNALITÉS → "smart_matrice" (PAS portfolio !)
 - Feuille avec résumé/dashboard/KPIs globaux → "kpis" (JAMAIS skip)
 - Feuille avec profils CSM/équipe → "team" (JAMAIS skip)
-- Feuille avec tâches/actions → "tasks"
+- Feuille avec tâches générées par ton analyse → "tasks"
+
+RÈGLE CRITIQUE : Si les noms de lignes ressemblent à des tâches/actions (ex: "Refactoring", "Tests", "Déploiement", "Phase 1", "Sprint 3") → c'est "smart_matrice", PAS "portfolio".
 
 ### 2. EXTRAIRE les KPIs depuis TOUTES les feuilles qui contiennent des chiffres
 Cherche dans les tableaux de synthèse :
@@ -74,7 +82,7 @@ Si health moyen < 6/10 :
   "sheets": [
     {
       "name": "...",
-      "module": "portfolio|kpis|team|tasks|skip",
+      "module": "portfolio|smart_matrice|kpis|team|tasks|skip",
       "confidence": 0.99,
       "columns": { "Colonne Excel": "champ_scalyo" },
       "notes": "..."
@@ -155,7 +163,7 @@ smartImport.post('/execute', async (c) => {
   const { company_id } = user
   const db = c.env.DB
   const data = await c.req.json()
-  const results = { portfolio: 0, kpis: 0, tasks: 0, roadmap: 0, errors: [] }
+  const results = { portfolio: 0, smart_matrice: 0, kpis: 0, tasks: 0, roadmap: 0, errors: [] }
   const validRisks = ['low', 'medium', 'critical']
 
   // --- Portfolio (batch of 50) ---
@@ -179,6 +187,57 @@ smartImport.post('/execute', async (c) => {
       })
       try { await db.batch(stmts); results.portfolio += batch.length }
       catch (e) { results.errors.push(`Portfolio batch ${i}: ${e.message}`) }
+    }
+  }
+
+  // --- Smart Matrice (projects + tasks) ---
+  if (data.smart_matrice?.length) {
+    // Group tasks by project_name
+    const projectMap = {}
+    for (const item of data.smart_matrice) {
+      const projName = item.project_name || item.name || 'Projet importé'
+      if (!projectMap[projName]) projectMap[projName] = []
+      if (item.tasks && Array.isArray(item.tasks)) {
+        projectMap[projName].push(...item.tasks)
+      } else {
+        // Each row is a task itself
+        projectMap[projName].push({
+          name: item.task_name || item.name || projName,
+          group_name: item.group_name || item.phase || item.category || '',
+          status: item.status === 'done' || item.status === 'completed' ? 'done' : item.status === 'doing' || item.status === 'in_progress' ? 'doing' : 'todo',
+          priority: item.priority || 'medium',
+        })
+      }
+    }
+
+    for (const [projName, tasks] of Object.entries(projectMap)) {
+      try {
+        // Create project
+        const project = await db.prepare(
+          `INSERT INTO sm_projects (company_id, name, description, emoji, status, color, sort_order)
+           VALUES (?, ?, ?, ?, 'active', ?, 0) RETURNING id`
+        ).bind(company_id, projName.slice(0, 200), '', '📋', '#4285F4').first()
+
+        if (project) {
+          // Create tasks
+          const taskStmts = tasks.map((t, i) => db.prepare(
+            `INSERT INTO sm_tasks (project_id, company_id, name, group_name, status, priority, sort_order)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`
+          ).bind(project.id, company_id,
+            String(t.name || '').slice(0, 200),
+            String(t.group_name || '').slice(0, 100),
+            t.status || 'todo',
+            t.priority || 'medium',
+            i))
+          if (taskStmts.length) {
+            const BATCH = 50
+            for (let i = 0; i < taskStmts.length; i += BATCH) {
+              await db.batch(taskStmts.slice(i, i + BATCH))
+            }
+          }
+          results.smart_matrice += 1 + tasks.length
+        }
+      } catch (e) { results.errors.push(`SM project "${projName}": ${e.message}`) }
     }
   }
 
@@ -259,7 +318,7 @@ smartImport.post('/execute', async (c) => {
     } catch (e) { results.errors.push(`Events: ${e.message}`) }
   }
 
-  return c.json({ ok: true, imported: results, total: results.portfolio + results.kpis + results.tasks + results.roadmap + (results.events || 0) })
+  return c.json({ ok: true, imported: results, total: results.portfolio + results.smart_matrice + results.kpis + results.tasks + results.roadmap + (results.events || 0) })
 })
 
 export default smartImport

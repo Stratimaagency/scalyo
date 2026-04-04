@@ -58,12 +58,20 @@
     <!-- Loading -->
     <div v-if="store.loading" class="sm-loading">{{ lt.loading }}</div>
 
-    <!-- PROJECTS VIEW -->
+    <!-- PROJECTS VIEW (Tree) -->
     <div v-else-if="currentView === 'projects'" class="sm-content">
-      <div v-if="store.projects.length" class="sm-projects-grid">
-        <SmProjectCard v-for="p in store.projects" :key="p.id" :project="p"
-          :selected="store.selectedProject?.id === p.id"
-          @select-project="selectProject" />
+      <div v-if="store.projects.length">
+        <SmTreeView
+          :projects="store.projects"
+          :tasks="store.tasks"
+          :team="store.team"
+          @toggle-subtask="toggleSubtask"
+          @delete-subtask="deleteSubtask"
+          @add-subtask="addSubtask"
+          @edit-task="openEditTask"
+          @delete-task="confirmDeleteTask"
+          @delete-project="confirmDeleteProject"
+        />
       </div>
       <div v-else class="sm-empty">
         <div class="sm-empty__icon">📁</div>
@@ -308,6 +316,7 @@ import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 
 import SmProjectCard from '../components/smart-matrice/SmProjectCard.vue'
+import SmTreeView from '../components/smart-matrice/SmTreeView.vue'
 import SmTaskGroup from '../components/smart-matrice/SmTaskGroup.vue'
 import SmKanbanBoard from '../components/smart-matrice/SmKanbanBoard.vue'
 import SmEisenhower from '../components/smart-matrice/SmEisenhower.vue'
@@ -402,6 +411,24 @@ function goToProjects() { store.selectProject(null); currentView.value = 'projec
 function selectProject(project) {
   store.selectProject(project)
   currentView.value = 'tasks'
+}
+
+async function confirmDeleteProject(project) {
+  if (!confirm(`Supprimer le projet "${project.name}" et toutes ses tâches ? Cette action est irréversible.`)) return
+  try {
+    await store.deleteProject(project.id)
+  } catch (e) {
+    console.error('Delete project error:', e)
+  }
+}
+
+async function confirmDeleteTask(task) {
+  if (!confirm(`Supprimer la tâche "${task.name}" ? Cette action est irréversible.`)) return
+  try {
+    await store.deleteTask(task.id)
+  } catch (e) {
+    console.error('Delete task error:', e)
+  }
 }
 
 async function createProject() {
@@ -536,13 +563,11 @@ async function handleImport(tasks) {
 onMounted(async () => {
   store.userName = authStore.user?.display_name || ''
   await Promise.all([store.fetchProjects(), store.fetchTeam()])
+  // Fetch tasks for all projects (needed for tree view)
+  await Promise.all(store.projects.map(p => store.fetchTasks(p.id).catch(() => {})))
   // Auto-select first project so all views work immediately
   if (store.projects.length && !store.selectedProject) {
     await store.selectProject(store.projects[0])
-  }
-  // Default to tasks view if a project is selected
-  if (store.selectedProject && currentView.value === 'projects') {
-    currentView.value = 'projects'
   }
 })
 

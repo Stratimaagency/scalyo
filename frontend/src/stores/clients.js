@@ -23,8 +23,11 @@ export const useClientsStore = defineStore('clients', () => {
     }, {})
   })
 
+  const error = ref(null)
+
   async function fetchClients() {
     loading.value = true
+    error.value = null
     try {
       const { data } = await api.get('/modules/clients/health')
       const apiData = data.data || []
@@ -34,9 +37,12 @@ export const useClientsStore = defineStore('clients', () => {
         loading.value = false
         return
       }
-    } catch { /* API not ready */ }
+    } catch (e) {
+      console.error('fetchClients API error:', e)
+      error.value = e.response?.data?.error || e.message
+    }
 
-    // Fallback: portfolio store
+    // Fallback: build client list from portfolio accounts
     try {
       const { usePortfolioStore } = await import('./portfolio')
       const portfolioStore = usePortfolioStore()
@@ -54,7 +60,9 @@ export const useClientsStore = defineStore('clients', () => {
         }))
         lastUpdated.value = new Date()
       }
-    } catch { /* portfolio not loaded */ }
+    } catch (e) {
+      console.error('fetchClients portfolio fallback error:', e)
+    }
 
     loading.value = false
   }
@@ -74,5 +82,5 @@ export const useClientsStore = defineStore('clients', () => {
     }
   }
 
-  return { clients, loading, lastUpdated, atRiskClients, healthyClients, neutralClients, avgHealthScore, totalARR, clientsByCSM, fetchClients, updateClientHealth }
+  return { clients, loading, lastUpdated, error, atRiskClients, healthyClients, neutralClients, avgHealthScore, totalARR, clientsByCSM, fetchClients, updateClientHealth }
 })

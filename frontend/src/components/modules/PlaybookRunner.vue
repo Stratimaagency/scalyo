@@ -177,6 +177,7 @@
           <span v-if="pb.startedAt">{{ t('pbStarted') }}: {{ formatDate(pb.startedAt) }}</span>
           <span v-if="pb.estimatedDays">{{ estimatedDaysLeft(pb) }} {{ t('pbDaysLeft') }}</span>
           <span v-if="pb.csm" class="pb-csm-badge">{{ pb.csm }}</span>
+          <button class="pb-delete-btn" @click.stop="deletePlaybook(pb)" title="Supprimer">🗑️</button>
         </div>
 
         <!-- Progress bar -->
@@ -219,6 +220,7 @@ import { useTasksStore } from '../../stores/tasks'
 import { useClientsStore } from '../../stores/clients'
 import { useCSMStore } from '../../stores/csm'
 import { useI18n } from '../../i18n'
+import api from '../../api/client'
 
 const { t } = useI18n()
 const tasksStore = useTasksStore()
@@ -404,6 +406,16 @@ function activatePlaybook(client) {
   showTemplates.value = false
 }
 
+async function deletePlaybook(pb) {
+  if (!confirm(`Supprimer le playbook "${pb.name}" ? Cette action est irréversible.`)) return
+  try {
+    await api.delete(`/modules/playbooks/${pb.id}`)
+    tasksStore.playbooks = tasksStore.playbooks.filter(p => p.id !== pb.id)
+  } catch (e) {
+    console.error('Delete playbook error:', e)
+  }
+}
+
 async function toggleStep(pbId, idx) {
   const prevProgress = pbProgress(pbId)
   await tasksStore.togglePlaybookStep(pbId, idx)
@@ -500,6 +512,9 @@ onMounted(() => {
 /* Footer */
 .pb-footer { display: flex; align-items: center; gap: 12px; margin-top: 14px; font-size: 11px; color: #5F6368; font-weight: 600; flex-wrap: wrap; }
 .pb-csm-badge { background: #E8F0FE; color: #4285F4; padding: 2px 10px; border-radius: 10px; font-weight: 700; }
+.pb-delete-btn { margin-left: auto; background: none; border: none; cursor: pointer; font-size: 14px; opacity: 0; transition: opacity .2s; padding: 4px 8px; border-radius: 6px; }
+.pb-delete-btn:hover { background: rgba(239,68,68,.1); }
+.playbook-card:hover .pb-delete-btn { opacity: 1; }
 
 /* Templates */
 .pb-templates-panel { position: relative; }

@@ -3,6 +3,7 @@
     <AppLoader v-if="authStore.loading" :text="t('initializingApp')" />
     <router-view v-else />
     <AppToast />
+    <ApiStatusBanner />
   </div>
 </template>
 
@@ -13,6 +14,7 @@ import { usePreferencesStore } from './stores/preferences'
 import { useI18n } from './i18n'
 import AppLoader from './components/AppLoader.vue'
 import AppToast from './components/AppToast.vue'
+import ApiStatusBanner from './components/ApiStatusBanner.vue'
 
 const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()

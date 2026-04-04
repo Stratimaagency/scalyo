@@ -206,12 +206,12 @@ const summaryCards = computed(() => {
 })
 
 function moduleIcon(mod) {
-  const icons = { portfolio: '💼', kpis: '📊', tasks: '✅', roadmap: '🗺️', team: '👥', skip: '⏭️' }
+  const icons = { portfolio: '💼', smart_matrice: '🧩', kpis: '📊', tasks: '✅', roadmap: '🗺️', team: '👥', skip: '⏭️' }
   return icons[mod] || '📄'
 }
 
 function moduleLabel(mod) {
-  const labels = { portfolio: t('portfolio'), kpis: 'KPIs', tasks: t('tasks'), roadmap: t('roadmap'), team: 'Team', skip: t('smartImportSkip') }
+  const labels = { portfolio: t('portfolio'), smart_matrice: 'Smart Matrice', kpis: 'KPIs', tasks: t('tasks'), roadmap: t('roadmap'), team: 'Team', skip: t('smartImportSkip') }
   return labels[mod] || mod
 }
 
@@ -934,7 +934,7 @@ async function doImport() {
   error.value = ''
 
   try {
-    const payload = { portfolio: [], kpis: {}, tasks: [], roadmap: [] }
+    const payload = { portfolio: [], smart_matrice: [], kpis: {}, tasks: [], roadmap: [] }
 
     for (const sheet of aiMapping.value) {
       if (sheet.module === 'skip') continue
@@ -966,6 +966,20 @@ async function doImport() {
               contact_email: String(mapped.contact_email || '').trim(),
               notes: String(mapped.notes || '').trim(),
               renewal: String(mapped.renewal || '').trim(),
+            })
+          }
+        }
+      } else if (sheet.module === 'smart_matrice') {
+        for (const row of rows) {
+          const mapped = applyMapping(row, cols)
+          const taskName = String(mapped.name || mapped.task_name || mapped.title || Object.values(row)[0] || '').trim()
+          if (taskName && taskName.length >= 2) {
+            payload.smart_matrice.push({
+              project_name: String(mapped.project_name || mapped.project || sheet.name || 'Projet importé').trim(),
+              name: taskName,
+              group_name: String(mapped.group_name || mapped.phase || mapped.category || mapped.sprint || '').trim(),
+              status: String(mapped.status || 'todo').toLowerCase(),
+              priority: String(mapped.priority || 'medium').toLowerCase(),
             })
           }
         }

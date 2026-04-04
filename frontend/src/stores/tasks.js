@@ -52,13 +52,16 @@ export const useTasksStore = defineStore('tasks', () => {
     return Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length)
   })
 
+  const error = ref(null)
+
   async function fetchAll() {
+    error.value = null
     try {
       const [projRes, pbRes, okrRes, progRes] = await Promise.all([
-        api.get('/modules/projects').catch(() => ({ data: { data: [] } })),
-        api.get('/modules/playbooks').catch(() => ({ data: { data: [] } })),
-        api.get('/modules/okrs').catch(() => ({ data: { data: [] } })),
-        api.get('/modules/playbooks/progress').catch(() => ({ data: { data: {} } })),
+        api.get('/modules/projects').catch((e) => { console.error('projects fetch:', e); return { data: { data: [] } } }),
+        api.get('/modules/playbooks').catch((e) => { console.error('playbooks fetch:', e); return { data: { data: [] } } }),
+        api.get('/modules/okrs').catch((e) => { console.error('okrs fetch:', e); return { data: { data: [] } } }),
+        api.get('/modules/playbooks/progress').catch((e) => { console.error('progress fetch:', e); return { data: { data: {} } } }),
       ])
       projects.value = projRes.data.data || []
       playbooks.value = pbRes.data.data || []
@@ -67,8 +70,9 @@ export const useTasksStore = defineStore('tasks', () => {
       if (Object.keys(apiProgress).length) {
         playbookProgress.value = apiProgress
       }
-    } catch {
-      // API not ready
+    } catch (e) {
+      error.value = e.message
+      console.error('fetchAll error:', e)
     }
 
     // Merge Smart Matrice projects into Gantt timeline
@@ -122,5 +126,5 @@ export const useTasksStore = defineStore('tasks', () => {
     } catch { /* API not ready */ }
   }
 
-  return { projects, playbooks, playbookProgress, okrs, currentWeek, urgentTasks, lateTasksByClient, activeChurnPlaybooks, globalOKRScore, fetchAll, togglePlaybookStep }
+  return { projects, playbooks, playbookProgress, okrs, error, currentWeek, urgentTasks, lateTasksByClient, activeChurnPlaybooks, globalOKRScore, fetchAll, togglePlaybookStep }
 })
