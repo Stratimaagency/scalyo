@@ -2,8 +2,29 @@
   <PlanGate requiredPlan="Growth" moduleName="Email Studio">
   <div class="fade-in" style="display: flex; height: 100%; overflow: hidden">
     <!-- Sidebar -->
-    <div style="width: 260px; border-right: 1px solid var(--border); overflow: auto; padding: 20px 14px; flex-shrink: 0">
-      <h2 style="font-size: 18px; font-weight: 900; margin-bottom: 14px">&#9993;&#65039; Email Studio</h2>
+    <div class="es-sidebar">
+      <!-- Gradient header -->
+      <div class="es-sidebar-hero">
+        <div class="es-hero-icon">✉️</div>
+        <div>
+          <h2 class="es-hero-title">{{ t('emailStudioTitle') }}</h2>
+          <p class="es-hero-sub">{{ t('emailStudioSubtitle') }}</p>
+        </div>
+      </div>
+
+      <!-- Role filter -->
+      <div style="display: flex; gap: 4px; margin-bottom: 10px; padding: 0 14px;">
+        <button v-for="r in ['all', 'csm', 'commercial', 'kam']" :key="r" class="es-role-btn"
+          :class="{ 'es-role-btn--on': activeRole === r }"
+          @click="activeRole = r">
+          {{ roleEmoji(r) }} {{ r === 'all' ? t('emailRoleAll') : r === 'csm' ? t('emailRoleCSM') : r === 'commercial' ? t('emailRoleCommercial') : t('emailRoleKAM') }}
+        </button>
+      </div>
+
+      <!-- Search -->
+      <div style="padding: 0 14px; margin-bottom: 10px;">
+        <input v-model="searchQuery" :placeholder="'🔍 ' + t('emailSearch')" class="es-search" />
+      </div>
 
       <!-- Category filter pills -->
       <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px">
@@ -27,27 +48,23 @@
       </div>
 
       <!-- Template list -->
+      <div style="padding: 0 14px;">
       <div
         v-for="tpl in filteredTemplates"
         :key="tpl.id"
-        class="row-item"
-        :style="{
-          padding: '11px 12px',
-          borderRadius: '11px',
-          marginBottom: '5px',
-          cursor: 'pointer',
-          background: selected?.id === tpl.id ? 'var(--teal-bg)' : undefined,
-          border: '1px solid ' + (selected?.id === tpl.id ? 'var(--teal-border)' : 'transparent')
-        }"
+        class="es-tpl-card"
+        :class="{ 'es-tpl-card--on': selected?.id === tpl.id }"
         @click="selectTemplate(tpl)"
       >
-        <div style="font-size: 10px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px">
-          {{ tpl.cat }}
+        <div class="es-tpl-top">
+          <span class="es-tpl-emoji">{{ tpl.emoji || '📧' }}</span>
+          <span class="es-tpl-cat" :style="{ background: catColor(tpl.cat) + '15', color: catColor(tpl.cat) }">{{ tpl.cat }}</span>
         </div>
-        <div :style="{ fontSize: '13px', fontWeight: 700, color: selected?.id === tpl.id ? 'var(--teal)' : 'var(--text)' }">
+        <div class="es-tpl-title" :class="{ 'es-tpl-title--on': selected?.id === tpl.id }">
           {{ tpl.title }}
         </div>
       </div>
+    </div>
     </div>
 
     <!-- Main content -->
@@ -299,7 +316,28 @@ Seriez-vous disponible pour en discuter ?
 📅 [Lien Calendly]
 
 [Votre prénom]`
-  }
+  },
+  // === NPS ===
+  { id: 'nps_survey', cat: 'NPS', role: 'csm', emoji: '⭐', title: 'Enquête NPS', subject: 'Votre avis compte — 30 secondes pour nous aider',
+    body: `Bonjour [Prénom],\n\nSur une échelle de 0 à 10, quelle est la probabilité que vous recommandiez [Entreprise] à un collègue ?\n\n→ Répondez en 1 clic : [Lien NPS]\n\nVotre retour nous aide à nous améliorer continuellement.\n\nMerci !\n[Votre prénom]` },
+  { id: 'nps_thanks', cat: 'NPS', role: 'csm', emoji: '🙏', title: 'Remerciement NPS promoteur', subject: 'Merci pour votre confiance !',
+    body: `Bonjour [Prénom],\n\nMerci d'avoir pris le temps de nous évaluer ! Votre score de [Score] nous fait très plaisir.\n\nSeriez-vous ouvert(e) à :\n• Partager un témoignage sur notre site ?\n• Nous recommander auprès de votre réseau ?\n• Participer à une étude de cas ?\n\nBien cordialement,\n[Votre prénom]` },
+  { id: 'nps_detractor', cat: 'NPS', role: 'csm', emoji: '💬', title: 'Suivi NPS détracteur', subject: 'Nous voulons nous améliorer — votre retour est précieux',
+    body: `Bonjour [Prénom],\n\nMerci pour votre retour honnête. Votre score nous indique que nous pouvons faire mieux.\n\nJ'aimerais comprendre ce qui vous freine :\n• Quels points posent problème ?\n• Que pourrions-nous améliorer en priorité ?\n\nJe vous propose un appel de 15 min pour en discuter.\n\n📅 Réservez : [Lien Calendly]\n\n[Votre prénom]` },
+  // === COMMERCIAL ===
+  { id: 'prospect_intro', cat: 'Prospection', role: 'commercial', emoji: '🎯', title: 'Prise de contact prospect', subject: '[Prénom], une solution pour [Problème]',
+    body: `Bonjour [Prénom],\n\nJe me permets de vous contacter car [Entreprise] aide des entreprises comme la vôtre à [Bénéfice principal].\n\nNos clients constatent en moyenne :\n• [Résultat 1]\n• [Résultat 2]\n• [Résultat 3]\n\nSeriez-vous disponible pour un échange de 15 min ?\n\n📅 Réservez : [Lien Calendly]\n\nCordialement,\n[Votre prénom]` },
+  { id: 'prospect_demo', cat: 'Prospection', role: 'commercial', emoji: '🎬', title: 'Invitation démo', subject: 'Découvrez [Produit] en 20 min',
+    body: `Bonjour [Prénom],\n\nSuite à notre échange, je vous propose une démo personnalisée de [Produit].\n\nDurée : 20 min\nFormat : Visio\nContenu : cas d'usage adaptés à votre contexte\n\n📅 Réservez votre créneau : [Lien Calendly]\n\nÀ très bientôt,\n[Votre prénom]` },
+  { id: 'prospect_proposal', cat: 'Négociation', role: 'commercial', emoji: '📋', title: 'Envoi de proposition', subject: 'Votre proposition personnalisée — [Entreprise]',
+    body: `Bonjour [Prénom],\n\nVeuillez trouver ci-joint votre proposition personnalisée.\n\nRécapitulatif :\n• Plan : [Plan choisi]\n• Montant : [Montant]€/mois\n• Engagement : [Durée]\n• Début : [Date]\n\nCette offre est valable jusqu'au [Date limite].\n\nJe reste disponible pour toute question.\n\n[Votre prénom]` },
+  // === KAM ===
+  { id: 'kam_upsell', cat: 'Expansion', role: 'kam', emoji: '📈', title: 'Proposition upsell', subject: 'Passez au niveau supérieur — offre exclusive',
+    body: `Bonjour [Prénom],\n\nAu vu de votre utilisation croissante, je pense que le plan [Plan supérieur] serait plus adapté.\n\nCe que vous gagnez :\n• [Fonctionnalité 1]\n• [Fonctionnalité 2]\n• [Support prioritaire]\n\nOffre exclusive : -[X]% sur les 3 premiers mois.\n\nOn en discute ?\n\n[Votre prénom]` },
+  { id: 'kam_crosssell', cat: 'Expansion', role: 'kam', emoji: '🔗', title: 'Cross-sell nouveau module', subject: 'Nouveau : [Module] — parfait pour votre équipe',
+    body: `Bonjour [Prénom],\n\nNous venons de lancer [Module], et je pense que ça correspond parfaitement à vos besoins.\n\nEn bref :\n• [Avantage 1]\n• [Avantage 2]\n\nJe vous propose un essai gratuit de 14 jours.\n\nIntéressé(e) ?\n\n[Votre prénom]` },
+  { id: 'kam_escalation', cat: 'Risque', role: 'kam', emoji: '🚨', title: 'Escalade compte stratégique', subject: 'Urgent — situation compte [Client]',
+    body: `Bonjour [Prénom],\n\nJe vous alerte sur la situation du compte [Client] :\n\n⚠️ Score santé : [Score]/100\n📉 Usage en baisse de [X]%\n🔄 Renouvellement dans [X] jours\n\nActions proposées :\n1. [Action 1]\n2. [Action 2]\n3. [Action 3]\n\nPouvons-nous en discuter en urgence ?\n\n[Votre prénom]` }
 ]
 
 // ── Templates EN ──────────────────────────────────
@@ -457,7 +495,25 @@ Would you be open to a conversation?
 📅 [Calendly Link]
 
 [Your Name]`
-  }
+  },
+  { id: 'nps_survey', cat: 'NPS', role: 'csm', emoji: '⭐', title: 'NPS Survey', subject: 'Your feedback matters — 30 seconds to help us improve',
+    body: `Hi [First Name],\n\nOn a scale of 0-10, how likely are you to recommend [Company] to a colleague?\n\n→ Answer in 1 click: [NPS Link]\n\nYour feedback helps us continuously improve.\n\nThank you!\n[Your Name]` },
+  { id: 'nps_thanks', cat: 'NPS', role: 'csm', emoji: '🙏', title: 'NPS Promoter Thank You', subject: 'Thank you for your trust!',
+    body: `Hi [First Name],\n\nThank you for rating us [Score]! We're thrilled.\n\nWould you be open to:\n• Sharing a testimonial on our website?\n• Referring us to your network?\n• Participating in a case study?\n\nBest regards,\n[Your Name]` },
+  { id: 'nps_detractor', cat: 'NPS', role: 'csm', emoji: '💬', title: 'NPS Detractor Follow-up', subject: 'We want to do better — your input is valuable',
+    body: `Hi [First Name],\n\nThank you for your honest feedback. Your score tells us we can do better.\n\nI'd love to understand:\n• What's not working for you?\n• What should we prioritize?\n\nCould we schedule a 15-min call?\n\n📅 Book here: [Calendly Link]\n\n[Your Name]` },
+  { id: 'prospect_intro', cat: 'Prospecting', role: 'commercial', emoji: '🎯', title: 'Prospect Introduction', subject: '[First Name], a solution for [Problem]',
+    body: `Hi [First Name],\n\nI'm reaching out because [Company] helps businesses like yours [Key Benefit].\n\nOur clients typically see:\n• [Result 1]\n• [Result 2]\n• [Result 3]\n\nWould you be available for a 15-min chat?\n\n📅 Book: [Calendly Link]\n\nBest,\n[Your Name]` },
+  { id: 'prospect_demo', cat: 'Prospecting', role: 'commercial', emoji: '🎬', title: 'Demo Invitation', subject: 'See [Product] in action — 20 min',
+    body: `Hi [First Name],\n\nFollowing our conversation, I'd love to show you a personalized demo of [Product].\n\nDuration: 20 min\nFormat: Video call\nContent: Use cases tailored to your context\n\n📅 Book your slot: [Calendly Link]\n\nLooking forward,\n[Your Name]` },
+  { id: 'prospect_proposal', cat: 'Negotiation', role: 'commercial', emoji: '📋', title: 'Proposal Submission', subject: 'Your custom proposal — [Company]',
+    body: `Hi [First Name],\n\nPlease find attached your personalized proposal.\n\nSummary:\n• Plan: [Plan]\n• Amount: $[Amount]/month\n• Commitment: [Duration]\n• Start: [Date]\n\nThis offer is valid until [Expiry Date].\n\nHappy to answer any questions.\n\n[Your Name]` },
+  { id: 'kam_upsell', cat: 'Expansion', role: 'kam', emoji: '📈', title: 'Upsell Proposal', subject: 'Level up — exclusive offer inside',
+    body: `Hi [First Name],\n\nBased on your growing usage, I think [Higher Plan] would be a better fit.\n\nWhat you gain:\n• [Feature 1]\n• [Feature 2]\n• [Priority Support]\n\nExclusive: [X]% off the first 3 months.\n\nShall we discuss?\n\n[Your Name]` },
+  { id: 'kam_crosssell', cat: 'Expansion', role: 'kam', emoji: '🔗', title: 'Cross-sell New Module', subject: 'New: [Module] — perfect for your team',
+    body: `Hi [First Name],\n\nWe just launched [Module], and I think it's a great fit for your needs.\n\nKey benefits:\n• [Benefit 1]\n• [Benefit 2]\n\nI'd like to offer you a free 14-day trial.\n\nInterested?\n\n[Your Name]` },
+  { id: 'kam_escalation', cat: 'Risk', role: 'kam', emoji: '🚨', title: 'Strategic Account Escalation', subject: 'Urgent — [Client] account situation',
+    body: `Hi [First Name],\n\nI'm flagging the [Client] account:\n\n⚠️ Health score: [Score]/100\n📉 Usage down [X]%\n🔄 Renewal in [X] days\n\nProposed actions:\n1. [Action 1]\n2. [Action 2]\n3. [Action 3]\n\nCan we discuss urgently?\n\n[Your Name]` }
 ]
 
 // ── Templates KR ──────────────────────────────────
@@ -615,11 +671,31 @@ Customer Success Manager`
 📅 [캘린들리 링크]
 
 [담당자 이름]`
-  }
+  },
+  { id: 'nps_survey', cat: 'NPS', role: 'csm', emoji: '⭐', title: 'NPS 설문', subject: '소중한 의견을 들려주세요 — 30초면 충분합니다',
+    body: `안녕하세요 [이름]님,\n\n0~10점 중 [회사명]을 동료에게 추천할 가능성은 얼마나 되시나요?\n\n→ 1클릭으로 답변: [NPS 링크]\n\n소중한 피드백 감사합니다.\n\n[담당자 이름]` },
+  { id: 'nps_thanks', cat: 'NPS', role: 'csm', emoji: '🙏', title: 'NPS 추천인 감사', subject: '신뢰에 감사드립니다!',
+    body: `안녕하세요 [이름]님,\n\n[점수]점을 주셔서 정말 감사합니다!\n\n혹시 다음 중 가능한 것이 있으신가요?\n• 웹사이트에 후기 공유\n• 지인에게 추천\n• 사례 연구 참여\n\n감사합니다,\n[담당자 이름]` },
+  { id: 'nps_detractor', cat: 'NPS', role: 'csm', emoji: '💬', title: 'NPS 비추천인 후속', subject: '더 나은 서비스를 위한 소중한 의견',
+    body: `안녕하세요 [이름]님,\n\n솔직한 피드백 감사합니다. 더 나아질 수 있다고 생각합니다.\n\n궁금한 점이 있습니다:\n• 어떤 부분이 불편하셨나요?\n• 우선 개선해야 할 사항은?\n\n15분 통화가 가능하실까요?\n\n📅 예약: [캘린들리 링크]\n\n[담당자 이름]` },
+  { id: 'prospect_intro', cat: '영업 개발', role: 'commercial', emoji: '🎯', title: '신규 고객 소개', subject: '[이름]님, [문제]에 대한 솔루션',
+    body: `안녕하세요 [이름]님,\n\n[회사명]은 귀사와 같은 기업이 [핵심 이점]을 달성할 수 있도록 돕고 있습니다.\n\n고객사 평균 성과:\n• [결과 1]\n• [결과 2]\n• [결과 3]\n\n15분 통화가 가능하실까요?\n\n📅 예약: [캘린들리 링크]\n\n[담당자 이름]` },
+  { id: 'prospect_demo', cat: '영업 개발', role: 'commercial', emoji: '🎬', title: '데모 초대', subject: '[제품] 20분 체험',
+    body: `안녕하세요 [이름]님,\n\n대화에 이어 [제품] 맞춤 데모를 제안드립니다.\n\n소요시간: 20분\n형식: 화상 통화\n내용: 귀사 상황에 맞는 사례\n\n📅 예약: [캘린들리 링크]\n\n곧 뵙겠습니다,\n[담당자 이름]` },
+  { id: 'prospect_proposal', cat: '협상', role: 'commercial', emoji: '📋', title: '제안서 발송', subject: '맞춤 제안서 — [회사명]',
+    body: `안녕하세요 [이름]님,\n\n맞춤 제안서를 첨부합니다.\n\n요약:\n• 플랜: [플랜]\n• 금액: [금액]원/월\n• 기간: [기간]\n• 시작일: [날짜]\n\n본 제안은 [만료일]까지 유효합니다.\n\n문의사항이 있으시면 연락 주세요.\n\n[담당자 이름]` },
+  { id: 'kam_upsell', cat: '확장', role: 'kam', emoji: '📈', title: '업셀 제안', subject: '다음 단계로 — 특별 혜택',
+    body: `안녕하세요 [이름]님,\n\n사용량 증가를 보면 [상위 플랜]이 더 적합할 것 같습니다.\n\n추가 혜택:\n• [기능 1]\n• [기능 2]\n• [우선 지원]\n\n특별 혜택: 첫 3개월 [X]% 할인\n\n논의해 볼까요?\n\n[담당자 이름]` },
+  { id: 'kam_crosssell', cat: '확장', role: 'kam', emoji: '🔗', title: '크로스셀 신규 모듈', subject: '신규: [모듈] — 팀에 딱 맞습니다',
+    body: `안녕하세요 [이름]님,\n\n[모듈]을 새로 출시했는데, 귀사에 잘 맞을 것 같습니다.\n\n핵심 장점:\n• [장점 1]\n• [장점 2]\n\n14일 무료 체험을 제안드립니다.\n\n관심 있으신가요?\n\n[담당자 이름]` },
+  { id: 'kam_escalation', cat: '위험', role: 'kam', emoji: '🚨', title: '전략 계정 에스컬레이션', subject: '긴급 — [고객] 계정 상황',
+    body: `안녕하세요 [이름]님,\n\n[고객] 계정 상황을 알려드립니다:\n\n⚠️ 건강 점수: [점수]/100\n📉 사용량 [X]% 감소\n🔄 갱신까지 [X]일\n\n제안 조치:\n1. [조치 1]\n2. [조치 2]\n3. [조치 3]\n\n긴급 논의 가능하신가요?\n\n[담당자 이름]` }
 ]
 
 // ── Reactive state ────────────────────────────────
 const activeCat = ref('all')
+const activeRole = ref('all')
+const searchQuery = ref('')
 const selected = ref(null)
 const editSubject = ref('')
 const editBody = ref('')
@@ -633,14 +709,37 @@ const templateSet = computed(() => {
 })
 
 const categories = computed(() => {
-  const cats = [...new Set(templateSet.value.map(t => t.cat))]
+  let list = templateSet.value
+  if (activeRole.value !== 'all') list = list.filter(t => t.role === activeRole.value)
+  const cats = [...new Set(list.map(t => t.cat))]
   return ['all', ...cats]
 })
 
 const filteredTemplates = computed(() => {
-  if (activeCat.value === 'all') return templateSet.value
-  return templateSet.value.filter(t => t.cat === activeCat.value)
+  let list = templateSet.value
+  if (activeRole.value !== 'all') list = list.filter(t => t.role === activeRole.value)
+  if (activeCat.value !== 'all') list = list.filter(t => t.cat === activeCat.value)
+  if (searchQuery.value.trim()) {
+    const q = searchQuery.value.toLowerCase()
+    list = list.filter(t => t.title.toLowerCase().includes(q) || t.cat.toLowerCase().includes(q) || t.body.toLowerCase().includes(q))
+  }
+  return list
 })
+
+function roleEmoji(r) { return r === 'csm' ? '💼' : r === 'commercial' ? '🎯' : r === 'kam' ? '📈' : '✨' }
+function catColor(cat) {
+  const c = cat.toLowerCase()
+  if (c.includes('onboarding')) return '#3b82f6'
+  if (c.includes('qbr')) return '#8b5cf6'
+  if (c.includes('risque') || c.includes('risk') || c.includes('위험')) return '#ef4444'
+  if (c.includes('renouv') || c.includes('renewal') || c.includes('갱신')) return '#f97316'
+  if (c.includes('suivi') || c.includes('follow') || c.includes('후속')) return '#06b6d4'
+  if (c.includes('nps')) return '#eab308'
+  if (c.includes('prospect') || c.includes('영업')) return '#ec4899'
+  if (c.includes('expans') || c.includes('확장')) return '#22c55e'
+  if (c.includes('négoci') || c.includes('negoti') || c.includes('협상')) return '#f43f5e'
+  return '#6366f1'
+}
 
 const allLabel = computed(() => {
   if (lang.value === 'en') return 'All'
@@ -723,3 +822,27 @@ watch(lang, () => {
   activeCat.value = 'all'
 }, { immediate: true })
 </script>
+
+<style scoped>
+.es-sidebar { width: 280px; border-right: 1px solid var(--border); overflow: auto; flex-shrink: 0; }
+.es-sidebar-hero { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a8e 100%); padding: 18px 16px; display: flex; align-items: center; gap: 12px; color: #fff; margin-bottom: 14px; }
+.es-hero-icon { font-size: 28px; width: 44px; height: 44px; background: rgba(255,255,255,.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.es-hero-title { font-size: 16px; font-weight: 900; margin: 0; color: #fff; }
+.es-hero-sub { font-size: 10px; opacity: .85; margin-top: 2px; }
+
+.es-role-btn { font-size: 10px; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); cursor: pointer; font-weight: 600; font-family: 'DM Sans', sans-serif; transition: all .12s; }
+.es-role-btn:hover { border-color: #1e3a5f; color: #1e3a5f; }
+.es-role-btn--on { background: #1e3a5f; color: #fff !important; border-color: transparent; box-shadow: 0 2px 8px rgba(30,58,95,.25); }
+
+.es-search { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; color: var(--text); font-size: 12px; outline: none; font-family: 'DM Sans', sans-serif; }
+.es-search:focus { border-color: #1e3a5f; box-shadow: 0 0 0 3px rgba(30,58,95,.08); }
+
+.es-tpl-card { padding: 10px 12px; border-radius: 12px; margin-bottom: 6px; cursor: pointer; border: 1px solid transparent; transition: all .15s; }
+.es-tpl-card:hover { background: rgba(30,58,95,.04); border-color: rgba(30,58,95,.15); transform: translateX(2px); }
+.es-tpl-card--on { background: rgba(30,58,95,.06); border-color: rgba(30,58,95,.2); box-shadow: 0 2px 8px rgba(30,58,95,.08); }
+.es-tpl-top { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.es-tpl-emoji { font-size: 16px; }
+.es-tpl-cat { font-size: 9px; font-weight: 700; padding: 1px 7px; border-radius: 8px; text-transform: uppercase; letter-spacing: .04em; }
+.es-tpl-title { font-size: 12px; font-weight: 600; color: var(--text); }
+.es-tpl-title--on { color: #1e3a5f; font-weight: 800; }
+</style>
