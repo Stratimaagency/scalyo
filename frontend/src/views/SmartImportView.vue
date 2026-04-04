@@ -392,10 +392,23 @@ async function parseToSheets(file) {
       const wb = XLSX.read(buffer, { type: 'array', cellFormula: false, cellDates: true })
       const sheets = {}
       for (const name of wb.SheetNames) {
-        const allTables = extractAllTables(wb.Sheets[name])
-        for (let i = 0; i < allTables.length; i++) {
-          const key = allTables.length > 1 ? `${name}_${i}` : name
-          if (allTables[i].length) sheets[key] = allTables[i]
+        try {
+          const allTables = extractAllTables(wb.Sheets[name])
+          for (let i = 0; i < allTables.length; i++) {
+            const key = allTables.length > 1 ? `${name}_${i}` : name
+            if (allTables[i].length) sheets[key] = allTables[i]
+          }
+        } catch {
+          // Fallback: simple sheet_to_json
+          const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: '' })
+          if (rows.length) sheets[name] = rows
+        }
+      }
+      // If extractAllTables returned nothing, fallback to basic parsing
+      if (!Object.keys(sheets).length) {
+        for (const name of wb.SheetNames) {
+          const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: '' })
+          if (rows.length) sheets[name] = rows
         }
       }
       return sheets
@@ -443,6 +456,9 @@ async function processFile(file) {
   try {
     // Parse any file format into sheets of rows
     const parsedSheets = await parseToSheets(file)
+    if (!parsedSheets || !Object.keys(parsedSheets).length) {
+      throw new Error('Impossible de lire ce fichier. Vérifiez le format.')
+    }
 
     const rawData = {}
     const mappedSheets = []
