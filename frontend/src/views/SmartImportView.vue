@@ -1011,18 +1011,85 @@ async function doImport() {
           }
         }
       } else if (sheet.module === 'smart_matrice') {
-        for (const row of rows) {
-          const mapped = applyMapping(row, cols)
-          const taskName = String(mapped.name || mapped.task_name || mapped.title || Object.values(row)[0] || '').trim()
-          if (taskName && taskName.length >= 2) {
-            payload.smart_matrice.push({
-              project_name: String(mapped.project_name || mapped.project || sheet.name || 'Projet importé').trim(),
-              name: taskName,
-              group_name: String(mapped.group_name || mapped.phase || mapped.category || mapped.sprint || '').trim(),
-              status: String(mapped.status || 'todo').toLowerCase(),
-              priority: String(mapped.priority || 'medium').toLowerCase(),
-            })
+        // Smart detection of columns — handle __EMPTY headers from merged Excel cells
+        const sampleRow = rows[0] || {}
+        const colKeys = Object.keys(sampleRow)
+
+        // Find the best column for each role by analyzing content
+        let taskCol = null, groupCol = null, statusCol = null, priorityCol = null
+        for (const key of colKeys) {
+          const keyL = key.toLowerCase()
+          const sampleVals = rows.slice(0, 15).map(r => String(r[key] || '').trim()).filter(Boolean)
+          if (!sampleVals.length) continue
+
+          // Task name: longest text column with unique values
+          if (!taskCol && sampleVals.some(v => v.length > 5) && new Set(sampleVals).size > sampleVals.length * 0.5) {
+            if (keyL.includes('tâche') || keyL.includes('task') || keyL.includes('sous-tâche') || keyL.includes('subtask') || keyL.includes('description') || keyL.includes('nom') || keyL.includes('name')) {
+              taskCol = key
+            }
           }
+          // Group: column with repeated values (module names, categories)
+          if (!groupCol && new Set(sampleVals).size < sampleVals.length * 0.5 && sampleVals[0].length > 2) {
+            if (keyL.includes('module') || keyL.includes('group') || keyL.includes('phase') || keyL.includes('catégorie') || keyL.includes('category') || keyL.includes('sprint') || keyL.includes('section')) {
+              groupCol = key
+            }
+          }
+          // Status
+          if (keyL.includes('statut') || keyL.includes('status') || keyL.includes('état')) statusCol = key
+          // Priority
+          if (keyL.includes('priorité') || keyL.includes('priority') || keyL.includes('urgence')) priorityCol = key
+        }
+
+        // Fallback: if no named columns found, guess by position and content
+        if (!taskCol || !groupCol) {
+          for (const key of colKeys) {
+            const sampleVals = rows.slice(0, 20).map(r => String(r[key] || '').trim()).filter(Boolean)
+            if (!sampleVals.length) continue
+            const avgLen = sampleVals.reduce((a, v) => a + v.length, 0) / sampleVals.length
+            const uniqueRatio = new Set(sampleVals).size / sampleVals.length
+
+            // Group column: short text, repeated (e.g., "TABLEAU DE BORD" appears many times)
+            if (!groupCol && uniqueRatio < 0.4 && avgLen > 3 && avgLen < 50) { groupCol = key; continue }
+            // Task column: longer text, mostly unique
+            if (!taskCol && uniqueRatio > 0.5 && avgLen > 5) { taskCol = key; continue }
+          }
+        }
+
+        // Last resort: first text column = task, skip number-only columns
+        if (!taskCol) {
+          taskCol = colKeys.find(k => {
+            const vals = rows.slice(0, 5).map(r => String(r[k] || ''))
+            return vals.some(v => v.length > 3 && isNaN(Number(v)))
+          }) || colKeys[0]
+        }
+
+        console.log('[SM Import] columns:', { taskCol, groupCol, statusCol, priorityCol })
+
+        for (const row of rows) {
+          const taskName = String(row[taskCol] || '').trim()
+          if (!taskName || taskName.length < 2) continue
+          // Skip header-like rows
+          if (/^(#|numéro|number|total|sous-total|id)$/i.test(taskName)) continue
+          // Skip pure numbers
+          if (!isNaN(Number(taskName)) && taskName.length < 4) continue
+
+          const group = groupCol ? String(row[groupCol] || '').trim() : ''
+          const status = statusCol ? String(row[statusCol] || '').toLowerCase() : 'todo'
+          const priority = priorityCol ? String(row[priorityCol] || '').toLowerCase() : 'medium'
+
+          // Normalize status
+          let normalizedStatus = 'todo'
+          if (/terminé|done|complet|fini|closed/i.test(status)) normalizedStatus = 'done'
+          else if (/en cours|doing|in.?progress|started|actif/i.test(status)) normalizedStatus = 'doing'
+          else if (/bloqué|blocked|waiting|attente|pause/i.test(status)) normalizedStatus = 'blocked'
+
+          payload.smart_matrice.push({
+            project_name: group || sheet.name.replace(/_\d+$/, '') || 'Projet importé',
+            name: taskName,
+            group_name: group,
+            status: normalizedStatus,
+            priority: /urgent|critique|high|haute/i.test(priority) ? 'urgent' : /moyen|medium|normal/i.test(priority) ? 'normal' : 'normal',
+          })
         }
       } else if (sheet.module === 'kpis' || sheet.module === 'team') {
         for (const row of rows) {
