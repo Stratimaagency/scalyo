@@ -198,6 +198,7 @@ const summaryCards = computed(() => {
   const taskCount = generatedTasks.value.length + counts.tasks
   return [
     { key: 'portfolio', label: t('portfolio'), count: counts.portfolio },
+    { key: 'smart_matrice', label: 'Smart Matrice', count: counts.smart_matrice || 0 },
     { key: 'kpis', label: 'KPIs', count: Object.keys(computedKpis.value).length },
     { key: 'tasks', label: 'Task Board', count: taskCount },
     { key: 'planning', label: t('planning'), count: '✓' },
@@ -288,6 +289,7 @@ async function processFile(file) {
         // --- UNIVERSAL DETECTION: try ALL types, pick the best match ---
         const scores = {
           portfolio: scorePortfolio(sheetLower, headersLower, rows),
+          smart_matrice: scoreSmartMatrice(sheetLower, headersLower, rows),
           team: scoreTeam(sheetLower, headersLower, rows),
           kpis: scoreKpis(sheetLower, headersLower, rows),
           tasks: scoreTasks(sheetLower, headersLower, rows),
@@ -346,7 +348,9 @@ async function processFile(file) {
     if (wellbeingTasks.length) summary += `${wellbeingTasks.length} alertes bien-être. `
     if (tasks.length) summary += `${tasks.length} tâches au total (Kanban + Eisenhower). `
     const portfolioCount = mappedSheets.filter(s => s.module === 'portfolio').reduce((s, sh) => s + sh.totalRows, 0)
-    if (portfolioCount) summary += `${portfolioCount} comptes clients.`
+    if (portfolioCount) summary += `${portfolioCount} comptes clients. `
+    const smCount = mappedSheets.filter(s => s.module === 'smart_matrice').reduce((s, sh) => s + sh.totalRows, 0)
+    if (smCount) summary += `${smCount} tâches projet (Smart Matrice). `
 
     // === DATA CLEANING & DEDUPLICATION ===
     const cleaningReport = { duplicates: 0, emptyRows: 0, cleaned: 0 }
@@ -705,15 +709,49 @@ function scorePortfolio(name, headers, rows) {
   let score = 0
   // By sheet name (any language)
   if (['client', 'portfolio', 'portefeuille', 'account', 'compte', 'customer', '고객', '顧客'].some(k => name.includes(k))) score += 0.5
-  // By column names
+  // By column names — must have client-specific columns
   if (headers.some(h => ['client', 'compte', 'account', 'entreprise', 'company', 'société', 'customer', 'nom client', 'id client'].includes(h))) score += 0.3
-  if (headers.some(h => h.includes('arr') || h.includes('mrr') || h.includes('ca') || h.includes('revenue') || h.includes('plan'))) score += 0.2
+  if (headers.some(h => h.includes('arr') || h.includes('mrr') || h.includes('revenue'))) score += 0.2
+  if (headers.some(h => h.includes('contact') || h.includes('email') || h.includes('industry') || h.includes('secteur'))) score += 0.2
   // By data patterns: many rows with text + large numbers = likely portfolio
   const colTypes = analyzeColumns(rows)
   const types = Object.values(colTypes).map(c => c.type)
-  if (types.includes('revenue') && (types.includes('text') || types.includes('person_name'))) score += 0.3
+  if (types.includes('revenue') && (types.includes('text') || types.includes('person_name'))) score += 0.2
+  if (types.includes('email')) score += 0.2
   if (rows.length > 10) score += 0.1
-  return Math.min(1, score)
+
+  // NEGATIVE signals — reduce score if data looks like tasks/projects
+  if (headers.some(h => /statut|status|priorité|priority|estimation|heures|hours|sprint|phase|scénario|scenario|backlog|à faire|todo|en cours|in progress|terminé|done|bloqué|blocked/i.test(h))) score -= 0.4
+  // If first column values look like task statuses, not company names
+  const firstColValues = rows.slice(0, 10).map(r => String(Object.values(r)[0] || '').toLowerCase())
+  if (firstColValues.some(v => /^(à faire|en cours|terminé|en attente|bloqué|todo|doing|done|blocked|waiting)/i.test(v))) score -= 0.5
+  // If headers include duration/time estimation columns
+  if (headers.some(h => /dur[ée]|duration|estimation|min|max|moyenne|average|optimiste|pessimiste/i.test(h))) score -= 0.4
+
+  return Math.max(0, Math.min(1, score))
+}
+
+function scoreSmartMatrice(name, headers, rows) {
+  let score = 0
+  // By sheet name
+  if (['projet', 'project', 'sprint', 'matrice', 'tâche', 'task', 'backlog', 'kanban', 'plan de travail', 'workplan', '프로젝트', 'estimation', 'plan', 'planning projet'].some(k => name.includes(k))) score += 0.5
+  // By column names — project/task structure
+  if (headers.some(h => /statut|status|état|state/i.test(h))) score += 0.2
+  if (headers.some(h => /priorité|priority|urgence/i.test(h))) score += 0.15
+  if (headers.some(h => /estimation|estimé|estimated|dur[ée]|duration|heures|hours|temps|time|charge/i.test(h))) score += 0.2
+  if (headers.some(h => /assigné|assigned|responsable|owner|référent/i.test(h))) score += 0.15
+  if (headers.some(h => /sprint|phase|groupe|group|catégorie|category|module/i.test(h))) score += 0.15
+  if (headers.some(h => /début|start|fin|end|deadline|échéance/i.test(h))) score += 0.1
+  if (headers.some(h => /min|max|optimiste|pessimiste|scénario|scenario|moyenne|average/i.test(h))) score += 0.3
+  // By data: status values in cells
+  const allVals = rows.slice(0, 20).flatMap(r => Object.values(r).map(v => String(v).toLowerCase()))
+  if (allVals.some(v => /^(à faire|en cours|terminé|en attente|bloqué|todo|doing|done|in.?progress|blocked|waiting|pending)/i.test(v))) score += 0.3
+  // Data with many numbers (durations) + text (task names) + small row count
+  const colTypes = analyzeColumns(rows)
+  const types = Object.values(colTypes).map(c => c.type)
+  if (types.includes('number') && types.includes('text') && !types.includes('email') && !types.includes('revenue')) score += 0.2
+
+  return Math.max(0, Math.min(1, score))
 }
 
 function scoreTeam(name, headers, rows) {
@@ -758,10 +796,12 @@ function scoreTasks(name, headers, rows) {
 
 function scoreRoadmap(name, headers, rows) {
   let score = 0
-  if (['roadmap', 'plan', 'jalons', 'milestone', 'étape', 'projet', 'objectif', 'okr', 'sprint', '로드맵'].some(k => name.includes(k))) score += 0.5
-  if (headers.some(h => ['phase', 'milestone', 'jalon', 'étape', 'objectif', 'livrable', 'deliverable', 'sprint'].includes(h))) score += 0.3
+  if (['roadmap', 'jalons', 'milestone', 'étape', 'objectif', 'okr', '로드맵'].some(k => name.includes(k))) score += 0.5
+  if (headers.some(h => ['milestone', 'jalon', 'étape', 'objectif', 'livrable', 'deliverable'].includes(h))) score += 0.3
   if (headers.some(h => /progress|avancement|%|completion/i.test(h))) score += 0.2
-  return Math.min(1, score)
+  // Don't match generic "plan" or "projet" — those are more likely smart_matrice
+  if (['plan', 'projet', 'sprint'].some(k => name.includes(k)) && !['roadmap', 'jalons', 'milestone'].some(k => name.includes(k))) score -= 0.2
+  return Math.max(0, Math.min(1, score))
 }
 
 function scorePlanning(name, headers, rows) {
@@ -779,6 +819,7 @@ function scorePlanning(name, headers, rows) {
 function getModuleNotes(module) {
   const notes = {
     portfolio: 'Portefeuille client détecté',
+    smart_matrice: 'Projets / tâches détectés → Smart Matrice',
     team: 'Données équipe CSM — bien-être et performance',
     kpis: 'Indicateurs de performance extraits',
     tasks: 'Tâches / actions à importer dans le Kanban',
