@@ -255,66 +255,9 @@ function getFileExtension(filename) {
   return (filename || '').split('.').pop().toLowerCase()
 }
 
-async function parsePDF(buffer) {
-  try {
-    const pdfjsLib = await import('pdfjs-dist')
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`
-    const pdf = await pdfjsLib.getDocument({ data: buffer }).promise
-    const allRows = []
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i)
-      const content = await page.getTextContent()
-      const lines = []
-      let currentLine = [], lastY = null
-      for (const item of content.items) {
-        if (lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
-          if (currentLine.length) lines.push(currentLine.join('\t'))
-          currentLine = []
-        }
-        currentLine.push(item.str)
-        lastY = item.transform[5]
-      }
-      if (currentLine.length) lines.push(currentLine.join('\t'))
-      for (const line of lines) {
-        const parts = line.split('\t').map(p => p.trim()).filter(Boolean)
-        if (parts.length) { const row = {}; parts.forEach((p, idx) => { row[`col_${idx}`] = p }); allRows.push(row) }
-      }
-    }
-    return { 'Document PDF': allRows.length ? allRows : [{ col_0: 'Document vide' }] }
-  } catch (e) { console.error('PDF parse error:', e); return { 'PDF': [{ col_0: 'Erreur lecture PDF: ' + e.message }] } }
-}
-
-async function parseDOCX(buffer) {
-  try {
-    const mam = await import('mammoth')
-    const mammothLib = mam.default || mam
-    const result = await mammothLib.extractRawText({ arrayBuffer: buffer })
-    const lines = result.value.split('\n').filter(l => l.trim())
-    const rows = lines.map(line => {
-      const parts = line.includes('\t') ? line.split('\t') : line.includes('|') ? line.split('|') : [line]
-      const row = {}; parts.forEach((p, idx) => { row[`col_${idx}`] = p.trim() }); return row
-    }).filter(r => Object.values(r).some(v => v))
-    return { 'Document Word': rows }
-  } catch (e) { console.error('DOCX parse error:', e); return { 'Word': [{ col_0: 'Erreur lecture Word: ' + e.message }] } }
-}
-
-async function parsePPTX(buffer) {
-  try {
-    const JSZipMod = await import('jszip')
-    const JSZipLib = JSZipMod.default || JSZipMod
-    const zip = await JSZipLib.loadAsync(buffer)
-    const slides = []
-    for (const [path, file] of Object.entries(zip.files)) {
-      if (path.match(/ppt\/slides\/slide\d+\.xml$/)) {
-        const xml = await file.async('text')
-        const texts = [...xml.matchAll(/<a:t[^>]*>([^<]+)<\/a:t>/g)].map(m => m[1])
-        if (texts.length) slides.push(texts)
-      }
-    }
-    const rows = slides.flatMap((texts, i) => texts.map(t => ({ slide: `Slide ${i + 1}`, content: t })))
-    return { 'Présentation': rows.length ? rows : [{ col_0: 'Présentation vide' }] }
-  } catch (e) { console.error('PPTX parse error:', e); return { 'PPT': [{ col_0: 'Erreur lecture PowerPoint: ' + e.message }] } }
-}
+function parsePDF() { throw new Error('Format PDF non supporté. Exportez en Excel ou CSV.') }
+function parseDOCX() { throw new Error('Format Word non supporté. Exportez en Excel ou CSV.') }
+function parsePPTX() { throw new Error('Format PowerPoint non supporté. Exportez en Excel ou CSV.') }
 
 function parseCSV(text) {
   const lines = text.split('\n').filter(l => l.trim())
@@ -376,26 +319,24 @@ async function parseToSheets(file) {
 
   switch (ext) {
     case 'xlsx': case 'xls': case 'numbers': {
-      const wb = XLSX.read(buffer, { type: 'array', cellFormula: false, cellDates: true })
+      const workbook = XLSX.read(buffer, { type: 'array', cellFormula: false, cellDates: true })
       const sheets = {}
-      for (const name of wb.SheetNames) {
+      for (const sn of workbook.SheetNames) {
         try {
-          const allTables = extractAllTables(wb.Sheets[name])
+          const allTables = extractAllTables(workbook.Sheets[sn])
           for (let i = 0; i < allTables.length; i++) {
-            const key = allTables.length > 1 ? `${name}_${i}` : name
+            const key = allTables.length > 1 ? `${sn}_${i}` : sn
             if (allTables[i].length) sheets[key] = allTables[i]
           }
         } catch {
-          // Fallback: simple sheet_to_json
-          const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: '' })
-          if (rows.length) sheets[name] = rows
+          const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sn], { defval: '' })
+          if (rows.length) sheets[sn] = rows
         }
       }
-      // If extractAllTables returned nothing, fallback to basic parsing
       if (!Object.keys(sheets).length) {
-        for (const name of wb.SheetNames) {
-          const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: '' })
-          if (rows.length) sheets[name] = rows
+        for (const sn of workbook.SheetNames) {
+          const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sn], { defval: '' })
+          if (rows.length) sheets[sn] = rows
         }
       }
       return sheets
@@ -422,10 +363,10 @@ async function parseToSheets(file) {
         if (text.includes(',') || text.includes('\t') || text.includes('|')) return parseCSV(text)
         return parseTXT(text)
       } catch {
-        const wb = XLSX.read(buffer, { type: 'array', cellFormula: false, cellDates: true })
+        const workbook2 = XLSX.read(buffer, { type: 'array', cellFormula: false, cellDates: true })
         const sheets = {}
-        for (const name of wb.SheetNames) {
-          sheets[name] = XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: '' })
+        for (const sn of workbook2.SheetNames) {
+          sheets[sn] = XLSX.utils.sheet_to_json(workbook2.Sheets[sn], { defval: '' })
         }
         return sheets
       }
