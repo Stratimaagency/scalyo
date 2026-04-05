@@ -1,8 +1,6 @@
 import { Hono } from 'hono'
-import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 
 const roadmap = new Hono()
-roadmap.use('*', authMiddleware(), companyRequired(), trialGuard())
 
 function parseRoadmap(row) {
   return {

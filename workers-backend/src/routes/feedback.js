@@ -1,8 +1,6 @@
 import { Hono } from 'hono'
-import { authMiddleware, companyRequired } from '../middleware/auth.js'
 
 const feedback = new Hono()
-feedback.use('*', authMiddleware(), companyRequired())
 
 // POST /api/feedback/
 feedback.post('/', async (c) => {
