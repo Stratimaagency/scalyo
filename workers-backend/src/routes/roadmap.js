@@ -1,9 +1,3 @@
-import { Hono } from 'hono'
-import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
-
-const roadmap = new Hono()
-roadmap.use('/*', authMiddleware(), companyRequired(), trialGuard())
-
 function parseRoadmap(row) {
   return {
     id: row.id,
@@ -16,7 +10,7 @@ function parseRoadmap(row) {
 }
 
 // GET /api/roadmap/
-roadmap.get('/', async (c) => {
+export async function handleGetRoadmap(c) {
   const { company_id } = c.get('user')
   let row = await c.env.DB.prepare(
     'SELECT * FROM roadmap WHERE company_id = ?'
@@ -29,10 +23,10 @@ roadmap.get('/', async (c) => {
   }
 
   return c.json(parseRoadmap(row))
-})
+}
 
 // PATCH /api/roadmap/update/
-roadmap.patch('/update/', async (c) => {
+export async function handleUpdateRoadmap(c) {
   const { company_id } = c.get('user')
   const data = await c.req.json()
 
@@ -57,6 +51,4 @@ roadmap.patch('/update/', async (c) => {
   ).bind(...values).first()
 
   return c.json(parseRoadmap(row))
-})
-
-export default roadmap
+}

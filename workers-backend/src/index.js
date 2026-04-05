@@ -6,7 +6,7 @@ import { authMiddleware, companyRequired, trialGuard } from './middleware/auth.j
 import auth from './routes/auth.js'
 import portfolio from './routes/portfolio.js'
 import { registerWellbeingRoutes } from './routes/wellbeing.js'
-import roadmap from './routes/roadmap.js'
+import { handleGetRoadmap, handleUpdateRoadmap } from './routes/roadmap.js'
 import coach from './routes/coach.js'
 import emailStudio from './routes/email-studio.js'
 import billing from './routes/billing.js'
@@ -58,7 +58,10 @@ app.route('/api/notifications', notifications)
 app.route('/api/health-history', healthHistory)
 app.route('/api/exports', exportsRoutes)
 
-app.route('/api/roadmap', roadmap)
+app.get('/api/roadmap', ...mw, handleGetRoadmap)
+app.get('/api/roadmap/', ...mw, handleGetRoadmap)
+app.patch('/api/roadmap/update', ...mw, handleUpdateRoadmap)
+app.patch('/api/roadmap/update/', ...mw, handleUpdateRoadmap)
 app.route('/api/coach', coach)
 app.route('/api/email-studio', emailStudio)
 app.route('/api/feedback', feedback)
