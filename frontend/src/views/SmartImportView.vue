@@ -165,12 +165,6 @@
 <script setup>
 import { ref, computed } from 'vue'
 import * as XLSX from 'xlsx'
-import * as pdfjsLib from 'pdfjs-dist'
-import mammoth from 'mammoth'
-import JSZip from 'jszip'
-
-// PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`
 import { useI18n } from '../i18n'
 import { smartImportApi, kpiApi, taskApi, planningApi, smartMatriceApi } from '../api'
 import { usePortfolioStore } from '../stores/portfolio'
@@ -261,73 +255,9 @@ function getFileExtension(filename) {
   return (filename || '').split('.').pop().toLowerCase()
 }
 
-async function parsePDF(buffer) {
-  const pdf = await pdfjsLib.getDocument({ data: buffer }).promise
-  const sheets = {}
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i)
-    const content = await page.getTextContent()
-    const lines = []
-    let currentLine = []
-    let lastY = null
-    for (const item of content.items) {
-      if (lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
-        if (currentLine.length) lines.push(currentLine.join('\t'))
-        currentLine = []
-      }
-      currentLine.push(item.str)
-      lastY = item.transform[5]
-    }
-    if (currentLine.length) lines.push(currentLine.join('\t'))
-
-    // Convert lines to table rows
-    const rows = lines.filter(l => l.trim()).map(line => {
-      const parts = line.split('\t').map(p => p.trim()).filter(Boolean)
-      const row = {}
-      parts.forEach((p, idx) => { row[`col_${idx}`] = p })
-      return row
-    })
-    if (rows.length > 1) sheets[`Page ${i}`] = rows
-  }
-  // Merge all pages into one sheet if only simple content
-  if (Object.keys(sheets).length > 3) {
-    const all = Object.values(sheets).flat()
-    return { 'Document PDF': all }
-  }
-  return Object.keys(sheets).length ? sheets : { 'Document PDF': [{ col_0: 'Document vide ou non-tabulaire' }] }
-}
-
-async function parseDOCX(buffer) {
-  const result = await mammoth.extractRawText({ arrayBuffer: buffer })
-  const lines = result.value.split('\n').filter(l => l.trim())
-  // Try to detect tables: lines with consistent tab/pipe separators
-  const rows = []
-  for (const line of lines) {
-    const parts = line.includes('\t') ? line.split('\t') : line.includes('|') ? line.split('|') : [line]
-    const row = {}
-    parts.forEach((p, idx) => { row[`col_${idx}`] = p.trim() })
-    if (Object.values(row).some(v => v)) rows.push(row)
-  }
-  return { 'Document Word': rows }
-}
-
-async function parsePPTX(buffer) {
-  const zip = await JSZip.loadAsync(buffer)
-  const slides = []
-  for (const [path, file] of Object.entries(zip.files)) {
-    if (path.match(/ppt\/slides\/slide\d+\.xml$/)) {
-      const xml = await file.async('text')
-      // Extract text from XML tags <a:t>...</a:t>
-      const texts = [...xml.matchAll(/<a:t[^>]*>([^<]+)<\/a:t>/g)].map(m => m[1])
-      if (texts.length) slides.push(texts)
-    }
-  }
-  // Convert slides to rows
-  const rows = slides.flatMap((texts, i) => {
-    return texts.map(t => ({ slide: `Slide ${i + 1}`, content: t }))
-  })
-  return { 'Présentation': rows.length ? rows : [{ col_0: 'Présentation vide' }] }
-}
+function parsePDF() { throw new Error('Format PDF non supporté. Exportez en Excel ou CSV.') }
+function parseDOCX() { throw new Error('Format Word non supporté. Exportez en Excel ou CSV.') }
+function parsePPTX() { throw new Error('Format PowerPoint non supporté. Exportez en Excel ou CSV.') }
 
 function parseCSV(text) {
   const lines = text.split('\n').filter(l => l.trim())
@@ -389,13 +319,24 @@ async function parseToSheets(file) {
 
   switch (ext) {
     case 'xlsx': case 'xls': case 'numbers': {
-      const wb = XLSX.read(buffer, { type: 'array', cellFormula: false, cellDates: true })
+      const workbook = XLSX.read(buffer, { type: 'array', cellFormula: false, cellDates: true })
       const sheets = {}
-      for (const name of wb.SheetNames) {
-        const allTables = extractAllTables(wb.Sheets[name])
-        for (let i = 0; i < allTables.length; i++) {
-          const key = allTables.length > 1 ? `${name}_${i}` : name
-          if (allTables[i].length) sheets[key] = allTables[i]
+      for (const sn of workbook.SheetNames) {
+        try {
+          const allTables = extractAllTables(workbook.Sheets[sn])
+          for (let i = 0; i < allTables.length; i++) {
+            const key = allTables.length > 1 ? `${sn}_${i}` : sn
+            if (allTables[i].length) sheets[key] = allTables[i]
+          }
+        } catch {
+          const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sn], { defval: '' })
+          if (rows.length) sheets[sn] = rows
+        }
+      }
+      if (!Object.keys(sheets).length) {
+        for (const sn of workbook.SheetNames) {
+          const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sn], { defval: '' })
+          if (rows.length) sheets[sn] = rows
         }
       }
       return sheets
@@ -422,10 +363,10 @@ async function parseToSheets(file) {
         if (text.includes(',') || text.includes('\t') || text.includes('|')) return parseCSV(text)
         return parseTXT(text)
       } catch {
-        const wb = XLSX.read(buffer, { type: 'array', cellFormula: false, cellDates: true })
+        const workbook2 = XLSX.read(buffer, { type: 'array', cellFormula: false, cellDates: true })
         const sheets = {}
-        for (const name of wb.SheetNames) {
-          sheets[name] = XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: '' })
+        for (const sn of workbook2.SheetNames) {
+          sheets[sn] = XLSX.utils.sheet_to_json(workbook2.Sheets[sn], { defval: '' })
         }
         return sheets
       }
@@ -443,6 +384,9 @@ async function processFile(file) {
   try {
     // Parse any file format into sheets of rows
     const parsedSheets = await parseToSheets(file)
+    if (!parsedSheets || !Object.keys(parsedSheets).length) {
+      throw new Error('Impossible de lire ce fichier. Vérifiez le format.')
+    }
 
     const rawData = {}
     const mappedSheets = []
@@ -519,6 +463,7 @@ async function processFile(file) {
 
     console.log('After extraction — KPIs:', kpis, 'Tasks:', tasks.length, 'Team:', teamData.length)
     if (tasks.length) console.log('Task titles:', tasks.map(t => t.title))
+    console.log('[DEBUG] Step 1: extraction done')
 
     // --- Generate summary ---
     let summary = ''
@@ -535,6 +480,7 @@ async function processFile(file) {
     const smCount = mappedSheets.filter(s => s.module === 'smart_matrice').reduce((s, sh) => s + sh.totalRows, 0)
     if (smCount) summary += `${smCount} tâches projet (Smart Matrice). `
 
+    console.log('[DEBUG] Step 2: summary done')
     // === DATA CLEANING & DEDUPLICATION ===
     const cleaningReport = { duplicates: 0, emptyRows: 0, cleaned: 0 }
 
@@ -593,17 +539,21 @@ async function processFile(file) {
     if (cleaningReport.emptyRows > 0) summary += `${cleaningReport.emptyRows} lignes vides ignorées. `
     if (cleaningReport.cleaned > 0) summary += `${cleaningReport.cleaned} en-têtes/totaux exclus. `
 
+    console.log('[DEBUG] Step 3: cleaning done')
     allSheetData.value = rawData
     aiMapping.value = finalSheets
     computedKpis.value = Object.keys(kpis).length ? kpis : {}
     generatedTasks.value = uniqueTasks
     aiSummary.value = summary || 'Fichier analysé. Vérifiez le mapping ci-dessous avant d\'importer.'
 
+    console.log('[DEBUG] Step 4: state set')
     // Try AI enrichment in background (non-blocking)
-    tryAiEnrichment(wb.SheetNames, rawData)
+    tryAiEnrichment(Object.keys(parsedSheets), rawData)
 
     step.value = 'preview'
+    console.log('[DEBUG] Step 5: done, showing preview')
   } catch (err) {
+    console.error('[DEBUG] processFile CRASHED:', err, err.stack)
     error.value = err.message || t('errorGeneric')
     step.value = 'upload'
   }
