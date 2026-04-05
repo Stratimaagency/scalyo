@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 
 const exports_ = new Hono()
-exports_.use('/*', authMiddleware(), companyRequired(), trialGuard())
+exports_.use('*', authMiddleware(), companyRequired(), trialGuard())
 
 function todayStr() {
   return new Date().toISOString().slice(0, 10)
