@@ -867,22 +867,35 @@ function scorePortfolio(name, headers, rows) {
 function scoreSmartMatrice(name, headers, rows) {
   let score = 0
   // By sheet name
-  if (['projet', 'project', 'sprint', 'matrice', 'tâche', 'task', 'backlog', 'kanban', 'plan de travail', 'workplan', '프로젝트', 'estimation', 'plan', 'planning projet'].some(k => name.includes(k))) score += 0.5
+  if (['projet', 'project', 'sprint', 'matrice', 'tâche', 'task', 'backlog', 'kanban', 'plan de travail', 'workplan', '프로젝트', 'estimation', 'planning projet'].some(k => name.includes(k))) score += 0.5
+  // Sheet name "plan" is generic but likely SM if combined with other signals
+  if (name.includes('plan') && !name.includes('planning')) score += 0.2
+
   // By column names — project/task structure
-  if (headers.some(h => /statut|status|état|state/i.test(h))) score += 0.2
-  if (headers.some(h => /priorité|priority|urgence/i.test(h))) score += 0.15
-  if (headers.some(h => /estimation|estimé|estimated|dur[ée]|duration|heures|hours|temps|time|charge/i.test(h))) score += 0.2
-  if (headers.some(h => /assigné|assigned|responsable|owner|référent/i.test(h))) score += 0.15
-  if (headers.some(h => /sprint|phase|groupe|group|catégorie|category|module/i.test(h))) score += 0.15
-  if (headers.some(h => /début|start|fin|end|deadline|échéance/i.test(h))) score += 0.1
-  if (headers.some(h => /min|max|optimiste|pessimiste|scénario|scenario|moyenne|average/i.test(h))) score += 0.3
+  const hasModule = headers.some(h => /module|groupe|group|catégorie|category|section|domaine|area/i.test(h))
+  const hasTask = headers.some(h => /sous.?tâche|subtask|tâche|task|action|livrables/i.test(h))
+  const hasStatus = headers.some(h => /statut|status|état|state/i.test(h))
+  const hasDates = headers.some(h => /start|début|end|fin|deadline|échéance/i.test(h))
+  const hasDuration = headers.some(h => /estimation|estimé|expected|actual|heures|hours|temps|time|charge|dur/i.test(h))
+  const hasPriority = headers.some(h => /priorité|priority|urgenc|importan|difficult/i.test(h))
+  const hasMinMax = headers.some(h => /min|max|optimiste|pessimiste|scénario|scenario|moyenne|average/i.test(h))
+
+  if (hasModule) score += 0.25
+  if (hasTask) score += 0.2
+  if (hasStatus) score += 0.15
+  if (hasDates) score += 0.1
+  if (hasDuration) score += 0.2
+  if (hasPriority) score += 0.1
+  if (hasMinMax) score += 0.2
+
+  // COMBO BONUS: Module + Task + Status = definitively SM (project management data)
+  if (hasModule && hasTask && hasStatus) score += 0.4
+  // COMBO: Task + Duration + Dates = project planning
+  if (hasTask && hasDuration && hasDates) score += 0.3
+
   // By data: status values in cells
   const allVals = rows.slice(0, 20).flatMap(r => Object.values(r).map(v => String(v).toLowerCase()))
-  if (allVals.some(v => /^(à faire|en cours|terminé|en attente|bloqué|todo|doing|done|in.?progress|blocked|waiting|pending)/i.test(v))) score += 0.3
-  // Data with many numbers (durations) + text (task names) + small row count
-  const colTypes = analyzeColumns(rows)
-  const types = Object.values(colTypes).map(c => c.type)
-  if (types.includes('number') && types.includes('text') && !types.includes('email') && !types.includes('revenue')) score += 0.2
+  if (allVals.some(v => /^(à faire|en cours|terminé|en attente|bloqué|todo|doing|done|in.?progress|blocked|waiting|pending)/i.test(v))) score += 0.2
 
   return Math.max(0, Math.min(1, score))
 }
@@ -917,14 +930,13 @@ function scoreTasks(name, headers, rows) {
   if (['task', 'tâche', 'tache', 'todo', 'action', 'à faire', 'a faire', 'suivi', 'backlog', 'kanban', '업무', '작업'].some(k => name.includes(k))) score += 0.5
   if (headers.some(h => ['tâche', 'task', 'action', 'todo', 'à faire', 'titre', 'description', 'assigné', 'assigned'].includes(h))) score += 0.3
   if (headers.some(h => /priorité|priority|statut|status|deadline|échéance|due/i.test(h))) score += 0.2
-  // By data: text values that look like actions
-  const allVals = rows.slice(0, 15).flatMap(r => Object.values(r).map(v => String(v)))
-  if (allVals.some(v => /^(appeler|planifier|envoyer|vérifier|préparer|organiser|suivre|relancer|contacter|call|send|schedule|review|prepare|check|update|fix|deploy|create)/i.test(v))) score += 0.3
-  // By data patterns: text + dates + booleans/status = tasks
-  const colTypes = analyzeColumns(rows)
-  const types = Object.values(colTypes).map(c => c.type)
-  if (types.includes('date') && types.includes('text') && (types.includes('boolean') || headers.some(h => /statut|status/i.test(h)))) score += 0.3
-  return Math.min(1, score)
+
+  // NEGATIVE: if data has Module/Group + Duration/Estimation columns → it's Smart Matrice, not simple tasks
+  if (headers.some(h => /module|groupe|group|catégorie|category|section/i.test(h))) score -= 0.4
+  if (headers.some(h => /estimation|expected|actual|heures|hours|dur|min|max|moyenne/i.test(h))) score -= 0.3
+  if (headers.some(h => /difficult|importan|urgenc/i.test(h))) score -= 0.2
+
+  return Math.max(0, Math.min(1, score))
 }
 
 function scoreRoadmap(name, headers, rows) {
