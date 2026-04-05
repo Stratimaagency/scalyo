@@ -178,6 +178,26 @@
         </div>
       </div>
 
+      <!-- Portfolio KPI strip -->
+      <div class="pf-kpi-strip">
+        <div class="pf-kpi">
+          <span class="pf-kpi-val">{{ portfolioStore.accounts.length }}</span>
+          <span class="pf-kpi-label">Comptes</span>
+        </div>
+        <div class="pf-kpi">
+          <span class="pf-kpi-val" style="color: var(--green);">{{ fmtARR(totalARR) }}</span>
+          <span class="pf-kpi-label">ARR Total</span>
+        </div>
+        <div class="pf-kpi">
+          <span class="pf-kpi-val" :style="{ color: avgHealth >= 70 ? 'var(--green)' : avgHealth >= 40 ? 'var(--amber)' : 'var(--red)' }">{{ avgHealth }}/100</span>
+          <span class="pf-kpi-label">Health Moy.</span>
+        </div>
+        <div class="pf-kpi">
+          <span class="pf-kpi-val" style="color: var(--red);">{{ criticalCount }}</span>
+          <span class="pf-kpi-label">Critiques</span>
+        </div>
+      </div>
+
       <!-- Search -->
       <input v-model="search" :placeholder="t('searchAccount')"
         style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 9px 12px; color: var(--text); font-size: 13px; margin-bottom: 12px;" />
@@ -207,28 +227,31 @@
 
       <!-- Account list -->
       <template v-if="filteredAccounts.length">
-        <div v-for="acc in filteredAccounts" :key="acc.id" class="row-item"
-          @click="selectAccount(acc)"
-          :style="{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '11px 10px', borderRadius: '11px', marginBottom: '4px',
-            background: selectedAccount?.id === acc.id ? 'var(--tealBg)' : undefined,
-            border: '1px solid ' + (selectedAccount?.id === acc.id ? 'var(--tealBorder)' : 'transparent'),
-            cursor: 'pointer', transition: 'all .12s'
-          }">
-          <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
-            <div style="width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; color: #fff;"
-              :style="{ background: riskColor(acc.risk) }">
+        <div v-for="acc in filteredAccounts" :key="acc.id" class="pf-account-card"
+          :class="{ 'pf-account-card--selected': selectedAccount?.id === acc.id, 'pf-account-card--critical': acc.risk === 'critical' }"
+          @click="selectAccount(acc)">
+          <div class="pf-account-row">
+            <div class="pf-avatar" :style="{ background: avatarGradient(acc.health || 70) }">
               {{ (acc.name || '?')[0] }}
             </div>
-            <div style="min-width: 0;">
-              <div style="font-weight: 700; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ acc.name }}</div>
-              <div style="font-size: 11px; color: var(--muted);">{{ acc.csm || t('unassigned') }} · {{ fmtMRR(acc.mrr ?? acc.arr) }}</div>
+            <div class="pf-account-info">
+              <div class="pf-account-name">
+                {{ acc.name }}
+                <span v-if="isRenewalSoon(acc.renewal)" class="pf-renewal-badge">⏰</span>
+              </div>
+              <div class="pf-account-meta">
+                <span>{{ acc.csm || t('unassigned') }}</span>
+                <span class="pf-dot">·</span>
+                <span>{{ acc.industry || '' }}</span>
+              </div>
+              <div class="pf-health-mini">
+                <div class="pf-health-mini-bar" :style="{ width: (acc.health || 70) + '%', background: healthGradient(acc.health || 70) }"></div>
+              </div>
             </div>
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
-            <RiskPill :risk="acc.risk" />
-            <div style="font-size: 10px; color: var(--muted);">Score {{ acc.health || 70 }}</div>
+            <div class="pf-account-right">
+              <div class="pf-account-mrr">{{ fmtMRR(acc.mrr ?? acc.arr) }}</div>
+              <RiskPill :risk="acc.risk" />
+            </div>
           </div>
         </div>
       </template>
@@ -242,9 +265,17 @@
       <!-- Header -->
       <div style="padding: 16px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; position: sticky; top: 0; background: var(--bg1); z-index: 10;">
         <div style="display: flex; align-items: center; gap: 11px; min-width: 0;">
-          <div style="width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; flex-shrink: 0; color: #fff;"
-            :style="{ background: riskColor(selectedAccount.risk) }">
-            {{ (selectedAccount.name || '?')[0] }}
+          <div style="position: relative; width: 52px; height: 52px; flex-shrink: 0;">
+            <svg viewBox="0 0 52 52" style="position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg);">
+              <circle cx="26" cy="26" r="23" fill="none" stroke="rgba(0,0,0,.06)" stroke-width="3"/>
+              <circle cx="26" cy="26" r="23" fill="none" :stroke="healthGradientColor(selectedAccount.health || 70)" stroke-width="3"
+                stroke-linecap="round" :stroke-dasharray="144.5" :stroke-dashoffset="144.5 - ((selectedAccount.health || 70) / 100 * 144.5)"
+                style="transition: stroke-dashoffset .6s ease;"/>
+            </svg>
+            <div style="position: absolute; inset: 3px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #fff;"
+              :style="{ background: avatarGradient(selectedAccount.health || 70) }">
+              {{ (selectedAccount.name || '?')[0] }}
+            </div>
           </div>
           <div style="min-width: 0;">
             <div style="font-weight: 800; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ selectedAccount.name }}</div>
@@ -384,6 +415,18 @@
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <div style="font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase;">👥 {{ t('crmContacts') }} ({{ (selectedAccount.contacts || []).length }})</div>
                 <button @click="addContact" style="font-size: 10px; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--tealBorder); background: var(--tealBg); color: var(--teal); cursor: pointer; font-weight: 600;">+ {{ t('crmAddContact') }}</button>
+              </div>
+              <div v-if="showAddContact" style="background: var(--surface); border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px;">
+                <input v-model="newContact.name" :placeholder="t('crmContactName')" style="background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; color: var(--text);" />
+                <div style="display: flex; gap: 4px;">
+                  <input v-model="newContact.role" :placeholder="t('crmContactRole')" style="flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; color: var(--text);" />
+                  <input v-model="newContact.email" placeholder="Email" style="flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; color: var(--text);" />
+                </div>
+                <div style="display: flex; gap: 4px;">
+                  <input v-model="newContact.phone" placeholder="Tél" style="flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; color: var(--text);" />
+                  <button @click="addContact" :disabled="!newContact.name.trim()" style="padding: 6px 12px; border-radius: 6px; border: none; background: var(--teal); color: #fff; font-size: 11px; font-weight: 600; cursor: pointer;">OK</button>
+                  <button @click="showAddContact = false" style="padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border); background: none; color: var(--muted); font-size: 11px; cursor: pointer;">✕</button>
+                </div>
               </div>
               <div v-for="(c, i) in (selectedAccount.contacts || [])" :key="i"
                 style="background: var(--surface); border-radius: 8px; padding: 8px 10px; margin-bottom: 4px; font-size: 12px; display: flex; align-items: center; gap: 8px;">
@@ -639,6 +682,8 @@ const editForm = ref({})
 const editError = ref('')
 const addError = ref('')
 const importMsg = ref('')
+const showAddContact = ref(false)
+const newContact = ref({ name: '', role: '', email: '', phone: '' })
 
 // Import state
 const importFile = ref(null)
@@ -768,14 +813,13 @@ function removeTag(idx) {
 // ─── CRM: Contacts multiples ───
 function addContact() {
   if (!selectedAccount.value) return
-  const name = prompt(t('crmContactName'))
-  if (!name) return
-  const role = prompt(t('crmContactRole')) || ''
-  const email = prompt(t('crmContactEmail')) || ''
-  const phone = prompt(t('crmContactPhone')) || ''
-  const contacts = [...(selectedAccount.value.contacts || []), { name, role, email, phone }]
+  if (!showAddContact.value) { showAddContact.value = true; return }
+  if (!newContact.value.name.trim()) return
+  const contacts = [...(selectedAccount.value.contacts || []), { ...newContact.value }]
   selectedAccount.value.contacts = contacts
   portfolioStore.updateAccount(selectedAccount.value.id, { contacts })
+  newContact.value = { name: '', role: '', email: '', phone: '' }
+  showAddContact.value = false
 }
 function removeContact(idx) {
   if (!selectedAccount.value) return
@@ -964,6 +1008,41 @@ const accountIssues = computed(() => {
   if (!selectedAccount.value) return []
   return parseItems(selectedAccount.value.issues)
 })
+
+// ─── KPI computeds ───
+const totalARR = computed(() => portfolioStore.accounts.reduce((s, a) => s + (a.arr || (a.mrr || 0) * 12), 0))
+const avgHealth = computed(() => {
+  const accs = portfolioStore.accounts
+  if (!accs.length) return 0
+  return Math.round(accs.reduce((s, a) => s + (a.health || 70), 0) / accs.length)
+})
+const criticalCount = computed(() => portfolioStore.accounts.filter(a => a.risk === 'critical').length)
+
+// ─── Visual helpers ───
+function avatarGradient(health) {
+  if (health >= 70) return 'linear-gradient(135deg, #22c55e, #06b6d4)'
+  if (health >= 40) return 'linear-gradient(135deg, #f59e0b, #f97316)'
+  return 'linear-gradient(135deg, #ef4444, #f43f5e)'
+}
+
+function healthGradient(health) {
+  if (health >= 70) return 'linear-gradient(90deg, #22c55e, #06b6d4)'
+  if (health >= 40) return 'linear-gradient(90deg, #f59e0b, #f97316)'
+  return 'linear-gradient(90deg, #ef4444, #f43f5e)'
+}
+
+function healthGradientColor(health) {
+  if (health >= 70) return '#22c55e'
+  if (health >= 40) return '#f59e0b'
+  return '#ef4444'
+}
+
+function isRenewalSoon(renewal) {
+  if (!renewal) return false
+  const d = new Date(renewal)
+  const diff = (d - new Date()) / (1000 * 60 * 60 * 24)
+  return diff >= 0 && diff <= 30
+}
 
 // ─── Helpers ───
 function isRenewalOverdue(renewal) {
@@ -1299,3 +1378,45 @@ async function runImport() {
   setTimeout(() => { importMsg.value = '' }, 5000)
 }
 </script>
+
+<style scoped>
+/* Account cards */
+.pf-account-card {
+  padding: 12px; border-radius: 12px; margin-bottom: 6px;
+  border: 1px solid transparent; cursor: pointer; transition: all .15s;
+  background: var(--surface);
+}
+.pf-account-card:hover { border-color: var(--border); transform: translateX(2px); box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+.pf-account-card--selected { border-color: var(--tealBorder); background: var(--tealBg); }
+.pf-account-card--critical { border-left: 3px solid var(--red); }
+.pf-account-row { display: flex; align-items: center; gap: 10px; }
+.pf-avatar {
+  width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center;
+  justify-content: center; font-size: 15px; font-weight: 800; color: #fff; flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,.1);
+}
+.pf-account-info { flex: 1; min-width: 0; }
+.pf-account-name {
+  font-weight: 700; font-size: 13px; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; display: flex; align-items: center; gap: 4px;
+}
+.pf-renewal-badge { font-size: 12px; animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.pf-account-meta { font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pf-dot { margin: 0 3px; }
+.pf-health-mini { height: 3px; background: rgba(0,0,0,.04); border-radius: 2px; margin-top: 5px; overflow: hidden; }
+.pf-health-mini-bar { height: 100%; border-radius: 2px; transition: width .4s; }
+.pf-account-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.pf-account-mrr { font-size: 12px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--teal); }
+
+/* KPI strip */
+.pf-kpi-strip {
+  display: flex; gap: 8px; margin-bottom: 14px; padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.pf-kpi {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.pf-kpi-val { font-size: 16px; font-weight: 900; font-family: 'JetBrains Mono', monospace; }
+.pf-kpi-label { font-size: 9px; color: var(--muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+</style>
