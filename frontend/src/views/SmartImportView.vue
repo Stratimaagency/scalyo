@@ -141,6 +141,7 @@
       <h4 style="font-weight: 700; margin-bottom: 8px;">{{ t('smartImportDone') }}</h4>
       <p style="font-size: 13px; color: var(--muted); margin-bottom: 20px;">
         {{ importResult.portfolio }} {{ t('portfolio').toLowerCase() }},
+        {{ importResult.smart_matrice || 0 }} Smart Matrice,
         {{ importResult.kpis }} KPIs,
         {{ importResult.tasks }} {{ t('tasks').toLowerCase() }},
         {{ importResult.events || 0 }} {{ t('planning').toLowerCase() }}
@@ -189,7 +190,7 @@ const totalParsed = computed(() => {
 })
 
 const summaryCards = computed(() => {
-  const counts = { portfolio: 0, kpis: 0, tasks: 0, roadmap: 0, team: 0 }
+  const counts = { portfolio: 0, smart_matrice: 0, kpis: 0, tasks: 0, roadmap: 0, team: 0 }
   for (const s of aiMapping.value) {
     if (s.module !== 'skip' && counts[s.module] !== undefined) {
       counts[s.module] += s.totalRows || 0
@@ -1473,6 +1474,7 @@ async function doImport() {
     try {
       const { data } = await smartImportApi.execute({
         portfolio: payload.portfolio,
+        smart_matrice: payload.smart_matrice,
         kpis: payload.kpis,
         tasks: formattedTasks,
         roadmap: payload.roadmap || [],
