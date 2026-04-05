@@ -3,7 +3,7 @@
     <!-- Hero -->
     <div class="wb-hero">
       <div class="wb-hero-left">
-        <div class="wb-hero-icon">💚</div>
+        <div class="wb-hero-icon">{{ roleIcon }}</div>
         <div>
           <h1 class="wb-title">{{ t('wellbeing') }}</h1>
           <p class="wb-subtitle">🔒 {{ t('wbConf') }}</p>
@@ -64,7 +64,7 @@
             <div class="wb-member-avatar" :style="{ background: (member.charge || 70) > 85 ? 'var(--red)' : (member.charge || 70) > 70 ? 'var(--amber)' : 'var(--green)' }">{{ (member.name || '?')[0] }}</div>
             <div class="wb-member-info">
               <div class="wb-member-name">{{ member.name }}</div>
-              <div class="wb-member-meta">{{ member.accounts || 0 }} {{ t('crmAccounts') }} · {{ t('satisfaction') }}: {{ member.sat || 7 }}/10</div>
+              <div class="wb-member-meta">{{ member.accounts || 0 }} {{ userRole === 'commercial' ? 'prospects' : userRole === 'kam' ? 'comptes cl\u00e9s' : t('crmAccounts') }} · {{ t('satisfaction') }}: {{ member.sat || 7 }}/10</div>
             </div>
             <span class="wb-member-badge" :style="{ background: (member.charge || 70) > 85 ? 'var(--redBg)' : (member.charge || 70) > 70 ? 'var(--amberBg)' : 'var(--greenBg)', color: (member.charge || 70) > 85 ? 'var(--red)' : (member.charge || 70) > 70 ? 'var(--amber)' : 'var(--green)' }">
               {{ (member.charge || 70) > 85 ? '⚠ ' + t('overload') : (member.charge || 70) > 70 ? t('caution') : t('healthy') }}
@@ -149,10 +149,14 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { wellbeingApi, coachApi } from '../api'
 import { useI18n } from '../i18n'
 import { usePreferencesStore } from '../stores/preferences'
+import { useAuthStore } from '../stores/auth'
 import { useChat } from '../composables/useChat'
 
 const { t } = useI18n()
 const prefsStore = usePreferencesStore()
+const authStore = useAuthStore()
+const userRole = computed(() => authStore.user?.role || 'csm')
+const roleIcon = computed(() => ({ csm: '\uD83D\uDC9A', commercial: '\uD83D\uDCB0', kam: '\uD83E\uDD1D', manager: '\uD83D\uDC9A' }[userRole.value] || '\uD83D\uDC9A'))
 const chatContainer = ref(null)
 const bottomRef = ref(null)
 const novaInput = ref('')
@@ -180,7 +184,28 @@ const tips = computed(() => [
   t('wbTip6') || 'Buvez un grand verre d\'eau maintenant. Votre corps en a besoin.',
   t('wbTip7') || 'Marchez 5 minutes — même autour du bureau ça change tout.',
 ])
-const currentTip = computed(() => tips.value[tipIndex.value % tips.value.length])
+const roleTips = computed(() => {
+  if (userRole.value === 'commercial') return [
+    'Apr\u00e8s un refus, notez ce que vous avez appris. Chaque "non" vous rapproche d\'un "oui".',
+    'Bloquez 1h sans email ni Slack pour vos appels de prospection.',
+    'C\u00e9l\u00e9brez chaque deal sign\u00e9, m\u00eame petit. La motivation se nourrit de victoires.',
+    'Pr\u00e9parez votre pipeline le vendredi pour d\u00e9marrer lundi avec clart\u00e9.',
+    'Un prospect difficile ? Changez d\'angle, pas d\'\u00e9nergie.',
+    'Prenez 5 min pour visualiser votre objectif du mois. \u00c7a marche.',
+    'Partagez une victoire avec l\'\u00e9quipe \u2014 le succ\u00e8s est contagieux.',
+  ]
+  if (userRole.value === 'kam') return [
+    'Planifiez un point strat\u00e9gique mensuel avec chaque compte cl\u00e9.',
+    'Notez les signaux faibles : un sponsor qui change, un budget gel\u00e9...',
+    'Investissez dans la relation avant de pousser l\'upsell.',
+    'Pr\u00e9parez chaque QBR comme une pr\u00e9sentation \u00e0 votre board.',
+    'Un compte silencieux est un compte en danger. Relancez cette semaine.',
+    'Cartographiez les d\u00e9cideurs \u2014 votre interlocuteur n\'est pas toujours le payeur.',
+    'Bloquez du temps pour la veille sectorielle de vos comptes.',
+  ]
+  return tips.value // CSM tips (default)
+})
+const currentTip = computed(() => roleTips.value[tipIndex.value % roleTips.value.length])
 const tipIcon = computed(() => ['🌱', '💡', '🧘', '💬', '🎉', '💧', '🚶'][tipIndex.value % 7])
 const tipBg = computed(() => 'rgba(52,168,83,.06)')
 const tipBorder = computed(() => 'rgba(52,168,83,.2)')
@@ -197,12 +222,26 @@ const moodHistory = computed(() => {
 })
 
 // Encouragements
-const encouragements = computed(() => [
-  { emoji: '💪', text: t('wbEncStrength') || 'Vous êtes plus fort(e) que vous ne pensez' },
-  { emoji: '🌟', text: t('wbEncStar') || 'Votre travail fait la différence' },
-  { emoji: '☕', text: t('wbEncPause') || 'Accordez-vous une pause méritée' },
-  { emoji: '🤝', text: t('wbEncTeam') || 'N\'hésitez pas à demander de l\'aide' },
-])
+const encouragements = computed(() => {
+  if (userRole.value === 'commercial') return [
+    { emoji: '🎯', text: 'Chaque appel vous rapproche du deal' },
+    { emoji: '💪', text: 'Les meilleurs vendeurs ont aussi des jours sans' },
+    { emoji: '🚀', text: 'Votre pipeline se construit un contact à la fois' },
+    { emoji: '⭐', text: 'Vous avez déjà prouvé que vous pouvez closer' },
+  ]
+  if (userRole.value === 'kam') return [
+    { emoji: '🤝', text: 'Vos comptes vous font confiance' },
+    { emoji: '📈', text: 'Chaque renouvellement est une victoire stratégique' },
+    { emoji: '🧠', text: 'Votre expertise sectorielle fait la différence' },
+    { emoji: '💎', text: 'La rétention est le meilleur investissement' },
+  ]
+  return [
+    { emoji: '💪', text: t('wbEncStrength') || 'Vous êtes plus fort(e) que vous ne pensez' },
+    { emoji: '🌟', text: t('wbEncStar') || 'Votre travail fait la différence' },
+    { emoji: '☕', text: t('wbEncPause') || 'Accordez-vous une pause méritée' },
+    { emoji: '🤝', text: t('wbEncTeam') || 'N\'hésitez pas à demander de l\'aide' },
+  ]
+})
 function showEncouragement(enc) { showToast(enc.emoji + ' ' + enc.text) }
 
 const wbData = ref({ score: 70, burnout: 'none', charge: 70, trend: '+0', alerts: [], team: [] })
@@ -241,7 +280,23 @@ const { messages, sending, send: chatSend } = useChat(async (msgs) => {
   return data.content
 })
 
-const quickChips = computed(() => [t('wbStressed'), t('wbExhausted'), t('wbTooManyAccounts'), t('wbManagerConflict'), t('wbDoubt')])
+const quickChips = computed(() => {
+  if (userRole.value === 'commercial') return [
+    'Je n\'atteins pas mes objectifs',
+    'Trop de pression sur les chiffres',
+    'Comment gérer les refus ?',
+    'Mon pipeline est vide',
+    'Besoin de motivation'
+  ]
+  if (userRole.value === 'kam') return [
+    'Un compte clé menace de partir',
+    'Comment préparer un QBR efficace ?',
+    'Trop de comptes à gérer',
+    'Négociation de renouvellement difficile',
+    'Comment identifier l\'upsell ?'
+  ]
+  return [t('wbStressed'), t('wbExhausted'), t('wbTooManyAccounts'), t('wbManagerConflict'), t('wbDoubt')]
+})
 
 async function sendNova(text) {
   const msg = typeof text === 'string' ? text.trim() : novaInput.value.trim()
