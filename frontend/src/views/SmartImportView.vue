@@ -189,7 +189,7 @@ const totalParsed = computed(() => {
 })
 
 const summaryCards = computed(() => {
-  const counts = { portfolio: 0, kpis: 0, tasks: 0, roadmap: 0, team: 0 }
+  const counts = { portfolio: 0, smart_matrice: 0, kpis: 0, tasks: 0, roadmap: 0, team: 0 }
   for (const s of aiMapping.value) {
     if (s.module !== 'skip' && counts[s.module] !== undefined) {
       counts[s.module] += s.totalRows || 0
@@ -198,7 +198,7 @@ const summaryCards = computed(() => {
   const taskCount = generatedTasks.value.length + counts.tasks
   return [
     { key: 'portfolio', label: t('portfolio'), count: counts.portfolio },
-    { key: 'smart_matrice', label: 'Smart Matrice', count: counts.smart_matrice || 0 },
+    { key: 'smart_matrice', label: 'Smart Matrice', count: counts.smart_matrice },
     { key: 'kpis', label: 'KPIs', count: Object.keys(computedKpis.value).length },
     { key: 'tasks', label: 'Task Board', count: taskCount },
     { key: 'planning', label: t('planning'), count: '✓' },
@@ -444,19 +444,11 @@ async function processFile(file) {
           extractCsmInsights(rows, kpis, tasks, teamData)
         }
 
-        // Extract tasks if detected
-        if (scores.tasks > 0.3) {
-          extractTaskRows(rows, headers, tasks)
-        }
-
-        // Extract roadmap items
-        if (scores.roadmap > 0.3) {
-          extractRoadmapRows(rows, headers, tasks)
-        }
-
-        // Extract planning events
-        if (scores.planning > 0.3) {
-          extractPlanningRows(rows, headers, tasks)
+        // Extract tasks/roadmap/planning ONLY if the sheet is NOT already detected as smart_matrice or portfolio
+        if (module !== 'smart_matrice' && module !== 'portfolio') {
+          if (scores.tasks > 0.3) extractTaskRows(rows, headers, tasks)
+          if (scores.roadmap > 0.3) extractRoadmapRows(rows, headers, tasks)
+          if (scores.planning > 0.3) extractPlanningRows(rows, headers, tasks)
         }
       }
     }
