@@ -17,6 +17,10 @@ import { registerIntegrationRoutes } from './routes/integrations.js'
 import { registerTeamRoutes } from './routes/team.js'
 import { registerSmartMatriceRoutes } from './routes/smart-matrice.js'
 import modules from './routes/modules.js'
+import alerts from './routes/alerts.js'
+import notifications from './routes/notifications.js'
+import healthHistory from './routes/health-history.js'
+import exports from './routes/exports.js'
 
 const app = new Hono()
 
@@ -25,6 +29,7 @@ app.use('*', corsMiddleware())
 
 // Health check
 app.get('/', (c) => c.json({ status: 'ok', service: 'scalyo-api' }))
+app.get('/api/health', (c) => c.json({ status: 'ok', version: '1.0.0', timestamp: new Date().toISOString() }))
 
 // Rate limiting on sensitive routes
 app.use('/api/auth/login/*', rateLimitMiddleware({ maxRequests: 10, windowMs: 60000 }))
@@ -52,6 +57,10 @@ app.route('/api/coach', coach)
 app.route('/api/email-studio', emailStudio)
 app.route('/api/feedback', feedback)
 app.route('/api/quotes', quotes)
+app.route('/api/alerts', alerts)
+app.route('/api/notifications', notifications)
+app.route('/api/health-history', healthHistory)
+app.route('/api/exports', exports)
 
 // === TASKS (direct mount — Hono sub-router bug workaround) ===
 async function handleGetTasks(c) {
@@ -157,7 +166,8 @@ app.onError(async (err, c) => {
       'INSERT INTO error_log (path, method, status, message) VALUES (?, ?, 500, ?)'
     ).bind(c.req.path, c.req.method, (err.message || 'Unknown error').slice(0, 500)).run()
   } catch {}
-  return c.json({ error: 'Internal server error' }, 500, headers)
+  const requestId = crypto.randomUUID()
+  return c.json({ error: 'Internal server error', requestId }, 500, headers)
 })
 
 export default app

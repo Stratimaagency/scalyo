@@ -26,6 +26,7 @@
             style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--redBg); border: 1px solid var(--redBorder); color: var(--red);">
             <ScalyoIcon name="trash" :size="12" /> {{ t('bulkDelete') }}
           </button>
+          <ExportDropdown type="clients" :filters="{ risk: filter, csm: csmFilter }" />
         </div>
       </div>
 
@@ -653,6 +654,7 @@ import AppModal from '../components/AppModal.vue'
 import AppField from '../components/AppField.vue'
 import EmptyState from '../components/EmptyState.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
+import ExportDropdown from '../components/ExportDropdown.vue'
 
 const portfolioStore = usePortfolioStore()
 const authStore = useAuthStore()
