@@ -55,8 +55,8 @@ let pollInterval = null
 
 async function fetchCount() {
   try {
-    const res = await notificationsApi.count()
-    unreadCount.value = res.count
+    const { data } = await notificationsApi.count({ _silent: true })
+    unreadCount.value = data?.unread || 0
   } catch (e) {
     // silently fail
   }

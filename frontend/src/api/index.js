@@ -102,6 +102,7 @@ export const feedbackApi = {
 // Alerts
 export const alertsApi = {
   list: (params) => api.get('/alerts/', { params }),
+  listSilent: (params) => api.get('/alerts/', { params, _silent: true }),
   getRules: () => api.get('/alerts/rules'),
   createRule: (data) => api.post('/alerts/rules', data),
   updateRule: (id, data) => api.put(`/alerts/rules/${id}`, data),
@@ -113,7 +114,7 @@ export const alertsApi = {
 // Notifications
 export const notificationsApi = {
   list: (params) => api.get('/notifications/', { params }),
-  count: () => api.get('/notifications/count'),
+  count: () => api.get('/notifications/count', { _silent: true }),
   read: (id) => api.put(`/notifications/${id}/read`),
   readAll: () => api.put('/notifications/read-all'),
   remove: (id) => api.delete(`/notifications/${id}`),

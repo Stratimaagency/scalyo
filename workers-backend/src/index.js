@@ -152,7 +152,10 @@ app.post('/api/planning/save', ...mw, handleSavePlanning)
 app.post('/api/planning/save/', ...mw, handleSavePlanning)
 
 // 404 fallback
-app.notFound((c) => c.json({ error: 'Not found', path: c.req.path, method: c.req.method }, 404))
+app.notFound((c) => {
+  const headers = corsHeaders(c)
+  return c.json({ error: 'Not found', path: c.req.path, method: c.req.method }, 404, headers)
+})
 
 // Error handler
 app.onError(async (err, c) => {
