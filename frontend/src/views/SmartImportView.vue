@@ -1465,6 +1465,7 @@ async function doImport() {
     try {
       const { data } = await smartImportApi.execute({
         portfolio: payload.portfolio,
+        smart_matrice: payload.smart_matrice,
         kpis: payload.kpis,
         tasks: formattedTasks,
         roadmap: payload.roadmap || [],
