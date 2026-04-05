@@ -1,6 +1,8 @@
 import { Hono } from 'hono'
+import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 
 const quotes = new Hono()
+quotes.use('/*', authMiddleware(), companyRequired(), trialGuard())
 
 // GET /api/quotes/
 quotes.get('/', async (c) => {
