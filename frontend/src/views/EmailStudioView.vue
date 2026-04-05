@@ -166,6 +166,8 @@ const TEMPLATES_FR = [
   {
     id: 'onboarding_j1',
     cat: 'Onboarding',
+    roles: ['csm'],
+    emoji: '👋',
     title: 'Bienvenue & premiers pas',
     subject: 'Bienvenue chez [Entreprise] — votre guide de démarrage',
     body: `Bonjour [Prénom],
@@ -192,6 +194,8 @@ Customer Success Manager`
   {
     id: 'qbr_invite',
     cat: 'QBR',
+    roles: ['csm'],
+    emoji: '📊',
     title: 'Invitation QBR trimestriel',
     subject: 'QBR Q[N] — Revue trimestrielle de votre succès',
     body: `Bonjour [Prénom],
@@ -218,6 +222,8 @@ Ce rendez-vous est stratégique pour maximiser votre ROI. Je prépare un rapport
   {
     id: 'health_check',
     cat: 'Suivi',
+    roles: ['csm'],
+    emoji: '📈',
     title: 'Point de santé mensuel',
     subject: "📊 Votre tableau de bord [Mois] — points d'attention",
     body: `Bonjour [Prénom],
@@ -247,6 +253,8 @@ Bonne lecture,
   {
     id: 'churn_alert',
     cat: 'Risque',
+    roles: ['csm'],
+    emoji: '⚠️',
     title: 'Relance compte à risque',
     subject: '📞 Je souhaite prendre de vos nouvelles — [Entreprise]',
     body: `Bonjour [Prénom],
@@ -270,6 +278,8 @@ Votre succès est ma priorité.
   {
     id: 'renewal',
     cat: 'Renouvellement',
+    roles: ['csm'],
+    emoji: '🔄',
     title: 'Préparation renouvellement',
     subject: 'Votre abonnement — renouvellement dans [N] jours',
     body: `Bonjour [Prénom],
@@ -297,6 +307,8 @@ Bien à vous,
   {
     id: 'expansion',
     cat: 'Expansion',
+    roles: ['csm'],
+    emoji: '🚀',
     title: "Opportunité d'expansion",
     subject: '💡 Opportunité pour aller encore plus loin',
     body: `Bonjour [Prénom],
@@ -710,14 +722,14 @@ const templateSet = computed(() => {
 
 const categories = computed(() => {
   let list = templateSet.value
-  if (activeRole.value !== 'all') list = list.filter(t => t.role === activeRole.value)
+  if (activeRole.value !== 'all') list = list.filter(t => (t.roles || []).includes(activeRole.value))
   const cats = [...new Set(list.map(t => t.cat))]
   return ['all', ...cats]
 })
 
 const filteredTemplates = computed(() => {
   let list = templateSet.value
-  if (activeRole.value !== 'all') list = list.filter(t => t.role === activeRole.value)
+  if (activeRole.value !== 'all') list = list.filter(t => (t.roles || []).includes(activeRole.value))
   if (activeCat.value !== 'all') list = list.filter(t => t.cat === activeCat.value)
   if (searchQuery.value.trim()) {
     const q = searchQuery.value.toLowerCase()
