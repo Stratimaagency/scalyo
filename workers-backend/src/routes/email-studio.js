@@ -1,7 +1,9 @@
 import { Hono } from 'hono'
+import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 import { planGate } from '../middleware/planGate.js'
 
 const emailStudio = new Hono()
+emailStudio.use('*', authMiddleware(), companyRequired(), trialGuard())
 
 // --- Template Registry (in-memory, same as Django version) ---
 
