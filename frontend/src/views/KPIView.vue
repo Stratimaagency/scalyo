@@ -409,7 +409,7 @@ function defaultSectionData(type) {
 async function loadSessions() {
   try {
     const { data } = await api.get('/modules/copil')
-    sessions.value = (data.results || data || []).map(s => ({
+    sessions.value = (data.data || data.results || data || []).map(s => ({
       ...s,
       sections: s.sections || []
     }))
