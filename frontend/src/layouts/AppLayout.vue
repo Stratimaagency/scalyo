@@ -76,8 +76,6 @@
         <NotificationCenter />
       </div>
       <main class="main-scroll">
-        <!-- Alerts banner -->
-        <AlertsBanner />
         <!-- Banners -->
         <div v-if="showVerifyBanner" class="banner banner--warn">
           <span>{{ t('verifyEmailBanner') }}</span>
@@ -126,7 +124,6 @@ import { useI18n } from '../i18n'
 import { useNavigation } from '../composables/useNavigation'
 import ScalyoLogo from '../components/ScalyoLogo.vue'
 import NotificationCenter from '../components/NotificationCenter.vue'
-import AlertsBanner from '../components/AlertsBanner.vue'
 
 const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()

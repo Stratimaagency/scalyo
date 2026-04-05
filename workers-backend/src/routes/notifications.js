@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 
 const router = new Hono()
-router.use('/*', authMiddleware(), companyRequired(), trialGuard())
+router.use('*', authMiddleware(), companyRequired(), trialGuard())
 
 // GET /notifications — List notifications for current user
 router.get('/', async (c) => {
