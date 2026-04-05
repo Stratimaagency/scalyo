@@ -1062,29 +1062,38 @@ function extractAllTables(sheet) {
   const rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false })
   if (!rows.length) return []
 
-  const dataKeywords = ['csm', 'client', 'nom', 'name', 'arr', 'mrr', 'ca', 'health', 'santé',
-    'nps', 'churn', 'séniorité', 'seniorite', 'task', 'tâche', 'phase', 'total',
-    'company', 'entreprise', 'revenue', 'score', 'contact', 'email', 'id client',
-    'plan', 'risque', 'critique', 'neutre', 'sain']
+  const dataKeywords = ['csm', 'client', 'nom', 'name', 'arr', 'mrr', 'health', 'santé',
+    'nps', 'churn', 'séniorité', 'seniorite', 'task', 'tâche', 'sous-tâche',
+    'company', 'entreprise', 'revenue', 'score', 'contact', 'email',
+    'module', 'statut', 'status', 'priorité', 'priority', 'assigné', 'assigned',
+    'urgence', 'urgency', 'importance', 'difficulty', 'difficulté',
+    'start date', 'end date', 'début', 'fin', 'deadline', 'échéance',
+    'sprint', 'phase', 'catégorie', 'category', 'groupe', 'group']
 
+  function countMatches(headers) {
+    return headers.filter(h => dataKeywords.some(k => h.toLowerCase().includes(k))).length
+  }
+
+  // Try the default row 1 as headers
   const firstHeaders = Object.keys(rows[0])
-  const hasData = firstHeaders.some(h => dataKeywords.some(k => h.toLowerCase().includes(k)))
-  if (hasData) return [rows]
+  let bestRows = rows
+  let bestScore = countMatches(firstHeaders)
 
-  // Try different start rows for sheets with decorative headers
+  // Also try different start rows (for sheets with title/summary rows)
   const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1')
-  const tables = []
-
-  for (let startRow = 1; startRow <= Math.min(range.e.r, 20); startRow++) {
+  for (let startRow = 1; startRow <= Math.min(range.e.r, 10); startRow++) {
     const subRows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false, range: startRow })
-    if (!subRows.length) continue
+    if (!subRows.length || subRows.length < 2) continue
     const subHeaders = Object.keys(subRows[0])
-    if (subHeaders.some(h => dataKeywords.some(k => h.toLowerCase().includes(k))) && subRows.length > 1) {
-      tables.push(subRows)
+    const score = countMatches(subHeaders)
+    // Prefer the start row with MORE keyword matches
+    if (score > bestScore) {
+      bestScore = score
+      bestRows = subRows
     }
   }
 
-  return tables.length ? tables : [rows]
+  return [bestRows]
 }
 
 // --- Column value finder ---
@@ -1144,86 +1153,100 @@ async function doImport() {
           }
         }
       } else if (sheet.module === 'smart_matrice') {
-        // Smart detection of columns — handle __EMPTY headers from merged Excel cells
-        const sampleRow = rows[0] || {}
-        const colKeys = Object.keys(sampleRow)
+        // === HUMAN-LIKE column detection ===
+        // Step 1: Map every column to a ROLE by checking its header name
+        const colKeys = Object.keys(rows[0] || {})
+        const colMap = { task: null, group: null, status: null, priority: null, startDate: null, endDate: null, durEstimated: null, durReal: null, importance: null, difficulty: null }
 
-        // Find the best column for each role by analyzing content
-        let taskCol = null, groupCol = null, statusCol = null, priorityCol = null
         for (const key of colKeys) {
-          const keyL = key.toLowerCase()
-          const sampleVals = rows.slice(0, 15).map(r => String(r[key] || '').trim()).filter(Boolean)
-          if (!sampleVals.length) continue
-
-          // Task name: longest text column with unique values
-          if (!taskCol && sampleVals.some(v => v.length > 5) && new Set(sampleVals).size > sampleVals.length * 0.5) {
-            if (keyL.includes('tâche') || keyL.includes('task') || keyL.includes('sous-tâche') || keyL.includes('subtask') || keyL.includes('description') || keyL.includes('nom') || keyL.includes('name')) {
-              taskCol = key
-            }
-          }
-          // Group: column with repeated values (module names, categories)
-          if (!groupCol && new Set(sampleVals).size < sampleVals.length * 0.5 && sampleVals[0].length > 2) {
-            if (keyL.includes('module') || keyL.includes('group') || keyL.includes('phase') || keyL.includes('catégorie') || keyL.includes('category') || keyL.includes('sprint') || keyL.includes('section')) {
-              groupCol = key
-            }
-          }
-          // Status
-          if (keyL.includes('statut') || keyL.includes('status') || keyL.includes('état')) statusCol = key
-          // Priority
-          if (keyL.includes('priorité') || keyL.includes('priority') || keyL.includes('urgence')) priorityCol = key
+          const kl = key.toLowerCase().trim()
+          if (!colMap.task && (/sous.?tâche|subtask|tâche|task|description|action|livrables|deliverable/i.test(kl) || kl === 'name' || kl === 'nom' || kl === 'titre' || kl === 'title')) colMap.task = key
+          if (!colMap.group && /module|groupe|group|phase|catégorie|category|section|sprint|famille|domaine|area/i.test(kl)) colMap.group = key
+          if (!colMap.status && /statut|status|état|state|avancement/i.test(kl)) colMap.status = key
+          if (!colMap.priority && /priorité|priority|urgenc/i.test(kl)) colMap.priority = key
+          if (!colMap.importance && /importan/i.test(kl)) colMap.importance = key
+          if (!colMap.difficulty && /difficult|difficulté/i.test(kl)) colMap.difficulty = key
+          if (!colMap.startDate && /start|début|date de début|date début|commence/i.test(kl)) colMap.startDate = key
+          if (!colMap.endDate && /end|fin|date de fin|date fin|échéance|deadline|termine/i.test(kl)) colMap.endDate = key
+          if (!colMap.durEstimated && /expect|estimat|prévu|planned|budg/i.test(kl)) colMap.durEstimated = key
+          if (!colMap.durReal && /actual|réel|reell|passé|spent|consommé/i.test(kl)) colMap.durReal = key
         }
 
-        // Fallback: if no named columns found, guess by position and content
-        if (!taskCol || !groupCol) {
+        // Step 2: Fallback — detect columns by DATA content if headers didn't match
+        if (!colMap.task || !colMap.group) {
           for (const key of colKeys) {
-            const sampleVals = rows.slice(0, 20).map(r => String(r[key] || '').trim()).filter(Boolean)
-            if (!sampleVals.length) continue
-            const avgLen = sampleVals.reduce((a, v) => a + v.length, 0) / sampleVals.length
-            const uniqueRatio = new Set(sampleVals).size / sampleVals.length
+            if (key === colMap.task || key === colMap.group || key === colMap.status) continue
+            const vals = rows.slice(0, 20).map(r => String(r[key] || '').trim()).filter(Boolean)
+            if (!vals.length) continue
+            const avgLen = vals.reduce((a, v) => a + v.length, 0) / vals.length
+            const uniqueRatio = new Set(vals).size / Math.max(vals.length, 1)
+            const allNumbers = vals.every(v => !isNaN(Number(v)))
+            if (allNumbers) continue // Skip number-only columns
 
-            // Group column: short text, repeated (e.g., "TABLEAU DE BORD" appears many times)
-            if (!groupCol && uniqueRatio < 0.4 && avgLen > 3 && avgLen < 50) { groupCol = key; continue }
-            // Task column: longer text, mostly unique
-            if (!taskCol && uniqueRatio > 0.5 && avgLen > 5) { taskCol = key; continue }
+            // Group = repeated short text (TABLEAU DE BORD, CLIENTS...)
+            if (!colMap.group && uniqueRatio < 0.4 && avgLen > 2 && avgLen < 50) { colMap.group = key; continue }
+            // Task = unique longer text (Dashboard principal, Widgets KPI...)
+            if (!colMap.task && uniqueRatio > 0.4 && avgLen > 5) { colMap.task = key; continue }
           }
         }
 
-        // Last resort: first text column = task, skip number-only columns
-        if (!taskCol) {
-          taskCol = colKeys.find(k => {
-            const vals = rows.slice(0, 5).map(r => String(r[k] || ''))
-            return vals.some(v => v.length > 3 && isNaN(Number(v)))
-          }) || colKeys[0]
+        // Step 3: Last resort
+        if (!colMap.task) {
+          colMap.task = colKeys.find(k => rows.slice(0, 5).some(r => String(r[k] || '').length > 5 && isNaN(Number(r[k])))) || colKeys[1] || colKeys[0]
         }
 
-        console.log('[SM Import] columns:', { taskCol, groupCol, statusCol, priorityCol })
+        console.log('[SM Import] Column mapping:', colMap)
+        console.log('[SM Import] Sample row:', rows[0])
 
+        // Step 4: Extract each row as a task
         for (const row of rows) {
-          const taskName = String(row[taskCol] || '').trim()
+          const taskName = String(row[colMap.task] || '').trim()
           if (!taskName || taskName.length < 2) continue
-          // Skip header-like rows
-          if (/^(#|numéro|number|total|sous-total|id)$/i.test(taskName)) continue
-          // Skip pure numbers
+          if (/^(#|numéro|number|total|sous-total|id|n°)$/i.test(taskName)) continue
           if (!isNaN(Number(taskName)) && taskName.length < 4) continue
 
-          const group = groupCol ? String(row[groupCol] || '').trim() : ''
-          const status = statusCol ? String(row[statusCol] || '').toLowerCase() : 'todo'
-          const priority = priorityCol ? String(row[priorityCol] || '').toLowerCase() : 'medium'
+          const group = colMap.group ? String(row[colMap.group] || '').trim() : ''
+          const rawStatus = colMap.status ? String(row[colMap.status] || '').trim().toLowerCase() : ''
+          const rawPriority = colMap.priority ? String(row[colMap.priority] || '') : ''
+          const rawImportance = colMap.importance ? String(row[colMap.importance] || '') : ''
 
-          // Normalize status
-          let normalizedStatus = 'todo'
-          if (/terminé|done|complet|fini|closed/i.test(status)) normalizedStatus = 'done'
-          else if (/en cours|doing|in.?progress|started|actif/i.test(status)) normalizedStatus = 'doing'
-          else if (/bloqué|blocked|waiting|attente|pause/i.test(status)) normalizedStatus = 'blocked'
+          // Normalize status (human-like detection)
+          let status = 'todo'
+          if (/terminé|done|complet|fini|closed|✅|✓/i.test(rawStatus)) status = 'done'
+          else if (/en cours|doing|in.?progress|started|actif|wip/i.test(rawStatus)) status = 'doing'
+          else if (/bloqué|blocked|waiting|attente|pause|hold|⏸|❌/i.test(rawStatus)) status = 'blocked'
+          else if (/à faire|todo|backlog|planned|planifié|not started/i.test(rawStatus)) status = 'todo'
+
+          // Normalize priority from urgency (1-5 scale or text)
+          let priority = 'normal'
+          const urgencyNum = parseNum(rawPriority)
+          const importanceNum = parseNum(rawImportance)
+          if (urgencyNum >= 4 || /urgent|critique|critical|high|haute|élevée/i.test(rawPriority)) priority = 'urgent'
+          else if (urgencyNum >= 3 || importanceNum >= 4) priority = 'important'
+          else if (urgencyNum <= 2 && importanceNum <= 2) priority = 'normal'
+
+          // Extract dates
+          const startDate = colMap.startDate ? String(row[colMap.startDate] || '').trim() : ''
+          const endDate = colMap.endDate ? String(row[colMap.endDate] || '').trim() : ''
+          const durEstimated = colMap.durEstimated ? parseNum(row[colMap.durEstimated]) : 0
+          const durReal = colMap.durReal ? parseNum(row[colMap.durReal]) : 0
 
           payload.smart_matrice.push({
             project_name: group || sheet.name.replace(/_\d+$/, '') || 'Projet importé',
             name: taskName,
             group_name: group,
-            status: normalizedStatus,
-            priority: /urgent|critique|high|haute/i.test(priority) ? 'urgent' : /moyen|medium|normal/i.test(priority) ? 'normal' : 'normal',
+            status,
+            priority,
+            start_date: startDate || null,
+            end_date: endDate || null,
+            dur_estimated: durEstimated || null,
+            dur_real: durReal || null,
           })
         }
+
+        console.log(`[SM Import] Extracted ${payload.smart_matrice.length} tasks from "${sheet.name}"`)
+        const groups = [...new Set(payload.smart_matrice.map(t => t.project_name))]
+        console.log(`[SM Import] Projects detected:`, groups)
       } else if (sheet.module === 'kpis' || sheet.module === 'team') {
         for (const row of rows) {
           const mapped = applyMapping(row, cols)

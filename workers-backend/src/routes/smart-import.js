@@ -204,8 +204,12 @@ smartImport.post('/execute', async (c) => {
         projectMap[projName].push({
           name: item.task_name || item.name || projName,
           group_name: item.group_name || item.phase || item.category || '',
-          status: item.status === 'done' || item.status === 'completed' ? 'done' : item.status === 'doing' || item.status === 'in_progress' ? 'doing' : 'todo',
-          priority: item.priority || 'medium',
+          status: item.status === 'done' || item.status === 'completed' ? 'done' : item.status === 'doing' || item.status === 'in_progress' ? 'doing' : item.status === 'blocked' ? 'blocked' : 'todo',
+          priority: item.priority || 'normal',
+          start_date: item.start_date || null,
+          end_date: item.end_date || null,
+          dur_estimated: item.dur_estimated || null,
+          dur_real: item.dur_real || null,
         })
       }
     }
@@ -221,13 +225,17 @@ smartImport.post('/execute', async (c) => {
         if (project) {
           // Create tasks
           const taskStmts = tasks.map((t, i) => db.prepare(
-            `INSERT INTO sm_tasks (project_id, company_id, name, group_name, status, priority, sort_order)
-             VALUES (?, ?, ?, ?, ?, ?, ?)`
+            `INSERT INTO sm_tasks (project_id, company_id, name, group_name, status, priority, start_date, end_date, dur_estimated, dur_real, sort_order)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
           ).bind(project.id, company_id,
             String(t.name || '').slice(0, 200),
             String(t.group_name || '').slice(0, 100),
             t.status || 'todo',
-            t.priority || 'medium',
+            t.priority || 'normal',
+            t.start_date || null,
+            t.end_date || null,
+            t.dur_estimated || null,
+            t.dur_real || null,
             i))
           if (taskStmts.length) {
             const BATCH = 50
