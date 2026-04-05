@@ -72,7 +72,14 @@
 
     <!-- Main content -->
     <div class="main-wrapper">
+      <!-- Top bar with notifications -->
+      <div class="topbar">
+        <div></div>
+        <NotificationCenter />
+      </div>
       <main class="main-scroll">
+        <!-- Alerts banner -->
+        <AlertsBanner />
         <!-- Banners -->
         <div v-if="showVerifyBanner" class="banner banner--warn">
           <span>{{ t('verifyEmailBanner') }}</span>
@@ -120,6 +127,8 @@ import { authApi } from '../api'
 import { useI18n } from '../i18n'
 import { useNavigation } from '../composables/useNavigation'
 import ScalyoLogo from '../components/ScalyoLogo.vue'
+import NotificationCenter from '../components/NotificationCenter.vue'
+import AlertsBanner from '../components/AlertsBanner.vue'
 
 const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()
@@ -276,6 +285,11 @@ onMounted(async () => {
 .banner-btn--alt { background: #F59E0B; }
 
 .sidebar-trial-badge { font-size: 10px; color: #F59E0B; font-weight: 700; margin-top: 2px; }
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+@media (max-width: 768px) { .topbar { padding: 6px 12px; } }
 .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .trial-expired-overlay { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px; background: var(--bg); }
 .trial-expired-card { text-align: center; max-width: 480px; padding: 48px 32px; background: white; border: 1px solid var(--border); border-radius: 16px; }

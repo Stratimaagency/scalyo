@@ -99,6 +99,40 @@ export const feedbackApi = {
   create: (data) => api.post('/feedback/', data),
 }
 
+// Alerts
+export const alertsApi = {
+  list: (params) => api.get('/alerts/', { params }),
+  getRules: () => api.get('/alerts/rules'),
+  createRule: (data) => api.post('/alerts/rules', data),
+  updateRule: (id, data) => api.put(`/alerts/rules/${id}`, data),
+  deleteRule: (id) => api.delete(`/alerts/rules/${id}`),
+  resolve: (id) => api.put(`/alerts/${id}/resolve`),
+  check: () => api.post('/alerts/check'),
+}
+
+// Notifications
+export const notificationsApi = {
+  list: (params) => api.get('/notifications/', { params }),
+  count: () => api.get('/notifications/count'),
+  read: (id) => api.put(`/notifications/${id}/read`),
+  readAll: () => api.put('/notifications/read-all'),
+  remove: (id) => api.delete(`/notifications/${id}`),
+}
+
+// Health History
+export const healthHistoryApi = {
+  get: (accountId, params) => api.get(`/health-history/${accountId}`, { params }),
+  record: (accountId, data) => api.post(`/health-history/${accountId}`, data),
+  trend: (accountId) => api.get(`/health-history/${accountId}/trend`),
+}
+
+// Exports
+export const exportsApi = {
+  clientsCsv: (params) => api.get('/exports/clients-csv', { params, responseType: 'blob' }),
+  clientsJson: (params) => api.get('/exports/clients-json', { params, responseType: 'blob' }),
+  kpisCsv: () => api.get('/exports/kpis-csv', { responseType: 'blob' }),
+}
+
 // Email Studio
 export const emailStudioApi = {
   getTemplates: (lang) => api.get('/email-studio/templates/', { params: { lang } }),
