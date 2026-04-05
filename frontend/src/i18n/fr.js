@@ -10,7 +10,7 @@ export default {
   resources: 'Ressources',
   email: 'Email Studio',
   tips: 'Guide CS',
-  healthTracker: 'Santé Clients',
+  healthTracker: 'Satisfaction Client',
   ganttTimeline: 'Timeline',
   okrTracker: 'OKR Tracker',
   workload: 'Health Tracker',
@@ -915,9 +915,9 @@ export default {
   scoreAvg: 'Score moyen',
   clients: 'clients',
   atRisk: 'à risque',
-  // Santé Clients
-  htTitle: 'Santé Clients',
-  htSubtitle: 'Vue complète sur la santé de votre portefeuille',
+  // Satisfaction Client
+  htTitle: 'Satisfaction Client',
+  htSubtitle: 'Vue complète sur la satisfaction de votre portefeuille',
   htAllClients: 'Tous les clients',
   htDistribution: 'Distribution des scores',
   htRiskLow: 'Sain (≥75)',
@@ -1117,7 +1117,7 @@ export default {
   dashNps: 'NPS',
   dashChurnRate: 'Taux de churn',
   dashActiveAccounts: 'Comptes actifs',
-  dashClientHealth: 'Santé du portefeuille',
+  dashClientHealth: 'Satisfaction portefeuille',
   dashHealthy: 'Sains',
   dashNeutral: 'Neutres',
   dashAtRisk: 'À risque',
@@ -1135,7 +1135,7 @@ export default {
   dashTrendDown: 'En baisse',
   dashTrendStable: 'Stable',
   dashNoPriority: 'Aucune priorité pour aujourd\'hui',
-  dashGoToHealthTracker: 'Voir la Santé Clients',
+  dashGoToHealthTracker: 'Voir Satisfaction Client',
 
   // Manager Dashboard v2
   mgrTeamHealth: 'Santé de l\'équipe',

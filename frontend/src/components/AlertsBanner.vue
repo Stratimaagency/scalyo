@@ -36,7 +36,7 @@ function goToAlert(alert) {
 
 onMounted(async () => {
   try {
-    const { data } = await alertsApi.list({ status: 'open', limit: 5 })
+    const { data } = await alertsApi.listSilent({ status: 'open', limit: 5 })
     alerts.value = data.results || data || []
   } catch {
     // Silently fail — banner just won't show

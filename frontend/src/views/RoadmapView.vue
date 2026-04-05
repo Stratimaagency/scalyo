@@ -132,6 +132,7 @@ import { ref, computed, onMounted } from 'vue'
 import { roadmapApi } from '../api'
 import { useI18n } from '../i18n'
 import PlanGate from '../components/PlanGate.vue'
+import { useToast } from '../composables/useToast'
 
 const { t, lang } = useI18n()
 
@@ -200,7 +201,7 @@ function addItem() {
   save()
 }
 function deleteItem(id) {
-  if (!confirm('Supprimer cette étape ? Cette action est irréversible.')) return
+  if (!confirm(t('confirmDelete') || 'Supprimer cette étape ?')) return
   roadmap.value.items = items.value.filter(i => i.id !== id)
   roadmap.value.progress = progress.value
   save()
@@ -214,7 +215,7 @@ function saveEdit(id) {
 }
 
 async function save() {
-  try { await roadmapApi.update({ items: roadmap.value.items, progress: roadmap.value.progress, phase: roadmap.value.phase }) } catch {}
+  try { await roadmapApi.update({ items: roadmap.value.items, progress: roadmap.value.progress, phase: roadmap.value.phase }) } catch { useToast().error('Erreur lors de la sauvegarde') }
 }
 
 function buildTemplate() {
@@ -236,7 +237,7 @@ onMounted(async () => {
     const { data } = await roadmapApi.get()
     if (data && Array.isArray(data.items) && data.items.length > 0) { roadmap.value = data }
     else { roadmap.value = { phase: '', progress: 0, items: buildTemplate() }; save() }
-  } catch { roadmap.value = { phase: '', progress: 0, items: buildTemplate() } }
+  } catch { useToast().error('Erreur de chargement de la roadmap'); roadmap.value = { phase: '', progress: 0, items: buildTemplate() } }
   finally { loading.value = false }
 })
 </script>

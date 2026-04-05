@@ -65,8 +65,12 @@
       <EmptyState v-if="!filteredQuotes.length" icon="document" :title="t('quotesEmpty')" />
     </div>
 
-    <!-- Add/Edit Modal -->
-    <AppModal v-if="showAdd || editingQuote" :title="editingQuote ? t('quotesEdit') : t('quotesNew')" @close="closeModal">
+    <!-- Add/Edit Panel -->
+    <div v-if="showAdd || editingQuote" class="card" style="padding: 16px; margin-bottom: 16px; border: 2px solid var(--tealBorder); border-radius: 12px; position: relative;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h4 style="font-weight: 800; font-size: 15px; margin: 0;">{{ editingQuote ? t('quotesEdit') : t('quotesNew') }}</h4>
+        <button @click="closeModal" style="background: none; border: none; font-size: 18px; cursor: pointer; color: var(--muted); padding: 0 4px; line-height: 1;">&#x2715;</button>
+      </div>
       <AppField :label="t('quotesFieldTitle')" v-model="qForm.title" :placeholder="t('quotesFieldTitle')" />
       <AppField :label="t('quotesFieldClient')" v-model="qForm.client" :placeholder="t('quotesFieldClient')" />
       <AppField :label="t('quotesFieldAmount')" v-model="qForm.amount" type="number" placeholder="0" />
@@ -86,7 +90,7 @@
         </button>
         <button class="btn btn-secondary" @click="closeModal">{{ t('cancel') }}</button>
       </div>
-    </AppModal>
+    </div>
   </div>
   </PlanGate>
 </template>
@@ -97,7 +101,6 @@ import { usePreferencesStore } from '../stores/preferences'
 import { useI18n } from '../i18n'
 import { quotesApi } from '../api'
 import AppField from '../components/AppField.vue'
-import AppModal from '../components/AppModal.vue'
 import EmptyState from '../components/EmptyState.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
 import PlanGate from '../components/PlanGate.vue'

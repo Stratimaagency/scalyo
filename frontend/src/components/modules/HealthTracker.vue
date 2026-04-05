@@ -3,7 +3,7 @@
     <!-- Header + Filters -->
     <div class="mod-hero">
       <div>
-        <h1 class="mod-title">❤️ {{ t('htTitle') }}</h1>
+        <h1 class="mod-title">⭐ {{ t('htTitle') }}</h1>
         <p class="mod-subtitle">{{ t('htSubtitle') }}</p>
       </div>
       <div class="mod-hero-score">

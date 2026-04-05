@@ -18,10 +18,10 @@
             style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--greenBg, var(--tealBg)); border: 1px solid var(--greenBorder, var(--tealBorder)); color: var(--green, var(--teal));">
             + {{ t('add') }}
           </button>
-          <button class="btn-base" @click="showImport = true"
-            style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--tealBg); border: 1px solid var(--tealBorder); color: var(--teal);">
+          <router-link :to="{ name: 'smart-import' }" class="btn-base"
+            style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--tealBg); border: 1px solid var(--tealBorder); color: var(--teal); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
             <ScalyoIcon name="upload" :size="12" /> {{ t('importPortfolio') }}
-          </button>
+          </router-link>
           <button v-if="isManager && portfolioStore.accounts.length > 0" class="btn-base" @click="showBulkDelete = true"
             style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--redBg); border: 1px solid var(--redBorder); color: var(--red);">
             <ScalyoIcon name="trash" :size="12" /> {{ t('bulkDelete') }}
@@ -39,6 +39,143 @@
       <!-- Import success message -->
       <div v-if="importMsg" style="margin-bottom: 10px; padding: 9px 12px; background: var(--greenBg, var(--tealBg)); border: 1px solid var(--greenBorder, var(--tealBorder)); border-radius: 9px; font-size: 12px; color: var(--green, var(--teal));">
         {{ importMsg }}
+      </div>
+
+      <!-- Inline Add Account panel -->
+      <div v-if="showAdd" class="card" style="padding: 16px; margin-bottom: 12px; border: 2px solid var(--tealBorder); border-radius: 12px;">
+        <div style="font-weight: 800; font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+          <ScalyoIcon name="briefcase" :size="16" /> {{ t('newAccount') }}
+        </div>
+
+        <div v-if="addError" style="margin-bottom: 12px; padding: 8px 12px; background: var(--redBg, #fdd); border: 1px solid var(--redBorder, #fbb); border-radius: 8px; font-size: 12px; color: var(--red);">
+          {{ addError }}
+        </div>
+
+        <AppField :label="t('accNameLabel')" v-model="newAcc.name" required />
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="field-group">
+            <label class="field-label">{{ t('csmLabel') }}</label>
+            <select v-model="newAcc.csm"
+              style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; cursor: pointer;">
+              <option value="">{{ t('unassigned') }}</option>
+              <option v-for="m in teamMembers" :key="m.id" :value="m.display_name || m.email">{{ m.display_name || m.email }}</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">{{ t('industry') }}</label>
+            <select v-model="newAcc.industry"
+              style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; cursor: pointer;">
+              <option value="">--</option>
+              <option v-for="ind in industrySectors" :key="ind.value" :value="ind.value">{{ ind.label }}</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <AppField :label="mrrLabel" v-model="newAcc.mrr" type="number" placeholder="0" />
+          <AppField :label="t('healthScore') + ' (0-100)'" v-model="newAcc.health" type="number" />
+        </div>
+        <AppField :label="t('renewal')" v-model="newAcc.renewal" />
+        <AppField :label="t('contact')" v-model="newAcc.contact" />
+        <AppField :label="t('emailPro')" v-model="newAcc.contact_email" type="email" />
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <AppField :label="t('crmPhone')" v-model="newAcc.phone" type="tel" />
+          <AppField :label="t('crmWebsite')" v-model="newAcc.website" placeholder="www.exemple.com" />
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <AppField :label="t('crmCompanySize')" v-model="newAcc.company_size" placeholder="1-10, 11-50, 51-200..." />
+          <AppField :label="t('crmNPS')" v-model="newAcc.nps" type="number" placeholder="0-100" />
+        </div>
+        <AppField :label="t('crmAddress')" v-model="newAcc.address" />
+        <AppField :label="t('notes')" v-model="newAcc.notes" type="textarea" />
+
+        <div style="display: flex; gap: 8px; margin-top: 16px;">
+          <button class="btn btn-secondary" @click="closeAddModal" style="flex: 1;">{{ t('cancel') }}</button>
+          <button class="btn btn-primary" :disabled="!newAcc.name || creating" @click="createAccount" style="flex: 2;">
+            {{ creating ? t('addingAcc') : t('createAcc') }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Inline Bulk Delete panel -->
+      <div v-if="showBulkDelete" class="card" style="padding: 16px; margin-bottom: 12px; border: 2px solid var(--redBorder); border-radius: 12px;">
+        <div style="font-weight: 800; font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; color: var(--red);">
+          <ScalyoIcon name="trash" :size="16" /> {{ t('bulkDeleteTitle') }}
+        </div>
+
+        <!-- Step 1: Choose what to delete -->
+        <div v-if="bulkDeleteStep === 1">
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">{{ t('bulkDeleteDesc') }}</p>
+
+          <!-- Delete all -->
+          <div class="card" style="padding: 14px; margin-bottom: 8px; cursor: pointer; border: 2px solid transparent;" :style="{ borderColor: bulkDeleteMode === 'all' ? 'var(--red)' : 'transparent' }" @click="bulkDeleteMode = 'all'">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <input type="radio" v-model="bulkDeleteMode" value="all" />
+              <div>
+                <div style="font-weight: 700; font-size: 14px; color: var(--red);">{{ t('bulkDeleteAll') }}</div>
+                <div style="font-size: 12px; color: var(--muted);">{{ portfolioStore.accounts.length }} {{ t('portfolio').toLowerCase() }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Delete filtered -->
+          <div v-if="filteredAccounts.length !== portfolioStore.accounts.length" class="card" style="padding: 14px; margin-bottom: 8px; cursor: pointer; border: 2px solid transparent;" :style="{ borderColor: bulkDeleteMode === 'filtered' ? 'var(--red)' : 'transparent' }" @click="bulkDeleteMode = 'filtered'">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <input type="radio" v-model="bulkDeleteMode" value="filtered" />
+              <div>
+                <div style="font-weight: 700; font-size: 14px;">{{ t('bulkDeleteFiltered') }}</div>
+                <div style="font-size: 12px; color: var(--muted);">{{ filteredAccounts.length }} {{ t('portfolio').toLowerCase() }} ({{ filter || t('search') }})</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Delete selected -->
+          <div class="card" style="padding: 14px; margin-bottom: 16px; cursor: pointer; border: 2px solid transparent;" :style="{ borderColor: bulkDeleteMode === 'selected' ? 'var(--red)' : 'transparent' }" @click="bulkDeleteMode = 'selected'">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <input type="radio" v-model="bulkDeleteMode" value="selected" />
+              <div>
+                <div style="font-weight: 700; font-size: 14px;">{{ t('bulkDeleteSelected') }}</div>
+                <div style="font-size: 12px; color: var(--muted);">{{ t('bulkDeleteSelectedDesc') }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Select individual accounts (only if mode = selected) -->
+          <div v-if="bulkDeleteMode === 'selected'" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 16px;">
+            <label v-for="acc in filteredAccounts" :key="acc.id" style="display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; cursor: pointer;">
+              <input type="checkbox" :value="acc.id" v-model="bulkDeleteIds" />
+              {{ acc.name }} <span style="color: var(--muted); font-size: 11px;">· {{ acc.csm || '\u2014' }}</span>
+            </label>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary" @click="closeBulkDelete" style="flex: 1;">{{ t('cancel') }}</button>
+            <button class="btn btn-primary" style="flex: 2; justify-content: center; background: var(--red); border-color: var(--red);" :disabled="bulkDeleteMode === 'selected' && bulkDeleteIds.length === 0" @click="bulkDeleteStep = 2">
+              {{ t('bulkDeleteNext') }} →
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: CONFIRM — type to confirm -->
+        <div v-if="bulkDeleteStep === 2">
+          <div style="background: var(--redBg); border: 1px solid var(--redBorder); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+            <p style="font-size: 14px; font-weight: 700; color: var(--red); margin-bottom: 8px;">{{ t('bulkDeleteWarning') }}</p>
+            <p style="font-size: 13px; color: var(--red);">
+              {{ bulkDeleteMode === 'all' ? portfolioStore.accounts.length : bulkDeleteMode === 'filtered' ? filteredAccounts.length : bulkDeleteIds.length }} {{ t('bulkDeleteCountMsg') }}
+            </p>
+          </div>
+
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 8px;">{{ t('bulkDeleteTypeConfirm') }}</p>
+          <input v-model="bulkDeleteConfirmText" :placeholder="t('bulkDeleteTypePlaceholder')" style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: var(--text); font-size: 14px; margin-bottom: 16px;" />
+
+          <div style="display: flex; gap: 8px;">
+            <button class="btn" style="flex: 1; justify-content: center; padding: 12px; background: var(--red); color: #fff; border: none; border-radius: 10px; font-weight: 800; cursor: pointer;"
+              :disabled="bulkDeleteConfirmText !== t('bulkDeleteTypePlaceholder') || bulkDeleting"
+              @click="executeBulkDelete">
+              {{ bulkDeleting ? '...' : t('bulkDeleteConfirmBtn') }}
+            </button>
+            <button class="btn btn-secondary" @click="bulkDeleteStep = 1">{{ t('back') }}</button>
+          </div>
+        </div>
       </div>
 
       <!-- Search -->
@@ -458,185 +595,6 @@
         </template>
       </div>
     </div>
-
-    <!-- Add account modal -->
-    <AppModal v-if="showAdd" :title="t('newAccount')" @close="closeAddModal">
-      <div v-if="addError" style="margin-bottom: 12px; padding: 8px 12px; background: var(--redBg, #fdd); border: 1px solid var(--redBorder, #fbb); border-radius: 8px; font-size: 12px; color: var(--red);">
-        {{ addError }}
-      </div>
-
-      <AppField :label="t('accNameLabel')" v-model="newAcc.name" required />
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div class="field-group">
-          <label class="field-label">{{ t('csmLabel') }}</label>
-          <select v-model="newAcc.csm"
-            style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; cursor: pointer;">
-            <option value="">{{ t('unassigned') }}</option>
-            <option v-for="m in teamMembers" :key="m.id" :value="m.display_name || m.email">{{ m.display_name || m.email }}</option>
-          </select>
-        </div>
-        <div class="field-group">
-          <label class="field-label">{{ t('industry') }}</label>
-          <select v-model="newAcc.industry"
-            style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; cursor: pointer;">
-            <option value="">--</option>
-            <option v-for="ind in industrySectors" :key="ind.value" :value="ind.value">{{ ind.label }}</option>
-          </select>
-        </div>
-      </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <AppField :label="mrrLabel" v-model="newAcc.mrr" type="number" placeholder="0" />
-        <AppField :label="t('healthScore') + ' (0-100)'" v-model="newAcc.health" type="number" />
-      </div>
-      <AppField :label="t('renewal')" v-model="newAcc.renewal" />
-      <AppField :label="t('contact')" v-model="newAcc.contact" />
-      <AppField :label="t('emailPro')" v-model="newAcc.contact_email" type="email" />
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <AppField :label="t('crmPhone')" v-model="newAcc.phone" type="tel" />
-        <AppField :label="t('crmWebsite')" v-model="newAcc.website" placeholder="www.exemple.com" />
-      </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <AppField :label="t('crmCompanySize')" v-model="newAcc.company_size" placeholder="1-10, 11-50, 51-200..." />
-        <AppField :label="t('crmNPS')" v-model="newAcc.nps" type="number" placeholder="0-100" />
-      </div>
-      <AppField :label="t('crmAddress')" v-model="newAcc.address" />
-      <AppField :label="t('notes')" v-model="newAcc.notes" type="textarea" />
-
-      <div style="display: flex; gap: 8px; margin-top: 16px;">
-        <button class="btn btn-secondary" @click="closeAddModal" style="flex: 1;">{{ t('cancel') }}</button>
-        <button class="btn btn-primary" :disabled="!newAcc.name || creating" @click="createAccount" style="flex: 2;">
-          {{ creating ? t('addingAcc') : t('createAcc') }}
-        </button>
-      </div>
-    </AppModal>
-
-    <!-- Import modal -->
-    <AppModal v-if="showImport" :title="t('importPortfolio')" @close="showImport = false" maxWidth="600px">
-      <!-- File drop zone -->
-      <div v-if="!importFile" class="import-drop-zone" @click="$refs.fileInput.click()"
-        @dragover.prevent @dragenter.prevent @drop.prevent="handleDrop">
-        <input ref="fileInput" type="file" accept=".csv" style="display: none" @change="handleFileSelect" />
-        <div style="margin-bottom: 12px;"><ScalyoIcon name="folder" :size="36" /></div>
-        <div style="font-weight: 700;">{{ t('importDropTitle') || 'Drop your CSV file here or click to browse' }}</div>
-        <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">{{ t('importDropHint') || 'Supported: CSV' }}</div>
-      </div>
-
-      <!-- Column mapping preview -->
-      <template v-if="importFile && importPreview.length && !importRunning">
-        <div style="margin-bottom: 12px;">
-          <div style="font-weight: 700; font-size: 13px; margin-bottom: 8px;">{{ t('importPreviewTitle') || 'Column mapping preview' }}</div>
-          <div style="background: var(--surface); border-radius: 10px; padding: 12px; font-size: 12px; overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
-              <thead>
-                <tr>
-                  <th v-for="col in importHeaders" :key="col" style="text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--border); font-weight: 700; color: var(--teal); font-size: 11px; text-transform: uppercase;">
-                    {{ col }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(row, i) in importPreview.slice(0, 3)" :key="i">
-                  <td v-for="col in importHeaders" :key="col" style="padding: 4px 8px; border-bottom: 1px solid var(--border); color: var(--text); font-size: 12px;">
-                    {{ row[col] || '\u2014' }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div style="font-size: 11px; color: var(--muted); margin-top: 6px;">
-            {{ importPreview.length }} {{ t('importRowsDetected') || 'rows detected' }}.
-          </div>
-        </div>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn btn-secondary" @click="resetImport" style="flex: 1;">{{ t('cancel') }}</button>
-          <button class="btn btn-primary" @click="runImport" style="flex: 2;">{{ t('importBtn') || 'Import' }} {{ importPreview.length }} {{ t('accounts') || 'accounts' }}</button>
-        </div>
-      </template>
-
-      <!-- Import progress -->
-      <div v-if="importRunning" style="padding: 20px 0; text-align: center;">
-        <div style="font-weight: 700; font-size: 14px; margin-bottom: 12px;">{{ t('importing') || 'Importing...' }}</div>
-        <div style="background: var(--surface); border-radius: 8px; height: 8px; overflow: hidden; margin-bottom: 8px;">
-          <div style="height: 100%; background: var(--teal); border-radius: 8px; transition: width .3s;" :style="{ width: importProgress + '%' }"></div>
-        </div>
-        <div style="font-size: 12px; color: var(--muted);">{{ importDone }}/{{ importTotal }} {{ t('portfolio').toLowerCase() }}</div>
-      </div>
-    </AppModal>
-
-    <!-- BULK DELETE MODAL — Double security -->
-    <AppModal v-if="showBulkDelete" :title="t('bulkDeleteTitle')" @close="closeBulkDelete">
-      <!-- Step 1: Choose what to delete -->
-      <div v-if="bulkDeleteStep === 1">
-        <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">{{ t('bulkDeleteDesc') }}</p>
-
-        <!-- Delete all -->
-        <div class="card" style="padding: 14px; margin-bottom: 8px; cursor: pointer; border: 2px solid transparent;" :style="{ borderColor: bulkDeleteMode === 'all' ? 'var(--red)' : 'transparent' }" @click="bulkDeleteMode = 'all'">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <input type="radio" v-model="bulkDeleteMode" value="all" />
-            <div>
-              <div style="font-weight: 700; font-size: 14px; color: var(--red);">🗑️ {{ t('bulkDeleteAll') }}</div>
-              <div style="font-size: 12px; color: var(--muted);">{{ portfolioStore.accounts.length }} {{ t('portfolio').toLowerCase() }}</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Delete filtered -->
-        <div v-if="filteredAccounts.length !== portfolioStore.accounts.length" class="card" style="padding: 14px; margin-bottom: 8px; cursor: pointer; border: 2px solid transparent;" :style="{ borderColor: bulkDeleteMode === 'filtered' ? 'var(--red)' : 'transparent' }" @click="bulkDeleteMode = 'filtered'">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <input type="radio" v-model="bulkDeleteMode" value="filtered" />
-            <div>
-              <div style="font-weight: 700; font-size: 14px;">🔍 {{ t('bulkDeleteFiltered') }}</div>
-              <div style="font-size: 12px; color: var(--muted);">{{ filteredAccounts.length }} {{ t('portfolio').toLowerCase() }} ({{ filter || t('search') }})</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Delete selected -->
-        <div class="card" style="padding: 14px; margin-bottom: 16px; cursor: pointer; border: 2px solid transparent;" :style="{ borderColor: bulkDeleteMode === 'selected' ? 'var(--red)' : 'transparent' }" @click="bulkDeleteMode = 'selected'">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <input type="radio" v-model="bulkDeleteMode" value="selected" />
-            <div>
-              <div style="font-weight: 700; font-size: 14px;">☑️ {{ t('bulkDeleteSelected') }}</div>
-              <div style="font-size: 12px; color: var(--muted);">{{ t('bulkDeleteSelectedDesc') }}</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Select individual accounts (only if mode = selected) -->
-        <div v-if="bulkDeleteMode === 'selected'" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 16px;">
-          <label v-for="acc in filteredAccounts" :key="acc.id" style="display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; cursor: pointer;">
-            <input type="checkbox" :value="acc.id" v-model="bulkDeleteIds" />
-            {{ acc.name }} <span style="color: var(--muted); font-size: 11px;">· {{ acc.csm || '—' }}</span>
-          </label>
-        </div>
-
-        <button class="btn btn-primary" style="width: 100%; justify-content: center; background: var(--red); border-color: var(--red);" :disabled="bulkDeleteMode === 'selected' && bulkDeleteIds.length === 0" @click="bulkDeleteStep = 2">
-          {{ t('bulkDeleteNext') }} →
-        </button>
-      </div>
-
-      <!-- Step 2: CONFIRM — type to confirm -->
-      <div v-if="bulkDeleteStep === 2">
-        <div style="background: var(--redBg); border: 1px solid var(--redBorder); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
-          <p style="font-size: 14px; font-weight: 700; color: var(--red); margin-bottom: 8px;">⚠️ {{ t('bulkDeleteWarning') }}</p>
-          <p style="font-size: 13px; color: var(--red);">
-            {{ bulkDeleteMode === 'all' ? portfolioStore.accounts.length : bulkDeleteMode === 'filtered' ? filteredAccounts.length : bulkDeleteIds.length }} {{ t('bulkDeleteCountMsg') }}
-          </p>
-        </div>
-
-        <p style="font-size: 13px; color: var(--muted); margin-bottom: 8px;">{{ t('bulkDeleteTypeConfirm') }}</p>
-        <input v-model="bulkDeleteConfirmText" :placeholder="t('bulkDeleteTypePlaceholder')" style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: var(--text); font-size: 14px; margin-bottom: 16px;" />
-
-        <div style="display: flex; gap: 8px;">
-          <button class="btn" style="flex: 1; justify-content: center; padding: 12px; background: var(--red); color: #fff; border: none; border-radius: 10px; font-weight: 800; cursor: pointer;"
-            :disabled="bulkDeleteConfirmText !== t('bulkDeleteTypePlaceholder') || bulkDeleting"
-            @click="executeBulkDelete">
-            {{ bulkDeleting ? '...' : t('bulkDeleteConfirmBtn') }}
-          </button>
-          <button class="btn btn-secondary" @click="bulkDeleteStep = 1">{{ t('back') }}</button>
-        </div>
-      </div>
-    </AppModal>
   </div>
 </template>
 
@@ -650,7 +608,6 @@ import { useFormatting, CURRENCIES } from '../composables/useFormatting'
 import { portfolioApi, teamApi, taskApi, planningApi, quotesApi } from '../api'
 import HealthBar from '../components/HealthBar.vue'
 import RiskPill from '../components/RiskPill.vue'
-import AppModal from '../components/AppModal.vue'
 import AppField from '../components/AppField.vue'
 import EmptyState from '../components/EmptyState.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
@@ -667,7 +624,6 @@ const search = ref('')
 const filter = ref('all')
 const csmFilter = ref('')
 const showAdd = ref(false)
-const showImport = ref(false)
 const showBulkDelete = ref(false)
 const bulkDeleteStep = ref(1)
 const bulkDeleteMode = ref('all')
@@ -1337,7 +1293,6 @@ async function runImport() {
     importProgress.value = Math.round((importDone.value / importTotal.value) * 100)
   }
 
-  showImport.value = false
   resetImport()
   await portfolioStore.fetchAccounts()
   importMsg.value = `${ok}/${rows.length} accounts imported`

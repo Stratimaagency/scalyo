@@ -54,6 +54,8 @@ api.interceptors.response.use(
     }
 
     // Show toast for API errors (except 401 handled above)
+    // Skip toast for silent requests (background polling, banners)
+    if (original?._silent) return Promise.reject(error)
     const toast = useToast()
     if (!error.response) {
       // Network error — debounce to avoid toast spam
