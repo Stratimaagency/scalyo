@@ -65,8 +65,8 @@ async function fetchCount() {
 async function fetchNotifications() {
   loading.value = true
   try {
-    const res = await notificationsApi.list({ limit: 20 })
-    notifications.value = res
+    const { data } = await notificationsApi.list({ limit: 20 })
+    notifications.value = data.results || data || []
   } catch (e) {
     notifications.value = []
   } finally {
