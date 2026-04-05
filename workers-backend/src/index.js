@@ -20,7 +20,7 @@ import modules from './routes/modules.js'
 import alerts from './routes/alerts.js'
 import notifications from './routes/notifications.js'
 import healthHistory from './routes/health-history.js'
-import exports from './routes/exports.js'
+import exportsRoutes from './routes/exports.js'
 
 const app = new Hono()
 
@@ -60,7 +60,7 @@ app.route('/api/quotes', quotes)
 app.route('/api/alerts', alerts)
 app.route('/api/notifications', notifications)
 app.route('/api/health-history', healthHistory)
-app.route('/api/exports', exports)
+app.route('/api/exports', exportsRoutes)
 
 // === TASKS (direct mount — Hono sub-router bug workaround) ===
 async function handleGetTasks(c) {
