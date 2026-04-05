@@ -1062,29 +1062,38 @@ function extractAllTables(sheet) {
   const rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false })
   if (!rows.length) return []
 
-  const dataKeywords = ['csm', 'client', 'nom', 'name', 'arr', 'mrr', 'ca', 'health', 'santé',
-    'nps', 'churn', 'séniorité', 'seniorite', 'task', 'tâche', 'phase', 'total',
-    'company', 'entreprise', 'revenue', 'score', 'contact', 'email', 'id client',
-    'plan', 'risque', 'critique', 'neutre', 'sain']
+  const dataKeywords = ['csm', 'client', 'nom', 'name', 'arr', 'mrr', 'health', 'santé',
+    'nps', 'churn', 'séniorité', 'seniorite', 'task', 'tâche', 'sous-tâche',
+    'company', 'entreprise', 'revenue', 'score', 'contact', 'email',
+    'module', 'statut', 'status', 'priorité', 'priority', 'assigné', 'assigned',
+    'urgence', 'urgency', 'importance', 'difficulty', 'difficulté',
+    'start date', 'end date', 'début', 'fin', 'deadline', 'échéance',
+    'sprint', 'phase', 'catégorie', 'category', 'groupe', 'group']
 
+  function countMatches(headers) {
+    return headers.filter(h => dataKeywords.some(k => h.toLowerCase().includes(k))).length
+  }
+
+  // Try the default row 1 as headers
   const firstHeaders = Object.keys(rows[0])
-  const hasData = firstHeaders.some(h => dataKeywords.some(k => h.toLowerCase().includes(k)))
-  if (hasData) return [rows]
+  let bestRows = rows
+  let bestScore = countMatches(firstHeaders)
 
-  // Try different start rows for sheets with decorative headers
+  // Also try different start rows (for sheets with title/summary rows)
   const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1')
-  const tables = []
-
-  for (let startRow = 1; startRow <= Math.min(range.e.r, 20); startRow++) {
+  for (let startRow = 1; startRow <= Math.min(range.e.r, 10); startRow++) {
     const subRows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false, range: startRow })
-    if (!subRows.length) continue
+    if (!subRows.length || subRows.length < 2) continue
     const subHeaders = Object.keys(subRows[0])
-    if (subHeaders.some(h => dataKeywords.some(k => h.toLowerCase().includes(k))) && subRows.length > 1) {
-      tables.push(subRows)
+    const score = countMatches(subHeaders)
+    // Prefer the start row with MORE keyword matches
+    if (score > bestScore) {
+      bestScore = score
+      bestRows = subRows
     }
   }
 
-  return tables.length ? tables : [rows]
+  return [bestRows]
 }
 
 // --- Column value finder ---
