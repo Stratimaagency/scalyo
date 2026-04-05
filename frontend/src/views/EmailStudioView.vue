@@ -330,26 +330,209 @@ Seriez-vous disponible pour en discuter ?
 [Votre prénom]`
   },
   // === NPS ===
-  { id: 'nps_survey', cat: 'NPS', role: 'csm', emoji: '⭐', title: 'Enquête NPS', subject: 'Votre avis compte — 30 secondes pour nous aider',
+  { id: 'nps_survey', cat: 'NPS', roles: ['csm'], emoji: '⭐', title: 'Enquête NPS', subject: 'Votre avis compte — 30 secondes pour nous aider',
     body: `Bonjour [Prénom],\n\nSur une échelle de 0 à 10, quelle est la probabilité que vous recommandiez [Entreprise] à un collègue ?\n\n→ Répondez en 1 clic : [Lien NPS]\n\nVotre retour nous aide à nous améliorer continuellement.\n\nMerci !\n[Votre prénom]` },
-  { id: 'nps_thanks', cat: 'NPS', role: 'csm', emoji: '🙏', title: 'Remerciement NPS promoteur', subject: 'Merci pour votre confiance !',
+  { id: 'nps_thanks', cat: 'NPS', roles: ['csm'], emoji: '🙏', title: 'Remerciement NPS promoteur', subject: 'Merci pour votre confiance !',
     body: `Bonjour [Prénom],\n\nMerci d'avoir pris le temps de nous évaluer ! Votre score de [Score] nous fait très plaisir.\n\nSeriez-vous ouvert(e) à :\n• Partager un témoignage sur notre site ?\n• Nous recommander auprès de votre réseau ?\n• Participer à une étude de cas ?\n\nBien cordialement,\n[Votre prénom]` },
-  { id: 'nps_detractor', cat: 'NPS', role: 'csm', emoji: '💬', title: 'Suivi NPS détracteur', subject: 'Nous voulons nous améliorer — votre retour est précieux',
+  { id: 'nps_detractor', cat: 'NPS', roles: ['csm'], emoji: '💬', title: 'Suivi NPS détracteur', subject: 'Nous voulons nous améliorer — votre retour est précieux',
     body: `Bonjour [Prénom],\n\nMerci pour votre retour honnête. Votre score nous indique que nous pouvons faire mieux.\n\nJ'aimerais comprendre ce qui vous freine :\n• Quels points posent problème ?\n• Que pourrions-nous améliorer en priorité ?\n\nJe vous propose un appel de 15 min pour en discuter.\n\n📅 Réservez : [Lien Calendly]\n\n[Votre prénom]` },
   // === COMMERCIAL ===
-  { id: 'prospect_intro', cat: 'Prospection', role: 'commercial', emoji: '🎯', title: 'Prise de contact prospect', subject: '[Prénom], une solution pour [Problème]',
+  { id: 'prospect_intro', cat: 'Prospection', roles: ['commercial'], emoji: '🎯', title: 'Prise de contact prospect', subject: '[Prénom], une solution pour [Problème]',
     body: `Bonjour [Prénom],\n\nJe me permets de vous contacter car [Entreprise] aide des entreprises comme la vôtre à [Bénéfice principal].\n\nNos clients constatent en moyenne :\n• [Résultat 1]\n• [Résultat 2]\n• [Résultat 3]\n\nSeriez-vous disponible pour un échange de 15 min ?\n\n📅 Réservez : [Lien Calendly]\n\nCordialement,\n[Votre prénom]` },
-  { id: 'prospect_demo', cat: 'Prospection', role: 'commercial', emoji: '🎬', title: 'Invitation démo', subject: 'Découvrez [Produit] en 20 min',
+  { id: 'prospect_demo', cat: 'Prospection', roles: ['commercial'], emoji: '🎬', title: 'Invitation démo', subject: 'Découvrez [Produit] en 20 min',
     body: `Bonjour [Prénom],\n\nSuite à notre échange, je vous propose une démo personnalisée de [Produit].\n\nDurée : 20 min\nFormat : Visio\nContenu : cas d'usage adaptés à votre contexte\n\n📅 Réservez votre créneau : [Lien Calendly]\n\nÀ très bientôt,\n[Votre prénom]` },
-  { id: 'prospect_proposal', cat: 'Négociation', role: 'commercial', emoji: '📋', title: 'Envoi de proposition', subject: 'Votre proposition personnalisée — [Entreprise]',
+  { id: 'prospect_proposal', cat: 'Négociation', roles: ['commercial'], emoji: '📋', title: 'Envoi de proposition', subject: 'Votre proposition personnalisée — [Entreprise]',
     body: `Bonjour [Prénom],\n\nVeuillez trouver ci-joint votre proposition personnalisée.\n\nRécapitulatif :\n• Plan : [Plan choisi]\n• Montant : [Montant]€/mois\n• Engagement : [Durée]\n• Début : [Date]\n\nCette offre est valable jusqu'au [Date limite].\n\nJe reste disponible pour toute question.\n\n[Votre prénom]` },
+  {
+    id: 'com_prospection_intro',
+    cat: 'Prospection',
+    roles: ['commercial'],
+    emoji: '🎯',
+    title: 'Premier contact prospect',
+    subject: '[Entreprise] — une idée pour [Objectif prospect]',
+    body: `Bonjour [Prénom],
+
+J'ai remarqué que [Entreprise prospect] [observation pertinente — ex: se développe à l'international / recrute activement / a levé des fonds].
+
+Chez [Votre entreprise], nous aidons des entreprises comme la vôtre à [bénéfice principal].
+
+[Nom client similaire] a obtenu [résultat concret — ex: +30% de rétention en 6 mois] grâce à notre approche.
+
+Seriez-vous disponible pour un échange de 15 minutes cette semaine ?
+
+Bien cordialement,
+[Votre prénom]`
+  },
+  {
+    id: 'com_follow_up',
+    cat: 'Relance',
+    roles: ['commercial'],
+    emoji: '🔄',
+    title: 'Relance après démo',
+    subject: 'Suite à notre échange — prochaines étapes',
+    body: `Bonjour [Prénom],
+
+Merci pour votre temps lors de notre démonstration [date].
+
+Comme évoqué, voici les points clés :
+→ [Point 1 qui a résonné]
+→ [Point 2 — ROI ou bénéfice]
+→ [Point 3 — différenciateur]
+
+Je vous ai préparé une proposition personnalisée (en PJ).
+
+Quand pourriez-vous en discuter avec [décideur] ?
+
+Bien à vous,
+[Votre prénom]`
+  },
+  {
+    id: 'com_objection_prix',
+    cat: 'Négociation',
+    roles: ['commercial'],
+    emoji: '💰',
+    title: 'Réponse objection prix',
+    subject: 'Re: Votre demande de tarification',
+    body: `Bonjour [Prénom],
+
+Je comprends votre préoccupation sur le budget.
+
+Permettez-moi de remettre en perspective :
+→ Coût actuel de [problème] : estimé à [X]€/an (turnover, inefficacité, etc.)
+→ Notre solution : [Y]€/an
+→ ROI moyen constaté chez nos clients : [Z] mois
+
+[Client référence] avait la même hésitation. Après 6 mois : [résultat concret].
+
+Je peux vous proposer [option flexible — paiement trimestriel, phase pilote, etc.].
+
+On en parle ?
+
+[Votre prénom]`
+  },
+  {
+    id: 'com_closing',
+    cat: 'Closing',
+    roles: ['commercial'],
+    emoji: '🏆',
+    title: 'Relance décision finale',
+    subject: '[Entreprise prospect] × [Votre entreprise] — on y est presque',
+    body: `Bonjour [Prénom],
+
+Où en êtes-vous dans votre réflexion ?
+
+Pour récapituler ce que nous avons validé ensemble :
+✅ [Besoin 1] → couvert par [fonctionnalité]
+✅ [Besoin 2] → couvert par [fonctionnalité]
+✅ ROI estimé : [X]
+
+Notre offre est valable jusqu'au [date]. Au-delà, je ne pourrai pas maintenir les conditions évoquées.
+
+Je reste disponible pour lever les dernières questions.
+
+[Votre prénom]`
+  },
   // === KAM ===
-  { id: 'kam_upsell', cat: 'Expansion', role: 'kam', emoji: '📈', title: 'Proposition upsell', subject: 'Passez au niveau supérieur — offre exclusive',
+  { id: 'kam_upsell_existing', cat: 'Expansion', roles: ['kam'], emoji: '📈', title: 'Proposition upsell', subject: 'Passez au niveau supérieur — offre exclusive',
     body: `Bonjour [Prénom],\n\nAu vu de votre utilisation croissante, je pense que le plan [Plan supérieur] serait plus adapté.\n\nCe que vous gagnez :\n• [Fonctionnalité 1]\n• [Fonctionnalité 2]\n• [Support prioritaire]\n\nOffre exclusive : -[X]% sur les 3 premiers mois.\n\nOn en discute ?\n\n[Votre prénom]` },
-  { id: 'kam_crosssell', cat: 'Expansion', role: 'kam', emoji: '🔗', title: 'Cross-sell nouveau module', subject: 'Nouveau : [Module] — parfait pour votre équipe',
+  { id: 'kam_crosssell', cat: 'Expansion', roles: ['kam'], emoji: '🔗', title: 'Cross-sell nouveau module', subject: 'Nouveau : [Module] — parfait pour votre équipe',
     body: `Bonjour [Prénom],\n\nNous venons de lancer [Module], et je pense que ça correspond parfaitement à vos besoins.\n\nEn bref :\n• [Avantage 1]\n• [Avantage 2]\n\nJe vous propose un essai gratuit de 14 jours.\n\nIntéressé(e) ?\n\n[Votre prénom]` },
-  { id: 'kam_escalation', cat: 'Risque', role: 'kam', emoji: '🚨', title: 'Escalade compte stratégique', subject: 'Urgent — situation compte [Client]',
-    body: `Bonjour [Prénom],\n\nJe vous alerte sur la situation du compte [Client] :\n\n⚠️ Score santé : [Score]/100\n📉 Usage en baisse de [X]%\n🔄 Renouvellement dans [X] jours\n\nActions proposées :\n1. [Action 1]\n2. [Action 2]\n3. [Action 3]\n\nPouvons-nous en discuter en urgence ?\n\n[Votre prénom]` }
+  { id: 'kam_escalation', cat: 'Risque', roles: ['kam'], emoji: '🚨', title: 'Escalade compte stratégique', subject: 'Urgent — situation compte [Client]',
+    body: `Bonjour [Prénom],\n\nJe vous alerte sur la situation du compte [Client] :\n\n⚠️ Score santé : [Score]/100\n📉 Usage en baisse de [X]%\n🔄 Renouvellement dans [X] jours\n\nActions proposées :\n1. [Action 1]\n2. [Action 2]\n3. [Action 3]\n\nPouvons-nous en discuter en urgence ?\n\n[Votre prénom]` },
+  {
+    id: 'kam_qbr_invite',
+    cat: 'QBR',
+    roles: ['kam'],
+    emoji: '📊',
+    title: 'Invitation QBR trimestriel',
+    subject: 'QBR Q[X] — [Entreprise client] × [Votre entreprise]',
+    body: `Bonjour [Prénom],
+
+Le trimestre touche à sa fin et je souhaite organiser notre Quarterly Business Review.
+
+Au programme :
+📈 Bilan des KPIs et adoption sur Q[X]
+🎯 Objectifs atteints et axes d'amélioration
+🗺️ Roadmap produit — nouveautés à venir
+💡 Recommandations personnalisées pour Q[X+1]
+
+Créneaux proposés :
+→ [Date 1] à [Heure]
+→ [Date 2] à [Heure]
+
+Merci de confirmer votre préférence (et d'inviter [parties prenantes] si pertinent).
+
+Bien à vous,
+[Votre prénom]`
+  },
+  {
+    id: 'kam_upsell',
+    cat: 'Expansion',
+    roles: ['kam'],
+    emoji: '🚀',
+    title: 'Proposition upsell / cross-sell',
+    subject: 'Une idée pour aller plus loin avec [Solution]',
+    body: `Bonjour [Prénom],
+
+En analysant votre utilisation de [Solution], j'ai identifié une opportunité intéressante.
+
+Constat :
+→ Vous utilisez [fonctionnalité A] avec succès ([résultat])
+→ Cependant, [besoin non couvert] pourrait être adressé par [module/plan supérieur]
+
+Cas client similaire : [Entreprise X] a activé [module] et a obtenu [résultat].
+
+Je peux vous faire une démo personnalisée de 20 minutes. Ça vous dit ?
+
+[Votre prénom]`
+  },
+  {
+    id: 'kam_renewal',
+    cat: 'Renouvellement',
+    roles: ['kam'],
+    emoji: '📝',
+    title: 'Préparation renouvellement',
+    subject: 'Renouvellement [Entreprise client] — point à 90 jours',
+    body: `Bonjour [Prénom],
+
+Votre contrat arrive à échéance le [date]. Je souhaite anticiper pour vous garantir les meilleures conditions.
+
+Bilan de notre collaboration :
+→ [X] utilisateurs actifs (vs [Y] au départ)
+→ [Résultat clé 1]
+→ [Résultat clé 2]
+→ NPS de votre équipe : [score]
+
+Pour le renouvellement, je vous propose :
+🔹 Option 1 : Reconduction à l'identique
+🔹 Option 2 : Upgrade vers [plan supérieur] avec [avantage]
+
+Quand pouvons-nous en discuter ?
+
+[Votre prénom]`
+  },
+  {
+    id: 'kam_risk_intervention',
+    cat: 'Rétention',
+    roles: ['kam'],
+    emoji: '🛡️',
+    title: 'Intervention compte à risque',
+    subject: '[Entreprise client] — votre satisfaction est notre priorité',
+    body: `Bonjour [Prénom],
+
+Je me permets de vous contacter car j'ai remarqué [signal — baisse d'usage, ticket support, feedback négatif].
+
+Votre réussite est ma priorité absolue. Je souhaite comprendre ce qui pourrait être amélioré.
+
+Je vous propose :
+→ Un call de 30 min cette semaine pour faire le point
+→ Un plan d'action personnalisé sous 48h
+→ Un accès prioritaire à notre équipe support
+
+Quel créneau vous conviendrait ?
+
+[Votre prénom]`
+  }
 ]
 
 // ── Templates EN ──────────────────────────────────
@@ -357,6 +540,7 @@ const TEMPLATES_EN = [
   {
     id: 'onboarding_j1',
     cat: 'Onboarding',
+    roles: ['csm'],
     title: 'Welcome & first steps',
     subject: 'Welcome to [Company] — your getting started guide',
     body: `Hi [First Name],
@@ -383,6 +567,7 @@ Customer Success Manager`
   {
     id: 'qbr_invite',
     cat: 'QBR',
+    roles: ['csm'],
     title: 'Quarterly Business Review invitation',
     subject: 'QBR Q[N] — Your quarterly success review',
     body: `Hi [First Name],
@@ -409,6 +594,7 @@ See you soon,
   {
     id: 'health_check',
     cat: 'Follow-up',
+    roles: ['csm'],
     title: 'Monthly health check',
     subject: '📊 Your [Month] dashboard — key highlights',
     body: `Hi [First Name],
@@ -438,6 +624,7 @@ Best,
   {
     id: 'churn_alert',
     cat: 'Risk',
+    roles: ['csm'],
     title: 'At-risk account re-engagement',
     subject: '📞 Checking in — [Company]',
     body: `Hi [First Name],
@@ -461,6 +648,7 @@ Your success is my priority.
   {
     id: 'renewal',
     cat: 'Renewal',
+    roles: ['csm'],
     title: 'Renewal preparation',
     subject: 'Your subscription — renewal in [N] days',
     body: `Hi [First Name],
@@ -488,6 +676,7 @@ Best,
   {
     id: 'expansion',
     cat: 'Expansion',
+    roles: ['csm'],
     title: 'Expansion opportunity',
     subject: '💡 An opportunity to go even further',
     body: `Hi [First Name],
@@ -508,24 +697,209 @@ Would you be open to a conversation?
 
 [Your Name]`
   },
-  { id: 'nps_survey', cat: 'NPS', role: 'csm', emoji: '⭐', title: 'NPS Survey', subject: 'Your feedback matters — 30 seconds to help us improve',
+  { id: 'nps_survey', cat: 'NPS', roles: ['csm'], emoji: '⭐', title: 'NPS Survey', subject: 'Your feedback matters — 30 seconds to help us improve',
     body: `Hi [First Name],\n\nOn a scale of 0-10, how likely are you to recommend [Company] to a colleague?\n\n→ Answer in 1 click: [NPS Link]\n\nYour feedback helps us continuously improve.\n\nThank you!\n[Your Name]` },
-  { id: 'nps_thanks', cat: 'NPS', role: 'csm', emoji: '🙏', title: 'NPS Promoter Thank You', subject: 'Thank you for your trust!',
+  { id: 'nps_thanks', cat: 'NPS', roles: ['csm'], emoji: '🙏', title: 'NPS Promoter Thank You', subject: 'Thank you for your trust!',
     body: `Hi [First Name],\n\nThank you for rating us [Score]! We're thrilled.\n\nWould you be open to:\n• Sharing a testimonial on our website?\n• Referring us to your network?\n• Participating in a case study?\n\nBest regards,\n[Your Name]` },
-  { id: 'nps_detractor', cat: 'NPS', role: 'csm', emoji: '💬', title: 'NPS Detractor Follow-up', subject: 'We want to do better — your input is valuable',
+  { id: 'nps_detractor', cat: 'NPS', roles: ['csm'], emoji: '💬', title: 'NPS Detractor Follow-up', subject: 'We want to do better — your input is valuable',
     body: `Hi [First Name],\n\nThank you for your honest feedback. Your score tells us we can do better.\n\nI'd love to understand:\n• What's not working for you?\n• What should we prioritize?\n\nCould we schedule a 15-min call?\n\n📅 Book here: [Calendly Link]\n\n[Your Name]` },
-  { id: 'prospect_intro', cat: 'Prospecting', role: 'commercial', emoji: '🎯', title: 'Prospect Introduction', subject: '[First Name], a solution for [Problem]',
+  // === COMMERCIAL ===
+  { id: 'prospect_intro', cat: 'Prospecting', roles: ['commercial'], emoji: '🎯', title: 'Prospect Introduction', subject: '[First Name], a solution for [Problem]',
     body: `Hi [First Name],\n\nI'm reaching out because [Company] helps businesses like yours [Key Benefit].\n\nOur clients typically see:\n• [Result 1]\n• [Result 2]\n• [Result 3]\n\nWould you be available for a 15-min chat?\n\n📅 Book: [Calendly Link]\n\nBest,\n[Your Name]` },
-  { id: 'prospect_demo', cat: 'Prospecting', role: 'commercial', emoji: '🎬', title: 'Demo Invitation', subject: 'See [Product] in action — 20 min',
+  { id: 'prospect_demo', cat: 'Prospecting', roles: ['commercial'], emoji: '🎬', title: 'Demo Invitation', subject: 'See [Product] in action — 20 min',
     body: `Hi [First Name],\n\nFollowing our conversation, I'd love to show you a personalized demo of [Product].\n\nDuration: 20 min\nFormat: Video call\nContent: Use cases tailored to your context\n\n📅 Book your slot: [Calendly Link]\n\nLooking forward,\n[Your Name]` },
-  { id: 'prospect_proposal', cat: 'Negotiation', role: 'commercial', emoji: '📋', title: 'Proposal Submission', subject: 'Your custom proposal — [Company]',
+  { id: 'prospect_proposal', cat: 'Negotiation', roles: ['commercial'], emoji: '📋', title: 'Proposal Submission', subject: 'Your custom proposal — [Company]',
     body: `Hi [First Name],\n\nPlease find attached your personalized proposal.\n\nSummary:\n• Plan: [Plan]\n• Amount: $[Amount]/month\n• Commitment: [Duration]\n• Start: [Date]\n\nThis offer is valid until [Expiry Date].\n\nHappy to answer any questions.\n\n[Your Name]` },
-  { id: 'kam_upsell', cat: 'Expansion', role: 'kam', emoji: '📈', title: 'Upsell Proposal', subject: 'Level up — exclusive offer inside',
+  {
+    id: 'com_prospection_intro',
+    cat: 'Prospecting',
+    roles: ['commercial'],
+    emoji: '🎯',
+    title: 'First prospect contact',
+    subject: '[Company] — an idea for [Prospect goal]',
+    body: `Hi [First Name],
+
+I noticed that [Prospect company] [relevant observation — e.g. expanding internationally / actively hiring / recently raised funding].
+
+At [Your company], we help businesses like yours [key benefit].
+
+[Similar client name] achieved [concrete result — e.g. +30% retention in 6 months] with our approach.
+
+Would you be available for a 15-minute chat this week?
+
+Best regards,
+[Your Name]`
+  },
+  {
+    id: 'com_follow_up',
+    cat: 'Follow-up',
+    roles: ['commercial'],
+    emoji: '🔄',
+    title: 'Post-demo follow-up',
+    subject: 'Following our meeting — next steps',
+    body: `Hi [First Name],
+
+Thank you for your time during our demo on [date].
+
+As discussed, here are the key takeaways:
+→ [Point 1 that resonated]
+→ [Point 2 — ROI or benefit]
+→ [Point 3 — differentiator]
+
+I've prepared a personalized proposal (attached).
+
+When could you discuss this with [decision-maker]?
+
+Best,
+[Your Name]`
+  },
+  {
+    id: 'com_objection_prix',
+    cat: 'Negotiation',
+    roles: ['commercial'],
+    emoji: '💰',
+    title: 'Price objection response',
+    subject: 'Re: Your pricing inquiry',
+    body: `Hi [First Name],
+
+I understand your concern about the budget.
+
+Let me put things in perspective:
+→ Current cost of [problem]: estimated at $[X]/year (turnover, inefficiency, etc.)
+→ Our solution: $[Y]/year
+→ Average ROI seen by our clients: [Z] months
+
+[Reference client] had the same hesitation. After 6 months: [concrete result].
+
+I can offer [flexible option — quarterly payment, pilot phase, etc.].
+
+Shall we discuss?
+
+[Your Name]`
+  },
+  {
+    id: 'com_closing',
+    cat: 'Closing',
+    roles: ['commercial'],
+    emoji: '🏆',
+    title: 'Final decision follow-up',
+    subject: '[Prospect company] × [Your company] — almost there',
+    body: `Hi [First Name],
+
+Where are you in your decision process?
+
+To recap what we've validated together:
+✅ [Need 1] → covered by [feature]
+✅ [Need 2] → covered by [feature]
+✅ Estimated ROI: [X]
+
+Our offer is valid until [date]. Beyond that, I won't be able to maintain the discussed terms.
+
+I'm available to address any remaining questions.
+
+[Your Name]`
+  },
+  // === KAM ===
+  { id: 'kam_upsell_existing', cat: 'Expansion', roles: ['kam'], emoji: '📈', title: 'Upsell Proposal', subject: 'Level up — exclusive offer inside',
     body: `Hi [First Name],\n\nBased on your growing usage, I think [Higher Plan] would be a better fit.\n\nWhat you gain:\n• [Feature 1]\n• [Feature 2]\n• [Priority Support]\n\nExclusive: [X]% off the first 3 months.\n\nShall we discuss?\n\n[Your Name]` },
-  { id: 'kam_crosssell', cat: 'Expansion', role: 'kam', emoji: '🔗', title: 'Cross-sell New Module', subject: 'New: [Module] — perfect for your team',
+  { id: 'kam_crosssell', cat: 'Expansion', roles: ['kam'], emoji: '🔗', title: 'Cross-sell New Module', subject: 'New: [Module] — perfect for your team',
     body: `Hi [First Name],\n\nWe just launched [Module], and I think it's a great fit for your needs.\n\nKey benefits:\n• [Benefit 1]\n• [Benefit 2]\n\nI'd like to offer you a free 14-day trial.\n\nInterested?\n\n[Your Name]` },
-  { id: 'kam_escalation', cat: 'Risk', role: 'kam', emoji: '🚨', title: 'Strategic Account Escalation', subject: 'Urgent — [Client] account situation',
-    body: `Hi [First Name],\n\nI'm flagging the [Client] account:\n\n⚠️ Health score: [Score]/100\n📉 Usage down [X]%\n🔄 Renewal in [X] days\n\nProposed actions:\n1. [Action 1]\n2. [Action 2]\n3. [Action 3]\n\nCan we discuss urgently?\n\n[Your Name]` }
+  { id: 'kam_escalation', cat: 'Risk', roles: ['kam'], emoji: '🚨', title: 'Strategic Account Escalation', subject: 'Urgent — [Client] account situation',
+    body: `Hi [First Name],\n\nI'm flagging the [Client] account:\n\n⚠️ Health score: [Score]/100\n📉 Usage down [X]%\n🔄 Renewal in [X] days\n\nProposed actions:\n1. [Action 1]\n2. [Action 2]\n3. [Action 3]\n\nCan we discuss urgently?\n\n[Your Name]` },
+  {
+    id: 'kam_qbr_invite',
+    cat: 'QBR',
+    roles: ['kam'],
+    emoji: '📊',
+    title: 'Quarterly Business Review invitation',
+    subject: 'QBR Q[X] — [Client company] × [Your company]',
+    body: `Hi [First Name],
+
+The quarter is coming to an end and I'd like to schedule our Quarterly Business Review.
+
+Agenda:
+📈 KPI review and adoption for Q[X]
+🎯 Goals achieved and areas for improvement
+🗺️ Product roadmap — upcoming features
+💡 Personalized recommendations for Q[X+1]
+
+Proposed slots:
+→ [Date 1] at [Time]
+→ [Date 2] at [Time]
+
+Please confirm your preference (and invite [stakeholders] if relevant).
+
+Best,
+[Your Name]`
+  },
+  {
+    id: 'kam_upsell',
+    cat: 'Expansion',
+    roles: ['kam'],
+    emoji: '🚀',
+    title: 'Upsell / cross-sell proposal',
+    subject: 'An idea to go further with [Solution]',
+    body: `Hi [First Name],
+
+Analyzing your usage of [Solution], I've identified an interesting opportunity.
+
+Observations:
+→ You're successfully using [Feature A] ([result])
+→ However, [unmet need] could be addressed by [module/higher plan]
+
+Similar client case: [Company X] activated [module] and achieved [result].
+
+I can give you a personalized 20-minute demo. Interested?
+
+[Your Name]`
+  },
+  {
+    id: 'kam_renewal',
+    cat: 'Renewal',
+    roles: ['kam'],
+    emoji: '📝',
+    title: 'Renewal preparation',
+    subject: '[Client company] renewal — 90-day check-in',
+    body: `Hi [First Name],
+
+Your contract expires on [date]. I'd like to plan ahead to ensure you get the best terms.
+
+Partnership recap:
+→ [X] active users (vs [Y] at start)
+→ [Key result 1]
+→ [Key result 2]
+→ Your team's NPS: [score]
+
+For renewal, I'd like to propose:
+🔹 Option 1: Renewal on same terms
+🔹 Option 2: Upgrade to [higher plan] with [benefit]
+
+When can we discuss?
+
+[Your Name]`
+  },
+  {
+    id: 'kam_risk_intervention',
+    cat: 'Retention',
+    roles: ['kam'],
+    emoji: '🛡️',
+    title: 'At-risk account intervention',
+    subject: '[Client company] — your satisfaction is our priority',
+    body: `Hi [First Name],
+
+I'm reaching out because I noticed [signal — usage drop, support ticket, negative feedback].
+
+Your success is my top priority. I'd like to understand what could be improved.
+
+I'd like to offer:
+→ A 30-min call this week to review the situation
+→ A personalized action plan within 48h
+→ Priority access to our support team
+
+What time works for you?
+
+[Your Name]`
+  }
 ]
 
 // ── Templates KR ──────────────────────────────────
@@ -533,6 +907,7 @@ const TEMPLATES_KR = [
   {
     id: 'onboarding_j1',
     cat: '온보딩',
+    roles: ['csm'],
     title: '환영 & 첫 걸음',
     subject: '환영합니다, [이름]님 — 시작 가이드',
     body: `안녕하세요 [이름]님,
@@ -559,6 +934,7 @@ Customer Success Manager`
   {
     id: 'qbr_invite',
     cat: 'QBR',
+    roles: ['csm'],
     title: '분기 비즈니스 리뷰 초대',
     subject: 'QBR Q[N] — 분기 성과 리뷰',
     body: `안녕하세요 [이름]님,
@@ -585,6 +961,7 @@ Customer Success Manager`
   {
     id: 'health_check',
     cat: '팔로우업',
+    roles: ['csm'],
     title: '월간 헬스 체크',
     subject: '📊 [월]의 대시보드 — 주요 내용',
     body: `안녕하세요 [이름]님,
@@ -614,6 +991,7 @@ Customer Success Manager`
   {
     id: 'churn_alert',
     cat: '위험',
+    roles: ['csm'],
     title: '위험 계정 재참여',
     subject: '📞 안부 확인 — [회사]',
     body: `안녕하세요 [이름]님,
@@ -637,6 +1015,7 @@ Customer Success Manager`
   {
     id: 'renewal',
     cat: '갱신',
+    roles: ['csm'],
     title: '갱신 준비',
     subject: '귀하의 구독 — [N]일 후 갱신',
     body: `안녕하세요 [이름]님,
@@ -664,6 +1043,7 @@ Customer Success Manager`
   {
     id: 'expansion',
     cat: '확장',
+    roles: ['csm'],
     title: '확장 기회',
     subject: '💡 더 나아갈 기회',
     body: `안녕하세요 [이름]님,
@@ -684,24 +1064,209 @@ Customer Success Manager`
 
 [담당자 이름]`
   },
-  { id: 'nps_survey', cat: 'NPS', role: 'csm', emoji: '⭐', title: 'NPS 설문', subject: '소중한 의견을 들려주세요 — 30초면 충분합니다',
+  { id: 'nps_survey', cat: 'NPS', roles: ['csm'], emoji: '⭐', title: 'NPS 설문', subject: '소중한 의견을 들려주세요 — 30초면 충분합니다',
     body: `안녕하세요 [이름]님,\n\n0~10점 중 [회사명]을 동료에게 추천할 가능성은 얼마나 되시나요?\n\n→ 1클릭으로 답변: [NPS 링크]\n\n소중한 피드백 감사합니다.\n\n[담당자 이름]` },
-  { id: 'nps_thanks', cat: 'NPS', role: 'csm', emoji: '🙏', title: 'NPS 추천인 감사', subject: '신뢰에 감사드립니다!',
+  { id: 'nps_thanks', cat: 'NPS', roles: ['csm'], emoji: '🙏', title: 'NPS 추천인 감사', subject: '신뢰에 감사드립니다!',
     body: `안녕하세요 [이름]님,\n\n[점수]점을 주셔서 정말 감사합니다!\n\n혹시 다음 중 가능한 것이 있으신가요?\n• 웹사이트에 후기 공유\n• 지인에게 추천\n• 사례 연구 참여\n\n감사합니다,\n[담당자 이름]` },
-  { id: 'nps_detractor', cat: 'NPS', role: 'csm', emoji: '💬', title: 'NPS 비추천인 후속', subject: '더 나은 서비스를 위한 소중한 의견',
+  { id: 'nps_detractor', cat: 'NPS', roles: ['csm'], emoji: '💬', title: 'NPS 비추천인 후속', subject: '더 나은 서비스를 위한 소중한 의견',
     body: `안녕하세요 [이름]님,\n\n솔직한 피드백 감사합니다. 더 나아질 수 있다고 생각합니다.\n\n궁금한 점이 있습니다:\n• 어떤 부분이 불편하셨나요?\n• 우선 개선해야 할 사항은?\n\n15분 통화가 가능하실까요?\n\n📅 예약: [캘린들리 링크]\n\n[담당자 이름]` },
-  { id: 'prospect_intro', cat: '영업 개발', role: 'commercial', emoji: '🎯', title: '신규 고객 소개', subject: '[이름]님, [문제]에 대한 솔루션',
+  // === COMMERCIAL ===
+  { id: 'prospect_intro', cat: '영업 개발', roles: ['commercial'], emoji: '🎯', title: '신규 고객 소개', subject: '[이름]님, [문제]에 대한 솔루션',
     body: `안녕하세요 [이름]님,\n\n[회사명]은 귀사와 같은 기업이 [핵심 이점]을 달성할 수 있도록 돕고 있습니다.\n\n고객사 평균 성과:\n• [결과 1]\n• [결과 2]\n• [결과 3]\n\n15분 통화가 가능하실까요?\n\n📅 예약: [캘린들리 링크]\n\n[담당자 이름]` },
-  { id: 'prospect_demo', cat: '영업 개발', role: 'commercial', emoji: '🎬', title: '데모 초대', subject: '[제품] 20분 체험',
+  { id: 'prospect_demo', cat: '영업 개발', roles: ['commercial'], emoji: '🎬', title: '데모 초대', subject: '[제품] 20분 체험',
     body: `안녕하세요 [이름]님,\n\n대화에 이어 [제품] 맞춤 데모를 제안드립니다.\n\n소요시간: 20분\n형식: 화상 통화\n내용: 귀사 상황에 맞는 사례\n\n📅 예약: [캘린들리 링크]\n\n곧 뵙겠습니다,\n[담당자 이름]` },
-  { id: 'prospect_proposal', cat: '협상', role: 'commercial', emoji: '📋', title: '제안서 발송', subject: '맞춤 제안서 — [회사명]',
+  { id: 'prospect_proposal', cat: '협상', roles: ['commercial'], emoji: '📋', title: '제안서 발송', subject: '맞춤 제안서 — [회사명]',
     body: `안녕하세요 [이름]님,\n\n맞춤 제안서를 첨부합니다.\n\n요약:\n• 플랜: [플랜]\n• 금액: [금액]원/월\n• 기간: [기간]\n• 시작일: [날짜]\n\n본 제안은 [만료일]까지 유효합니다.\n\n문의사항이 있으시면 연락 주세요.\n\n[담당자 이름]` },
-  { id: 'kam_upsell', cat: '확장', role: 'kam', emoji: '📈', title: '업셀 제안', subject: '다음 단계로 — 특별 혜택',
+  {
+    id: 'com_prospection_intro',
+    cat: '영업 개발',
+    roles: ['commercial'],
+    emoji: '🎯',
+    title: '첫 번째 잠재 고객 연락',
+    subject: '[회사명] — [잠재 고객 목표]를 위한 아이디어',
+    body: `안녕하세요 [이름]님,
+
+[잠재 고객 회사]가 [관련 관찰 — 예: 해외 진출 / 적극 채용 / 자금 조달]하고 있다는 것을 알게 되었습니다.
+
+[귀사]에서는 귀사와 같은 기업이 [핵심 이점]을 달성할 수 있도록 돕고 있습니다.
+
+[유사 고객명]은 저희 접근 방식으로 [구체적 결과 — 예: 6개월 만에 리텐션 +30%]를 달성했습니다.
+
+이번 주 15분 통화가 가능하실까요?
+
+감사합니다,
+[담당자 이름]`
+  },
+  {
+    id: 'com_follow_up',
+    cat: '후속 조치',
+    roles: ['commercial'],
+    emoji: '🔄',
+    title: '데모 후 후속 조치',
+    subject: '미팅 후속 — 다음 단계',
+    body: `안녕하세요 [이름]님,
+
+[날짜] 데모에 시간을 내주셔서 감사합니다.
+
+논의한 핵심 사항:
+→ [공감한 포인트 1]
+→ [포인트 2 — ROI 또는 이점]
+→ [포인트 3 — 차별화 요소]
+
+맞춤 제안서를 준비했습니다 (첨부).
+
+[의사 결정자]와 언제 논의하실 수 있으신가요?
+
+감사합니다,
+[담당자 이름]`
+  },
+  {
+    id: 'com_objection_prix',
+    cat: '협상',
+    roles: ['commercial'],
+    emoji: '💰',
+    title: '가격 이의 대응',
+    subject: 'Re: 가격 문의',
+    body: `안녕하세요 [이름]님,
+
+예산에 대한 우려를 이해합니다.
+
+관점을 바꿔 보겠습니다:
+→ [문제]의 현재 비용: 연간 [X]원 추정 (이직, 비효율 등)
+→ 저희 솔루션: 연간 [Y]원
+→ 고객사 평균 ROI: [Z]개월
+
+[참조 고객]도 같은 망설임이 있었습니다. 6개월 후: [구체적 결과].
+
+[유연한 옵션 — 분기 결제, 파일럿 단계 등]을 제안드릴 수 있습니다.
+
+논의해 볼까요?
+
+[담당자 이름]`
+  },
+  {
+    id: 'com_closing',
+    cat: '클로징',
+    roles: ['commercial'],
+    emoji: '🏆',
+    title: '최종 결정 후속',
+    subject: '[잠재 고객 회사] × [귀사] — 거의 다 왔습니다',
+    body: `안녕하세요 [이름]님,
+
+검토는 어디까지 진행되셨나요?
+
+함께 확인한 내용 요약:
+✅ [니즈 1] → [기능]으로 해결
+✅ [니즈 2] → [기능]으로 해결
+✅ 예상 ROI: [X]
+
+제안은 [날짜]까지 유효합니다. 이후에는 논의된 조건을 유지하기 어렵습니다.
+
+남은 질문이 있으시면 언제든 연락 주세요.
+
+[담당자 이름]`
+  },
+  // === KAM ===
+  { id: 'kam_upsell_existing', cat: '확장', roles: ['kam'], emoji: '📈', title: '업셀 제안', subject: '다음 단계로 — 특별 혜택',
     body: `안녕하세요 [이름]님,\n\n사용량 증가를 보면 [상위 플랜]이 더 적합할 것 같습니다.\n\n추가 혜택:\n• [기능 1]\n• [기능 2]\n• [우선 지원]\n\n특별 혜택: 첫 3개월 [X]% 할인\n\n논의해 볼까요?\n\n[담당자 이름]` },
-  { id: 'kam_crosssell', cat: '확장', role: 'kam', emoji: '🔗', title: '크로스셀 신규 모듈', subject: '신규: [모듈] — 팀에 딱 맞습니다',
+  { id: 'kam_crosssell', cat: '확장', roles: ['kam'], emoji: '🔗', title: '크로스셀 신규 모듈', subject: '신규: [모듈] — 팀에 딱 맞습니다',
     body: `안녕하세요 [이름]님,\n\n[모듈]을 새로 출시했는데, 귀사에 잘 맞을 것 같습니다.\n\n핵심 장점:\n• [장점 1]\n• [장점 2]\n\n14일 무료 체험을 제안드립니다.\n\n관심 있으신가요?\n\n[담당자 이름]` },
-  { id: 'kam_escalation', cat: '위험', role: 'kam', emoji: '🚨', title: '전략 계정 에스컬레이션', subject: '긴급 — [고객] 계정 상황',
-    body: `안녕하세요 [이름]님,\n\n[고객] 계정 상황을 알려드립니다:\n\n⚠️ 건강 점수: [점수]/100\n📉 사용량 [X]% 감소\n🔄 갱신까지 [X]일\n\n제안 조치:\n1. [조치 1]\n2. [조치 2]\n3. [조치 3]\n\n긴급 논의 가능하신가요?\n\n[담당자 이름]` }
+  { id: 'kam_escalation', cat: '위험', roles: ['kam'], emoji: '🚨', title: '전략 계정 에스컬레이션', subject: '긴급 — [고객] 계정 상황',
+    body: `안녕하세요 [이름]님,\n\n[고객] 계정 상황을 알려드립니다:\n\n⚠️ 건강 점수: [점수]/100\n📉 사용량 [X]% 감소\n🔄 갱신까지 [X]일\n\n제안 조치:\n1. [조치 1]\n2. [조치 2]\n3. [조치 3]\n\n긴급 논의 가능하신가요?\n\n[담당자 이름]` },
+  {
+    id: 'kam_qbr_invite',
+    cat: 'QBR',
+    roles: ['kam'],
+    emoji: '📊',
+    title: '분기 비즈니스 리뷰 초대',
+    subject: 'QBR Q[X] — [고객 회사] × [귀사]',
+    body: `안녕하세요 [이름]님,
+
+분기가 마무리되고 있어 Quarterly Business Review를 진행하고자 합니다.
+
+안건:
+📈 Q[X] KPI 및 도입 현황
+🎯 달성 목표 및 개선점
+🗺️ 제품 로드맵 — 향후 업데이트
+💡 Q[X+1] 맞춤 추천사항
+
+제안 일정:
+→ [날짜 1] [시간]
+→ [날짜 2] [시간]
+
+선호 일정을 확인해 주세요 ([이해관계자]도 초대해 주시면 좋겠습니다).
+
+감사합니다,
+[담당자 이름]`
+  },
+  {
+    id: 'kam_upsell',
+    cat: '확장',
+    roles: ['kam'],
+    emoji: '🚀',
+    title: '업셀 / 크로스셀 제안',
+    subject: '[솔루션]으로 더 나아갈 아이디어',
+    body: `안녕하세요 [이름]님,
+
+[솔루션] 사용 현황을 분석한 결과 흥미로운 기회를 발견했습니다.
+
+분석:
+→ [기능 A]를 성공적으로 활용 중 ([결과])
+→ 그러나 [미충족 니즈]는 [모듈/상위 플랜]으로 해결 가능
+
+유사 사례: [회사 X]가 [모듈]을 활성화하여 [결과]를 달성했습니다.
+
+20분 맞춤 데모를 보여드릴 수 있습니다. 관심 있으신가요?
+
+[담당자 이름]`
+  },
+  {
+    id: 'kam_renewal',
+    cat: '갱신',
+    roles: ['kam'],
+    emoji: '📝',
+    title: '갱신 준비',
+    subject: '[고객 회사] 갱신 — 90일 전 체크인',
+    body: `안녕하세요 [이름]님,
+
+계약이 [날짜]에 만료됩니다. 최적의 조건을 보장하기 위해 미리 준비하고자 합니다.
+
+협력 현황:
+→ 활성 사용자 [X]명 (시작 시 [Y]명)
+→ [핵심 결과 1]
+→ [핵심 결과 2]
+→ 팀 NPS: [점수]
+
+갱신 제안:
+🔹 옵션 1: 동일 조건 갱신
+🔹 옵션 2: [상위 플랜]으로 업그레이드 + [혜택]
+
+언제 논의 가능하신가요?
+
+[담당자 이름]`
+  },
+  {
+    id: 'kam_risk_intervention',
+    cat: '리텐션',
+    roles: ['kam'],
+    emoji: '🛡️',
+    title: '위험 계정 개입',
+    subject: '[고객 회사] — 귀하의 만족이 최우선입니다',
+    body: `안녕하세요 [이름]님,
+
+[신호 — 사용량 감소, 지원 티켓, 부정적 피드백]을 확인하여 연락드립니다.
+
+귀하의 성공이 저의 최우선 과제입니다. 개선할 수 있는 부분을 파악하고 싶습니다.
+
+제안드립니다:
+→ 이번 주 30분 통화로 현황 점검
+→ 48시간 내 맞춤 액션 플랜
+→ 지원팀 우선 접근 권한
+
+어떤 시간이 편하신가요?
+
+[담당자 이름]`
+  }
 ]
 
 // ── Reactive state ────────────────────────────────
@@ -750,6 +1315,10 @@ function catColor(cat) {
   if (c.includes('prospect') || c.includes('영업')) return '#ec4899'
   if (c.includes('expans') || c.includes('확장')) return '#22c55e'
   if (c.includes('négoci') || c.includes('negoti') || c.includes('협상')) return '#f43f5e'
+  if (c.includes('relance') || c.includes('follow') || c.includes('후속')) return '#06b6d4'
+  if (c.includes('closing') || c.includes('클로징')) return '#10b981'
+  if (c.includes('rétention') || c.includes('retention') || c.includes('리텐션')) return '#8b5cf6'
+  if (c.includes('renouvel') || c.includes('갱신')) return '#f97316'
   return '#6366f1'
 }
 
