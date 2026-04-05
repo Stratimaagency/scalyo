@@ -1117,7 +1117,7 @@ export default {
   dashNps: 'NPS',
   dashChurnRate: 'Taux de churn',
   dashActiveAccounts: 'Comptes actifs',
-  dashClientHealth: 'Santé du portefeuille',
+  dashClientHealth: 'Satisfaction portefeuille',
   dashHealthy: 'Sains',
   dashNeutral: 'Neutres',
   dashAtRisk: 'À risque',
@@ -1135,7 +1135,7 @@ export default {
   dashTrendDown: 'En baisse',
   dashTrendStable: 'Stable',
   dashNoPriority: 'Aucune priorité pour aujourd\'hui',
-  dashGoToHealthTracker: 'Voir la Santé Clients',
+  dashGoToHealthTracker: 'Voir Satisfaction Client',
 
   // Manager Dashboard v2
   mgrTeamHealth: 'Santé de l\'équipe',
