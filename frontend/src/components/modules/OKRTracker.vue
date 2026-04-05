@@ -131,9 +131,8 @@
       </div>
     </div>
 
-    <!-- CREATE / EDIT MODAL -->
-    <div v-if="showModal" class="okr-modal-overlay" @click.self="closeModal">
-      <div class="okr-modal">
+    <!-- CREATE / EDIT INLINE PANEL -->
+    <div v-if="showModal" class="card" style="padding: 16px; margin-bottom: 16px; border: 2px solid var(--tealBorder); border-radius: 12px;">
         <h3 class="okr-modal-title">{{ editingOkr ? t('okrEditObjective') : t('okrNewOKR') }}</h3>
 
         <label class="okr-label">{{ t('okrObjectiveName') }}</label>
@@ -172,18 +171,15 @@
           <button class="okr-btn-secondary" @click="closeModal">{{ t('okrCancel') }}</button>
           <button class="okr-btn-primary" @click="saveOkr" :disabled="saving">{{ t('okrSave') }}</button>
         </div>
-      </div>
     </div>
 
-    <!-- DELETE CONFIRM -->
-    <div v-if="deletingOkr" class="okr-modal-overlay" @click.self="deletingOkr = null">
-      <div class="okr-modal okr-modal-sm">
+    <!-- DELETE CONFIRM INLINE PANEL -->
+    <div v-if="deletingOkr" class="card" style="padding: 16px; margin-bottom: 16px; border: 2px solid #EA4335; border-radius: 12px;">
         <p style="font-size:15px;font-weight:600;margin-bottom:16px">{{ t('okrDeleteConfirm') }}</p>
         <div class="okr-modal-footer">
           <button class="okr-btn-secondary" @click="deletingOkr = null">{{ t('okrCancel') }}</button>
           <button class="okr-btn-danger-full" @click="doDelete">{{ t('okrDeleteObjective') }}</button>
         </div>
-      </div>
     </div>
 
     <!-- HIDDEN PRINT AREA -->
@@ -586,16 +582,7 @@ onMounted(() => {
 }
 .okr-btn-danger-full:hover { background: #C5221F; }
 
-/* ---------- MODAL ---------- */
-.okr-modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex;
-  align-items: center; justify-content: center; z-index: 1000; padding: 20px;
-}
-.okr-modal {
-  background: #fff; border-radius: 16px; padding: 28px; width: 100%; max-width: 580px;
-  max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-}
-.okr-modal-sm { max-width: 360px; }
+/* ---------- MODAL (inline panels) ---------- */
 .okr-modal-title { font-size: 20px; font-weight: 800; color: #202124; margin: 0 0 20px; }
 .okr-label { display: block; font-size: 12px; font-weight: 700; color: #5F6368; margin: 14px 0 6px; text-transform: uppercase; letter-spacing: 0.5px; }
 .okr-input {

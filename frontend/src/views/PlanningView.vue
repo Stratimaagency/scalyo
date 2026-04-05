@@ -125,8 +125,12 @@
       </div>
     </div>
 
-    <!-- Add/Edit Event Modal -->
-    <AppModal v-if="showAddEvent" :title="editEventData ? t('editEvent') : t('newEvent')" @close="closeModal">
+    <!-- Add/Edit Event Panel -->
+    <div v-if="showAddEvent" class="card" style="padding: 16px; margin-bottom: 16px; border: 2px solid var(--tealBorder); border-radius: 12px; position: relative;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h4 style="font-weight: 800; font-size: 15px; margin: 0;">{{ editEventData ? t('editEvent') : t('newEvent') }}</h4>
+        <button @click="closeModal" style="background: none; border: none; font-size: 18px; cursor: pointer; color: var(--muted); padding: 0 4px; line-height: 1;">&#x2715;</button>
+      </div>
       <!-- Saved confirmation with calendar export options -->
       <template v-if="savedEvent">
         <div style="text-align: center; margin-bottom: 20px">
@@ -216,7 +220,7 @@
           </button>
         </div>
       </template>
-    </AppModal>
+    </div>
     </template>
   </div>
   </PlanGate>
@@ -228,7 +232,6 @@ import { planningApi } from '../api'
 import { useI18n } from '../i18n'
 import { usePreferencesStore } from '../stores/preferences'
 import { usePortfolioStore } from '../stores/portfolio'
-import AppModal from '../components/AppModal.vue'
 import PlanGate from '../components/PlanGate.vue'
 
 const { t } = useI18n()

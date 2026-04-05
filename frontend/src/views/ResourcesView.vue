@@ -15,32 +15,39 @@
 
     <!-- Resource cards -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px">
-      <div v-for="res in filteredResources" :key="res.id" style="position: relative">
-        <AppCard class="card-lift" :style="{ cursor: isLocked(res) ? 'default' : 'pointer', filter: isLocked(res) ? 'blur(5px)' : 'none', pointerEvents: isLocked(res) ? 'none' : 'auto' }" @click="handleResourceClick(res)">
-          <div style="margin-bottom: 10px"><ScalyoIcon :name="res.icon" :size="32" /></div>
-          <div style="font-weight: 800; margin-bottom: 4px">{{ t(res.titleKey) }}</div>
-          <div style="font-size: 12px; color: var(--muted); line-height: 1.6">{{ t(res.descKey) }}</div>
-          <div style="margin-top: 10px">
-            <span class="tag" :class="'risk-low'" style="font-size: 10px">{{ t(res.categoryKey) }}</span>
-          </div>
-        </AppCard>
-        <div v-if="isLocked(res)" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 2;">
-          <div style="text-align: center; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
-            <div style="font-size: 20px; margin-bottom: 4px">&#x1F512;</div>
-            <div style="font-size: 11px; font-weight: 700; color: var(--teal)">GROWTH</div>
-            <button class="btn btn-primary btn-sm" style="margin-top: 6px; font-size: 11px" @click="$router.push({ name: 'settings' })">
-              {{ lang === 'en' ? 'Upgrade' : lang === 'kr' ? '업그레이드' : 'Débloquer' }}
-            </button>
+      <template v-for="res in filteredResources" :key="res.id">
+        <div style="position: relative">
+          <AppCard class="card-lift" :style="{ cursor: isLocked(res) ? 'default' : 'pointer', filter: isLocked(res) ? 'blur(5px)' : 'none', pointerEvents: isLocked(res) ? 'none' : 'auto', border: selectedResource && selectedResource.id === res.id ? '2px solid var(--tealBorder)' : undefined }" @click="handleResourceClick(res)">
+            <div style="margin-bottom: 10px"><ScalyoIcon :name="res.icon" :size="32" /></div>
+            <div style="font-weight: 800; margin-bottom: 4px">{{ t(res.titleKey) }}</div>
+            <div style="font-size: 12px; color: var(--muted); line-height: 1.6">{{ t(res.descKey) }}</div>
+            <div style="margin-top: 10px">
+              <span class="tag" :class="'risk-low'" style="font-size: 10px">{{ t(res.categoryKey) }}</span>
+            </div>
+          </AppCard>
+          <div v-if="isLocked(res)" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 2;">
+            <div style="text-align: center; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+              <div style="font-size: 20px; margin-bottom: 4px">&#x1F512;</div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--teal)">GROWTH</div>
+              <button class="btn btn-primary btn-sm" style="margin-top: 6px; font-size: 11px" @click="$router.push({ name: 'settings' })">
+                {{ lang === 'en' ? 'Upgrade' : lang === 'kr' ? '업그레이드' : 'Débloquer' }}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+        <!-- Inline detail panel below selected card -->
+        <div v-if="selectedResource && selectedResource.id === res.id" style="grid-column: 1 / -1; padding: 20px; border: 2px solid var(--tealBorder); border-radius: 12px; background: var(--card);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <ScalyoIcon :name="selectedResource.icon" :size="36" />
+              <h4 style="font-weight: 800; margin: 0;">{{ t(selectedResource.titleKey) }}</h4>
+            </div>
+            <button class="btn btn-secondary" style="font-size: 12px; padding: 4px 12px;" @click="selectedResource = null">&times;</button>
+          </div>
+          <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.8; color: var(--text)">{{ t(selectedResource.contentKey) }}</div>
+        </div>
+      </template>
     </div>
-
-    <!-- Detail modal -->
-    <AppModal v-if="selectedResource" :title="t(selectedResource.titleKey)" @close="selectedResource = null" maxWidth="700px">
-      <div style="text-align: center; margin-bottom: 16px"><ScalyoIcon :name="selectedResource.icon" :size="52" /></div>
-      <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.8; color: var(--text)">{{ t(selectedResource.contentKey) }}</div>
-    </AppModal>
   </div>
 </template>
 
@@ -49,7 +56,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from '../i18n'
 import { useAuthStore } from '../stores/auth'
 import AppCard from '../components/AppCard.vue'
-import AppModal from '../components/AppModal.vue'
+
 import ScalyoIcon from '../components/ScalyoIcon.vue'
 
 const { t, lang } = useI18n()
@@ -101,7 +108,7 @@ function isLocked(res) {
 
 function handleResourceClick(res) {
   if (isLocked(res)) return
-  selectedResource.value = res
+  selectedResource.value = selectedResource.value?.id === res.id ? null : res
 }
 
 const filteredResources = computed(() => {

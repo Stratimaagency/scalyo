@@ -1,9 +1,13 @@
 <template>
   <div class="app-shell">
     <!-- Desktop sidebar -->
-    <aside class="sidebar-desktop">
+    <aside class="sidebar-desktop" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
       <div class="sidebar-logo">
-        <ScalyoLogo :markSize="38" :fontSize="20" :gap="10" :showSub="isSmartMatrice" />
+        <ScalyoLogo v-if="!sidebarCollapsed" :markSize="38" :fontSize="20" :gap="10" :showSub="isSmartMatrice" />
+        <ScalyoLogo v-else :markSize="28" :fontSize="0" :gap="0" />
+        <button class="sidebar-toggle" @click="sidebarCollapsed = !sidebarCollapsed">
+          {{ sidebarCollapsed ? '»' : '«' }}
+        </button>
       </div>
       <nav class="sidebar-nav">
         <!-- Global nav with SM sub-nav inline -->
@@ -46,12 +50,6 @@
           <span class="nav-emoji">⚙️</span>
           <span class="nav-label">{{ t('settings') }}</span>
         </router-link>
-
-        <!-- Language switcher -->
-        <div class="lang-switcher">
-          <button v-for="l in ['fr', 'en', 'kr']" :key="l" class="lang-btn"
-            :class="{ active: prefsStore.lang === l }" @click="prefsStore.setLang(l)">{{ langLabel(l) }}</button>
-        </div>
 
         <!-- User info -->
         <div class="sidebar-user">
@@ -139,6 +137,7 @@ const router = useRouter()
 const { t } = useI18n()
 const { navItems, mobileNavItems } = useNavigation()
 
+const sidebarCollapsed = ref(false)
 const company = computed(() => authStore.company)
 const showVerifyBanner = ref(authStore.user && !authStore.user.email_verified)
 const resendMsg = ref('')
@@ -293,4 +292,23 @@ onMounted(async () => {
 .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .trial-expired-overlay { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px; background: var(--bg); }
 .trial-expired-card { text-align: center; max-width: 480px; padding: 48px 32px; background: white; border: 1px solid var(--border); border-radius: 16px; }
+
+.sidebar-toggle {
+  background: none; border: none; cursor: pointer; font-size: 14px;
+  color: var(--muted); padding: 4px 6px; border-radius: 6px;
+  transition: all .2s; margin-left: auto;
+}
+.sidebar-toggle:hover { background: rgba(0,0,0,.06); color: var(--text); }
+
+.sidebar-collapsed { width: 60px !important; padding: 16px 6px; }
+.sidebar-collapsed .nav-label,
+.sidebar-collapsed .nav-group-label,
+.sidebar-collapsed .nav-lock,
+.sidebar-collapsed .nav-badge-count,
+.sidebar-collapsed .sidebar-user-info,
+.sidebar-collapsed .lang-switcher { display: none; }
+.sidebar-collapsed .nav-btn { justify-content: center; padding: 9px 6px; }
+.sidebar-collapsed .nav-btn--sub { padding-left: 6px; }
+.sidebar-collapsed .nav-emoji { width: auto; }
+.sidebar-collapsed .sidebar-logo { justify-content: center; margin-bottom: 16px; }
 </style>

@@ -8,7 +8,7 @@ const ALL_NAV_ITEMS = [
   { key: 'manager-dashboard', icon: 'dashboard', emoji: '📊', roles: ['manager'] },
   // Clients
   { key: 'portfolio', icon: 'briefcase', emoji: '💼', roles: ['manager', 'csm', 'commercial', 'kam'] },
-  { key: 'health-tracker', icon: 'heart', emoji: '❤️', roles: ['manager', 'csm', 'commercial', 'kam'] },
+  { key: 'health-tracker', icon: 'heart', emoji: '⭐', roles: ['manager', 'csm', 'commercial', 'kam'] },
   { key: 'playbook-runner', icon: 'refresh', emoji: '🔄', roles: ['manager', 'csm', 'commercial', 'kam'] },
   // Performance
   { key: 'kpis', icon: 'chart-up', emoji: '📈', roles: ['manager', 'csm', 'commercial', 'kam'] },

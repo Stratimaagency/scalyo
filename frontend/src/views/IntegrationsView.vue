@@ -98,8 +98,9 @@
       </div>
     </AppCard>
 
-    <!-- Connect modal -->
-    <AppModal v-if="modal" :title="(connectedKeys.has(modal.key) ? t('edit') + ' ' : t('connect') + ' ') + modal.name" @close="modal = null">
+    <!-- Connect inline panel -->
+    <div v-if="modal" class="card" style="padding: 16px; margin-bottom: 16px; border: 2px solid var(--tealBorder); border-radius: 12px;">
+      <h4 style="font-weight: 800; margin-bottom: 12px;">{{ (connectedKeys.has(modal.key) ? t('edit') + ' ' : t('connect') + ' ') + modal.name }}</h4>
       <div class="integ-modal-body">
         <div class="integ-modal-icon-row">
           <span style="font-size: 40px;">{{ modal.icon }}</span>
@@ -138,7 +139,7 @@
 
         <div v-if="connectSuccess" class="integ-success">{{ t('connectSuccess') }}</div>
       </div>
-    </AppModal>
+    </div>
   </div>
   </PlanGate>
 </template>
@@ -150,7 +151,7 @@ import { useI18n } from '../i18n'
 import { usePreferencesStore } from '../stores/preferences'
 import { integrationsApi } from '../api'
 import AppCard from '../components/AppCard.vue'
-import AppModal from '../components/AppModal.vue'
+
 import ScalyoIcon from '../components/ScalyoIcon.vue'
 import PlanGate from '../components/PlanGate.vue'
 

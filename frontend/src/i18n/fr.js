@@ -10,7 +10,7 @@ export default {
   resources: 'Ressources',
   email: 'Email Studio',
   tips: 'Guide CS',
-  healthTracker: 'Santé Clients',
+  healthTracker: 'Satisfaction Client',
   ganttTimeline: 'Timeline',
   okrTracker: 'OKR Tracker',
   workload: 'Health Tracker',
@@ -915,9 +915,9 @@ export default {
   scoreAvg: 'Score moyen',
   clients: 'clients',
   atRisk: 'à risque',
-  // Santé Clients
-  htTitle: 'Santé Clients',
-  htSubtitle: 'Vue complète sur la santé de votre portefeuille',
+  // Satisfaction Client
+  htTitle: 'Satisfaction Client',
+  htSubtitle: 'Vue complète sur la satisfaction de votre portefeuille',
   htAllClients: 'Tous les clients',
   htDistribution: 'Distribution des scores',
   htRiskLow: 'Sain (≥75)',
