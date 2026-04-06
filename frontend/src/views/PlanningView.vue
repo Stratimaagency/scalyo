@@ -8,7 +8,7 @@
     <!-- Header bar -->
     <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 28px 14px; flex-shrink: 0; border-bottom: 1px solid var(--border)">
       <div style="display: flex; align-items: center; gap: 14px">
-        <h1 style="font-size: 20px; font-weight: 900; letter-spacing: -0.4px">{{ t('planning') }}</h1>
+        <h1 class="page-header__title">{{ t('planning') }}</h1>
         <div style="display: flex; align-items: center; gap: 4px">
           <button @click="prevPeriod" style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; width: 28px; height: 28px; cursor: pointer; color: var(--text); font-size: 14px; display: flex; align-items: center; justify-content: center">&lsaquo;</button>
           <span style="font-size: 13px; font-weight: 700; min-width: 180px; text-align: center">{{ headerTitle }}</span>

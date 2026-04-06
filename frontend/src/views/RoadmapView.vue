@@ -6,9 +6,12 @@
 
     <!-- Header -->
     <div class="rm-header">
-      <div>
-        <h1 class="rm-title">🗺️ {{ t('rmTitle') }}</h1>
-        <p class="rm-subtitle">{{ t('rmSubtitle') }}</p>
+      <div class="page-header__left">
+        <div class="page-header__icon">🗺️</div>
+        <div class="page-header__text">
+          <h1 class="page-header__title">{{ t('rmTitle') }}</h1>
+          <p class="page-header__subtitle">{{ t('rmSubtitle') }}</p>
+        </div>
       </div>
       <div class="rm-header-right">
         <div class="rm-ring-wrap">

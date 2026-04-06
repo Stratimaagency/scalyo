@@ -579,7 +579,7 @@ watch(currentView, async (v) => {
 .sm-page { font-family: 'DM Sans', sans-serif; }
 .sm-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 0 20px; gap: 16px; flex-wrap: wrap; }
 .sm-topbar__left { display: flex; align-items: center; gap: 12px; }
-.sm-topbar__title { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 26px; color: var(--sm-t1); margin: 0; }
+.sm-topbar__title { font-family: 'DM Sans', sans-serif; font-weight: 900; font-size: 22px; letter-spacing: -0.5px; color: var(--sm-t1); margin: 0; }
 .sm-topbar__project { font-size: 14px; color: var(--sm-t3); }
 .sm-topbar__actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .sm-back { border: none; background: none; color: var(--sm-t3); font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 4px 0; }
