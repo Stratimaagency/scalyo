@@ -20,6 +20,10 @@
       <!-- Project row -->
       <div class="sm-tree-row sm-tree-row--project" @click="toggleProject(project.id)">
         <div class="sm-tree-col sm-tree-col--name">
+          <label v-if="bulkMode" class="sm-tree-check" @click.stop>
+            <input type="checkbox" :checked="bulkSelect.includes(project.id)" @change="$emit('toggle-bulk', project.id)" />
+            <span class="sm-tree-checkmark"></span>
+          </label>
           <button class="sm-tree-toggle" :class="{ 'sm-tree-toggle--open': expandedProjects.has(project.id) }">
             <svg width="10" height="10" viewBox="0 0 10 10"><path d="M3 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           </button>
@@ -128,9 +132,11 @@ const props = defineProps({
   projects: { type: Array, default: () => [] },
   tasks: { type: Object, default: () => ({}) },
   team: { type: Array, default: () => [] },
+  bulkMode: { type: Boolean, default: false },
+  bulkSelect: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(['toggle-subtask', 'delete-subtask', 'add-subtask', 'edit-task', 'delete-task', 'delete-project'])
+const emit = defineEmits(['toggle-subtask', 'delete-subtask', 'add-subtask', 'edit-task', 'delete-task', 'delete-project', 'toggle-bulk'])
 
 const expandedProjects = ref(new Set())
 const expandedTasks = ref(new Set())

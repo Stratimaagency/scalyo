@@ -46,8 +46,12 @@
             <option value="normal">⚪ {{ lt.normal }}</option>
           </select>
         </div>
-        <button v-if="store.selectedProject && currentView !== 'projects'" class="sm-btn sm-btn--danger" @click="confirmDeleteProject(store.selectedProject)">🗑️ {{ lt.cancel === 'Cancel' ? 'Delete project' : 'Supprimer le projet' }}</button>
-        <button v-if="currentView === 'projects'" class="sm-btn sm-btn--primary" @click="showCreateProject = true">✨ {{ lt.newProject }}</button>
+        <button v-if="store.selectedProject && currentView !== 'projects'" class="sm-btn sm-btn--danger" @click="confirmDeleteProject(store.selectedProject)">🗑️ Supprimer</button>
+        <template v-if="currentView === 'projects'">
+          <button v-if="bulkSelect.length" class="sm-btn sm-btn--danger" @click="bulkDeleteProjects">🗑️ Supprimer ({{ bulkSelect.length }})</button>
+          <button class="sm-btn sm-btn--secondary" @click="toggleBulkMode">{{ bulkMode ? '✕ Annuler' : '☑ Sélectionner' }}</button>
+          <button class="sm-btn sm-btn--primary" @click="showCreateProject = true">✨ {{ lt.newProject }}</button>
+        </template>
         <button v-if="['tasks','kanban','eisenhower'].includes(currentView)" class="sm-btn sm-btn--secondary" @click="showCreateTask = true">+ {{ lt.newTask }}</button>
       </div>
     </header>
@@ -62,12 +66,15 @@
           :projects="store.projects"
           :tasks="store.tasks"
           :team="store.team"
+          :bulk-mode="bulkMode"
+          :bulk-select="bulkSelect"
           @toggle-subtask="toggleSubtask"
           @delete-subtask="deleteSubtask"
           @add-subtask="addSubtask"
           @edit-task="openEditTask"
           @delete-task="confirmDeleteTask"
           @delete-project="confirmDeleteProject"
+          @toggle-bulk="toggleBulkProject"
         />
       </div>
       <div v-else class="sm-empty">
@@ -382,6 +389,26 @@ const pageTitle = computed(() => currentNavItem.value?.label || 'Smart Matrice')
 const showCreateProject = ref(false)
 const showCreateTask = ref(false)
 const showEditTask = ref(false)
+const bulkMode = ref(false)
+const bulkSelect = ref([])
+
+function toggleBulkMode() {
+  bulkMode.value = !bulkMode.value
+  bulkSelect.value = []
+}
+function toggleBulkProject(id) {
+  const idx = bulkSelect.value.indexOf(id)
+  if (idx >= 0) bulkSelect.value.splice(idx, 1)
+  else bulkSelect.value.push(id)
+}
+async function bulkDeleteProjects() {
+  if (!confirm(`Supprimer ${bulkSelect.value.length} projet(s) et toutes leurs tâches ? Cette action est irréversible.`)) return
+  for (const id of bulkSelect.value) {
+    try { await store.deleteProject(id) } catch {}
+  }
+  bulkSelect.value = []
+  bulkMode.value = false
+}
 const newProject = reactive({ name: '', description: '', start_date: '', target_end_date: '', state: 'active' })
 const newTask = reactive({ name: '', description: '', group_name: '', priority: 'normal', dur_estimated: null, dur_min: null, dur_max: null, start_date: '', end_date: '', referent_name: '' })
 const editTask = reactive({ id: null, name: '', description: '', group_name: '', priority: 'normal', status: 'todo', dur_estimated: null, dur_min: null, dur_max: null, start_date: '', end_date: '' })
