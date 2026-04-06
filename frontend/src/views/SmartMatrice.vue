@@ -66,7 +66,7 @@
 
     <!-- PROJECTS VIEW (Tree) -->
     <div v-else-if="currentView === 'projects'" class="sm-content">
-      <div v-if="store.projects.length">
+      <div v-if="filteredProjects.length">
         <SmTreeView
           :projects="filteredProjects"
           :tasks="store.tasks"
