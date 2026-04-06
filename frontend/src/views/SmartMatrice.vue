@@ -304,7 +304,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue'
 import { useSmartMatriceStore } from '../stores/smartMatrice'
 import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
@@ -330,11 +330,10 @@ const currentView = computed({
 })
 
 const smNavItems = [
-  { key: 'projects', emoji: '📁', label: 'Projets', group: 'VUE D\'ENSEMBLE' },
   { key: 'stats', emoji: '📊', label: 'Stats', group: 'VUE D\'ENSEMBLE' },
-  { key: 'tasks', emoji: '⚡', label: 'Tâches', group: 'GESTION' },
-  { key: 'planning', emoji: '📅', label: 'Planning', group: 'GESTION' },
-  { key: 'kanban', emoji: '🔥', label: 'Kanban', group: 'VUES' },
+  { key: 'planning', emoji: '📅', label: 'Planning', group: 'VUE D\'ENSEMBLE' },
+  { key: 'projects', emoji: '📁', label: 'Projets', group: 'GESTION' },
+  { key: 'kanban', emoji: '🔥', label: 'Kanban', group: 'GESTION' },
   { key: 'eisenhower', emoji: '🎯', label: 'Priorités', group: 'VUES' },
   { key: 'team', emoji: '👥', label: 'Équipe', group: 'VUES' },
   { key: 'config', emoji: '⚙️', label: 'Réglages', group: 'RÉGLAGES' },
@@ -474,6 +473,9 @@ function openEditTask(task) {
     end_date: task.end_date || '',
   })
   showEditTask.value = true
+  nextTick(() => {
+    document.querySelector('.sm-inline-panel')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  })
 }
 
 async function saveEditTask() {

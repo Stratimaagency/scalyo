@@ -149,10 +149,9 @@ const smCurrentView = computed({
   set: (v) => { smStore.currentView = v }
 })
 const smNavItems = computed(() => [
-  { key: 'projects', emoji: '📁', label: t('smNavProjects') },
   { key: 'stats', emoji: '📊', label: t('smNavStats') },
-  { key: 'tasks', emoji: '⚡', label: t('smNavTasks') },
   { key: 'planning', emoji: '📅', label: t('smNavPlanning') },
+  { key: 'projects', emoji: '📁', label: t('smNavProjects') },
   { key: 'kanban', emoji: '🔥', label: t('smNavKanban') },
   { key: 'eisenhower', emoji: '🎯', label: t('smNavPriorities') },
   { key: 'team', emoji: '👥', label: t('smNavTeam') },
