@@ -7,7 +7,7 @@
         <div class="sm-tree-col sm-tree-col--date">Échéance</div>
         <div class="sm-tree-col sm-tree-col--urgency">Urgence</div>
         <div class="sm-tree-col sm-tree-col--importance">Importance</div>
-        <div class="sm-tree-col sm-tree-col--diff">Diff.</div>
+        <div class="sm-tree-col sm-tree-col--diff">Difficulté</div>
         <div class="sm-tree-col sm-tree-col--assigned">Assigné</div>
         <div class="sm-tree-col sm-tree-col--status">Statut</div>
         <div class="sm-tree-col sm-tree-col--dur">Estimé</div>
@@ -33,29 +33,29 @@
           </div>
           <div class="sm-tree-col sm-tree-col--date" @click.stop><input type="date" class="sm-inline-date" :value="(project.end_date || project.target_end_date || '').slice(0,10)" @change="onUpdateProject(project, 'end_date', $event.target.value)" /></div>
           <div class="sm-tree-col sm-tree-col--urgency" @click.stop>
-            <select class="sm-inline-sel" :value="project.state === 'urgent' ? 'urgent' : project.state === 'priority' ? 'high' : 'normal'" @change="onUpdateProject(project, 'state', $event.target.value === 'urgent' ? 'urgent' : $event.target.value === 'high' ? 'priority' : 'active')">
-              <option value="normal">⚪</option><option value="high">🟠</option><option value="urgent">⚡</option>
+            <select class="sm-pill-sel" :class="'pill-' + (project.state === 'urgent' ? 'urgent' : project.state === 'priority' ? 'high' : 'normal')" :value="project.state === 'urgent' ? 'urgent' : project.state === 'priority' ? 'high' : 'normal'" @change="onUpdateProject(project, 'state', $event.target.value === 'urgent' ? 'urgent' : $event.target.value === 'high' ? 'priority' : 'active')">
+              <option value="normal">Aucune</option><option value="high">Haute</option><option value="urgent">Urgente</option>
             </select>
           </div>
           <div class="sm-tree-col sm-tree-col--importance" @click.stop>
-            <select class="sm-inline-sel" :value="project.state === 'important' ? 'important' : 'normal'" @change="onUpdateProject(project, 'state', $event.target.value === 'important' ? 'important' : 'active')">
-              <option value="normal">⚪</option><option value="important">🟡</option>
+            <select class="sm-pill-sel" :class="'pill-' + (project.state === 'important' ? 'important' : 'normal')" :value="project.state === 'important' ? 'important' : 'normal'" @change="onUpdateProject(project, 'state', $event.target.value === 'important' ? 'important' : 'active')">
+              <option value="normal">Aucune</option><option value="important">Importante</option>
             </select>
           </div>
           <div class="sm-tree-col sm-tree-col--diff" @click.stop>
-            <select class="sm-inline-sel" :value="project.difficulty || 'medium'" @change="onUpdateProject(project, 'difficulty', $event.target.value)">
-              <option value="easy">🟢</option><option value="medium">🟡</option><option value="hard">🔴</option>
+            <select class="sm-pill-sel" :class="'pill-' + (project.difficulty || 'medium')" :value="project.difficulty || 'medium'" @change="onUpdateProject(project, 'difficulty', $event.target.value)">
+              <option value="easy">Facile</option><option value="medium">Moyen</option><option value="hard">Difficile</option>
             </select>
           </div>
           <div class="sm-tree-col sm-tree-col--assigned" @click.stop>
-            <select class="sm-inline-sel sm-inline-sel--sm" :value="project.assigned_to || ''" @change="onUpdateProject(project, 'assigned_to', $event.target.value || null)">
-              <option value="">—</option>
+            <select class="sm-pill-sel pill-normal" :value="project.assigned_to || ''" @change="onUpdateProject(project, 'assigned_to', $event.target.value || null)">
+              <option value="">Non assigné</option>
               <option v-for="m in team" :key="m.id" :value="m.id">{{ m.display_name || m.email }}</option>
             </select>
           </div>
           <div class="sm-tree-col sm-tree-col--status" @click.stop>
-            <select class="sm-inline-sel" :value="project.state || 'active'" @change="onUpdateProject(project, 'state', $event.target.value)">
-              <option value="active">🟢 Actif</option><option value="priority">🔴 Prio</option><option value="urgent">⚡ Urgent</option><option value="important">🟡 Imp.</option><option value="paused">⏸ Pause</option>
+            <select class="sm-pill-sel" :class="'pill-status-' + (project.state || 'active')" :value="project.state || 'active'" @change="onUpdateProject(project, 'state', $event.target.value)">
+              <option value="active">Actif</option><option value="priority">Prioritaire</option><option value="urgent">Urgent</option><option value="important">Important</option><option value="paused">En pause</option>
             </select>
           </div>
           <div class="sm-tree-col sm-tree-col--dur" @click.stop><input type="number" class="sm-inline-num" :value="project.hours_per_day || 8" @change="onUpdateProject(project, 'hours_per_day', +$event.target.value)" min="1" step="0.5" /></div>
@@ -115,9 +115,9 @@ function onQuickAdd(projectId, e) { const n = e.target.value.trim(); if (!n) ret
 .sm-tree-col { display: flex; align-items: center; gap: 4px; padding: 0 2px; }
 .sm-tree-col--name { flex: 2; min-width: 200px; position: sticky; left: 0; background: inherit; z-index: 5; }
 .sm-tree-col--date { width: 75px; flex-shrink: 0; }
-.sm-tree-col--urgency { width: 85px; flex-shrink: 0; }
-.sm-tree-col--importance { width: 85px; flex-shrink: 0; }
-.sm-tree-col--diff { width: 55px; flex-shrink: 0; }
+.sm-tree-col--urgency { width: 90px; flex-shrink: 0; }
+.sm-tree-col--importance { width: 90px; flex-shrink: 0; }
+.sm-tree-col--diff { width: 75px; flex-shrink: 0; }
 .sm-tree-col--assigned { width: 75px; flex-shrink: 0; }
 .sm-tree-col--status { width: 80px; flex-shrink: 0; }
 .sm-tree-col--dur { width: 50px; flex-shrink: 0; text-align: center; justify-content: center; }
@@ -149,6 +149,27 @@ function onQuickAdd(projectId, e) { const n = e.target.value.trim(); if (!n) ret
 .sm-tree-add-input { border: none; background: transparent; font-size: 11px; color: var(--sm-t3); padding: 3px 0; width: 100%; outline: none; }
 .sm-tree-add-input:focus { color: var(--sm-t1); }
 .sm-tree-empty { padding: 40px; text-align: center; color: var(--sm-t3); font-size: 13px; }
+/* Pill selects */
+.sm-pill-sel {
+  font-size: 10px; font-weight: 600; font-family: 'DM Sans', sans-serif;
+  border: none; border-radius: 6px; padding: 3px 6px; cursor: pointer;
+  outline: none; appearance: none; -webkit-appearance: none;
+  text-align: center; min-width: 70px;
+}
+.pill-normal { background: #f1f5f9; color: #64748b; }
+.pill-medium { background: #fef3c7; color: #92400e; }
+.pill-high { background: #ffedd5; color: #c2410c; }
+.pill-critical { background: #fee2e2; color: #dc2626; }
+.pill-urgent { background: #dc2626; color: #fff; }
+.pill-important { background: #fef3c7; color: #92400e; }
+.pill-easy { background: #dcfce7; color: #166534; }
+.pill-hard { background: #fee2e2; color: #dc2626; }
+.pill-status-todo, .pill-status-active { background: #f1f5f9; color: #475569; }
+.pill-status-in_progress, .pill-status-priority { background: #dbeafe; color: #1d4ed8; }
+.pill-status-blocked, .pill-status-important { background: #fef3c7; color: #92400e; }
+.pill-status-done { background: #dcfce7; color: #166534; }
+.pill-status-urgent { background: #dc2626; color: #fff; }
+.pill-status-paused { background: #e2e8f0; color: #64748b; }
 /* Inline edit controls for project rows */
 .sm-inline-date { border: none; background: none; font-size: 10px; color: var(--sm-t2, #475569); cursor: pointer; padding: 1px; width: 80px; font-family: inherit; outline: none; }
 .sm-inline-date:hover { background: rgba(79,70,229,.05); border-radius: 3px; }
