@@ -358,44 +358,193 @@ async function saveQuote() {
   closeForm()
 }
 
-function downloadQuote(q) {
+async function downloadQuote(q) {
+  const { default: jsPDF } = await import('jspdf')
+  await import('jspdf-autotable')
+
   const cfg = config.value || {}
   const label = cfg.country_defaults?.label || 'Devis'
-  const lines = [
-    `${label.toUpperCase()} ${q.quote_number || ''}`,
-    `Date: ${q.issue_date || q.date || ''}`,
-    `Validité: ${q.validity_days || 30} jours`,
-    ``,
-    `CLIENT`,
-    q.customer_name || q.client || '',
-    q.customer_address || '',
-    q.customer_vat ? `TVA: ${q.customer_vat}` : '',
-    ``,
-    `OBJET: ${q.title || ''}`,
-    ``,
-    `DÉTAIL`,
-    `${'Description'.padEnd(40)} ${'Qté'.padStart(6)} ${'P.U.'.padStart(10)} ${'Total'.padStart(12)}`,
-    '-'.repeat(70),
-  ]
-  // If we have stored items info in the quote, show subtotal
-  lines.push(``)
-  lines.push(`Sous-total HT: ${fmtAmount(q.subtotal || q.amount || 0)}`)
-  if (q.discount_pct) lines.push(`Remise (${q.discount_pct}%): -${fmtAmount((q.subtotal || 0) * q.discount_pct / 100)}`)
-  if (q.tax_rate) lines.push(`TVA (${q.tax_rate}%): ${fmtAmount(q.tax_amount || 0)}`)
-  lines.push(`TOTAL TTC: ${fmtAmount(q.total_ttc || q.amount || 0)}`)
-  lines.push(``)
-  if (q.payment_terms) lines.push(`Conditions: ${q.payment_terms}`)
-  if (q.conditions) lines.push(`${q.conditions}`)
-  if (cfg.legal_mentions) lines.push(`\n${cfg.legal_mentions}`)
-  lines.push(`\nStatut: ${statusOptions.find(s => s.key === q.status)?.label || q.status}`)
+  const cur = cfg.country_defaults?.currency || 'EUR'
+  const fmt = (v) => Number(v || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + (cur === 'EUR' ? ' €' : ` ${cur}`)
 
-  const blob = new Blob([lines.filter(l => l !== undefined).join('\n')], { type: 'text/plain;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `${q.quote_number || 'devis'}.txt`
-  a.click()
-  URL.revokeObjectURL(url)
+  const doc = new jsPDF()
+  const w = doc.internal.pageSize.getWidth()
+
+  // --- Header gradient bar ---
+  doc.setFillColor(79, 70, 229)
+  doc.rect(0, 0, w, 28, 'F')
+  doc.setFillColor(124, 58, 237)
+  doc.rect(0, 0, w * 0.5, 28, 'F')
+
+  // Company name in header
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(18)
+  doc.setTextColor(255, 255, 255)
+  doc.text('Scalyo', 14, 16)
+
+  // Quote number + label
+  doc.setFontSize(11)
+  doc.text(`${label.toUpperCase()} ${q.quote_number || ''}`, w - 14, 12, { align: 'right' })
+  doc.setFontSize(9)
+  doc.text(`Date: ${q.issue_date || q.date || '-'}  |  Validité: ${q.validity_days || 30} jours`, w - 14, 19, { align: 'right' })
+
+  // --- Status badge ---
+  const statusOpt = statusOptions.find(s => s.key === q.status)
+  if (statusOpt) {
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'bold')
+    const badgeText = statusOpt.label.toUpperCase()
+    const badgeW = doc.getTextWidth(badgeText) + 10
+    const colors = { draft: [100, 116, 139], sent: [59, 130, 246], won: [22, 163, 74], lost: [220, 38, 38] }
+    const c = colors[q.status] || colors.draft
+    doc.setFillColor(c[0], c[1], c[2])
+    doc.roundedRect(w - 14 - badgeW, 22, badgeW, 7, 2, 2, 'F')
+    doc.setTextColor(255, 255, 255)
+    doc.text(badgeText, w - 14 - badgeW / 2, 27, { align: 'center' })
+  }
+
+  let y = 40
+
+  // --- Client block ---
+  doc.setTextColor(79, 70, 229)
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'bold')
+  doc.text('CLIENT', 14, y)
+  y += 6
+  doc.setTextColor(30, 30, 30)
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.text(q.customer_name || q.client || '-', 14, y)
+  y += 5
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(9)
+  if (q.customer_address) { doc.text(q.customer_address, 14, y); y += 4 }
+  if (q.customer_email) { doc.text(q.customer_email, 14, y); y += 4 }
+  if (q.customer_vat) { doc.text(`TVA: ${q.customer_vat}`, 14, y); y += 4 }
+
+  // --- Objet ---
+  y += 6
+  doc.setTextColor(79, 70, 229)
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'bold')
+  doc.text('OBJET', 14, y)
+  y += 6
+  doc.setTextColor(30, 30, 30)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(10)
+  doc.text(q.title || '-', 14, y)
+  y += 10
+
+  // --- Line items table ---
+  let items = []
+  try {
+    const { data } = await quotesApi.getItems(q.id)
+    if (data?.length) items = data
+  } catch {}
+
+  if (items.length) {
+    doc.autoTable({
+      startY: y,
+      head: [['Description', 'Qté', 'Prix unitaire', 'Total']],
+      body: items.map(i => [
+        i.description || '-',
+        String(i.quantity || 1),
+        fmt(i.unit_price),
+        fmt((i.quantity || 1) * (i.unit_price || 0)),
+      ]),
+      theme: 'grid',
+      headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold', fontSize: 9 },
+      bodyStyles: { fontSize: 9, textColor: [30, 30, 30] },
+      alternateRowStyles: { fillColor: [245, 243, 255] },
+      margin: { left: 14, right: 14 },
+      columnStyles: { 0: { cellWidth: 'auto' }, 1: { halign: 'center', cellWidth: 25 }, 2: { halign: 'right', cellWidth: 35 }, 3: { halign: 'right', cellWidth: 35 } },
+    })
+    y = doc.lastAutoTable.finalY + 8
+  } else {
+    y += 4
+  }
+
+  // --- Totals box ---
+  const boxX = w - 80
+  doc.setFillColor(245, 243, 255)
+  doc.roundedRect(boxX - 6, y - 2, 72, q.discount_pct ? 36 : 28, 3, 3, 'F')
+
+  doc.setFontSize(9)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(100, 100, 100)
+  doc.text('Sous-total HT:', boxX, y + 4)
+  doc.setTextColor(30, 30, 30)
+  doc.text(fmt(q.subtotal || q.amount || 0), w - 20, y + 4, { align: 'right' })
+
+  if (q.discount_pct) {
+    y += 6
+    doc.setTextColor(100, 100, 100)
+    doc.text(`Remise (${q.discount_pct}%):`, boxX, y + 4)
+    doc.setTextColor(220, 38, 38)
+    doc.text(`-${fmt((q.subtotal || 0) * q.discount_pct / 100)}`, w - 20, y + 4, { align: 'right' })
+  }
+
+  y += 6
+  doc.setTextColor(100, 100, 100)
+  doc.text(`TVA (${q.tax_rate || 0}%):`, boxX, y + 4)
+  doc.setTextColor(30, 30, 30)
+  doc.text(fmt(q.tax_amount || 0), w - 20, y + 4, { align: 'right' })
+
+  y += 8
+  doc.setFillColor(79, 70, 229)
+  doc.roundedRect(boxX - 6, y, 72, 10, 3, 3, 'F')
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.setTextColor(255, 255, 255)
+  doc.text('TOTAL TTC:', boxX, y + 7)
+  doc.text(fmt(q.total_ttc || q.amount || 0), w - 20, y + 7, { align: 'right' })
+
+  y += 18
+
+  // --- Payment terms ---
+  if (q.payment_terms) {
+    doc.setTextColor(79, 70, 229)
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'bold')
+    doc.text('CONDITIONS DE PAIEMENT', 14, y)
+    y += 5
+    doc.setTextColor(60, 60, 60)
+    doc.setFont('helvetica', 'normal')
+    doc.text(q.payment_terms, 14, y)
+    y += 8
+  }
+
+  // --- Conditions ---
+  if (q.conditions) {
+    doc.setTextColor(79, 70, 229)
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'bold')
+    doc.text('CONDITIONS', 14, y)
+    y += 5
+    doc.setTextColor(60, 60, 60)
+    doc.setFont('helvetica', 'normal')
+    const condLines = doc.splitTextToSize(q.conditions, w - 28)
+    doc.text(condLines, 14, y)
+    y += condLines.length * 4 + 6
+  }
+
+  // --- Legal mentions (footer) ---
+  if (cfg.legal_mentions) {
+    doc.setFontSize(7)
+    doc.setTextColor(150, 150, 150)
+    const legalLines = doc.splitTextToSize(cfg.legal_mentions, w - 28)
+    doc.text(legalLines, 14, 280)
+  }
+
+  // --- Footer line ---
+  doc.setDrawColor(79, 70, 229)
+  doc.setLineWidth(0.5)
+  doc.line(14, 275, w - 14, 275)
+  doc.setFontSize(7)
+  doc.setTextColor(150, 150, 150)
+  doc.text(`Généré par Scalyo — ${new Date().toLocaleDateString('fr-FR')}`, w / 2, 290, { align: 'center' })
+
+  doc.save(`${q.quote_number || 'devis'}.pdf`)
 }
 
 async function removeQuote(id) {
