@@ -10,15 +10,15 @@ import { handleGetRoadmap, handleUpdateRoadmap } from './routes/roadmap.js'
 import coach from './routes/coach.js'
 import emailStudio from './routes/email-studio.js'
 import billing from './routes/billing.js'
-import feedback from './routes/feedback.js'
+import { registerFeedbackRoutes } from './routes/feedback.js'
 import { handleGetQuotes, handleCreateQuote, handleUpdateQuote, handleDeleteQuote } from './routes/quotes.js'
 import smartImport from './routes/smart-import.js'
 import { registerIntegrationRoutes } from './routes/integrations.js'
 import { registerTeamRoutes } from './routes/team.js'
 import { registerSmartMatriceRoutes } from './routes/smart-matrice.js'
 import modules from './routes/modules.js'
-import alerts from './routes/alerts.js'
-import notifications from './routes/notifications.js'
+import { registerAlertRoutes } from './routes/alerts.js'
+import { registerNotificationRoutes } from './routes/notifications.js'
 import healthHistory from './routes/health-history.js'
 import exportsRoutes from './routes/exports.js'
 
@@ -60,8 +60,8 @@ app.patch('/api/quotes/:id', ...mw, handleUpdateQuote)
 app.patch('/api/quotes/:id/', ...mw, handleUpdateQuote)
 app.delete('/api/quotes/:id', ...mw, handleDeleteQuote)
 app.delete('/api/quotes/:id/', ...mw, handleDeleteQuote)
-app.route('/api/alerts', alerts)
-app.route('/api/notifications', notifications)
+registerAlertRoutes(app)
+registerNotificationRoutes(app)
 app.route('/api/health-history', healthHistory)
 app.route('/api/exports', exportsRoutes)
 
@@ -71,7 +71,7 @@ app.patch('/api/roadmap/update', ...mw, handleUpdateRoadmap)
 app.patch('/api/roadmap/update/', ...mw, handleUpdateRoadmap)
 app.route('/api/coach', coach)
 app.route('/api/email-studio', emailStudio)
-app.route('/api/feedback', feedback)
+registerFeedbackRoutes(app)
 
 // === TASKS (direct mount — Hono sub-router bug workaround) ===
 async function handleGetTasks(c) {

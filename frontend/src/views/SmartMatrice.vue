@@ -592,14 +592,14 @@ onMounted(async () => {
 })
 
 watch(() => store.selectedProject, async (p) => {
-  if (p) {
+  if (p?.id) {
     await store.fetchTasks(p.id)
     if (currentView.value === 'stats') await store.fetchStats(p.id)
   }
 })
 
 watch(currentView, async (v) => {
-  if (v === 'stats' && store.selectedProject) await store.fetchStats(store.selectedProject.id)
+  if (v === 'stats' && store.selectedProject?.id) await store.fetchStats(store.selectedProject.id)
 })
 </script>
 

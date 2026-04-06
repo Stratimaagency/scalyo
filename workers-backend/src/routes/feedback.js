@@ -1,11 +1,13 @@
-import { Hono } from 'hono'
 import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
 
-const feedback = new Hono()
-feedback.use('/*', authMiddleware(), companyRequired(), trialGuard())
+const mw = [authMiddleware(), companyRequired(), trialGuard()]
 
-// POST /api/feedback/
-feedback.post('/', async (c) => {
+export function registerFeedbackRoutes(app) {
+  app.post('/api/feedback', ...mw, postFeedback)
+  app.post('/api/feedback/', ...mw, postFeedback)
+}
+
+async function postFeedback(c) {
   const user = c.get('user')
   const { category, rating, description } = await c.req.json()
 
@@ -24,6 +26,4 @@ feedback.post('/', async (c) => {
   ).bind(user.id, category, rating, description).first()
 
   return c.json(result, 201)
-})
-
-export default feedback
+}
