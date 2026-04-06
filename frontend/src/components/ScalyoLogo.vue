@@ -31,7 +31,7 @@ const uid = Math.random().toString(36).slice(2, 8)
 defineProps({
   markSize: { type: Number, default: 34 },
   fontSize: { type: Number, default: 20 },
-  gap: { type: Number, default: 9 },
+  gap: { type: Number, default: 5 },
   showText: { type: Boolean, default: true },
   showSub: { type: Boolean, default: false },
 })
