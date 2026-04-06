@@ -23,6 +23,9 @@ frontend/dist/
 frontend/.vite/
 *.local
 
+# Wrangler
+.wrangler/
+
 # IDE
 .idea/
 .vscode/
