@@ -547,8 +547,8 @@ input:focus, select:focus, textarea:focus {
   color: var(--chip-text);
   transition: all 0.15s ease;
 }
-.chip:hover { background: var(--tealBg); border-color: var(--tealBorder); color: var(--teal); }
-.chip.active { background: var(--tealBg); border-color: var(--tealBorder); color: var(--teal); font-weight: 700; }
+.chip:hover { background: rgba(79,70,229,.08); border-color: rgba(79,70,229,.25); color: #4f46e5; }
+.chip.active { background: #4f46e5; border-color: #4f46e5; color: #fff; font-weight: 700; }
 
 /* Tab bar */
 .tab-bar { display: flex; flex-wrap: wrap; gap: 4px; background: var(--surface); border-radius: 8px; padding: 4px; border: 1px solid var(--border); }
@@ -842,8 +842,8 @@ input:focus, select:focus, textarea:focus {
 /* CSM filter bar */
 .csm-filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; padding: 0 2px; max-width: 100%; overflow-x: auto; }
 .csm-chip { padding: 5px 14px; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; border: 1px solid var(--chip-border); background: var(--chip-bg); color: var(--chip-text); }
-.csm-chip:hover { background: var(--tealBg); border-color: var(--tealBorder); color: var(--teal); }
-.csm-chip.active { background: var(--tealBg); border-color: var(--tealBorder); color: var(--teal); font-weight: 700; }
+.csm-chip:hover { background: rgba(79,70,229,.08); border-color: rgba(79,70,229,.25); color: #4f46e5; }
+.csm-chip.active { background: #4f46e5; border-color: #4f46e5; color: #fff; font-weight: 700; }
 
 /* Light mode overrides */
 [data-theme="light"] input,
