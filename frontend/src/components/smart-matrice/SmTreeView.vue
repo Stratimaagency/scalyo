@@ -55,7 +55,7 @@
           </div>
           <div class="sm-tree-col sm-tree-col--status" @click.stop>
             <select class="sm-pill-sel" :class="'pill-status-' + (project.state || 'active')" :value="project.state || 'active'" @change="onUpdateProject(project, 'state', $event.target.value)">
-              <option value="active">Actif</option><option value="priority">Prioritaire</option><option value="urgent">Urgent</option><option value="important">Important</option><option value="paused">En pause</option>
+              <option value="active">Actif</option><option value="priority">Prioritaire</option><option value="important">Important</option><option value="paused">En pause</option><option value="done">Terminé</option>
             </select>
           </div>
           <div class="sm-tree-col sm-tree-col--dur" @click.stop><input type="number" class="sm-inline-num" :value="project.hours_per_day || 8" @change="onUpdateProject(project, 'hours_per_day', +$event.target.value)" min="1" step="0.5" /></div>
@@ -64,7 +64,10 @@
           <div class="sm-tree-col sm-tree-col--progress"><strong>{{ project.progress || 0 }}%</strong></div>
           <div class="sm-tree-col sm-tree-col--accuracy"></div>
           <div class="sm-tree-col sm-tree-col--ai"></div>
-          <div class="sm-tree-col sm-tree-col--actions"><button class="sm-tree-act" @click.stop="$emit('delete-project', project)">🗑️</button></div>
+          <div class="sm-tree-col sm-tree-col--actions">
+            <button class="sm-tree-act" @click.stop="$emit('edit-project', project)" title="Modifier">✏️</button>
+            <button class="sm-tree-act" @click.stop="$emit('delete-project', project)" title="Supprimer">🗑️</button>
+          </div>
         </div>
 
         <!-- Tasks (recursive) -->
@@ -94,7 +97,7 @@ const props = defineProps({
   bulkSelect: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(['delete-project', 'update-project', 'toggle-bulk', 'update-task', 'delete-task', 'quick-add-task', 'add-child-task'])
+const emit = defineEmits(['delete-project', 'edit-project', 'update-project', 'toggle-bulk', 'update-task', 'delete-task', 'quick-add-task', 'add-child-task'])
 
 const expanded = reactive(new Set())
 
@@ -111,21 +114,21 @@ function onQuickAdd(projectId, e) { const n = e.target.value.trim(); if (!n) ret
 <style scoped>
 .sm-tree-wrap { overflow-x: auto; border: 1px solid var(--sm-bd, #e5e7eb); border-radius: 12px; background: var(--sm-white, #fff); font-family: 'DM Sans', sans-serif; font-size: 12px; }
 .sm-tree { min-width: 1400px; }
-.sm-tree-header { display: flex; align-items: center; padding: 8px 12px; background: var(--sm-bg, #f9fafb); border-bottom: 1px solid var(--sm-bd); font-weight: 700; font-size: 9px; text-transform: uppercase; letter-spacing: .5px; color: var(--sm-t3, #6b7280); position: sticky; top: 0; z-index: 10; }
-.sm-tree-col { display: flex; align-items: center; gap: 4px; padding: 0 2px; }
-.sm-tree-col--name { flex: 2; min-width: 200px; position: sticky; left: 0; background: inherit; z-index: 5; }
-.sm-tree-col--date { width: 75px; flex-shrink: 0; }
-.sm-tree-col--urgency { width: 90px; flex-shrink: 0; }
-.sm-tree-col--importance { width: 90px; flex-shrink: 0; }
-.sm-tree-col--diff { width: 75px; flex-shrink: 0; }
-.sm-tree-col--assigned { width: 75px; flex-shrink: 0; }
-.sm-tree-col--status { width: 80px; flex-shrink: 0; }
+.sm-tree-header { display: flex; align-items: center; padding: 10px 16px; background: var(--sm-bg, #f9fafb); border-bottom: 2px solid var(--sm-bd); font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--sm-t3, #6b7280); position: sticky; top: 0; z-index: 10; gap: 4px; }
+.sm-tree-col { display: flex; align-items: center; gap: 6px; padding: 0 6px; }
+.sm-tree-col--name { flex: 2.5; min-width: 220px; position: sticky; left: 0; background: inherit; z-index: 5; }
+.sm-tree-col--date { width: 90px; flex-shrink: 0; }
+.sm-tree-col--urgency { width: 95px; flex-shrink: 0; }
+.sm-tree-col--importance { width: 95px; flex-shrink: 0; }
+.sm-tree-col--diff { width: 85px; flex-shrink: 0; }
+.sm-tree-col--assigned { width: 100px; flex-shrink: 0; }
+.sm-tree-col--status { width: 95px; flex-shrink: 0; }
 .sm-tree-col--dur { width: 50px; flex-shrink: 0; text-align: center; justify-content: center; }
 .sm-tree-col--progress { width: 40px; flex-shrink: 0; justify-content: center; }
 .sm-tree-col--accuracy { width: 45px; flex-shrink: 0; justify-content: center; }
 .sm-tree-col--ai { flex: 1; min-width: 150px; font-size: 10px; color: var(--sm-t3); }
 .sm-tree-col--actions { width: 35px; flex-shrink: 0; justify-content: flex-end; }
-.sm-tree-row { display: flex; align-items: center; padding: 5px 12px; border-bottom: 1px solid rgba(0,0,0,.04); transition: background .1s; }
+.sm-tree-row { display: flex; align-items: center; padding: 8px 16px; border-bottom: 1px solid rgba(0,0,0,.06); transition: background .1s; gap: 4px; }
 .sm-tree-row:hover { background: var(--sm-bg, #f9fafb); }
 .sm-tree-row--project { font-weight: 700; background: var(--sm-bg, #fafbfc); cursor: pointer; }
 .sm-tree-row--project:hover { background: #eef2ff; }
