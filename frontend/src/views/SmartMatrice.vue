@@ -46,6 +46,7 @@
             <option value="normal">⚪ {{ lt.normal }}</option>
           </select>
         </div>
+        <button v-if="store.selectedProject && currentView !== 'projects'" class="sm-btn sm-btn--danger" @click="confirmDeleteProject(store.selectedProject)">🗑️ {{ lt.cancel === 'Cancel' ? 'Delete project' : 'Supprimer le projet' }}</button>
         <button v-if="currentView === 'projects'" class="sm-btn sm-btn--primary" @click="showCreateProject = true">✨ {{ lt.newProject }}</button>
         <button v-if="['tasks','kanban','eisenhower'].includes(currentView)" class="sm-btn sm-btn--secondary" @click="showCreateTask = true">+ {{ lt.newTask }}</button>
       </div>
@@ -605,6 +606,8 @@ watch(currentView, async (v) => {
 .sm-btn--primary:disabled { opacity: .5; transform: none; }
 .sm-btn--secondary { background: #fff; border: 1px solid var(--sm-bd); color: var(--sm-t1); }
 .sm-btn--secondary:hover { border-color: #3b82f6; color: #3b82f6; }
+.sm-btn--danger { background: transparent; border: 1px solid var(--sm-err); color: var(--sm-err); font-size: 12px; }
+.sm-btn--danger:hover { background: var(--sm-err); color: #fff; }
 
 /* Content */
 .sm-content { }
