@@ -233,32 +233,28 @@
     <!-- CREATE PROJECT PANEL -->
     <div v-if="showCreateProject" class="sm-inline-panel">
       <h3 class="sm-inline-panel__title">✨ {{ lt.newProject }}</h3>
-      <div class="sm-modal__field">
-        <label>{{ lt.projectName }}</label>
-        <input v-model="newProject.name" :placeholder="lt.projectNameHint" autofocus />
-      </div>
-      <div class="sm-modal__field">
-        <label>{{ lt.description }}</label>
-        <textarea v-model="newProject.description" rows="3" :placeholder="lt.descriptionHint"></textarea>
-      </div>
       <div class="sm-modal__row">
-        <div class="sm-modal__field">
-          <label>{{ lt.startDate }}</label>
-          <input v-model="newProject.start_date" type="date" />
-        </div>
-        <div class="sm-modal__field">
-          <label>{{ lt.targetDate }}</label>
-          <input v-model="newProject.target_end_date" type="date" />
+        <div class="sm-modal__field" style="flex:2"><label>{{ lt.projectName }}</label><input v-model="newProject.name" :placeholder="lt.projectNameHint" autofocus /></div>
+        <div class="sm-modal__field"><label>{{ lt.state }}</label>
+          <select v-model="newProject.state">
+            <option value="active">🟢 {{ lt.active }}</option>
+            <option value="priority">🔴 {{ lt.priority }}</option>
+            <option value="urgent">⚡ {{ lt.urgent }}</option>
+            <option value="important">🟡 {{ lt.important }}</option>
+          </select>
         </div>
       </div>
-      <div class="sm-modal__field">
-        <label>{{ lt.state }}</label>
-        <select v-model="newProject.state">
-          <option value="active">🟢 {{ lt.active }}</option>
-          <option value="priority">🔴 {{ lt.priority }}</option>
-          <option value="urgent">⚡ {{ lt.urgent }}</option>
-          <option value="important">🟡 {{ lt.important }}</option>
-        </select>
+      <div class="sm-modal__field"><label>{{ lt.description }}</label><textarea v-model="newProject.description" rows="2" :placeholder="lt.descriptionHint"></textarea></div>
+      <div class="sm-modal__row">
+        <div class="sm-modal__field"><label>{{ lt.startDate }}</label><input v-model="newProject.start_date" type="date" /></div>
+        <div class="sm-modal__field"><label>{{ lt.targetDate }}</label><input v-model="newProject.target_end_date" type="date" /></div>
+      </div>
+      <h4 style="font-size: 12px; font-weight: 700; color: var(--sm-t3); margin: 12px 0 6px; text-transform: uppercase; letter-spacing: .5px;">⏱ Paramètres de temps</h4>
+      <div class="sm-modal__row">
+        <div class="sm-modal__field"><label>Jours ouvrés / an</label><input v-model.number="newProject.working_days_year" type="number" min="1" max="365" /></div>
+        <div class="sm-modal__field"><label>Jours off / an</label><input v-model.number="newProject.days_off_year" type="number" min="0" max="100" /></div>
+        <div class="sm-modal__field"><label>Heures / jour</label><input v-model.number="newProject.hours_per_day" type="number" min="1" max="24" step="0.5" /></div>
+        <div class="sm-modal__field"><label>Jours / semaine</label><input v-model.number="newProject.working_days_week" type="number" min="1" max="7" /></div>
       </div>
       <div class="sm-modal__actions">
         <button class="sm-btn sm-btn--secondary" @click="showCreateProject = false">{{ lt.cancel }}</button>
@@ -410,7 +406,7 @@ async function bulkDeleteProjects() {
   bulkSelect.value = []
   bulkMode.value = false
 }
-const newProject = reactive({ name: '', description: '', start_date: '', target_end_date: '', state: 'active' })
+const newProject = reactive({ name: '', description: '', start_date: '', target_end_date: '', state: 'active', working_days_year: 260, days_off_year: 14, hours_per_day: 8, working_days_week: 5 })
 const newTask = reactive({ name: '', description: '', group_name: '', priority: 'normal', status: 'todo', dur_estimated: null, dur_min: null, dur_max: null, start_date: '', end_date: '', referent_name: '', assigned_to: '', quadrant: 0 })
 const editTask = reactive({ id: null, name: '', description: '', group_name: '', priority: 'normal', status: 'todo', dur_estimated: null, dur_min: null, dur_max: null, start_date: '', end_date: '', referent_name: '', assigned_to: '', quadrant: 0 })
 
@@ -458,8 +454,12 @@ async function createProject() {
     target_end_date: newProject.target_end_date || null,
     state: newProject.state,
     emoji: '📁',
+    working_days_year: newProject.working_days_year,
+    days_off_year: newProject.days_off_year,
+    hours_per_day: newProject.hours_per_day,
+    working_days_week: newProject.working_days_week,
   })
-  Object.assign(newProject, { name: '', description: '', start_date: '', target_end_date: '', state: 'active' })
+  Object.assign(newProject, { name: '', description: '', start_date: '', target_end_date: '', state: 'active', working_days_year: 260, days_off_year: 14, hours_per_day: 8, working_days_week: 5 })
   showCreateProject.value = false
   selectProject(p)
 }
