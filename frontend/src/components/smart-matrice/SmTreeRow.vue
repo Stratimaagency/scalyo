@@ -12,29 +12,29 @@
       </div>
       <div class="sm-tree-col sm-tree-col--date" @click.stop><input type="date" class="sm-inline-date" :value="dateVal(task.end_date)" @change="upd('end_date', $event.target.value)" /></div>
       <div class="sm-tree-col sm-tree-col--urgency" @click.stop>
-        <select class="sm-inline-sel" :value="task.urgency || task.priority || 'normal'" @change="upd('urgency', $event.target.value)">
-          <option value="normal">⚪</option><option value="medium">🟡</option><option value="high">🟠</option><option value="critical">🔴</option><option value="urgent">⚡</option>
+        <select class="sm-pill-sel" :class="'pill-' + (task.urgency || task.priority || 'normal')" :value="task.urgency || task.priority || 'normal'" @change="upd('urgency', $event.target.value)">
+          <option value="normal">Aucune</option><option value="medium">Moyenne</option><option value="high">Haute</option><option value="critical">Critique</option><option value="urgent">Urgente</option>
         </select>
       </div>
       <div class="sm-tree-col sm-tree-col--importance" @click.stop>
-        <select class="sm-inline-sel" :value="task.importance || 'normal'" @change="upd('importance', $event.target.value)">
-          <option value="normal">⚪</option><option value="important">🟡</option><option value="critical">🔴</option>
+        <select class="sm-pill-sel" :class="'pill-' + (task.importance || 'normal')" :value="task.importance || 'normal'" @change="upd('importance', $event.target.value)">
+          <option value="normal">Aucune</option><option value="important">Importante</option><option value="critical">Critique</option>
         </select>
       </div>
       <div class="sm-tree-col sm-tree-col--diff" @click.stop>
-        <select class="sm-inline-sel" :value="task.difficulty || 'medium'" @change="upd('difficulty', $event.target.value)">
-          <option value="easy">🟢</option><option value="medium">🟡</option><option value="hard">🔴</option>
+        <select class="sm-pill-sel" :class="'pill-' + (task.difficulty || 'medium')" :value="task.difficulty || 'medium'" @change="upd('difficulty', $event.target.value)">
+          <option value="easy">Facile</option><option value="medium">Moyen</option><option value="hard">Difficile</option>
         </select>
       </div>
       <div class="sm-tree-col sm-tree-col--assigned" @click.stop>
-        <select class="sm-inline-sel sm-inline-sel--sm" :value="task.assigned_to || ''" @change="upd('assigned_to', $event.target.value || null)">
-          <option value="">—</option>
+        <select class="sm-pill-sel pill-normal" :value="task.assigned_to || ''" @change="upd('assigned_to', $event.target.value || null)">
+          <option value="">Non assigné</option>
           <option v-for="m in team" :key="m.id" :value="m.id">{{ m.display_name || m.email }}</option>
         </select>
       </div>
       <div class="sm-tree-col sm-tree-col--status" @click.stop>
-        <select class="sm-inline-sel" :value="task.status" @change="upd('status', $event.target.value)" :style="{ color: statusColor }">
-          <option value="todo">📋</option><option value="in_progress">⚡</option><option value="blocked">⏸</option><option value="done">✅</option>
+        <select class="sm-pill-sel" :class="'pill-status-' + task.status" :value="task.status" @change="upd('status', $event.target.value)">
+          <option value="todo">À faire</option><option value="in_progress">En cours</option><option value="blocked">Bloqué</option><option value="done">Terminé</option>
         </select>
       </div>
       <div class="sm-tree-col sm-tree-col--dur" @click.stop><input type="number" class="sm-inline-num" :value="task.dur_estimated" @change="upd('dur_estimated', +$event.target.value || null)" placeholder="—" min="0" step="0.5" /></div>
@@ -116,9 +116,9 @@ function addChild(e) {
 .sm-tree-col { display: flex; align-items: center; gap: 3px; padding: 0 2px; }
 .sm-tree-col--name { flex: 2; min-width: 200px; position: sticky; left: 0; background: inherit; z-index: 5; }
 .sm-tree-col--date { width: 75px; flex-shrink: 0; }
-.sm-tree-col--urgency { width: 85px; flex-shrink: 0; }
-.sm-tree-col--importance { width: 85px; flex-shrink: 0; }
-.sm-tree-col--diff { width: 55px; flex-shrink: 0; }
+.sm-tree-col--urgency { width: 90px; flex-shrink: 0; }
+.sm-tree-col--importance { width: 90px; flex-shrink: 0; }
+.sm-tree-col--diff { width: 75px; flex-shrink: 0; }
 .sm-tree-col--assigned { width: 75px; flex-shrink: 0; }
 .sm-tree-col--status { width: 80px; flex-shrink: 0; }
 .sm-tree-col--dur { width: 50px; flex-shrink: 0; justify-content: center; }
@@ -148,4 +148,28 @@ function addChild(e) {
 .sm-tree-row:hover .sm-tree-act { opacity: 1; }
 .sm-tree-add-input { border: none; background: transparent; font-size: 11px; color: var(--sm-t3); padding: 2px 0; width: 100%; outline: none; }
 .sm-tree-add-input:focus { color: var(--sm-t1); }
+
+/* Pill selects — lisibles, colorés, user-friendly */
+.sm-pill-sel {
+  font-size: 10px; font-weight: 600; font-family: 'DM Sans', sans-serif;
+  border: none; border-radius: 6px; padding: 3px 6px; cursor: pointer;
+  outline: none; appearance: none; -webkit-appearance: none;
+  text-align: center; min-width: 70px;
+}
+/* Urgence */
+.pill-normal { background: #f1f5f9; color: #64748b; }
+.pill-medium { background: #fef3c7; color: #92400e; }
+.pill-high { background: #ffedd5; color: #c2410c; }
+.pill-critical { background: #fee2e2; color: #dc2626; }
+.pill-urgent { background: #dc2626; color: #fff; }
+/* Importance */
+.pill-important { background: #fef3c7; color: #92400e; }
+/* Difficulté */
+.pill-easy { background: #dcfce7; color: #166534; }
+.pill-hard { background: #fee2e2; color: #dc2626; }
+/* Statut */
+.pill-status-todo { background: #f1f5f9; color: #475569; }
+.pill-status-in_progress { background: #dbeafe; color: #1d4ed8; }
+.pill-status-blocked { background: #fef3c7; color: #92400e; }
+.pill-status-done { background: #dcfce7; color: #166534; }
 </style>
