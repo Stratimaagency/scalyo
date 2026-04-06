@@ -425,7 +425,7 @@
     <div class="chip"><div class="chip-icon">&#x1F916;</div><div class="chip-label">{{ t('fl_c4') }}</div></div>
     <div class="chip"><div class="chip-icon">&#x2709;&#xFE0F;</div><div class="chip-label">{{ t('fl_c5') }}</div></div>
     <div class="chip"><div class="chip-icon">&#x1F4C5;</div><div class="chip-label">{{ t('fl_c6') }}</div></div>
-    <div class="chip"><div class="chip-icon">&#x1F3AF;</div><div class="chip-label">{{ t('fl_c7') }}</div></div>
+    <div class="chip"><div class="chip-icon">🧠</div><div class="chip-label">{{ t('fl_c7') }}</div></div>
     <div class="chip"><div class="chip-icon">&#x1F4E5;</div><div class="chip-label">{{ t('fl_c8') }}</div></div>
   </div>
 </section>
@@ -654,7 +654,7 @@
 <section class="mod-section" id="m7">
   <div class="mod-inner">
     <div class="mod-text rv">
-      <div class="mod-tag"><span class="mod-tag-icon">&#x1F3AF;</span><span class="mod-tag-label">{{ t('fl_m7tag') }}</span></div>
+      <div class="mod-tag"><span class="mod-tag-icon">🧠</span><span class="mod-tag-label">{{ t('fl_m7tag') }}</span></div>
       <h2 class="mod-h2" v-html="t('fl_m7h2')"></h2>
       <p class="mod-body">{{ t('fl_m7body') }}</p>
       <ul class="mod-list">
@@ -668,22 +668,48 @@
     </div>
     <div class="mod-visual rv d2">
       <div class="mv">
-        <div class="mv-head">{{ t('demo_tb_head') }} <span class="badge ba">{{ t('demo_tb_late') }}</span></div>
-        <div class="task-g">
-          <div>
-            <div class="task-col-h">{{ t('demo_col_1') }}</div>
-            <div class="task-card tc-t"><strong style="font-size:11px">QBR BioMed</strong><br/><span style="font-size:10px;color:var(--dt3)">Sophie &middot; 15 f&eacute;v</span></div>
-            <div class="task-card tc-b"><strong style="font-size:11px">Emails check-in &times; 5</strong><br/><span style="font-size:10px;color:var(--dt3)">Thomas &middot; 18 f&eacute;v</span></div>
+        <div class="mv-head">Smart Matrice <span class="badge bg" style="background:rgba(79,70,229,.1);color:#4f46e5;">7 vues</span></div>
+        <!-- Mini tabs -->
+        <div style="display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap;">
+          <span style="font-size:9px;padding:3px 8px;border-radius:6px;background:#4f46e5;color:#fff;font-weight:700;">📊 Stats</span>
+          <span style="font-size:9px;padding:3px 8px;border-radius:6px;background:rgba(79,70,229,.08);color:#4f46e5;font-weight:600;">📅 Planning</span>
+          <span style="font-size:9px;padding:3px 8px;border-radius:6px;background:rgba(79,70,229,.08);color:#4f46e5;font-weight:600;">📁 Projets</span>
+          <span style="font-size:9px;padding:3px 8px;border-radius:6px;background:rgba(79,70,229,.08);color:#4f46e5;font-weight:600;">🔥 Kanban</span>
+          <span style="font-size:9px;padding:3px 8px;border-radius:6px;background:rgba(79,70,229,.08);color:#4f46e5;font-weight:600;">🎯 Priorités</span>
+          <span style="font-size:9px;padding:3px 8px;border-radius:6px;background:rgba(79,70,229,.08);color:#4f46e5;font-weight:600;">👥 Équipe</span>
+        </div>
+        <!-- Stats preview -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;">
+          <div style="background:rgba(79,70,229,.06);border-radius:8px;padding:8px;text-align:center;">
+            <div style="font-size:18px;font-weight:900;color:#4f46e5;">12</div>
+            <div style="font-size:8px;color:var(--dt3);">Tâches totales</div>
           </div>
-          <div>
-            <div class="task-col-h">{{ t('demo_col_2') }}</div>
-            <div class="task-card tc-a"><strong style="font-size:11px">Playbook Leroy</strong><br/><span style="font-size:10px;color:var(--amber)">{{ t('demo_card_late') }}</span></div>
-            <div class="task-card tc-t"><strong style="font-size:11px">Analyse usage Acme</strong><br/><span style="font-size:10px;color:var(--dt3)">Sophie</span></div>
+          <div style="background:rgba(22,163,74,.06);border-radius:8px;padding:8px;text-align:center;">
+            <div style="font-size:18px;font-weight:900;color:#16a34a;">67%</div>
+            <div style="font-size:8px;color:var(--dt3);">Avancement</div>
           </div>
-          <div>
-            <div class="task-col-h">{{ t('demo_col_3') }}</div>
-            <div class="task-card tc-t" style="opacity:.55"><strong style="font-size:11px">&#x2713; QBR TechVision</strong><br/><span style="font-size:10px;color:var(--dt3)">{{ t('demo_done_1') }}</span></div>
-            <div class="task-card tc-t" style="opacity:.55"><strong style="font-size:11px">&#x2713; Onboarding Acme</strong><br/><span style="font-size:10px;color:var(--dt3)">{{ t('demo_done_2') }}</span></div>
+          <div style="background:rgba(249,115,22,.06);border-radius:8px;padding:8px;text-align:center;">
+            <div style="font-size:18px;font-weight:900;color:#f97316;">3j</div>
+            <div style="font-size:8px;color:var(--dt3);">Estimation fin</div>
+          </div>
+        </div>
+        <!-- Priority matrix mini -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+          <div style="background:rgba(239,68,68,.06);border-radius:6px;padding:6px;font-size:9px;">
+            <div style="font-weight:700;color:#ef4444;margin-bottom:2px;">🔴 Faire maintenant</div>
+            <div style="color:var(--dt3);">Appel client Leroy</div>
+          </div>
+          <div style="background:rgba(34,197,94,.06);border-radius:6px;padding:6px;font-size:9px;">
+            <div style="font-weight:700;color:#22c55e;margin-bottom:2px;">🟢 Planifier</div>
+            <div style="color:var(--dt3);">QBR trimestriel</div>
+          </div>
+          <div style="background:rgba(59,130,246,.06);border-radius:6px;padding:6px;font-size:9px;">
+            <div style="font-weight:700;color:#3b82f6;margin-bottom:2px;">🔵 Déléguer</div>
+            <div style="color:var(--dt3);">Mise à jour docs</div>
+          </div>
+          <div style="background:rgba(148,163,184,.06);border-radius:6px;padding:6px;font-size:9px;">
+            <div style="font-weight:700;color:#94a3b8;margin-bottom:2px;">⚪ Éliminer</div>
+            <div style="color:var(--dt3);">Reporting manuel</div>
           </div>
         </div>
       </div>
