@@ -193,7 +193,6 @@ import { useI18n } from '../i18n'
 import { quotesApi, authApi } from '../api'
 import AppField from '../components/AppField.vue'
 import EmptyState from '../components/EmptyState.vue'
-import ScalyoIcon from '../components/ScalyoIcon.vue'
 import PlanGate from '../components/PlanGate.vue'
 
 const { t } = useI18n()
@@ -245,7 +244,11 @@ const computedTotal = computed(() => {
 
 onMounted(async () => {
   try {
-    const [quotesRes, configRes] = await Promise.all([quotesApi.list(), quotesApi.getConfig(), authApi.getCompany().then(r => { authStore.company = r.data }).catch(() => {})])
+    const [quotesRes, configRes] = await Promise.all([
+      quotesApi.list(),
+      quotesApi.getConfig(),
+    ])
+    authApi.getCompany().then(r => { authStore.company = r.data }).catch(() => {})
     quotes.value = quotesRes.data
     config.value = configRes.data
     Object.assign(configForm, {
@@ -294,13 +297,11 @@ function fmtAmount(v) {
   const cur = config.value?.country_defaults?.currency || prefsStore.currency || 'EUR'
   const n = Number(v || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   const map = { USD: '$', GBP: '£', CHF: 'CHF ', KRW: '₩' }
-  return (map[cur] || '') + n + (cur === 'EUR' ? '€' : '')
+  if (map[cur]) return map[cur] + n
+  if (cur === 'EUR') return n + '€'
+  return n + ' ' + cur
 }
 
-function statusLabel(s) { return { draft: t('quotesDraft'), sent: t('quotesSent'), won: t('quotesWon'), lost: t('quotesLost') }[s] || s }
-function statusColor(s) { return { won: 'var(--green)', lost: 'var(--red)', sent: 'var(--teal)' }[s] || 'var(--muted)' }
-function statusBg(s) { return { won: 'var(--greenBg)', lost: 'var(--redBg)', sent: 'var(--tealBg)' }[s] || 'var(--surface)' }
-function statusIcon(s) { return { won: '✓', lost: '✗', sent: '→' }[s] || '✎' }
 
 function onCountryChange() {
   const defs = { FR: { tax: 20, prefix: 'DEV' }, DE: { tax: 19, prefix: 'ANG' }, ES: { tax: 21, prefix: 'PRE' }, IT: { tax: 22, prefix: 'PRV' }, GB: { tax: 20, prefix: 'QUO' }, US: { tax: 0, prefix: 'EST' }, CH: { tax: 8.1, prefix: 'DEV' }, BE: { tax: 21, prefix: 'DEV' }, KR: { tax: 10, prefix: 'EST' } }
