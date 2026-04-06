@@ -25,6 +25,11 @@
         <span v-if="store.selectedProject && currentView !== 'projects'" class="sm-topbar__project">{{ store.selectedProject.emoji }} {{ store.selectedProject.name }}</span>
       </div>
       <div class="sm-topbar__actions">
+        <!-- Search -->
+        <div class="sm-search-wrap">
+          <input v-model="searchQuery" class="sm-search" :placeholder="lt.cancel === 'Cancel' ? 'Search...' : 'Rechercher...'" />
+          <span v-if="searchQuery" class="sm-search-clear" @click="searchQuery = ''">✕</span>
+        </div>
         <!-- Filters -->
         <div v-if="showFilters" class="sm-filters">
           <select v-model="filterStatus" class="sm-filter-select">
@@ -63,7 +68,7 @@
     <div v-else-if="currentView === 'projects'" class="sm-content">
       <div v-if="store.projects.length">
         <SmTreeView
-          :projects="store.projects"
+          :projects="filteredProjects"
           :tasks="store.tasks"
           :team="store.team"
           :bulk-mode="bulkMode"
@@ -349,8 +354,19 @@ const smNavItems = [
 const filterStatus = ref('')
 const filterAssignee = ref('')
 const filterPriority = ref('')
+const searchQuery = ref('')
 
 const showFilters = computed(() => ['tasks', 'kanban', 'eisenhower', 'planning', 'team'].includes(currentView.value))
+
+const filteredProjects = computed(() => {
+  if (!searchQuery.value) return store.projects
+  const q = searchQuery.value.toLowerCase()
+  return store.projects.filter(p => {
+    if ((p.name || '').toLowerCase().includes(q)) return true
+    const tasks = store.tasks[p.id] || []
+    return tasks.some(t => (t.name || '').toLowerCase().includes(q) || (t.group_name || '').toLowerCase().includes(q))
+  })
+})
 
 const currentTasks = computed(() => {
   if (!store.selectedProject) return []
@@ -359,6 +375,15 @@ const currentTasks = computed(() => {
 
 const filteredTasks = computed(() => {
   let list = currentTasks.value
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    list = list.filter(t =>
+      (t.name || '').toLowerCase().includes(q) ||
+      (t.description || '').toLowerCase().includes(q) ||
+      (t.group_name || '').toLowerCase().includes(q) ||
+      (t.referent_name || '').toLowerCase().includes(q)
+    )
+  }
   if (filterStatus.value) list = list.filter(t => t.status === filterStatus.value)
   if (filterAssignee.value) list = list.filter(t => t.assigned_to == filterAssignee.value)
   if (filterPriority.value) list = list.filter(t => t.priority === filterPriority.value)
@@ -376,8 +401,16 @@ const filteredTaskGroups = computed(() => {
 })
 
 const allTasksFlat = computed(() => {
-  const all = []
+  let all = []
   for (const pid in store.tasks) all.push(...store.tasks[pid])
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    all = all.filter(t =>
+      (t.name || '').toLowerCase().includes(q) ||
+      (t.description || '').toLowerCase().includes(q) ||
+      (t.group_name || '').toLowerCase().includes(q)
+    )
+  }
   return all
 })
 
@@ -612,6 +645,18 @@ watch(currentView, async (v) => {
 .sm-back:hover { color: var(--sm-t1); }
 
 /* Filters */
+.sm-search-wrap { position: relative; }
+.sm-search {
+  border: 1px solid var(--sm-bd); background: #fff; border-radius: 8px;
+  padding: 6px 28px 6px 10px; font-size: 12px; font-family: 'DM Sans', sans-serif;
+  color: var(--sm-t1); outline: none; width: 180px; transition: border-color .15s;
+}
+.sm-search:focus { border-color: #4f46e5; width: 240px; }
+.sm-search-clear {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  font-size: 11px; color: var(--sm-t3); cursor: pointer; padding: 2px;
+}
+.sm-search-clear:hover { color: var(--sm-t1); }
 .sm-filters { display: flex; gap: 8px; }
 .sm-filter-select {
   border: 1px solid var(--sm-bd); background: #fff; border-radius: 8px;
