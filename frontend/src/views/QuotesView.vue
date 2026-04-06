@@ -70,37 +70,43 @@
       <button class="csm-chip" :class="{ active: filter === 'lost' }" @click="filter = 'lost'">{{ t('quotesLost') }}</button>
     </div>
 
-    <!-- Quotes list -->
-    <div style="display: flex; flex-direction: column; gap: 8px;">
-      <div v-for="q in filteredQuotes" :key="q.id" class="card card-lift row-item"
-        style="padding: 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;"
-        @click="editQuote(q)">
-        <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
-          <div style="width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;"
-            :style="{ background: statusBg(q.status), color: statusColor(q.status) }">
-            {{ statusIcon(q.status) }}
-          </div>
-          <div style="min-width: 0;">
-            <div style="font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              <span v-if="q.quote_number" style="color: var(--muted); font-weight: 500;">{{ q.quote_number }} — </span>{{ q.customer_name || q.client }}
+    <!-- Quotes grouped by status -->
+    <div v-for="group in groupedQuotes" :key="group.key" style="margin-bottom: 20px;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <span style="font-size: 14px;">{{ group.icon }}</span>
+        <span style="font-weight: 800; font-size: 14px;">{{ group.label }}</span>
+        <span style="font-size: 12px; color: var(--muted); background: var(--chip-bg); padding: 2px 8px; border-radius: 10px;">{{ group.quotes.length }}</span>
+        <div style="flex: 1; height: 1px; background: var(--border); margin-left: 8px;"></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div v-for="q in group.quotes" :key="q.id" class="card card-lift"
+          style="padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;"
+          :style="{ borderLeft: '3px solid ' + group.color }"
+          @click="editQuote(q)">
+          <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
+            <div style="min-width: 0;">
+              <div style="font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <span v-if="q.quote_number" style="color: var(--muted); font-weight: 500; font-size: 12px;">{{ q.quote_number }} — </span>{{ q.customer_name || q.client }}
+              </div>
+              <div style="font-size: 12px; color: var(--muted);">{{ q.title }} · {{ q.issue_date || q.date }}</div>
             </div>
-            <div style="font-size: 12px; color: var(--muted);">{{ q.title }} · {{ q.issue_date || q.date }}</div>
           </div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="text-align: right;">
-            <div style="font-weight: 800; font-size: 14px;">{{ fmtAmount(q.total_ttc || q.amount) }}</div>
-            <div v-if="q.tax_amount" style="font-size: 10px; color: var(--muted);">HT {{ fmtAmount(q.subtotal) }} + TVA {{ fmtAmount(q.tax_amount) }}</div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="text-align: right;">
+              <div style="font-weight: 800; font-size: 14px;">{{ fmtAmount(q.total_ttc || q.amount) }}</div>
+              <div v-if="q.tax_amount" style="font-size: 10px; color: var(--muted);">HT {{ fmtAmount(q.subtotal) }}</div>
+            </div>
+            <button @click.stop="downloadQuote(q)" title="Télécharger" style="background: none; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; padding: 6px 8px; color: var(--muted); font-size: 12px;">⬇</button>
+            <button @click.stop="removeQuote(q.id)" title="Supprimer" style="background: none; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; padding: 6px 8px; color: var(--red); font-size: 12px;">🗑</button>
           </div>
-          <span class="csm-chip" :style="{ background: statusBg(q.status), color: statusColor(q.status), borderColor: statusColor(q.status) }">
-            {{ statusLabel(q.status) }}
-          </span>
-          <button class="btn btn-sm btn-danger" @click.stop="removeQuote(q.id)" style="padding: 6px 10px; font-size: 12px;">
-            <ScalyoIcon name="trash" :size="12" />
-          </button>
         </div>
       </div>
-      <EmptyState v-if="!filteredQuotes.length" icon="document" :title="t('quotesEmpty')" />
+    </div>
+    <EmptyState v-if="!filteredQuotes.length" icon="document" :title="t('quotesEmpty')" />
+
+    <!-- Storage info -->
+    <div style="margin-top: 16px; text-align: center; font-size: 12px; color: var(--muted);">
+      {{ quotes.length }} devis enregistrés · Stockage illimité
     </div>
 
     <!-- Add/Edit Panel -->
@@ -152,9 +158,11 @@
       <div class="field-group" style="margin-top: 8px;">
         <label class="field-label">Statut</label>
         <div style="display: flex; gap: 6px;">
-          <button v-for="s in ['draft', 'sent', 'won', 'lost']" :key="s"
-            class="csm-chip" :class="{ active: qForm.status === s }" @click="qForm.status = s">
-            {{ statusLabel(s) }}
+          <button v-for="s in statusOptions" :key="s.key"
+            style="padding: 6px 16px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; border: 2px solid transparent;"
+            :style="qForm.status === s.key ? { background: s.color, color: '#fff', borderColor: s.color } : { background: 'var(--chip-bg)', color: 'var(--chip-text)', borderColor: 'var(--chip-border)' }"
+            @click="qForm.status = s.key">
+            {{ s.icon }} {{ s.label }}
           </button>
         </div>
       </div>
@@ -251,9 +259,25 @@ onMounted(async () => {
   loading.value = false
 })
 
+const statusOptions = [
+  { key: 'draft', label: 'Brouillon', icon: '✎', color: '#64748b' },
+  { key: 'sent', label: 'Envoyé', icon: '→', color: '#3b82f6' },
+  { key: 'won', label: 'Gagné', icon: '✓', color: '#16a34a' },
+  { key: 'lost', label: 'Perdu', icon: '✗', color: '#dc2626' },
+]
+
 const filteredQuotes = computed(() => {
   if (filter.value === 'all') return quotes.value
   return quotes.value.filter(q => q.status === filter.value)
+})
+
+const groupedQuotes = computed(() => {
+  return statusOptions
+    .map(s => ({
+      ...s,
+      quotes: filteredQuotes.value.filter(q => q.status === s.key),
+    }))
+    .filter(g => g.quotes.length > 0)
 })
 
 const totalQuotes = computed(() => quotes.value.length)
@@ -332,6 +356,46 @@ async function saveQuote() {
     }
   } catch { /* silent */ }
   closeForm()
+}
+
+function downloadQuote(q) {
+  const cfg = config.value || {}
+  const label = cfg.country_defaults?.label || 'Devis'
+  const lines = [
+    `${label.toUpperCase()} ${q.quote_number || ''}`,
+    `Date: ${q.issue_date || q.date || ''}`,
+    `Validité: ${q.validity_days || 30} jours`,
+    ``,
+    `CLIENT`,
+    q.customer_name || q.client || '',
+    q.customer_address || '',
+    q.customer_vat ? `TVA: ${q.customer_vat}` : '',
+    ``,
+    `OBJET: ${q.title || ''}`,
+    ``,
+    `DÉTAIL`,
+    `${'Description'.padEnd(40)} ${'Qté'.padStart(6)} ${'P.U.'.padStart(10)} ${'Total'.padStart(12)}`,
+    '-'.repeat(70),
+  ]
+  // If we have stored items info in the quote, show subtotal
+  lines.push(``)
+  lines.push(`Sous-total HT: ${fmtAmount(q.subtotal || q.amount || 0)}`)
+  if (q.discount_pct) lines.push(`Remise (${q.discount_pct}%): -${fmtAmount((q.subtotal || 0) * q.discount_pct / 100)}`)
+  if (q.tax_rate) lines.push(`TVA (${q.tax_rate}%): ${fmtAmount(q.tax_amount || 0)}`)
+  lines.push(`TOTAL TTC: ${fmtAmount(q.total_ttc || q.amount || 0)}`)
+  lines.push(``)
+  if (q.payment_terms) lines.push(`Conditions: ${q.payment_terms}`)
+  if (q.conditions) lines.push(`${q.conditions}`)
+  if (cfg.legal_mentions) lines.push(`\n${cfg.legal_mentions}`)
+  lines.push(`\nStatut: ${statusOptions.find(s => s.key === q.status)?.label || q.status}`)
+
+  const blob = new Blob([lines.filter(l => l !== undefined).join('\n')], { type: 'text/plain;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${q.quote_number || 'devis'}.txt`
+  a.click()
+  URL.revokeObjectURL(url)
 }
 
 async function removeQuote(id) {
