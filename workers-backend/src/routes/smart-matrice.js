@@ -38,6 +38,8 @@ export function registerSmartMatriceRoutes(app) {
   app.patch(`${P}/config/`, ...mw, updateConfig)
   app.post(`${P}/import`, ...mw, importTasks)
   app.post(`${P}/import/`, ...mw, importTasks)
+  app.post(`${P}/ai-estimate`, ...mw, aiEstimate)
+  app.post(`${P}/ai-estimate/`, ...mw, aiEstimate)
 }
 
 // ===================== HANDLERS =====================
@@ -109,6 +111,7 @@ async function getTasks(c) {
   const { company_id } = c.get('user')
   const projectId = parseInt(c.req.param('projectId'), 10)
   const { results: tasks } = await c.env.DB.prepare('SELECT * FROM sm_tasks WHERE project_id = ? AND company_id = ? ORDER BY sort_order ASC, created_at ASC').bind(projectId, company_id).all()
+  // Also get legacy subtasks
   const taskIds = (tasks || []).map(t => t.id)
   let subtaskMap = {}
   if (taskIds.length) {
@@ -116,10 +119,33 @@ async function getTasks(c) {
     const { results: subs } = await c.env.DB.prepare(`SELECT * FROM sm_subtasks WHERE task_id IN (${ph}) ORDER BY sort_order ASC`).bind(...taskIds).all()
     for (const s of (subs || [])) { if (!subtaskMap[s.task_id]) subtaskMap[s.task_id] = []; subtaskMap[s.task_id].push(s) }
   }
-  return c.json((tasks || []).map(t => {
+  // Build tree: tasks with parent_id are children
+  const flat = (tasks || []).map(t => {
     const subs = subtaskMap[t.id] || []
-    return { ...t, is_paused: !!t.is_paused, subtasks: subs.map(s => ({ ...s, done: !!s.done })), progress: subs.length > 0 ? Math.round(subs.filter(s => s.done).length / subs.length * 100) : 0 }
-  }))
+    const subProgress = subs.length > 0 ? Math.round(subs.filter(s => s.done).length / subs.length * 100) : null
+    return { ...t, is_paused: !!t.is_paused, subtasks: subs.map(s => ({ ...s, done: !!s.done })), progress: t.progress || subProgress || 0, history: JSON.parse(t.history || '[]') }
+  })
+  // Build hierarchy
+  const map = {}
+  for (const t of flat) { map[t.id] = { ...t, children: [] } }
+  const roots = []
+  for (const t of flat) {
+    if (t.parent_id && map[t.parent_id]) map[t.parent_id].children.push(map[t.id])
+    else roots.push(map[t.id])
+  }
+  // Calculate aggregates bottom-up
+  function calcAggregates(node) {
+    if (node.children.length) {
+      for (const child of node.children) calcAggregates(child)
+      const kids = node.children
+      node.dur_estimated = node.dur_estimated || kids.reduce((s, k) => s + (k.dur_estimated || 0), 0)
+      node.actual_duration = node.actual_duration || kids.reduce((s, k) => s + (k.actual_duration || 0), 0)
+      node.progress = kids.length ? Math.round(kids.reduce((s, k) => s + (k.progress || 0), 0) / kids.length) : node.progress
+      if (node.dur_estimated && node.actual_duration) node.accuracy = Math.round((1 - Math.abs(node.actual_duration - node.dur_estimated) / node.dur_estimated) * 100)
+    }
+  }
+  for (const root of roots) calcAggregates(root)
+  return c.json(roots)
 }
 
 async function createTask(c) {
@@ -128,19 +154,20 @@ async function createTask(c) {
   if (!body.project_id) return c.json({ error: 'project_id required' }, 400)
   const history = JSON.stringify([{ date: new Date().toISOString(), action: 'created', details: body.name || 'Nouvelle tâche', user_id }])
   const row = await c.env.DB.prepare(
-    `INSERT INTO sm_tasks (project_id, company_id, name, group_name, status, priority, quadrant, start_date, end_date, dur_min, dur_max, dur_estimated, assigned_to, sort_order, description, referent_name, waiting_for, history)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
+    `INSERT INTO sm_tasks (project_id, company_id, name, group_name, status, priority, quadrant, start_date, end_date, dur_min, dur_max, dur_estimated, assigned_to, sort_order, description, referent_name, waiting_for, parent_id, depth, difficulty, importance, urgency, history)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
   ).bind(body.project_id, company_id, body.name || 'Nouvelle tâche', body.group_name || '', body.status || 'todo', body.priority || 'normal', body.quadrant || 0,
     body.start_date || null, body.end_date || null, body.dur_min || null, body.dur_max || null, body.dur_estimated || null, body.assigned_to || null, body.sort_order || 0,
-    body.description || '', body.referent_name || '', body.waiting_for || '', history).first()
-  return c.json({ ...row, is_paused: false, subtasks: [], progress: 0, history: JSON.parse(row.history || '[]') }, 201)
+    body.description || '', body.referent_name || '', body.waiting_for || '',
+    body.parent_id || null, body.depth || 0, body.difficulty || 'medium', body.importance || 'normal', body.urgency || 'normal', history).first()
+  return c.json({ ...row, is_paused: false, subtasks: [], children: [], progress: 0, history: JSON.parse(row.history || '[]') }, 201)
 }
 
 async function updateTask(c) {
   const { company_id, id: user_id } = c.get('user')
   const id = parseInt(c.req.param('id'), 10)
   const body = await c.req.json()
-  const allowed = ['name', 'group_name', 'status', 'priority', 'quadrant', 'start_date', 'end_date', 'dur_min', 'dur_max', 'dur_estimated', 'dur_ai', 'dur_real', 'assigned_to', 'is_paused', 'sort_order', 'description', 'referent_name', 'waiting_for', 'actual_end_date', 'is_repetitive', 'cycle_count']
+  const allowed = ['name', 'group_name', 'status', 'priority', 'quadrant', 'start_date', 'end_date', 'dur_min', 'dur_max', 'dur_estimated', 'dur_ai', 'dur_real', 'assigned_to', 'is_paused', 'sort_order', 'description', 'referent_name', 'waiting_for', 'actual_end_date', 'is_repetitive', 'cycle_count', 'parent_id', 'depth', 'progress', 'difficulty', 'importance', 'urgency', 'actual_duration', 'accuracy', 'ai_recommendation']
   const fields = [], values = []
   for (const key of allowed) { if (body[key] !== undefined) { fields.push(`${key} = ?`); values.push(['is_paused', 'is_repetitive'].includes(key) ? (body[key] ? 1 : 0) : body[key]) } }
   if (body.is_paused === true) fields.push("paused_at = datetime('now')")
@@ -273,4 +300,103 @@ async function importTasks(c) {
     created++
   }
   return c.json({ imported: created })
+}
+
+// AI Estimation — calcule les temps et recommandations
+async function aiEstimate(c) {
+  const { company_id } = c.get('user')
+  const body = await c.req.json()
+  const db = c.env.DB
+  const projectId = body.project_id
+  if (!projectId) return c.json({ error: 'project_id required' }, 400)
+
+  const { results: tasks } = await db.prepare('SELECT * FROM sm_tasks WHERE project_id = ? AND company_id = ?').bind(projectId, company_id).all()
+  if (!tasks?.length) return c.json({ error: 'No tasks' }, 400)
+
+  const project = await db.prepare('SELECT * FROM sm_projects WHERE id = ? AND company_id = ?').bind(projectId, company_id).first()
+  const hpd = project?.hours_per_day || 8
+  const dpw = project?.working_days_week || 5
+
+  const updates = []
+  const recommendations = []
+
+  for (const task of tasks) {
+    if (task.status === 'done') continue
+    const est = task.dur_estimated || 0
+    const min = task.dur_min || est * 0.7
+    const max = task.dur_max || est * 1.5
+    // IA: moyenne pondérée (PERT: (min + 4*est + max) / 6)
+    const aiDur = est > 0 ? Math.round(((min + 4 * est + max) / 6) * 100) / 100 : null
+
+    // Accuracy: si on a actual_duration, calculer la précision
+    let accuracy = null
+    if (task.actual_duration && est > 0) {
+      accuracy = Math.round((1 - Math.abs(task.actual_duration - est) / est) * 100)
+    }
+
+    // Urgency auto-calculée
+    let autoUrgency = task.urgency || 'normal'
+    if (task.end_date) {
+      const daysLeft = Math.ceil((new Date(task.end_date) - new Date()) / 86400000)
+      if (daysLeft < 0) autoUrgency = 'critical'
+      else if (daysLeft < 3) autoUrgency = 'high'
+      else if (daysLeft < 7) autoUrgency = 'medium'
+    }
+
+    // Recommendation
+    let rec = ''
+    if (task.end_date) {
+      const daysLeft = Math.ceil((new Date(task.end_date) - new Date()) / 86400000)
+      const daysNeeded = aiDur ? Math.ceil(aiDur / hpd) : 0
+      if (daysNeeded > daysLeft && daysLeft > 0) {
+        rec = `⚠ Retard probable : ${daysNeeded}j nécessaires, ${daysLeft}j restants. Réduire le scope ou ajouter des ressources.`
+      } else if (daysLeft < 0) {
+        rec = `🔴 En retard de ${Math.abs(daysLeft)}j. Reprioriser immédiatement.`
+      } else if (daysLeft <= 2 && task.status === 'todo') {
+        rec = `⚡ Échéance dans ${daysLeft}j et pas commencé. Démarrer maintenant.`
+      }
+    }
+    if (task.dur_estimated && task.actual_duration && task.actual_duration > task.dur_estimated * 1.3) {
+      rec += rec ? ' ' : ''
+      rec += `📊 Durée réelle (${task.actual_duration}h) dépasse l'estimation (${task.dur_estimated}h) de ${Math.round((task.actual_duration / task.dur_estimated - 1) * 100)}%.`
+    }
+
+    if (aiDur !== null || accuracy !== null || rec) {
+      const sets = []
+      const vals = []
+      if (aiDur !== null) { sets.push('dur_ai = ?'); vals.push(aiDur) }
+      if (accuracy !== null) { sets.push('accuracy = ?'); vals.push(accuracy) }
+      if (autoUrgency !== task.urgency) { sets.push('urgency = ?'); vals.push(autoUrgency) }
+      if (rec) { sets.push('ai_recommendation = ?'); vals.push(rec) }
+      if (sets.length) {
+        sets.push("updated_at = datetime('now')")
+        vals.push(task.id, company_id)
+        updates.push(db.prepare(`UPDATE sm_tasks SET ${sets.join(', ')} WHERE id = ? AND company_id = ?`).bind(...vals))
+      }
+      if (rec) recommendations.push({ task_id: task.id, task_name: task.name, recommendation: rec })
+    }
+  }
+
+  if (updates.length) await db.batch(updates)
+
+  // Project-level stats
+  const activeTasks = tasks.filter(t => t.status !== 'done')
+  const totalEst = activeTasks.reduce((s, t) => s + (t.dur_estimated || 0), 0)
+  const totalActual = tasks.reduce((s, t) => s + (t.actual_duration || 0), 0)
+  const doneCount = tasks.filter(t => t.status === 'done').length
+  const overallProgress = tasks.length ? Math.round(doneCount / tasks.length * 100) : 0
+  const daysToComplete = Math.ceil(totalEst / hpd)
+
+  return c.json({
+    tasks_analyzed: tasks.length,
+    updates_applied: updates.length,
+    recommendations,
+    summary: {
+      total_estimated_hours: totalEst,
+      total_actual_hours: totalActual,
+      overall_progress: overallProgress,
+      days_to_complete: daysToComplete,
+      tasks_at_risk: recommendations.length,
+    }
+  })
 }

@@ -58,6 +58,7 @@
           <button class="sm-btn sm-btn--primary" @click="showCreateProject = true">✨ {{ lt.newProject }}</button>
         </template>
         <button v-if="['tasks','kanban','eisenhower'].includes(currentView)" class="sm-btn sm-btn--secondary" @click="showCreateTask = true">+ {{ lt.newTask }}</button>
+        <button v-if="store.selectedProject" class="sm-btn sm-btn--ai" @click="runAiAnalysis" :disabled="aiLoading">🧠 {{ aiLoading ? 'Analyse...' : 'Analyser IA' }}</button>
       </div>
     </header>
 
@@ -156,12 +157,9 @@
           :team="store.team"
           :bulk-mode="bulkMode"
           :bulk-select="bulkSelect"
-          @toggle-subtask="toggleSubtask"
-          @delete-subtask="deleteSubtask"
-          @add-subtask="addSubtask"
-          @edit-task="openEditTask"
           @update-task="inlineUpdateTask"
           @quick-add-task="quickAddTask"
+          @add-child-task="addChildTask"
           @delete-task="confirmDeleteTask"
           @delete-project="confirmDeleteProject"
           @toggle-bulk="toggleBulkProject"
@@ -287,6 +285,9 @@ import SmTeamView from '../components/smart-matrice/SmTeamView.vue'
 import SmConfigView from '../components/smart-matrice/SmConfigView.vue'
 import SmImport from '../components/smart-matrice/SmImport.vue'
 
+import { smartMatriceApi } from '../api'
+import { useToast } from '../composables/useToast'
+
 const store = useSmartMatriceStore()
 const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()
@@ -358,9 +359,18 @@ const filteredTaskGroups = computed(() => {
   return groups
 })
 
+function flattenTree(tree) {
+  const result = []
+  for (const t of (tree || [])) {
+    result.push(t)
+    if (t.children?.length) result.push(...flattenTree(t.children))
+  }
+  return result
+}
+
 const allTasksFlat = computed(() => {
   let all = []
-  for (const pid in store.tasks) all.push(...store.tasks[pid])
+  for (const pid in store.tasks) all.push(...flattenTree(store.tasks[pid]))
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase()
     all = all.filter(t =>
@@ -377,6 +387,8 @@ const currentNavItem = computed(() => smNavItems.find(n => n.key === currentView
 const pageTitle = computed(() => currentNavItem.value?.label || 'Smart Matrice')
 
 // Modals
+const aiLoading = ref(false)
+const aiResult = ref(null)
 const showCreateProject = ref(false)
 const showCreateTask = ref(false)
 const showEditTask = ref(false)
@@ -544,13 +556,42 @@ async function inlineUpdateTask(taskId, fields) {
   await store.updateTask(taskId, fields)
 }
 
+async function runAiAnalysis() {
+  if (!store.selectedProject) return
+  aiLoading.value = true
+  try {
+    const { data } = await smartMatriceApi.aiEstimate(store.selectedProject.id)
+    aiResult.value = data
+    await store.fetchTasks(store.selectedProject.id)
+    if (data.recommendations?.length) {
+      useToast().success(`🧠 Analyse terminée : ${data.recommendations.length} recommandation(s)`)
+    } else {
+      useToast().success('🧠 Analyse terminée — tout est en ordre !')
+    }
+  } catch { useToast().error('Erreur lors de l\'analyse IA') }
+  aiLoading.value = false
+}
+
 async function quickAddTask(projectId, name) {
+  await store.createTask({ project_id: projectId, name, status: 'todo', priority: 'normal' })
+  await store.fetchTasks(projectId)
+}
+
+async function addChildTask(parentId, projectId, name) {
+  const parent = findTask(store.tasks[projectId] || [], parentId)
   await store.createTask({
-    project_id: projectId,
-    name,
-    status: 'todo',
-    priority: 'normal',
+    project_id: projectId, name, status: 'todo', priority: 'normal',
+    parent_id: parentId, depth: (parent?.depth || 0) + 1,
   })
+  await store.fetchTasks(projectId)
+}
+
+function findTask(tree, id) {
+  for (const t of tree) {
+    if (t.id === id) return t
+    if (t.children?.length) { const found = findTask(t.children, id); if (found) return found }
+  }
+  return null
 }
 
 async function updateTaskStatus(taskId, status) {
@@ -657,6 +698,9 @@ watch(currentView, async (v) => {
 .sm-btn--secondary:hover { border-color: #3b82f6; color: #3b82f6; }
 .sm-btn--danger { background: transparent; border: 1px solid var(--sm-err); color: var(--sm-err); font-size: 12px; }
 .sm-btn--danger:hover { background: var(--sm-err); color: #fff; }
+.sm-btn--ai { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; font-size: 12px; border: none; }
+.sm-btn--ai:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.sm-btn--ai:disabled { opacity: .6; transform: none; filter: none; }
 
 /* Content */
 .sm-content { }
