@@ -349,7 +349,7 @@ auth.get('/company/', companyRequired(), async (c) => {
 auth.patch('/company/', companyRequired(), managerRequired(), async (c) => {
   const { company_id } = c.get('user')
   const data = await c.req.json()
-  const allowed = ['name', 'arr', 'churn', 'nps', 'color', 'logo']
+  const allowed = ['name', 'arr', 'churn', 'nps', 'color', 'logo', 'country', 'legal_name', 'registration_number', 'vat_number', 'address', 'city', 'postal_code']
   const sets = []
   const values = []
 

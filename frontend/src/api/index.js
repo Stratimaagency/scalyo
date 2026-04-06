@@ -92,6 +92,10 @@ export const quotesApi = {
   create: (data) => api.post('/quotes/', data),
   update: (id, data) => api.patch(`/quotes/${id}/`, data),
   remove: (id) => api.delete(`/quotes/${id}/`),
+  getConfig: () => api.get('/quotes/config/'),
+  updateConfig: (data) => api.patch('/quotes/config/', data),
+  getItems: (id) => api.get(`/quotes/${id}/items/`),
+  setItems: (id, items) => api.put(`/quotes/${id}/items/`, { items }),
 }
 
 // Feedback
