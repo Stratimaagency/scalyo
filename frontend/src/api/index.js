@@ -171,6 +171,7 @@ export const smartMatriceApi = {
   getConfig: () => api.get('/smart-matrice/config'),
   updateConfig: (data) => api.patch('/smart-matrice/config', data),
   importTasks: (data) => api.post('/smart-matrice/import', data),
+  aiEstimate: (projectId) => api.post('/smart-matrice/ai-estimate', { project_id: projectId }),
 }
 
 // Integrations
