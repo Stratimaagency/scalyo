@@ -1,20 +1,24 @@
 <template>
   <div class="coach fade-in">
     <!-- Hero header -->
-    <div class="coach-hero">
-      <div class="page-header__icon">🪄</div>
-      <div class="coach-hero-info">
-        <h1 class="page-header__title">{{ t('coachTitle') }}</h1>
-        <p class="coach-status">
-          <span class="coach-pulse"></span>
-          {{ t('coachStatus') }}
-        </p>
+    <div class="page-header">
+      <div class="page-header__left">
+        <div class="page-header__icon">🪄</div>
+        <div class="page-header__text">
+          <h1 class="page-header__title">{{ t('coachTitle') }}</h1>
+          <p class="page-header__subtitle">
+            <span class="coach-pulse"></span>
+            {{ t('coachStatus') }}
+          </p>
+        </div>
       </div>
-      <div v-if="dailyCount >= dailyLimit" class="coach-limit">
-        {{ t('dailyLimitReached') }}
-        <button v-if="isStarter" class="coach-upgrade" @click="$router.push({ name: 'settings' })">🔓 {{ t('upgradeToGrowth') }}</button>
+      <div class="page-header__actions">
+        <div v-if="dailyCount >= dailyLimit" class="coach-limit">
+          {{ t('dailyLimitReached') }}
+          <button v-if="isStarter" class="coach-upgrade" @click="$router.push({ name: 'settings' })">🔓 {{ t('upgradeToGrowth') }}</button>
+        </div>
+        <div v-else class="coach-counter">{{ dailyCount }}/{{ dailyLimit }}</div>
       </div>
-      <div v-else class="coach-counter">{{ dailyCount }}/{{ dailyLimit }}</div>
     </div>
 
     <!-- Chat area -->

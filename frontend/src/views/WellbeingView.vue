@@ -1,8 +1,8 @@
 <template>
   <div class="wb fade-in">
     <!-- Hero -->
-    <div class="wb-hero">
-      <div class="wb-hero-left">
+    <div class="page-header">
+      <div class="page-header__left">
         <div class="page-header__icon">{{ roleIcon }}</div>
         <div class="page-header__text">
           <h1 class="page-header__title">{{ t('wellbeing') }}</h1>

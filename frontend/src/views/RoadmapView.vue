@@ -5,7 +5,7 @@
     <template v-else>
 
     <!-- Header -->
-    <div class="rm-header">
+    <div class="page-header rm-header">
       <div class="page-header__left">
         <div class="page-header__icon">🗺️</div>
         <div class="page-header__text">
@@ -13,7 +13,7 @@
           <p class="page-header__subtitle">{{ t('rmSubtitle') }}</p>
         </div>
       </div>
-      <div class="rm-header-right">
+      <div class="page-header__actions">
         <div class="rm-ring-wrap">
           <svg viewBox="0 0 80 80" class="rm-ring">
             <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(0,0,0,.06)" stroke-width="7"/>

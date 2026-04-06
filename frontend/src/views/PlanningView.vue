@@ -6,7 +6,7 @@
     </div>
     <template v-else>
     <!-- Header bar -->
-    <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 28px 14px; flex-shrink: 0; border-bottom: 1px solid var(--border)">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; flex-shrink: 0; background: linear-gradient(135deg, rgba(79,70,229,.07), rgba(124,58,237,.07), rgba(168,85,247,.05)); border: 1px solid rgba(79,70,229,.12); border-radius: 16px; margin: 0 20px 16px;">
       <div style="display: flex; align-items: center; gap: 14px">
         <h1 class="page-header__title">{{ t('planning') }}</h1>
         <div style="display: flex; align-items: center; gap: 4px">
