@@ -6,6 +6,16 @@
     </div>
 
     <template v-else>
+      <!-- Page header -->
+      <div class="page-header" style="margin-bottom: 16px;">
+        <div class="page-header__left">
+          <div class="page-header__icon">📊</div>
+          <div class="page-header__text">
+            <h1 class="page-header__title">{{ t('kpiTitle') || 'KPIs Copilot' }}</h1>
+            <p class="page-header__subtitle">{{ t('kpiDesc') || 'Suivez vos indicateurs clés de performance' }}</p>
+          </div>
+        </div>
+      </div>
       <!-- ===== 1. SESSION SWITCHER BAR ===== -->
       <div style="display: flex; align-items: center; gap: 0; margin-bottom: 20px; overflow-x: auto; border-bottom: 2px solid var(--border);">
         <button

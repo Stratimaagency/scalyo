@@ -1,8 +1,13 @@
 <template>
   <div class="fade-in">
-    <div class="mb-lg">
-      <h3 style="font-weight: 800; margin-bottom: 4px">{{ t('resTitle') }}</h3>
-      <p style="font-size: 13px; color: var(--muted)">{{ t('resSubtitle') }}</p>
+    <div class="page-header">
+      <div class="page-header__left">
+        <div class="page-header__icon">📚</div>
+        <div class="page-header__text">
+          <h1 class="page-header__title">{{ t('resTitle') }}</h1>
+          <p class="page-header__subtitle">{{ t('resSubtitle') }}</p>
+        </div>
+      </div>
     </div>
 
     <!-- Category filter -->

@@ -1,9 +1,14 @@
 <template>
   <PlanGate requiredPlan="Growth" moduleName="Integrations">
   <div class="fade-in">
-    <div class="mb-lg">
-      <h3 style="font-weight: 800; margin-bottom: 4px">{{ t('integrationsTitle') }}</h3>
-      <p style="font-size: 13px; color: var(--muted)">{{ t('integrationsDesc') }}</p>
+    <div class="page-header">
+      <div class="page-header__left">
+        <div class="page-header__icon">🔌</div>
+        <div class="page-header__text">
+          <h1 class="page-header__title">{{ t('integrationsTitle') }}</h1>
+          <p class="page-header__subtitle">{{ t('integrationsDesc') }}</p>
+        </div>
+      </div>
     </div>
 
     <!-- Load error banner -->
