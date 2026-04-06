@@ -188,8 +188,9 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { usePreferencesStore } from '../stores/preferences'
+import { useAuthStore } from '../stores/auth'
 import { useI18n } from '../i18n'
-import { quotesApi } from '../api'
+import { quotesApi, authApi } from '../api'
 import AppField from '../components/AppField.vue'
 import EmptyState from '../components/EmptyState.vue'
 import ScalyoIcon from '../components/ScalyoIcon.vue'
@@ -197,6 +198,7 @@ import PlanGate from '../components/PlanGate.vue'
 
 const { t } = useI18n()
 const prefsStore = usePreferencesStore()
+const authStore = useAuthStore()
 
 const quotes = ref([])
 const config = ref(null)
@@ -243,7 +245,7 @@ const computedTotal = computed(() => {
 
 onMounted(async () => {
   try {
-    const [quotesRes, configRes] = await Promise.all([quotesApi.list(), quotesApi.getConfig()])
+    const [quotesRes, configRes] = await Promise.all([quotesApi.list(), quotesApi.getConfig(), authApi.getCompany().then(r => { authStore.company = r.data }).catch(() => {})])
     quotes.value = quotesRes.data
     config.value = configRes.data
     Object.assign(configForm, {
@@ -363,6 +365,8 @@ async function downloadQuote(q) {
   const autoTable = (await import('jspdf-autotable')).default
 
   const cfg = config.value || {}
+  const company = authStore.company
+  const companyName = company?.legal_name || company?.name || ''
   const label = cfg.country_defaults?.label || 'Devis'
   const cur = cfg.country_defaults?.currency || 'EUR'
   const fmt = (v) => Number(v || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + (cur === 'EUR' ? ' €' : ` ${cur}`)
@@ -380,7 +384,7 @@ async function downloadQuote(q) {
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(18)
   doc.setTextColor(255, 255, 255)
-  doc.text('Scalyo', 14, 16)
+  doc.text(companyName || 'Mon entreprise', 14, 16)
 
   // Quote number + label
   doc.setFontSize(11)
@@ -403,7 +407,13 @@ async function downloadQuote(q) {
     doc.text(badgeText, w - 14 - badgeW / 2, 27, { align: 'center' })
   }
 
-  let y = 40
+  // --- Company info under header ---
+  let y = 34
+  doc.setFontSize(8)
+  doc.setTextColor(100, 100, 100)
+  const companyInfo = [company?.address, company?.postal_code && company?.city ? `${company.postal_code} ${company.city}` : company?.city, company?.vat_number ? `TVA: ${company.vat_number}` : '', company?.registration_number || ''].filter(Boolean).join('  ·  ')
+  if (companyInfo) { doc.text(companyInfo, 14, y); y += 6 }
+  y = Math.max(y, 42)
 
   // --- Client block ---
   doc.setTextColor(79, 70, 229)
@@ -542,7 +552,7 @@ async function downloadQuote(q) {
   doc.line(14, 275, w - 14, 275)
   doc.setFontSize(7)
   doc.setTextColor(150, 150, 150)
-  doc.text(`Généré par Scalyo — ${new Date().toLocaleDateString('fr-FR')}`, w / 2, 290, { align: 'center' })
+  doc.text(`${companyName || ''} — ${new Date().toLocaleDateString('fr-FR')}`, w / 2, 290, { align: 'center' })
 
   doc.save(`${q.quote_number || 'devis'}.pdf`)
 }
