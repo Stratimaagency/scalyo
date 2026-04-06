@@ -61,6 +61,89 @@
       </div>
     </header>
 
+    <!-- EDIT TASK PANEL (above content) -->
+    <div v-if="showEditTask" class="sm-inline-panel">
+      <h3 class="sm-inline-panel__title">✏️ {{ lt.editTask }}</h3>
+      <div class="sm-modal__row">
+        <div class="sm-modal__field" style="flex:2"><label>{{ lt.taskName }}</label><input v-model="editTask.name" :placeholder="lt.taskNameHint" autofocus /></div>
+        <div class="sm-modal__field"><label>{{ lt.group }}</label><input v-model="editTask.group_name" :placeholder="lt.groupHint" /></div>
+      </div>
+      <div class="sm-modal__field"><label>{{ lt.description }}</label><textarea v-model="editTask.description" rows="2" :placeholder="lt.taskDescHint"></textarea></div>
+      <div class="sm-modal__row">
+        <div class="sm-modal__field"><label>{{ lt.status }}</label>
+          <select v-model="editTask.status"><option value="todo">{{ lt.todo }}</option><option value="in_progress">{{ lt.inProgress }}</option><option value="blocked">{{ lt.blocked }}</option><option value="done">{{ lt.done }}</option></select>
+        </div>
+        <div class="sm-modal__field"><label>Urgence / Priorité</label>
+          <select v-model="editTask.priority"><option value="normal">⚪ {{ lt.normal }}</option><option value="important">🟡 {{ lt.important }}</option><option value="priority">🔴 {{ lt.priority }}</option><option value="urgent">⚡ {{ lt.urgent }}</option></select>
+        </div>
+        <div class="sm-modal__field"><label>Importance (quadrant)</label>
+          <select v-model.number="editTask.quadrant"><option :value="0">— Non classé</option><option :value="1">🔴 Faire maintenant</option><option :value="2">🟢 Planifier</option><option :value="3">🔵 Déléguer</option><option :value="4">⚪ Éliminer</option></select>
+        </div>
+      </div>
+      <div class="sm-modal__row">
+        <div class="sm-modal__field"><label>{{ lt.estimatedDuration }} (h)</label><input v-model.number="editTask.dur_estimated" type="number" min="0" step="0.5" /></div>
+        <div class="sm-modal__field"><label>{{ lt.minDuration }} (h)</label><input v-model.number="editTask.dur_min" type="number" min="0" step="0.5" /></div>
+        <div class="sm-modal__field"><label>{{ lt.maxDuration }} (h)</label><input v-model.number="editTask.dur_max" type="number" min="0" step="0.5" /></div>
+      </div>
+      <div class="sm-modal__row">
+        <div class="sm-modal__field"><label>{{ lt.startDate }}</label><input v-model="editTask.start_date" type="datetime-local" /></div>
+        <div class="sm-modal__field"><label>{{ lt.endDate }}</label><input v-model="editTask.end_date" type="datetime-local" /></div>
+      </div>
+      <div class="sm-modal__row">
+        <div class="sm-modal__field"><label>{{ lt.referent }}</label><input v-model="editTask.referent_name" :placeholder="lt.referentHint" /></div>
+        <div class="sm-modal__field"><label>Assigné à</label>
+          <select v-model="editTask.assigned_to">
+            <option value="">— Non assigné</option>
+            <option v-for="m in store.team" :key="m.id" :value="m.id">{{ m.display_name || m.email }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="sm-modal__actions">
+        <button class="sm-btn sm-btn--secondary" @click="showEditTask = false">{{ lt.cancel }}</button>
+        <button class="sm-btn sm-btn--primary" @click="saveEditTask" :disabled="!editTask.name.trim()">{{ lt.save }}</button>
+      </div>
+    </div>
+
+    <!-- CREATE TASK PANEL (above content) -->
+    <div v-if="showCreateTask" class="sm-inline-panel">
+      <h3 class="sm-inline-panel__title">📝 {{ lt.newTask }}</h3>
+      <div class="sm-modal__row">
+        <div class="sm-modal__field" style="flex:2"><label>{{ lt.taskName }}</label><input v-model="newTask.name" :placeholder="lt.taskNameHint" autofocus /></div>
+        <div class="sm-modal__field"><label>{{ lt.group }}</label><input v-model="newTask.group_name" :placeholder="lt.groupHint" /></div>
+      </div>
+      <div class="sm-modal__field"><label>{{ lt.description }}</label><textarea v-model="newTask.description" rows="2" :placeholder="lt.taskDescHint"></textarea></div>
+      <div class="sm-modal__row">
+        <div class="sm-modal__field"><label>Urgence / Priorité</label>
+          <select v-model="newTask.priority"><option value="normal">⚪ {{ lt.normal }}</option><option value="important">🟡 {{ lt.important }}</option><option value="priority">🔴 {{ lt.priority }}</option><option value="urgent">⚡ {{ lt.urgent }}</option></select>
+        </div>
+        <div class="sm-modal__field"><label>Importance (quadrant)</label>
+          <select v-model.number="newTask.quadrant"><option :value="0">— Non classé</option><option :value="1">🔴 Faire maintenant</option><option :value="2">🟢 Planifier</option><option :value="3">🔵 Déléguer</option><option :value="4">⚪ Éliminer</option></select>
+        </div>
+      </div>
+      <div class="sm-modal__row">
+        <div class="sm-modal__field"><label>{{ lt.estimatedDuration }} (h)</label><input v-model.number="newTask.dur_estimated" type="number" min="0" step="0.5" /></div>
+        <div class="sm-modal__field"><label>{{ lt.minDuration }} (h)</label><input v-model.number="newTask.dur_min" type="number" min="0" step="0.5" /></div>
+        <div class="sm-modal__field"><label>{{ lt.maxDuration }} (h)</label><input v-model.number="newTask.dur_max" type="number" min="0" step="0.5" /></div>
+      </div>
+      <div class="sm-modal__row">
+        <div class="sm-modal__field"><label>{{ lt.startDate }}</label><input v-model="newTask.start_date" type="datetime-local" /></div>
+        <div class="sm-modal__field"><label>{{ lt.endDate }}</label><input v-model="newTask.end_date" type="datetime-local" /></div>
+      </div>
+      <div class="sm-modal__row">
+        <div class="sm-modal__field"><label>{{ lt.referent }}</label><input v-model="newTask.referent_name" :placeholder="lt.referentHint" /></div>
+        <div class="sm-modal__field"><label>Assigné à</label>
+          <select v-model="newTask.assigned_to">
+            <option value="">— Non assigné</option>
+            <option v-for="m in store.team" :key="m.id" :value="m.id">{{ m.display_name || m.email }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="sm-modal__actions">
+        <button class="sm-btn sm-btn--secondary" @click="showCreateTask = false">{{ lt.cancel }}</button>
+        <button class="sm-btn sm-btn--primary" @click="createTask" :disabled="!newTask.name.trim()">{{ lt.create }}</button>
+      </div>
+    </div>
+
     <!-- Loading -->
     <div v-if="store.loading" class="sm-loading">{{ lt.loading }}</div>
 
@@ -180,89 +263,6 @@
       <div class="sm-modal__actions">
         <button class="sm-btn sm-btn--secondary" @click="showCreateProject = false">{{ lt.cancel }}</button>
         <button class="sm-btn sm-btn--primary" @click="createProject" :disabled="!newProject.name.trim()">{{ lt.create }}</button>
-      </div>
-    </div>
-
-    <!-- EDIT TASK PANEL -->
-    <div v-if="showEditTask" class="sm-inline-panel">
-      <h3 class="sm-inline-panel__title">✏️ {{ lt.editTask }}</h3>
-      <div class="sm-modal__row">
-        <div class="sm-modal__field" style="flex:2"><label>{{ lt.taskName }}</label><input v-model="editTask.name" :placeholder="lt.taskNameHint" autofocus /></div>
-        <div class="sm-modal__field"><label>{{ lt.group }}</label><input v-model="editTask.group_name" :placeholder="lt.groupHint" /></div>
-      </div>
-      <div class="sm-modal__field"><label>{{ lt.description }}</label><textarea v-model="editTask.description" rows="2" :placeholder="lt.taskDescHint"></textarea></div>
-      <div class="sm-modal__row">
-        <div class="sm-modal__field"><label>{{ lt.status }}</label>
-          <select v-model="editTask.status"><option value="todo">{{ lt.todo }}</option><option value="in_progress">{{ lt.inProgress }}</option><option value="blocked">{{ lt.blocked }}</option><option value="done">{{ lt.done }}</option></select>
-        </div>
-        <div class="sm-modal__field"><label>Urgence / Priorité</label>
-          <select v-model="editTask.priority"><option value="normal">⚪ {{ lt.normal }}</option><option value="important">🟡 {{ lt.important }}</option><option value="priority">🔴 {{ lt.priority }}</option><option value="urgent">⚡ {{ lt.urgent }}</option></select>
-        </div>
-        <div class="sm-modal__field"><label>Importance (quadrant)</label>
-          <select v-model.number="editTask.quadrant"><option :value="0">— Non classé</option><option :value="1">🔴 Faire maintenant</option><option :value="2">🟢 Planifier</option><option :value="3">🔵 Déléguer</option><option :value="4">⚪ Éliminer</option></select>
-        </div>
-      </div>
-      <div class="sm-modal__row">
-        <div class="sm-modal__field"><label>{{ lt.estimatedDuration }} (h)</label><input v-model.number="editTask.dur_estimated" type="number" min="0" step="0.5" /></div>
-        <div class="sm-modal__field"><label>{{ lt.minDuration }} (h)</label><input v-model.number="editTask.dur_min" type="number" min="0" step="0.5" /></div>
-        <div class="sm-modal__field"><label>{{ lt.maxDuration }} (h)</label><input v-model.number="editTask.dur_max" type="number" min="0" step="0.5" /></div>
-      </div>
-      <div class="sm-modal__row">
-        <div class="sm-modal__field"><label>{{ lt.startDate }}</label><input v-model="editTask.start_date" type="datetime-local" /></div>
-        <div class="sm-modal__field"><label>{{ lt.endDate }}</label><input v-model="editTask.end_date" type="datetime-local" /></div>
-      </div>
-      <div class="sm-modal__row">
-        <div class="sm-modal__field"><label>{{ lt.referent }}</label><input v-model="editTask.referent_name" :placeholder="lt.referentHint" /></div>
-        <div class="sm-modal__field"><label>Assigné à</label>
-          <select v-model="editTask.assigned_to">
-            <option value="">— Non assigné</option>
-            <option v-for="m in store.team" :key="m.id" :value="m.id">{{ m.display_name || m.email }}</option>
-          </select>
-        </div>
-      </div>
-      <div class="sm-modal__actions">
-        <button class="sm-btn sm-btn--secondary" @click="showEditTask = false">{{ lt.cancel }}</button>
-        <button class="sm-btn sm-btn--primary" @click="saveEditTask" :disabled="!editTask.name.trim()">{{ lt.save }}</button>
-      </div>
-    </div>
-
-    <!-- CREATE TASK PANEL -->
-    <div v-if="showCreateTask" class="sm-inline-panel">
-      <h3 class="sm-inline-panel__title">📝 {{ lt.newTask }}</h3>
-      <div class="sm-modal__row">
-        <div class="sm-modal__field" style="flex:2"><label>{{ lt.taskName }}</label><input v-model="newTask.name" :placeholder="lt.taskNameHint" autofocus /></div>
-        <div class="sm-modal__field"><label>{{ lt.group }}</label><input v-model="newTask.group_name" :placeholder="lt.groupHint" /></div>
-      </div>
-      <div class="sm-modal__field"><label>{{ lt.description }}</label><textarea v-model="newTask.description" rows="2" :placeholder="lt.taskDescHint"></textarea></div>
-      <div class="sm-modal__row">
-        <div class="sm-modal__field"><label>Urgence / Priorité</label>
-          <select v-model="newTask.priority"><option value="normal">⚪ {{ lt.normal }}</option><option value="important">🟡 {{ lt.important }}</option><option value="priority">🔴 {{ lt.priority }}</option><option value="urgent">⚡ {{ lt.urgent }}</option></select>
-        </div>
-        <div class="sm-modal__field"><label>Importance (quadrant)</label>
-          <select v-model.number="newTask.quadrant"><option :value="0">— Non classé</option><option :value="1">🔴 Faire maintenant</option><option :value="2">🟢 Planifier</option><option :value="3">🔵 Déléguer</option><option :value="4">⚪ Éliminer</option></select>
-        </div>
-      </div>
-      <div class="sm-modal__row">
-        <div class="sm-modal__field"><label>{{ lt.estimatedDuration }} (h)</label><input v-model.number="newTask.dur_estimated" type="number" min="0" step="0.5" /></div>
-        <div class="sm-modal__field"><label>{{ lt.minDuration }} (h)</label><input v-model.number="newTask.dur_min" type="number" min="0" step="0.5" /></div>
-        <div class="sm-modal__field"><label>{{ lt.maxDuration }} (h)</label><input v-model.number="newTask.dur_max" type="number" min="0" step="0.5" /></div>
-      </div>
-      <div class="sm-modal__row">
-        <div class="sm-modal__field"><label>{{ lt.startDate }}</label><input v-model="newTask.start_date" type="datetime-local" /></div>
-        <div class="sm-modal__field"><label>{{ lt.endDate }}</label><input v-model="newTask.end_date" type="datetime-local" /></div>
-      </div>
-      <div class="sm-modal__row">
-        <div class="sm-modal__field"><label>{{ lt.referent }}</label><input v-model="newTask.referent_name" :placeholder="lt.referentHint" /></div>
-        <div class="sm-modal__field"><label>Assigné à</label>
-          <select v-model="newTask.assigned_to">
-            <option value="">— Non assigné</option>
-            <option v-for="m in store.team" :key="m.id" :value="m.id">{{ m.display_name || m.email }}</option>
-          </select>
-        </div>
-      </div>
-      <div class="sm-modal__actions">
-        <button class="sm-btn sm-btn--secondary" @click="showCreateTask = false">{{ lt.cancel }}</button>
-        <button class="sm-btn sm-btn--primary" @click="createTask" :disabled="!newTask.name.trim()">{{ lt.create }}</button>
       </div>
     </div>
   </div>
