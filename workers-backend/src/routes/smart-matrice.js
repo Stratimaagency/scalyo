@@ -67,10 +67,11 @@ async function createProject(c) {
     // Try with V2 columns (history, state, target_end_date)
     const history = JSON.stringify([{ date: new Date().toISOString(), action: 'created', details: body.name || 'Nouveau projet', user_id }])
     const row = await c.env.DB.prepare(
-      `INSERT INTO sm_projects (company_id, name, description, emoji, color, start_date, end_date, target_end_date, state, history)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
+      `INSERT INTO sm_projects (company_id, name, description, emoji, color, start_date, end_date, target_end_date, state, history, working_days_year, days_off_year, hours_per_day, working_days_week)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
     ).bind(company_id, body.name || 'Nouveau projet', body.description || '', body.emoji || '📁', body.color || '#3b82f6',
-      body.start_date || null, body.end_date || null, body.target_end_date || body.end_date || null, body.state || 'active', history).first()
+      body.start_date || null, body.end_date || null, body.target_end_date || body.end_date || null, body.state || 'active', history,
+      body.working_days_year || 260, body.days_off_year || 14, body.hours_per_day || 8, body.working_days_week || 5).first()
     return c.json({ ...row, history: JSON.parse(row.history || '[]') }, 201)
   } catch {
     // Fallback for V1 schema (no history/state columns)
@@ -304,6 +305,7 @@ async function importTasks(c) {
 
 // AI Estimation — calcule les temps et recommandations
 async function aiEstimate(c) {
+  try {
   const { company_id } = c.get('user')
   const body = await c.req.json()
   const db = c.env.DB
@@ -399,4 +401,8 @@ async function aiEstimate(c) {
       tasks_at_risk: recommendations.length,
     }
   })
+  } catch (err) {
+    console.error('AI estimate error:', err.message)
+    return c.json({ error: 'AI analysis failed', detail: err.message }, 500)
+  }
 }
