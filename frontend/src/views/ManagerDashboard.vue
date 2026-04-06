@@ -2,15 +2,15 @@
   <div class="fade-in" style="max-width: 1100px; padding: 26px 30px;">
 
     <!-- Team Health Header -->
-    <div class="card" style="padding: 24px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
-      <div>
-        <h1 style="font-size: 22px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
-          <ScalyoIcon name="people" :size="22" />
-          {{ t('mgrTeamHealth') }}
-        </h1>
-        <p style="color: var(--muted); font-size: 13px;">{{ todayStr }}</p>
+    <div class="page-header" style="margin-bottom: 20px;">
+      <div class="page-header__left">
+        <div class="page-header__icon">👥</div>
+        <div class="page-header__text">
+          <h1 class="page-header__title">{{ t('mgrTeamHealth') }}</h1>
+          <p class="page-header__subtitle">{{ todayStr }}</p>
+        </div>
       </div>
-      <div style="display: flex; gap: 24px; align-items: center;">
+      <div class="page-header__actions" style="gap: 24px;">
         <div style="text-align: center;">
           <div style="font-size: 32px; font-weight: 900; font-family: 'DM Sans', sans-serif;"
             :style="{ color: scoreColor(d.avgHealthScore) }">{{ d.avgHealthScore }}</div>
