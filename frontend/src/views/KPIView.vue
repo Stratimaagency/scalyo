@@ -11,8 +11,8 @@
         <div class="page-header__left">
           <div class="page-header__icon">📊</div>
           <div class="page-header__text">
-            <h1 class="page-header__title">{{ t('kpiTitle') || 'KPIs Copilot' }}</h1>
-            <p class="page-header__subtitle">{{ t('kpiDesc') || 'Suivez vos indicateurs clés de performance' }}</p>
+            <h1 class="page-header__title">KPIs Copilot</h1>
+            <p class="page-header__subtitle">Suivez vos indicateurs clés de performance</p>
           </div>
         </div>
       </div>
