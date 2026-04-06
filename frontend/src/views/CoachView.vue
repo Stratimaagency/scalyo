@@ -2,9 +2,9 @@
   <div class="coach fade-in">
     <!-- Hero header -->
     <div class="coach-hero">
-      <div class="coach-avatar">🪄</div>
+      <div class="page-header__icon">🪄</div>
       <div class="coach-hero-info">
-        <h1 class="coach-title">{{ t('coachTitle') }}</h1>
+        <h1 class="page-header__title">{{ t('coachTitle') }}</h1>
         <p class="coach-status">
           <span class="coach-pulse"></span>
           {{ t('coachStatus') }}

@@ -2,8 +2,8 @@
   <div class="fade-in" style="max-width: 600px; margin: 0 auto">
     <AppCard v-if="!sent">
       <div style="text-align: center; margin-bottom: 20px">
-        <div style="margin-bottom: 8px"><ScalyoIcon name="chat" :size="36" /></div>
-        <h3 style="font-weight: 800">{{ t('feedbackTitle') }}</h3>
+        <div class="page-header__icon" style="margin: 0 auto 8px;">💬</div>
+        <h1 class="page-header__title">{{ t('feedbackTitle') }}</h1>
       </div>
 
       <!-- Category -->

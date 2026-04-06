@@ -3,10 +3,10 @@
     <!-- Hero -->
     <div class="wb-hero">
       <div class="wb-hero-left">
-        <div class="wb-hero-icon">{{ roleIcon }}</div>
-        <div>
-          <h1 class="wb-title">{{ t('wellbeing') }}</h1>
-          <p class="wb-subtitle">🔒 {{ t('wbConf') }}</p>
+        <div class="page-header__icon">{{ roleIcon }}</div>
+        <div class="page-header__text">
+          <h1 class="page-header__title">{{ t('wellbeing') }}</h1>
+          <p class="page-header__subtitle">🔒 {{ t('wbConf') }}</p>
         </div>
       </div>
       <div class="wb-hero-score">

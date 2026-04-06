@@ -1,14 +1,15 @@
 <template>
   <div class="fade-in" style="max-width: 1100px; padding: 26px 30px;">
     <!-- Welcome Header -->
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 26px;">
-      <div>
-        <h1 style="font-size: 24px; font-weight: 900; letter-spacing: -0.6px; margin-bottom: 5px;">
-          {{ greeting }}, {{ userName }} <ScalyoIcon name="wave" :size="24" style="margin-left: 4px" />
-        </h1>
-        <p style="color: var(--muted); font-size: 13px;">{{ company?.name }} · {{ todayFormatted }}</p>
+    <div class="page-header">
+      <div class="page-header__left">
+        <div class="page-header__icon">👋</div>
+        <div class="page-header__text">
+          <h1 class="page-header__title">{{ greeting }}, {{ userName }}</h1>
+          <p class="page-header__subtitle">{{ company?.name }} · {{ todayFormatted }}</p>
+        </div>
       </div>
-      <div style="display: flex; gap: 8px;">
+      <div class="page-header__actions">
         <span class="tag" :style="{ background: planBg, color: planColorVal, border: '1px solid ' + planBorder }">
           {{ company?.plan || 'Starter' }}
         </span>

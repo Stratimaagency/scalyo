@@ -5,10 +5,10 @@
     <div class="es-sidebar">
       <!-- Gradient header -->
       <div class="es-sidebar-hero">
-        <div class="es-hero-icon">✉️</div>
-        <div>
-          <h2 class="es-hero-title">{{ t('emailStudioTitle') }}</h2>
-          <p class="es-hero-sub">{{ t('emailStudioSubtitle') }}</p>
+        <div class="page-header__icon">✉️</div>
+        <div class="page-header__text">
+          <h1 class="page-header__title" style="font-size: 18px;">{{ t('emailStudioTitle') }}</h1>
+          <p class="page-header__subtitle">{{ t('emailStudioSubtitle') }}</p>
         </div>
       </div>
 
