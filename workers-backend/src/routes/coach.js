@@ -5,7 +5,7 @@ const coach = new Hono()
 coach.use('/*', authMiddleware(), companyRequired(), trialGuard())
 
 // Daily message limits per plan
-const DAILY_MSG_LIMITS = { Starter: 5, Growth: -1, Elite: -1 }
+const DAILY_MSG_LIMITS = { Starter: 50, Growth: 50, Elite: 100 }
 
 async function checkCoachLimit(c) {
   const user = c.get('user')
