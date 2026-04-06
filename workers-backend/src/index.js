@@ -11,7 +11,7 @@ import coach from './routes/coach.js'
 import emailStudio from './routes/email-studio.js'
 import billing from './routes/billing.js'
 import { registerFeedbackRoutes } from './routes/feedback.js'
-import { handleGetQuotes, handleCreateQuote, handleUpdateQuote, handleDeleteQuote } from './routes/quotes.js'
+import { handleGetQuotes, handleCreateQuote, handleUpdateQuote, handleDeleteQuote, handleGetQuoteConfig, handleUpdateQuoteConfig, handleGetQuoteItems, handleSetQuoteItems } from './routes/quotes.js'
 import smartImport from './routes/smart-import.js'
 import { registerIntegrationRoutes } from './routes/integrations.js'
 import { registerTeamRoutes } from './routes/team.js'
@@ -54,8 +54,16 @@ registerSmartMatriceRoutes(app)
 app.route('/api/modules', modules)
 app.get('/api/quotes', ...mw, handleGetQuotes)
 app.get('/api/quotes/', ...mw, handleGetQuotes)
+app.get('/api/quotes/config', ...mw, handleGetQuoteConfig)
+app.get('/api/quotes/config/', ...mw, handleGetQuoteConfig)
+app.patch('/api/quotes/config', ...mw, handleUpdateQuoteConfig)
+app.patch('/api/quotes/config/', ...mw, handleUpdateQuoteConfig)
 app.post('/api/quotes', ...mw, handleCreateQuote)
 app.post('/api/quotes/', ...mw, handleCreateQuote)
+app.get('/api/quotes/:id/items', ...mw, handleGetQuoteItems)
+app.get('/api/quotes/:id/items/', ...mw, handleGetQuoteItems)
+app.put('/api/quotes/:id/items', ...mw, handleSetQuoteItems)
+app.put('/api/quotes/:id/items/', ...mw, handleSetQuoteItems)
 app.patch('/api/quotes/:id', ...mw, handleUpdateQuote)
 app.patch('/api/quotes/:id/', ...mw, handleUpdateQuote)
 app.delete('/api/quotes/:id', ...mw, handleDeleteQuote)
