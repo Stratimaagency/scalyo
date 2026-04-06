@@ -3,10 +3,12 @@
 
 /* === PALETTE === */
 :root {
-  /* Gradients — Rainbow moderne */
-  --sm-grad:   linear-gradient(135deg, #f43f5e 0%, #f97316 18%, #eab308 33%, #22c55e 50%, #06b6d4 66%, #3b82f6 82%, #8b5cf6 100%);
-  --sm-grad-h: linear-gradient(90deg,  #f43f5e 0%, #f97316 16%, #eab308 32%, #22c55e 48%, #06b6d4 64%, #3b82f6 80%, #8b5cf6 100%);
-  --sm-grad-pastel: linear-gradient(160deg, #fef2f2 0%, #fffbeb 20%, #ecfdf5 40%, #eff6ff 60%, #f5f3ff 80%, #fdf2f8 100%);
+  /* Gradients — CTA Canva-style (violet → rose → orange) */
+  --sm-grad:   linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #f97316 100%);
+  --sm-grad-h: linear-gradient(90deg,  #7c3aed 0%, #db2777 50%, #f97316 100%);
+  --sm-grad-pastel: linear-gradient(160deg, #f5f3ff 0%, #fdf2f8 30%, #fff7ed 60%, #fef2f2 100%);
+  /* Logo gradient (original rainbow — used only for logo/decorative) */
+  --sm-logo-grad: linear-gradient(135deg, #f43f5e 0%, #f97316 18%, #eab308 33%, #22c55e 50%, #06b6d4 66%, #3b82f6 82%, #8b5cf6 100%);
   --sm-terra:  #f43f5e;
   --sm-rose:   #f97316;
   --sm-parme:  #3b82f6;
@@ -203,7 +205,7 @@ input:focus, select:focus, textarea:focus {
 .sidebar-desktop {
   width: 220px;
   height: 100vh;
-  background: linear-gradient(180deg, #eff6ff 0%, #f0fdf4 35%, #fffbeb 60%, #fef2f2 80%, #f5f3ff 100%);
+  background: linear-gradient(180deg, #f5f3ff 0%, #fdf2f8 40%, #fff7ed 80%, #fefce8 100%);
   border-right: 1px solid rgba(0,0,0,.04);
   display: flex;
   flex-direction: column;
@@ -418,6 +420,20 @@ input:focus, select:focus, textarea:focus {
 }
 .topbar-user { font-size: 13px; color: var(--muted); font-weight: 600; }
 .view-pad { padding: 20px 24px; background: var(--bg); color: var(--text); }
+
+/* Resizable sections — user can drag edges to resize */
+.resizable {
+  resize: both;
+  overflow: auto;
+  min-width: 200px;
+  min-height: 100px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--surface);
+}
+.resizable-v { resize: vertical; overflow: auto; }
+.resizable-h { resize: horizontal; overflow: auto; }
 
 /* Cards */
 .card {

@@ -268,7 +268,7 @@ function addSubtask(taskId, e) {
 
 /* Progress bar */
 .sm-tree-bar { flex: 1; height: 6px; background: var(--sm-bd, #e5e7eb); border-radius: 3px; overflow: hidden; }
-.sm-tree-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #f43f5e, #f97316, #eab308, #22c55e, #3b82f6, #8b5cf6); transition: width .3s; }
+.sm-tree-bar-fill { height: 100%; border-radius: 3px; background: var(--sm-grad-h); transition: width .3s; }
 .sm-tree-pct { font-size: 11px; font-weight: 700; color: var(--sm-t3, #6b7280); min-width: 30px; text-align: right; }
 
 /* Avatar */

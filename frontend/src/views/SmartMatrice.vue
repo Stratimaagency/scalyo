@@ -4,13 +4,9 @@
     <svg width="0" height="0" style="position:absolute">
       <defs>
         <linearGradient id="sm-cg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#f43f5e"/>
-          <stop offset="18%" stop-color="#f97316"/>
-          <stop offset="33%" stop-color="#eab308"/>
-          <stop offset="50%" stop-color="#22c55e"/>
-          <stop offset="66%" stop-color="#06b6d4"/>
-          <stop offset="82%" stop-color="#3b82f6"/>
-          <stop offset="100%" stop-color="#8b5cf6"/>
+          <stop offset="0%" stop-color="#7c3aed"/>
+          <stop offset="50%" stop-color="#db2777"/>
+          <stop offset="100%" stop-color="#f97316"/>
         </linearGradient>
         <linearGradient id="sm-cg-g" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="#16a34a"/><stop offset="100%" stop-color="#4ade80"/>
@@ -604,7 +600,7 @@ watch(currentView, async (v) => {
   font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif;
   transition: all .15s; white-space: nowrap;
 }
-.sm-btn--primary { background: var(--sm-grad); color: white; box-shadow: 0 3px 12px rgba(59,130,246,.2); }
+.sm-btn--primary { background: var(--sm-grad); color: white; box-shadow: 0 3px 12px rgba(124,58,237,.25); }
 .sm-btn--primary:hover { transform: translateY(-1px); box-shadow: 0 5px 18px rgba(59,130,246,.25); }
 .sm-btn--primary:disabled { opacity: .5; transform: none; }
 .sm-btn--secondary { background: #fff; border: 1px solid var(--sm-bd); color: var(--sm-t1); }
