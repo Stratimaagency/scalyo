@@ -110,6 +110,12 @@
       <h3 class="sm-inline-panel__title">📝 {{ lt.newTask }}</h3>
       <div class="sm-modal__row">
         <div class="sm-modal__field" style="flex:2"><label>{{ lt.taskName }}</label><input v-model="newTask.name" :placeholder="lt.taskNameHint" autofocus /></div>
+        <div class="sm-modal__field"><label>Projet</label>
+          <select v-model="newTask.project_id" v-if="!store.selectedProject">
+            <option v-for="p in store.projects" :key="p.id" :value="p.id">{{ p.emoji || '📁' }} {{ p.name }}</option>
+          </select>
+          <span v-else style="font-size: 12px; color: var(--sm-t2);">{{ store.selectedProject.emoji || '📁' }} {{ store.selectedProject.name }}</span>
+        </div>
         <div class="sm-modal__field"><label>{{ lt.group }}</label><input v-model="newTask.group_name" :placeholder="lt.groupHint" /></div>
       </div>
       <div class="sm-modal__field"><label>{{ lt.description }}</label><textarea v-model="newTask.description" rows="2" :placeholder="lt.taskDescHint"></textarea></div>
@@ -158,6 +164,7 @@
           :bulk-mode="bulkMode"
           :bulk-select="bulkSelect"
           @update-task="inlineUpdateTask"
+          @edit-project="openEditProject"
           @update-project="inlineUpdateProject"
           @quick-add-task="quickAddTask"
           @add-child-task="addChildTask"
@@ -233,7 +240,7 @@
 
     <!-- CREATE PROJECT PANEL -->
     <div v-if="showCreateProject" class="sm-inline-panel">
-      <h3 class="sm-inline-panel__title">✨ {{ lt.newProject }}</h3>
+      <h3 class="sm-inline-panel__title">{{ editingProject ? '✏️ Modifier le projet' : '✨ ' + lt.newProject }}</h3>
       <div class="sm-modal__row">
         <div class="sm-modal__field" style="flex:2"><label>{{ lt.projectName }}</label><input v-model="newProject.name" :placeholder="lt.projectNameHint" autofocus /></div>
         <div class="sm-modal__field"><label>{{ lt.state }}</label>
@@ -258,8 +265,8 @@
         <div class="sm-modal__field"><label>Jours / semaine</label><input v-model.number="newProject.working_days_week" type="number" min="1" max="7" /></div>
       </div>
       <div class="sm-modal__actions">
-        <button class="sm-btn sm-btn--secondary" @click="showCreateProject = false">{{ lt.cancel }}</button>
-        <button class="sm-btn sm-btn--primary" @click="createProject" :disabled="!newProject.name.trim()">{{ lt.create }}</button>
+        <button class="sm-btn sm-btn--secondary" @click="showCreateProject = false; editingProject = null">{{ lt.cancel }}</button>
+        <button class="sm-btn sm-btn--primary" @click="saveProject" :disabled="!newProject.name.trim()">{{ editingProject ? lt.save : lt.create }}</button>
       </div>
     </div>
   </div>
@@ -408,7 +415,7 @@ async function bulkDeleteProjects() {
   bulkMode.value = false
 }
 const newProject = reactive({ name: '', description: '', start_date: '', target_end_date: '', state: 'active', working_days_year: 260, days_off_year: 14, hours_per_day: 8, working_days_week: 5 })
-const newTask = reactive({ name: '', description: '', group_name: '', priority: 'normal', status: 'todo', dur_estimated: null, dur_min: null, dur_max: null, start_date: '', end_date: '', referent_name: '', assigned_to: '', quadrant: 0 })
+const newTask = reactive({ name: '', description: '', group_name: '', priority: 'normal', status: 'todo', dur_estimated: null, dur_min: null, dur_max: null, start_date: '', end_date: '', referent_name: '', assigned_to: '', quadrant: 0, project_id: null })
 const editTask = reactive({ id: null, name: '', description: '', group_name: '', priority: 'normal', status: 'todo', dur_estimated: null, dur_min: null, dur_max: null, start_date: '', end_date: '', referent_name: '', assigned_to: '', quadrant: 0 })
 
 // i18n
@@ -446,8 +453,8 @@ async function confirmDeleteTask(task) {
   }
 }
 
-async function createProject() {
-  const p = await store.createProject({
+async function saveProject() {
+  const payload = {
     name: newProject.name.trim(),
     description: newProject.description,
     start_date: newProject.start_date || null,
@@ -459,7 +466,14 @@ async function createProject() {
     days_off_year: newProject.days_off_year,
     hours_per_day: newProject.hours_per_day,
     working_days_week: newProject.working_days_week,
-  })
+  }
+  let p
+  if (editingProject.value) {
+    await store.updateProject(editingProject.value.id, payload)
+    editingProject.value = null
+  } else {
+    p = await store.createProject(payload)
+  }
   Object.assign(newProject, { name: '', description: '', start_date: '', target_end_date: '', state: 'active', working_days_year: 260, days_off_year: 14, hours_per_day: 8, working_days_week: 5 })
   showCreateProject.value = false
   selectProject(p)
@@ -467,7 +481,7 @@ async function createProject() {
 
 async function createTask() {
   await store.createTask({
-    project_id: store.selectedProject.id,
+    project_id: store.selectedProject?.id || newTask.project_id,
     name: newTask.name.trim(),
     description: newTask.description,
     group_name: newTask.group_name,
@@ -555,6 +569,24 @@ async function transferTask(taskId, memberId) { await store.transferTask(taskId,
 
 async function inlineUpdateTask(taskId, fields) {
   await store.updateTask(taskId, fields)
+}
+
+const editingProject = ref(null)
+
+function openEditProject(project) {
+  editingProject.value = project
+  Object.assign(newProject, {
+    name: project.name || '',
+    description: project.description || '',
+    start_date: project.start_date || '',
+    target_end_date: project.target_end_date || project.end_date || '',
+    state: project.state || 'active',
+    working_days_year: project.working_days_year || 260,
+    days_off_year: project.days_off_year || 14,
+    hours_per_day: project.hours_per_day || 8,
+    working_days_week: project.working_days_week || 5,
+  })
+  showCreateProject.value = true
 }
 
 async function inlineUpdateProject(projectId, fields) {

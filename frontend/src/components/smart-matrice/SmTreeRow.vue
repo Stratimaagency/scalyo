@@ -107,20 +107,20 @@ function addChild(e) {
 </script>
 
 <style scoped>
-.sm-tree-row { display: flex; align-items: center; padding: 4px 12px; border-bottom: 1px solid rgba(0,0,0,.03); transition: background .1s; }
+.sm-tree-row { display: flex; align-items: center; padding: 7px 16px; border-bottom: 1px solid rgba(0,0,0,.05); transition: background .1s; gap: 4px; }
 .sm-tree-row:hover { background: #fafbff; }
 .sm-tree-row--done { opacity: .5; }
 .sm-tree-row--risk { background: #fef2f2; }
 .sm-tree-row--risk:hover { background: #fee2e2; }
 .sm-tree-row--add { padding: 2px 12px; }
-.sm-tree-col { display: flex; align-items: center; gap: 3px; padding: 0 2px; }
-.sm-tree-col--name { flex: 2; min-width: 200px; position: sticky; left: 0; background: inherit; z-index: 5; }
-.sm-tree-col--date { width: 75px; flex-shrink: 0; }
-.sm-tree-col--urgency { width: 90px; flex-shrink: 0; }
-.sm-tree-col--importance { width: 90px; flex-shrink: 0; }
-.sm-tree-col--diff { width: 75px; flex-shrink: 0; }
-.sm-tree-col--assigned { width: 75px; flex-shrink: 0; }
-.sm-tree-col--status { width: 80px; flex-shrink: 0; }
+.sm-tree-col { display: flex; align-items: center; gap: 6px; padding: 0 6px; }
+.sm-tree-col--name { flex: 2.5; min-width: 220px; position: sticky; left: 0; background: inherit; z-index: 5; }
+.sm-tree-col--date { width: 90px; flex-shrink: 0; }
+.sm-tree-col--urgency { width: 95px; flex-shrink: 0; }
+.sm-tree-col--importance { width: 95px; flex-shrink: 0; }
+.sm-tree-col--diff { width: 85px; flex-shrink: 0; }
+.sm-tree-col--assigned { width: 100px; flex-shrink: 0; }
+.sm-tree-col--status { width: 95px; flex-shrink: 0; }
 .sm-tree-col--dur { width: 50px; flex-shrink: 0; justify-content: center; }
 .sm-tree-col--progress { width: 40px; flex-shrink: 0; justify-content: center; font-weight: 700; font-size: 11px; }
 .sm-tree-col--accuracy { width: 45px; flex-shrink: 0; justify-content: center; font-size: 10px; font-weight: 600; }
