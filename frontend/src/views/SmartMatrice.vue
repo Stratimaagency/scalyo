@@ -160,6 +160,8 @@
           @delete-subtask="deleteSubtask"
           @add-subtask="addSubtask"
           @edit-task="openEditTask"
+          @update-task="inlineUpdateTask"
+          @quick-add-task="quickAddTask"
           @delete-task="confirmDeleteTask"
           @delete-project="confirmDeleteProject"
           @toggle-bulk="toggleBulkProject"
@@ -537,6 +539,19 @@ async function toggleSubtask(taskId, subId) { await store.toggleSubtask(taskId, 
 async function deleteSubtask(taskId, subId) { await store.deleteSubtask(taskId, subId) }
 async function addSubtask(taskId, name) { await store.addSubtask(taskId, name) }
 async function transferTask(taskId, memberId) { await store.transferTask(taskId, memberId) }
+
+async function inlineUpdateTask(taskId, fields) {
+  await store.updateTask(taskId, fields)
+}
+
+async function quickAddTask(projectId, name) {
+  await store.createTask({
+    project_id: projectId,
+    name,
+    status: 'todo',
+    priority: 'normal',
+  })
+}
 
 async function updateTaskStatus(taskId, status) {
   const updates = { status }
