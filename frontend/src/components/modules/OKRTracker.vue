@@ -5,6 +5,7 @@
       <div style="flex:1">
         <h1 class="mod-title">{{ t('okrTitle') }}</h1>
         <p class="mod-subtitle">{{ t('okrSubtitle') }}</p>
+        <button @click="resetAllOkrs" style="margin-top: 8px; font-size: 11px; padding: 4px 12px; border-radius: 8px; border: 1px solid var(--red); background: transparent; color: var(--red); cursor: pointer; font-weight: 600;">🔄 Réinitialiser</button>
       </div>
       <div class="okr-hero-right">
         <div class="okr-global-ring-wrap">
@@ -396,6 +397,11 @@ function closeModal() {
 }
 function confirmDelete(okr) {
   deletingOkr.value = okr
+}
+function resetAllOkrs() {
+  if (!confirm('Réinitialiser tous les OKRs ? Cette action est irréversible.')) return
+  tasksStore.okrs = []
+  tasksStore.saveOkrs()
 }
 function addKR() {
   form.value.keyResults.push(emptyKR())

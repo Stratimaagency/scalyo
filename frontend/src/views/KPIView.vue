@@ -29,6 +29,7 @@
           <span class="copil-status-badge" :class="'status-' + (s.status || 'draft')">
             {{ t('copil' + capitalize(s.status || 'draft')) }}
           </span>
+          <span v-if="activeSessionId === s.id" class="copil-tab-delete" @click.stop="deleteSession" title="Supprimer">✕</span>
         </button>
         <button class="copil-tab copil-tab-add" @click="createNewSession">
           <span style="font-size: 18px; line-height: 1;">+</span>
@@ -719,6 +720,13 @@ onUnmounted(() => {
 .copil-tab-add:hover {
   color: var(--teal);
 }
+.copil-tab-delete {
+  font-size: 12px; color: var(--muted); margin-left: 6px;
+  border-radius: 50%; width: 18px; height: 18px;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.copil-tab-delete:hover { background: var(--red); color: #fff; }
 
 .copil-status-badge {
   font-size: 10px;
