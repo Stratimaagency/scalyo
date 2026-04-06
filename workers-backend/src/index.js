@@ -11,7 +11,7 @@ import coach from './routes/coach.js'
 import emailStudio from './routes/email-studio.js'
 import billing from './routes/billing.js'
 import feedback from './routes/feedback.js'
-import quotes from './routes/quotes.js'
+import { handleGetQuotes, handleCreateQuote, handleUpdateQuote, handleDeleteQuote } from './routes/quotes.js'
 import smartImport from './routes/smart-import.js'
 import { registerIntegrationRoutes } from './routes/integrations.js'
 import { registerTeamRoutes } from './routes/team.js'
@@ -52,7 +52,14 @@ registerIntegrationRoutes(app)
 registerTeamRoutes(app)
 registerSmartMatriceRoutes(app)
 app.route('/api/modules', modules)
-app.route('/api/quotes', quotes)
+app.get('/api/quotes', ...mw, handleGetQuotes)
+app.get('/api/quotes/', ...mw, handleGetQuotes)
+app.post('/api/quotes', ...mw, handleCreateQuote)
+app.post('/api/quotes/', ...mw, handleCreateQuote)
+app.patch('/api/quotes/:id', ...mw, handleUpdateQuote)
+app.patch('/api/quotes/:id/', ...mw, handleUpdateQuote)
+app.delete('/api/quotes/:id', ...mw, handleDeleteQuote)
+app.delete('/api/quotes/:id/', ...mw, handleDeleteQuote)
 app.route('/api/alerts', alerts)
 app.route('/api/notifications', notifications)
 app.route('/api/health-history', healthHistory)

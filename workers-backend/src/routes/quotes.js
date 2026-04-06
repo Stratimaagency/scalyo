@@ -1,11 +1,5 @@
-import { Hono } from 'hono'
-import { authMiddleware, companyRequired, trialGuard } from '../middleware/auth.js'
-
-const quotes = new Hono()
-quotes.use('/*', authMiddleware(), companyRequired(), trialGuard())
-
 // GET /api/quotes/
-quotes.get('/', async (c) => {
+export async function handleGetQuotes(c) {
   const user = c.get('user')
   const { company_id } = user
 
@@ -14,10 +8,10 @@ quotes.get('/', async (c) => {
   ).bind(company_id).all()
 
   return c.json(results || [])
-})
+}
 
 // POST /api/quotes/
-quotes.post('/', async (c) => {
+export async function handleCreateQuote(c) {
   const user = c.get('user')
   const data = await c.req.json()
 
@@ -47,10 +41,10 @@ quotes.post('/', async (c) => {
   ).first()
 
   return c.json(quote, 201)
-})
+}
 
 // PATCH /api/quotes/:id/
-quotes.patch('/:id/', async (c) => {
+export async function handleUpdateQuote(c) {
   const user = c.get('user')
   const id = c.req.param('id')
   const data = await c.req.json()
@@ -86,10 +80,10 @@ quotes.patch('/:id/', async (c) => {
 
   if (!quote) return c.json({ error: 'Not found' }, 404)
   return c.json(quote)
-})
+}
 
 // DELETE /api/quotes/:id/
-quotes.delete('/:id/', async (c) => {
+export async function handleDeleteQuote(c) {
   const user = c.get('user')
   const id = c.req.param('id')
 
@@ -99,6 +93,4 @@ quotes.delete('/:id/', async (c) => {
 
   if (result.meta.changes === 0) return c.json({ error: 'Not found' }, 404)
   return c.body(null, 204)
-})
-
-export default quotes
+}
