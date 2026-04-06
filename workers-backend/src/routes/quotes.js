@@ -129,17 +129,17 @@ export async function handleCreateQuote(c) {
     config.country
   ).first()
 
-  // Insert line items
+  // Insert line items (batched)
   if (data.items?.length) {
-    for (let i = 0; i < data.items.length; i++) {
-      const item = data.items[i]
+    const stmts = data.items.map((item, i) => {
       const qty = parseFloat(item.quantity) || 1
       const price = parseFloat(item.unit_price) || 0
-      await db.prepare(
+      return db.prepare(
         `INSERT INTO quote_items (quote_id, description, quantity, unit_price, tax_rate, total, position)
          VALUES (?, ?, ?, ?, ?, ?, ?)`
-      ).bind(quote.id, item.description || '', qty, price, parseFloat(item.tax_rate) || tax_rate, qty * price, i).run()
-    }
+      ).bind(quote.id, item.description || '', qty, price, parseFloat(item.tax_rate) || tax_rate, qty * price, i)
+    })
+    await db.batch(stmts)
   }
 
   return c.json(quote, 201)
@@ -162,30 +162,29 @@ export async function handleSetQuoteItems(c) {
   const data = await c.req.json()
   const db = c.env.DB
 
-  const quote = await db.prepare('SELECT id, tax_rate FROM quotes WHERE id = ? AND company_id = ?').bind(id, company_id).first()
+  const quote = await db.prepare('SELECT id, tax_rate, discount_pct FROM quotes WHERE id = ? AND company_id = ?').bind(id, company_id).first()
   if (!quote) return c.json({ error: 'Not found' }, 404)
 
-  // Delete existing
+  // Delete existing + batch insert new items
   await db.prepare('DELETE FROM quote_items WHERE quote_id = ?').bind(id).run()
 
   let subtotal = 0
   const items = data.items || []
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i]
+  const stmts = items.map((item, i) => {
     const qty = parseFloat(item.quantity) || 1
     const price = parseFloat(item.unit_price) || 0
     const lineTotal = qty * price
     subtotal += lineTotal
-    await db.prepare(
+    return db.prepare(
       `INSERT INTO quote_items (quote_id, description, quantity, unit_price, tax_rate, total, position)
        VALUES (?, ?, ?, ?, ?, ?, ?)`
-    ).bind(id, item.description || '', qty, price, parseFloat(item.tax_rate) || quote.tax_rate || 0, lineTotal, i).run()
-  }
+    ).bind(id, item.description || '', qty, price, parseFloat(item.tax_rate) || quote.tax_rate || 0, lineTotal, i)
+  })
+  if (stmts.length) await db.batch(stmts)
 
-  // Recalculate totals
-  const q = await db.prepare('SELECT discount_pct, tax_rate FROM quotes WHERE id = ?').bind(id).first()
-  const discounted = subtotal * (1 - (q.discount_pct || 0) / 100)
-  const tax_amount = discounted * (q.tax_rate || 0) / 100
+  // Recalculate totals (reuse first SELECT)
+  const discounted = subtotal * (1 - (quote.discount_pct || 0) / 100)
+  const tax_amount = discounted * (quote.tax_rate || 0) / 100
   const total_ttc = discounted + tax_amount
 
   await db.prepare(

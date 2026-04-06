@@ -411,9 +411,7 @@ function activatePlaybook(client) {
 
 async function resetPlaybooks() {
   if (!confirm('Supprimer tous les playbooks ? Cette action est irréversible.')) return
-  for (const pb of [...tasksStore.playbooks]) {
-    try { await api.delete(`/modules/playbooks/${pb.id}`) } catch {}
-  }
+  await Promise.all(tasksStore.playbooks.map(pb => api.delete(`/modules/playbooks/${pb.id}`).catch(() => {})))
   tasksStore.playbooks = []
 }
 

@@ -403,9 +403,7 @@ function toggleBulkProject(id) {
 }
 async function bulkDeleteProjects() {
   if (!confirm(`Supprimer ${bulkSelect.value.length} projet(s) et toutes leurs tâches ? Cette action est irréversible.`)) return
-  for (const id of bulkSelect.value) {
-    try { await store.deleteProject(id) } catch {}
-  }
+  await Promise.all(bulkSelect.value.map(id => store.deleteProject(id).catch(() => {})))
   bulkSelect.value = []
   bulkMode.value = false
 }
