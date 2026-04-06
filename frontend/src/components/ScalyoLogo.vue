@@ -3,15 +3,15 @@
     <div class="scalyo-logo-mark" :style="{ width: markSize + 'px', height: markSize + 'px' }">
       <svg :width="markSize" :height="markSize" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient :id="'sg-'+uid" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#f43f5e"/>
-            <stop offset="18%" stop-color="#f97316"/>
-            <stop offset="33%" stop-color="#eab308"/>
-            <stop offset="50%" stop-color="#22c55e"/>
-            <stop offset="66%" stop-color="#06b6d4"/>
-            <stop offset="82%" stop-color="#3b82f6"/>
-            <stop offset="100%" stop-color="#8b5cf6"/>
-          </linearGradient>
+          <radialGradient :id="'sg-'+uid" cx="30%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#f9a8d4"/>
+            <stop offset="20%" stop-color="#f97316"/>
+            <stop offset="40%" stop-color="#facc15"/>
+            <stop offset="55%" stop-color="#4ade80"/>
+            <stop offset="70%" stop-color="#38bdf8"/>
+            <stop offset="85%" stop-color="#818cf8"/>
+            <stop offset="100%" stop-color="#c084fc"/>
+          </radialGradient>
         </defs>
         <circle cx="20" cy="20" r="20" :fill="'url(#sg-'+uid+')'"/>
         <text x="20" y="21.5" text-anchor="middle" dominant-baseline="central"
