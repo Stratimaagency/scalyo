@@ -9,10 +9,11 @@
       flexShrink: 0, minWidth: '290px'
     }">
       <!-- Header -->
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-        <h1 class="page-header__title" style="display: flex; align-items: center; gap: 6px;">
-          <ScalyoIcon name="briefcase" :size="22" /> {{ t('portfolio') }}
-        </h1>
+      <div class="page-header" style="margin-bottom: 14px;">
+        <div class="page-header__left">
+          <div class="page-header__icon">💼</div>
+          <h1 class="page-header__title">{{ t('portfolio') }}</h1>
+        </div>
         <div style="display: flex; gap: 6px;">
           <button class="btn-base" @click="openAddModal"
             style="font-size: 11px; padding: 6px 13px; border-radius: 20px; background: var(--greenBg, var(--tealBg)); border: 1px solid var(--greenBorder, var(--tealBorder)); color: var(--green, var(--teal));">

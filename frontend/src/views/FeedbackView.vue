@@ -1,10 +1,14 @@
 <template>
   <div class="fade-in" style="max-width: 600px; margin: 0 auto">
-    <AppCard v-if="!sent">
-      <div style="text-align: center; margin-bottom: 20px">
-        <div class="page-header__icon" style="margin: 0 auto 8px;">💬</div>
-        <h1 class="page-header__title">{{ t('feedbackTitle') }}</h1>
+    <div class="page-header" style="margin-bottom: 20px;">
+      <div class="page-header__left">
+        <div class="page-header__icon">💬</div>
+        <div class="page-header__text">
+          <h1 class="page-header__title">{{ t('feedbackTitle') }}</h1>
+        </div>
       </div>
+    </div>
+    <AppCard v-if="!sent">
 
       <!-- Category -->
       <div class="field-group">
