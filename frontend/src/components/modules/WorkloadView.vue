@@ -6,9 +6,11 @@
         <h1 class="mod-title">💚 {{ t('htTeamTitle') }}</h1>
         <p class="mod-subtitle">{{ t('htTeamSubtitle') }}</p>
       </div>
-      <div class="mod-hero-score">
-        <div class="mod-big-num" :style="{ color: teamScoreColor }">{{ teamScore }}</div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="mod-hero-score">
+          <div class="mod-big-num" :style="{ color: teamScoreColor }">{{ teamScore }}</div>
         <div class="mod-big-label">{{ t('htTeamScore') }}</div>
+        </div>
       </div>
     </div>
 

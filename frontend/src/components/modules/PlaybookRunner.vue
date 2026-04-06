@@ -6,9 +6,12 @@
         <h1 class="mod-title">{{ t('pbTitle') }}</h1>
         <p class="mod-subtitle">{{ t('pbSubtitle') }}</p>
       </div>
-      <div class="mod-hero-score">
-        <div class="mod-big-num" style="color: #fff">{{ tasksStore.playbooks.length }}</div>
-        <div class="mod-big-label">Playbooks</div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button v-if="tasksStore.playbooks.length" @click="resetPlaybooks" style="font-size: 11px; padding: 5px 12px; border-radius: 8px; border: 1px solid var(--red); background: transparent; color: var(--red); cursor: pointer; font-weight: 600;">🔄 Réinitialiser</button>
+        <div class="mod-hero-score">
+          <div class="mod-big-num">{{ tasksStore.playbooks.length }}</div>
+          <div class="mod-big-label">Playbooks</div>
+        </div>
       </div>
     </div>
 
@@ -404,6 +407,14 @@ function activatePlaybook(client) {
   tasksStore.playbooks.push(newPb)
   pendingTemplate.value = null
   showTemplates.value = false
+}
+
+async function resetPlaybooks() {
+  if (!confirm('Supprimer tous les playbooks ? Cette action est irréversible.')) return
+  for (const pb of [...tasksStore.playbooks]) {
+    try { await api.delete(`/modules/playbooks/${pb.id}`) } catch {}
+  }
+  tasksStore.playbooks = []
 }
 
 async function deletePlaybook(pb) {

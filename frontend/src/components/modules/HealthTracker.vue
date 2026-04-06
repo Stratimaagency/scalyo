@@ -6,9 +6,12 @@
         <h1 class="mod-title">⭐ {{ t('htTitle') }}</h1>
         <p class="mod-subtitle">{{ t('htSubtitle') }}</p>
       </div>
-      <div class="mod-hero-score">
-        <div class="mod-big-num" :style="{ color: '#fff' }">{{ clientsStore.avgHealthScore }}</div>
-        <div class="mod-big-label">{{ t('scoreAvg') }}</div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button @click="statusFilter = ''; searchQuery = ''" style="font-size: 11px; padding: 5px 12px; border-radius: 8px; border: 1px solid var(--muted); background: transparent; color: var(--muted); cursor: pointer; font-weight: 600;">🔄 Réinitialiser</button>
+        <div class="mod-hero-score">
+          <div class="mod-big-num">{{ clientsStore.avgHealthScore }}</div>
+          <div class="mod-big-label">{{ t('scoreAvg') }}</div>
+        </div>
       </div>
     </div>
 
