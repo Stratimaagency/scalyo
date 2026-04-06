@@ -4,9 +4,9 @@
     <svg width="0" height="0" style="position:absolute">
       <defs>
         <linearGradient id="sm-cg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#7c3aed"/>
-          <stop offset="50%" stop-color="#db2777"/>
-          <stop offset="100%" stop-color="#f97316"/>
+          <stop offset="0%" stop-color="#4f46e5"/>
+          <stop offset="50%" stop-color="#7c3aed"/>
+          <stop offset="100%" stop-color="#a855f7"/>
         </linearGradient>
         <linearGradient id="sm-cg-g" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="#16a34a"/><stop offset="100%" stop-color="#4ade80"/>
