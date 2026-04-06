@@ -805,7 +805,7 @@
           <li><div class="pf-yes">&#x2713;</div>{{ t('feat_coach') }}</li>
           <li><div class="pf-yes">&#x2713;</div>{{ t('feat_email') }}</li>
         </ul>
-        <a href="https://buy.stripe.com/bJebJ1amncpL7mBekAdfG01" target="_blank" class="plan-btn pb-outline">{{ t('cta_trial') }}</a>
+        <a href="/app/register" target="_blank" class="plan-btn pb-outline">{{ t('cta_trial') }}</a>
       </div>
 
       <!-- Growth -->
@@ -826,7 +826,7 @@
           <li><div class="pf-yes">&#x2713;</div>{{ t('feat_import') }}</li>
           <li><div class="pf-yes">&#x2713;</div>{{ t('feat_support') }}</li>
         </ul>
-        <a href="https://buy.stripe.com/eVqbJ10LN61n5et50gdfG00" target="_blank" class="plan-btn pb-teal">{{ t('cta_trial') }}</a>
+        <a href="/app/register" target="_blank" class="plan-btn pb-teal">{{ t('cta_trial') }}</a>
       </div>
 
       <!-- Elite -->
@@ -846,7 +846,7 @@
           <li><div class="pf-yes">&#x2713;</div>{{ t('feat_multi') }}</li>
           <li><div class="pf-yes">&#x2713;</div>{{ t('feat_copil') }}</li>
         </ul>
-        <a href="https://buy.stripe.com/eVqaEXeCD1L736l7WcdfG05" target="_blank" class="plan-btn pb-outline">{{ t('cta_trial') }}</a>
+        <a href="/app/register" target="_blank" class="plan-btn pb-outline">{{ t('cta_trial') }}</a>
       </div>
     </div>
 
@@ -1130,7 +1130,6 @@ const integrations = [
   { name: 'Calendly', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='6' y='8' width='36' height='34' rx='6' fill='%23006BFF'/%3E%3Crect x='6' y='8' width='36' height='10' rx='6' fill='%23004FC4'/%3E%3Ccircle cx='24' cy='30' r='6' fill='%23fff'/%3E%3Crect x='14' y='6' width='3' height='6' rx='1.5' fill='%23fff'/%3E%3Crect x='31' y='6' width='3' height='6' rx='1.5' fill='%23fff'/%3E%3C/svg%3E", tagKey: 'integ_calendly_tag', cat: 'project' },
   { name: 'Jira', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%230052CC' d='M43.5 23.2L25.8 5.5 24 3.7 8.7 19 3 24.7c-.7.7-.7 1.9 0 2.6L15.3 39.7 24 48.4l15.3-15.3.5-.5 3.7-3.7c.7-.7.7-1.9 0-2.7zM24 30.9l-6.9-6.9L24 17.1l6.9 6.9L24 30.9z'/%3E%3C/svg%3E", tag: 'Issues & Projects', cat: 'project' },
   { name: 'Asana', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='12' r='8' fill='%23F06A6A'/%3E%3Ccircle cx='12' cy='32' r='8' fill='%23F06A6A'/%3E%3Ccircle cx='36' cy='32' r='8' fill='%23F06A6A'/%3E%3C/svg%3E", tagKey: 'integ_asana_tag', cat: 'project' },
-  { name: 'Stripe', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='8' fill='%236366F1'/%3E%3Cpath fill='%23fff' d='M22.5 19.5c0-1.5 1.2-2.1 3.2-2.1 2.9 0 6.5 0.9 9.4 2.4V12c-3.1-1.3-6.3-1.8-9.4-1.8-7.7 0-12.8 4-12.8 10.7 0 10.4 14.3 8.7 14.3 13.2 0 1.8-1.5 2.3-3.7 2.3-3.2 0-7.3-1.3-10.5-3.1v7.9c3.6 1.5 7.2 2.2 10.5 2.2 7.9 0 13.3-3.9 13.3-10.7-.1-11.2-14.3-9.2-14.3-13.2z'/%3E%3C/svg%3E", tag: 'Billing & MRR', cat: 'data' },
   { name: 'Import CSV', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%236B7280' d='M12 4h16l12 12v24c0 2.2-1.8 4-4 4H12c-2.2 0-4-1.8-4-4V8c0-2.2 1.8-4 4-4z'/%3E%3Cpath fill='%23fff' opacity='.5' d='M28 4l12 12h-8c-2.2 0-4-1.8-4-4V4z'/%3E%3Ctext x='24' y='35' text-anchor='middle' fill='%23fff' font-size='11' font-weight='700' font-family='sans-serif'%3ECSV%3C/text%3E%3C/svg%3E", tag: 'Import fichiers', cat: 'data' },
   { name: 'Excel', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%2316A34A' d='M12 4h16l12 12v24c0 2.2-1.8 4-4 4H12c-2.2 0-4-1.8-4-4V8c0-2.2 1.8-4 4-4z'/%3E%3Cpath fill='%23fff' opacity='.5' d='M28 4l12 12h-8c-2.2 0-4-1.8-4-4V4z'/%3E%3Ctext x='24' y='35' text-anchor='middle' fill='%23fff' font-size='9' font-weight='700' font-family='sans-serif'%3EXLSX%3C/text%3E%3C/svg%3E", tag: 'Spreadsheets', cat: 'data' }
 ]
@@ -1190,9 +1189,9 @@ const RGPD_CONTENT = {
 }
 
 const LEGAL_CONTENT = {
-  fr: `<h4>Éditeur</h4><p><strong>Stratimaagency</strong> (marque commerciale Scalyo)<br>Email : <a href="mailto:info@scalyo.app" style="color:var(--teal)">info@scalyo.app</a></p><h4>Hébergement</h4><p><strong>Cloudflare Pages</strong> + <strong>Supabase</strong> Europe (Irlande) + <strong>Stripe</strong> paiements</p><h4>Propriété intellectuelle</h4><p>Tous les éléments de Scalyo sont la propriété exclusive de Stratimaagency.</p><h4>Contact</h4><p><a href="mailto:info@scalyo.app" style="color:var(--teal)">info@scalyo.app</a></p>`,
-  en: `<h4>Publisher</h4><p><strong>Stratimaagency</strong> (trading as Scalyo)<br>Email: <a href="mailto:info@scalyo.app" style="color:var(--teal)">info@scalyo.app</a></p><h4>Hosting</h4><p><strong>Cloudflare Pages</strong> + <strong>Supabase</strong> Europe (Ireland) + <strong>Stripe</strong> payments</p><h4>Intellectual Property</h4><p>All Scalyo elements are the exclusive property of Stratimaagency.</p><h4>Contact</h4><p><a href="mailto:info@scalyo.app" style="color:var(--teal)">info@scalyo.app</a></p>`,
-  kr: `<h4>발행자</h4><p><strong>Stratimaagency</strong> (Scalyo 브랜드)<br>이메일: <a href="mailto:info@scalyo.app" style="color:var(--teal)">info@scalyo.app</a></p><h4>호스팅</h4><p><strong>Cloudflare Pages</strong> + <strong>Supabase</strong> 유럽 (아일랜드) + <strong>Stripe</strong> 결제</p><h4>지적 재산권</h4><p>Scalyo의 모든 요소는 Stratimaagency의 독점 자산입니다.</p><h4>문의</h4><p><a href="mailto:info@scalyo.app" style="color:var(--teal)">info@scalyo.app</a></p>`
+  fr: `<h4>Éditeur</h4><p><strong>Stratimaagency</strong> (marque commerciale Scalyo)<br>Email : <a href="mailto:info@scalyo.app" style="color:var(--teal)">info@scalyo.app</a></p><h4>Hébergement</h4><p><strong>Cloudflare Pages</strong> + <strong>Supabase</strong> Europe (Irlande)</p><h4>Propriété intellectuelle</h4><p>Tous les éléments de Scalyo sont la propriété exclusive de Stratimaagency.</p><h4>Contact</h4><p><a href="mailto:info@scalyo.app" style="color:var(--teal)">info@scalyo.app</a></p>`,
+  en: `<h4>Publisher</h4><p><strong>Stratimaagency</strong> (trading as Scalyo)<br>Email: <a href="mailto:info@scalyo.app" style="color:var(--teal)">info@scalyo.app</a></p><h4>Hosting</h4><p><strong>Cloudflare Pages</strong> + <strong>Supabase</strong> Europe (Ireland)</p><h4>Intellectual Property</h4><p>All Scalyo elements are the exclusive property of Stratimaagency.</p><h4>Contact</h4><p><a href="mailto:info@scalyo.app" style="color:var(--teal)">info@scalyo.app</a></p>`,
+  kr: `<h4>발행자</h4><p><strong>Stratimaagency</strong> (Scalyo 브랜드)<br>이메일: <a href="mailto:info@scalyo.app" style="color:var(--teal)">info@scalyo.app</a></p><h4>호스팅</h4><p><strong>Cloudflare Pages</strong> + <strong>Supabase</strong> 유럽 (아일랜드)</p><h4>지적 재산권</h4><p>Scalyo의 모든 요소는 Stratimaagency의 독점 자산입니다.</p><h4>문의</h4><p><a href="mailto:info@scalyo.app" style="color:var(--teal)">info@scalyo.app</a></p>`
 }
 
 const MODAL_I18N_DATA = {
