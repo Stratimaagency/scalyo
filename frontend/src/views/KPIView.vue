@@ -11,7 +11,7 @@
         <div class="page-header__left">
           <div class="page-header__icon">📊</div>
           <div class="page-header__text">
-            <h1 class="page-header__title">KPIs Copilot</h1>
+            <h1 class="page-header__title">KPIs Copil</h1>
             <p class="page-header__subtitle">Suivez vos indicateurs clés de performance</p>
           </div>
         </div>
