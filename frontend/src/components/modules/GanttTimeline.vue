@@ -6,7 +6,7 @@
         <p class="mod-subtitle">{{ t('gtSubtitle') }}</p>
       </div>
       <div class="mod-hero-score">
-        <div class="mod-big-num" style="color: #4285F4">{{ tasksStore.projects.length }}</div>
+        <div class="mod-big-num" style="color: var(--text)">{{ tasksStore.projects.length }}</div>
         <div class="mod-big-label">Projets</div>
       </div>
     </div>
