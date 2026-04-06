@@ -297,6 +297,46 @@ const integrations = computed(() => [
           '1. <a href="https://calendly.com/integrations/api_webhooks" target="_blank">calendly.com/integrations/api_webhooks</a>를 여세요\n2. "새 토큰 생성" 클릭\n3. 이름: Scalyo → 토큰 만들기\n4. 복사하여 여기에 붙여넣으세요') },
     ]},
 
+  // Email
+  { key: 'gmail', name: 'Gmail / Google Workspace', icon: '📧', color: '#EA4335', available: true,
+    desc: L('Connectez votre compte Gmail pour envoyer des emails et devis directement depuis Scalyo.',
+            'Connect your Gmail account to send emails and quotes directly from Scalyo.',
+            'Gmail 계정을 연결하여 Scalyo에서 직접 이메일과 견적서를 보내세요.'),
+    fields: [
+      { key: 'email', label: L('Adresse Gmail', 'Gmail address', 'Gmail 주소'), type: 'email', placeholder: 'vous@gmail.com' },
+      { key: 'apiKey', label: L('Mot de passe d\'application', 'App password', '앱 비밀번호'), type: 'password', placeholder: 'xxxx xxxx xxxx xxxx',
+        hint: L(
+          '1. Ouvrez <a href="https://myaccount.google.com/apppasswords" target="_blank">myaccount.google.com/apppasswords</a>\n2. Connectez-vous avec votre compte Google\n3. Nom de l\'app : Scalyo → Cliquez "Créer"\n4. Copiez le mot de passe à 16 caractères\n<strong>Prérequis</strong> : la validation en 2 étapes doit être activée sur votre compte Google.',
+          '1. Open <a href="https://myaccount.google.com/apppasswords" target="_blank">myaccount.google.com/apppasswords</a>\n2. Sign in with your Google account\n3. App name: Scalyo → Click "Create"\n4. Copy the 16-character password\n<strong>Prerequisite</strong>: 2-step verification must be enabled on your Google account.',
+          '1. <a href="https://myaccount.google.com/apppasswords" target="_blank">myaccount.google.com/apppasswords</a>를 여세요\n2. Google 계정으로 로그인\n3. 앱 이름: Scalyo → "만들기" 클릭\n4. 16자 비밀번호를 복사하세요\n<strong>사전 요구사항</strong>: Google 계정에서 2단계 인증이 활성화되어 있어야 합니다.') },
+    ]},
+  { key: 'outlook', name: 'Outlook / Microsoft 365', icon: '📨', color: '#0078D4', available: true,
+    desc: L('Connectez votre compte Outlook pour envoyer des emails et devis depuis Scalyo.',
+            'Connect your Outlook account to send emails and quotes from Scalyo.',
+            'Outlook 계정을 연결하여 Scalyo에서 이메일과 견적서를 보내세요.'),
+    fields: [
+      { key: 'email', label: L('Adresse Outlook', 'Outlook address', 'Outlook 주소'), type: 'email', placeholder: 'vous@outlook.com' },
+      { key: 'apiKey', label: L('Mot de passe d\'application', 'App password', '앱 비밀번호'), type: 'password', placeholder: 'xxxx-xxxx-xxxx-xxxx',
+        hint: L(
+          '1. Ouvrez <a href="https://account.microsoft.com/security" target="_blank">account.microsoft.com/security</a>\n2. Cliquez "Options de sécurité avancées"\n3. Dans "Mots de passe d\'application", cliquez "Créer un mot de passe d\'application"\n4. Copiez-le et collez-le ici\n<strong>Prérequis</strong> : la vérification en deux étapes doit être activée.',
+          '1. Open <a href="https://account.microsoft.com/security" target="_blank">account.microsoft.com/security</a>\n2. Click "Advanced security options"\n3. Under "App passwords", click "Create a new app password"\n4. Copy and paste it here\n<strong>Prerequisite</strong>: Two-step verification must be enabled.',
+          '1. <a href="https://account.microsoft.com/security" target="_blank">account.microsoft.com/security</a>를 여세요\n2. "고급 보안 옵션" 클릭\n3. "앱 비밀번호"에서 "새 앱 비밀번호 만들기" 클릭\n4. 복사하여 여기에 붙여넣으세요\n<strong>사전 요구사항</strong>: 2단계 인증이 활성화되어 있어야 합니다.') },
+    ]},
+  { key: 'smtp', name: 'SMTP personnalisé', icon: '✉️', color: '#6B7280', available: true,
+    desc: L('Connectez n\'importe quel serveur SMTP pour envoyer vos emails (OVH, Ionos, Infomaniak, etc.).',
+            'Connect any SMTP server to send your emails (OVH, Ionos, Infomaniak, etc.).',
+            '모든 SMTP 서버를 연결하여 이메일을 보내세요 (OVH, Ionos, Infomaniak 등).'),
+    fields: [
+      { key: 'host', label: L('Serveur SMTP', 'SMTP server', 'SMTP 서버'), type: 'text', placeholder: 'smtp.votredomaine.com' },
+      { key: 'port', label: L('Port', 'Port', '포트'), type: 'text', placeholder: '587' },
+      { key: 'email', label: L('Adresse email', 'Email address', '이메일 주소'), type: 'email', placeholder: 'vous@votredomaine.com' },
+      { key: 'apiKey', label: L('Mot de passe SMTP', 'SMTP password', 'SMTP 비밀번호'), type: 'password', placeholder: '••••••••',
+        hint: L(
+          'Utilisez le mot de passe de votre compte email ou un mot de passe d\'application si la 2FA est activée.\nPorts courants : 587 (TLS), 465 (SSL), 25 (non chiffré — déconseillé).',
+          'Use your email account password or an app password if 2FA is enabled.\nCommon ports: 587 (TLS), 465 (SSL), 25 (unencrypted — not recommended).',
+          '이메일 계정 비밀번호 또는 2FA가 활성화된 경우 앱 비밀번호를 사용하세요.\n일반 포트: 587 (TLS), 465 (SSL), 25 (비암호화 — 비권장).') },
+    ]},
+
   // Notifications
   { key: 'slack', name: 'Slack', icon: '💜', logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cdefs%3E%3Cfilter id='slf'%3E%3CfeDropShadow dx='0' dy='2' stdDeviation='3' flood-color='%234A154B' flood-opacity='.3'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='4' y='4' width='72' height='72' rx='18' fill='%234A154B' filter='url(%23slf)'/%3E%3Cpath d='M26 44a5 5 0 01-5-5 5 5 0 015-5h5v5a5 5 0 01-5 5zm2.5 0a5 5 0 0110 0v12.5a5 5 0 01-10 0V44z' fill='%23E01E5A'/%3E%3Cpath d='M33.5 26a5 5 0 015-5 5 5 0 015 5v5h-5a5 5 0 01-5-5zm0 2.5a5 5 0 010 10H21a5 5 0 010-10h12.5z' fill='%2336C5F0'/%3E%3Cpath d='M51 33.5a5 5 0 015 5 5 5 0 01-5 5h-5v-5a5 5 0 015-5zm-2.5 0a5 5 0 01-10 0V21a5 5 0 0110 0v12.5z' fill='%232EB67D'/%3E%3Cpath d='M43.5 51a5 5 0 01-5 5 5 5 0 01-5-5v-5h5a5 5 0 015 5zm0-2.5a5 5 0 010-10H56a5 5 0 010 10H43.5z' fill='%23ECB22E'/%3E%3C/svg%3E", color: '#4A154B', available: true,
     desc: L('Recevez des alertes quand un compte client est en danger.',
