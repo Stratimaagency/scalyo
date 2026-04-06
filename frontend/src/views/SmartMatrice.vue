@@ -577,7 +577,7 @@ watch(currentView, async (v) => {
 
 <style scoped>
 .sm-page { font-family: 'DM Sans', sans-serif; }
-.sm-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 0 20px; gap: 16px; flex-wrap: wrap; }
+.sm-topbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; gap: 16px; flex-wrap: wrap; background: linear-gradient(135deg, rgba(79,70,229,.07), rgba(124,58,237,.07), rgba(168,85,247,.05)); border: 1px solid rgba(79,70,229,.12); border-radius: 16px; margin-bottom: 20px; }
 .sm-topbar__left { display: flex; align-items: center; gap: 12px; }
 .sm-topbar__title { font-family: 'DM Sans', sans-serif; font-weight: 900; font-size: 22px; letter-spacing: -0.5px; color: var(--sm-t1); margin: 0; }
 .sm-topbar__project { font-size: 14px; color: var(--sm-t3); }
