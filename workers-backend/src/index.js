@@ -29,14 +29,7 @@ app.use('*', corsMiddleware())
 
 // Health check
 app.get('/', (c) => c.json({ status: 'ok', service: 'scalyo-api' }))
-app.get('/api/health', (c) => c.json({ status: 'ok', version: '2.0.0-roadmap-fix', timestamp: new Date().toISOString() }))
-
-// DEBUG — temporary route to verify deployment
-app.get('/api/debug-routes', (c) => c.json({
-  version: '2.0.0-roadmap-fix',
-  routes: ['GET /api/roadmap', 'GET /api/roadmap/', 'PATCH /api/roadmap/update', 'PATCH /api/roadmap/update/'],
-  timestamp: new Date().toISOString(),
-}))
+app.get('/api/health', (c) => c.json({ status: 'ok', version: '1.0.0', timestamp: new Date().toISOString() }))
 
 // Rate limiting on sensitive routes
 app.use('/api/auth/login/*', rateLimitMiddleware({ maxRequests: 10, windowMs: 60000 }))
@@ -64,9 +57,6 @@ app.route('/api/alerts', alerts)
 app.route('/api/notifications', notifications)
 app.route('/api/health-history', healthHistory)
 app.route('/api/exports', exportsRoutes)
-
-// DEBUG: test simple sans middleware
-app.get('/api/roadmap-test', (c) => c.json({ ok: true, path: c.req.path }))
 
 app.get('/api/roadmap', ...mw, handleGetRoadmap)
 app.get('/api/roadmap/', ...mw, handleGetRoadmap)
