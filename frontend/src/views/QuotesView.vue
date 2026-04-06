@@ -359,8 +359,8 @@ async function saveQuote() {
 }
 
 async function downloadQuote(q) {
-  const { default: jsPDF } = await import('jspdf')
-  await import('jspdf-autotable')
+  const { jsPDF } = await import('jspdf')
+  const autoTable = (await import('jspdf-autotable')).default
 
   const cfg = config.value || {}
   const label = cfg.country_defaults?.label || 'Devis'
@@ -443,7 +443,7 @@ async function downloadQuote(q) {
   } catch {}
 
   if (items.length) {
-    doc.autoTable({
+    autoTable(doc, {
       startY: y,
       head: [['Description', 'Qté', 'Prix unitaire', 'Total']],
       body: items.map(i => [
@@ -459,7 +459,7 @@ async function downloadQuote(q) {
       margin: { left: 14, right: 14 },
       columnStyles: { 0: { cellWidth: 'auto' }, 1: { halign: 'center', cellWidth: 25 }, 2: { halign: 'right', cellWidth: 35 }, 3: { halign: 'right', cellWidth: 35 } },
     })
-    y = doc.lastAutoTable.finalY + 8
+    y = doc.lastAutoTable?.finalY || (y + 40) + 8
   } else {
     y += 4
   }
