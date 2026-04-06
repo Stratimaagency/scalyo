@@ -98,17 +98,21 @@ export async function handleCreateQuote(c) {
   const tax_amount = discounted * tax_rate / 100
   const total_ttc = discounted + tax_amount
 
+  const validStatuses = ['draft', 'sent', 'won', 'lost']
+  const status = validStatuses.includes(data.status) ? data.status : 'draft'
+
   const quote = await db.prepare(
     `INSERT INTO quotes (company_id, user_id, title, client, amount, status, notes, date,
       quote_number, customer_name, customer_email, customer_address, customer_vat,
       issue_date, validity_days, payment_terms, currency, subtotal, discount_pct,
       tax_rate, tax_amount, total_ttc, conditions, country)
-     VALUES (?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
   ).bind(
     user.company_id, user.id,
     data.title?.trim() || quote_number,
     data.customer_name.trim(),
     total_ttc,
+    status,
     data.notes || '',
     data.date || now,
     quote_number,
