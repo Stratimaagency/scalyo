@@ -158,6 +158,7 @@
           :bulk-mode="bulkMode"
           :bulk-select="bulkSelect"
           @update-task="inlineUpdateTask"
+          @update-project="inlineUpdateProject"
           @quick-add-task="quickAddTask"
           @add-child-task="addChildTask"
           @delete-task="confirmDeleteTask"
@@ -554,6 +555,10 @@ async function transferTask(taskId, memberId) { await store.transferTask(taskId,
 
 async function inlineUpdateTask(taskId, fields) {
   await store.updateTask(taskId, fields)
+}
+
+async function inlineUpdateProject(projectId, fields) {
+  await store.updateProject(projectId, fields)
 }
 
 async function runAiAnalysis() {

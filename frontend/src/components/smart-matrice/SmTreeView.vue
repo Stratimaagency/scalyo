@@ -31,13 +31,34 @@
             <span class="sm-tree-label sm-tree-label--project">{{ project.name }}</span>
             <span class="sm-tree-badge-count">{{ flatCount(tasks[project.id]) }}</span>
           </div>
-          <div class="sm-tree-col sm-tree-col--date">{{ fmtDate(project.end_date || project.target_end_date) }}</div>
-          <div class="sm-tree-col sm-tree-col--urgency"></div>
-          <div class="sm-tree-col sm-tree-col--importance"></div>
-          <div class="sm-tree-col sm-tree-col--diff"></div>
-          <div class="sm-tree-col sm-tree-col--assigned"></div>
-          <div class="sm-tree-col sm-tree-col--status"><span class="tag-badge" style="background:#4f46e5">{{ project.status || 'actif' }}</span></div>
-          <div class="sm-tree-col sm-tree-col--dur"></div>
+          <div class="sm-tree-col sm-tree-col--date" @click.stop><input type="date" class="sm-inline-date" :value="(project.end_date || project.target_end_date || '').slice(0,10)" @change="onUpdateProject(project, 'end_date', $event.target.value)" /></div>
+          <div class="sm-tree-col sm-tree-col--urgency" @click.stop>
+            <select class="sm-inline-sel" :value="project.state === 'urgent' ? 'urgent' : project.state === 'priority' ? 'high' : 'normal'" @change="onUpdateProject(project, 'state', $event.target.value === 'urgent' ? 'urgent' : $event.target.value === 'high' ? 'priority' : 'active')">
+              <option value="normal">⚪</option><option value="high">🟠</option><option value="urgent">⚡</option>
+            </select>
+          </div>
+          <div class="sm-tree-col sm-tree-col--importance" @click.stop>
+            <select class="sm-inline-sel" :value="project.state === 'important' ? 'important' : 'normal'" @change="onUpdateProject(project, 'state', $event.target.value === 'important' ? 'important' : 'active')">
+              <option value="normal">⚪</option><option value="important">🟡</option>
+            </select>
+          </div>
+          <div class="sm-tree-col sm-tree-col--diff" @click.stop>
+            <select class="sm-inline-sel" :value="project.difficulty || 'medium'" @change="onUpdateProject(project, 'difficulty', $event.target.value)">
+              <option value="easy">🟢</option><option value="medium">🟡</option><option value="hard">🔴</option>
+            </select>
+          </div>
+          <div class="sm-tree-col sm-tree-col--assigned" @click.stop>
+            <select class="sm-inline-sel sm-inline-sel--sm" :value="project.assigned_to || ''" @change="onUpdateProject(project, 'assigned_to', $event.target.value || null)">
+              <option value="">—</option>
+              <option v-for="m in team" :key="m.id" :value="m.id">{{ m.display_name || m.email }}</option>
+            </select>
+          </div>
+          <div class="sm-tree-col sm-tree-col--status" @click.stop>
+            <select class="sm-inline-sel" :value="project.state || 'active'" @change="onUpdateProject(project, 'state', $event.target.value)">
+              <option value="active">🟢 Actif</option><option value="priority">🔴 Prio</option><option value="urgent">⚡ Urgent</option><option value="important">🟡 Imp.</option><option value="paused">⏸ Pause</option>
+            </select>
+          </div>
+          <div class="sm-tree-col sm-tree-col--dur" @click.stop><input type="number" class="sm-inline-num" :value="project.hours_per_day || 8" @change="onUpdateProject(project, 'hours_per_day', +$event.target.value)" min="1" step="0.5" /></div>
           <div class="sm-tree-col sm-tree-col--dur"></div>
           <div class="sm-tree-col sm-tree-col--dur"></div>
           <div class="sm-tree-col sm-tree-col--progress"><strong>{{ project.progress || 0 }}%</strong></div>
@@ -73,13 +94,14 @@ const props = defineProps({
   bulkSelect: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(['delete-project', 'toggle-bulk', 'update-task', 'delete-task', 'quick-add-task', 'add-child-task'])
+const emit = defineEmits(['delete-project', 'update-project', 'toggle-bulk', 'update-task', 'delete-task', 'quick-add-task', 'add-child-task'])
 
 const expanded = reactive(new Set())
 
 function toggle(key) { expanded.has(key) ? expanded.delete(key) : expanded.add(key) }
 function fmtDate(d) { if (!d) return '—'; const dt = new Date(d); return isNaN(dt) ? '—' : dt.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'2-digit' }) }
 function flatCount(tree) { if (!tree) return 0; let c = 0; for (const t of tree) { c++; if (t.children?.length) c += flatCount(t.children) }; return c }
+function onUpdateProject(project, field, value) { emit('update-project', project.id, { [field]: value }) }
 function onUpdate(taskId, fields) { emit('update-task', taskId, fields) }
 function onDelete(task) { emit('delete-task', task) }
 function onAddChild(parentId, projectId, name) { emit('add-child-task', parentId, projectId, name) }
@@ -127,4 +149,12 @@ function onQuickAdd(projectId, e) { const n = e.target.value.trim(); if (!n) ret
 .sm-tree-add-input { border: none; background: transparent; font-size: 11px; color: var(--sm-t3); padding: 3px 0; width: 100%; outline: none; }
 .sm-tree-add-input:focus { color: var(--sm-t1); }
 .sm-tree-empty { padding: 40px; text-align: center; color: var(--sm-t3); font-size: 13px; }
+/* Inline edit controls for project rows */
+.sm-inline-date { border: none; background: none; font-size: 10px; color: var(--sm-t2, #475569); cursor: pointer; padding: 1px; width: 80px; font-family: inherit; outline: none; }
+.sm-inline-date:hover { background: rgba(79,70,229,.05); border-radius: 3px; }
+.sm-inline-sel { border: none; background: none; font-size: 10px; color: var(--sm-t1); cursor: pointer; padding: 1px 0; font-family: inherit; outline: none; appearance: none; -webkit-appearance: none; max-width: 80px; }
+.sm-inline-sel:hover { background: rgba(79,70,229,.05); border-radius: 3px; }
+.sm-inline-sel--sm { max-width: 70px; }
+.sm-inline-num { border: none; background: none; font-size: 10px; color: var(--sm-t2); width: 40px; text-align: center; padding: 1px; font-family: inherit; outline: none; }
+.sm-inline-num:hover { background: rgba(79,70,229,.05); border-radius: 3px; }
 </style>
