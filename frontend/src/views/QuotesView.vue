@@ -369,7 +369,13 @@ async function downloadQuote(q) {
   const companyName = company?.legal_name || company?.name || ''
   const label = cfg.country_defaults?.label || 'Devis'
   const cur = cfg.country_defaults?.currency || 'EUR'
-  const fmt = (v) => Number(v || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + (cur === 'EUR' ? ' €' : ` ${cur}`)
+  const fmt = (v) => {
+    const n = Number(v || 0).toFixed(2)
+    const [int, dec] = n.split('.')
+    const spacedInt = int.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+    const suffix = cur === 'EUR' ? ' EUR' : ` ${cur}`
+    return `${spacedInt},${dec}${suffix}`
+  }
 
   const doc = new jsPDF()
   const w = doc.internal.pageSize.getWidth()
@@ -475,39 +481,45 @@ async function downloadQuote(q) {
   }
 
   // --- Totals box ---
-  const boxX = w - 80
+  const boxW = 90
+  const boxX = w - 14 - boxW
+  const boxH = q.discount_pct ? 38 : 30
   doc.setFillColor(245, 243, 255)
-  doc.roundedRect(boxX - 6, y - 2, 72, q.discount_pct ? 36 : 28, 3, 3, 'F')
+  doc.roundedRect(boxX, y - 2, boxW, boxH, 3, 3, 'F')
 
+  const rightEdge = w - 18
   doc.setFontSize(9)
   doc.setFont('helvetica', 'normal')
   doc.setTextColor(100, 100, 100)
-  doc.text('Sous-total HT:', boxX, y + 4)
+  doc.text('Sous-total HT:', boxX + 4, y + 5)
   doc.setTextColor(30, 30, 30)
-  doc.text(fmt(q.subtotal || q.amount || 0), w - 20, y + 4, { align: 'right' })
+  doc.setFont('helvetica', 'bold')
+  doc.text(fmt(q.subtotal || q.amount || 0), rightEdge, y + 5, { align: 'right' })
 
   if (q.discount_pct) {
-    y += 6
+    y += 7
+    doc.setFont('helvetica', 'normal')
     doc.setTextColor(100, 100, 100)
-    doc.text(`Remise (${q.discount_pct}%):`, boxX, y + 4)
+    doc.text(`Remise (${q.discount_pct}%):`, boxX + 4, y + 5)
     doc.setTextColor(220, 38, 38)
-    doc.text(`-${fmt((q.subtotal || 0) * q.discount_pct / 100)}`, w - 20, y + 4, { align: 'right' })
+    doc.text(`-${fmt((q.subtotal || 0) * q.discount_pct / 100)}`, rightEdge, y + 5, { align: 'right' })
   }
 
-  y += 6
+  y += 7
+  doc.setFont('helvetica', 'normal')
   doc.setTextColor(100, 100, 100)
-  doc.text(`TVA (${q.tax_rate || 0}%):`, boxX, y + 4)
+  doc.text(`TVA (${q.tax_rate || 0}%):`, boxX + 4, y + 5)
   doc.setTextColor(30, 30, 30)
-  doc.text(fmt(q.tax_amount || 0), w - 20, y + 4, { align: 'right' })
+  doc.text(fmt(q.tax_amount || 0), rightEdge, y + 5, { align: 'right' })
 
-  y += 8
+  y += 10
   doc.setFillColor(79, 70, 229)
-  doc.roundedRect(boxX - 6, y, 72, 10, 3, 3, 'F')
+  doc.roundedRect(boxX, y, boxW, 11, 3, 3, 'F')
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(11)
+  doc.setFontSize(10)
   doc.setTextColor(255, 255, 255)
-  doc.text('TOTAL TTC:', boxX, y + 7)
-  doc.text(fmt(q.total_ttc || q.amount || 0), w - 20, y + 7, { align: 'right' })
+  doc.text('TOTAL TTC:', boxX + 4, y + 8)
+  doc.text(fmt(q.total_ttc || q.amount || 0), rightEdge, y + 8, { align: 'right' })
 
   y += 18
 
