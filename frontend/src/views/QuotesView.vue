@@ -106,57 +106,57 @@
 
     <!-- Storage info -->
     <div style="margin-top: 16px; text-align: center; font-size: 12px; color: var(--muted);">
-      {{ quotes.length }} devis enregistrés · Stockage illimité
+      {{ quotes.length }} {{ t('qStorageInfo') }}
     </div>
 
     <!-- Add/Edit Panel -->
     <div v-if="showForm" class="card" style="padding: 20px; margin-top: 16px; border: 2px solid var(--tealBorder); border-radius: 12px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h4 style="font-weight: 800; font-size: 16px; margin: 0;">{{ editingQuote ? 'Modifier' : 'Nouveau' }} {{ config?.country_defaults?.label || 'Devis' }}</h4>
+        <h4 style="font-weight: 800; font-size: 16px; margin: 0;">{{ editingQuote ? t('qEditQuote') : t('qNewQuote') }} {{ config?.country_defaults?.label || t('quotesTitle') }}</h4>
         <button @click="closeForm" style="background: none; border: none; font-size: 18px; cursor: pointer; color: var(--muted);">&#x2715;</button>
       </div>
 
       <!-- Client info -->
-      <h5 style="font-weight: 700; font-size: 13px; color: var(--muted); margin: 0 0 8px; text-transform: uppercase; letter-spacing: .5px;">Client</h5>
+      <h5 style="font-weight: 700; font-size: 13px; color: var(--muted); margin: 0 0 8px; text-transform: uppercase; letter-spacing: .5px;">{{ t('qClient') }}</h5>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <AppField label="Nom / Société *" v-model="qForm.customer_name" placeholder="Nom du client" />
-        <AppField label="Email" v-model="qForm.customer_email" placeholder="email@client.com" />
+        <AppField :label="t('qClientName')" v-model="qForm.customer_name" placeholder="Nom du client" />
+        <AppField :label="t('qClientEmail')" v-model="qForm.customer_email" placeholder="email@client.com" />
       </div>
-      <AppField label="Adresse" v-model="qForm.customer_address" placeholder="Adresse complète" />
-      <AppField v-if="needsVat" label="N° TVA / Tax ID" v-model="qForm.customer_vat" :placeholder="vatPlaceholder" />
+      <AppField :label="t('qAddress')" v-model="qForm.customer_address" placeholder="Adresse complète" />
+      <AppField v-if="needsVat" :label="t('qVatNumber')" v-model="qForm.customer_vat" :placeholder="vatPlaceholder" />
 
       <!-- Quote info -->
-      <h5 style="font-weight: 700; font-size: 13px; color: var(--muted); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: .5px;">{{ config?.country_defaults?.label || 'Devis' }}</h5>
-      <AppField label="Objet" v-model="qForm.title" placeholder="Ex: Prestation de conseil Q2 2026" />
+      <h5 style="font-weight: 700; font-size: 13px; color: var(--muted); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: .5px;">{{ config?.country_defaults?.label || t('quotesTitle') }}</h5>
+      <AppField :label="t('qObject')" v-model="qForm.title" placeholder="Ex: Prestation de conseil Q2 2026" />
       <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-        <AppField label="Date d'émission" v-model="qForm.issue_date" type="date" />
-        <AppField label="Validité (jours)" v-model="qForm.validity_days" type="number" />
-        <AppField label="Conditions paiement" v-model="qForm.payment_terms" :placeholder="config?.default_payment_terms || 'Net 30'" />
+        <AppField :label="t('qIssueDate')" v-model="qForm.issue_date" type="date" />
+        <AppField :label="t('qValidityDays')" v-model="qForm.validity_days" type="number" />
+        <AppField :label="t('qPaymentTermsLabel')" v-model="qForm.payment_terms" :placeholder="config?.default_payment_terms || 'Net 30'" />
       </div>
 
       <!-- Line items -->
-      <h5 style="font-weight: 700; font-size: 13px; color: var(--muted); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: .5px;">Lignes</h5>
+      <h5 style="font-weight: 700; font-size: 13px; color: var(--muted); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: .5px;">{{ t('qLines') }}</h5>
       <div v-for="(item, i) in qForm.items" :key="i" style="display: grid; grid-template-columns: 3fr 1fr 1fr 30px; gap: 8px; margin-bottom: 6px; align-items: end;">
-        <AppField label="Description" v-model="item.description" placeholder="Produit ou service" />
-        <AppField label="Qté" v-model="item.quantity" type="number" />
-        <AppField label="Prix unitaire" v-model="item.unit_price" type="number" />
+        <AppField :label="t('qDescription')" v-model="item.description" placeholder="Produit ou service" />
+        <AppField :label="t('qQuantity')" v-model="item.quantity" type="number" />
+        <AppField :label="t('qUnitPrice')" v-model="item.unit_price" type="number" />
         <button @click="qForm.items.splice(i, 1)" style="background: none; border: none; color: var(--red); cursor: pointer; font-size: 16px; padding: 8px 0;">✕</button>
       </div>
-      <button @click="qForm.items.push({ description: '', quantity: 1, unit_price: 0 })" class="btn btn-secondary" style="font-size: 12px; margin-bottom: 12px;">+ Ajouter une ligne</button>
+      <button @click="qForm.items.push({ description: '', quantity: 1, unit_price: 0 })" class="btn btn-secondary" style="font-size: 12px; margin-bottom: 12px;">+ {{ t('qAddLine') }}</button>
 
       <!-- Totals -->
       <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-        <AppField label="Remise (%)" v-model="qForm.discount_pct" type="number" />
-        <AppField :label="'TVA (%)'" v-model="qForm.tax_rate" type="number" />
+        <AppField :label="t('qDiscount')" v-model="qForm.discount_pct" type="number" />
+        <AppField :label="t('qTaxRate')" v-model="qForm.tax_rate" type="number" />
         <div class="field-group">
-          <label class="field-label">Total TTC</label>
+          <label class="field-label">{{ t('qTotalTTC') }}</label>
           <div style="font-size: 22px; font-weight: 900; padding: 6px 0; color: var(--teal);">{{ fmtAmount(computedTotal) }}</div>
         </div>
       </div>
 
       <!-- Status -->
       <div class="field-group" style="margin-top: 8px;">
-        <label class="field-label">Statut</label>
+        <label class="field-label">{{ t('qStatus') }}</label>
         <div style="display: flex; gap: 6px;">
           <button v-for="s in statusOptions" :key="s.key"
             style="padding: 6px 16px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; border: 2px solid transparent;"
@@ -168,9 +168,9 @@
       </div>
 
       <!-- Notes & conditions -->
-      <AppField label="Notes" v-model="qForm.notes" placeholder="Notes internes..." />
+      <AppField :label="t('qNotes')" v-model="qForm.notes" placeholder="Notes internes..." />
       <div class="field-group">
-        <label class="field-label">Conditions</label>
+        <label class="field-label">{{ t('qConditions') }}</label>
         <textarea v-model="qForm.conditions" class="field-input" rows="2" placeholder="Conditions de vente..."></textarea>
       </div>
 
