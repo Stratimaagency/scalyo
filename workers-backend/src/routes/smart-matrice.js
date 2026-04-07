@@ -279,12 +279,24 @@ async function updateConfig(c) {
   const { company_id } = c.get('user')
   const body = await c.req.json()
   const fields = [], values = []
-  for (const key of ['country', 'company_name', 'days_per_week', 'hours_per_day', 'days_off_per_year', 'national_holidays', 'extra_days_off', 'company_type', 'contract_type', 'user_first_name']) { if (body[key] !== undefined) { fields.push(`${key} = ?`); values.push(body[key]) } }
+  const allowed = ['country', 'company_name', 'days_per_week', 'hours_per_day', 'days_off_per_year', 'national_holidays', 'extra_days_off', 'company_type', 'contract_type', 'user_first_name']
+  for (const key of allowed) { if (body[key] !== undefined) { fields.push(`${key} = ?`); values.push(body[key]) } }
   if (body.daily_tasks !== undefined) { fields.push('daily_tasks = ?'); values.push(JSON.stringify(body.daily_tasks)) }
-  if (!fields.length) return c.json({ error: 'Nothing to update' }, 400)
+
+  // Ensure config row exists
+  const existing = await c.env.DB.prepare('SELECT id FROM sm_config WHERE company_id = ?').bind(company_id).first()
+  if (!existing) {
+    await c.env.DB.prepare('INSERT INTO sm_config (company_id) VALUES (?)').bind(company_id).run()
+  }
+
+  if (!fields.length) {
+    // Nothing to update, just return current config
+    const config = await c.env.DB.prepare('SELECT * FROM sm_config WHERE company_id = ?').bind(company_id).first()
+    return c.json({ ...config, daily_tasks: JSON.parse(config?.daily_tasks || '[]') })
+  }
+
   fields.push("updated_at = datetime('now')"); values.push(company_id)
-  let config = await c.env.DB.prepare(`UPDATE sm_config SET ${fields.join(', ')} WHERE company_id = ? RETURNING *`).bind(...values).first()
-  if (!config) config = await c.env.DB.prepare("INSERT INTO sm_config (company_id) VALUES (?) RETURNING *").bind(company_id).first()
+  const config = await c.env.DB.prepare(`UPDATE sm_config SET ${fields.join(', ')} WHERE company_id = ? RETURNING *`).bind(...values).first()
   return c.json({ ...config, daily_tasks: JSON.parse(config.daily_tasks || '[]') })
 }
 
