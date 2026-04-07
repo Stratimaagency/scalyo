@@ -8,33 +8,33 @@
         <span class="sm-tree-dot" :style="{ background: prioColor }"></span>
         <input v-if="editingName" class="sm-inline" v-model="task.name" @blur="saveName" @keydown.enter="saveName" @click.stop />
         <span v-else class="sm-tree-label" :class="{ done: task.status === 'done' }" @dblclick.stop="editingName = true">{{ task.name }}</span>
-        <button class="sm-tree-add-child" @click.stop="showAddChild = !showAddChild" title="Ajouter sous-tâche">+</button>
+        <button class="sm-tree-add-child" @click.stop="showAddChild = !showAddChild" :title="t('smAddSubtask')">+</button>
       </div>
       <div class="sm-tree-col sm-tree-col--date" @click.stop><input type="date" class="sm-inline-date" :value="dateVal(task.end_date)" @change="upd('end_date', $event.target.value)" /></div>
       <div class="sm-tree-col sm-tree-col--urgency" @click.stop>
         <select class="sm-pill-sel" :class="'pill-' + (task.urgency || task.priority || 'normal')" :value="task.urgency || task.priority || 'normal'" @change="upd('urgency', $event.target.value)">
-          <option value="normal">Aucune</option><option value="medium">Moyenne</option><option value="high">Haute</option><option value="critical">Critique</option><option value="urgent">Urgente</option>
+          <option value="normal">{{ t('smUrgNone') }}</option><option value="medium">{{ t('smUrgMedium') }}</option><option value="high">{{ t('smUrgHigh') }}</option><option value="critical">{{ t('smUrgCritical') }}</option><option value="urgent">{{ t('smUrgUrgent') }}</option>
         </select>
       </div>
       <div class="sm-tree-col sm-tree-col--importance" @click.stop>
         <select class="sm-pill-sel" :class="'pill-' + (task.importance || 'normal')" :value="task.importance || 'normal'" @change="upd('importance', $event.target.value)">
-          <option value="normal">Aucune</option><option value="important">Importante</option><option value="critical">Critique</option>
+          <option value="normal">{{ t('smUrgNone') }}</option><option value="important">{{ t('smImpImportant') }}</option><option value="critical">{{ t('smUrgCritical') }}</option>
         </select>
       </div>
       <div class="sm-tree-col sm-tree-col--diff" @click.stop>
         <select class="sm-pill-sel" :class="'pill-' + (task.difficulty || 'medium')" :value="task.difficulty || 'medium'" @change="upd('difficulty', $event.target.value)">
-          <option value="easy">Facile</option><option value="medium">Moyen</option><option value="hard">Difficile</option>
+          <option value="easy">{{ t('smDiffEasy') }}</option><option value="medium">{{ t('smDiffMedium') }}</option><option value="hard">{{ t('smDiffHard') }}</option>
         </select>
       </div>
       <div class="sm-tree-col sm-tree-col--assigned" @click.stop>
         <select class="sm-pill-sel pill-normal" :value="task.assigned_to || ''" @change="upd('assigned_to', $event.target.value || null)">
-          <option value="">Non assigné</option>
+          <option value="">{{ t('smNotAssigned') }}</option>
           <option v-for="m in team" :key="m.id" :value="m.id">{{ m.display_name || m.email }}</option>
         </select>
       </div>
       <div class="sm-tree-col sm-tree-col--status" @click.stop>
         <select class="sm-pill-sel" :class="'pill-status-' + task.status" :value="task.status" @change="upd('status', $event.target.value)">
-          <option value="todo">À faire</option><option value="in_progress">En cours</option><option value="blocked">Bloqué</option><option value="done">Terminé</option>
+          <option value="todo">{{ t('smStatusTodo') }}</option><option value="in_progress">{{ t('smStatusInProgress') }}</option><option value="blocked">{{ t('smStatusBlocked') }}</option><option value="done">{{ t('smStatusDone') }}</option>
         </select>
       </div>
       <div class="sm-tree-col sm-tree-col--dur" @click.stop><input type="number" class="sm-inline-num" :value="task.dur_estimated" @change="upd('dur_estimated', +$event.target.value || null)" placeholder="—" min="0" step="0.5" /></div>
@@ -65,6 +65,8 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from '../../i18n'
+const { t } = useI18n()
 
 const props = defineProps({
   task: { type: Object, required: true },

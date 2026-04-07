@@ -1355,4 +1355,17 @@ export default {
   emailCatProspect: 'Prospecting',
   emailCatExpansion: 'Expansion',
   emailCatNegotiation: 'Negotiation',
+
+  smColName: 'Name', smColDueDate: 'Due date', smColUrgency: 'Urgency', smColImportance: 'Importance', smColDifficulty: 'Difficulty', smColAssigned: 'Assigned', smColStatus: 'Status', smColEstimated: 'Est.', smColActual: 'Actual', smColAI: 'AI', smColProgress: '%', smColAccuracy: 'Acc.', smColAIRec: 'AI Recommendation', smNoProject: 'No project.', smAddTask: '+ Add a task...', smAddSubtask: '+ Add a subtask...', smSubtaskOf: '+ Subtask of',
+  smUrgNone: 'None', smUrgMedium: 'Medium', smUrgHigh: 'High', smUrgCritical: 'Critical', smUrgUrgent: 'Urgent',
+  smImpNone: 'None', smImpImportant: 'Important', smImpCritical: 'Critical',
+  smDiffEasy: 'Easy', smDiffMedium: 'Medium', smDiffHard: 'Hard',
+  smNotAssigned: 'Unassigned',
+  smStatusTodo: 'To do', smStatusInProgress: 'In progress', smStatusBlocked: 'Blocked', smStatusDone: 'Done',
+  smProjActive: 'Active', smProjPriority: 'Priority', smProjImportant: 'Important', smProjPaused: 'Paused', smProjDone: 'Done',
+  smQuadNone: '— None', smQuadDo: 'Do now', smQuadSchedule: 'Schedule', smQuadDelegate: 'Delegate', smQuadEliminate: 'Eliminate',
+  smQuadDoDesc: 'Urgent & important — handle immediately', smQuadScheduleDesc: 'Important but not urgent — plan it', smQuadDelegateDesc: 'Urgent but not important — assign it', smQuadEliminateDesc: 'Neither urgent nor important — drop or defer',
+  smUnsorted: 'Unsorted', smDragHint: 'Drag or click buttons to classify', smAllSorted: 'All tasks are classified', smDropHere: 'Drop tasks here', smRename: 'Rename', smTransfer: 'Transfer', smRemove: 'Remove', smDefaultGroup: 'No group',
+  smSearch: 'Search...', smSelect: 'Select', smCancelSelect: 'Cancel', smDeleteSelected: 'Delete', smAnalyzeAI: 'AI Analyze', smAnalyzing: 'Analyzing...', smUrgencyPriority: 'Urgency / Priority', smImportanceQuadrant: 'Importance (quadrant)', smAssignedTo: 'Assigned to', smTimeParams: 'Time parameters', smWorkingDaysYear: 'Working days / year', smDaysOffYear: 'Days off / year', smHoursPerDay: 'Hours / day', smDaysPerWeek: 'Days / week', smEditProject: 'Edit project', smProject: 'Project', smReset: 'Reset',
+  qConfigCountry: 'Country config', qConfigTitle: 'Country configuration', qCountry: 'Country', qPrefix: 'Numbering prefix', qDefaultTax: 'Default tax (%)', qValidityDays: 'Validity (days)', qPaymentTerms: 'Payment terms', qLegalMentions: 'Legal mentions', qDefaultConditions: 'Default conditions', qSave: 'Save', qCloseConfig: 'Close', qDownload: 'Download', qNewQuote: 'New', qEditQuote: 'Edit', qClient: 'Client', qClientName: 'Name / Company', qClientEmail: 'Email', qAddress: 'Address', qVatNumber: 'VAT / Tax ID', qObject: 'Subject', qIssueDate: 'Issue date', qPaymentTermsLabel: 'Payment terms', qLines: 'Lines', qDescription: 'Description', qQuantity: 'Qty', qUnitPrice: 'Unit price', qAddLine: '+ Add a line', qDiscount: 'Discount (%)', qTaxRate: 'Tax (%)', qTotalTTC: 'Total incl. tax', qStatus: 'Status', qNotes: 'Notes', qConditions: 'Conditions', qStorageInfo: 'quotes saved · Unlimited storage',
 }
