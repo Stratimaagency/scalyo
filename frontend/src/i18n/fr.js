@@ -1497,4 +1497,5 @@ export default {
   qNotes: 'Notes',
   qConditions: 'Conditions',
   qStorageInfo: 'devis enregistrés · Stockage illimité',
+  kpiSubtitle: 'Suivez vos indicateurs clés de performance',
 }
