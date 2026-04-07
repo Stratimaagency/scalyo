@@ -27,7 +27,7 @@
       <div class="sm-topbar__actions">
         <!-- Search -->
         <div class="sm-search-wrap">
-          <input v-model="searchQuery" class="sm-search" :placeholder="lt.cancel === 'Cancel' ? 'Search...' : 'Rechercher...'" />
+          <input v-model="searchQuery" class="sm-search" :placeholder="t('smSearch')" />
           <span v-if="searchQuery" class="sm-search-clear" @click="searchQuery = ''">✕</span>
         </div>
         <!-- Filters -->
@@ -51,14 +51,14 @@
             <option value="normal">⚪ {{ lt.normal }}</option>
           </select>
         </div>
-        <button v-if="store.selectedProject && currentView !== 'projects'" class="sm-btn sm-btn--danger" @click="confirmDeleteProject(store.selectedProject)">🗑️ Supprimer</button>
+        <button v-if="store.selectedProject && currentView !== 'projects'" class="sm-btn sm-btn--danger" @click="confirmDeleteProject(store.selectedProject)">🗑️ {{ t('delete') }}</button>
         <template v-if="currentView === 'projects'">
-          <button v-if="bulkSelect.length" class="sm-btn sm-btn--danger" @click="bulkDeleteProjects">🗑️ Supprimer ({{ bulkSelect.length }})</button>
-          <button class="sm-btn sm-btn--secondary" @click="toggleBulkMode">{{ bulkMode ? '✕ Annuler' : '☑ Sélectionner' }}</button>
+          <button v-if="bulkSelect.length" class="sm-btn sm-btn--danger" @click="bulkDeleteProjects">🗑️ {{ t('smDeleteSelected') }} ({{ bulkSelect.length }})</button>
+          <button class="sm-btn sm-btn--secondary" @click="toggleBulkMode">{{ bulkMode ? '✕ ' + t('smCancelSelect') : '☑ ' + t('smSelect') }}</button>
           <button class="sm-btn sm-btn--primary" @click="showCreateProject = true">✨ {{ lt.newProject }}</button>
         </template>
         <button v-if="['tasks','kanban','eisenhower'].includes(currentView)" class="sm-btn sm-btn--secondary" @click="showCreateTask = true">+ {{ lt.newTask }}</button>
-        <button v-if="store.selectedProject" class="sm-btn sm-btn--ai" @click="runAiAnalysis" :disabled="aiLoading">🧠 {{ aiLoading ? 'Analyse...' : 'Analyser IA' }}</button>
+        <button v-if="store.selectedProject" class="sm-btn sm-btn--ai" @click="runAiAnalysis" :disabled="aiLoading">🧠 {{ aiLoading ? t('smAnalyzing') : t('smAnalyzeAI') }}</button>
       </div>
     </header>
 
@@ -74,11 +74,11 @@
         <div class="sm-modal__field"><label>{{ lt.status }}</label>
           <select v-model="editTask.status"><option value="todo">{{ lt.todo }}</option><option value="in_progress">{{ lt.inProgress }}</option><option value="blocked">{{ lt.blocked }}</option><option value="done">{{ lt.done }}</option></select>
         </div>
-        <div class="sm-modal__field"><label>Urgence / Priorité</label>
+        <div class="sm-modal__field"><label>{{ t('smUrgencyPriority') }}</label>
           <select v-model="editTask.priority"><option value="normal">⚪ {{ lt.normal }}</option><option value="important">🟡 {{ lt.important }}</option><option value="priority">🔴 {{ lt.priority }}</option><option value="urgent">⚡ {{ lt.urgent }}</option></select>
         </div>
-        <div class="sm-modal__field"><label>Importance (quadrant)</label>
-          <select v-model.number="editTask.quadrant"><option :value="0">— Non classé</option><option :value="1">🔴 Faire maintenant</option><option :value="2">🟢 Planifier</option><option :value="3">🔵 Déléguer</option><option :value="4">⚪ Éliminer</option></select>
+        <div class="sm-modal__field"><label>{{ t('smImportanceQuadrant') }}</label>
+          <select v-model.number="editTask.quadrant"><option :value="0">{{ t('smQuadNone') }}</option><option :value="1">🔴 {{ t('smQuadDo') }}</option><option :value="2">🟢 {{ t('smQuadSchedule') }}</option><option :value="3">🔵 {{ t('smQuadDelegate') }}</option><option :value="4">⚪ {{ t('smQuadEliminate') }}</option></select>
         </div>
       </div>
       <div class="sm-modal__row">
@@ -92,9 +92,9 @@
       </div>
       <div class="sm-modal__row">
         <div class="sm-modal__field"><label>{{ lt.referent }}</label><input v-model="editTask.referent_name" :placeholder="lt.referentHint" /></div>
-        <div class="sm-modal__field"><label>Assigné à</label>
+        <div class="sm-modal__field"><label>{{ t('smAssignedTo') }}</label>
           <select v-model="editTask.assigned_to">
-            <option value="">— Non assigné</option>
+            <option value="">{{ t('smNotAssigned') }}</option>
             <option v-for="m in store.team" :key="m.id" :value="m.id">{{ m.display_name || m.email }}</option>
           </select>
         </div>
@@ -110,7 +110,7 @@
       <h3 class="sm-inline-panel__title">📝 {{ lt.newTask }}</h3>
       <div class="sm-modal__row">
         <div class="sm-modal__field" style="flex:2"><label>{{ lt.taskName }}</label><input v-model="newTask.name" :placeholder="lt.taskNameHint" autofocus /></div>
-        <div class="sm-modal__field"><label>Projet</label>
+        <div class="sm-modal__field"><label>{{ t('smProject') }}</label>
           <select v-model="newTask.project_id" v-if="!store.selectedProject">
             <option v-for="p in store.projects" :key="p.id" :value="p.id">{{ p.emoji || '📁' }} {{ p.name }}</option>
           </select>
@@ -120,11 +120,11 @@
       </div>
       <div class="sm-modal__field"><label>{{ lt.description }}</label><textarea v-model="newTask.description" rows="2" :placeholder="lt.taskDescHint"></textarea></div>
       <div class="sm-modal__row">
-        <div class="sm-modal__field"><label>Urgence / Priorité</label>
+        <div class="sm-modal__field"><label>{{ t('smUrgencyPriority') }}</label>
           <select v-model="newTask.priority"><option value="normal">⚪ {{ lt.normal }}</option><option value="important">🟡 {{ lt.important }}</option><option value="priority">🔴 {{ lt.priority }}</option><option value="urgent">⚡ {{ lt.urgent }}</option></select>
         </div>
-        <div class="sm-modal__field"><label>Importance (quadrant)</label>
-          <select v-model.number="newTask.quadrant"><option :value="0">— Non classé</option><option :value="1">🔴 Faire maintenant</option><option :value="2">🟢 Planifier</option><option :value="3">🔵 Déléguer</option><option :value="4">⚪ Éliminer</option></select>
+        <div class="sm-modal__field"><label>{{ t('smImportanceQuadrant') }}</label>
+          <select v-model.number="newTask.quadrant"><option :value="0">{{ t('smQuadNone') }}</option><option :value="1">🔴 {{ t('smQuadDo') }}</option><option :value="2">🟢 {{ t('smQuadSchedule') }}</option><option :value="3">🔵 {{ t('smQuadDelegate') }}</option><option :value="4">⚪ {{ t('smQuadEliminate') }}</option></select>
         </div>
       </div>
       <div class="sm-modal__row">
@@ -138,9 +138,9 @@
       </div>
       <div class="sm-modal__row">
         <div class="sm-modal__field"><label>{{ lt.referent }}</label><input v-model="newTask.referent_name" :placeholder="lt.referentHint" /></div>
-        <div class="sm-modal__field"><label>Assigné à</label>
+        <div class="sm-modal__field"><label>{{ t('smAssignedTo') }}</label>
           <select v-model="newTask.assigned_to">
-            <option value="">— Non assigné</option>
+            <option value="">{{ t('smNotAssigned') }}</option>
             <option v-for="m in store.team" :key="m.id" :value="m.id">{{ m.display_name || m.email }}</option>
           </select>
         </div>
@@ -240,7 +240,7 @@
 
     <!-- CREATE PROJECT PANEL -->
     <div v-if="showCreateProject" class="sm-inline-panel">
-      <h3 class="sm-inline-panel__title">{{ editingProject ? '✏️ Modifier le projet' : '✨ ' + lt.newProject }}</h3>
+      <h3 class="sm-inline-panel__title">{{ editingProject ? '✏️ ' + t('smEditProject') : '✨ ' + lt.newProject }}</h3>
       <div class="sm-modal__row">
         <div class="sm-modal__field" style="flex:2"><label>{{ lt.projectName }}</label><input v-model="newProject.name" :placeholder="lt.projectNameHint" autofocus /></div>
         <div class="sm-modal__field"><label>{{ lt.state }}</label>
@@ -257,12 +257,12 @@
         <div class="sm-modal__field"><label>{{ lt.startDate }}</label><input v-model="newProject.start_date" type="date" /></div>
         <div class="sm-modal__field"><label>{{ lt.targetDate }}</label><input v-model="newProject.target_end_date" type="date" /></div>
       </div>
-      <h4 style="font-size: 12px; font-weight: 700; color: var(--sm-t3); margin: 12px 0 6px; text-transform: uppercase; letter-spacing: .5px;">⏱ Paramètres de temps</h4>
+      <h4 style="font-size: 12px; font-weight: 700; color: var(--sm-t3); margin: 12px 0 6px; text-transform: uppercase; letter-spacing: .5px;">⏱ {{ t('smTimeParams') }}</h4>
       <div class="sm-modal__row">
-        <div class="sm-modal__field"><label>Jours ouvrés / an</label><input v-model.number="newProject.working_days_year" type="number" min="1" max="365" /></div>
-        <div class="sm-modal__field"><label>Jours off / an</label><input v-model.number="newProject.days_off_year" type="number" min="0" max="100" /></div>
-        <div class="sm-modal__field"><label>Heures / jour</label><input v-model.number="newProject.hours_per_day" type="number" min="1" max="24" step="0.5" /></div>
-        <div class="sm-modal__field"><label>Jours / semaine</label><input v-model.number="newProject.working_days_week" type="number" min="1" max="7" /></div>
+        <div class="sm-modal__field"><label>{{ t('smWorkingDaysYear') }}</label><input v-model.number="newProject.working_days_year" type="number" min="1" max="365" /></div>
+        <div class="sm-modal__field"><label>{{ t('smDaysOffYear') }}</label><input v-model.number="newProject.days_off_year" type="number" min="0" max="100" /></div>
+        <div class="sm-modal__field"><label>{{ t('smHoursPerDay') }}</label><input v-model.number="newProject.hours_per_day" type="number" min="1" max="24" step="0.5" /></div>
+        <div class="sm-modal__field"><label>{{ t('smDaysPerWeek') }}</label><input v-model.number="newProject.working_days_week" type="number" min="1" max="7" /></div>
       </div>
       <div class="sm-modal__actions">
         <button class="sm-btn sm-btn--secondary" @click="showCreateProject = false; editingProject = null">{{ lt.cancel }}</button>
@@ -291,7 +291,9 @@ import SmImport from '../components/smart-matrice/SmImport.vue'
 
 import { smartMatriceApi } from '../api'
 import { useToast } from '../composables/useToast'
+import { useI18n } from '../i18n'
 
+const { t } = useI18n()
 const store = useSmartMatriceStore()
 const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()

@@ -11,28 +11,28 @@
         </div>
       </div>
       <div class="page-header__actions">
-        <button class="btn btn-secondary" @click="showConfig = !showConfig" style="font-size: 12px;">⚙️ Config pays</button>
+        <button class="btn btn-secondary" @click="showConfig = !showConfig" style="font-size: 12px;">⚙️ {{ t('qConfigCountry') }}</button>
         <button class="btn btn-primary" @click="openNew">+ {{ config?.country_defaults?.label || t('quotesNew') }}</button>
       </div>
     </div>
 
     <!-- Country Config Panel -->
     <div v-if="showConfig" class="card" style="padding: 16px; margin-bottom: 16px; border: 2px solid var(--tealBorder);">
-      <h4 style="font-weight: 800; font-size: 14px; margin: 0 0 12px;">Configuration par pays</h4>
+      <h4 style="font-weight: 800; font-size: 14px; margin: 0 0 12px;">{{ t('qConfigTitle') }}</h4>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
         <div class="field-group">
-          <label class="field-label">Pays</label>
+          <label class="field-label">{{ t('qCountry') }}</label>
           <select v-model="configForm.country" class="field-input" @change="onCountryChange">
             <option v-for="c in countries" :key="c.code" :value="c.code">{{ c.flag }} {{ c.name }}</option>
           </select>
         </div>
-        <AppField label="Préfixe numérotation" v-model="configForm.quote_prefix" placeholder="DEV" />
-        <AppField label="TVA par défaut (%)" v-model="configForm.default_tax_rate" type="number" />
-        <AppField label="Validité (jours)" v-model="configForm.default_validity_days" type="number" />
-        <AppField label="Conditions de paiement" v-model="configForm.default_payment_terms" placeholder="Net 30" />
+        <AppField :label="t('qPrefix')" v-model="configForm.quote_prefix" placeholder="DEV" />
+        <AppField :label="t('qDefaultTax')" v-model="configForm.default_tax_rate" type="number" />
+        <AppField :label="t('qValidityDays')" v-model="configForm.default_validity_days" type="number" />
+        <AppField :label="t('qPaymentTerms')" v-model="configForm.default_payment_terms" placeholder="Net 30" />
       </div>
       <div class="field-group" style="margin-top: 8px;">
-        <label class="field-label">Mentions légales</label>
+        <label class="field-label">{{ t('qLegalMentions') }}</label>
         <textarea v-model="configForm.legal_mentions" class="field-input" rows="2" placeholder="Ex: TVA non applicable..."></textarea>
       </div>
       <div class="field-group" style="margin-top: 8px;">
