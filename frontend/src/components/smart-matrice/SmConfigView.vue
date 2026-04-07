@@ -59,6 +59,35 @@
       </div>
     </div>
 
+    <!-- Legal info for selected country -->
+    <div v-if="currentCountry" class="sm-config__section">
+      <h4 class="sm-config__section-title">{{ t.legalInfo || 'Réglementation du pays' }}</h4>
+      <div class="sm-config__legal-note">
+        <span class="sm-config__legal-flag">{{ currentCountry.flag }}</span>
+        <span>{{ currentCountry.legalNote }}</span>
+      </div>
+      <div class="sm-config__grid" style="margin-top: 12px;">
+        <div class="sm-config__field">
+          <label>{{ t.maxHoursWeek || 'Max heures / semaine (légal)' }}</label>
+          <input :value="currentCountry.maxHoursWeek || '—'" disabled class="sm-config__disabled" />
+        </div>
+        <div class="sm-config__field">
+          <label>{{ t.maxHoursDay || 'Max heures / jour (légal)' }}</label>
+          <input :value="currentCountry.maxHoursDay || 'Non plafonné'" disabled class="sm-config__disabled" />
+        </div>
+      </div>
+      <div class="sm-config__grid" style="margin-top: 8px;">
+        <div class="sm-config__field">
+          <label>{{ t.conventionCollective || 'Convention collective' }}</label>
+          <input v-model="form.company_type" @blur="save" :placeholder="t.toFill || 'À remplir selon votre secteur'" />
+        </div>
+        <div class="sm-config__field">
+          <label>{{ t.specificRules || 'Règles spécifiques entreprise' }}</label>
+          <input v-model="form.extra_rules" @blur="save" :placeholder="t.toFill || 'À remplir (ex: RTT, accord d\'entreprise...)'" />
+        </div>
+      </div>
+    </div>
+
     <!-- Daily Fixed Tasks -->
     <div class="sm-config__section">
       <h4 class="sm-config__section-title">{{ t.dailyTasks }}</h4>
@@ -112,30 +141,33 @@ const form = reactive({
   days_off_per_year: 25,
   national_holidays: 11,
   extra_days_off: 0,
+  extra_rules: '',
   daily_tasks: [],
 })
 
 // Country defaults
 const countries = [
-  { code: 'FR', name: 'France', flag: '🇫🇷', days: 5, hours: 7, off: 25, holidays: 11 },
-  { code: 'US', name: 'United States', flag: '🇺🇸', days: 5, hours: 8, off: 10, holidays: 11 },
-  { code: 'UK', name: 'United Kingdom', flag: '🇬🇧', days: 5, hours: 8, off: 28, holidays: 8 },
-  { code: 'DE', name: 'Deutschland', flag: '🇩🇪', days: 5, hours: 8, off: 20, holidays: 9 },
-  { code: 'ES', name: 'España', flag: '🇪🇸', days: 5, hours: 8, off: 22, holidays: 14 },
-  { code: 'IT', name: 'Italia', flag: '🇮🇹', days: 5, hours: 8, off: 26, holidays: 12 },
-  { code: 'BE', name: 'Belgique', flag: '🇧🇪', days: 5, hours: 7.6, off: 20, holidays: 10 },
-  { code: 'CH', name: 'Suisse', flag: '🇨🇭', days: 5, hours: 8.4, off: 20, holidays: 8 },
-  { code: 'CA', name: 'Canada', flag: '🇨🇦', days: 5, hours: 8, off: 10, holidays: 9 },
-  { code: 'AU', name: 'Australia', flag: '🇦🇺', days: 5, hours: 7.6, off: 20, holidays: 8 },
-  { code: 'JP', name: '日本', flag: '🇯🇵', days: 5, hours: 8, off: 10, holidays: 16 },
-  { code: 'KR', name: '대한민국', flag: '🇰🇷', days: 5, hours: 8, off: 15, holidays: 15 },
-  { code: 'BR', name: 'Brasil', flag: '🇧🇷', days: 5, hours: 8, off: 30, holidays: 12 },
-  { code: 'IN', name: 'India', flag: '🇮🇳', days: 5, hours: 8, off: 12, holidays: 10 },
-  { code: 'SG', name: 'Singapore', flag: '🇸🇬', days: 5, hours: 8, off: 7, holidays: 11 },
-  { code: 'AE', name: 'UAE', flag: '🇦🇪', days: 5, hours: 8, off: 30, holidays: 10 },
-  { code: 'MA', name: 'Maroc', flag: '🇲🇦', days: 5, hours: 8, off: 18, holidays: 13 },
-  { code: 'SN', name: 'Sénégal', flag: '🇸🇳', days: 5, hours: 8, off: 24, holidays: 14 },
+  { code: 'FR', name: 'France', flag: '🇫🇷', days: 5, hours: 7, off: 25, holidays: 11, maxHoursWeek: 35, maxHoursDay: 10, legalNote: 'Durée légale : 35h/sem. RTT possible au-delà. Convention collective applicable.' },
+  { code: 'US', name: 'United States', flag: '🇺🇸', days: 5, hours: 8, off: 10, holidays: 11, maxHoursWeek: 40, maxHoursDay: 0, legalNote: 'No federal PTO requirement. Overtime after 40h/week (FLSA).' },
+  { code: 'UK', name: 'United Kingdom', flag: '🇬🇧', days: 5, hours: 8, off: 28, holidays: 8, maxHoursWeek: 48, maxHoursDay: 0, legalNote: '28 days statutory leave (incl. bank holidays). 48h/week max (WTR).' },
+  { code: 'DE', name: 'Deutschland', flag: '🇩🇪', days: 5, hours: 8, off: 20, holidays: 9, maxHoursWeek: 48, maxHoursDay: 10, legalNote: 'Min. 20 Urlaubstage (5-Tage). Max 10h/Tag, 48h/Woche (ArbZG).' },
+  { code: 'ES', name: 'España', flag: '🇪🇸', days: 5, hours: 8, off: 22, holidays: 14, maxHoursWeek: 40, maxHoursDay: 9, legalNote: '30 días naturales de vacaciones. Máximo 40h/semana.' },
+  { code: 'IT', name: 'Italia', flag: '🇮🇹', days: 5, hours: 8, off: 26, holidays: 12, maxHoursWeek: 40, maxHoursDay: 0, legalNote: '4 settimane di ferie minimo. Massimo 48h/settimana con straordinari.' },
+  { code: 'BE', name: 'Belgique', flag: '🇧🇪', days: 5, hours: 7.6, off: 20, holidays: 10, maxHoursWeek: 38, maxHoursDay: 9, legalNote: '20 jours légaux. Semaine de 38h. Possibilité de semaine de 4 jours.' },
+  { code: 'CH', name: 'Suisse', flag: '🇨🇭', days: 5, hours: 8.4, off: 20, holidays: 8, maxHoursWeek: 45, maxHoursDay: 0, legalNote: '4 semaines de vacances min (5 si < 20 ans). Max 45h/sem (bureau).' },
+  { code: 'CA', name: 'Canada', flag: '🇨🇦', days: 5, hours: 8, off: 10, holidays: 9, maxHoursWeek: 40, maxHoursDay: 8, legalNote: '2 weeks vacation (federal). Varies by province.' },
+  { code: 'AU', name: 'Australia', flag: '🇦🇺', days: 5, hours: 7.6, off: 20, holidays: 8, maxHoursWeek: 38, maxHoursDay: 0, legalNote: '4 weeks annual leave. Max 38h/week (NES).' },
+  { code: 'JP', name: '日本', flag: '🇯🇵', days: 5, hours: 8, off: 10, holidays: 16, maxHoursWeek: 40, maxHoursDay: 8, legalNote: '有給休暇 10日～20日。法定労働時間 40時間/週。' },
+  { code: 'KR', name: '대한민국', flag: '🇰🇷', days: 5, hours: 8, off: 15, holidays: 15, maxHoursWeek: 52, maxHoursDay: 8, legalNote: '연차 15일. 주 52시간 상한 (연장근로 포함).' },
+  { code: 'BR', name: 'Brasil', flag: '🇧🇷', days: 5, hours: 8, off: 30, holidays: 12, maxHoursWeek: 44, maxHoursDay: 8, legalNote: '30 dias de férias. Máximo 44h/semana (CLT).' },
+  { code: 'IN', name: 'India', flag: '🇮🇳', days: 5, hours: 8, off: 12, holidays: 10, maxHoursWeek: 48, maxHoursDay: 9, legalNote: '12-21 earned leave days. Max 48h/week.' },
+  { code: 'SG', name: 'Singapore', flag: '🇸🇬', days: 5, hours: 8, off: 7, holidays: 11, maxHoursWeek: 44, maxHoursDay: 8, legalNote: '7-14 days annual leave. Max 44h/week (EA).' },
+  { code: 'AE', name: 'UAE', flag: '🇦🇪', days: 5, hours: 8, off: 30, holidays: 10, maxHoursWeek: 48, maxHoursDay: 8, legalNote: '30 days leave after 1 year. Max 8h/day (reduced in Ramadan).' },
+  { code: 'MA', name: 'Maroc', flag: '🇲🇦', days: 5, hours: 8, off: 18, holidays: 13, maxHoursWeek: 44, maxHoursDay: 10, legalNote: '18 jours ouvrables après 6 mois. 44h/semaine (Code du travail).' },
+  { code: 'SN', name: 'Sénégal', flag: '🇸🇳', days: 5, hours: 8, off: 24, holidays: 14, maxHoursWeek: 40, maxHoursDay: 8, legalNote: '24 jours ouvrables/an. 40h/semaine (Code du travail).' },
 ]
+
+const currentCountry = computed(() => countries.find(c => c.code === form.country))
 
 function applyCountryDefaults() {
   const c = countries.find(x => x.code === form.country)
@@ -229,6 +261,12 @@ const translations = {
     workDaysYear: 'Jours ouvrés / an',
     effectiveHours: 'Heures projet / jour',
     projectHoursYear: 'Heures projet / an',
+    legalInfo: 'Réglementation du pays',
+    maxHoursWeek: 'Max heures / semaine (légal)',
+    maxHoursDay: 'Max heures / jour (légal)',
+    conventionCollective: 'Convention collective',
+    specificRules: 'Règles spécifiques entreprise',
+    toFill: 'À remplir selon votre situation',
   },
   en: {
     title: 'Smart Matrice Settings',
@@ -255,6 +293,12 @@ const translations = {
     workDaysYear: 'Working days / year',
     effectiveHours: 'Project hours / day',
     projectHoursYear: 'Project hours / year',
+    legalInfo: 'Country regulations',
+    maxHoursWeek: 'Max hours / week (legal)',
+    maxHoursDay: 'Max hours / day (legal)',
+    conventionCollective: 'Collective agreement',
+    specificRules: 'Company-specific rules',
+    toFill: 'To be filled based on your situation',
   },
   kr: {
     title: '스마트 매트릭스 설정',
@@ -281,6 +325,12 @@ const translations = {
     workDaysYear: '연간 근무일',
     effectiveHours: '일일 프로젝트 시간',
     projectHoursYear: '연간 프로젝트 시간',
+    legalInfo: '국가 규정',
+    maxHoursWeek: '주당 최대 근무시간 (법적)',
+    maxHoursDay: '일일 최대 근무시간 (법적)',
+    conventionCollective: '단체 협약',
+    specificRules: '회사 특별 규정',
+    toFill: '상황에 맞게 입력하세요',
   },
 }
 const t = computed(() => translations[lang.value] || translations.fr)
@@ -303,6 +353,16 @@ const t = computed(() => translations[lang.value] || translations.fr)
 }
 .sm-config__field input:focus, .sm-config__field select:focus { border-color: var(--sm-terra); }
 .sm-config__hint { font-size: 12px; color: var(--sm-t3); margin-bottom: 12px; }
+.sm-config__legal-note {
+  display: flex; align-items: flex-start; gap: 8px; padding: 10px 14px;
+  background: rgba(79,70,229,.04); border: 1px solid rgba(79,70,229,.1);
+  border-radius: 10px; font-size: 12px; color: var(--sm-t2); line-height: 1.5;
+}
+.sm-config__legal-flag { font-size: 20px; flex-shrink: 0; }
+.sm-config__disabled {
+  border: 1px solid var(--sm-bd); background: var(--sm-bg, #f9fafb); border-radius: 8px;
+  padding: 7px 10px; font-size: 13px; color: var(--sm-t3); width: 100%;
+}
 .sm-config__daily-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
 .sm-config__daily-item { display: flex; align-items: center; gap: 8px; }
 .sm-config__daily-item input:first-child { flex: 1; border: 1px solid var(--sm-bd); background: #fff; border-radius: 8px; padding: 7px 10px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--sm-t1); outline: none; }
