@@ -7,7 +7,7 @@
         <p class="mod-subtitle">{{ t('pbSubtitle') }}</p>
       </div>
       <div style="display: flex; align-items: center; gap: 16px;">
-        <button v-if="tasksStore.playbooks.length" @click="resetPlaybooks" style="font-size: 11px; padding: 5px 12px; border-radius: 8px; border: 1px solid var(--red); background: transparent; color: var(--red); cursor: pointer; font-weight: 600;">🔄 Réinitialiser</button>
+        <button v-if="tasksStore.playbooks.length" @click="resetPlaybooks" style="font-size: 11px; padding: 5px 12px; border-radius: 8px; border: 1px solid var(--red); background: transparent; color: var(--red); cursor: pointer; font-weight: 600;">🔄 {{ t('smReset') }}</button>
         <div class="mod-hero-score">
           <div class="mod-big-num">{{ tasksStore.playbooks.length }}</div>
           <div class="mod-big-label">Playbooks</div>

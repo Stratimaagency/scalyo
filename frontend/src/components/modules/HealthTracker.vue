@@ -7,7 +7,7 @@
         <p class="mod-subtitle">{{ t('htSubtitle') }}</p>
       </div>
       <div style="display: flex; align-items: center; gap: 16px;">
-        <button @click="statusFilter = ''; searchQuery = ''" style="font-size: 11px; padding: 5px 12px; border-radius: 8px; border: 1px solid var(--muted); background: transparent; color: var(--muted); cursor: pointer; font-weight: 600;">🔄 Réinitialiser</button>
+        <button @click="statusFilter = ''; searchQuery = ''" style="font-size: 11px; padding: 5px 12px; border-radius: 8px; border: 1px solid var(--muted); background: transparent; color: var(--muted); cursor: pointer; font-weight: 600;">🔄 {{ t('smReset') }}</button>
         <div class="mod-hero-score">
           <div class="mod-big-num">{{ clientsStore.avgHealthScore }}</div>
           <div class="mod-big-label">{{ t('scoreAvg') }}</div>

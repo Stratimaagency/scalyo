@@ -50,7 +50,7 @@
     <!-- Filters + Quick add -->
     <div class="rm-toolbar">
       <div class="rm-filters">
-        <button class="rm-chip" style="color: var(--red); border-color: var(--red);" @click="resetRoadmap" title="Réinitialiser">🔄 Réinitialiser</button>
+        <button class="rm-chip" style="color: var(--red); border-color: var(--red);" @click="resetRoadmap" title="Réinitialiser">🔄 {{ t('smReset') }}</button>
         <span class="rm-divider"></span>
         <button class="rm-chip" :class="{ 'rm-chip--on': phaseFilter === 'all' }" @click="phaseFilter = 'all'">{{ t('rmAllPhases') }}</button>
         <button v-for="p in 3" :key="p" class="rm-chip" :class="{ 'rm-chip--on': phaseFilter === String(p) }" @click="phaseFilter = String(p)" :style="phaseFilter === String(p) ? { background: phaseColor(p) + '18', color: phaseColor(p), borderColor: phaseColor(p) + '40' } : {}">P{{ p }}</button>

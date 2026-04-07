@@ -36,12 +36,12 @@
         <textarea v-model="configForm.legal_mentions" class="field-input" rows="2" placeholder="Ex: TVA non applicable..."></textarea>
       </div>
       <div class="field-group" style="margin-top: 8px;">
-        <label class="field-label">Conditions par défaut</label>
+        <label class="field-label">{{ t('qDefaultConditions') }}</label>
         <textarea v-model="configForm.default_conditions" class="field-input" rows="2" placeholder="Conditions générales..."></textarea>
       </div>
       <div style="display: flex; gap: 8px; margin-top: 12px;">
-        <button class="btn btn-primary" @click="saveConfig">Enregistrer</button>
-        <button class="btn btn-secondary" @click="showConfig = false">Fermer</button>
+        <button class="btn btn-primary" @click="saveConfig">{{ t('qSave') }}</button>
+        <button class="btn btn-secondary" @click="showConfig = false">{{ t('qCloseConfig') }}</button>
       </div>
     </div>
 
@@ -96,8 +96,8 @@
               <div style="font-weight: 800; font-size: 14px;">{{ fmtAmount(q.total_ttc || q.amount) }}</div>
               <div v-if="q.tax_amount" style="font-size: 10px; color: var(--muted);">HT {{ fmtAmount(q.subtotal) }}</div>
             </div>
-            <button @click.stop="downloadQuote(q)" title="Télécharger" style="background: none; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; padding: 6px 8px; color: var(--muted); font-size: 12px;">⬇</button>
-            <button @click.stop="removeQuote(q.id)" title="Supprimer" style="background: none; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; padding: 6px 8px; color: var(--red); font-size: 12px;">🗑</button>
+            <button @click.stop="downloadQuote(q)" :title="t('qDownload')" style="background: none; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; padding: 6px 8px; color: var(--muted); font-size: 12px;">⬇</button>
+            <button @click.stop="removeQuote(q.id)" :title="t('delete')" style="background: none; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; padding: 6px 8px; color: var(--red); font-size: 12px;">🗑</button>
           </div>
         </div>
       </div>
