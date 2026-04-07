@@ -11,37 +11,37 @@
         </div>
       </div>
       <div class="page-header__actions">
-        <button class="btn btn-secondary" @click="showConfig = !showConfig" style="font-size: 12px;">⚙️ Config pays</button>
+        <button class="btn btn-secondary" @click="showConfig = !showConfig" style="font-size: 12px;">⚙️ {{ t('qConfigCountry') }}</button>
         <button class="btn btn-primary" @click="openNew">+ {{ config?.country_defaults?.label || t('quotesNew') }}</button>
       </div>
     </div>
 
     <!-- Country Config Panel -->
     <div v-if="showConfig" class="card" style="padding: 16px; margin-bottom: 16px; border: 2px solid var(--tealBorder);">
-      <h4 style="font-weight: 800; font-size: 14px; margin: 0 0 12px;">Configuration par pays</h4>
+      <h4 style="font-weight: 800; font-size: 14px; margin: 0 0 12px;">{{ t('qConfigTitle') }}</h4>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
         <div class="field-group">
-          <label class="field-label">Pays</label>
+          <label class="field-label">{{ t('qCountry') }}</label>
           <select v-model="configForm.country" class="field-input" @change="onCountryChange">
             <option v-for="c in countries" :key="c.code" :value="c.code">{{ c.flag }} {{ c.name }}</option>
           </select>
         </div>
-        <AppField label="Préfixe numérotation" v-model="configForm.quote_prefix" placeholder="DEV" />
-        <AppField label="TVA par défaut (%)" v-model="configForm.default_tax_rate" type="number" />
-        <AppField label="Validité (jours)" v-model="configForm.default_validity_days" type="number" />
-        <AppField label="Conditions de paiement" v-model="configForm.default_payment_terms" placeholder="Net 30" />
+        <AppField :label="t('qPrefix')" v-model="configForm.quote_prefix" placeholder="DEV" />
+        <AppField :label="t('qDefaultTax')" v-model="configForm.default_tax_rate" type="number" />
+        <AppField :label="t('qValidityDays')" v-model="configForm.default_validity_days" type="number" />
+        <AppField :label="t('qPaymentTerms')" v-model="configForm.default_payment_terms" placeholder="Net 30" />
       </div>
       <div class="field-group" style="margin-top: 8px;">
-        <label class="field-label">Mentions légales</label>
+        <label class="field-label">{{ t('qLegalMentions') }}</label>
         <textarea v-model="configForm.legal_mentions" class="field-input" rows="2" placeholder="Ex: TVA non applicable..."></textarea>
       </div>
       <div class="field-group" style="margin-top: 8px;">
-        <label class="field-label">Conditions par défaut</label>
+        <label class="field-label">{{ t('qDefaultConditions') }}</label>
         <textarea v-model="configForm.default_conditions" class="field-input" rows="2" placeholder="Conditions générales..."></textarea>
       </div>
       <div style="display: flex; gap: 8px; margin-top: 12px;">
-        <button class="btn btn-primary" @click="saveConfig">Enregistrer</button>
-        <button class="btn btn-secondary" @click="showConfig = false">Fermer</button>
+        <button class="btn btn-primary" @click="saveConfig">{{ t('qSave') }}</button>
+        <button class="btn btn-secondary" @click="showConfig = false">{{ t('qCloseConfig') }}</button>
       </div>
     </div>
 
@@ -96,8 +96,8 @@
               <div style="font-weight: 800; font-size: 14px;">{{ fmtAmount(q.total_ttc || q.amount) }}</div>
               <div v-if="q.tax_amount" style="font-size: 10px; color: var(--muted);">HT {{ fmtAmount(q.subtotal) }}</div>
             </div>
-            <button @click.stop="downloadQuote(q)" title="Télécharger" style="background: none; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; padding: 6px 8px; color: var(--muted); font-size: 12px;">⬇</button>
-            <button @click.stop="removeQuote(q.id)" title="Supprimer" style="background: none; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; padding: 6px 8px; color: var(--red); font-size: 12px;">🗑</button>
+            <button @click.stop="downloadQuote(q)" :title="t('qDownload')" style="background: none; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; padding: 6px 8px; color: var(--muted); font-size: 12px;">⬇</button>
+            <button @click.stop="removeQuote(q.id)" :title="t('delete')" style="background: none; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; padding: 6px 8px; color: var(--red); font-size: 12px;">🗑</button>
           </div>
         </div>
       </div>
