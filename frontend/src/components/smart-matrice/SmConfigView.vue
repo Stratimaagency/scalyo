@@ -132,6 +132,7 @@ const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()
 
 const firstName = ref('')
+const ready = ref(false)
 const form = reactive({
   country: 'FR',
   company_name: '',
@@ -193,6 +194,7 @@ function addDaily() { form.daily_tasks.push({ name: '', duration: 0.5 }) }
 function removeDaily(i) { form.daily_tasks.splice(i, 1); save() }
 
 async function save() {
+  if (!ready.value) return
   await store.updateConfig({
     country: form.country,
     company_name: form.company_name,
@@ -231,6 +233,7 @@ onMounted(async () => {
     })
   }
   firstName.value = authStore.user?.display_name || ''
+  ready.value = true
 })
 
 // i18n native
