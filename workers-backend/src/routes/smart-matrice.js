@@ -249,7 +249,7 @@ async function getStats(c) {
   for (const t of (tasks || [])) { const g = t.group_name || 'Sans groupe'; if (!byGroup[g]) byGroup[g] = { total: 0, done: 0 }; byGroup[g].total++; if (t.status === 'done') byGroup[g].done++ }
   let config = await db.prepare('SELECT * FROM sm_config WHERE company_id = ?').bind(company_id).first()
   const hoursPerDay = config?.hours_per_day || 8, daysPerWeek = config?.days_per_week || 5
-  const dailyFixed = JSON.parse(config?.daily_tasks || '[]').reduce((s, dt) => s + (dt.duration || 0), 0)
+  const dailyFixed = safeParseDailyTasks(config?.daily_tasks).reduce((s, dt) => s + (dt.duration || 0), 0)
   const effectiveHPD = Math.max(1, hoursPerDay - dailyFixed)
   const activeTasks = (tasks || []).filter(t => t.status !== 'done' && !t.is_paused)
   const rem = { min: 0, est: 0, max: 0 }
@@ -268,11 +268,15 @@ async function getStats(c) {
   })
 }
 
+function safeParseDailyTasks(raw) {
+  try { return JSON.parse(raw || '[]') } catch { return [] }
+}
+
 async function getConfig(c) {
   const { company_id } = c.get('user')
   let config = await c.env.DB.prepare('SELECT * FROM sm_config WHERE company_id = ?').bind(company_id).first()
   if (!config) config = await c.env.DB.prepare("INSERT INTO sm_config (company_id) VALUES (?) RETURNING *").bind(company_id).first()
-  return c.json({ ...config, daily_tasks: JSON.parse(config.daily_tasks || '[]') })
+  return c.json({ ...config, daily_tasks: safeParseDailyTasks(config.daily_tasks) })
 }
 
 async function updateConfig(c) {
@@ -292,12 +296,12 @@ async function updateConfig(c) {
   if (!fields.length) {
     // Nothing to update, just return current config
     const config = await c.env.DB.prepare('SELECT * FROM sm_config WHERE company_id = ?').bind(company_id).first()
-    return c.json({ ...config, daily_tasks: JSON.parse(config?.daily_tasks || '[]') })
+    return c.json({ ...config, daily_tasks: safeParseDailyTasks(config?.daily_tasks) })
   }
 
   fields.push("updated_at = datetime('now')"); values.push(company_id)
   const config = await c.env.DB.prepare(`UPDATE sm_config SET ${fields.join(', ')} WHERE company_id = ? RETURNING *`).bind(...values).first()
-  return c.json({ ...config, daily_tasks: JSON.parse(config.daily_tasks || '[]') })
+  return c.json({ ...config, daily_tasks: safeParseDailyTasks(config.daily_tasks) })
 }
 
 async function importTasks(c) {

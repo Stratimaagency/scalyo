@@ -182,8 +182,12 @@ export const useSmartMatriceStore = defineStore('smartMatrice', {
     },
 
     async fetchConfig() {
-      const { data } = await smartMatriceApi.getConfig()
-      this.config = data
+      try {
+        const { data } = await smartMatriceApi.getConfig()
+        this.config = data
+      } catch {
+        this.config = null
+      }
     },
 
     async updateConfig(payload) {
