@@ -1352,4 +1352,17 @@ export default {
   emailCatProspect: '영업 개발',
   emailCatExpansion: '확장',
   emailCatNegotiation: '협상',
+
+  smColName: '이름', smColDueDate: '마감일', smColUrgency: '긴급도', smColImportance: '중요도', smColDifficulty: '난이도', smColAssigned: '담당자', smColStatus: '상태', smColEstimated: '예상', smColActual: '실제', smColAI: 'AI', smColProgress: '%', smColAccuracy: '정확도', smColAIRec: 'AI 추천', smNoProject: '프로젝트 없음.', smAddTask: '+ 작업 추가...', smAddSubtask: '+ 하위 작업 추가...', smSubtaskOf: '+ 하위 작업:',
+  smUrgNone: '없음', smUrgMedium: '보통', smUrgHigh: '높음', smUrgCritical: '심각', smUrgUrgent: '긴급',
+  smImpNone: '없음', smImpImportant: '중요', smImpCritical: '심각',
+  smDiffEasy: '쉬움', smDiffMedium: '보통', smDiffHard: '어려움',
+  smNotAssigned: '미배정',
+  smStatusTodo: '할 일', smStatusInProgress: '진행 중', smStatusBlocked: '차단됨', smStatusDone: '완료',
+  smProjActive: '활성', smProjPriority: '우선', smProjImportant: '중요', smProjPaused: '일시정지', smProjDone: '완료',
+  smQuadNone: '— 없음', smQuadDo: '즉시 실행', smQuadSchedule: '일정 잡기', smQuadDelegate: '위임하기', smQuadEliminate: '제거하기',
+  smQuadDoDesc: '긴급하고 중요 — 즉시 처리', smQuadScheduleDesc: '중요하지만 긴급하지 않음 — 계획하기', smQuadDelegateDesc: '긴급하지만 중요하지 않음 — 위임하기', smQuadEliminateDesc: '긴급하지도 중요하지도 않음 — 제거 또는 연기',
+  smUnsorted: '미분류', smDragHint: '드래그하거나 버튼을 클릭하여 분류', smAllSorted: '모든 작업이 분류됨', smDropHere: '여기에 작업을 놓으세요', smRename: '이름 변경', smTransfer: '이전', smRemove: '제거', smDefaultGroup: '그룹 없음',
+  smSearch: '검색...', smSelect: '선택', smCancelSelect: '취소', smDeleteSelected: '삭제', smAnalyzeAI: 'AI 분석', smAnalyzing: '분석 중...', smUrgencyPriority: '긴급도 / 우선순위', smImportanceQuadrant: '중요도 (사분면)', smAssignedTo: '담당자', smTimeParams: '시간 설정', smWorkingDaysYear: '연간 근무일', smDaysOffYear: '연간 휴일', smHoursPerDay: '일 근무시간', smDaysPerWeek: '주 근무일', smEditProject: '프로젝트 수정', smProject: '프로젝트', smReset: '초기화',
+  qConfigCountry: '국가 설정', qConfigTitle: '국가별 설정', qCountry: '국가', qPrefix: '번호 접두사', qDefaultTax: '기본 세율 (%)', qValidityDays: '유효기간 (일)', qPaymentTerms: '결제 조건', qLegalMentions: '법적 고지', qDefaultConditions: '기본 조건', qSave: '저장', qCloseConfig: '닫기', qDownload: '다운로드', qNewQuote: '신규', qEditQuote: '수정', qClient: '고객', qClientName: '이름 / 회사명', qClientEmail: '이메일', qAddress: '주소', qVatNumber: '사업자등록번호', qObject: '제목', qIssueDate: '발행일', qPaymentTermsLabel: '결제 조건', qLines: '항목', qDescription: '설명', qQuantity: '수량', qUnitPrice: '단가', qAddLine: '+ 항목 추가', qDiscount: '할인 (%)', qTaxRate: '세율 (%)', qTotalTTC: '세금 포함 합계', qStatus: '상태', qNotes: '메모', qConditions: '조건', qStorageInfo: '견적서 저장됨 · 무제한 저장',
 }

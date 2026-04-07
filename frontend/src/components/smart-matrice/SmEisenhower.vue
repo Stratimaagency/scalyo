@@ -8,7 +8,7 @@
         <span class="sm-prio__stat-count">{{ q(idx + 1).length }}</span>
       </div>
       <div class="sm-prio__stat sm-prio__stat--muted">
-        <span class="sm-prio__stat-label">Non classées</span>
+        <span class="sm-prio__stat-label">{{ t('smUnsorted') }}</span>
         <span class="sm-prio__stat-count">{{ unsortedTasks.length }}</span>
       </div>
     </div>
@@ -16,8 +16,8 @@
     <div class="sm-prio__layout">
       <!-- Unsorted tasks panel -->
       <div class="sm-prio__inbox">
-        <h4 class="sm-prio__inbox-title">Non classées ({{ unsortedTasks.length }})</h4>
-        <p v-if="unsortedTasks.length" class="sm-prio__inbox-hint">Glissez ou cliquez les boutons pour classer</p>
+        <h4 class="sm-prio__inbox-title">{{ t('smUnsorted') }} ({{ unsortedTasks.length }})</h4>
+        <p v-if="unsortedTasks.length" class="sm-prio__inbox-hint">{{ t('smDragHint') }}</p>
 
         <div v-for="(group, gName) in unsortedGrouped" :key="gName" class="sm-prio__inbox-group">
           <div class="sm-prio__inbox-group-head" @click="toggleGroup(gName)">
@@ -44,7 +44,7 @@
             </div>
           </div>
         </div>
-        <div v-if="!unsortedTasks.length" class="sm-prio__inbox-empty">Toutes les tâches sont classées</div>
+        <div v-if="!unsortedTasks.length" class="sm-prio__inbox-empty">{{ t('smAllSorted') }}</div>
       </div>
 
       <!-- Priority grid -->
@@ -60,11 +60,11 @@
 
           <div class="sm-prio__card-header">
             <span class="sm-prio__card-icon">{{ cfg.icon }}</span>
-            <input v-if="editingLabel === idx" class="sm-prio__card-label-input" v-model="quadrants[idx].label"
+            <input v-if="editingLabel === idx" class="sm-prio__card-label-input" v-model="customLabels[idx]"
               @blur="editingLabel = null" @keydown.enter="editingLabel = null" autofocus />
             <span v-else class="sm-prio__card-label" @dblclick="editingLabel = idx">{{ cfg.label }}</span>
             <span class="sm-prio__card-count">{{ q(idx + 1).length }}</span>
-            <button class="sm-prio__card-edit" @click="editingLabel = editingLabel === idx ? null : idx" title="Renommer">✎</button>
+            <button class="sm-prio__card-edit" @click="editingLabel = editingLabel === idx ? null : idx" :title="t('smRename')">✎</button>
           </div>
           <p class="sm-prio__card-desc">{{ cfg.desc }}</p>
 
@@ -73,13 +73,13 @@
               draggable="true" @dragstart="onDragStart($event, task)" @click="$emit('edit-task', task)">
               <span class="sm-prio__task-status" :class="'sm-prio__task-status--' + task.status"></span>
               <span class="sm-prio__task-name">{{ task.name }}</span>
-              <button v-if="team.length" class="sm-prio__task-transfer" @click.stop="startTransfer(task)" title="Transférer">↗</button>
-              <button class="sm-prio__task-remove" @click.stop="quickAssign(task, 0)" title="Retirer">✕</button>
+              <button v-if="team.length" class="sm-prio__task-transfer" @click.stop="startTransfer(task)" :title="t('smTransfer')">↗</button>
+              <button class="sm-prio__task-remove" @click.stop="quickAssign(task, 0)" :title="t('smRemove')">✕</button>
             </div>
           </div>
 
           <div v-if="!q(idx + 1).length" class="sm-prio__card-empty">
-            Glissez des tâches ici
+            {{ t('smDropHere') }}
           </div>
         </div>
       </div>
@@ -88,12 +88,12 @@
     <!-- Transfer overlay -->
     <div v-if="transferringTask" class="sm-prio__overlay" @click.self="transferringTask = null">
       <div class="sm-prio__transfer-box">
-        <h4>Transférer « {{ transferringTask.name }} »</h4>
+        <h4>{{ t('smTransfer') }} « {{ transferringTask.name }} »</h4>
         <div v-for="m in team" :key="m.id" class="sm-prio__transfer-item" @click="doTransfer(m.id)">
           <span class="sm-prio__transfer-avatar">{{ getInitials(m.display_name || m.email) }}</span>
           {{ m.display_name || m.email }}
         </div>
-        <button class="sm-prio__transfer-cancel" @click="transferringTask = null">Annuler</button>
+        <button class="sm-prio__transfer-cancel" @click="transferringTask = null">{{ t('cancel') }}</button>
       </div>
     </div>
   </div>
@@ -101,6 +101,8 @@
 
 <script setup>
 import { ref, computed, reactive } from 'vue'
+import { useI18n } from '../../i18n'
+const { t } = useI18n()
 
 const props = defineProps({
   tasks: { type: Array, required: true },
@@ -113,13 +115,13 @@ const transferringTask = ref(null)
 const dragOver = ref(null)
 const openGroups = reactive({})
 const editingLabel = ref(null)
+const customLabels = reactive({})
 
-// Customizable quadrant config
-const quadrants = reactive([
-  { label: 'Faire maintenant', icon: '🔴', color: '#ef4444', bg: '#fef2f2', desc: 'Urgent & important — à traiter immédiatement' },
-  { label: 'Planifier', icon: '🟢', color: '#22c55e', bg: '#f0fdf4', desc: 'Important mais pas urgent — à programmer' },
-  { label: 'Déléguer', icon: '🔵', color: '#3b82f6', bg: '#eff6ff', desc: 'Urgent mais pas important — à confier' },
-  { label: 'Éliminer', icon: '⚪', color: '#94a3b8', bg: '#f8fafc', desc: 'Ni urgent ni important — à supprimer ou reporter' },
+const quadrants = computed(() => [
+  { label: customLabels[0] || t('smQuadDo'), icon: '🔴', color: '#ef4444', bg: '#fef2f2', desc: t('smQuadDoDesc') },
+  { label: customLabels[1] || t('smQuadSchedule'), icon: '🟢', color: '#22c55e', bg: '#f0fdf4', desc: t('smQuadScheduleDesc') },
+  { label: customLabels[2] || t('smQuadDelegate'), icon: '🔵', color: '#3b82f6', bg: '#eff6ff', desc: t('smQuadDelegateDesc') },
+  { label: customLabels[3] || t('smQuadEliminate'), icon: '⚪', color: '#94a3b8', bg: '#f8fafc', desc: t('smQuadEliminateDesc') },
 ])
 
 function q(num) {
@@ -133,7 +135,7 @@ const unsortedTasks = computed(() => {
 const unsortedGrouped = computed(() => {
   const groups = {}
   for (const tk of unsortedTasks.value) {
-    const g = tk.group_name || 'Sans groupe'
+    const g = tk.group_name || t('smDefaultGroup')
     if (!groups[g]) { groups[g] = []; if (openGroups[g] === undefined) openGroups[g] = true }
     groups[g].push(tk)
   }
