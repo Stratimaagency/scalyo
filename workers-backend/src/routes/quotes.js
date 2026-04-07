@@ -1,14 +1,14 @@
 // Country-specific defaults
 const COUNTRY_DEFAULTS = {
-  FR: { tax_rate: 20, prefix: 'DEV', payment_terms: 'Net 30', currency: 'EUR', label: 'Devis', legal: 'TVA non applicable, art. 293 B du CGI (si applicable)' },
-  DE: { tax_rate: 19, prefix: 'ANG', payment_terms: 'Net 14', currency: 'EUR', label: 'Angebot', legal: '' },
-  ES: { tax_rate: 21, prefix: 'PRE', payment_terms: 'Net 30', currency: 'EUR', label: 'Presupuesto', legal: '' },
-  IT: { tax_rate: 22, prefix: 'PRV', payment_terms: 'Net 30', currency: 'EUR', label: 'Preventivo', legal: '' },
-  GB: { tax_rate: 20, prefix: 'QUO', payment_terms: 'Net 30', currency: 'GBP', label: 'Quote', legal: '' },
-  US: { tax_rate: 0, prefix: 'EST', payment_terms: 'Net 30', currency: 'USD', label: 'Estimate', legal: '' },
-  CH: { tax_rate: 8.1, prefix: 'DEV', payment_terms: 'Net 30', currency: 'CHF', label: 'Devis', legal: '' },
-  BE: { tax_rate: 21, prefix: 'DEV', payment_terms: 'Net 30', currency: 'EUR', label: 'Devis', legal: '' },
-  KR: { tax_rate: 10, prefix: 'EST', payment_terms: 'Net 30', currency: 'KRW', label: '견적서', legal: '' },
+  FR: { tax_rate: 20, prefix: 'DEV', payment_terms: 'Net 30', currency: 'EUR', label: 'Devis', legal: 'TVA non applicable, art. 293 B du CGI (si auto-entrepreneur). Devis valable 30 jours. En cas de retard de paiement, une pénalité de 3x le taux d\'intérêt légal sera appliquée (art. L441-10 Code de commerce).' },
+  DE: { tax_rate: 19, prefix: 'ANG', payment_terms: 'Net 14', currency: 'EUR', label: 'Angebot', legal: 'Angebot freibleibend. Es gelten unsere AGB. Zahlungsziel: 14 Tage netto. Gerichtsstand ist der Sitz des Anbieters.' },
+  ES: { tax_rate: 21, prefix: 'PRE', payment_terms: 'Net 30', currency: 'EUR', label: 'Presupuesto', legal: 'Presupuesto válido por 30 días. IVA incluido según tipo aplicable. Forma de pago según condiciones indicadas.' },
+  IT: { tax_rate: 22, prefix: 'PRV', payment_terms: 'Net 30', currency: 'EUR', label: 'Preventivo', legal: 'Preventivo valido 30 giorni. IVA applicata secondo normativa vigente. Pagamento secondo condizioni indicate.' },
+  GB: { tax_rate: 20, prefix: 'QUO', payment_terms: 'Net 30', currency: 'GBP', label: 'Quote', legal: 'Quote valid for 30 days. VAT applied where applicable. Payment terms as stated. Late payment subject to statutory interest.' },
+  US: { tax_rate: 0, prefix: 'EST', payment_terms: 'Net 30', currency: 'USD', label: 'Estimate', legal: 'Estimate valid for 30 days. Sales tax varies by state and is not included unless specified. Payment due upon receipt or as agreed.' },
+  CH: { tax_rate: 8.1, prefix: 'DEV', payment_terms: 'Net 30', currency: 'CHF', label: 'Devis', legal: 'Devis valable 30 jours. TVA 8.1% incluse. Conditions de paiement selon accord. Juridiction : siège de l\'entreprise.' },
+  BE: { tax_rate: 21, prefix: 'DEV', payment_terms: 'Net 30', currency: 'EUR', label: 'Devis', legal: 'Devis valable 30 jours. TVA 21% applicable. En cas de retard, intérêts de retard au taux légal + indemnité forfaitaire de 40€ (loi du 2/08/2002).' },
+  KR: { tax_rate: 10, prefix: 'EST', payment_terms: 'Net 30', currency: 'KRW', label: '견적서', legal: '견적서 유효기간 30일. 부가가치세 10% 포함. 결제 조건은 명시된 대로 적용됩니다.' },
 }
 function getDefaults(country) { return COUNTRY_DEFAULTS[country] || COUNTRY_DEFAULTS.FR }
 
