@@ -948,9 +948,9 @@
         {{ t('cta_start_free') }}
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </router-link>
-      <a href="mailto:support@scalyo.app" class="btn-secondary">{{ t('cta_talk') }}</a>
+      <a href="mailto:contact@scalyo.app" class="btn-secondary">{{ t('cta_talk') }}</a>
     </div>
-    <div class="end-note">support@scalyo.app &middot; {{ t('end_note') }}</div>
+    <div class="end-note">contact@scalyo.app &middot; {{ t('end_note') }}</div>
   </div>
 </section>
 
@@ -1001,10 +1001,10 @@
     </div>
     <div class="lm-body">
       <p>{{ modalI18n.ms_desc }}</p>
-      <a href="mailto:support@scalyo.app" class="lm-email-link">
+      <a href="mailto:contact@scalyo.app" class="lm-email-link">
         <div class="lm-email-icon">&#x2709;&#xFE0F;</div>
         <div class="lm-email-info">
-          <strong>support@scalyo.app</strong>
+          <strong>contact@scalyo.app</strong>
           <span>{{ modalI18n.ms_email_sub }}</span>
         </div>
       </a>
