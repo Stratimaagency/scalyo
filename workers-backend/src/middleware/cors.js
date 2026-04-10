@@ -39,7 +39,10 @@ function corsHeaders(c) {
   const allowedOrigins = [frontendUrl, 'https://scalyo.app', 'https://www.scalyo.app', 'http://localhost:5173', 'http://localhost:4173']
   const origin = c.req.header('Origin')
   // Allow *.scalyo.pages.dev (Cloudflare Pages preview URLs) — only alphanumeric subdomains
-  const isAllowed = allowedOrigins.includes(origin) || (origin && /^https:\/\/[a-z0-9-]+\.scalyo\.pages\.dev$/.test(origin))
+  const isAllowed = allowedOrigins.includes(origin) ||
+    (origin && /^https:\/\/[a-z0-9-]+\.scalyo\.pages\.dev$/.test(origin)) ||
+    (origin && /^https:\/\/[a-z0-9-]+\.scalyo-project\.pages\.dev$/.test(origin)) ||
+    origin === 'https://scalyo-project.pages.dev'
   const allowedOrigin = isAllowed ? origin : allowedOrigins[0]
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
