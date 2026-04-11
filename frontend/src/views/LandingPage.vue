@@ -1321,10 +1321,10 @@ onUnmounted(() => {
   --lline2: rgba(26,16,53,.14);
 
   /* brand — Violet premium */
-  --teal: #7C3AED;
-  --teal2: rgba(124,58,237,0.08);
-  --teal3: rgba(124,58,237,0.04);
-  --teal-glow: rgba(124,58,237,0.20);
+  --teal: #3b82f6;
+  --teal2: rgba(59,130,246,.1);
+  --teal3: rgba(59,130,246,.05);
+  --teal-glow: rgba(59,130,246,.06);
 
   --gold: rgba(212,175,55,.10);
   --gold-line: rgba(212,175,55,.06);
@@ -1339,6 +1339,8 @@ onUnmounted(() => {
 
   --f: "DM Sans", -apple-system, system-ui, sans-serif;
   --f-head: "Cormorant Garamond", Georgia, serif;
+  --sm-grad: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  --sm-grad-h: linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7, #8b5cf6, #6366f1);
   --sm-grad: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
   --sm-grad-h: linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7, #8b5cf6, #6366f1);
   --rad: 14px;
