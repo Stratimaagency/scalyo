@@ -1295,6 +1295,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700&family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap");
 
 .landing {
   /* NOUVELLE PALETTE — Blanc/Violet premium */
@@ -1336,7 +1337,10 @@ onUnmounted(() => {
   --bg2: var(--dk3);
   --bg3: var(--dk4);
 
-  --f: 'Plus Jakarta Sans', -apple-system, system-ui, sans-serif;
+  --f: "DM Sans", -apple-system, system-ui, sans-serif;
+  --f-head: "Cormorant Garamond", Georgia, serif;
+  --sm-grad: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  --sm-grad-h: linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7, #8b5cf6, #6366f1);
   --rad: 14px;
 }
 
