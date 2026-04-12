@@ -55,8 +55,8 @@
         <span class="c-csm hide-md">{{ c.csm }}</span>
         <span class="c-ren hide-md" :class="{ soon: renewSoon(c) }">{{ fmtDate(c.renewalDate) }}</span>
         <span class="c-act hide-sm">
-          <button class="rb" @click.stop="openEdit(c)" title="Edit">✏️</button>
-          <button class="rb del" @click.stop="doDelete(c)" title="Delete">🗑️</button>
+          <button class="rb" @click.stop="openEdit(c)" :title="t('edit')">✏️</button>
+          <button class="rb del" @click.stop="doDelete(c)" :title="t('delete')">🗑️</button>
         </span>
       </div>
     </div>

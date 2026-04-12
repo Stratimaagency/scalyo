@@ -2,26 +2,26 @@
   <div class="auth-page">
     <div class="auth-card">
       <div class="auth-logo"><ScalyoLogo :size="48" /><span class="auth-brand">Scalyo</span></div>
-      <h1>Essai gratuit — 14 jours</h1>
-      <p class="auth-sub">Aucune carte bancaire requise</p>
+      <h1>{{ t('reg_title') }}</h1>
+      <p class="auth-sub">{{ t('reg_subtitle') }}</p>
       <form @submit.prevent="register" class="auth-form">
         <div class="fr">
-          <div class="fg"><label>Prénom</label><input v-model="form.firstName" required class="fi" /></div>
-          <div class="fg"><label>Nom</label><input v-model="form.lastName" required class="fi" /></div>
+          <div class="fg"><label>{{ t('reg_firstname') }}</label><input v-model="form.firstName" required class="fi" /></div>
+          <div class="fg"><label>{{ t('reg_lastname') }}</label><input v-model="form.lastName" required class="fi" /></div>
         </div>
-        <div class="fg"><label>Email professionnel</label><input v-model="form.email" type="email" required class="fi" placeholder="email@entreprise.com" /></div>
-        <div class="fg"><label>Entreprise</label><input v-model="form.company" required class="fi" /></div>
-        <div class="fg"><label>Mot de passe</label><input v-model="form.password" type="password" required class="fi" placeholder="Min. 8 caractères" minlength="8" /></div>
-        <div class="fg"><label>Plan</label>
+        <div class="fg"><label>{{ t('reg_email') }}</label><input v-model="form.email" type="email" required class="fi" :placeholder="t('login_email_ph')" /></div>
+        <div class="fg"><label>{{ t('reg_company') }}</label><input v-model="form.company" required class="fi" /></div>
+        <div class="fg"><label>{{ t('login_password') }}</label><input v-model="form.password" type="password" required class="fi" :placeholder="t('reg_pwd_hint')" minlength="8" /></div>
+        <div class="fg"><label>{{ t('reg_plan') }}</label>
           <div class="plan-selector">
             <button type="button" v-for="p in plans" :key="p.key" class="plan-opt" :class="{ active: form.plan === p.key }" @click="form.plan = p.key">
               <strong>{{ p.name }}</strong><span>{{ p.price }}</span>
             </button>
           </div>
         </div>
-        <button type="submit" class="btn-primary full">Créer mon compte</button>
+        <button type="submit" class="btn-primary full">{{ t('reg_submit') }}</button>
       </form>
-      <p class="auth-footer">Déjà un compte ? <router-link to="/login" class="link">Se connecter</router-link></p>
+      <p class="auth-footer">{{ t('reg_has_account') }} <router-link to="/login" class="link">{{ t('login_submit') }}</router-link></p>
     </div>
   </div>
 </template>
@@ -29,7 +29,10 @@
 <script setup>
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import ScalyoLogo from '@/components/ScalyoLogo.vue'
+
+const { t } = useI18n({ useScope: 'global' })
 
 const router = useRouter()
 const form = reactive({ firstName: '', lastName: '', email: '', company: '', password: '', plan: 'growth' })

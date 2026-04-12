@@ -2,14 +2,14 @@
   <div class="auth-page">
     <div class="auth-card">
       <div class="auth-logo"><ScalyoLogo :size="48" /><span class="auth-brand">Scalyo</span></div>
-      <h1>Connexion</h1>
-      <p class="auth-sub">Accédez à votre espace Customer Success</p>
+      <h1>{{ t('login_title') }}</h1>
+      <p class="auth-sub">{{ t('login_subtitle') }}</p>
       <form @submit.prevent="login" class="auth-form">
-        <div class="fg"><label>Email</label><input v-model="email" type="email" required class="fi" placeholder="email@entreprise.com" /></div>
-        <div class="fg"><label>Mot de passe</label><input v-model="password" type="password" required class="fi" placeholder="••••••••" /></div>
-        <button type="submit" class="btn-primary full">Se connecter</button>
+        <div class="fg"><label>{{ t('login_email') }}</label><input v-model="email" type="email" required class="fi" :placeholder="t('login_email_ph')" /></div>
+        <div class="fg"><label>{{ t('login_password') }}</label><input v-model="password" type="password" required class="fi" placeholder="••••••••" /></div>
+        <button type="submit" class="btn-primary full">{{ t('login_submit') }}</button>
       </form>
-      <p class="auth-footer">Pas encore de compte ? <router-link to="/register" class="link">Essai gratuit →</router-link></p>
+      <p class="auth-footer">{{ t('login_no_account') }} <router-link to="/register" class="link">{{ t('login_signup') }}</router-link></p>
     </div>
   </div>
 </template>
@@ -17,7 +17,10 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import ScalyoLogo from '@/components/ScalyoLogo.vue'
+
+const { t } = useI18n({ useScope: 'global' })
 
 const router = useRouter()
 const email = ref('')

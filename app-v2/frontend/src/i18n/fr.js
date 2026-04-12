@@ -570,6 +570,39 @@ export default {
   chat_correction_grammar: 'Orthographe + Grammaire',
   chat_correction_pro: 'Style professionnel',
 
+  // Auth
+  login_title: 'Connexion',
+  login_subtitle: 'Accédez à votre espace Customer Success',
+  login_email: 'Email',
+  login_email_ph: 'vous@entreprise.com',
+  login_password: 'Mot de passe',
+  login_submit: 'Se connecter',
+  login_no_account: 'Pas encore de compte ?',
+  login_signup: 'Essai gratuit →',
+  reg_title: 'Essai gratuit — 14 jours',
+  reg_subtitle: 'Aucune carte bancaire requise',
+  reg_firstname: 'Prénom',
+  reg_lastname: 'Nom',
+  reg_email: 'Email professionnel',
+  reg_company: 'Entreprise',
+  reg_pwd_hint: 'Min. 8 caractères',
+  reg_plan: 'Plan',
+  reg_submit: 'Créer mon compte',
+  reg_has_account: 'Déjà un compte ?',
+
+  // Resources hardcoded fixes
+  res_all_levels: 'Tous niveaux',
+  res_beginner: 'Débutant',
+  res_intermediate: 'Intermédiaire',
+  res_expert: 'Expert',
+  res_no_results: 'Aucune ressource ne correspond aux filtres',
+  res_search_ph: 'Rechercher...',
+
+  // Settings hardcoded fixes
+  stg_appearance_note: 'Mode clair uniquement pour le moment. Le mode sombre arrive bientôt.',
+  stg_delete_warning: 'Cette action est irréversible. Toutes vos données seront supprimées définitivement.',
+  stg_delete_btn: 'Supprimer mon compte',
+
   // Country Laws
   cl_title: 'Configuration pays',
   cl_subtitle: 'Paramètres légaux et de travail selon votre pays',

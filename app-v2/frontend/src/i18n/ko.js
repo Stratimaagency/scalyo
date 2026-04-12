@@ -305,6 +305,37 @@ export default {
   chat_nova_sug1: '가장 위험한 고객은?', chat_nova_sug2: '이번 주 요약', chat_nova_sug3: 'COPIL 보고서 생성', chat_nova_sug4: '지연된 작업은?',
   chat_correction_level: '교정 수준', chat_correction_spell: '맞춤법만', chat_correction_grammar: '맞춤법 + 문법', chat_correction_pro: '전문적 스타일',
 
+  // Auth
+  login_title: '로그인',
+  login_subtitle: 'Customer Success 작업 공간에 접속하세요',
+  login_email: '이메일',
+  login_email_ph: 'you@company.com',
+  login_password: '비밀번호',
+  login_submit: '로그인하기',
+  login_no_account: '계정이 없으신가요?',
+  login_signup: '무료 체험 →',
+  reg_title: '무료 체험 — 14일',
+  reg_subtitle: '신용카드 불필요',
+  reg_firstname: '이름',
+  reg_lastname: '성',
+  reg_email: '업무용 이메일',
+  reg_company: '회사명',
+  reg_pwd_hint: '최소 8자',
+  reg_plan: '플랜',
+  reg_submit: '계정 만들기',
+  reg_has_account: '이미 계정이 있으신가요?',
+
+  res_all_levels: '모든 레벨',
+  res_beginner: '초급',
+  res_intermediate: '중급',
+  res_expert: '고급',
+  res_no_results: '필터에 해당하는 리소스가 없습니다',
+  res_search_ph: '검색...',
+
+  stg_appearance_note: '현재 라이트 모드만 지원됩니다. 다크 모드가 곧 출시됩니다.',
+  stg_delete_warning: '이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 삭제됩니다.',
+  stg_delete_btn: '계정 삭제하기',
+
   // Country Laws
   cl_title: '국가 설정',
   cl_subtitle: '국가에 따른 법적 및 근로 설정',

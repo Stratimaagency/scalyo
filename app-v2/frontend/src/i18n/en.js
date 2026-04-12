@@ -305,6 +305,37 @@ export default {
   chat_nova_sug1: 'Which client is most at risk?', chat_nova_sug2: 'Summarize my week', chat_nova_sug3: 'Generate a COPIL report', chat_nova_sug4: 'Which tasks are overdue?',
   chat_correction_level: 'Correction level', chat_correction_spell: 'Spelling only', chat_correction_grammar: 'Spelling + Grammar', chat_correction_pro: 'Professional style',
 
+  // Auth
+  login_title: 'Sign in',
+  login_subtitle: 'Access your Customer Success workspace',
+  login_email: 'Email',
+  login_email_ph: 'you@company.com',
+  login_password: 'Password',
+  login_submit: 'Sign in',
+  login_no_account: 'No account yet?',
+  login_signup: 'Free trial →',
+  reg_title: 'Free trial — 14 days',
+  reg_subtitle: 'No credit card required',
+  reg_firstname: 'First name',
+  reg_lastname: 'Last name',
+  reg_email: 'Work email',
+  reg_company: 'Company',
+  reg_pwd_hint: 'Min. 8 characters',
+  reg_plan: 'Plan',
+  reg_submit: 'Create my account',
+  reg_has_account: 'Already have an account?',
+
+  res_all_levels: 'All levels',
+  res_beginner: 'Beginner',
+  res_intermediate: 'Intermediate',
+  res_expert: 'Expert',
+  res_no_results: 'No resources match your filters',
+  res_search_ph: 'Search...',
+
+  stg_appearance_note: 'Light mode only for now. Dark mode coming soon.',
+  stg_delete_warning: 'This action is irreversible. All your data will be permanently deleted.',
+  stg_delete_btn: 'Delete my account',
+
   // Country Laws
   cl_title: 'Country Configuration',
   cl_subtitle: 'Legal and work settings according to your country',

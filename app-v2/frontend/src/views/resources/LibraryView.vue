@@ -1,8 +1,8 @@
 <template>
   <div class="library-view">
     <div class="lib-header">
-      <h1>📚 Bibliothèque CS</h1>
-      <p class="lib-sub">Guides, templates, scripts et frameworks pour exceller en Customer Success</p>
+      <h1>📚 {{ t('sidebar_res_library') }}</h1>
+      <p class="lib-sub">{{ t('es_subtitle') }}</p>
     </div>
     <div class="lib-toolbar">
       <div class="lib-cats">
@@ -10,12 +10,12 @@
       </div>
       <div class="lib-filters">
         <select v-model="activeLevel" class="fsel">
-          <option value="all">Tous niveaux</option>
-          <option value="beginner">Débutant</option>
-          <option value="intermediate">Intermédiaire</option>
-          <option value="expert">Expert</option>
+          <option value="all">{{ t('res_all_levels') }}</option>
+          <option value="beginner">{{ t('res_beginner') }}</option>
+          <option value="intermediate">{{ t('res_intermediate') }}</option>
+          <option value="expert">{{ t('res_expert') }}</option>
         </select>
-        <div class="search-box"><span>🔍</span><input v-model="search" placeholder="Rechercher..." /></div>
+        <div class="search-box"><span>🔍</span><input v-model="search" :placeholder="t('res_search_ph')" /></div>
       </div>
     </div>
     <div class="lib-grid">
@@ -30,28 +30,31 @@
             <span class="lc-dur">{{ r.duration }}</span>
           </div>
         </div>
-        <button class="btn-sm-green">Accéder →</button>
+        <button class="btn-sm-green">{{ t('dash_view_all') }} →</button>
       </div>
     </div>
     <div v-if="!filtered.length" class="lib-empty">
-      <span>📚</span><p>Aucune ressource ne correspond aux filtres</p>
+      <span>📚</span><p>{{ t('res_no_results') }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useResourceStore } from '@/stores/resources'
+
+const { t } = useI18n({ useScope: 'global' })
 const store = useResourceStore()
 const activeCat = ref('all')
 const activeLevel = ref('all')
 const search = ref('')
-const cats = [
-  { key: 'all', label: 'Tous' }, { key: 'guide', label: '📘 Guides' }, { key: 'checklist', label: '📋 Checklists' },
+const cats = computed(() => [
+  { key: 'all', label: t('all') }, { key: 'guide', label: '📘 Guides' }, { key: 'checklist', label: '📋 Checklists' },
   { key: 'framework', label: '🎯 Frameworks' }, { key: 'script', label: '⚙️ Scripts' }, { key: 'template', label: '📊 Templates' },
-]
+])
 const filtered = computed(() => store.filteredResources(activeCat.value, activeLevel.value, search.value))
-function levelLabel(l) { return l === 'beginner' ? 'Débutant' : l === 'intermediate' ? 'Intermédiaire' : 'Expert' }
+function levelLabel(l) { return l === 'beginner' ? t('res_beginner') : l === 'intermediate' ? t('res_intermediate') : t('res_expert') }
 </script>
 
 <style scoped>

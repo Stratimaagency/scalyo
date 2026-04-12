@@ -92,7 +92,7 @@
     <div v-else-if="activeTab === 'appearance'" class="sv-panel">
       <div class="sv-section">
         <h3>{{ t('stg_tab_appearance') }}</h3>
-        <p class="sv-note">Mode clair uniquement pour le moment. Le mode sombre arrive bientôt.</p>
+        <p class="sv-note">{{ t('stg_appearance_note') }}</p>
       </div>
     </div>
 
@@ -100,8 +100,8 @@
     <div v-else-if="activeTab === 'delete'" class="sv-panel">
       <div class="sv-section danger-section">
         <h3>{{ t('stg_tab_delete') }}</h3>
-        <p>Cette action est irréversible. Toutes vos données seront supprimées définitivement.</p>
-        <button class="btn-danger">Supprimer mon compte</button>
+        <p>{{ t('stg_delete_warning') }}</p>
+        <button class="btn-danger">{{ t('stg_delete_btn') }}</button>
       </div>
     </div>
   </div>
