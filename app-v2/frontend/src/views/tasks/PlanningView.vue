@@ -1,161 +1,520 @@
 <template>
   <div class="planning-view">
-    <div class="pl-header">
-      <h1>📅 {{ t('sm_planning_title') }}</h1>
-      <div class="pl-nav">
-        <button class="btn-outline btn-sm" @click="shiftWeek(-1)">←</button>
-        <span class="pl-range">{{ weekLabel }}</span>
-        <button class="btn-outline btn-sm" @click="shiftWeek(1)">→</button>
-        <button class="btn-outline btn-sm" @click="weekOffset = 0">{{ t('today') }}</button>
+    <!-- TOOLBAR -->
+    <div class="pl-toolbar">
+      <div class="pl-toolbar-left">
+        <h1>📅 {{ t('pl_title') }}</h1>
+        <div class="pl-nav-btns">
+          <button class="nav-btn" @click="calPrev">‹</button>
+          <button class="nav-btn today-btn" @click="calToday">{{ t('pl_today') }}</button>
+          <button class="nav-btn" @click="calNext">›</button>
+          <span class="pl-current-date">{{ currentTitle }}</span>
+        </div>
       </div>
-      <div class="pl-views">
-        <button :class="{ active: view === 'week' }" @click="view = 'week'">{{ t('sm_view_week') }}</button>
-        <button :class="{ active: view === 'month' }" @click="view = 'month'">{{ t('sm_view_month') }}</button>
+      <div class="pl-toolbar-right">
+        <div class="pl-views">
+          <button v-for="v in views" :key="v.key" :class="{ active: activeView === v.key }" @click="switchView(v.key)">{{ t(v.label) }}</button>
+        </div>
+        <div class="pl-actions">
+          <button class="sync-btn" @click="syncOpen = true">{{ t('pl_sync') }}</button>
+          <button class="create-btn" @click="openCreate">{{ t('pl_create') }}</button>
+          <button class="settings-btn" @click="settingsOpen = true">⚙</button>
+        </div>
       </div>
     </div>
 
-    <!-- Week view -->
-    <div v-if="view === 'week'" class="week-grid">
-      <!-- Time column -->
-      <div class="time-col">
-        <div class="time-header"></div>
-        <div v-for="h in hours" :key="h" class="time-slot">{{ h }}:00</div>
-      </div>
-      <!-- Day columns -->
-      <div v-for="day in weekDays" :key="day.date" class="day-col" :class="{ today: day.isToday }">
-        <div class="day-header">
-          <span class="day-name">{{ day.name }}</span>
-          <span class="day-num" :class="{ today: day.isToday }">{{ day.num }}</span>
+    <!-- FULLCALENDAR (day/week/month/year/list) -->
+    <div v-show="activeView !== 'gantt'" class="fc-wrapper">
+      <FullCalendar ref="calRef" :options="calendarOptions" />
+    </div>
+
+    <!-- GANTT VIEW -->
+    <div v-if="activeView === 'gantt'" class="gantt-view">
+      <div class="gantt-toolbar-sub">
+        <div class="gz-group">
+          <span class="gz-label">Zoom:</span>
+          <button v-for="z in zoomLevels" :key="z.key" class="gz-btn" :class="{ active: ganttZoom === z.key }" @click="ganttZoom = z.key">{{ t(z.label) }}</button>
         </div>
-        <div class="day-body">
-          <div v-for="task in tasksForDay(day.date)" :key="task.id" class="pl-task" :style="{ borderLeftColor: projectColor(task.projectId) }">
-            <strong>{{ task.title }}</strong>
-            <span class="pl-task-time">{{ task.dueDate }}</span>
+        <div class="gz-group">
+          <span class="gz-label">{{ t('pl_color_by') }}:</span>
+          <select v-model="ganttColorBy" class="gz-select">
+            <option value="project">{{ t('pl_color_project') }}</option>
+            <option value="status">{{ t('pl_color_status') }}</option>
+            <option value="priority">{{ t('pl_color_priority') }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="gantt-container" ref="ganttRef">
+        <!-- Timeline header -->
+        <div class="g-header">
+          <div class="g-labels-h">{{ t('sm_projects_title') }}</div>
+          <div class="g-dates-h">
+            <div v-for="d in ganttDates" :key="d.key" class="g-date-col" :class="{ today: d.isToday, weekend: d.isWeekend }">
+              <span class="gdc-day">{{ d.dayName }}</span>
+              <span class="gdc-num">{{ d.num }}</span>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Month view -->
-    <div v-else class="month-grid">
-      <div class="month-header" v-for="d in ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim']" :key="d">{{ d }}</div>
-      <div v-for="day in monthDays" :key="day.date" class="month-day" :class="{ today: day.isToday, other: day.otherMonth }">
-        <span class="md-num">{{ day.num }}</span>
-        <div v-for="task in tasksForDay(day.date)" :key="task.id" class="md-task" :style="{ background: projectColor(task.projectId) + '20', borderLeft: '2px solid ' + projectColor(task.projectId) }">
-          {{ task.title }}
+        <!-- Projects & tasks -->
+        <div v-for="proj in tasks.projects" :key="proj.id" class="g-project">
+          <div class="g-row g-project-row">
+            <div class="g-label"><span class="gp-dot" :style="{ background: proj.color }" /><strong>{{ proj.name }}</strong></div>
+            <div class="g-cells"><div v-for="d in ganttDates" :key="d.key" class="g-cell" :class="{ today: d.isToday, weekend: d.isWeekend }" /></div>
+          </div>
+          <div v-for="task in projectTasks(proj.id)" :key="task.id" class="g-row g-task-row">
+            <div class="g-label g-task-label"><span class="gt-dot" :class="task.status" />{{ task.title }}</div>
+            <div class="g-cells">
+              <div v-for="d in ganttDates" :key="d.key" class="g-cell" :class="{ today: d.isToday, weekend: d.isWeekend }">
+                <div v-if="d.date === task.dueDate" class="g-bar" :style="{ background: ganttBarColor(task, proj), width: ganttBarWidth + 'px' }" :title="task.title">
+                  <span class="gb-text">{{ task.title }}</span>
+                  <div class="gb-prog" :style="{ width: taskProg(task) + '%' }" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Today line -->
+        <div v-if="todayLineX > 0" class="g-today-line" :style="{ left: todayLineX + 'px' }">
+          <span class="gtl">{{ t('pl_gantt_today') }}</span>
         </div>
       </div>
     </div>
+
+    <!-- SLIDE-OVER: Create/Edit Event -->
+    <SlideOver :open="eventSlideOpen" :title="editingEvent ? t('pl_event_edit') : t('pl_create')" @close="eventSlideOpen = false" :width="460">
+      <form @submit.prevent="saveEvent" class="sf">
+        <div class="fg"><label>{{ t('pl_event_title') }} *</label><input v-model="eventForm.title" required class="fi" /></div>
+        <div class="fr">
+          <div class="fg"><label>{{ t('pl_event_start') }}</label><input v-model="eventForm.start" type="datetime-local" class="fi" /></div>
+          <div class="fg"><label>{{ t('pl_event_end') }}</label><input v-model="eventForm.end" type="datetime-local" class="fi" /></div>
+        </div>
+        <label class="fi-check"><input type="checkbox" v-model="eventForm.allDay" /> {{ t('pl_event_allday') }}</label>
+        <div class="fg"><label>{{ t('pl_event_location') }}</label><input v-model="eventForm.location" class="fi" /></div>
+        <div class="fg"><label>{{ t('pl_event_desc') }}</label><textarea v-model="eventForm.description" class="fi ta" rows="2" /></div>
+        <div class="fr">
+          <div class="fg"><label>{{ t('pl_event_client') }}</label>
+            <select v-model="eventForm.clientId" class="fi"><option value="">—</option><option v-for="c in clients.clients" :key="c.id" :value="c.id">{{ c.name }}</option></select>
+          </div>
+          <div class="fg"><label>{{ t('pl_event_project') }}</label>
+            <select v-model="eventForm.projectId" class="fi"><option value="">—</option><option v-for="p in tasks.projects" :key="p.id" :value="p.id">{{ p.name }}</option></select>
+          </div>
+        </div>
+        <div class="fr">
+          <div class="fg"><label>{{ t('pl_event_recurrence') }}</label>
+            <select v-model="eventForm.recurrence" class="fi">
+              <option value="none">{{ t('pl_recur_none') }}</option>
+              <option value="daily">{{ t('pl_recur_daily') }}</option>
+              <option value="weekly">{{ t('pl_recur_weekly') }}</option>
+              <option value="monthly">{{ t('pl_recur_monthly') }}</option>
+            </select>
+          </div>
+          <div class="fg"><label>{{ t('pl_event_reminder') }}</label>
+            <select v-model="eventForm.reminder" class="fi">
+              <option value="15">{{ t('pl_remind_15') }}</option>
+              <option value="30">{{ t('pl_remind_30') }}</option>
+              <option value="60">{{ t('pl_remind_1h') }}</option>
+              <option value="1440">{{ t('pl_remind_1d') }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg"><label>{{ t('pl_event_color') }}</label>
+          <div class="color-row">
+            <button v-for="c in eventColors" :key="c" type="button" class="cpick" :class="{ active: eventForm.color === c }" :style="{ background: c }" @click="eventForm.color = c" />
+          </div>
+        </div>
+        <div class="fa">
+          <button v-if="editingEvent" type="button" class="btn-danger" @click="deleteEvent">{{ t('pl_event_delete') }}</button>
+          <div style="flex:1" />
+          <button type="button" class="btn-outline" @click="eventSlideOpen = false">{{ t('cancel') }}</button>
+          <button type="submit" class="btn-primary">{{ t('pl_event_save') }}</button>
+        </div>
+      </form>
+    </SlideOver>
+
+    <!-- SLIDE-OVER: Sync -->
+    <SlideOver :open="syncOpen" :title="t('pl_sync_with')" @close="syncOpen = false">
+      <div class="sync-list">
+        <div v-for="cal in syncOptions" :key="cal.key" class="sync-item" @click="doSync(cal.key)">
+          <span class="sync-icon">{{ cal.icon }}</span>
+          <div class="sync-info">
+            <strong>{{ t(cal.label) }}</strong>
+            <span v-if="syncedCals[cal.key]" class="sync-badge">{{ t('pl_synced') }}</span>
+          </div>
+          <button class="btn-sm-green" v-if="!syncedCals[cal.key]">{{ t('pl_authorize') }}</button>
+          <span v-else class="sync-check">✓</span>
+        </div>
+      </div>
+    </SlideOver>
+
+    <!-- SLIDE-OVER: Settings -->
+    <SlideOver :open="settingsOpen" :title="t('pl_settings')" @close="settingsOpen = false">
+      <div class="sf">
+        <div class="fg"><label>{{ t('pl_settings_first_day') }}</label>
+          <select v-model="planningSettings.firstDay" class="fi"><option :value="1">{{ t('wb_mon') }}</option><option :value="0">{{ t('wb_fri') === 'Ven' ? 'Dimanche' : 'Sunday' }}</option></select>
+        </div>
+        <div class="fr">
+          <div class="fg"><label>{{ t('pl_settings_work_hours') }} ({{ t('pl_event_start') }})</label><input v-model="planningSettings.workStart" type="time" class="fi" /></div>
+          <div class="fg"><label>{{ t('pl_event_end') }}</label><input v-model="planningSettings.workEnd" type="time" class="fi" /></div>
+        </div>
+        <label class="fi-check"><input type="checkbox" v-model="planningSettings.hideWeekends" /> {{ t('pl_settings_hide_weekends') }}</label>
+        <div class="fg"><label>{{ t('pl_settings_density') }}</label>
+          <select v-model="planningSettings.density" class="fi">
+            <option value="compact">{{ t('pl_density_compact') }}</option>
+            <option value="normal">{{ t('pl_density_normal') }}</option>
+            <option value="comfortable">{{ t('pl_density_comfortable') }}</option>
+          </select>
+        </div>
+        <div class="fg"><label>{{ t('pl_settings_time_format') }}</label>
+          <select v-model="planningSettings.timeFormat" class="fi"><option value="24h">24h</option><option value="12h">12h (AM/PM)</option></select>
+        </div>
+      </div>
+    </SlideOver>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import FullCalendar from '@fullcalendar/vue3'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import interactionPlugin from '@fullcalendar/interaction'
+import listPlugin from '@fullcalendar/list'
+import multiMonthPlugin from '@fullcalendar/multimonth'
+import SlideOver from '@/components/SlideOver.vue'
 import { useTaskStore } from '@/stores/tasks'
+import { useClientStore } from '@/stores/clients'
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const tasks = useTaskStore()
+const clients = useClientStore()
 
-const view = ref('week')
-const weekOffset = ref(0)
-const hours = Array.from({ length: 13 }, (_, i) => i + 7) // 07-19
+const calRef = ref(null)
+const ganttRef = ref(null)
+const activeView = ref('week')
+const currentTitle = ref('')
+const eventSlideOpen = ref(false)
+const editingEvent = ref(null)
+const syncOpen = ref(false)
+const settingsOpen = ref(false)
+const ganttZoom = ref('day')
+const ganttColorBy = ref('project')
+const syncedCals = reactive({ google: false, outlook: false, apple: false })
 
-function shiftWeek(dir) { weekOffset.value += dir }
+const eventColors = ['#7c3aed', '#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#ec4899', '#06b6d4', '#8b5cf6']
 
-const weekStart = computed(() => {
-  const d = new Date()
-  const day = d.getDay() || 7
-  d.setDate(d.getDate() - day + 1 + weekOffset.value * 7)
-  d.setHours(0, 0, 0, 0)
-  return d
+const views = [
+  { key: 'day', label: 'pl_view_day' },
+  { key: 'week', label: 'pl_view_week' },
+  { key: 'month', label: 'pl_view_month' },
+  { key: 'year', label: 'pl_view_year' },
+  { key: 'list', label: 'pl_view_list' },
+  { key: 'gantt', label: 'pl_view_gantt' },
+]
+
+const zoomLevels = [
+  { key: 'day', label: 'pl_zoom_day' },
+  { key: 'week', label: 'pl_zoom_week' },
+  { key: 'month', label: 'pl_zoom_month' },
+]
+
+const syncOptions = [
+  { key: 'google', icon: '🔴', label: 'pl_google' },
+  { key: 'outlook', icon: '🔵', label: 'pl_outlook' },
+  { key: 'apple', icon: '⚫', label: 'pl_apple' },
+]
+
+const planningSettings = reactive({
+  firstDay: 1,
+  workStart: '09:00',
+  workEnd: '18:00',
+  hideWeekends: false,
+  density: 'normal',
+  timeFormat: '24h',
 })
 
-const weekLabel = computed(() => {
-  const s = new Date(weekStart.value)
-  const e = new Date(s); e.setDate(e.getDate() + 6)
-  const loc = locale.value === 'ko' ? 'ko-KR' : locale.value === 'en' ? 'en-US' : 'fr-FR'
-  return s.toLocaleDateString(loc, { day: 'numeric', month: 'short' }) + ' — ' + e.toLocaleDateString(loc, { day: 'numeric', month: 'short', year: 'numeric' })
+const defaultEvent = () => ({
+  title: '', start: '', end: '', allDay: false, location: '', description: '',
+  clientId: '', projectId: '', recurrence: 'none', reminder: '30', color: '#7c3aed',
 })
+const eventForm = reactive(defaultEvent())
 
-const dayNames = computed(() => {
-  const loc = locale.value === 'ko' ? 'ko-KR' : locale.value === 'en' ? 'en-US' : 'fr-FR'
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(weekStart.value); d.setDate(d.getDate() + i)
-    return d.toLocaleDateString(loc, { weekday: 'short' })
+// Mock events
+const events = ref([
+  { id: 'ev1', title: 'QBR Acme Corp', start: '2026-04-14T10:00:00', end: '2026-04-14T11:00:00', color: '#3b82f6', extendedProps: { clientId: 'cl2', projectId: 'p3' } },
+  { id: 'ev2', title: 'Check-in TechScale', start: '2026-04-15T14:00:00', end: '2026-04-15T14:30:00', color: '#10b981', extendedProps: { clientId: 'cl1' } },
+  { id: 'ev3', title: 'Call rétention Leroy', start: '2026-04-16T09:00:00', end: '2026-04-16T10:00:00', color: '#ef4444', extendedProps: { clientId: 'cl4' } },
+  { id: 'ev4', title: 'Onboarding Biotech', start: '2026-04-17T11:00:00', end: '2026-04-17T12:00:00', color: '#7c3aed', extendedProps: { clientId: 'cl3' } },
+  { id: 'ev5', title: 'Team standup', start: '2026-04-14T09:00:00', end: '2026-04-14T09:15:00', color: '#f59e0b' },
+  { id: 'ev6', title: 'Planning sprint', start: '2026-04-14T15:00:00', end: '2026-04-14T16:00:00', color: '#8b5cf6' },
+  { id: 'ev7', title: 'NPS Review', start: '2026-04-18T10:00:00', end: '2026-04-18T11:30:00', color: '#ec4899', extendedProps: { clientId: 'cl5' } },
+])
+
+const fcLocale = computed(() => locale.value === 'ko' ? 'ko' : locale.value === 'en' ? 'en' : 'fr')
+const slotHeight = computed(() => planningSettings.density === 'compact' ? 32 : planningSettings.density === 'comfortable' ? 56 : 44)
+
+const calendarOptions = computed(() => ({
+  plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, multiMonthPlugin],
+  initialView: 'timeGridWeek',
+  locale: fcLocale.value,
+  firstDay: planningSettings.firstDay,
+  headerToolbar: false,
+  height: 'auto',
+  editable: true,
+  selectable: true,
+  selectMirror: true,
+  dayMaxEvents: 3,
+  weekends: !planningSettings.hideWeekends,
+  nowIndicator: true,
+  slotMinTime: '07:00:00',
+  slotMaxTime: '21:00:00',
+  slotDuration: '00:30:00',
+  slotLabelFormat: planningSettings.timeFormat === '12h'
+    ? { hour: 'numeric', minute: '2-digit', meridiem: 'short' }
+    : { hour: '2-digit', minute: '2-digit', hour12: false },
+  businessHours: {
+    daysOfWeek: [1, 2, 3, 4, 5],
+    startTime: planningSettings.workStart,
+    endTime: planningSettings.workEnd,
+  },
+  events: events.value,
+  select: handleSelect,
+  eventClick: handleEventClick,
+  eventDrop: handleEventDrop,
+  eventResize: handleEventResize,
+  datesSet: handleDatesSet,
+}))
+
+function getApi() { return calRef.value?.getApi() }
+
+function calPrev() { getApi()?.prev() }
+function calNext() { getApi()?.next() }
+function calToday() { getApi()?.today() }
+
+function switchView(key) {
+  activeView.value = key
+  if (key === 'gantt') return
+  const map = { day: 'timeGridDay', week: 'timeGridWeek', month: 'dayGridMonth', year: 'multiMonthYear', list: 'listWeek' }
+  getApi()?.changeView(map[key] || 'timeGridWeek')
+}
+
+function handleDatesSet(info) {
+  currentTitle.value = info.view.title
+}
+
+function handleSelect(info) {
+  Object.assign(eventForm, defaultEvent())
+  eventForm.start = info.startStr.slice(0, 16)
+  eventForm.end = info.endStr.slice(0, 16)
+  eventForm.allDay = info.allDay
+  editingEvent.value = null
+  eventSlideOpen.value = true
+  getApi()?.unselect()
+}
+
+function handleEventClick(info) {
+  editingEvent.value = info.event.id
+  Object.assign(eventForm, {
+    title: info.event.title,
+    start: info.event.startStr.slice(0, 16),
+    end: info.event.endStr?.slice(0, 16) || '',
+    allDay: info.event.allDay,
+    color: info.event.backgroundColor || '#7c3aed',
+    location: '', description: '', clientId: info.event.extendedProps?.clientId || '',
+    projectId: info.event.extendedProps?.projectId || '', recurrence: 'none', reminder: '30',
   })
-})
+  eventSlideOpen.value = true
+}
 
-const weekDays = computed(() => {
-  const today = new Date().toISOString().slice(0, 10)
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(weekStart.value); d.setDate(d.getDate() + i)
-    const date = d.toISOString().slice(0, 10)
-    return { date, name: dayNames.value[i], num: d.getDate(), isToday: date === today }
-  })
-})
+function handleEventDrop(info) {
+  const ev = events.value.find(e => e.id === info.event.id)
+  if (ev) { ev.start = info.event.startStr; ev.end = info.event.endStr }
+}
 
-const monthDays = computed(() => {
-  const now = new Date()
-  const y = now.getFullYear(), m = now.getMonth()
-  const first = new Date(y, m, 1)
-  const startDay = (first.getDay() || 7) - 1
-  const today = now.toISOString().slice(0, 10)
-  const days = []
-  for (let i = -startDay; i < 42 - startDay; i++) {
-    const d = new Date(y, m, 1 + i)
-    days.push({ date: d.toISOString().slice(0, 10), num: d.getDate(), isToday: d.toISOString().slice(0, 10) === today, otherMonth: d.getMonth() !== m })
+function handleEventResize(info) {
+  const ev = events.value.find(e => e.id === info.event.id)
+  if (ev) { ev.end = info.event.endStr }
+}
+
+function saveEvent() {
+  if (editingEvent.value) {
+    const ev = events.value.find(e => e.id === editingEvent.value)
+    if (ev) { Object.assign(ev, { title: eventForm.title, start: eventForm.start, end: eventForm.end, color: eventForm.color }) }
+  } else {
+    events.value.push({
+      id: 'ev_' + Date.now(), title: eventForm.title, start: eventForm.start, end: eventForm.end || eventForm.start,
+      color: eventForm.color, allDay: eventForm.allDay,
+      extendedProps: { clientId: eventForm.clientId, projectId: eventForm.projectId },
+    })
   }
-  return days
+  eventSlideOpen.value = false
+}
+
+function deleteEvent() {
+  if (editingEvent.value) { events.value = events.value.filter(e => e.id !== editingEvent.value) }
+  eventSlideOpen.value = false
+}
+
+function openCreate() {
+  Object.assign(eventForm, defaultEvent())
+  const now = new Date()
+  now.setMinutes(0, 0, 0)
+  eventForm.start = now.toISOString().slice(0, 16)
+  now.setHours(now.getHours() + 1)
+  eventForm.end = now.toISOString().slice(0, 16)
+  editingEvent.value = null
+  eventSlideOpen.value = true
+}
+
+function doSync(key) {
+  syncedCals[key] = true
+  setTimeout(() => syncOpen.value = false, 600)
+}
+
+// GANTT
+const ganttDays = computed(() => ganttZoom.value === 'month' ? 60 : ganttZoom.value === 'week' ? 28 : 14)
+const ganttBarWidth = computed(() => ganttZoom.value === 'month' ? 60 : ganttZoom.value === 'week' ? 100 : 140)
+const ganttStart = computed(() => { const d = new Date(); d.setDate(d.getDate() - 3); d.setHours(0, 0, 0, 0); return d })
+const ganttDates = computed(() => {
+  const today = new Date().toISOString().slice(0, 10)
+  const loc = locale.value === 'ko' ? 'ko-KR' : locale.value === 'en' ? 'en-US' : 'fr-FR'
+  return Array.from({ length: ganttDays.value }, (_, i) => {
+    const d = new Date(ganttStart.value); d.setDate(d.getDate() + i)
+    const date = d.toISOString().slice(0, 10)
+    return { key: date, date, num: d.getDate(), dayName: d.toLocaleDateString(loc, { weekday: 'narrow' }), isToday: date === today, isWeekend: d.getDay() === 0 || d.getDay() === 6 }
+  })
+})
+const todayLineX = computed(() => {
+  const idx = ganttDates.value.findIndex(d => d.isToday)
+  return idx >= 0 ? 180 + idx * 36 + 18 : 0
 })
 
-function tasksForDay(date) { return tasks.tasks.filter(t => t.dueDate === date) }
-function projectColor(pid) { return tasks.projects.find(p => p.id === pid)?.color || '#7c3aed' }
+function projectTasks(pid) { return tasks.tasks.filter(t => t.projectId === pid) }
+function ganttBarColor(task, proj) {
+  if (ganttColorBy.value === 'status') return { todo: '#9ca3af', in_progress: '#3b82f6', blocked: '#ef4444', done: '#10b981' }[task.status] || '#7c3aed'
+  if (ganttColorBy.value === 'priority') return { urgent_important: '#ef4444', important: '#3b82f6', urgent: '#f59e0b', not_urgent: '#9ca3af' }[task.priority] || '#7c3aed'
+  return proj.color
+}
+function taskProg(task) {
+  if (task.status === 'done') return 100
+  if (!task.subtasks?.length) return task.status === 'in_progress' ? 50 : 0
+  return Math.round((task.subtasks.filter(s => s.done).length / task.subtasks.length) * 100)
+}
+
+onMounted(() => { setTimeout(() => { currentTitle.value = getApi()?.view?.title || '' }, 100) })
 </script>
 
 <style scoped>
-.planning-view { max-width: 1100px; }
-.pl-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-.pl-header h1 { font-size: 1.5rem; font-weight: 800; }
-.pl-nav { display: flex; align-items: center; gap: 8px; }
-.pl-range { font-size: 0.9rem; font-weight: 600; min-width: 200px; text-align: center; }
-.btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
-.btn-outline:hover { border-color: var(--purple); color: var(--purple); }
-.btn-sm { padding: 6px 12px; }
-.pl-views { display: flex; gap: 2px; background: var(--bg); border-radius: 8px; padding: 2px; }
-.pl-views button { background: none; border: none; padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; color: var(--text-muted); font-weight: 500; }
+.planning-view { max-width: 1300px; }
+
+/* Toolbar */
+.pl-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+.pl-toolbar-left { display: flex; align-items: center; gap: 16px; }
+.pl-toolbar-left h1 { font-size: 1.3rem; font-weight: 800; white-space: nowrap; }
+.pl-nav-btns { display: flex; align-items: center; gap: 4px; }
+.nav-btn { background: #fff; border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: all 0.15s; color: var(--text); }
+.nav-btn:hover { border-color: var(--purple); color: var(--purple); }
+.today-btn { font-weight: 600; }
+.pl-current-date { font-size: 1rem; font-weight: 700; margin-left: 8px; text-transform: capitalize; }
+.pl-toolbar-right { display: flex; align-items: center; gap: 8px; }
+.pl-views { display: flex; gap: 1px; background: var(--border-light); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+.pl-views button { background: #fff; border: none; padding: 6px 12px; font-size: 0.75rem; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: all 0.15s; }
 .pl-views button.active { background: var(--purple); color: #fff; font-weight: 600; }
+.pl-views button:hover:not(.active) { background: var(--bg-hover); }
+.pl-actions { display: flex; gap: 6px; }
+.sync-btn { background: #fff; border: 1px solid var(--border); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; }
+.sync-btn:hover { border-color: var(--purple); }
+.create-btn { background: var(--purple); color: #fff; border: none; padding: 6px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+.create-btn:hover { background: var(--purple-dark); }
+.settings-btn { background: #fff; border: 1px solid var(--border); padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
 
-/* Week grid */
-.week-grid { display: grid; grid-template-columns: 60px repeat(7, 1fr); background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-.time-col { border-right: 1px solid var(--border-light); }
-.time-header { height: 48px; border-bottom: 1px solid var(--border-light); }
-.time-slot { height: 48px; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; color: var(--text-muted); border-bottom: 1px solid var(--border-light); }
-.day-col { border-right: 1px solid var(--border-light); min-width: 0; }
-.day-col:last-child { border-right: none; }
-.day-col.today { background: rgba(124,58,237,0.02); }
-.day-header { height: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-bottom: 1px solid var(--border-light); }
-.day-name { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; }
-.day-num { font-size: 0.9rem; font-weight: 700; }
-.day-num.today { background: var(--purple); color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.day-body { padding: 4px; min-height: 200px; }
-.pl-task { padding: 6px 8px; border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; margin-bottom: 4px; font-size: 0.72rem; }
-.pl-task strong { display: block; font-size: 0.75rem; }
-.pl-task-time { font-size: 0.65rem; color: var(--text-muted); }
+/* FullCalendar overrides */
+.fc-wrapper { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.fc-wrapper :deep(.fc) { font-family: 'Inter', -apple-system, sans-serif; }
+.fc-wrapper :deep(.fc-timegrid-now-indicator-line) { border-color: #ef4444; border-width: 2px; }
+.fc-wrapper :deep(.fc-timegrid-now-indicator-arrow) { border-color: #ef4444; }
+.fc-wrapper :deep(.fc-day-today) { background: rgba(124, 58, 237, 0.03) !important; }
+.fc-wrapper :deep(.fc-event) { border: none; border-radius: 6px; padding: 2px 6px; font-size: 0.78rem; cursor: pointer; }
+.fc-wrapper :deep(.fc-timegrid-event) { border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+.fc-wrapper :deep(.fc-daygrid-event) { border-radius: 4px; }
+.fc-wrapper :deep(.fc-col-header-cell) { font-size: 0.78rem; font-weight: 600; padding: 10px 0; }
+.fc-wrapper :deep(.fc-timegrid-slot-label) { font-size: 0.72rem; color: var(--text-muted); }
+.fc-wrapper :deep(.fc-daygrid-day-number) { font-size: 0.82rem; padding: 6px 8px; }
+.fc-wrapper :deep(.fc-more-link) { font-size: 0.72rem; color: var(--purple); font-weight: 600; }
+.fc-wrapper :deep(.fc-list-event) { cursor: pointer; }
+.fc-wrapper :deep(.fc-highlight) { background: rgba(124, 58, 237, 0.08); }
+.fc-wrapper :deep(.fc-business-container) { background: rgba(124, 58, 237, 0.02); }
 
-/* Month grid */
-.month-grid { display: grid; grid-template-columns: repeat(7, 1fr); background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-.month-header { padding: 10px; text-align: center; font-size: 0.72rem; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border-light); background: var(--bg); }
-.month-day { min-height: 80px; padding: 6px; border-bottom: 1px solid var(--border-light); border-right: 1px solid var(--border-light); }
-.month-day.other { opacity: 0.3; }
-.month-day.today { background: rgba(124,58,237,0.03); }
-.md-num { font-size: 0.78rem; font-weight: 600; display: block; margin-bottom: 4px; }
-.month-day.today .md-num { color: var(--purple); }
-.md-task { padding: 2px 6px; border-radius: 3px; font-size: 0.65rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Gantt (reused from before with improvements) */
+.gantt-view { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.gantt-toolbar-sub { display: flex; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--border-light); background: var(--bg); flex-wrap: wrap; gap: 8px; }
+.gz-group { display: flex; align-items: center; gap: 6px; }
+.gz-label { font-size: 0.75rem; color: var(--text-muted); }
+.gz-btn { background: #fff; border: 1px solid var(--border); padding: 4px 12px; border-radius: 6px; font-size: 0.72rem; cursor: pointer; color: var(--text-muted); }
+.gz-btn.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+.gz-select { padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.72rem; background: #fff; }
+.gantt-container { overflow-x: auto; position: relative; }
+.g-header { display: flex; position: sticky; top: 0; z-index: 2; border-bottom: 1px solid var(--border); background: #fff; }
+.g-labels-h { width: 180px; min-width: 180px; padding: 8px 12px; font-size: 0.72rem; font-weight: 600; color: var(--text-muted); border-right: 1px solid var(--border-light); }
+.g-dates-h { display: flex; }
+.g-date-col { width: 36px; min-width: 36px; text-align: center; padding: 4px 0; border-right: 1px solid var(--border-light); }
+.g-date-col.today { background: rgba(124,58,237,0.06); }
+.g-date-col.weekend { background: var(--bg); }
+.gdc-day { font-size: 0.55rem; color: var(--text-muted); display: block; text-transform: uppercase; }
+.gdc-num { font-size: 0.68rem; font-weight: 600; display: block; }
+.g-date-col.today .gdc-num { color: var(--purple); }
+.g-project { border-bottom: 1px solid var(--border-light); }
+.g-row { display: flex; border-bottom: 1px solid var(--border-light); }
+.g-label { width: 180px; min-width: 180px; padding: 8px 12px; font-size: 0.78rem; display: flex; align-items: center; gap: 8px; border-right: 1px solid var(--border-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.g-task-label { padding-left: 28px; font-size: 0.72rem; color: var(--text-secondary); }
+.gp-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.gt-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.gt-dot.todo { background: var(--text-muted); } .gt-dot.in_progress { background: #3b82f6; } .gt-dot.blocked { background: #ef4444; } .gt-dot.done { background: #10b981; }
+.g-cells { display: flex; position: relative; }
+.g-cell { width: 36px; min-width: 36px; height: 32px; border-right: 1px solid var(--border-light); position: relative; }
+.g-cell.today { background: rgba(124,58,237,0.04); } .g-cell.weekend { background: rgba(0,0,0,0.015); }
+.g-project-row .g-label { font-weight: 700; background: var(--bg); } .g-project-row .g-cell { background: var(--bg); }
+.g-bar { position: absolute; top: 3px; left: 0; height: 26px; border-radius: 5px; display: flex; align-items: center; padding: 0 6px; z-index: 1; min-width: 36px; cursor: pointer; overflow: hidden; transition: all 0.15s; }
+.g-bar:hover { filter: brightness(1.1); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+.gb-text { font-size: 0.6rem; color: #fff; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: relative; z-index: 2; }
+.gb-prog { position: absolute; top: 0; left: 0; height: 100%; background: rgba(255,255,255,0.25); border-radius: 5px; }
+.g-today-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--purple); z-index: 10; pointer-events: none; }
+.gtl { position: absolute; top: -2px; left: -12px; background: var(--purple); color: #fff; font-size: 0.5rem; padding: 1px 4px; border-radius: 3px; }
 
-@media (max-width: 768px) {
-  .week-grid { grid-template-columns: 40px repeat(7, 1fr); }
-  .time-slot { font-size: 0.6rem; }
-  .day-name { font-size: 0.6rem; }
+/* Sync slide-over */
+.sync-list { display: flex; flex-direction: column; gap: 10px; }
+.sync-item { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-md); cursor: pointer; transition: all 0.15s; }
+.sync-item:hover { border-color: var(--purple); box-shadow: var(--shadow-sm); }
+.sync-icon { font-size: 1.5rem; }
+.sync-info { flex: 1; }
+.sync-info strong { font-size: 0.9rem; display: block; }
+.sync-badge { font-size: 0.68rem; color: var(--green); font-weight: 600; }
+.btn-sm-green { background: var(--green); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+.sync-check { color: var(--green); font-size: 1.2rem; font-weight: 700; }
+
+/* Form */
+.sf { display: flex; flex-direction: column; gap: 14px; }
+.fg { display: flex; flex-direction: column; gap: 4px; }
+.fg label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
+.fi { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; background: #fff; width: 100%; }
+.fi:focus { border-color: var(--purple); }
+.ta { resize: vertical; }
+.fr { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.fa { display: flex; gap: 10px; align-items: center; padding-top: 8px; border-top: 1px solid var(--border-light); }
+.fi-check { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer; }
+.fi-check input { accent-color: var(--purple); }
+.color-row { display: flex; gap: 6px; }
+.cpick { width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+.cpick.active { border-color: var(--text); transform: scale(1.15); }
+.btn-primary { background: var(--purple); color: #fff; border: none; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+.btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; }
+.btn-danger { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+
+@media (max-width: 900px) {
+  .pl-toolbar { flex-direction: column; align-items: stretch; }
+  .pl-toolbar-left, .pl-toolbar-right { flex-wrap: wrap; }
+  .pl-views { overflow-x: auto; }
+  .g-label, .g-labels-h { width: 120px; min-width: 120px; }
+  .fr { grid-template-columns: 1fr; }
 }
 </style>

@@ -2,6 +2,7 @@ import { detectLanguage, t } from './middleware/i18n.js'
 import { handleCountryLaws } from './routes/countryLaws.js'
 import { handlePlanning } from './routes/planning.js'
 import { handleGantt } from './routes/gantt.js'
+import { handleChat } from './routes/chat.js'
 
 export default {
   async fetch(request, env) {
@@ -38,6 +39,11 @@ export default {
       // ── Gantt routes ──
       if (url.pathname.startsWith('/api/gantt')) {
         return addCors(handleGantt(request))
+      }
+
+      // ── Chat routes ──
+      if (url.pathname.startsWith('/api/chat')) {
+        return addCors(await handleChat(request, env))
       }
 
       // ── Coach IA ──

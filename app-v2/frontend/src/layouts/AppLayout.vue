@@ -135,27 +135,13 @@
     <!-- CHAT FAB -->
     <button class="chat-fab" @click="app.toggleChat()" :class="{ active: app.chatOpen }">
       💬
+      <span v-if="chatStore.totalUnread" class="chat-fab-badge">{{ chatStore.totalUnread }}</span>
     </button>
 
     <!-- Chat panel -->
     <transition name="slide-right">
-      <div v-if="app.chatOpen" class="chat-panel">
-        <div class="chat-panel-header">
-          <strong>{{ t('chat_title') }}</strong>
-          <button @click="app.toggleChat()">✕</button>
-        </div>
-        <div class="chat-channels">
-          <button class="channel active">{{ t('chat_general') }}</button>
-          <button class="channel">{{ t('chat_cs_team') }}</button>
-          <button class="channel">{{ t('chat_alerts') }}</button>
-        </div>
-        <div class="chat-messages">
-          <div class="chat-empty">{{ t('no_data') }}</div>
-        </div>
-        <div class="chat-input-area">
-          <input :placeholder="t('chat_placeholder')" />
-          <button class="send-btn">→</button>
-        </div>
+      <div v-if="app.chatOpen" class="chat-panel-wrapper">
+        <ChatPanel @close="app.toggleChat()" />
       </div>
     </transition>
   </div>
@@ -167,15 +153,18 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { onClickOutside } from '@vueuse/core'
 import ScalyoLogo from '@/components/ScalyoLogo.vue'
+import ChatPanel from '@/components/chat/ChatPanel.vue'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notifications'
+import { useChatStore } from '@/stores/chat'
 
 const route = useRoute()
 const { t, locale } = useI18n({ useScope: 'global' })
 const app = useAppStore()
 const auth = useAuthStore()
 const notifications = useNotificationStore()
+const chatStore = useChatStore()
 
 const notifOpen = ref(false)
 const notifRef = ref(null)
@@ -348,20 +337,10 @@ const sidebarSections = [
 .chat-fab { position: fixed; bottom: 24px; right: 24px; width: 52px; height: 52px; border-radius: 50%; background: var(--purple); color: #fff; border: none; font-size: 1.4rem; box-shadow: var(--shadow-lg); z-index: 400; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
 .chat-fab:hover { transform: scale(1.08); box-shadow: 0 8px 30px rgba(124,58,237,0.3); }
 .chat-fab.active { background: var(--text); }
+.chat-fab-badge { position: absolute; top: -4px; right: -4px; background: var(--red); color: #fff; font-size: 0.6rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
 /* Chat panel */
-.chat-panel { position: fixed; bottom: 88px; right: 24px; width: 360px; height: 480px; background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); z-index: 399; display: flex; flex-direction: column; border: 1px solid var(--border); }
-.chat-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--border-light); }
-.chat-panel-header button { background: none; border: none; color: var(--text-muted); font-size: 1rem; cursor: pointer; }
-.chat-channels { display: flex; gap: 4px; padding: 8px 12px; border-bottom: 1px solid var(--border-light); }
-.channel { background: var(--bg); border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
-.channel.active { background: var(--purple-bg); color: var(--purple); font-weight: 600; }
-.chat-messages { flex: 1; overflow-y: auto; padding: 16px; }
-.chat-empty { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 40px; }
-.chat-input-area { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border-light); }
-.chat-input-area input { flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; }
-.chat-input-area input:focus { border-color: var(--purple); }
-.chat-input-area .send-btn { background: var(--purple); color: #fff; border: none; border-radius: var(--radius-sm); padding: 8px 14px; font-size: 0.95rem; }
+.chat-panel-wrapper { position: fixed; bottom: 88px; right: 24px; width: 680px; height: 520px; background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); z-index: 399; border: 1px solid var(--border); overflow: hidden; }
 
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 1024px) {
@@ -379,7 +358,7 @@ const sidebarSections = [
   .hide-mobile { display: none !important; }
   .main-content { padding: 16px; }
   .notif-dropdown { width: calc(100vw - 32px); right: -60px; }
-  .chat-panel { right: 8px; left: 8px; width: auto; bottom: 80px; }
+  .chat-panel-wrapper { right: 0; left: 0; bottom: 0; top: 0; width: 100%; height: 100%; border-radius: 0; }
 }
 @media (min-width: 769px) { .hide-desktop { display: none !important; } }
 @media (min-width: 769px) { .topbar-logo-mobile { display: none; } }

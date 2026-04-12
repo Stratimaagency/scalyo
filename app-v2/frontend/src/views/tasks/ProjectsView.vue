@@ -18,22 +18,32 @@
         <transition name="slide-up">
           <div v-if="openProjects[proj.id]" class="pjc-tasks">
             <div v-for="task in projectTasks(proj.id)" :key="task.id" class="pjt-row">
-              <span class="pjt-status" :class="task.status" />
-              <div class="pjt-info">
-                <strong>{{ task.title }}</strong>
-                <div class="pjt-meta">
-                  <span v-if="task.clientId" class="pjt-client">{{ clientName(task.clientId) }}</span>
-                  <span class="pjt-due">{{ task.dueDate }}</span>
+              <div class="pjt-main">
+                <span class="pjt-status" :class="task.status" />
+                <div class="pjt-info">
+                  <div class="pjt-title-row">
+                    <strong>{{ task.title }}</strong>
+                    <span class="pjt-badge" :class="task.status">{{ t('status_' + task.status) }}</span>
+                  </div>
+                  <div class="pjt-meta">
+                    <span v-if="task.clientId" class="pjt-client">{{ clientName(task.clientId) }}</span>
+                    <span class="pjt-due">{{ task.dueDate }}</span>
+                  </div>
                 </div>
               </div>
-              <span class="pjt-badge" :class="task.status">{{ t('status_' + task.status) }}</span>
-              <!-- Subtasks -->
+              <!-- Recursive subtasks (infinite nesting) -->
               <div v-if="task.subtasks?.length" class="pjt-subtasks">
-                <div v-for="st in task.subtasks" :key="st.id" class="pjt-sub" :class="{ done: st.done }">
-                  <span class="sub-check">{{ st.done ? '✅' : '⬜' }}</span>
-                  <span>{{ st.title }}</span>
-                </div>
+                <RecursiveSubtask
+                  v-for="st in task.subtasks"
+                  :key="st.id"
+                  :subtask="st"
+                  :depth="0"
+                  :add-label="t('add')"
+                  @toggle="toggleSubtask(task, $event)"
+                  @add-child="addChildSubtask(task, $event)"
+                />
               </div>
+              <button class="pjt-add-sub" @click="addTopSubtask(task)">+ {{ t('add') }}</button>
             </div>
             <div v-if="!projectTasks(proj.id).length" class="pjt-empty">{{ t('sm_no_tasks') }}</div>
           </div>
@@ -70,6 +80,7 @@ import { useI18n } from 'vue-i18n'
 import { useTaskStore } from '@/stores/tasks'
 import { useClientStore } from '@/stores/clients'
 import SlideOver from '@/components/SlideOver.vue'
+import RecursiveSubtask from '@/components/RecursiveSubtask.vue'
 
 const { t } = useI18n({ useScope: 'global' })
 const tasks = useTaskStore()
@@ -81,7 +92,6 @@ const newColor = ref('#7c3aed')
 const openProjects = reactive({})
 const colors = ['#7c3aed', '#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4']
 
-// Open first project by default
 if (tasks.projects.length) openProjects[tasks.projects[0].id] = true
 
 function toggleProject(id) { openProjects[id] = !openProjects[id] }
@@ -92,6 +102,36 @@ function createProject() {
   tasks.addProject({ name: newName.value, color: newColor.value })
   newName.value = ''
   slideOpen.value = false
+}
+
+// Recursive subtask helpers
+function findSubtask(subtasks, id) {
+  for (const st of subtasks) {
+    if (st.id === id) return st
+    if (st.children?.length) {
+      const found = findSubtask(st.children, id)
+      if (found) return found
+    }
+  }
+  return null
+}
+
+function toggleSubtask(task, subtaskId) {
+  const st = findSubtask(task.subtasks, subtaskId)
+  if (st) st.done = !st.done
+}
+
+function addChildSubtask(task, parentId) {
+  const parent = findSubtask(task.subtasks, parentId)
+  if (parent) {
+    if (!parent.children) parent.children = []
+    parent.children.push({ id: 'st_' + Date.now(), title: 'Nouvelle sous-tâche', done: false, children: [] })
+  }
+}
+
+function addTopSubtask(task) {
+  if (!task.subtasks) task.subtasks = []
+  task.subtasks.push({ id: 'st_' + Date.now(), title: 'Nouvelle sous-tâche', done: false, children: [] })
 }
 </script>
 
@@ -113,15 +153,17 @@ function createProject() {
 .pjc-count { font-size: 0.78rem; color: var(--text-muted); }
 
 .pjc-tasks { border-top: 1px solid var(--border-light); }
-.pjt-row { display: flex; align-items: flex-start; gap: 10px; padding: 12px 20px 12px 52px; border-bottom: 1px solid var(--border-light); flex-wrap: wrap; }
+.pjt-row { padding: 12px 20px 12px 40px; border-bottom: 1px solid var(--border-light); }
 .pjt-row:last-child { border-bottom: none; }
+.pjt-main { display: flex; align-items: flex-start; gap: 10px; }
 .pjt-status { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
 .pjt-status.todo { background: var(--text-muted); }
 .pjt-status.in_progress { background: var(--blue); }
 .pjt-status.blocked { background: var(--red); }
 .pjt-status.done { background: var(--green); }
 .pjt-info { flex: 1; min-width: 0; }
-.pjt-info strong { font-size: 0.85rem; display: block; }
+.pjt-title-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.pjt-info strong { font-size: 0.85rem; }
 .pjt-meta { display: flex; gap: 8px; margin-top: 3px; }
 .pjt-client { font-size: 0.7rem; color: var(--purple); background: var(--purple-bg); padding: 1px 6px; border-radius: 4px; }
 .pjt-due { font-size: 0.7rem; color: var(--text-muted); }
@@ -131,10 +173,11 @@ function createProject() {
 .pjt-badge.blocked { background: var(--red-bg); color: var(--red); }
 .pjt-badge.done { background: var(--green-bg); color: var(--green); }
 
-.pjt-subtasks { width: 100%; margin-left: 18px; margin-top: 6px; }
-.pjt-sub { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; padding: 3px 0; }
-.pjt-sub.done { color: var(--text-muted); text-decoration: line-through; }
-.sub-check { font-size: 0.8rem; }
+.pjt-subtasks { margin-top: 8px; margin-left: 18px; border-left: 2px solid var(--border-light); padding-left: 4px; }
+
+.pjt-add-sub { background: none; border: 1px dashed var(--border); padding: 4px 12px; border-radius: 6px; font-size: 0.72rem; color: var(--text-muted); cursor: pointer; margin-top: 8px; margin-left: 18px; transition: all 0.15s; }
+.pjt-add-sub:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-bg); }
+
 .pjt-empty { padding: 16px 52px; font-size: 0.82rem; color: var(--text-muted); }
 
 .pj-empty { text-align: center; padding: 60px 20px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); }
