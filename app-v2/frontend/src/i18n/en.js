@@ -98,6 +98,8 @@ export default {
   sm_project_progress: 'Project progress', sm_burndown: 'Burn-down', sm_ideal: 'Ideal', sm_real: 'Actual',
   sm_top_late: 'Late tasks', sm_no_late: 'No late tasks', sm_estimation_analysis: 'Estimation analysis',
   sm_totals: 'Totals', sm_new_subtask: '+ Subtask', sm_avg_auto: 'Auto-calculated', sm_scroll_hint: '← Scroll →',
+  sm_delete_project_confirm: 'Delete this project and all its tasks?',
+  sm_delete_task_confirm: 'Delete this task and its subtasks?',
   sm_contract_cdi: 'Permanent', sm_contract_cdd: 'Fixed-term', sm_contract_freelance: 'Freelance',
 
   rm_title: 'Roadmap',

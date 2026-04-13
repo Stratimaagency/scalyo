@@ -31,6 +31,7 @@
               <th class="col-scroll col-num-input">{{ t('sm_col_max') }}</th>
               <th class="col-scroll col-num-input col-avg">{{ t('sm_col_avg') }}</th>
               <th class="col-scroll col-desc">{{ t('sm_col_desc') }}</th>
+              <th class="col-scroll col-actions"></th>
             </tr>
           </thead>
           <tbody>
@@ -101,6 +102,9 @@
                   <input v-if="editCell === row.id + '_desc'" v-model="row.description" class="cell-input" @keydown.enter="editCell = null" @blur="editCell = null" />
                   <span v-else class="cell-text desc">{{ row.description || '—' }}</span>
                 </td>
+                <td class="col-scroll col-actions">
+                  <button class="btn-delete" @click="deleteRow(row)" :title="t('delete')">🗑</button>
+                </td>
               </tr>
             </template>
             <!-- Totals row -->
@@ -122,6 +126,7 @@
               <td class="col-scroll col-num-input"><strong>{{ totals.max }}</strong></td>
               <td class="col-scroll col-num-input col-avg"><strong>{{ totals.avg }}</strong></td>
               <td class="col-scroll col-desc"></td>
+              <td class="col-scroll col-actions"></td>
             </tr>
           </tbody>
         </table>
@@ -266,6 +271,22 @@ function addSubtask(parentRow) {
   editCell.value = newId + '_title'
 }
 
+function deleteRow(row) {
+  if (row.type === 'project') {
+    if (!confirm(t('sm_delete_project_confirm'))) return
+    // Remove all children of this project
+    const toRemove = new Set([row.id])
+    for (const r of rows) { if (r.parentId && toRemove.has(r.parentId)) toRemove.add(r.id) }
+    rows.splice(0, rows.length, ...rows.filter(r => !toRemove.has(r.id) && r.id !== row.id))
+  } else {
+    if (!confirm(t('sm_delete_task_confirm'))) return
+    // Remove task and all nested children
+    const toRemove = new Set([row.id])
+    for (const r of rows) { if (r.parentId && toRemove.has(r.parentId)) toRemove.add(r.id) }
+    rows.splice(0, rows.length, ...rows.filter(r => !toRemove.has(r.id)))
+  }
+}
+
 function createProject() {
   rows.push({
     id: 'p' + Date.now(), type: 'project', title: newName.value, color: newColor.value, level: 0, hasChildren: false,
@@ -356,6 +377,12 @@ tr:hover .col-fix { background: #f3f4f6; }
 .add-task-btn, .add-sub-btn { opacity: 0; background: none; border: 1px dashed var(--border); padding: 1px 8px; border-radius: 4px; font-size: 0.65rem; color: var(--text-muted); cursor: pointer; margin-left: 6px; transition: all 0.15s; white-space: nowrap; }
 tr:hover .add-task-btn, tr:hover .add-sub-btn { opacity: 1; }
 .add-task-btn:hover, .add-sub-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-bg); }
+
+/* Delete button */
+.col-actions { width: 50px; min-width: 50px; text-align: center; }
+.btn-delete { background: none; border: none; cursor: pointer; padding: 4px 6px; border-radius: 4px; opacity: 0; transition: all 0.15s; font-size: 0.85rem; }
+tr:hover .btn-delete { opacity: 0.4; }
+.btn-delete:hover { opacity: 1 !important; background: #fee2e2; }
 .cell-input { width: 100%; padding: 4px 6px; border: 1.5px solid var(--purple); border-radius: 4px; font-size: 0.82rem; outline: none; background: #fff; }
 .cell-input.num { text-align: right; width: 60px; }
 .cell-input.title-input { width: 100%; }

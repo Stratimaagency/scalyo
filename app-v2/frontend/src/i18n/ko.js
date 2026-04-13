@@ -98,6 +98,8 @@ export default {
   sm_project_progress: '프로젝트 진행', sm_burndown: '번다운', sm_ideal: '이상적', sm_real: '실제',
   sm_top_late: '지연 작업', sm_no_late: '지연 작업 없음', sm_estimation_analysis: '추정 분석',
   sm_totals: '합계', sm_new_subtask: '+ 하위 작업', sm_avg_auto: '자동 계산', sm_scroll_hint: '← 스크롤 →',
+  sm_delete_project_confirm: '이 프로젝트와 모든 작업을 삭제하시겠습니까?',
+  sm_delete_task_confirm: '이 작업과 하위 작업을 삭제하시겠습니까?',
   sm_contract_cdi: '정규직', sm_contract_cdd: '계약직', sm_contract_freelance: '프리랜서',
 
   rm_title: '로드맵',

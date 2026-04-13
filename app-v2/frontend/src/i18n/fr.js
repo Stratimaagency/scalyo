@@ -370,6 +370,8 @@ export default {
   sm_new_subtask: '+ Sous-tâche',
   sm_avg_auto: 'Calculé auto',
   sm_scroll_hint: '← Faites défiler →',
+  sm_delete_project_confirm: 'Supprimer ce projet et toutes ses tâches ?',
+  sm_delete_task_confirm: 'Supprimer cette tâche et ses sous-tâches ?',
   sm_contract_cdi: 'CDI',
   sm_contract_cdd: 'CDD',
   sm_contract_freelance: 'Freelance',
