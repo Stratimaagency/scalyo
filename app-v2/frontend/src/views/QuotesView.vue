@@ -3,15 +3,22 @@
     <div class="qt-header">
       <div><h1>📄 {{ t('qt_title') }}</h1><p class="qt-sub">{{ t('qt_subtitle') }}</p></div>
       <div class="qt-actions">
-        <button class="btn-outline">{{ t('qt_config') }}</button>
+        <button class="btn-outline" @click="configOpen = true">{{ t('qt_config') }}</button>
         <button class="btn-primary" @click="slideOpen = true">{{ t('qt_new') }}</button>
       </div>
+    </div>
+
+    <!-- Country config banner -->
+    <div v-if="billingCountry" class="qt-country-banner">
+      <span>{{ laws.flag }} {{ laws.name }}</span>
+      <span>{{ t('qt_field_tax') }}: {{ laws.tva }}% ({{ laws.taxName }})</span>
+      <span>{{ t('cl_currency') }}: {{ laws.currencySymbol }}</span>
     </div>
 
     <div class="qt-kpis">
       <div class="qtk"><span class="qtk-val">{{ quotes.length }}</span><span class="qtk-lbl">{{ t('qt_total') }}</span></div>
       <div class="qtk"><span class="qtk-val">{{ conversionRate }}%</span><span class="qtk-lbl">{{ t('qt_conversion') }}</span></div>
-      <div class="qtk"><span class="qtk-val green">€{{ wonAmount.toLocaleString() }}</span><span class="qtk-lbl">{{ t('qt_won') }}</span></div>
+      <div class="qtk"><span class="qtk-val green">{{ laws.currencySymbol }}{{ wonAmount.toLocaleString() }}</span><span class="qtk-lbl">{{ t('qt_won') }}</span></div>
     </div>
 
     <div class="qt-filters">
@@ -25,7 +32,7 @@
           <span class="qtc-client">{{ clientName(q.clientId) }}</span>
         </div>
         <div class="qtc-right">
-          <span class="qtc-amount">€{{ q.amount.toLocaleString() }}</span>
+          <span class="qtc-amount">{{ laws.currencySymbol }}{{ q.amount.toLocaleString() }}</span>
           <span class="qtc-status" :class="q.status">{{ t('qt_filter_' + q.status) }}</span>
         </div>
       </div>
@@ -38,6 +45,7 @@
       <button class="btn-primary" @click="slideOpen = true">{{ t('qt_new') }}</button>
     </div>
 
+    <!-- Slide-over: Create quote -->
     <SlideOver :open="slideOpen" :title="t('qt_create_title')" @close="slideOpen = false">
       <form @submit.prevent="createQuote" class="sf">
         <div class="fg"><label>{{ t('qt_field_title') }} *</label><input v-model="form.title" required class="fi" /></div>
@@ -45,10 +53,10 @@
           <select v-model="form.clientId" class="fi"><option value="">—</option><option v-for="c in clients.clients" :key="c.id" :value="c.id">{{ c.name }}</option></select>
         </div>
         <div class="fr">
-          <div class="fg"><label>{{ t('qt_field_amount') }}</label><input v-model.number="form.amount" type="number" min="0" class="fi" /></div>
-          <div class="fg"><label>{{ t('qt_field_tax') }}</label><input v-model.number="form.tax" type="number" min="0" max="100" class="fi" /></div>
+          <div class="fg"><label>{{ t('qt_field_amount') }} ({{ laws.currencySymbol }})</label><input v-model.number="form.amount" type="number" min="0" class="fi" /></div>
+          <div class="fg"><label>{{ t('qt_field_tax') }} ({{ laws.tva }}%)</label><input v-model.number="form.tax" type="number" min="0" max="100" class="fi" /></div>
         </div>
-        <div class="fg calc-ttc"><span>{{ t('qt_ttc') }}:</span><strong>€{{ ttc.toLocaleString() }}</strong></div>
+        <div class="fg calc-ttc"><span>{{ t('qt_ttc') }}:</span><strong>{{ laws.currencySymbol }}{{ ttc.toLocaleString() }}</strong></div>
         <div class="fg"><label>{{ t('qt_field_status') }}</label>
           <select v-model="form.status" class="fi">
             <option value="draft">{{ t('qt_filter_draft') }}</option>
@@ -64,22 +72,62 @@
         </div>
       </form>
     </SlideOver>
+
+    <!-- Slide-over: Country config -->
+    <SlideOver :open="configOpen" :title="t('qt_config')" @close="configOpen = false">
+      <div class="sf">
+        <div class="fg">
+          <label>{{ t('cl_country') }}</label>
+          <select v-model="billingCountry" class="fi">
+            <option v-for="c in countryLaws.allCountries" :key="c.code" :value="c.code">{{ c.flag }} {{ c.name }}</option>
+          </select>
+        </div>
+        <div class="qt-law-info">
+          <div class="qli-row"><span>{{ t('cl_tva') }}</span><strong>{{ laws.tva }}% ({{ laws.taxName }})</strong></div>
+          <div class="qli-row"><span>{{ t('cl_currency') }}</span><strong>{{ laws.currencySymbol }} ({{ laws.currencyCode }})</strong></div>
+          <div class="qli-row"><span>{{ t('cl_legal_number') }}</span><strong>{{ legalLabel }}</strong></div>
+        </div>
+        <div class="fg"><label>{{ legalLabel }}</label><input v-model="legalNumber" class="fi" :placeholder="laws.legalNumberFormat" /></div>
+        <div class="qt-law-mention">
+          <strong>⚖️ {{ t('cl_data_law') }}</strong>
+          <p>{{ laws.privacy }}</p>
+        </div>
+      </div>
+    </SlideOver>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useClientStore } from '@/stores/clients'
+import { useCountryLawStore } from '@/stores/countryLaws'
 import SlideOver from '@/components/SlideOver.vue'
 
 const { t } = useI18n({ useScope: 'global' })
 const clients = useClientStore()
+const countryLaws = useCountryLawStore()
 
 const quotes = ref([])
 const slideOpen = ref(false)
+const configOpen = ref(false)
 const activeFilter = ref('all')
-const form = reactive({ title: '', clientId: '', amount: 0, tax: 20, status: 'draft', notes: '' })
+const billingCountry = ref(countryLaws.currentCountry)
+const legalNumber = ref('')
+
+const laws = computed(() => countryLaws.getLaws(billingCountry.value))
+const legalLabel = computed(() => {
+  const map = { FR: t('cl_legal_siret'), BE: t('cl_legal_bce'), CH: t('cl_legal_ide'), CA: t('cl_legal_tps'), US: t('cl_legal_ein'), KR: t('cl_legal_krn') }
+  return map[billingCountry.value] || t('cl_legal_number')
+})
+
+const form = reactive({ title: '', clientId: '', amount: 0, tax: laws.value.taxRate, status: 'draft', notes: '' })
+
+// Auto-update TVA when country changes
+watch(billingCountry, (country) => {
+  const l = countryLaws.getLaws(country)
+  form.tax = l.taxRate
+})
 
 const filters = [
   { key: 'all', label: 'qt_filter_all' },
@@ -97,30 +145,35 @@ const ttc = computed(() => Math.round(form.amount * (1 + form.tax / 100)))
 function clientName(id) { return clients.clients.find(c => c.id === id)?.name || '—' }
 
 function createQuote() {
-  quotes.value.push({ id: 'q' + Date.now(), ...form, createdAt: new Date().toISOString().slice(0, 10) })
-  Object.assign(form, { title: '', clientId: '', amount: 0, tax: 20, status: 'draft', notes: '' })
+  quotes.value.push({ id: 'q' + Date.now(), ...form, country: billingCountry.value, currency: laws.value.currencySymbol, createdAt: new Date().toISOString().slice(0, 10) })
+  Object.assign(form, { title: '', clientId: '', amount: 0, tax: laws.value.taxRate, status: 'draft', notes: '' })
   slideOpen.value = false
 }
 </script>
 
 <style scoped>
 .quotes-view { max-width: 900px; }
-.qt-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.qt-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
 .qt-header h1 { font-size: 1.5rem; font-weight: 800; }
 .qt-sub { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
 .qt-actions { display: flex; gap: 8px; }
 .btn-primary { background: var(--purple); color: #fff; border: none; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
 .btn-primary:hover { background: var(--purple-dark); }
 .btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; }
+.btn-outline:hover { border-color: var(--purple); color: var(--purple); }
+
+.qt-country-banner { display: flex; gap: 16px; align-items: center; background: var(--purple-bg); border: 1px solid var(--purple-border); border-radius: var(--radius-sm); padding: 10px 16px; margin-bottom: 16px; font-size: 0.82rem; flex-wrap: wrap; }
+.qt-country-banner span:first-child { font-weight: 600; }
 
 .qt-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
-.qtk { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; text-align: center; }
+.qtk { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; text-align: center; transition: all 0.2s; }
+.qtk:hover { box-shadow: var(--shadow-sm); transform: translateY(-1px); }
 .qtk-val { font-size: 1.6rem; font-weight: 800; display: block; }
 .qtk-val.green { color: var(--green); }
 .qtk-lbl { font-size: 0.72rem; color: var(--text-secondary); }
 
 .qt-filters { display: flex; gap: 4px; margin-bottom: 20px; }
-.ftab { background: var(--bg); border: none; padding: 7px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); cursor: pointer; }
+.ftab { background: var(--bg); border: none; padding: 7px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
 .ftab.active { background: var(--purple-bg); color: var(--purple); font-weight: 600; }
 
 .qt-list { display: flex; flex-direction: column; gap: 8px; }
@@ -151,6 +204,14 @@ function createQuote() {
 .fa { display: flex; gap: 10px; justify-content: flex-end; padding-top: 8px; border-top: 1px solid var(--border-light); }
 .calc-ttc { flex-direction: row; justify-content: space-between; align-items: center; padding: 12px; background: var(--purple-bg); border-radius: var(--radius-sm); }
 .calc-ttc strong { font-size: 1.1rem; color: var(--purple); }
+
+/* Country config slide-over */
+.qt-law-info { background: var(--bg); border-radius: var(--radius-sm); padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.qli-row { display: flex; justify-content: space-between; font-size: 0.82rem; }
+.qli-row span { color: var(--text-secondary); }
+.qt-law-mention { background: rgba(124,58,237,0.04); border-left: 3px solid var(--purple); border-radius: var(--radius-sm); padding: 12px; }
+.qt-law-mention strong { font-size: 0.78rem; display: block; margin-bottom: 4px; }
+.qt-law-mention p { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.5; }
 
 @media (max-width: 768px) { .qt-kpis { grid-template-columns: 1fr; } .fr { grid-template-columns: 1fr; } }
 </style>
