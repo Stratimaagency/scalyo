@@ -45,13 +45,13 @@ onUnmounted(() => {
 
 <style scoped>
 .slide-over-root { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: flex-end; }
-.slide-over-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.3); cursor: pointer; }
-.slide-over-panel { position: relative; z-index: 10000; max-width: 100vw; height: 100vh; background: #fff; box-shadow: -8px 0 32px rgba(0,0,0,0.12); display: flex; flex-direction: column; overflow: hidden; }
+.slide-over-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.3); z-index: 9998; cursor: pointer; }
+.slide-over-panel { position: fixed; top: 0; right: 0; z-index: 10000; max-width: 100vw; height: 100vh; background: #fff; box-shadow: -4px 0 24px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; }
 .slide-over-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .slide-over-title { font-size: 1.1rem; font-weight: 700; color: var(--text); }
 .slide-over-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--bg-hover); color: var(--text-secondary); font-size: 1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s; }
 .slide-over-close:hover { background: var(--border); }
-.slide-over-body { flex: 1; overflow: hidden; padding: 20px 24px; display: flex; flex-direction: column; min-height: 0; }
+.slide-over-body { flex: 1 1 0; overflow-y: auto; padding: 20px 24px; min-height: 0; }
 
 /* Transitions */
 .slide-over-enter-active .slide-over-overlay { transition: opacity 0.3s ease; }
