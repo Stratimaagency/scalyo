@@ -147,7 +147,7 @@ KPI_CATEGORIES.slice(0, 3).forEach(c => { catOpen[c.id] = true })
 </script>
 
 <style scoped>
-.kc-body { display: flex; flex-direction: column; gap: 14px; height: calc(100vh - 100px); overflow: hidden; }
+.kc-body { display: flex; flex-direction: column; gap: 14px; height: 100%; overflow: hidden; padding: 20px 24px; }
 .kc-sub { font-size: 0.82rem; color: var(--text-secondary); flex-shrink: 0; }
 
 .kc-filters { display: flex; gap: 4px; flex-wrap: wrap; flex-shrink: 0; }
