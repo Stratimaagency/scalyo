@@ -23,7 +23,7 @@
       </div>
 
       <!-- Catalog grouped by category -->
-      <div class="kc-catalog" style="overflow-y: auto; max-height: calc(100vh - 380px); min-height: 0;">
+      <div class="kc-catalog">
         <div v-for="cat in filteredCategories" :key="cat.id" class="kc-cat">
           <h4 class="kc-cat-title" @click="catOpen[cat.id] = !catOpen[cat.id]">
             <span>{{ catOpen[cat.id] ? '▾' : '▸' }}</span>
@@ -147,7 +147,7 @@ KPI_CATEGORIES.slice(0, 3).forEach(c => { catOpen[c.id] = true })
 </script>
 
 <style scoped>
-.kc-body { display: flex; flex-direction: column; gap: 14px; flex: 1 1 0; min-height: 0; overflow: hidden; padding: 20px 24px; }
+.kc-body { display: flex; flex-direction: column; gap: 14px; padding: 20px 24px; overflow-y: auto; height: 100%; }
 .kc-sub { font-size: 0.82rem; color: var(--text-secondary); flex-shrink: 0; }
 
 .kc-filters { display: flex; gap: 4px; flex-wrap: wrap; flex-shrink: 0; }
@@ -167,7 +167,7 @@ KPI_CATEGORIES.slice(0, 3).forEach(c => { catOpen[c.id] = true })
 .kc-sel-remove:hover { color: var(--red); }
 .kc-sel-empty { font-size: 0.78rem; color: var(--text-muted); text-align: center; padding: 12px; }
 
-.kc-catalog { height: calc(100vh - 360px); overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding-right: 4px; }
+.kc-catalog { display: flex; flex-direction: column; gap: 4px; }
 .kc-cat { background: var(--bg); border-radius: var(--radius-sm); overflow: hidden; }
 .kc-cat-title { display: flex; align-items: center; gap: 6px; padding: 8px 12px; font-size: 0.82rem; font-weight: 700; cursor: pointer; margin: 0; }
 .kc-cat-title:hover { background: var(--bg-hover); }
