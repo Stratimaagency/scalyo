@@ -167,7 +167,7 @@ KPI_CATEGORIES.slice(0, 3).forEach(c => { catOpen[c.id] = true })
 .kc-sel-remove:hover { color: var(--red); }
 .kc-sel-empty { font-size: 0.78rem; color: var(--text-muted); text-align: center; padding: 12px; }
 
-.kc-catalog { flex: 1 1 0; overflow-y: scroll; min-height: 0; display: flex; flex-direction: column; gap: 4px; padding-right: 4px; }
+.kc-catalog { height: calc(100vh - 360px); overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding-right: 4px; }
 .kc-cat { background: var(--bg); border-radius: var(--radius-sm); overflow: hidden; }
 .kc-cat-title { display: flex; align-items: center; gap: 6px; padding: 8px 12px; font-size: 0.82rem; font-weight: 700; cursor: pointer; margin: 0; }
 .kc-cat-title:hover { background: var(--bg-hover); }
