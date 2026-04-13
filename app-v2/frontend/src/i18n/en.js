@@ -91,6 +91,10 @@ export default {
   sm_team_title: 'Team', sm_member: 'Member', sm_assigned_tasks: 'Assigned tasks',
   sm_settings_title: 'Smart Matrix Settings', sm_firstname: 'First name', sm_country: 'Country', sm_company: 'Company', sm_contract: 'Contract type', sm_days_week: 'Days / week', sm_hours_day: 'Hours / day', sm_vacation_days: 'Vacation / year', sm_holidays: 'Holidays / year', sm_exceptional: 'Exceptional leave', sm_daily_tasks: 'Daily fixed tasks (h)', sm_working_days: 'Working days / year', sm_project_hours_day: 'Project hours / day', sm_project_hours_year: 'Project hours / year', sm_auto_calculated: 'Auto-calculated',
   sm_priority_urgent_important: 'Urgent & Important', sm_priority_important: 'Important', sm_priority_urgent: 'Urgent', sm_priority_not_urgent: 'Not urgent', sm_no_tasks: 'No tasks',
+  sm_col_start: 'Start date', sm_col_end: 'End date', sm_col_urgency: 'Urgency', sm_col_importance: 'Importance', sm_col_difficulty: 'Difficulty',
+  sm_col_finished: 'Finished', sm_col_pended: 'Pending', sm_col_actual: 'Actual (h)', sm_col_expected: 'Expected (h)', sm_col_min: 'Min (h)', sm_col_max: 'Max (h)', sm_col_avg: 'Avg (h)', sm_col_desc: 'Description', sm_col_title: 'Title',
+  sm_badge_1: 'Very low', sm_badge_2: 'Low', sm_badge_3: 'Medium', sm_badge_4: 'High', sm_badge_5: 'Critical',
+  sm_totals: 'Totals', sm_new_subtask: '+ Subtask', sm_avg_auto: 'Auto-calculated', sm_scroll_hint: '← Scroll →',
   sm_contract_cdi: 'Permanent', sm_contract_cdd: 'Fixed-term', sm_contract_freelance: 'Freelance',
 
   rm_title: 'Roadmap',

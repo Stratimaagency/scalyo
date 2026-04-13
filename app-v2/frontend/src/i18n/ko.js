@@ -91,6 +91,10 @@ export default {
   sm_team_title: '팀', sm_member: '멤버', sm_assigned_tasks: '할당된 작업',
   sm_settings_title: '스마트 매트릭스 설정', sm_firstname: '이름', sm_country: '국가', sm_company: '회사', sm_contract: '계약 유형', sm_days_week: '일 / 주', sm_hours_day: '시간 / 일', sm_vacation_days: '휴가 / 년', sm_holidays: '공휴일 / 년', sm_exceptional: '특별 휴가', sm_daily_tasks: '일일 고정 작업 (h)', sm_working_days: '근무일 / 년', sm_project_hours_day: '프로젝트 시간 / 일', sm_project_hours_year: '프로젝트 시간 / 년', sm_auto_calculated: '자동 계산',
   sm_priority_urgent_important: '긴급 & 중요', sm_priority_important: '중요', sm_priority_urgent: '긴급', sm_priority_not_urgent: '긴급하지 않음', sm_no_tasks: '작업 없음',
+  sm_col_start: '시작일', sm_col_end: '종료일', sm_col_urgency: '긴급도', sm_col_importance: '중요도', sm_col_difficulty: '난이도',
+  sm_col_finished: '완료', sm_col_pended: '대기', sm_col_actual: '실제 (h)', sm_col_expected: '예상 (h)', sm_col_min: '최소 (h)', sm_col_max: '최대 (h)', sm_col_avg: '평균 (h)', sm_col_desc: '설명', sm_col_title: '제목',
+  sm_badge_1: '매우 낮음', sm_badge_2: '낮음', sm_badge_3: '보통', sm_badge_4: '높음', sm_badge_5: '위급',
+  sm_totals: '합계', sm_new_subtask: '+ 하위 작업', sm_avg_auto: '자동 계산', sm_scroll_hint: '← 스크롤 →',
   sm_contract_cdi: '정규직', sm_contract_cdd: '계약직', sm_contract_freelance: '프리랜서',
 
   rm_title: '로드맵',
