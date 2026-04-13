@@ -177,7 +177,7 @@ function generate() {
 </script>
 
 <style scoped>
-.kn { max-width: 720px; margin: 0 auto; }
+.kn { max-width: 720px; margin: 0 auto; min-height: 100vh; }
 .kn-header { margin-bottom: 24px; }
 .kn-back { font-size: 0.82rem; color: var(--text-muted); display: block; margin-bottom: 8px; }
 .kn-back:hover { color: var(--purple); }
@@ -194,7 +194,7 @@ function generate() {
 .kn-step span { font-size: 0.68rem; color: var(--text-muted); }
 .kn-step.active span { color: var(--purple); font-weight: 600; }
 
-.kn-panel { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 28px; margin-bottom: 20px; animation: fadeIn 0.2s ease; max-height: calc(100vh - 200px); overflow-y: auto; }
+.kn-panel { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 28px; margin-bottom: 20px; animation: fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .kn-panel h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; }
 
@@ -219,7 +219,7 @@ function generate() {
 .part-check input { accent-color: var(--purple); }
 .part-role { font-size: 0.72rem; color: var(--text-muted); margin-left: auto; }
 
-.kpi-catalog { display: flex; flex-direction: column; gap: 6px; max-height: calc(100vh - 300px); overflow-y: auto; }
+.kpi-catalog { display: flex; flex-direction: column; gap: 6px; max-height: 55vh; overflow-y: auto; }
 .kcat { background: var(--bg); border-radius: var(--radius-sm); overflow: hidden; }
 .kcat-title { display: flex; align-items: center; gap: 8px; padding: 10px 14px; font-size: 0.88rem; font-weight: 700; cursor: pointer; margin: 0; }
 .kcat-title:hover { background: var(--bg-hover); }
