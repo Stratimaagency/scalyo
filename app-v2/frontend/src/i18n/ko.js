@@ -94,6 +94,9 @@ export default {
   sm_col_start: '시작일', sm_col_end: '종료일', sm_col_urgency: '긴급도', sm_col_importance: '중요도', sm_col_difficulty: '난이도',
   sm_col_finished: '완료', sm_col_pended: '대기', sm_col_actual: '실제 (h)', sm_col_expected: '예상 (h)', sm_col_min: '최소 (h)', sm_col_max: '최대 (h)', sm_col_avg: '평균 (h)', sm_col_desc: '설명', sm_col_title: '제목',
   sm_badge_1: '매우 낮음', sm_badge_2: '낮음', sm_badge_3: '보통', sm_badge_4: '높음', sm_badge_5: '위급',
+  sm_velocity: '속도', sm_velocity_unit: '작업/주', sm_estimation_acc: '추정 정확도', sm_delivery_rate: '전달률',
+  sm_project_progress: '프로젝트 진행', sm_burndown: '번다운', sm_ideal: '이상적', sm_real: '실제',
+  sm_top_late: '지연 작업', sm_no_late: '지연 작업 없음', sm_estimation_analysis: '추정 분석',
   sm_totals: '합계', sm_new_subtask: '+ 하위 작업', sm_avg_auto: '자동 계산', sm_scroll_hint: '← 스크롤 →',
   sm_contract_cdi: '정규직', sm_contract_cdd: '계약직', sm_contract_freelance: '프리랜서',
 

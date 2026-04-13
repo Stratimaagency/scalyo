@@ -94,6 +94,9 @@ export default {
   sm_col_start: 'Start date', sm_col_end: 'End date', sm_col_urgency: 'Urgency', sm_col_importance: 'Importance', sm_col_difficulty: 'Difficulty',
   sm_col_finished: 'Finished', sm_col_pended: 'Pending', sm_col_actual: 'Actual (h)', sm_col_expected: 'Expected (h)', sm_col_min: 'Min (h)', sm_col_max: 'Max (h)', sm_col_avg: 'Avg (h)', sm_col_desc: 'Description', sm_col_title: 'Title',
   sm_badge_1: 'Very low', sm_badge_2: 'Low', sm_badge_3: 'Medium', sm_badge_4: 'High', sm_badge_5: 'Critical',
+  sm_velocity: 'Velocity', sm_velocity_unit: 'tasks/week', sm_estimation_acc: 'Estimation accuracy', sm_delivery_rate: 'Delivery rate',
+  sm_project_progress: 'Project progress', sm_burndown: 'Burn-down', sm_ideal: 'Ideal', sm_real: 'Actual',
+  sm_top_late: 'Late tasks', sm_no_late: 'No late tasks', sm_estimation_analysis: 'Estimation analysis',
   sm_totals: 'Totals', sm_new_subtask: '+ Subtask', sm_avg_auto: 'Auto-calculated', sm_scroll_hint: '← Scroll →',
   sm_contract_cdi: 'Permanent', sm_contract_cdd: 'Fixed-term', sm_contract_freelance: 'Freelance',
 
