@@ -361,6 +361,7 @@ export default {
   res_expert: 'Expert',
   res_no_results: 'No resources match your filters',
   res_search_ph: 'Search...',
+  res_exercise: 'Practical exercise',
 
   stg_appearance_note: 'Light mode only for now. Dark mode coming soon.',
   stg_delete_warning: 'This action is irreversible. All your data will be permanently deleted.',

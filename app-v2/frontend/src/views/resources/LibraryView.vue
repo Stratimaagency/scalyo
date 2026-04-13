@@ -19,18 +19,31 @@
       </div>
     </div>
     <div class="lib-grid">
-      <div v-for="r in filtered" :key="r.id" class="lib-card">
-        <span class="lc-icon">{{ r.icon }}</span>
-        <div class="lc-body">
-          <strong>{{ r.title }}</strong>
-          <p>{{ r.desc }}</p>
-          <div class="lc-meta">
-            <span class="lc-cat">{{ r.category }}</span>
-            <span class="lc-level" :class="r.level">{{ levelLabel(r.level) }}</span>
-            <span class="lc-dur">{{ r.duration }}</span>
+      <div v-for="r in filtered" :key="r.id" class="lib-card" :class="{ expanded: openId === r.id }">
+        <div class="lc-top" @click="openId = openId === r.id ? null : r.id">
+          <span class="lc-icon">{{ r.icon }}</span>
+          <div class="lc-body">
+            <strong>{{ r.title }}</strong>
+            <p>{{ r.desc }}</p>
+            <div class="lc-meta">
+              <span class="lc-cat">{{ r.category }}</span>
+              <span class="lc-level" :class="r.level">{{ levelLabel(r.level) }}</span>
+              <span class="lc-dur">{{ r.duration }}</span>
+            </div>
+          </div>
+          <span class="lc-chevron">{{ openId === r.id ? '▾' : '▸' }}</span>
+        </div>
+        <!-- Expanded content -->
+        <div v-if="openId === r.id && r.content" class="lc-content">
+          <div v-for="section in r.content" :key="section.week" class="lc-section">
+            <h4>{{ section.week }}</h4>
+            <ul><li v-for="item in section.items" :key="item">{{ item }}</li></ul>
+          </div>
+          <div v-if="r.exercise" class="lc-exercise">
+            <strong>📝 {{ t('res_exercise') }}</strong>
+            <p>{{ r.exercise }}</p>
           </div>
         </div>
-        <button class="btn-sm-green">{{ t('dash_view_all') }} →</button>
       </div>
     </div>
     <div v-if="!filtered.length" class="lib-empty">
@@ -49,6 +62,7 @@ const store = useResourceStore()
 const activeCat = ref('all')
 const activeLevel = ref('all')
 const search = ref('')
+const openId = ref(null)
 const cats = computed(() => [
   { key: 'all', label: t('all') }, { key: 'guide', label: '📘 Guides' }, { key: 'checklist', label: '📋 Checklists' },
   { key: 'framework', label: '🎯 Frameworks' }, { key: 'script', label: '⚙️ Scripts' }, { key: 'template', label: '📊 Templates' },
@@ -71,8 +85,21 @@ function levelLabel(l) { return l === 'beginner' ? t('res_beginner') : l === 'in
 .search-box { display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 10px; }
 .search-box input { border: none; outline: none; padding: 7px 0; font-size: 0.82rem; width: 140px; background: transparent; }
 .lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
-.lib-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; display: flex; gap: 14px; align-items: flex-start; transition: all 0.2s; }
-.lib-card:hover { box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+.lib-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; transition: all 0.2s; }
+.lib-card:hover { box-shadow: var(--shadow-sm); }
+.lib-card.expanded { border-color: var(--purple-border); }
+.lc-top { display: flex; gap: 14px; align-items: flex-start; padding: 20px; cursor: pointer; transition: background 0.15s; }
+.lc-top:hover { background: var(--bg-hover); }
+.lc-chevron { font-size: 0.8rem; color: var(--text-muted); flex-shrink: 0; margin-top: 4px; }
+.lc-content { border-top: 1px solid var(--border-light); padding: 16px 20px 20px 54px; }
+.lc-section { margin-bottom: 14px; }
+.lc-section h4 { font-size: 0.82rem; font-weight: 700; color: var(--purple); margin-bottom: 6px; }
+.lc-section ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.lc-section li { font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary); padding-left: 14px; position: relative; }
+.lc-section li::before { content: '→'; position: absolute; left: 0; color: var(--text-muted); }
+.lc-exercise { background: var(--amber-bg); border-radius: var(--radius-sm); padding: 12px; margin-top: 10px; }
+.lc-exercise strong { font-size: 0.78rem; display: block; margin-bottom: 4px; }
+.lc-exercise p { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; }
 .lc-icon { font-size: 2rem; flex-shrink: 0; }
 .lc-body { flex: 1; min-width: 0; }
 .lc-body strong { font-size: 0.9rem; display: block; margin-bottom: 4px; }

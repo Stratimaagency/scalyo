@@ -746,6 +746,7 @@ export default {
   res_expert: 'Expert',
   res_no_results: 'Aucune ressource ne correspond aux filtres',
   res_search_ph: 'Rechercher...',
+  res_exercise: 'Exercice pratique',
 
   // Settings hardcoded fixes
   stg_appearance_note: 'Mode clair uniquement pour le moment. Le mode sombre arrive bientôt.',

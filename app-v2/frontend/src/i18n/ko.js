@@ -361,6 +361,7 @@ export default {
   res_expert: '고급',
   res_no_results: '필터에 해당하는 리소스가 없습니다',
   res_search_ph: '검색...',
+  res_exercise: '실습 과제',
 
   stg_appearance_note: '현재 라이트 모드만 지원됩니다. 다크 모드가 곧 출시됩니다.',
   stg_delete_warning: '이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 삭제됩니다.',
