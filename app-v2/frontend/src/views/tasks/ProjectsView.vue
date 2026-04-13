@@ -47,6 +47,8 @@
                     <input v-model="row.title" class="cell-input title-input" @keydown.enter="editCell = null" @keydown.tab.prevent="editCell = null" @keydown.escape="editCell = null" ref="editRef" />
                   </span>
                   <span v-else class="cell-text title-text" :class="{ bold: row.type === 'project' }" @click="editCell = row.id + '_title'">{{ row.title }}</span>
+                  <button v-if="row.type === 'project'" class="add-task-btn" @click.stop="addTask(row.id)">+ {{ t('sm_new_task') }}</button>
+                  <button v-else class="add-sub-btn" @click.stop="addSubtask(row)">+</button>
                 </td>
                 <!-- Scrollable columns -->
                 <td class="col-scroll col-date" @click="editCell = row.id + '_startDate'">
@@ -227,6 +229,43 @@ const totals = computed(() => {
   }
 })
 
+function addTask(projectId) {
+  const newId = 't_' + Date.now()
+  const projIdx = rows.findIndex(r => r.id === projectId)
+  // Find last child of this project to insert after
+  let insertIdx = projIdx + 1
+  while (insertIdx < rows.length && rows[insertIdx].parentId === projectId) insertIdx++
+  // Also skip nested children
+  while (insertIdx < rows.length && rows[insertIdx].level > 0 && rows[insertIdx].parentId) insertIdx++
+  const newTask = {
+    id: newId, type: 'task', parentId: projectId, title: '', level: 1, hasChildren: false,
+    startDate: '', endDate: '', urgency: 3, importance: 3, difficulty: 3, status: 'todo',
+    finished: false, pended: false, actualHours: 0, expectedHours: 0, minHours: 0, maxHours: 0, description: '',
+  }
+  rows.splice(insertIdx, 0, newTask)
+  // Mark parent as having children
+  const parent = rows.find(r => r.id === projectId)
+  if (parent) parent.hasChildren = true
+  expanded[projectId] = true
+  editCell.value = newId + '_title'
+}
+
+function addSubtask(parentRow) {
+  const newId = 'st_' + Date.now()
+  const parentIdx = rows.findIndex(r => r.id === parentRow.id)
+  let insertIdx = parentIdx + 1
+  while (insertIdx < rows.length && rows[insertIdx].level > parentRow.level) insertIdx++
+  const newSub = {
+    id: newId, type: 'subtask', parentId: parentRow.id, title: '', level: parentRow.level + 1, hasChildren: false,
+    startDate: '', endDate: '', urgency: 3, importance: 3, difficulty: 3, status: 'todo',
+    finished: false, pended: false, actualHours: 0, expectedHours: 0, minHours: 0, maxHours: 0, description: '',
+  }
+  rows.splice(insertIdx, 0, newSub)
+  parentRow.hasChildren = true
+  expanded[parentRow.id] = true
+  editCell.value = newId + '_title'
+}
+
 function createProject() {
   rows.push({
     id: 'p' + Date.now(), type: 'project', title: newName.value, color: newColor.value, level: 0, hasChildren: false,
@@ -254,14 +293,16 @@ function createProject() {
 .table-scroll { overflow-x: auto; }
 .pv-table { width: max-content; min-width: 100%; border-collapse: collapse; font-size: 0.82rem; }
 
-/* Header */
-.pv-table thead th { padding: 10px 8px; font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid var(--border); white-space: nowrap; text-align: left; background: var(--bg); }
+/* Header — sticky top + opaque */
+.pv-table thead th { padding: 10px 8px; font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid var(--border); white-space: nowrap; text-align: left; background: #f9fafb; position: sticky; top: 0; z-index: 10; }
+.pv-table thead th.col-fix { z-index: 15; background: #f9fafb; }
+.pv-table thead th.col-title { border-right: 2px solid var(--border); }
 
-/* Fixed columns */
-.col-fix { position: sticky; z-index: 2; background: #fff; }
+/* Fixed columns — opaque backgrounds, always visible */
+.col-fix { position: sticky; z-index: 5; background: #ffffff; }
 .col-exp { left: 0; width: 32px; min-width: 32px; }
 .col-num { left: 32px; width: 36px; min-width: 36px; text-align: center; color: var(--text-muted); }
-.col-title { left: 68px; min-width: 200px; max-width: 280px; }
+.col-title { left: 68px; min-width: 220px; max-width: 300px; border-right: 2px solid var(--border); }
 thead .col-fix { background: var(--bg); }
 
 /* Scrollable columns */
@@ -279,16 +320,18 @@ thead .col-fix { background: var(--bg); }
 .pv-table tbody tr:hover { background: rgba(0,0,0,0.015); }
 .pv-table tbody td { padding: 6px 8px; vertical-align: middle; }
 
-.row-project { background: rgba(124,58,237,0.03); }
-.row-project .col-fix { background: rgba(124,58,237,0.03); }
-.row-project:hover .col-fix { background: rgba(124,58,237,0.05); }
-.row-level-2 { background: rgba(0,0,0,0.01); }
-.row-level-2 .col-fix { background: rgba(0,0,0,0.01); }
+.row-project { background: #f5f3ff; }
+.row-project .col-fix { background: #f5f3ff; }
+.row-project:hover .col-fix { background: #ede9fe; }
+.row-level-2 { background: #fafafa; }
+.row-level-2 .col-fix { background: #fafafa; }
 .row-done { opacity: 0.55; }
+tr:hover .col-fix { background: #f3f4f6; }
+.row-project:hover .col-fix { background: #ede9fe; }
 
 /* Totals */
 .row-totals { background: var(--bg); font-weight: 600; border-top: 2px solid var(--border); }
-.row-totals .col-fix { background: var(--bg); }
+.row-totals .col-fix { background: #f3f4f6; }
 .row-totals td { padding: 10px 8px; font-size: 0.78rem; }
 
 /* Expand button */
@@ -304,7 +347,13 @@ thead .col-fix { background: var(--bg); }
 .cell-text.num { text-align: right; font-variant-numeric: tabular-nums; }
 .cell-text.avg { color: var(--purple); font-weight: 600; }
 .cell-text.desc { max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
-.cell-text.bold, .title-text.bold { font-weight: 700; }
+.cell-text.bold, .title-text.bold { font-weight: 700; color: #111827; }
+.title-text { font-weight: 500; color: #111827; }
+
+/* Add task/subtask buttons — visible on hover */
+.add-task-btn, .add-sub-btn { opacity: 0; background: none; border: 1px dashed var(--border); padding: 1px 8px; border-radius: 4px; font-size: 0.65rem; color: var(--text-muted); cursor: pointer; margin-left: 6px; transition: all 0.15s; white-space: nowrap; }
+tr:hover .add-task-btn, tr:hover .add-sub-btn { opacity: 1; }
+.add-task-btn:hover, .add-sub-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-bg); }
 .cell-input { width: 100%; padding: 4px 6px; border: 1.5px solid var(--purple); border-radius: 4px; font-size: 0.82rem; outline: none; background: #fff; }
 .cell-input.num { text-align: right; width: 60px; }
 .cell-input.title-input { width: 100%; }
