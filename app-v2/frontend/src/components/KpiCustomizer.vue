@@ -147,18 +147,18 @@ KPI_CATEGORIES.slice(0, 3).forEach(c => { catOpen[c.id] = true })
 </script>
 
 <style scoped>
-.kc-body { display: flex; flex-direction: column; gap: 14px; }
-.kc-sub { font-size: 0.82rem; color: var(--text-secondary); }
+.kc-body { display: flex; flex-direction: column; gap: 14px; height: 100%; overflow: hidden; }
+.kc-sub { font-size: 0.82rem; color: var(--text-secondary); flex-shrink: 0; }
 
-.kc-filters { display: flex; gap: 4px; flex-wrap: wrap; }
+.kc-filters { display: flex; gap: 4px; flex-wrap: wrap; flex-shrink: 0; }
 .kc-pill { background: var(--bg); border: none; padding: 5px 12px; border-radius: 999px; font-size: 0.75rem; cursor: pointer; color: var(--text-muted); transition: all 0.15s; }
 .kc-pill.active { background: var(--purple); color: #fff; }
 
-.kc-search { display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 10px; }
+.kc-search { display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 10px; flex-shrink: 0; }
 .kc-search input { border: none; outline: none; padding: 8px 0; font-size: 0.82rem; width: 100%; background: transparent; }
 
-.kc-selected-header { font-size: 0.75rem; font-weight: 700; color: var(--purple); }
-.kc-selected-list { display: flex; flex-direction: column; gap: 4px; min-height: 40px; }
+.kc-selected-header { font-size: 0.75rem; font-weight: 700; color: var(--purple); flex-shrink: 0; }
+.kc-selected-list { display: flex; flex-direction: column; gap: 4px; min-height: 40px; flex-shrink: 0; max-height: 200px; overflow-y: auto; }
 .kc-sel-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: var(--purple-bg); border: 1px solid var(--purple-border); border-radius: 6px; cursor: grab; font-size: 0.82rem; }
 .kc-sel-item:active { cursor: grabbing; }
 .kc-drag { color: var(--text-muted); font-size: 0.9rem; cursor: grab; }
@@ -167,7 +167,7 @@ KPI_CATEGORIES.slice(0, 3).forEach(c => { catOpen[c.id] = true })
 .kc-sel-remove:hover { color: var(--red); }
 .kc-sel-empty { font-size: 0.78rem; color: var(--text-muted); text-align: center; padding: 12px; }
 
-.kc-catalog { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+.kc-catalog { flex: 1; overflow-y: auto; min-height: 0; display: flex; flex-direction: column; gap: 4px; padding-right: 4px; }
 .kc-cat { background: var(--bg); border-radius: var(--radius-sm); overflow: hidden; }
 .kc-cat-title { display: flex; align-items: center; gap: 6px; padding: 8px 12px; font-size: 0.82rem; font-weight: 700; cursor: pointer; margin: 0; }
 .kc-cat-title:hover { background: var(--bg-hover); }
@@ -185,7 +185,7 @@ KPI_CATEGORIES.slice(0, 3).forEach(c => { catOpen[c.id] = true })
 
 .kc-max-warn { font-size: 0.75rem; color: var(--amber); text-align: center; padding: 6px; background: var(--amber-bg); border-radius: 6px; }
 
-.kc-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 10px; border-top: 1px solid var(--border-light); }
+.kc-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 10px; border-top: 1px solid var(--border-light); flex-shrink: 0; }
 .btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 0.82rem; cursor: pointer; }
 .btn-primary { background: var(--purple); color: #fff; border: none; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 600; cursor: pointer; }
 </style>

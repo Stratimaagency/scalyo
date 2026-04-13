@@ -32,7 +32,7 @@ defineEmits(['close'])
 .slide-over-title { font-size: 1.1rem; font-weight: 700; color: var(--text); }
 .slide-over-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--bg-hover); color: var(--text-secondary); font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
 .slide-over-close:hover { background: var(--border); }
-.slide-over-body { flex: 1; overflow-y: auto; padding: 24px; }
+.slide-over-body { flex: 1; overflow: hidden; padding: 24px; display: flex; flex-direction: column; min-height: 0; }
 
 /* Transitions */
 .slide-over-enter-active .slide-over-panel, .slide-over-leave-active .slide-over-panel { transition: transform 0.3s ease; }
