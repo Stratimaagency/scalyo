@@ -17,24 +17,29 @@
             v-for="task in colTasks(col.key)"
             :key="task.id"
             class="kb-card"
+            :class="'prio-' + priorityLevel(task.priority)"
             draggable="true"
             @dragstart="onDragStart($event, task)"
             @click="openEdit(task)"
           >
             <div class="kcard-top">
               <strong>{{ task.title }}</strong>
-              <span v-if="task.priority === 'urgent_important'" class="kcard-urgent">!</span>
+              <span class="prio-badge" :class="'pb-' + priorityLevel(task.priority)">{{ priorityLabel(task.priority) }}</span>
             </div>
             <div class="kcard-meta">
               <span v-if="task.clientId" class="kcard-client">{{ clientName(task.clientId) }}</span>
               <span v-if="task.projectId" class="kcard-project" :style="{ borderColor: projectColor(task.projectId) }">{{ projectName(task.projectId) }}</span>
             </div>
             <div class="kcard-footer">
-              <span class="kcard-assignee">{{ assigneeName(task.assignee) }}</span>
+              <div class="kcard-assignee-wrap">
+                <span class="kcard-avatar">{{ assigneeName(task.assignee)?.[0] || '?' }}</span>
+                <span class="kcard-assignee">{{ assigneeName(task.assignee) }}</span>
+              </div>
               <span class="kcard-due" :class="{ late: isOverdue(task) }">{{ task.dueDate }}</span>
             </div>
             <div v-if="task.subtasks?.length" class="kcard-subtasks">
-              {{ task.subtasks.filter(s => s.done).length }}/{{ task.subtasks.length }}
+              <div class="kcard-sub-bar"><div class="kcard-sub-fill" :style="{ width: (task.subtasks.filter(s => s.done).length / task.subtasks.length * 100) + '%' }" /></div>
+              <span>{{ task.subtasks.filter(s => s.done).length }}/{{ task.subtasks.length }}</span>
             </div>
           </div>
           <!-- Drop zone -->
@@ -121,6 +126,15 @@ function projectColor(id) { return tasks.projects.find(p => p.id === id)?.color 
 function assigneeName(id) { return team.members.find(m => m.id === id)?.name || '' }
 function isOverdue(task) { return task.status !== 'done' && task.dueDate < new Date().toISOString().slice(0, 10) }
 
+function priorityLevel(p) {
+  const map = { urgent_important: 'critical', important: 'high', urgent: 'medium', not_urgent: 'low' }
+  return map[p] || 'low'
+}
+function priorityLabel(p) {
+  const map = { urgent_important: t('sm_badge_5'), important: t('sm_badge_4'), urgent: t('sm_badge_3'), not_urgent: t('sm_badge_2') }
+  return map[p] || t('sm_badge_1')
+}
+
 function onDragStart(e, task) { draggedTask = task; e.dataTransfer.effectAllowed = 'move' }
 function onDrop(e, newStatus) { if (draggedTask) { tasks.moveTask(draggedTask.id, newStatus); draggedTask = null } }
 
@@ -155,7 +169,11 @@ function deleteTask() {
 .btn-danger { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; font-weight: 600; }
 
 .kb-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; }
-.kb-col { background: var(--bg); border-radius: var(--radius-md); min-height: 300px; }
+.kb-col { border-radius: var(--radius-md); min-height: 300px; }
+.kb-col.todo { background: #f8fafc; }
+.kb-col.in_progress { background: #fffbeb; }
+.kb-col.blocked { background: #fff5f5; }
+.kb-col.done { background: #f0fdf4; }
 .kbc-header { display: flex; align-items: center; gap: 8px; padding: 14px 14px 10px; }
 .kbc-dot { width: 8px; height: 8px; border-radius: 50%; }
 .kbc-dot.todo { background: var(--text-muted); }
@@ -169,17 +187,34 @@ function deleteTask() {
 .kb-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 8px; cursor: grab; transition: all 0.15s; }
 .kb-card:hover { box-shadow: var(--shadow-sm); transform: translateY(-1px); }
 .kb-card:active { cursor: grabbing; }
-.kcard-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-.kcard-top strong { font-size: 0.82rem; }
-.kcard-urgent { background: var(--red-bg); color: var(--red); width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; }
+/* Card priority border */
+.kb-card.prio-critical { border-left: 3px solid #ef4444; }
+.kb-card.prio-high { border-left: 3px solid #f97316; }
+.kb-card.prio-medium { border-left: 3px solid #f59e0b; }
+.kb-card.prio-low { border-left: 3px solid #10b981; }
+
+.kcard-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 6px; }
+.kcard-top strong { font-size: 0.82rem; flex: 1; }
+
+/* Priority badge */
+.prio-badge { font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; }
+.pb-critical { background: #fee2e2; color: #991b1b; }
+.pb-high { background: #ffedd5; color: #9a3412; }
+.pb-medium { background: #fef3c7; color: #92400e; }
+.pb-low { background: #d1fae5; color: #065f46; }
+
 .kcard-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
 .kcard-client { font-size: 0.68rem; color: var(--purple); background: var(--purple-bg); padding: 1px 6px; border-radius: 4px; }
 .kcard-project { font-size: 0.68rem; padding: 1px 6px; border-radius: 4px; border: 1px solid; }
-.kcard-footer { display: flex; justify-content: space-between; }
+.kcard-footer { display: flex; justify-content: space-between; align-items: center; }
+.kcard-assignee-wrap { display: flex; align-items: center; gap: 5px; }
+.kcard-avatar { width: 18px; height: 18px; border-radius: 50%; background: var(--purple); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: 700; flex-shrink: 0; }
 .kcard-assignee { font-size: 0.7rem; color: var(--text-muted); }
 .kcard-due { font-size: 0.7rem; color: var(--text-muted); }
 .kcard-due.late { color: var(--red); font-weight: 600; }
-.kcard-subtasks { font-size: 0.68rem; color: var(--text-muted); margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border-light); }
+.kcard-subtasks { display: flex; align-items: center; gap: 6px; font-size: 0.68rem; color: var(--text-muted); margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border-light); }
+.kcard-sub-bar { flex: 1; height: 3px; background: var(--border-light); border-radius: 2px; overflow: hidden; }
+.kcard-sub-fill { height: 100%; background: var(--green); border-radius: 2px; }
 
 .kb-dropzone { min-height: 40px; border: 2px dashed transparent; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 0.78rem; color: var(--text-muted); }
 .kb-dropzone:hover { border-color: var(--purple-border); background: var(--purple-bg); }
