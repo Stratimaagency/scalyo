@@ -6,6 +6,9 @@
         <h1>👥 {{ t('mgr_title') }}</h1>
         <p class="mgr-date">{{ formattedDate }}</p>
       </div>
+      <div class="mgr-header-actions">
+        <button class="btn-customize" @click="customizerOpen = true">⚙ {{ t('kpi_cust_title') }}</button>
+      </div>
       <div class="mgr-kpis-top">
         <div class="mkpi">
           <span class="mkpi-value" :class="healthClass">{{ team.teamHealthScore }}</span>
@@ -162,6 +165,8 @@
         </div>
       </section>
     </div>
+
+    <KpiCustomizer :open="customizerOpen" page-id="manager" :defaults="defaultKpis" v-model="selectedKpis" @close="customizerOpen = false" />
   </div>
 </template>
 
@@ -171,9 +176,14 @@ import { useI18n } from 'vue-i18n'
 import { useTeamStore } from '@/stores/team'
 import { useClientStore } from '@/stores/clients'
 import { useNotificationStore } from '@/stores/notifications'
+import KpiCustomizer from '@/components/KpiCustomizer.vue'
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const team = useTeamStore()
+
+const customizerOpen = ref(false)
+const defaultKpis = ['team_wellbeing', 'arr', 'churn_rate', 'accounts_per_csm', 'nrr', 'health_score']
+const selectedKpis = ref([...defaultKpis])
 const clients = useClientStore()
 const notifications = useNotificationStore()
 
@@ -234,6 +244,9 @@ const criticalArcMini = computed(() => ((clients.criticalCount / total.value) * 
 
 /* Header */
 .mgr-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+.mgr-header-actions { display: flex; align-items: center; }
+.btn-customize { background: #fff; border: 1px solid var(--border); padding: 6px 14px; border-radius: var(--radius-sm); font-size: 0.78rem; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+.btn-customize:hover { border-color: var(--purple); color: var(--purple); }
 .mgr-header h1 { font-size: 1.5rem; font-weight: 800; }
 .mgr-date { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; text-transform: capitalize; }
 .mgr-kpis-top { display: flex; gap: 20px; }

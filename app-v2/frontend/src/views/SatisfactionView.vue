@@ -6,6 +6,7 @@
         <h1>⭐ {{ t('sat_title') }}</h1>
       </div>
       <div class="sat-header-right">
+        <button class="btn-customize" @click="customizerOpen = true">⚙ {{ t('kpi_cust_title') }}</button>
         <button class="btn-outline" @click="resetFilters">{{ t('sat_reset') }}</button>
         <div class="sat-score-badge">
           <span class="ssb-label">{{ t('sat_avg_score') }}</span>
@@ -147,6 +148,8 @@
         </div>
       </div>
     </div>
+
+    <KpiCustomizer :open="customizerOpen" page-id="satisfaction" :defaults="defaultKpis" v-model="selectedKpis" @close="customizerOpen = false" />
   </div>
 </template>
 
@@ -155,10 +158,15 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useClientStore } from '@/stores/clients'
 import { useTeamStore } from '@/stores/team'
+import KpiCustomizer from '@/components/KpiCustomizer.vue'
 
 const { t } = useI18n({ useScope: 'global' })
 const clients = useClientStore()
 const team = useTeamStore()
+
+const customizerOpen = ref(false)
+const defaultKpis = ['health_score', 'nps', 'churn_rate', 'renewal_rate', 'csat', 'promoters_pct']
+const selectedKpis = ref([...defaultKpis])
 
 const activeFilter = ref('all')
 const csmFilter = ref('all')
@@ -251,6 +259,8 @@ function scoreColor(score) {
 .sat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
 .sat-header h1 { font-size: 1.5rem; font-weight: 800; }
 .sat-header-right { display: flex; align-items: center; gap: 12px; }
+.btn-customize { background: #fff; border: 1px solid var(--border); padding: 6px 14px; border-radius: var(--radius-sm); font-size: 0.78rem; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+.btn-customize:hover { border-color: var(--purple); color: var(--purple); }
 .btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 500; transition: all 0.2s; cursor: pointer; }
 .btn-outline:hover { border-color: var(--purple); color: var(--purple); }
 .sat-score-badge { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 8px 18px; display: flex; align-items: center; gap: 10px; }
