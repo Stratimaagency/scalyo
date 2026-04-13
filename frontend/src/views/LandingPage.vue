@@ -1,1957 +1,1220 @@
 <template>
-  <div class="landing">
+  <div class="landing" ref="rootEl">
 
-<!-- NAV -->
-<nav id="main-nav" :class="{ scrolled: navScrolled }">
-  <a href="/" class="nav-logo">
-    <img src="/logo.svg" alt="Scalyo" class="nav-logo-img" />
-    Scal<span>yo</span>
-  </a>
-  <div class="nav-links">
-    <a href="#features">{{ t('nav_features') }}</a>
-    <a href="#roi">{{ t('nav_roi') }}</a>
-    <a href="#pricing">{{ t('nav_pricing') }}</a>
-    <a href="#faq">{{ t('nav_faq') }}</a>
-  </div>
-  <div class="nav-right">
-    <router-link to="/login" class="n-ghost">{{ t('nav_login') }}</router-link>
-    <router-link to="/login" class="n-solid">{{ t('nav_cta') }}</router-link>
-    <button class="hamburger" :class="{ open: mobileMenuOpen }" aria-label="Menu" @click="mobileMenuOpen = !mobileMenuOpen">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-  <div class="lang-sw">
-    <button :class="{ active: lang === 'fr' }" @click="setLang('fr')">FR</button>
-    <button :class="{ active: lang === 'en' }" @click="setLang('en')">EN</button>
-    <button :class="{ active: lang === 'kr' }" @click="setLang('kr')">한국어</button>
-  </div>
-</nav>
-<div class="mobile-menu" :class="{ open: mobileMenuOpen }">
-  <a href="#features" @click="closeMobile">{{ t('nav_features') }}</a>
-  <a href="#roi" @click="closeMobile">{{ t('nav_roi') }}</a>
-  <a href="#pricing" @click="closeMobile">{{ t('nav_pricing') }}</a>
-  <a href="#faq" @click="closeMobile">{{ t('nav_faq') }}</a>
-  <router-link to="/login" class="mm-cta" @click="closeMobile">{{ t('cta_free') }}</router-link>
-</div>
+    <!-- ═══════════════════ NAVBAR ═══════════════════ -->
+    <nav class="nav" :class="{ scrolled }">
+      <div class="nav-inner">
+        <router-link to="/" class="logo-link">
+          <ScalyoLogo :size="34" />
+          <span class="logo-text">Scalyo</span>
+        </router-link>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-inner">
-    <div class="hero-badge rv">
-      <div class="badge-dot"></div>
-      <span>{{ t('hero_badge') }}</span>
-    </div>
-    <h1 class="hero-h1 rv" v-html="t('hero_h1')"></h1>
-    <p class="hero-sub rv d1" v-html="t('hero_sub')"></p>
-    <div class="hero-cta rv d2">
-      <router-link to="/login" class="btn-primary">
-        {{ t('cta_free_14') }}
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </router-link>
-      <a href="#pricing" class="btn-secondary">{{ t('see_pricing') }}</a>
-    </div>
-    <div class="hero-social-proof rv d3">
-      <span>{{ t('proof_no_card') }}</span>
-      <div class="hsp-sep"></div>
-      <span>{{ t('proof_14d') }}</span>
-      <div class="hsp-sep"></div>
-      <span>{{ t('proof_rgpd') }}</span>
-      <div class="hsp-sep"></div>
-      <span>{{ t('proof_support') }}</span>
-    </div>
-  </div>
+        <div class="nav-links hide-mobile">
+          <a href="#features" @click.prevent="scrollTo('features')">{{ t('nav_features') }}</a>
+          <a href="#roi" @click.prevent="scrollTo('roi')">{{ t('nav_roi') }}</a>
+          <a href="#pricing" @click.prevent="scrollTo('pricing')">{{ t('nav_pricing') }}</a>
+          <a href="#faq" @click.prevent="scrollTo('faq')">{{ t('nav_faq') }}</a>
+        </div>
 
-  <!-- SCREENSHOT -->
-  <div class="hero-screenshot rv d3">
-    <div class="screenshot-glow"></div>
-    <div class="app-shell">
-      <!-- Browser chrome -->
-      <div class="app-topbar">
-        <div class="topbar-dots"><div class="td" style="background:#FF5F57"></div><div class="td" style="background:#FEBC2E"></div><div class="td" style="background:#28C840"></div></div>
-        <div class="topbar-url">app.scalyo.app</div>
-        <div class="topbar-actions">
-          <div class="topbar-action-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        <div class="nav-right hide-mobile">
+          <div class="lang-switch">
+            <button v-for="l in langs" :key="l.code" :class="{ active: locale === l.code }" @click="locale = l.code">{{ l.label }}</button>
           </div>
-          <div class="topbar-action-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          </div>
+          <a :href="appUrl + '/login'" class="btn-ghost-sm">{{ t('nav_login') }}</a>
+          <a :href="appUrl + '/login'" class="btn-primary-sm">{{ t('nav_cta') }}</a>
         </div>
-      </div>
-      <!-- App layout -->
-      <div class="app-layout">
-        <!-- Sidebar -->
-        <nav class="app-sidebar">
-          <div class="sb-brand">
-            <div class="sb-logo-mark"><span>S</span></div>
-            <div class="sb-brand-text">
-              <span class="sb-brand-name">Scalyo</span>
-              <span class="sb-brand-plan">Starter</span>
-            </div>
-          </div>
-          <div class="sb-section">
-            <div class="sb-nav active"><span class="sb-ico">&#9632;</span>{{ t('demo_dashboard') }}</div>
-            <div class="sb-nav"><span class="sb-ico">&#9830;</span>{{ t('demo_portfolio') }}</div>
-            <div class="sb-nav"><span class="sb-ico">&#9650;</span>KPIs</div>
-            <div class="sb-nav"><span class="sb-ico">&#9632;</span>Planning</div>
-            <div class="sb-nav"><span class="sb-ico">&#10003;</span>Tasks</div>
-          </div>
-          <div class="sb-divider"></div>
-          <div class="sb-section">
-            <div class="sb-nav"><span class="sb-ico">&#9829;</span>{{ t('feat_wb') }}</div>
-            <div class="sb-nav"><span class="sb-ico">&#9733;</span>Coach IA</div>
-            <div class="sb-nav"><span class="sb-ico">&#9993;</span>{{ t('feat_email') }}</div>
-          </div>
-          <div class="sb-user">
-            <div class="sb-user-avatar">CF</div>
-            <div class="sb-user-info">
-              <span class="sb-user-name">la fabrique</span>
-              <span class="sb-user-role">Manager CS</span>
-            </div>
-          </div>
-        </nav>
-        <!-- Main content -->
-        <main class="app-main">
-          <!-- Top bar inside main -->
-          <div class="main-topbar">
-            <div class="main-topbar-left">
-              <span class="main-page-title">{{ t('demo_overview') }}</span>
-              <span class="main-page-date">{{ t('demo_today') }}</span>
-            </div>
-            <div class="main-topbar-right">
-              <div class="main-badge badge-teal">Starter</div>
-              <div class="main-badge badge-purple">Manager CS</div>
-              <div class="main-notif">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                <span class="notif-dot"></span>
-              </div>
-            </div>
-          </div>
-          <!-- KPI cards row -->
-          <div class="kpi-row">
-            <div class="kpi-card">
-              <div class="kpi-header"><span class="kpi-label">{{ t('demo_arr') }}</span><span class="kpi-icon kpi-icon-teal">&#8364;</span></div>
-              <div class="kpi-value kpi-teal">3.4M&euro;</div>
-              <div class="kpi-sub"><span class="kpi-trend kpi-up">+12%</span> 12 {{ t('demo_active_acc') }}</div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-header"><span class="kpi-label">{{ t('demo_avg_health') }}</span><span class="kpi-icon kpi-icon-green">&#9829;</span></div>
-              <div class="kpi-value">74<span class="kpi-unit">/100</span></div>
-              <div class="kpi-sub"><span class="kpi-trend kpi-up">+3</span> {{ t('demo_healthy') }}</div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-header"><span class="kpi-label">{{ t('demo_critical') }}</span><span class="kpi-icon kpi-icon-red">!</span></div>
-              <div class="kpi-value kpi-red">2</div>
-              <div class="kpi-sub"><span class="kpi-trend kpi-down">480K&euro;</span> ARR {{ t('demo_at_risk') }}</div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-header"><span class="kpi-label">NPS</span><span class="kpi-icon kpi-icon-blue">&#9734;</span></div>
-              <div class="kpi-value kpi-blue">+42</div>
-              <div class="kpi-sub"><span class="kpi-trend kpi-up">+5pts</span> vs dernier trimestre</div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-header"><span class="kpi-label">{{ t('demo_roadmap') }}</span><span class="kpi-icon kpi-icon-teal">&#9654;</span></div>
-              <div class="kpi-value kpi-teal">67%</div>
-              <div class="kpi-sub">4/6 {{ t('demo_steps') }}</div>
-            </div>
-          </div>
-          <!-- Content grid -->
-          <div class="content-grid">
-            <!-- Left: Alerts + Chart -->
-            <div class="content-left">
-              <!-- Alerts -->
-              <div class="alert-card">
-                <div class="alert-header">
-                  <span class="alert-title">&#x1F6A8; {{ t('demo_critical_alert') }}</span>
-                  <span class="alert-action">{{ t('demo_see_portfolio') }} &#8594;</span>
-                </div>
-                <div class="alert-row">
-                  <div class="alert-avatar alert-avatar-red">L</div>
-                  <div class="alert-info">
-                    <span class="alert-name">Leroy Finance</span>
-                    <span class="alert-reason">NPS en baisse &middot; Usage -34%</span>
-                  </div>
-                  <div class="alert-meta">
-                    <span class="alert-amount">240K&euro;</span>
-                    <span class="alert-date">Renouvellement Avr.</span>
-                  </div>
-                </div>
-                <div class="alert-row">
-                  <div class="alert-avatar alert-avatar-orange">A</div>
-                  <div class="alert-info">
-                    <span class="alert-name">Acme Corp</span>
-                    <span class="alert-reason">Usage en chute &middot; 3 tickets ouverts</span>
-                  </div>
-                  <div class="alert-meta">
-                    <span class="alert-amount">240K&euro;</span>
-                    <span class="alert-date">Renouvellement Mai</span>
-                  </div>
-                </div>
-              </div>
-              <!-- Fake chart -->
-              <div class="chart-card">
-                <div class="chart-header">
-                  <span class="chart-title">ARR evolution</span>
-                  <div class="chart-tabs">
-                    <span class="chart-tab">6M</span>
-                    <span class="chart-tab active">12M</span>
-                    <span class="chart-tab">YTD</span>
-                  </div>
-                </div>
-                <div class="chart-area">
-                  <svg viewBox="0 0 480 120" class="chart-svg">
-                    <defs>
-                      <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="rgba(13,148,136,.3)"/>
-                        <stop offset="100%" stop-color="rgba(13,148,136,0)"/>
-                      </linearGradient>
-                    </defs>
-                    <path d="M0,95 C40,90 80,85 120,78 C160,71 200,60 240,50 C280,40 320,35 360,28 C400,21 440,15 480,10" fill="none" stroke="var(--teal)" stroke-width="2.5"/>
-                    <path d="M0,95 C40,90 80,85 120,78 C160,71 200,60 240,50 C280,40 320,35 360,28 C400,21 440,15 480,10 L480,120 L0,120 Z" fill="url(#chartGrad)"/>
-                    <circle cx="480" cy="10" r="4" fill="var(--teal)"/>
-                    <circle cx="480" cy="10" r="8" fill="rgba(13,148,136,.2)"/>
-                  </svg>
-                  <div class="chart-labels">
-                    <span>Avr</span><span>Mai</span><span>Juin</span><span>Juil</span><span>Aout</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Fev</span><span>Mar</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- Right: Roadmap + Wellbeing -->
-            <div class="content-right">
-              <!-- Roadmap -->
-              <div class="roadmap-card">
-                <div class="roadmap-header">
-                  <div>
-                    <span class="roadmap-title">{{ t('demo_roadmap_title') }}</span>
-                    <span class="roadmap-phase">{{ t('demo_roadmap_phase') }}</span>
-                  </div>
-                  <div class="roadmap-pct">67%</div>
-                </div>
-                <div class="roadmap-bar"><div class="roadmap-fill" style="width:67%"></div></div>
-                <div class="roadmap-items">
-                  <div class="roadmap-item done"><span class="ri-check">&#10003;</span>{{ t('demo_rd1') }}</div>
-                  <div class="roadmap-item done"><span class="ri-check">&#10003;</span>{{ t('demo_rd2') }}</div>
-                  <div class="roadmap-item current"><span class="ri-dot"></span>{{ t('demo_rd3') }}</div>
-                  <div class="roadmap-item pending"><span class="ri-dot pending-dot"></span>{{ t('demo_rd4') }}</div>
-                </div>
-              </div>
-              <!-- Wellbeing -->
-              <div class="wb-card">
-                <div class="wb-header">
-                  <span class="wb-title">{{ t('demo_wb_title') }}</span>
-                  <div class="wb-score-badge">7.2</div>
-                </div>
-                <div class="wb-members">
-                  <div class="wb-member">
-                    <div class="wb-m-avatar" style="background:var(--teal)">S</div>
-                    <span class="wb-m-name">Sophie</span>
-                    <div class="wb-m-bar"><div class="wb-m-fill" style="width:65%;background:var(--green)"></div></div>
-                    <span class="wb-m-val" style="color:var(--green)">65%</span>
-                  </div>
-                  <div class="wb-member">
-                    <div class="wb-m-avatar" style="background:var(--amber)">T</div>
-                    <span class="wb-m-name">Thomas</span>
-                    <div class="wb-m-bar"><div class="wb-m-fill" style="width:78%;background:var(--amber)"></div></div>
-                    <span class="wb-m-val" style="color:var(--amber)">78%</span>
-                  </div>
-                  <div class="wb-member">
-                    <div class="wb-m-avatar" style="background:var(--red)">M</div>
-                    <span class="wb-m-name">Marie</span>
-                    <div class="wb-m-bar"><div class="wb-m-fill" style="width:89%;background:var(--red)"></div></div>
-                    <span class="wb-m-val" style="color:var(--red)">89%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- STATS BAR -->
-<div class="stats-bar">
-  <div class="stats-inner">
-    <div class="stat-cell rv">
-      <div class="stat-number">&minus;34%</div>
-      <div class="stat-label">{{ t('stat1') }}</div>
-      <div class="stat-note">{{ t('stat1n') }}</div>
-    </div>
-    <div class="stat-cell rv d1">
-      <div class="stat-number">+18pts</div>
-      <div class="stat-label">{{ t('stat2') }}</div>
-      <div class="stat-note">{{ t('stat2n') }}</div>
-    </div>
-    <div class="stat-cell rv d2">
-      <div class="stat-number">6h</div>
-      <div class="stat-label">{{ t('stat3') }}</div>
-      <div class="stat-note">{{ t('stat3n') }}</div>
-    </div>
-    <div class="stat-cell rv d3">
-      <div class="stat-number">30j</div>
-      <div class="stat-label">{{ t('stat4') }}</div>
-      <div class="stat-note">{{ t('stat4n') }}</div>
-    </div>
-  </div>
-</div>
-
-<!-- FEATURES — alternating panels -->
-<section class="section section-dark" id="features">
-  <div class="container">
-
-    <!-- Panel 1 -->
-    <div class="feat-panel rv" style="margin-bottom:100px">
-      <div class="feat-text">
-        <div class="label"><div class="label-line"></div><span>{{ t('feat1_tag') }}</span></div>
-        <h2 class="h2-light" v-html="t('feat1_h2')"></h2>
-        <p class="feat-body">{{ t('feat1_body') }}</p>
-        <div class="feat-points">
-          <div class="feat-point"><div class="fp-check">&#x2713;</div><span>{{ t('feat1_p1') }}</span></div>
-          <div class="feat-point"><div class="fp-check">&#x2713;</div><span>{{ t('feat1_p2') }}</span></div>
-          <div class="feat-point"><div class="fp-check">&#x2713;</div><span>{{ t('feat1_p3') }}</span></div>
-          <div class="feat-point"><div class="fp-check">&#x2713;</div><span>{{ t('feat1_p4') }}</span></div>
-        </div>
-      </div>
-      <div class="feat-visual">
-        <div class="fv-pad">
-          <div class="fv-header">
-            <span class="fv-title" style="color:var(--dt)">{{ t('pb_title') }}</span>
-            <span class="fv-badge badge-live">{{ t('pb_ongoing') }}</span>
-          </div>
-          <div class="playbook-list" style="margin-bottom:14px">
-            <div class="pb-step done"><div class="pb-num done">&#x2713;</div><span class="pb-text">{{ t('pb_s1') }}</span></div>
-            <div class="pb-step done"><div class="pb-num done">&#x2713;</div><span class="pb-text">{{ t('pb_s2') }}</span></div>
-            <div class="pb-step" style="border-color:var(--teal);background:rgba(13,148,136,.04)"><div class="pb-num">3</div><span class="pb-text" style="color:var(--dt);font-weight:500">{{ t('pb_step3') }}</span></div>
-            <div class="pb-step"><div class="pb-num" style="opacity:.4">4</div><span class="pb-text" style="opacity:.5">{{ t('pb_step4') }}</span></div>
-          </div>
-          <div style="padding:10px 12px;border-radius:8px;background:rgba(13,148,136,.06);border:1px solid rgba(13,148,136,.15)">
-            <div style="font-size:11px;font-weight:600;color:var(--teal);margin-bottom:2px">{{ t('pb_ai_label') }}</div>
-            <div style="font-size:12.5px;color:var(--dt2);line-height:1.55">{{ t('pb_ai_msg') }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Panel 2 -->
-    <div class="feat-panel flip rv" style="margin-bottom:100px">
-      <div class="feat-text">
-        <div class="label"><div class="label-line"></div><span>{{ t('feat2_tag') }}</span></div>
-        <h2 class="h2-light" v-html="t('feat2_h2')"></h2>
-        <p class="feat-body">{{ t('feat2_body') }}</p>
-        <div class="feat-points">
-          <div class="feat-point"><div class="fp-check">&#x2713;</div><span>{{ t('feat2_p1') }}</span></div>
-          <div class="feat-point"><div class="fp-check">&#x2713;</div><span>{{ t('feat2_p2') }}</span></div>
-          <div class="feat-point"><div class="fp-check">&#x2713;</div><span>{{ t('feat2_p3') }}</span></div>
-          <div class="feat-point"><div class="fp-check">&#x2713;</div><span>{{ t('feat2_p4') }}</span></div>
-        </div>
-      </div>
-      <div class="feat-visual">
-        <div class="fv-pad">
-          <div class="fv-header">
-            <span class="fv-title" style="color:var(--dt)">{{ t('d_wb_title') }}</span>
-            <span class="fv-badge badge-live">{{ t('d_wb_upd') }}</span>
-          </div>
-          <div class="wb-grid">
-            <div class="wb-card">
-              <div class="wb-label">{{ t('d_wb_avg') }}</div>
-              <div class="wb-score" style="color:var(--teal)">7.8</div>
-              <div class="wb-sub">{{ t('d_wb_sub') }}</div>
-              <div class="wb-bar"><div class="wb-fill" style="width:78%;background:var(--teal)"></div></div>
-            </div>
-            <div class="wb-card">
-              <div class="wb-label">{{ t('d_wb_load') }}</div>
-              <div class="wb-score" style="color:#FBBF24">6.2</div>
-              <div class="wb-sub">{{ t('wb_load_sub') }}</div>
-              <div class="wb-bar"><div class="wb-fill" style="width:62%;background:#FBBF24"></div></div>
-            </div>
-            <div class="wb-card" style="grid-column:1/-1">
-              <div class="wb-label">{{ t('wb_alert') }}</div>
-              <div style="display:flex;align-items:center;justify-content:space-between">
-                <div style="font-size:13px;color:var(--dt)">Marie D. — Score 4.5/10</div>
-                <span style="font-size:11px;font-weight:600;color:#F87171;padding:2px 8px;border-radius:100px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.15)">{{ t('d_wb_warn') }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Panel 3 -->
-    <div class="feat-panel rv">
-      <div class="feat-text">
-        <div class="label"><div class="label-line"></div><span>{{ t('feat3_tag') }}</span></div>
-        <h2 class="h2-light" v-html="t('feat3_h2')"></h2>
-        <p class="feat-body">{{ t('feat3_body') }}</p>
-        <div class="feat-points">
-          <div class="feat-point"><div class="fp-check">&#x2713;</div><span>{{ t('feat3_p1') }}</span></div>
-          <div class="feat-point"><div class="fp-check">&#x2713;</div><span>{{ t('feat3_p2') }}</span></div>
-          <div class="feat-point"><div class="fp-check">&#x2713;</div><span>{{ t('feat3_p3') }}</span></div>
-          <div class="feat-point"><div class="fp-check">&#x2713;</div><span>{{ t('feat3_p4') }}</span></div>
-        </div>
-      </div>
-      <div class="feat-visual">
-        <div class="fv-pad">
-          <div class="fv-header">
-            <span class="fv-title" style="color:var(--dt)">{{ t('demo_coach_fv_title') }}</span>
-            <span class="fv-badge badge-live">{{ t('coach_online') }}</span>
-          </div>
-          <div class="coach-wrap">
-            <div class="coach-msg">{{ t('coach_user_msg') }}</div>
-            <div class="coach-author">{{ t('demo_coach_author') }}</div>
-            <div class="coach-msg ai" v-html="t('coach_ai')"></div>
-            <div class="coach-input">
-              <span class="coach-placeholder">{{ t('coach_placeholder') }}</span>
-              <div class="coach-send">&#x2191;</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- FEATURES DETAIL -->
-<div id="features-detail">
-<section class="chips-section">
-  <div class="chips-label">{{ t('fl_chips_label') }}</div>
-  <div class="chips-grid">
-    <div class="chip active"><div class="chip-icon">&#x1F3AF;</div><div class="chip-label">{{ t('fl_c1') }}</div></div>
-    <div class="chip"><div class="chip-icon">&#x1F4CA;</div><div class="chip-label">{{ t('fl_c2') }}</div></div>
-    <div class="chip"><div class="chip-icon">&#x1F49A;</div><div class="chip-label">{{ t('fl_c3') }}</div></div>
-    <div class="chip"><div class="chip-icon">&#x1F916;</div><div class="chip-label">{{ t('fl_c4') }}</div></div>
-    <div class="chip"><div class="chip-icon">&#x2709;&#xFE0F;</div><div class="chip-label">{{ t('fl_c5') }}</div></div>
-    <div class="chip"><div class="chip-icon">&#x1F4C5;</div><div class="chip-label">{{ t('fl_c6') }}</div></div>
-    <div class="chip"><div class="chip-icon">&#x2705;</div><div class="chip-label">{{ t('fl_c7') }}</div></div>
-    <div class="chip"><div class="chip-icon">&#x1F4DA;</div><div class="chip-label">{{ t('fl_c8') }}</div></div>
-  </div>
-</section>
-<div class="stats-band">
-  <div class="stats-grid">
-    <div><div class="stat-n">-34%</div><div class="stat-l">{{ t('fl_s1l') }}</div><div class="stat-s">{{ t('fl_s1s') }}</div></div>
-    <div><div class="stat-n">+18%</div><div class="stat-l">{{ t('fl_s2l') }}</div><div class="stat-s">{{ t('fl_s2s') }}</div></div>
-    <div><div class="stat-n">6h</div><div class="stat-l">{{ t('fl_s3l') }}</div><div class="stat-s">{{ t('fl_s3s') }}</div></div>
-    <div><div class="stat-n">30j</div><div class="stat-l">{{ t('fl_s4l') }}</div><div class="stat-s">{{ t('fl_s4s') }}</div></div>
-  </div>
-</div>
-
-<!-- Module 1 -->
-<section class="mod-section" id="m1">
-  <div class="mod-inner">
-    <div class="mod-text rv">
-      <div class="mod-tag"><span class="mod-tag-icon">&#x1F3AF;</span><span class="mod-tag-label">{{ t('fl_m1tag') }}</span></div>
-      <h2 class="mod-h2" v-html="t('fl_m1h2')"></h2>
-      <p class="mod-body">{{ t('fl_m1body') }}</p>
-      <ul class="mod-list">
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m1p1') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m1p2') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m1p3') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m1p4') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m1p5') }}</span></li>
-      </ul>
-      <router-link to="/login" class="mod-btn">{{ t('fl_m1btn') }}</router-link>
-    </div>
-    <div class="mod-visual rv d2">
-      <div class="mv">
-        <div class="mv-head"><span>{{ t('d_m1_head') }}</span> <span class="badge ba">{{ t('d_m1_alerts') }}</span></div>
-        <div class="hr"><div class="hr-name" style="font-size:12px">Leroy Finance</div><div class="hr-bar"><div class="hr-fill" style="width:25%;background:var(--red)"></div></div><div class="hr-val" style="color:var(--red)">2.5</div><span class="badge br">{{ t('d_m1_crit') }}</span></div>
-        <div class="hr"><div class="hr-name" style="font-size:12px">Acme Corp</div><div class="hr-bar"><div class="hr-fill" style="width:62%;background:var(--amber)"></div></div><div class="hr-val" style="color:var(--amber)">6.2</div><span class="badge ba">{{ t('d_m1_watch') }}</span></div>
-        <div class="hr"><div class="hr-name" style="font-size:12px">TechVision SAS</div><div class="hr-bar"><div class="hr-fill" style="width:87%;background:var(--teal)"></div></div><div class="hr-val" style="color:var(--teal)">8.7</div><span class="badge bg">{{ t('d_m1_s1') }}</span></div>
-        <div class="hr"><div class="hr-name" style="font-size:12px">BioMed Group</div><div class="hr-bar"><div class="hr-fill" style="width:91%;background:var(--teal)"></div></div><div class="hr-val" style="color:var(--teal)">9.1</div><span class="badge bg">{{ t('d_m1_s2') }}</span></div>
-        <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(240,246,252,.06)">
-          <div style="font-size:10px;color:var(--dt3);text-transform:uppercase;font-weight:700;letter-spacing:.06em;margin-bottom:8px">{{ t('d_m1_reco') }}</div>
-          <div style="background:rgba(13,148,136,.06);border:1px solid rgba(13,148,136,.14);border-radius:9px;padding:11px;font-size:12px;color:var(--dt2)">{{ t('d_m1_ai') }}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Module 2 -->
-<section class="mod-section" id="m2">
-  <div class="mod-inner">
-    <div class="mod-text rv">
-      <div class="mod-tag"><span class="mod-tag-icon">&#x1F4CA;</span><span class="mod-tag-label">{{ t('fl_m2tag') }}</span></div>
-      <h2 class="mod-h2" v-html="t('fl_m2h2')"></h2>
-      <p class="mod-body">{{ t('fl_m2body') }}</p>
-      <ul class="mod-list">
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m2p1') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m2p2') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m2p3') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m2p4') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m2p5') }}</span></li>
-      </ul>
-      <router-link to="/login" class="mod-btn">{{ t('fl_m2btn') }}</router-link>
-    </div>
-    <div class="mod-visual rv d2">
-      <div class="mv">
-        <div class="mv-head"><span>{{ t('demo_copil_period') }}</span> <span class="badge bg">{{ t('demo_copil_badge') }}</span></div>
-        <div class="kpi-g">
-          <div class="kpi-c"><div class="kpi-l">NRR</div><div class="kpi-v" style="color:var(--teal)">112%</div><div class="kpi-d dp">{{ t('demo_kpi_d1') }}</div></div>
-          <div class="kpi-c"><div class="kpi-l">Churn Rate</div><div class="kpi-v" style="color:var(--red)">3.2%</div><div class="kpi-d dp">{{ t('demo_kpi_d2') }}</div></div>
-          <div class="kpi-c"><div class="kpi-l">{{ t('demo_mrr_sec') }}</div><div class="kpi-v">&euro;84K</div><div class="kpi-d dp">&#x25B2; +&euro;6K</div></div>
-          <div class="kpi-c"><div class="kpi-l">CSAT</div><div class="kpi-v" style="color:var(--teal)">91%</div><div class="kpi-d dp">&#x25B2; +3%</div></div>
-        </div>
-        <div style="margin-top:14px;height:54px;position:relative">
-          <svg width="100%" height="54" viewBox="0 0 300 54" fill="none" preserveAspectRatio="none">
-            <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#12CDB8" stop-opacity=".25"/><stop offset="100%" stop-color="#12CDB8" stop-opacity="0"/></linearGradient></defs>
-            <path d="M0,46 C50,40 80,30 110,24 C140,18 160,34 190,22 C220,12 250,16 300,6" stroke="rgba(13,148,136,.5)" stroke-width="1.5" fill="none"/>
-            <path d="M0,46 C50,40 80,30 110,24 C140,18 160,34 190,22 C220,12 250,16 300,6 L300,54 L0,54Z" fill="url(#g1)"/>
-          </svg>
-        </div>
-        <div style="font-size:10px;color:var(--dt3);text-align:center;margin-top:4px">NRR 6 mois &middot; Objectif 110%</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Module 3 -->
-<section class="mod-section" id="m3">
-  <div class="mod-inner">
-    <div class="mod-text rv">
-      <div class="mod-tag"><span class="mod-tag-icon">&#x1F49A;</span><span class="mod-tag-label">{{ t('fl_m3tag') }}</span></div>
-      <h2 class="mod-h2" v-html="t('fl_m3h2')"></h2>
-      <p class="mod-body">{{ t('fl_m3body') }}</p>
-      <ul class="mod-list">
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m3p1') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m3p2') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m3p3') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m3p4') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m3p5') }}</span></li>
-      </ul>
-      <router-link to="/login" class="mod-btn">{{ t('fl_m3btn') }}</router-link>
-    </div>
-    <div class="mod-visual rv d2">
-      <div class="mv">
-        <div class="mv-head"><span>{{ t('d_m3_head') }}</span> <span class="badge ba">{{ t('d_m3_badge') }}</span></div>
-        <div class="wb-g">
-          <div class="wb-c"><div class="wb-n">7.2</div><div class="wb-l">{{ t('d_m3_avg') }}</div></div>
-          <div class="wb-c"><div class="wb-n" style="color:var(--amber)">7.1</div><div class="wb-l">{{ t('d_m3_load') }}</div></div>
-          <div class="wb-c"><div class="wb-n" style="color:var(--red)">1</div><div class="wb-l">{{ t('d_m3_alrt') }}</div></div>
-        </div>
-        <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);border-radius:9px;padding:11px;margin-bottom:12px">
-          <div style="font-size:10px;font-weight:700;color:var(--amber);margin-bottom:3px">{{ t('demo_burnout') }}</div>
-          <div style="font-size:12px;color:var(--dt2)">{{ t('d_m3_sara') }}</div>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <div style="flex:1;height:5px;background:rgba(13,148,136,.12);border-radius:100px;overflow:hidden"><div style="width:72%;height:100%;background:var(--teal);border-radius:100px"></div></div>
-          <div style="font-size:10px;color:var(--dt3)">{{ t('d_m3_trnd') }}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Module 4 -->
-<section class="mod-section" id="m4">
-  <div class="mod-inner">
-    <div class="mod-text rv">
-      <div class="mod-tag"><span class="mod-tag-icon">&#x1F916;</span><span class="mod-tag-label">{{ t('fl_m4tag') }}</span></div>
-      <h2 class="mod-h2" v-html="t('fl_m4h2')"></h2>
-      <p class="mod-body">{{ t('fl_m4body') }}</p>
-      <ul class="mod-list">
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m4p1') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m4p2') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m4p3') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m4p4') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m4p5') }}</span></li>
-      </ul>
-      <router-link to="/login" class="mod-btn">{{ t('fl_m4btn') }}</router-link>
-    </div>
-    <div class="mod-visual rv d2">
-      <div class="mv">
-        <div class="mv-head"><span>{{ t('demo_coach_head') }}</span> <span class="badge bg">{{ t('demo_coach_online') }}</span></div>
-        <div class="msgs">
-          <div class="msg msg-u">{{ t('demo_coach_q1') }}</div>
-          <div class="msg msg-a"><div class="msg-tag">{{ t('demo_coach_tag1') }}</div><span v-html="t('demo_coach_a1')"></span></div>
-          <div class="msg msg-u">{{ t('demo_coach_q2') }}</div>
-          <div class="msg msg-a"><div class="msg-tag">{{ t('demo_coach_tag2') }}</div><span v-html="t('demo_coach_a2')"></span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Module 5 -->
-<section class="mod-section" id="m5">
-  <div class="mod-inner">
-    <div class="mod-text rv">
-      <div class="mod-tag"><span class="mod-tag-icon">&#x2709;&#xFE0F;</span><span class="mod-tag-label">{{ t('fl_m5tag') }}</span></div>
-      <h2 class="mod-h2" v-html="t('fl_m5h2')"></h2>
-      <p class="mod-body">{{ t('fl_m5body') }}</p>
-      <ul class="mod-list">
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m5p1') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m5p2') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m5p3') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m5p4') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m5p5') }}</span></li>
-      </ul>
-      <router-link to="/login" class="mod-btn">{{ t('fl_m5btn') }}</router-link>
-    </div>
-    <div class="mod-visual rv d2">
-      <div class="mv">
-        <div class="mv-head"><span>{{ t('demo_email_head') }}</span> <span class="badge bg">{{ t('demo_ai_badge') }}</span></div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-          <span style="font-size:11px;background:rgba(13,148,136,.1);border:1px solid rgba(13,148,136,.2);color:var(--teal);padding:4px 10px;border-radius:100px">{{ t('demo_tag_checkin') }}</span>
-          <span style="font-size:11px;background:rgba(240,246,252,.06);border:1px solid rgba(240,246,252,.08);color:var(--dt3);padding:4px 10px;border-radius:100px">{{ t('demo_tag_churn') }}</span>
-          <span style="font-size:11px;background:rgba(240,246,252,.06);border:1px solid rgba(240,246,252,.08);color:var(--dt3);padding:4px 10px;border-radius:100px">QBR</span>
-        </div>
-        <div class="ep">
-          <div class="ep-row"><div class="ep-lbl">{{ t('demo_email_to') }}</div><div>marc@leroy-finance.com</div></div>
-          <div class="ep-row"><div class="ep-lbl">{{ t('d_m5_lbl') }}</div><div style="font-weight:600">{{ t('d_m5_subj') }}</div></div>
-          <div style="margin-top:10px;padding-top:10px" v-html="t('d_m5_body')"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Module 6 -->
-<section class="mod-section" id="m6">
-  <div class="mod-inner">
-    <div class="mod-text rv">
-      <div class="mod-tag"><span class="mod-tag-icon">&#x1F4C5;</span><span class="mod-tag-label">{{ t('fl_m6tag') }}</span></div>
-      <h2 class="mod-h2" v-html="t('fl_m6h2')"></h2>
-      <p class="mod-body">{{ t('fl_m6body') }}</p>
-      <ul class="mod-list">
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m6p1') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m6p2') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m6p3') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m6p4') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m6p5') }}</span></li>
-      </ul>
-      <router-link to="/login" class="mod-btn">{{ t('fl_m6btn') }}</router-link>
-    </div>
-    <div class="mod-visual rv d2">
-      <div class="mv">
-        <div class="mv-head"><span>{{ t('d_m6_head') }}</span> <span class="badge bg">{{ t('d_m6_ev') }}</span></div>
-        <div class="cal">
-          <div class="cal-c cal-ev"><div class="cal-title">&#x1F4CA; QBR Leroy</div><div class="cal-sub">14h &middot; 1h</div></div>
-          <div class="cal-c"></div>
-          <div class="cal-c cal-ev cal-td"><div class="cal-title" style="color:var(--blue)">&#x1F680; Onboarding</div><div class="cal-sub">10h &middot; Acme</div></div>
-          <div class="cal-c cal-ev"><div class="cal-title">{{ t('d_m6_ret') }}</div><div class="cal-sub">15h30</div></div>
-          <div class="cal-c"></div>
-          <div class="cal-c"></div>
-          <div class="cal-c cal-ev"><div class="cal-title">&#x1F4CA; QBR TechV.</div><div class="cal-sub">11h &middot; 1h30</div></div>
-          <div class="cal-c"></div>
-          <div class="cal-c cal-ev"><div class="cal-title" style="color:var(--amber)">&#x26A0; Follow-up</div><div class="cal-sub">16h &middot; Leroy</div></div>
-          <div class="cal-c"></div>
-        </div>
-        <div style="margin-top:10px;display:flex;gap:12px;flex-wrap:wrap">
-          <span style="font-size:10px;color:var(--dt3);display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--teal);border-radius:2px;display:inline-block"></span>QBR</span>
-          <span style="font-size:10px;color:var(--dt3);display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--blue);border-radius:2px;display:inline-block"></span>Onboarding</span>
-          <span style="font-size:10px;color:var(--dt3);display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--amber);border-radius:2px;display:inline-block"></span>{{ lang === 'fr' ? 'Retention' : lang === 'kr' ? '리텐션' : 'Retention' }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Module 7 -->
-<section class="mod-section" id="m7">
-  <div class="mod-inner">
-    <div class="mod-text rv">
-      <div class="mod-tag"><span class="mod-tag-icon">&#x2705;</span><span class="mod-tag-label">{{ t('fl_m7tag') }}</span></div>
-      <h2 class="mod-h2" v-html="t('fl_m7h2')"></h2>
-      <p class="mod-body">{{ t('fl_m7body') }}</p>
-      <ul class="mod-list">
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m7p1') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m7p2') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m7p3') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m7p4') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m7p5') }}</span></li>
-      </ul>
-      <router-link to="/login" class="mod-btn">{{ t('fl_m7btn') }}</router-link>
-    </div>
-    <div class="mod-visual rv d2">
-      <div class="mv">
-        <div class="mv-head">{{ t('demo_tb_head') }} <span class="badge ba">{{ t('demo_tb_late') }}</span></div>
-        <div class="task-g">
-          <div>
-            <div class="task-col-h">{{ t('demo_col_1') }}</div>
-            <div class="task-card tc-t"><strong style="font-size:11px">QBR BioMed</strong><br/><span style="font-size:10px;color:var(--dt3)">Sophie &middot; 15 f&eacute;v</span></div>
-            <div class="task-card tc-b"><strong style="font-size:11px">Emails check-in &times; 5</strong><br/><span style="font-size:10px;color:var(--dt3)">Thomas &middot; 18 f&eacute;v</span></div>
-          </div>
-          <div>
-            <div class="task-col-h">{{ t('demo_col_2') }}</div>
-            <div class="task-card tc-a"><strong style="font-size:11px">Playbook Leroy</strong><br/><span style="font-size:10px;color:var(--amber)">{{ t('demo_card_late') }}</span></div>
-            <div class="task-card tc-t"><strong style="font-size:11px">Analyse usage Acme</strong><br/><span style="font-size:10px;color:var(--dt3)">Sophie</span></div>
-          </div>
-          <div>
-            <div class="task-col-h">{{ t('demo_col_3') }}</div>
-            <div class="task-card tc-t" style="opacity:.55"><strong style="font-size:11px">&#x2713; QBR TechVision</strong><br/><span style="font-size:10px;color:var(--dt3)">{{ t('demo_done_1') }}</span></div>
-            <div class="task-card tc-t" style="opacity:.55"><strong style="font-size:11px">&#x2713; Onboarding Acme</strong><br/><span style="font-size:10px;color:var(--dt3)">{{ t('demo_done_2') }}</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Module 8 -->
-<section class="mod-section" id="m8">
-  <div class="mod-inner">
-    <div class="mod-text rv">
-      <div class="mod-tag"><span class="mod-tag-icon">&#x1F4DA;</span><span class="mod-tag-label">{{ t('fl_m8tag') }}</span></div>
-      <h2 class="mod-h2" v-html="t('fl_m8h2')"></h2>
-      <p class="mod-body">{{ t('fl_m8body') }}</p>
-      <ul class="mod-list">
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m8p1') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m8p2') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m8p3') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m8p4') }}</span></li>
-        <li><div class="mod-check">&#x2713;</div><span>{{ t('fl_m8p5') }}</span></li>
-      </ul>
-      <router-link to="/login" class="mod-btn">{{ t('fl_m8btn') }}</router-link>
-    </div>
-    <div class="mod-visual rv d2">
-      <div class="mv">
-        <div class="mv-head"><span>{{ t('demo_lib_title') }}</span> <span class="badge bg">{{ t('demo_lib_badge') }}</span></div>
-        <div class="res-list">
-          <router-link to="/login" class="res-item" style="text-decoration:none;color:inherit;"><div class="res-icon">&#x1F4D6;</div><div class="res-info"><strong>{{ t('demo_guide1') }}</strong><span>PDF &middot; 24 pages &middot; Jan. 2025</span></div><div class="res-dl">&#x2193;</div></router-link>
-          <router-link to="/login" class="res-item" style="text-decoration:none;color:inherit;"><div class="res-icon">&#x1F4CA;</div><div class="res-info"><strong>Template QBR SaaS B2B</strong><span>XLSX + Google Slides</span></div><div class="res-dl">&#x2193;</div></router-link>
-          <router-link to="/login" class="res-item" style="text-decoration:none;color:inherit;"><div class="res-icon">&#x1F4DE;</div><div class="res-info"><strong>{{ t('demo_script1') }}</strong><span>{{ t('demo_pdf1') }}</span></div><div class="res-dl">&#x2193;</div></router-link>
-          <router-link to="/login" class="res-item res-new" style="text-decoration:none;color:inherit;"><div class="res-icon">&#x1F3AF;</div><div class="res-info"><strong style="color:var(--teal)">{{ t('demo_pb_new') }}</strong><span>{{ t('demo_pb_sub') }}</span></div><div class="res-dl">&#x2193;</div></router-link>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-</div>
-<!-- END FEATURES DETAIL -->
-
-
-<!-- ROI -->
-<section class="section section-dark" id="roi">
-  <div class="container">
-    <div class="rv" style="margin-bottom:56px">
-      <div class="label"><div class="label-line"></div><span>{{ t('roi_tag') }}</span></div>
-      <h2 class="h2-light" v-html="t('roi_h2')"></h2>
-      <p class="sub-light">{{ t('roi_sub') }}</p>
-    </div>
-    <div class="roi-wrap">
-      <div class="rv">
-        <div class="roi-sliders">
-          <div>
-            <div class="rsl-label">{{ t('roi_lbl_csm') }} <span>{{ roi.csm }}</span></div>
-            <input type="range" min="1" max="50" v-model.number="roi.csm" :style="rangeStyle(roi.csm, 1, 50)"/>
-          </div>
-          <div>
-            <div class="rsl-label">{{ t('roi_lbl_acc') }} <span>{{ roi.acc }}</span></div>
-            <input type="range" min="5" max="100" v-model.number="roi.acc" :style="rangeStyle(roi.acc, 5, 100)"/>
-          </div>
-          <div>
-            <div class="rsl-label">{{ t('roi_arr_avg') }} <span>{{ roi.arr >= 1000 ? Math.round(roi.arr/1000)+'K' : roi.arr }}&euro;</span></div>
-            <input type="range" min="1000" max="100000" step="1000" v-model.number="roi.arr" :style="rangeStyle(roi.arr, 1000, 100000)"/>
-          </div>
-          <div>
-            <div class="rsl-label">{{ t('roi_churn_rate') }} <span>{{ roi.churn }}%</span></div>
-            <input type="range" min="1" max="30" v-model.number="roi.churn" :style="rangeStyle(roi.churn, 1, 30)"/>
-          </div>
-        </div>
-      </div>
-      <div class="rv d2">
-        <div class="roi-big">{{ roiComputed.main }}</div>
-        <div class="roi-big-label">{{ t('roi_main_label') }}</div>
-        <div class="roi-table">
-          <div class="roi-row"><span class="roi-row-label">{{ t('roi_arr') }}</span><span class="roi-row-val">{{ roiComputed.arr }}</span></div>
-          <div class="roi-row"><span class="roi-row-label">{{ t('roi_cost') }}</span><span class="roi-row-val">{{ roiComputed.cost }}</span></div>
-          <div class="roi-row"><span class="roi-row-label">{{ t('roi_time') }}</span><span class="roi-row-val">{{ roiComputed.time }}</span></div>
-          <div class="roi-row"><span class="roi-row-label">{{ t('roi_mult') }}</span><span class="roi-row-val">{{ roiComputed.mult }}</span></div>
-        </div>
-        <div class="roi-cta-row">
-          <div>
-            <div class="roi-cta-plan">{{ t('roi_plan_label') }}</div>
-            <div class="roi-cta-name">{{ roiComputed.plan }}</div>
-          </div>
-          <router-link to="/login" class="roi-cta-btn">{{ t('cta_start') }}</router-link>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section class="section section-dark" id="pricing">
-  <div class="container">
-    <div class="rv">
-      <div class="label"><div class="label-line"></div><span>{{ t('pricing_tag') }}</span></div>
-      <div class="pricing-header">
-        <div>
-          <h2 class="h2-light" style="margin-bottom:0" v-html="t('pricing_h2')"></h2>
-        </div>
-      </div>
-      <div class="pricing-note" v-html="t('pricing_note')"></div>
-    </div>
-
-    <div class="plans rv">
-      <!-- Starter -->
-      <div class="plan">
-        <div class="plan-top"></div>
-        <div class="plan-name">Starter</div>
-        <div class="plan-price-main"><span class="curr">&euro;</span>97</div>
-        <div class="plan-period">/mois &middot; {{ t('pricing_no_commit') }}</div>
-        <div class="plan-seats">{{ t('plan_1csm') }}</div>
-        <div class="plan-divider"></div>
-        <ul class="plan-features">
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_5acc') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_dash') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_tasks') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_res') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_wb') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_coach') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_email') }}</li>
-        </ul>
-        <a href="https://buy.stripe.com/bJebJ1amncpL7mBekAdfG01" target="_blank" class="plan-btn pb-outline">{{ t('cta_trial') }}</a>
-      </div>
-
-      <!-- Growth -->
-      <div class="plan featured">
-        <div class="plan-top"></div>
-        <div class="plan-tag">{{ t('badge_popular') }}</div>
-        <div class="plan-name">Growth</div>
-        <div class="plan-price-main"><span class="curr">&euro;</span>297</div>
-        <div class="plan-period">/mois &middot; {{ t('pricing_no_commit') }}</div>
-        <div class="plan-seats">{{ t('plan_10csm') }}</div>
-        <div class="plan-divider"></div>
-        <ul class="plan-features">
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_unlim') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_dash_adv') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_wb') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_coach_cs') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_email_ai') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_import') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_support') }}</li>
-        </ul>
-        <a href="https://buy.stripe.com/eVqbJ10LN61n5et50gdfG00" target="_blank" class="plan-btn pb-teal">{{ t('cta_trial') }}</a>
-      </div>
-
-      <!-- Elite -->
-      <div class="plan">
-        <div class="plan-top"></div>
-        <div class="plan-name">Elite</div>
-        <div class="plan-price-main"><span class="curr">&euro;</span>697</div>
-        <div class="plan-period">/mois &middot; {{ t('pricing_no_commit') }}</div>
-        <div class="plan-seats">{{ t('plan_unlim_csm') }}</div>
-        <div class="plan-divider"></div>
-        <ul class="plan-features">
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_all_growth') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_playbooks') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_coaching') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_onboarding') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_sla') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_multi') }}</li>
-          <li><div class="pf-yes">&#x2713;</div>{{ t('feat_copil') }}</li>
-        </ul>
-        <a href="https://buy.stripe.com/eVqaEXeCD1L736l7WcdfG05" target="_blank" class="plan-btn pb-outline">{{ t('cta_trial') }}</a>
-      </div>
-    </div>
-
-    <p class="plan-footnote rv" v-html="t('plan_footnote')"></p>
-  </div>
-</section>
-
-
-<!-- INTEGRATIONS -->
-<section class="section section-dark" id="integrations">
-  <div class="container" style="text-align: center;">
-    <div class="label" style="justify-content: center;"><div class="label-line"></div><span>{{ t('integ_tag') }}</span><div class="label-line"></div></div>
-    <h2 class="h2-light" style="margin-bottom: 16px" v-html="t('integ_h2')"></h2>
-    <p style="color: var(--dt2); font-size: 16px; max-width: 600px; margin: 0 auto 32px; line-height: 1.7;">
-      {{ t('integ_sub') }}
-    </p>
-
-    <!-- Category tabs -->
-    <div class="integ-cats">
-      <button v-for="cat in integCategories" :key="cat.key" class="integ-cat-btn" :class="{ active: activeIntegCat === cat.key }" @click="filterInteg(cat.key)">
-        <span>{{ cat.icon }}</span> {{ cat.key === 'all' ? t('integ_all') : cat.key === 'meeting' ? t('integ_meetings') : cat.key === 'project' ? t('integ_projects') : cat.key === 'data' ? t('integ_data') : cat.label }}
-      </button>
-    </div>
-
-    <div class="integrations-grid">
-      <div v-for="(card, idx) in filteredIntegrations" :key="idx" class="integration-card available" :data-cat="card.cat">
-        <div class="integration-icon"><img :src="card.icon" :alt="card.name"/></div>
-        <div class="integration-name">{{ card.name }}</div>
-        <div class="integration-tag">{{ card.tagKey ? t(card.tagKey) : card.tag }}</div>
-        <div class="integration-status live">{{ t('integ_available') }}</div>
-      </div>
-    </div>
-
-    <p style="color: var(--dt3); font-size: 13px; margin-top: 24px;">
-      {{ t('integ_more') }}
-    </p>
-
-    <!-- Sales arguments -->
-    <div class="vs-block">
-      <div class="vs-title">{{ t('sell_title') }}</div>
-      <p class="vs-subtitle">{{ t('sell_subtitle') }}</p>
-
-      <div class="sell-grid">
-        <div class="sell-card" v-for="i in 8" :key="'sell'+i">
-          <div class="sell-icon">{{ sellIcons[i-1] }}</div>
-          <div class="sell-label">{{ t('sell_'+i+'_label') }}</div>
-          <div class="sell-desc">{{ t('sell_'+i+'_desc') }}</div>
-        </div>
-      </div>
-
-      <div class="vs-highlights">
-        <div class="vs-hl-card">
-          <div class="vs-hl-number">0 &euro;</div>
-          <div class="vs-hl-text" v-html="t('sell_hl1')"></div>
-        </div>
-        <div class="vs-hl-card">
-          <div class="vs-hl-number">5 min</div>
-          <div class="vs-hl-text" v-html="t('sell_hl2')"></div>
-        </div>
-        <div class="vs-hl-card">
-          <div class="vs-hl-number">100%</div>
-          <div class="vs-hl-text" v-html="t('sell_hl3')"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section class="section section-dark" id="faq">
-  <div class="container">
-    <div class="rv" style="margin-bottom:56px;text-align:center">
-      <div class="label" style="justify-content:center"><div class="label-line"></div><span>{{ t('faq_tag') }}</span><div class="label-line"></div></div>
-      <h2 class="h2-light" v-html="t('faq_h2')"></h2>
-    </div>
-    <div class="faq-list">
-      <div v-for="(item, index) in faqItems" :key="index" class="faq-item" :class="{ open: openFaqIndex === index }">
-        <button class="faq-q" @click="toggleFaq(index)">
-          {{ t('faq_q' + (index + 1)) }}
-          <span class="faq-icon">{{ openFaqIndex === index ? '\u00D7' : '+' }}</span>
+        <button class="burger hide-desktop" @click="mobileMenu = !mobileMenu" aria-label="Menu">
+          <span /><span /><span />
         </button>
-        <div class="faq-a">
-          <p>{{ t('faq_a' + (index + 1)) }}</p>
-        </div>
       </div>
-    </div>
-  </div>
-</section>
 
-<!-- END CTA -->
-<section class="end-cta">
-  <div class="end-glow"></div>
-  <div class="end-inner rv">
-    <div class="label" style="justify-content:center;margin-bottom:20px"><div class="label-line"></div>{{ t('end_section_tag') }}<div class="label-line"></div></div>
-    <h2 class="end-h2" v-html="t('end_h2')"></h2>
-    <p class="end-sub">{{ t('end_sub') }}</p>
-    <div class="end-btns">
-      <router-link to="/login" class="btn-primary">
-        {{ t('cta_start_free') }}
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </router-link>
-      <a href="mailto:contact@scalyo.app" class="btn-secondary">{{ t('cta_talk') }}</a>
-    </div>
-    <div class="end-note">contact@scalyo.app &middot; {{ t('end_note') }}</div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-grid">
-    <div>
-      <a href="/" class="nav-logo"><img src="/logo.svg" alt="Scalyo" class="nav-logo-img" />Scal<span>yo</span></a>
-      <p class="footer-desc">{{ t('footer_desc') }}</p>
-      <div class="footer-social">
-        <a href="https://x.com/scalyo_app" target="_blank" rel="noopener" class="fsoc" aria-label="X">&#x1D54F;</a>
-        <a href="https://linkedin.com/company/scalyo" target="_blank" rel="noopener" class="fsoc" aria-label="LinkedIn">in</a>
-      </div>
-    </div>
-    <div class="footer-col">
-      <h4>{{ t('footer_col_product') }}</h4>
-      <a href="#features">{{ t('footer_features') }}</a>
-      <a href="#pricing">{{ t('footer_pricing') }}</a>
-      <a href="#roi">{{ t('footer_roi_calc') }}</a>
-      <router-link to="/login">{{ t('footer_signin') }}</router-link>
-    </div>
-    <div class="footer-col">
-      <h4>{{ t('footer_col_resources') }}</h4>
-      <a href="#m1">{{ t('footer_blog') }}</a>
-      <a href="#m2">{{ t('footer_guides') }}</a>
-      <a href="#m1">{{ t('footer_playbooks') }}</a>
-      <a href="#m8">{{ t('footer_docs') }}</a>
-    </div>
-    <div class="footer-col">
-      <h4>{{ t('footer_col_contact') }}</h4>
-      <a href="javascript:void(0)" @click="modalSupport = true">{{ t('footer_support') }}</a>
-      <router-link to="/legal">{{ t('footer_rgpd') }}</router-link>
-      <router-link to="/legal">{{ t('footer_legal') }}</router-link>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span>{{ t('footer_copy') }}</span>
-    <span>{{ t('footer_markets') }}</span>
-  </div>
-</footer>
-
-<!-- MODAL SUPPORT -->
-<div class="lm-overlay" :class="{ open: modalSupport }" @click.self="closeAllModals">
-  <div class="lm-box">
-    <div class="lm-head">
-      <h3>{{ modalI18n.ms_title }}</h3>
-      <button class="lm-close" @click="closeAllModals">&times;</button>
-    </div>
-    <div class="lm-body">
-      <p>{{ modalI18n.ms_desc }}</p>
-      <a href="mailto:contact@scalyo.app" class="lm-email-link">
-        <div class="lm-email-icon">&#x2709;&#xFE0F;</div>
-        <div class="lm-email-info">
-          <strong>contact@scalyo.app</strong>
-          <span>{{ modalI18n.ms_email_sub }}</span>
-        </div>
-      </a>
-      <div class="lm-contact-form" v-if="!contactSuccess">
-        <div class="lm-row">
-          <div class="lm-field">
-            <label>{{ modalI18n.lbl_name }}</label>
-            <input type="text" v-model="contactForm.name" placeholder="Lidia M.">
+      <!-- Mobile menu -->
+      <transition name="slide-down">
+        <div v-if="mobileMenu" class="mobile-menu">
+          <a href="#features" @click.prevent="scrollTo('features'); mobileMenu = false">{{ t('nav_features') }}</a>
+          <a href="#roi" @click.prevent="scrollTo('roi'); mobileMenu = false">{{ t('nav_roi') }}</a>
+          <a href="#pricing" @click.prevent="scrollTo('pricing'); mobileMenu = false">{{ t('nav_pricing') }}</a>
+          <a href="#faq" @click.prevent="scrollTo('faq'); mobileMenu = false">{{ t('nav_faq') }}</a>
+          <div class="lang-switch">
+            <button v-for="l in langs" :key="l.code" :class="{ active: locale === l.code }" @click="locale = l.code">{{ l.label }}</button>
           </div>
-          <div class="lm-field">
-            <label>{{ modalI18n.lbl_email }}</label>
-            <input type="email" v-model="contactForm.email" placeholder="vous@entreprise.com">
+          <a :href="appUrl + '/login'" class="btn-ghost-sm">{{ t('nav_login') }}</a>
+          <a :href="appUrl + '/login'" class="btn-primary-sm">{{ t('nav_cta_mobile') }}</a>
+        </div>
+      </transition>
+    </nav>
+
+    <!-- ═══════════════════ HERO ═══════════════════ -->
+    <section class="hero">
+      <div class="hero-glow" />
+      <div class="container hero-content anim-section" data-anim="fade-up">
+        <div class="hero-badge">
+          <span class="badge-dot" />
+          {{ t('hero_badge') }}
+        </div>
+
+        <h1 class="hero-title" v-html="t('hero_h1')"></h1>
+
+        <p class="hero-sub">{{ t('hero_sub') }}</p>
+
+        <div class="hero-ctas">
+          <a :href="appUrl + '/login'" class="btn-primary lg glow-btn">{{ t('cta_free_14') }}</a>
+          <a href="#pricing" class="btn-outline lg" @click.prevent="scrollTo('pricing')">{{ t('see_pricing') }}</a>
+        </div>
+
+        <div class="proof-row">
+          <span class="proof-item">✓ {{ t('proof_no_card') }}</span>
+          <span class="proof-item">✓ {{ t('proof_14d') }}</span>
+          <span class="proof-item">✓ {{ t('proof_rgpd') }}</span>
+          <span class="proof-item">✓ {{ t('proof_support') }}</span>
+        </div>
+      </div>
+
+      <!-- Dashboard Mockup -->
+      <div class="container mockup-wrapper anim-section" data-anim="fade-up-delay">
+        <div class="browser-chrome">
+          <div class="chrome-dots"><span /><span /><span /></div>
+          <div class="chrome-url">
+            <span class="chrome-lock">🔒</span>
+            app.scalyo.app
+          </div>
+          <div class="chrome-live">
+            <span class="live-dot" />
+            {{ t('demo_live') }}
           </div>
         </div>
-        <div class="lm-field">
-          <label>{{ modalI18n.lbl_subject }}</label>
-          <input type="text" v-model="contactForm.subject" placeholder="Question sur mon plan Starter...">
-        </div>
-        <div class="lm-field">
-          <label>{{ modalI18n.lbl_msg }}</label>
-          <textarea v-model="contactForm.msg" placeholder="Decrivez votre probleme ou question..."></textarea>
-        </div>
-        <button class="lm-submit" @click="submitContact">{{ modalI18n.cf_submit }}</button>
-      </div>
-      <div class="lm-success" v-if="contactSuccess" style="display:block">
-        <div style="font-size:36px;margin-bottom:8px">&#x2705;</div>
-        <strong>{{ modalI18n.ms_ok_title }}</strong>
-        <p>{{ modalI18n.ms_ok_body }}</p>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- MODAL RGPD -->
-<div class="lm-overlay" :class="{ open: modalRgpd }" @click.self="closeAllModals">
-  <div class="lm-box">
-    <div class="lm-head">
-      <h3>{{ modalI18n.mr_title }}</h3>
-      <button class="lm-close" @click="closeAllModals">&times;</button>
-    </div>
-    <div class="lm-body" v-html="rgpdContent"></div>
-  </div>
-</div>
+        <div class="mockup-body">
+          <!-- Sidebar -->
+          <div class="mock-sidebar">
+            <div class="mock-sidebar-logo"><ScalyoLogo :size="22" /><span>Scalyo</span></div>
+            <div
+              v-for="(tab, i) in demoTabs"
+              :key="tab.key"
+              class="mock-tab"
+              :class="{ active: activeDemo === i }"
+              @click="activeDemo = i"
+            >
+              <span class="tab-icon">{{ tab.icon }}</span>
+              <span class="tab-label hide-mobile">{{ t(tab.labelKey) }}</span>
+            </div>
+          </div>
 
-<!-- MODAL LEGAL -->
-<div class="lm-overlay" :class="{ open: modalLegal }" @click.self="closeAllModals">
-  <div class="lm-box">
-    <div class="lm-head">
-      <h3>{{ modalI18n.ml_title }}</h3>
-      <button class="lm-close" @click="closeAllModals">&times;</button>
-    </div>
-    <div class="lm-body" v-html="legalContent"></div>
-  </div>
-</div>
+          <!-- Main content -->
+          <div class="mock-main">
+            <transition name="mock-fade" mode="out-in">
+              <!-- Dashboard Overview -->
+              <div v-if="activeDemo === 0" key="dash" class="mock-panel">
+                <div class="mock-header">
+                  <h3>{{ t('demo_overview') }}</h3>
+                  <span class="mock-date">{{ t('demo_today') }}</span>
+                </div>
+                <div class="mock-kpi-row">
+                  <div class="mock-kpi"><span class="kpi-value purple">€2.4M</span><span class="kpi-label">{{ t('demo_arr') }}</span></div>
+                  <div class="mock-kpi"><span class="kpi-value green">8.2</span><span class="kpi-label">{{ t('demo_avg_health') }}</span></div>
+                  <div class="mock-kpi"><span class="kpi-value red">3</span><span class="kpi-label">{{ t('demo_critical') }}</span></div>
+                  <div class="mock-kpi"><span class="kpi-value blue">90{{ t('demo_steps') === 'steps' ? 'd' : 'j' }}</span><span class="kpi-label">{{ t('demo_roadmap') }}</span></div>
+                </div>
+                <div class="mock-chart">
+                  <div class="chart-label">{{ t('demo_nrr') }}</div>
+                  <div class="chart-bars">
+                    <div v-for="(h, i) in [65,72,68,78,85,92]" :key="i" class="chart-bar" :style="{ height: h + '%' }">
+                      <span class="bar-val">{{ 100 + i * 2 }}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Portfolio -->
+              <div v-else-if="activeDemo === 1" key="port" class="mock-panel">
+                <div class="mock-header">
+                  <h3>{{ t('d_m1_head') }}</h3>
+                  <span class="mock-badge warn">{{ t('d_m1_alerts') }}</span>
+                </div>
+                <div class="mock-accounts">
+                  <div class="mock-acc" v-for="acc in mockAccounts" :key="acc.name">
+                    <div class="acc-avatar" :style="{ background: acc.color }">{{ acc.name[0] }}</div>
+                    <div class="acc-info">
+                      <strong>{{ acc.name }}</strong>
+                      <div class="health-bar"><div :style="{ width: acc.health * 10 + '%', background: acc.health > 7 ? '#10b981' : acc.health > 4 ? '#f59e0b' : '#ef4444' }" /></div>
+                    </div>
+                    <span class="acc-score" :style="{ color: acc.health > 7 ? '#10b981' : acc.health > 4 ? '#f59e0b' : '#ef4444' }">{{ acc.health.toFixed(1) }}</span>
+                    <span class="acc-tag" :class="acc.health > 7 ? 'stable' : acc.health > 4 ? 'watch' : 'critical'">
+                      {{ acc.health > 7 ? t('d_m1_s1') : acc.health > 4 ? t('d_m1_watch') : t('d_m1_crit') }}
+                    </span>
+                  </div>
+                </div>
+                <div class="mock-ai-box">
+                  <span class="ai-label">{{ t('d_m1_reco') }}</span>
+                  <p>{{ t('d_m1_ai') }}</p>
+                </div>
+              </div>
+
+              <!-- Coach IA -->
+              <div v-else-if="activeDemo === 2" key="coach" class="mock-panel mock-chat">
+                <div class="mock-header chat-header">
+                  <h3>{{ t('demo_coach_head') }}</h3>
+                  <span class="online-badge">{{ t('demo_coach_online') }}</span>
+                </div>
+                <div class="chat-messages">
+                  <div class="chat-msg user">{{ t('demo_coach_q1') }}</div>
+                  <div class="chat-msg ai">
+                    <span class="chat-tag">{{ t('demo_coach_tag1') }}</span>
+                    {{ t('demo_coach_a1') }}
+                  </div>
+                  <div class="chat-msg user">{{ t('demo_coach_q2') }}</div>
+                  <div class="chat-msg ai">
+                    <span class="chat-tag">{{ t('demo_coach_tag2') }}</span>
+                    {{ t('demo_coach_a2') }}
+                  </div>
+                </div>
+                <div class="chat-input-bar">
+                  <input :placeholder="t('coach_placeholder')" readonly />
+                  <button class="send-btn">→</button>
+                </div>
+              </div>
+
+              <!-- Wellbeing -->
+              <div v-else-if="activeDemo === 3" key="wb" class="mock-panel">
+                <div class="mock-header">
+                  <h3>{{ t('d_m3_head') }}</h3>
+                  <span class="mock-badge warn">{{ t('d_m3_badge') }}</span>
+                </div>
+                <div class="mock-kpi-row">
+                  <div class="mock-kpi"><span class="kpi-value green">7.4</span><span class="kpi-label">{{ t('d_m3_avg') }}</span></div>
+                  <div class="mock-kpi"><span class="kpi-value amber">6.8</span><span class="kpi-label">{{ t('d_m3_load') }}</span></div>
+                  <div class="mock-kpi"><span class="kpi-value red">1</span><span class="kpi-label">{{ t('d_m3_alrt') }}</span></div>
+                </div>
+                <div class="mock-ai-box warn">
+                  <span class="ai-label">{{ t('d_m3_burn') }}</span>
+                  <p>{{ t('d_m3_sara') }}</p>
+                </div>
+                <div class="mock-trend">{{ t('d_m3_trnd') }}</div>
+              </div>
+
+              <!-- Email Studio -->
+              <div v-else-if="activeDemo === 4" key="email" class="mock-panel">
+                <div class="mock-header">
+                  <h3>{{ t('demo_email_head') }}</h3>
+                  <div class="email-tags">
+                    <span class="etag">{{ t('demo_tag_checkin') }}</span>
+                    <span class="etag">{{ t('demo_tag_churn') }}</span>
+                  </div>
+                </div>
+                <div class="mock-email">
+                  <div class="email-field"><strong>{{ t('demo_email_to') }}</strong> marc.duval@client.com</div>
+                  <div class="email-field"><strong>{{ t('d_m5_lbl') }}</strong> {{ t('d_m5_subj') }}</div>
+                  <div class="email-body" v-html="t('d_m5_body')"></div>
+                  <div class="email-footer-badge">{{ t('demo_ai_badge') }}</div>
+                </div>
+              </div>
+
+              <!-- Planning -->
+              <div v-else-if="activeDemo === 5" key="plan" class="mock-panel">
+                <div class="mock-header">
+                  <h3>{{ t('d_m6_head') }}</h3>
+                  <span class="mock-badge">{{ t('d_m6_ev') }}</span>
+                </div>
+                <div class="mock-calendar">
+                  <div class="cal-grid">
+                    <div v-for="d in 28" :key="d" class="cal-day" :class="{ today: d === 12, event: [3,7,12,15,21,25].includes(d) }">
+                      {{ d }}
+                      <span v-if="[3,7,12,15,21,25].includes(d)" class="cal-dot" />
+                    </div>
+                  </div>
+                  <div class="cal-event-preview">
+                    <span class="cal-ev-icon">📞</span>
+                    {{ t('d_m6_ret') }} — Leroy Finance · 14:00
+                  </div>
+                </div>
+              </div>
+
+              <!-- Task Board -->
+              <div v-else-if="activeDemo === 6" key="tasks" class="mock-panel">
+                <div class="mock-header">
+                  <h3>{{ t('demo_tb_head') }}</h3>
+                  <span class="mock-badge warn">{{ t('demo_tb_late') }}</span>
+                </div>
+                <div class="mock-kanban">
+                  <div class="kanban-col">
+                    <div class="kanban-col-title">{{ t('demo_col_1') }} <span class="col-count">3</span></div>
+                    <div class="kanban-card late">QBR Acme Corp <span class="card-tag">{{ t('demo_card_late') }}</span></div>
+                    <div class="kanban-card">Check-in TechScale</div>
+                    <div class="kanban-card late">Onboarding Biotech <span class="card-tag">{{ t('demo_card_late') }}</span></div>
+                  </div>
+                  <div class="kanban-col">
+                    <div class="kanban-col-title">{{ t('demo_col_2') }} <span class="col-count">2</span></div>
+                    <div class="kanban-card active">Playbook Leroy Finance</div>
+                    <div class="kanban-card active">Email expansion NovaTech</div>
+                  </div>
+                  <div class="kanban-col done-col">
+                    <div class="kanban-col-title">{{ t('demo_col_3') }} <span class="col-count">2</span></div>
+                    <div class="kanban-card done">QBR MegaCorp <span class="done-date">{{ t('demo_done_1') }}</span></div>
+                    <div class="kanban-card done">Health check Rapid <span class="done-date">{{ t('demo_done_2') }}</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Resources -->
+              <div v-else key="lib" class="mock-panel">
+                <div class="mock-header">
+                  <h3>{{ t('demo_lib_title') }}</h3>
+                  <span class="mock-badge">{{ t('demo_lib_badge') }}</span>
+                </div>
+                <div class="mock-library">
+                  <div class="lib-card">
+                    <span class="lib-icon">📕</span>
+                    <div><strong>{{ t('demo_guide1') }}</strong><br /><small>{{ t('demo_pdf1') }}</small></div>
+                  </div>
+                  <div class="lib-card">
+                    <span class="lib-icon">📞</span>
+                    <div><strong>{{ t('demo_script1') }}</strong><br /><small>{{ t('demo_pdf1') }}</small></div>
+                  </div>
+                  <div class="lib-card new">
+                    <span class="lib-icon">🆕</span>
+                    <div><strong>{{ t('demo_pb_new') }}</strong><br /><small>{{ t('demo_pb_sub') }}</small></div>
+                  </div>
+                </div>
+              </div>
+            </transition>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ STATS ═══════════════════ -->
+    <section class="stats-section anim-section" data-anim="fade-up">
+      <div class="container">
+        <div class="stats-grid">
+          <div v-for="(s, i) in statsData" :key="i" class="stat-card">
+            <span class="stat-emoji emoji-3d">{{ s.icon }}</span>
+            <div class="stat-number">{{ s.n }}</div>
+            <div class="stat-label">{{ s.l }}</div>
+            <div class="stat-note">{{ s.s }}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ FEATURES ═══════════════════ -->
+    <section id="features" class="features-section">
+      <div class="container">
+        <div class="section-header anim-section" data-anim="fade-up">
+          <span class="section-tag">{{ t('fl_chips_label') }}</span>
+        </div>
+
+        <!-- Module chips -->
+        <div class="module-chips anim-section" data-anim="fade-up">
+          <button
+            v-for="(m, i) in modulesData"
+            :key="i"
+            class="module-chip"
+            :class="{ active: activeModule === i }"
+            @click="activeModule = i"
+          >
+            <span class="chip-icon">{{ m.icon }}</span>
+            {{ m.chip }}
+          </button>
+        </div>
+
+        <!-- Active module detail -->
+        <transition name="module-fade" mode="out-in">
+          <div class="module-detail anim-section" :key="activeModule" data-anim="fade-up">
+            <div class="module-text">
+              <span class="module-tag">{{ modulesData[activeModule].tag }}</span>
+              <h2 class="module-title" v-html="modulesData[activeModule].h2"></h2>
+              <p class="module-body">{{ modulesData[activeModule].body }}</p>
+              <ul class="module-points">
+                <li v-for="(p, j) in modulesData[activeModule].points" :key="j">
+                  <span class="point-check">✓</span> {{ p }}
+                </li>
+              </ul>
+              <a :href="appUrl + '/login'" class="btn-primary module-cta">{{ modulesData[activeModule].btn }}</a>
+            </div>
+            <div class="module-visual">
+              <!-- Module-specific mockup -->
+              <div class="module-mockup-card">
+                <component :is="'div'" class="mmock-content">
+                  <!-- Portfolio mockup -->
+                  <template v-if="activeModule === 0">
+                    <div class="mmock-head">{{ t('pb_title') }} <span class="mmock-badge">{{ t('pb_status') }}</span></div>
+                    <div class="pb-step done"><span>✅</span> {{ t('pb_s1') }}</div>
+                    <div class="pb-step done"><span>✅</span> {{ t('pb_s2') }}</div>
+                    <div class="pb-step"><span>⬜</span> {{ t('pb_s3') }}</div>
+                    <div class="pb-step"><span>⬜</span> {{ t('pb_s4') }}</div>
+                    <div class="mmock-ai"><span>🤖</span> {{ t('pb_ai_msg') }}</div>
+                  </template>
+                  <!-- KPIs COPIL -->
+                  <template v-else-if="activeModule === 1">
+                    <div class="mmock-head">{{ t('demo_copil_period') }} <span class="mmock-badge green">{{ t('demo_copil_badge') }}</span></div>
+                    <div class="copil-kpis">
+                      <div class="copil-kpi"><strong>NRR</strong><span class="green">108%</span><small>{{ t('demo_kpi_d1') }}</small></div>
+                      <div class="copil-kpi"><strong>Churn</strong><span class="red">4.2%</span><small>{{ t('demo_kpi_d2') }}</small></div>
+                      <div class="copil-kpi"><strong>MRR</strong><span class="purple">€186K</span></div>
+                      <div class="copil-kpi"><strong>CSAT</strong><span class="green">4.6/5</span></div>
+                    </div>
+                  </template>
+                  <!-- Wellbeing -->
+                  <template v-else-if="activeModule === 2">
+                    <div class="mmock-head">{{ t('d_wb_title') }} <span class="mmock-badge">{{ t('d_wb_upd') }}</span></div>
+                    <div class="wb-metrics">
+                      <div class="wb-metric"><span class="wb-val green">7.4</span><span>{{ t('d_wb_avg') }}</span><small>{{ t('d_wb_sub') }}</small></div>
+                      <div class="wb-metric"><span class="wb-val amber">6.8</span><span>{{ t('d_wb_load') }}</span></div>
+                    </div>
+                    <div class="mmock-ai warn"><span>⚠️</span> {{ t('demo_burnout') }}</div>
+                  </template>
+                  <!-- Coach IA -->
+                  <template v-else-if="activeModule === 3">
+                    <div class="mmock-head">{{ t('demo_coach_head') }} <span class="online-dot">{{ t('coach_online') }}</span></div>
+                    <div class="mini-chat">
+                      <div class="mc-user">{{ t('coach_user') }}</div>
+                      <div class="mc-ai">🤖 {{ t('coach_ai') }}</div>
+                    </div>
+                  </template>
+                  <!-- Email Studio -->
+                  <template v-else-if="activeModule === 4">
+                    <div class="mmock-head">{{ t('demo_email_head') }} <span class="mmock-badge">{{ t('demo_ai_badge') }}</span></div>
+                    <div class="email-tags-mini">
+                      <span>{{ t('demo_tag_checkin') }}</span>
+                      <span>{{ t('demo_tag_churn') }}</span>
+                    </div>
+                    <div class="mini-email-body">{{ t('d_m5_subj') }}</div>
+                  </template>
+                  <!-- Planning -->
+                  <template v-else-if="activeModule === 5">
+                    <div class="mmock-head">{{ t('d_m6_head') }} <span class="mmock-badge">{{ t('d_m6_ev') }}</span></div>
+                    <div class="mini-cal">
+                      <div v-for="d in 7" :key="d" class="mini-cal-day" :class="{ active: d === 3 }">{{ d + 9 }}</div>
+                    </div>
+                    <div class="cal-event-mini">{{ t('d_m6_ret') }} — 14:00</div>
+                  </template>
+                  <!-- Task Board -->
+                  <template v-else-if="activeModule === 6">
+                    <div class="mmock-head">{{ t('demo_tb_head') }} <span class="mmock-badge warn">{{ t('demo_tb_late') }}</span></div>
+                    <div class="mini-kanban">
+                      <div class="mk-col"><div class="mk-title">{{ t('demo_col_1') }}</div><div class="mk-card">QBR Acme</div><div class="mk-card warn">Onboarding</div></div>
+                      <div class="mk-col"><div class="mk-title">{{ t('demo_col_2') }}</div><div class="mk-card active">Playbook</div></div>
+                      <div class="mk-col"><div class="mk-title">{{ t('demo_col_3') }}</div><div class="mk-card done">QBR Mega</div></div>
+                    </div>
+                  </template>
+                  <!-- Resources -->
+                  <template v-else>
+                    <div class="mmock-head">{{ t('demo_lib_title') }} <span class="mmock-badge">{{ t('demo_lib_badge') }}</span></div>
+                    <div class="mini-lib">
+                      <div class="ml-card">📕 {{ t('demo_guide1') }}</div>
+                      <div class="ml-card">📞 {{ t('demo_script1') }}</div>
+                      <div class="ml-card new">🆕 {{ t('demo_pb_new') }}</div>
+                    </div>
+                  </template>
+                </component>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ ROI CALCULATOR ═══════════════════ -->
+    <section id="roi" class="roi-section">
+      <div class="container">
+        <div class="section-header anim-section" data-anim="fade-up">
+          <span class="section-tag">{{ t('roi_tag') }}</span>
+          <h2 v-html="t('roi_h2')"></h2>
+          <p class="section-sub">{{ t('roi_sub') }}</p>
+        </div>
+
+        <div class="roi-grid anim-section" data-anim="fade-up">
+          <div class="roi-sliders">
+            <div class="roi-field">
+              <label>{{ t('roi_lbl_csm') }}: <strong>{{ roiCsms }}</strong></label>
+              <input type="range" v-model.number="roiCsms" min="1" max="50" />
+            </div>
+            <div class="roi-field">
+              <label>{{ t('roi_lbl_acc') }}: <strong>{{ roiAcc }}</strong></label>
+              <input type="range" v-model.number="roiAcc" min="5" max="200" />
+            </div>
+            <div class="roi-field">
+              <label>{{ t('roi_lbl_arr') }}: <strong>€{{ roiArr.toLocaleString() }}</strong></label>
+              <input type="range" v-model.number="roiArr" min="1000" max="100000" step="1000" />
+            </div>
+            <div class="roi-field">
+              <label>{{ t('roi_lbl_churn') }}: <strong>{{ roiChurn }}%</strong></label>
+              <input type="range" v-model.number="roiChurn" min="1" max="30" />
+            </div>
+          </div>
+
+          <div class="roi-results">
+            <div class="roi-main-result">
+              <span class="roi-big">€{{ roiSaved.toLocaleString() }}</span>
+              <span class="roi-desc">{{ t('roi_main_label') }}</span>
+            </div>
+            <div class="roi-details">
+              <div class="roi-detail"><span class="roi-dl">{{ t('roi_arr') }}</span><span class="roi-dv">€{{ roiTotalArr.toLocaleString() }}</span></div>
+              <div class="roi-detail"><span class="roi-dl">{{ t('roi_cost') }}</span><span class="roi-dv red">€{{ roiChurnCost.toLocaleString() }}</span></div>
+              <div class="roi-detail"><span class="roi-dl">{{ t('roi_time') }}</span><span class="roi-dv green">{{ roiTimeSaved }}h</span></div>
+              <div class="roi-detail"><span class="roi-dl">{{ t('roi_mult') }}</span><span class="roi-dv purple">{{ roiMultiplier }}x</span></div>
+            </div>
+            <div class="roi-plan">
+              <span class="roi-plan-label">{{ t('roi_plan_rec') }}:</span>
+              <span class="roi-plan-value">{{ roiRecommendedPlan }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ INTEGRATIONS ═══════════════════ -->
+    <section class="integ-section anim-section" data-anim="fade-up">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">{{ t('integ_tag') }}</span>
+          <h2 v-html="t('integ_h2')"></h2>
+          <p class="section-sub">{{ t('integ_sub') }}</p>
+        </div>
+        <div class="integ-grid">
+          <div v-for="ig in integrations" :key="ig.name" class="integ-card">
+            <span class="integ-icon">{{ ig.icon }}</span>
+            <strong>{{ ig.name }}</strong>
+            <small>{{ ig.tag }}</small>
+            <span class="integ-avail">{{ t('integ_available') }}</span>
+          </div>
+        </div>
+        <p class="integ-more">{{ t('integ_more') }}</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ WHY SCALYO ═══════════════════ -->
+    <section class="why-section anim-section" data-anim="fade-up">
+      <div class="container">
+        <div class="section-header">
+          <h2>{{ t('sell_title') }}</h2>
+          <p class="section-sub">{{ t('sell_subtitle') }}</p>
+        </div>
+        <div class="sell-grid">
+          <div v-for="(s, i) in sellingPoints" :key="i" class="sell-card">
+            <span class="sell-icon emoji-3d">{{ s.icon }}</span>
+            <h4>{{ s.label }}</h4>
+            <p>{{ s.desc }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ PRICING ═══════════════════ -->
+    <section id="pricing" class="pricing-section">
+      <div class="container">
+        <div class="section-header anim-section" data-anim="fade-up">
+          <span class="section-tag">{{ t('pricing_tag') }}</span>
+          <h2 v-html="t('pricing_h2')"></h2>
+          <p class="pricing-note" v-html="t('pricing_note')"></p>
+        </div>
+
+        <div class="plans-grid anim-section" data-anim="fade-up">
+          <!-- Starter -->
+          <div class="plan-card">
+            <div class="plan-name">STARTER</div>
+            <div class="plan-price"><span class="currency">€</span>97<span class="period">/{{ locale === 'kr' ? '월' : locale === 'en' ? 'mo' : 'mois' }}</span></div>
+            <div class="plan-desc">{{ t('plan_1csm') }}</div>
+            <ul class="plan-features">
+              <li>✓ {{ t('feat_5acc') }}</li>
+              <li>✓ {{ t('feat_dash') }}</li>
+              <li>✓ {{ t('feat_tasks') }}</li>
+              <li>✓ {{ t('feat_res') }}</li>
+              <li>✓ {{ t('feat_wb') }}</li>
+              <li>✓ {{ t('feat_coach') }}</li>
+            </ul>
+            <a :href="appUrl + '/login'" class="btn-outline plan-btn">{{ t('cta_trial') }}</a>
+          </div>
+
+          <!-- Growth -->
+          <div class="plan-card popular">
+            <div class="popular-badge">⭐ {{ t('badge_popular') }}</div>
+            <div class="plan-name">GROWTH</div>
+            <div class="plan-price"><span class="currency">€</span>297<span class="period">/{{ locale === 'kr' ? '월' : locale === 'en' ? 'mo' : 'mois' }}</span></div>
+            <div class="plan-desc">{{ t('plan_10csm') }}</div>
+            <ul class="plan-features">
+              <li>✓ {{ t('feat_unlim_acc') }}</li>
+              <li>✓ {{ t('feat_dash_adv') }}</li>
+              <li>✓ {{ t('feat_coach_cs') }}</li>
+              <li>✓ {{ t('feat_email_ai') }}</li>
+              <li>✓ {{ t('feat_import') }}</li>
+              <li>✓ {{ t('feat_support') }}</li>
+            </ul>
+            <a :href="appUrl + '/login'" class="btn-primary plan-btn glow-btn">{{ t('cta_trial') }}</a>
+          </div>
+
+          <!-- Elite -->
+          <div class="plan-card">
+            <div class="plan-name">ELITE</div>
+            <div class="plan-price"><span class="currency">€</span>697<span class="period">/{{ locale === 'kr' ? '월' : locale === 'en' ? 'mo' : 'mois' }}</span></div>
+            <div class="plan-desc">{{ t('plan_unlim_csm') }}</div>
+            <ul class="plan-features">
+              <li>✓ {{ t('feat_all_growth') }}</li>
+              <li>✓ {{ t('feat_playbooks') }}</li>
+              <li>✓ {{ t('feat_coaching') }}</li>
+              <li>✓ {{ t('feat_onboarding') }}</li>
+              <li>✓ {{ t('feat_sla') }}</li>
+              <li>✓ {{ t('feat_multi') }}</li>
+            </ul>
+            <a :href="appUrl + '/login'" class="btn-outline plan-btn">{{ t('cta_trial') }}</a>
+          </div>
+        </div>
+
+        <p class="plan-footnote" v-html="t('plan_footnote')"></p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ FAQ ═══════════════════ -->
+    <section id="faq" class="faq-section">
+      <div class="container">
+        <div class="section-header anim-section" data-anim="fade-up">
+          <span class="section-tag">{{ t('faq_tag') }}</span>
+          <h2 v-html="t('faq_h2')"></h2>
+        </div>
+
+        <div class="faq-list anim-section" data-anim="fade-up">
+          <div v-for="(item, i) in faqItems" :key="i" class="faq-item" :class="{ open: openFaq === i }" @click="openFaq = openFaq === i ? null : i">
+            <div class="faq-q">
+              <span>{{ item.q }}</span>
+              <span class="faq-toggle">{{ openFaq === i ? '−' : '+' }}</span>
+            </div>
+            <div class="faq-a">
+              <p>{{ item.a }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ FINAL CTA ═══════════════════ -->
+    <section class="final-cta-section anim-section" data-anim="fade-up">
+      <div class="final-cta-glow" />
+      <div class="container center">
+        <span class="section-tag light">{{ t('end_section_tag') }}</span>
+        <h2 class="final-cta-title" v-html="t('end_h2')"></h2>
+        <p class="final-cta-sub">{{ t('end_sub') }}</p>
+        <div class="final-cta-btns">
+          <a :href="appUrl + '/login'" class="btn-primary lg glow-btn">{{ t('cta_start_free') }}</a>
+          <a href="mailto:contact@scalyo.app" class="btn-outline-light lg">{{ t('cta_talk') }}</a>
+        </div>
+        <p class="final-cta-note">{{ t('end_note') }}</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ FOOTER ═══════════════════ -->
+    <footer class="footer-section">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <div class="footer-logo"><ScalyoLogo :size="28" /><span>Scalyo</span></div>
+            <p>{{ t('footer_desc') }}</p>
+            <p class="footer-markets">{{ t('footer_markets') }}</p>
+          </div>
+          <div class="footer-col">
+            <h4>{{ t('footer_col_product') }}</h4>
+            <a href="#features" @click.prevent="scrollTo('features')">{{ t('footer_features') }}</a>
+            <a href="#pricing" @click.prevent="scrollTo('pricing')">{{ t('footer_pricing') }}</a>
+            <a href="#roi" @click.prevent="scrollTo('roi')">{{ t('footer_roi_calc') }}</a>
+            <a :href="appUrl + '/login'">{{ t('footer_signin') }}</a>
+          </div>
+          <div class="footer-col">
+            <h4>{{ t('footer_col_resources') }}</h4>
+            <a href="#">{{ t('footer_blog') }}</a>
+            <a href="#">{{ t('footer_guides') }}</a>
+            <a href="#">{{ t('footer_playbooks') }}</a>
+            <a href="#">{{ t('footer_docs') }}</a>
+          </div>
+          <div class="footer-col">
+            <h4>{{ t('footer_col_contact') }}</h4>
+            <a href="mailto:contact@scalyo.app">contact@scalyo.app</a>
+            <a href="#">{{ t('footer_support') }}</a>
+            <router-link to="/legal">{{ t('footer_rgpd') }}</router-link>
+            <router-link to="/legal">{{ t('footer_legal') }}</router-link>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>{{ t('footer_copy') }}</span>
+        </div>
+      </div>
+    </footer>
 
   </div>
 </template>
 
-
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
-import { L, T } from '../i18n/landing.js'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import ScalyoLogo from '@/components/ScalyoLogo.vue'
+import { L } from '@/i18n/landing'
 
-const router = useRouter()
+const appUrl = 'http://localhost:5174'
 
-// ── LANGUAGE ──
-const lang = ref(localStorage.getItem('scalyo_lang') || 'fr')
-
+const locale = ref('fr')
 function t(key) {
-  const lBlock = L[lang.value] || L.fr
-  const tBlock = T[lang.value] || T.fr
-  return lBlock[key] || tBlock[key] || L.fr[key] || T.fr[key] || key
+  return (L[locale.value] || L.fr)[key] || L.fr[key] || key
 }
 
-function setLang(l) {
-  lang.value = l
-  try { localStorage.setItem('scalyo_lang', l) } catch(e) {}
-  document.documentElement.lang = l === 'kr' ? 'ko' : l
-  nextTick(() => {})
-}
-
-// ── NAV SCROLL ──
-const navScrolled = ref(false)
-function onScroll() { navScrolled.value = window.scrollY > 40 }
-
-// ── MOBILE MENU ──
-const mobileMenuOpen = ref(false)
-function closeMobile() { mobileMenuOpen.value = false }
-
-// ── FAQ ──
-const openFaqIndex = ref(-1)
-const faqItems = computed(() => {
-  return [1, 2, 3, 4, 5, 6, 7, 8].map(i => ({
-    q: t('faq_q' + i),
-    a: t('faq_a' + i)
-  }))
-})
-
-function toggleFaq(index) {
-  openFaqIndex.value = openFaqIndex.value === index ? -1 : index
-}
-
-// ── INTEGRATION FILTERING ──
-const activeIntegCat = ref('all')
-
-const integCategories = [
-  { key: 'all', icon: '📋', label: 'Tout' },
-  { key: 'crm', icon: '🏢', label: 'CRM' },
-  { key: 'email', icon: '📧', label: 'Email' },
-  { key: 'chat', icon: '💬', label: 'Chat' },
-  { key: 'meeting', icon: '📹', label: 'Réunions' },
-  { key: 'project', icon: '📁', label: 'Projets' },
-  { key: 'data', icon: '📊', label: 'Données' }
+const langs = [
+  { code: 'fr', label: 'FR' },
+  { code: 'en', label: 'EN' },
+  { code: 'kr', label: '한국어' },
 ]
 
-const integrations = [
-  { name: 'Salesforce', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%2300A1E0' d='M20 8c3.2 0 6.1 1.3 8.2 3.3C30 9.9 32.5 9 35.2 9c6.2 0 11.2 5.1 11.2 11.3 0 .5 0 1-.1 1.5C47.9 23.2 49 25.3 49 27.7c0 3.9-3 7.1-6.8 7.3H12.5C7.3 35 3 30.6 3 25.3c0-4.2 2.7-7.7 6.5-9C10.3 11.9 14.7 8 20 8z'/%3E%3C/svg%3E", tagKey: 'integ_sf_tag', cat: 'crm' },
-  { name: 'HubSpot', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23FF7A59' d='M267.5 78.7V44.3c15.1-7.2 25.6-22.6 25.6-40.3C293.1 1.8 291.3 0 289 0h-32c-2.2 0-4 1.8-4 4v.1c0 11.1-9 20.1-20.1 20.1-11.1 0-20.1-9-20.1-20.1V4c0-2.2-1.8-4-4-4h-32c-2.2 0-4 1.8-4 4c0 17.7 10.5 33.1 25.6 40.3v34.4C143.1 87.3 96 141 96 205.8c0 36.5 14.5 69.6 38 93.8l-53.4 53.4c-3 3-4.2 7.3-3.2 11.4s4.2 7.3 8.1 8.7l.6.2c6.6 2.3 13.8.4 18.5-4.8l50.2-55.6c24 17.5 53.5 27.8 85.2 27.8s61.2-10.3 85.2-27.8l50.2 55.6c4.7 5.2 11.9 7.1 18.5 4.8l.6-.2c3.9-1.4 6.9-4.6 8.1-8.7s-.2-8.4-3.2-11.4L346 299.6c23.5-24.2 38-57.3 38-93.8 0-64.8-47.1-118.5-108.5-127.1zM240 304c-54.2 0-98.2-44-98.2-98.2s44-98.2 98.2-98.2 98.2 44 98.2 98.2S294.2 304 240 304z'/%3E%3C/svg%3E", tag: 'CRM & Contacts', cat: 'crm' },
-  { name: 'Pipedrive', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%2325C16F'/%3E%3Cpath fill='%23fff' d='M16 7c-2.8 0-5 2.2-5 5v8c0 2.8 2.2 5 5 5s5-2.2 5-5v-8c0-2.8-2.2-5-5-5zm2 13c0 1.1-.9 2-2 2s-2-.9-2-2v-8c0-1.1.9-2 2-2s2 .9 2 2v8z'/%3E%3C/svg%3E", tag: 'CRM & Deals', cat: 'crm' },
-  { name: 'Gmail', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%234285F4' d='M6 10v28h10V23l8 6 8-6v15h10V10L34 22 24 14 14 22z'/%3E%3Cpath fill='%2334A853' d='M6 10l18 14v-4L6 8z'/%3E%3Cpath fill='%23FBBC04' d='M42 10L24 24v-4l18-12z'/%3E%3Cpath fill='%23EA4335' d='M6 10h6l12 10 12-10h6v2L24 24 6 12z'/%3E%3C/svg%3E", tagKey: 'integ_gmail_tag', cat: 'email' },
-  { name: 'Outlook', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%230078D4' d='M28 7v10h14V7zM28 20v11h14V20zM28 34v7h14v-7zM5 7l20 3v28L5 41z'/%3E%3Cellipse fill='%23fff' cx='15' cy='24' rx='6' ry='7'/%3E%3Cellipse fill='%230078D4' cx='15' cy='24' rx='4' ry='5'/%3E%3C/svg%3E", tag: 'Email & Calendar', cat: 'email' },
-  { name: 'IMAP', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='4' y='10' width='40' height='28' rx='4' fill='%236B7280'/%3E%3Cpath fill='none' stroke='%23fff' stroke-width='2' d='M4 14l20 12 20-12'/%3E%3C/svg%3E", tagKey: 'integ_imap_tag', cat: 'email' },
-  { name: 'Slack', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23E01E5A' d='M13 28a3 3 0 1 1-3-3h3v3zm1.5 0a3 3 0 1 1 6 0v7.5a3 3 0 1 1-6 0V28z'/%3E%3Cpath fill='%2336C5F0' d='M20 13a3 3 0 1 1 3-3v3h-3zm0 1.5a3 3 0 1 1 0 6h-7.5a3 3 0 1 1 0-6H20z'/%3E%3Cpath fill='%232EB67D' d='M35 20a3 3 0 1 1 3 3h-3v-3zm-1.5 0a3 3 0 1 1-6 0v-7.5a3 3 0 1 1 6 0V20z'/%3E%3Cpath fill='%23ECB22E' d='M28 35a3 3 0 1 1-3 3v-3h3zm0-1.5a3 3 0 1 1 0-6h7.5a3 3 0 1 1 0 6H28z'/%3E%3C/svg%3E", tagKey: 'integ_slack_tag', cat: 'chat' },
-  { name: 'Teams', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%235B5FC7' d='M34 16a5 5 0 100-10 5 5 0 000 10zM41 18h-8c-1.7 0-3 1.3-3 3v10c0 1.7 1.3 3 3 3h8c1.7 0 3-1.3 3-3V21c0-1.7-1.3-3-3-3z'/%3E%3Cpath fill='%237B83EB' d='M24 14a6 6 0 100-12 6 6 0 000 12zM33 17H11c-1.7 0-3 1.3-3 3v13c0 5 4 9 9 9h10c5 0 9-4 9-9V20c0-1.7-1.3-3-3-3z'/%3E%3C/svg%3E", tag: 'Chat & Visio', cat: 'chat' },
-  { name: 'Intercom', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='6' y='6' width='36' height='36' rx='8' fill='%23286EFA'/%3E%3Cpath stroke='%23fff' stroke-width='2.5' stroke-linecap='round' fill='none' d='M16 18v8M21 16v12M26 16v12M31 18v8M14 32s3 3 10 3 10-3 10-3'/%3E%3C/svg%3E", tag: 'Chat & Tickets', cat: 'chat' },
-  { name: 'Zoom', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='2' y='8' width='44' height='32' rx='8' fill='%232D8CFF'/%3E%3Cpath fill='%23fff' d='M10 16h16v12c0 1.1-.9 2-2 2H10V16zM30 20l8-4v16l-8-4V20z'/%3E%3C/svg%3E", tagKey: 'integ_zoom_tag', cat: 'meeting' },
-  { name: 'Google Meet', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%230F9D58' d='M8 12h20v24H8z'/%3E%3Cpath fill='%234285F4' d='M28 18l12-8v28l-12-8z'/%3E%3Cpath fill='%23FBBC04' d='M28 24l12-14h-12z'/%3E%3Cpath fill='%23EA4335' d='M28 24l12 14h-12z'/%3E%3C/svg%3E", tag: 'Video calls', cat: 'meeting' },
-  { name: 'Calendly', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='6' y='8' width='36' height='34' rx='6' fill='%23006BFF'/%3E%3Crect x='6' y='8' width='36' height='10' rx='6' fill='%23004FC4'/%3E%3Ccircle cx='24' cy='30' r='6' fill='%23fff'/%3E%3Crect x='14' y='6' width='3' height='6' rx='1.5' fill='%23fff'/%3E%3Crect x='31' y='6' width='3' height='6' rx='1.5' fill='%23fff'/%3E%3C/svg%3E", tagKey: 'integ_calendly_tag', cat: 'meeting' },
-  { name: 'Jira', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%230052CC' d='M43.5 23.2L25.8 5.5 24 3.7 8.7 19 3 24.7c-.7.7-.7 1.9 0 2.6L15.3 39.7 24 48.4l15.3-15.3.5-.5 3.7-3.7c.7-.7.7-1.9 0-2.7zM24 30.9l-6.9-6.9L24 17.1l6.9 6.9L24 30.9z'/%3E%3C/svg%3E", tag: 'Issues & Projects', cat: 'project' },
-  { name: 'Asana', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='12' r='8' fill='%23F06A6A'/%3E%3Ccircle cx='12' cy='32' r='8' fill='%23F06A6A'/%3E%3Ccircle cx='36' cy='32' r='8' fill='%23F06A6A'/%3E%3C/svg%3E", tagKey: 'integ_asana_tag', cat: 'project' },
-  { name: 'Stripe', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='8' fill='%236366F1'/%3E%3Cpath fill='%23fff' d='M22.5 19.5c0-1.5 1.2-2.1 3.2-2.1 2.9 0 6.5 0.9 9.4 2.4V12c-3.1-1.3-6.3-1.8-9.4-1.8-7.7 0-12.8 4-12.8 10.7 0 10.4 14.3 8.7 14.3 13.2 0 1.8-1.5 2.3-3.7 2.3-3.2 0-7.3-1.3-10.5-3.1v7.9c3.6 1.5 7.2 2.2 10.5 2.2 7.9 0 13.3-3.9 13.3-10.7-.1-11.2-14.3-9.2-14.3-13.2z'/%3E%3C/svg%3E", tag: 'Billing & MRR', cat: 'data' },
-  { name: 'Import CSV', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%236B7280' d='M12 4h16l12 12v24c0 2.2-1.8 4-4 4H12c-2.2 0-4-1.8-4-4V8c0-2.2 1.8-4 4-4z'/%3E%3Cpath fill='%23fff' opacity='.5' d='M28 4l12 12h-8c-2.2 0-4-1.8-4-4V4z'/%3E%3Ctext x='24' y='35' text-anchor='middle' fill='%23fff' font-size='11' font-weight='700' font-family='sans-serif'%3ECSV%3C/text%3E%3C/svg%3E", tag: 'Import fichiers', cat: 'data' },
-  { name: 'Excel', icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%2316A34A' d='M12 4h16l12 12v24c0 2.2-1.8 4-4 4H12c-2.2 0-4-1.8-4-4V8c0-2.2 1.8-4 4-4z'/%3E%3Cpath fill='%23fff' opacity='.5' d='M28 4l12 12h-8c-2.2 0-4-1.8-4-4V4z'/%3E%3Ctext x='24' y='35' text-anchor='middle' fill='%23fff' font-size='9' font-weight='700' font-family='sans-serif'%3EXLSX%3C/text%3E%3C/svg%3E", tag: 'Spreadsheets', cat: 'data' }
+/* ── State ── */
+const rootEl = ref(null)
+const scrolled = ref(false)
+const mobileMenu = ref(false)
+const activeDemo = ref(0)
+const activeModule = ref(0)
+const openFaq = ref(null)
+
+/* ROI */
+const roiCsms = ref(5)
+const roiAcc = ref(30)
+const roiArr = ref(15000)
+const roiChurn = ref(12)
+
+const roiTotalArr = computed(() => roiCsms.value * roiAcc.value * roiArr.value)
+const roiChurnCost = computed(() => Math.round(roiTotalArr.value * roiChurn.value / 100))
+const roiSaved = computed(() => Math.round(roiChurnCost.value * 0.3))
+const roiTimeSaved = computed(() => roiCsms.value * 6)
+const roiMultiplier = computed(() => {
+  const cost = roiCsms.value <= 3 ? 97 : roiCsms.value <= 10 ? 297 : 697
+  return Math.max(1, Math.round(roiSaved.value / (cost * 12)))
+})
+const roiRecommendedPlan = computed(() => {
+  if (roiCsms.value <= 3) return t('roi_plan_starter')
+  if (roiCsms.value <= 10) return t('roi_plan_growth')
+  return t('roi_plan_elite')
+})
+
+/* ── Demo tabs ── */
+const demoTabs = [
+  { key: 'dashboard', icon: '📊', labelKey: 'demo_dashboard' },
+  { key: 'portfolio', icon: '🗂️', labelKey: 'demo_portfolio' },
+  { key: 'coach',     icon: '🤖', labelKey: 'demo_coach' },
+  { key: 'wellbeing', icon: '💚', labelKey: 'demo_wellbeing' },
+  { key: 'email',     icon: '📧', labelKey: 'demo_email_head' },
+  { key: 'planning',  icon: '📅', labelKey: 'fl_c6' },
+  { key: 'tasks',     icon: '✅', labelKey: 'fl_c7' },
+  { key: 'resources', icon: '📚', labelKey: 'fl_c8' },
 ]
 
-const filteredIntegrations = computed(() => {
-  if (activeIntegCat.value === 'all') return integrations
-  return integrations.filter(c => c.cat === activeIntegCat.value)
-})
+const mockAccounts = [
+  { name: 'TechScale', health: 9.1, color: '#10b981' },
+  { name: 'Acme Corp', health: 6.4, color: '#f59e0b' },
+  { name: 'Biotech Group', health: 8.7, color: '#8b5cf6' },
+  { name: 'Leroy Finance', health: 3.2, color: '#ef4444' },
+  { name: 'NovaTech', health: 7.8, color: '#3b82f6' },
+]
 
-function filterInteg(cat) {
-  activeIntegCat.value = cat
+/* ── Stats ── */
+const statsData = computed(() => [
+  { n: '-34%', l: t('stat1'), s: t('stat1n'), icon: '📉' },
+  { n: '+18%', l: t('stat2'), s: t('stat2n'), icon: '📈' },
+  { n: '6h',   l: t('stat3'), s: t('stat3n'), icon: '⏱️' },
+  { n: '30j',  l: t('stat4'), s: t('stat4n'), icon: '🔮' },
+])
+
+/* ── Modules (features) ── */
+const modulesData = computed(() => [
+  { icon: '🗂️', chip: t('fl_c1'), tag: t('fl_m1tag'), h2: t('fl_m1h2'), body: t('fl_m1body'), points: [t('fl_m1p1'), t('fl_m1p2'), t('fl_m1p3'), t('fl_m1p4'), t('fl_m1p5')], btn: t('fl_m1btn') },
+  { icon: '📊', chip: t('fl_c2'), tag: t('fl_m2tag'), h2: t('fl_m2h2'), body: t('fl_m2body'), points: [t('fl_m2p1'), t('fl_m2p2'), t('fl_m2p3'), t('fl_m2p4'), t('fl_m2p5')], btn: t('fl_m2btn') },
+  { icon: '💚', chip: t('fl_c3'), tag: t('fl_m3tag'), h2: t('fl_m3h2'), body: t('fl_m3body'), points: [t('fl_m3p1'), t('fl_m3p2'), t('fl_m3p3'), t('fl_m3p4'), t('fl_m3p5')], btn: t('fl_m3btn') },
+  { icon: '🤖', chip: t('fl_c4'), tag: t('fl_m4tag'), h2: t('fl_m4h2'), body: t('fl_m4body'), points: [t('fl_m4p1'), t('fl_m4p2'), t('fl_m4p3'), t('fl_m4p4'), t('fl_m4p5')], btn: t('fl_m4btn') },
+  { icon: '📧', chip: t('fl_c5'), tag: t('fl_m5tag'), h2: t('fl_m5h2'), body: t('fl_m5body'), points: [t('fl_m5p1'), t('fl_m5p2'), t('fl_m5p3'), t('fl_m5p4'), t('fl_m5p5')], btn: t('fl_m5btn') },
+  { icon: '📅', chip: t('fl_c6'), tag: t('fl_m6tag'), h2: t('fl_m6h2'), body: t('fl_m6body'), points: [t('fl_m6p1'), t('fl_m6p2'), t('fl_m6p3'), t('fl_m6p4'), t('fl_m6p5')], btn: t('fl_m6btn') },
+  { icon: '✅', chip: t('fl_c7'), tag: t('fl_m7tag'), h2: t('fl_m7h2'), body: t('fl_m7body'), points: [t('fl_m7p1'), t('fl_m7p2'), t('fl_m7p3'), t('fl_m7p4'), t('fl_m7p5')], btn: t('fl_m7btn') },
+  { icon: '📚', chip: t('fl_c8'), tag: t('fl_m8tag'), h2: t('fl_m8h2'), body: t('fl_m8body'), points: [t('fl_m8p1'), t('fl_m8p2'), t('fl_m8p3'), t('fl_m8p4'), t('fl_m8p5')], btn: t('fl_m8btn') },
+])
+
+/* ── Integrations ── */
+const integrations = computed(() => [
+  { icon: '☁️', name: 'Salesforce', tag: t('integ_sf_tag') },
+  { icon: '📧', name: 'Gmail', tag: t('integ_gmail_tag') },
+  { icon: '📬', name: 'IMAP', tag: t('integ_imap_tag') },
+  { icon: '💬', name: 'Slack', tag: t('integ_slack_tag') },
+  { icon: '📹', name: 'Zoom', tag: t('integ_zoom_tag') },
+  { icon: '📆', name: 'Calendly', tag: t('integ_calendly_tag') },
+  { icon: '📋', name: 'Asana', tag: t('integ_asana_tag') },
+])
+
+/* ── Selling points ── */
+const sellingPoints = computed(() => [
+  { icon: '🔗', label: t('sell_1_label'), desc: t('sell_1_desc') },
+  { icon: '⚡', label: t('sell_2_label'), desc: t('sell_2_desc') },
+  { icon: '🛡️', label: t('sell_3_label'), desc: t('sell_3_desc') },
+  { icon: '🤖', label: t('sell_4_label'), desc: t('sell_4_desc') },
+  { icon: '💚', label: t('sell_5_label'), desc: t('sell_5_desc') },
+  { icon: '💎', label: t('sell_6_label'), desc: t('sell_6_desc') },
+  { icon: '🧩', label: t('sell_7_label'), desc: t('sell_7_desc') },
+  { icon: '🇫🇷', label: t('sell_8_label'), desc: t('sell_8_desc') },
+])
+
+/* ── FAQ ── */
+const faqItems = computed(() => [
+  { q: t('faq_q1'), a: t('faq_a1') },
+  { q: t('faq_q2'), a: t('faq_a2') },
+  { q: t('faq_q3'), a: t('faq_a3') },
+  { q: t('faq_q4'), a: t('faq_a4') },
+  { q: t('faq_q5'), a: t('faq_a5') },
+  { q: t('faq_q6'), a: t('faq_a6') },
+  { q: t('faq_q7'), a: t('faq_a7') },
+  { q: t('faq_q8'), a: t('faq_a8') },
+])
+
+/* ── Scroll ── */
+function onScroll() { scrolled.value = window.scrollY > 30 }
+function scrollTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  mobileMenu.value = false
 }
 
-// ── SELL ICONS ──
-const sellIcons = ['🔗', '⚡', '🇪🇺', '🤖', '💚', '💰', '📊', '🇫🇷']
+/* ── Intersection Observer for animations ── */
+let observer = null
+let demoCycleTimer = null
+onMounted(() => {
+  window.addEventListener('scroll', onScroll, { passive: true })
 
-// ── ROI CALCULATOR ──
-const roi = reactive({ csm: 5, acc: 30, arr: 10000, churn: 10 })
-
-function fmt(n) {
-  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M€'
-  if (n >= 1e4) return Math.round(n / 1e3) + 'K€'
-  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K€'
-  return n + '€'
-}
-
-function rangeStyle(value, min, max) {
-  const pct = ((value - min) / (max - min) * 100).toFixed(1)
-  return `--pct: ${pct}%`
-}
-
-const roiComputed = computed(() => {
-  const total = roi.csm * roi.acc * roi.arr
-  const cost = Math.round(total * roi.churn / 100)
-  const rec = Math.round(cost * 0.3)
-  const sub = roi.csm <= 1 ? 97 * 12 : roi.csm <= 10 ? 297 * 12 : 697 * 12
-  const planKey = roi.csm <= 1 ? 'roi_plan_starter' : roi.csm <= 10 ? 'roi_plan_growth' : 'roi_plan_elite'
-  return {
-    main: fmt(rec),
-    arr: fmt(total),
-    cost: fmt(cost),
-    time: (roi.csm * 6) + 'h',
-    mult: sub > 0 ? (Math.round(rec / sub * 10) / 10) + '×' : '—',
-    plan: t(planKey),
-  }
-})
-
-// ── MODALS ──
-const modalSupport = ref(false)
-const modalRgpd = ref(false)
-const modalLegal = ref(false)
-
-const RGPD_CONTENT = {
-  fr: `<p><strong>Dernière mise à jour : Janvier 2025</strong></p><h4>1. Responsable du traitement</h4><p>Scalyo (Stratimaagency) est responsable du traitement de vos données personnelles. Contact DPO : <a href="mailto:contact@scalyo.app" style="color:var(--teal)">contact@scalyo.app</a></p><h4>2. Données collectées</h4><p>Nous collectons uniquement les données nécessaires au fonctionnement.</p><h4>3. Hébergement & sécurité</h4><p><strong>Supabase</strong> — région Europe (Irlande, conforme RGPD). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par entreprise via Row Level Security.</p><h4>4. Vos droits</h4><ul><li>✓ Accès à vos données</li><li>✓ Rectification</li><li>✓ Effacement (droit à l'oubli)</li><li>✓ Portabilité (export JSON/CSV)</li></ul><p>Exercer vos droits : <a href="mailto:contact@scalyo.app" style="color:var(--teal)">contact@scalyo.app</a></p>`,
-  en: `<p><strong>Last updated: January 2025</strong></p><h4>1. Data Controller</h4><p>Scalyo (Stratimaagency) is the controller of your personal data. DPO contact: <a href="mailto:contact@scalyo.app" style="color:var(--teal)">contact@scalyo.app</a></p><h4>2. Data Collected</h4><p>Only data necessary for the service to function.</p><h4>3. Hosting & Security</h4><p><strong>Supabase</strong> — Europe region (Ireland, GDPR compliant). AES-256 encryption at rest, TLS 1.3 in transit. Row Level Security per company.</p><h4>4. Your Rights</h4><ul><li>✓ Access to your data</li><li>✓ Rectification</li><li>✓ Erasure (right to be forgotten)</li><li>✓ Portability (JSON/CSV export)</li></ul><p>Exercise your rights: <a href="mailto:contact@scalyo.app" style="color:var(--teal)">contact@scalyo.app</a></p>`,
-  kr: `<p><strong>최종 업데이트: 2025년 1월</strong></p><h4>1. 데이터 처리 책임자</h4><p>Scalyo(Stratimaagency)는 귀하의 개인정보 처리 책임자입니다. DPO 연락처: <a href="mailto:contact@scalyo.app" style="color:var(--teal)">contact@scalyo.app</a></p><h4>2. 수집 데이터</h4><p>서비스 운영에 필요한 데이터만 수집합니다.</p><h4>3. 호스팅 및 보안</h4><p><strong>Supabase</strong> — 유럽 리전 (아일랜드, GDPR 준수). AES-256 암호화, TLS 1.3.</p><h4>4. 귀하의 권리</h4><ul><li>✓ 개인정보 열람권</li><li>✓ 정정권</li><li>✓ 삭제권</li><li>✓ 이동권 (JSON/CSV 내보내기)</li></ul><p>권리 행사: <a href="mailto:contact@scalyo.app" style="color:var(--teal)">contact@scalyo.app</a></p>`
-}
-
-const LEGAL_CONTENT = {
-  fr: `<h4>Éditeur</h4><p><strong>Stratimaagency</strong> (marque commerciale Scalyo)<br>Email : <a href="mailto:contact@scalyo.app" style="color:var(--teal)">contact@scalyo.app</a></p><h4>Hébergement</h4><p><strong>Cloudflare Pages</strong> + <strong>Supabase</strong> Europe (Irlande) + <strong>Stripe</strong> paiements</p><h4>Propriété intellectuelle</h4><p>Tous les éléments de Scalyo sont la propriété exclusive de Stratimaagency.</p><h4>Contact</h4><p><a href="mailto:contact@scalyo.app" style="color:var(--teal)">contact@scalyo.app</a></p>`,
-  en: `<h4>Publisher</h4><p><strong>Stratimaagency</strong> (trading as Scalyo)<br>Email: <a href="mailto:contact@scalyo.app" style="color:var(--teal)">contact@scalyo.app</a></p><h4>Hosting</h4><p><strong>Cloudflare Pages</strong> + <strong>Supabase</strong> Europe (Ireland) + <strong>Stripe</strong> payments</p><h4>Intellectual Property</h4><p>All Scalyo elements are the exclusive property of Stratimaagency.</p><h4>Contact</h4><p><a href="mailto:contact@scalyo.app" style="color:var(--teal)">contact@scalyo.app</a></p>`,
-  kr: `<h4>발행자</h4><p><strong>Stratimaagency</strong> (Scalyo 브랜드)<br>이메일: <a href="mailto:contact@scalyo.app" style="color:var(--teal)">contact@scalyo.app</a></p><h4>호스팅</h4><p><strong>Cloudflare Pages</strong> + <strong>Supabase</strong> 유럽 (아일랜드) + <strong>Stripe</strong> 결제</p><h4>지적 재산권</h4><p>Scalyo의 모든 요소는 Stratimaagency의 독점 자산입니다.</p><h4>문의</h4><p><a href="mailto:contact@scalyo.app" style="color:var(--teal)">contact@scalyo.app</a></p>`
-}
-
-const MODAL_I18N_DATA = {
-  fr: { ms_title: 'Support', ms_desc: 'Notre équipe est disponible pour vous aider.', mr_title: 'Politique de confidentialité', ml_title: 'Mentions légales', lbl_name: 'Nom', lbl_email: 'Email', lbl_subject: 'Sujet', lbl_msg: 'Message', cf_submit: 'Envoyer', ms_email_sub: 'Réponse en moins de 24h', ms_ok_title: 'Message envoyé !', ms_ok_body: 'Nous reviendrons vers vous dans les 24 heures.' },
-  en: { ms_title: 'Support', ms_desc: 'Our team is available to help.', mr_title: 'Privacy policy', ml_title: 'Legal notice', lbl_name: 'Name', lbl_email: 'Email', lbl_subject: 'Subject', lbl_msg: 'Message', cf_submit: 'Send', ms_email_sub: 'Reply within 24h', ms_ok_title: 'Message sent!', ms_ok_body: 'We will get back to you within 24 hours.' },
-  kr: { ms_title: '지원', ms_desc: '팀이 도움을 드릴 준비가 되어 있습니다.', mr_title: '개인정보 처리방침', ml_title: '법적 고지', lbl_name: '이름', lbl_email: '이메일', lbl_subject: '제목', lbl_msg: '메시지', cf_submit: '보내기', ms_email_sub: '24시간 내 답변', ms_ok_title: '메시지 전송 완료!', ms_ok_body: '24시간 이내에 답변 드리겠습니다.' }
-}
-
-const rgpdContent = computed(() => RGPD_CONTENT[lang.value] || RGPD_CONTENT.fr)
-const legalContent = computed(() => LEGAL_CONTENT[lang.value] || LEGAL_CONTENT.fr)
-const modalI18n = computed(() => MODAL_I18N_DATA[lang.value] || MODAL_I18N_DATA.fr)
-
-function closeAllModals() {
-  modalSupport.value = false
-  modalRgpd.value = false
-  modalLegal.value = false
-  document.body.style.overflow = ''
-}
-
-// ── CONTACT FORM ──
-const contactForm = reactive({ name: '', email: '', subject: '', msg: '' })
-const contactSuccess = ref(false)
-
-function submitContact() {
-  if (!contactForm.name || !contactForm.email || !contactForm.msg) return
-  contactSuccess.value = true
-  setTimeout(() => {
-    contactSuccess.value = false
-    contactForm.name = ''
-    contactForm.email = ''
-    contactForm.subject = ''
-    contactForm.msg = ''
-  }, 5000)
-}
-
-// ── SCROLL REVEAL ──
-let revealObserver = null
-
-function initScrollReveal() {
-  revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible')
-        revealObserver.unobserve(entry.target)
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible')
+        observer.unobserve(e.target)
       }
     })
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' })
+  }, { threshold: 0.08 })
 
-  document.querySelectorAll('.rv').forEach(el => {
-    revealObserver.observe(el)
-  })
-}
-
-// ── PARALLAX GLOW ──
-function onParallax() {
-  const glow = document.querySelector('.hero-glow')
-  if (glow) {
-    const y = window.scrollY
-    glow.style.transform = `translateX(-50%) translateY(${y * 0.15}px)`
-  }
-}
-
-// ── INIT ──
-onMounted(() => {
-  window.addEventListener('scroll', onScroll)
-  window.addEventListener('scroll', onParallax, { passive: true })
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllModals() })
-
-  // Auto-detect Korean browser
-  if (!localStorage.getItem('scalyo_lang')) {
-    const bl = (navigator.language || '').toLowerCase()
-    if (bl.startsWith('ko')) {
-      lang.value = 'kr'
+  // Hide below-fold elements then observe them
+  rootEl.value?.querySelectorAll('.anim-section').forEach(el => {
+    const rect = el.getBoundingClientRect()
+    if (rect.top > window.innerHeight) {
+      el.classList.add('anim-hidden')
     }
-  }
-
-  // Apply language
-  nextTick(() => {
-    setLang(lang.value)
+    observer.observe(el)
   })
 
-  // Init scroll reveal after DOM is ready
-  nextTick(() => {
-    initScrollReveal()
-  })
+  // Auto-cycle dashboard tabs
+  demoCycleTimer = setInterval(() => {
+    activeDemo.value = (activeDemo.value + 1) % demoTabs.length
+  }, 5000)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
-  window.removeEventListener('scroll', onParallax)
-  if (revealObserver) revealObserver.disconnect()
+  observer?.disconnect()
+  clearInterval(demoCycleTimer)
 })
-
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+/* ═══════════════════ BASE ═══════════════════ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.landing { --lp-purple: #7c3aed; --lp-purple-dark: #6d28d9; --lp-purple-light: #a78bfa; --lp-bg: #0b0d17; --lp-bg2: #111427; --lp-surface: rgba(255,255,255,0.04); --lp-border: rgba(255,255,255,0.08); --lp-text: #f0f0f5; --lp-muted: rgba(240,240,245,0.55); --lp-green: #10b981; --lp-red: #ef4444; --lp-amber: #f59e0b; --lp-blue: #3b82f6; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--lp-text); background: var(--lp-bg); line-height: 1.6; overflow-x: hidden; min-height: 100vh; }
+.container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+.center { text-align: center; }
+.accent { color: var(--lp-purple-light); }
+a { color: inherit; text-decoration: none; }
 
-.landing {
-  --dk: #ffffff;
-  --dk2: #ffffff;
-  --dk3: #f8fafc;
-  --dk4: #f1f5f9;
-  --dk5: #e2e8f0;
-  --dt: #0f172a;
-  --dt2: #475569;
-  --dt3: #64748b;
-  --dline: #e2e8f0;
-  --dline2: #cbd5e1;
-  --lk: #ffffff;
-  --lk2: #f8fafc;
-  --lk3: #f1f5f9;
-  --lk4: #e2e8f0;
-  --lt: #0f172a;
-  --lt2: #475569;
-  --lt3: #64748b;
-  --lline: #e2e8f0;
-  --lline2: #cbd5e1;
-  --teal: #3b82f6;
-  --teal2: rgba(59,130,246,.1);
-  --teal3: rgba(59,130,246,.05);
-  --teal-glow: rgba(59,130,246,.06);
-  --gold: rgba(212,175,55,.15);
-  --gold-line: rgba(212,175,55,.08);
-  --red: #F87171;
-  --amber: #FBBF24;
-  --blue: #60A5FA;
-  --green: #4ADE80;
-  --bg2: var(--dk3);
-  --bg3: var(--dk4);
-  --f: "DM Sans", -apple-system, system-ui, sans-serif;
-  --f-head: "Cormorant Garamond", Georgia, serif;
-  --sm-grad: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
-  --sm-grad-h: linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7, #8b5cf6, #6366f1);
-  --rad: 16px;
-}
+/* ═══════════════════ ANIMATIONS ═══════════════════ */
+.anim-section { opacity: 1; transform: translateY(0); }
+.anim-section.anim-hidden { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+.anim-section.anim-hidden.visible { opacity: 1; transform: translateY(0); }
+.anim-section.anim-hidden[data-anim="fade-up-delay"] { transition-delay: 0.3s; }
 
-html { scroll-behavior: smooth; overflow-x: hidden; }
-body { font-family: var(--f); font-size: 16px; line-height: 1.65; letter-spacing: -.01em; -webkit-font-smoothing: antialiased; overflow-x: hidden; background: var(--dk); color: var(--dt); }
-a { text-decoration: none; }
-img { display: block; max-width: 100%; }
-::selection { background: rgba(59,130,246,.2); color: #3b82f6; }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes pulse-glow { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+@keyframes gradient-shift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+@keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-.rv { opacity: 0; transform: translateY(32px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
-.rv.d1 { transition-delay: .1s; }
-.rv.d2 { transition-delay: .2s; }
-.rv.d3 { transition-delay: .3s; }
-.rv.d4 { transition-delay: .4s; }
-.rv.visible { opacity: 1; transform: none; }
+.emoji-3d { display: inline-block; font-size: 2rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); animation: float 3s ease-in-out infinite; }
 
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  height: 60px; padding: 0 24px;
-  display: flex; align-items: center; justify-content: space-between;
-  transition: background .3s, border-bottom .3s;
-  background: #fff;
-}
-nav.scrolled {
-  background: rgba(255,255,255,.92);
-  backdrop-filter: blur(28px) saturate(2);
-  -webkit-backdrop-filter: blur(28px) saturate(2);
-  border-bottom: 1px solid transparent;
-  border-image: linear-gradient(90deg, transparent 10%, rgba(59,130,246,.2) 50%, transparent 90%) 1;
-}
-.nav-logo { display: flex; align-items: center; gap: 5px; font-weight: 800; font-size: 18px; letter-spacing: -.02em; color: var(--dt); text-decoration: none; }
-.nav-logo-img { width: 36px; height: 36px; flex-shrink: 0; }
-.nav-logo-text { font-family: DM Sans, sans-serif; font-weight: 800; color: var(--dt); }
-.nav-links { display: flex; gap: 0; }
-.nav-links a { padding: 7px 14px; border-radius: 7px; font-size: 14px; font-weight: 500; color: var(--dt2); transition: color .15s, background .15s; }
-.nav-links a:hover { color: var(--dt); background: rgba(32,33,36,.04); }
-.nav-right { display: flex; align-items: center; gap: 8px; }
-.n-ghost { padding: 7px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--dt2); border: 1px solid var(--dline2); transition: all .15s; }
-.n-ghost:hover { color: var(--dt); background: rgba(32,33,36,.04); }
-.n-solid { padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; color: #fff; background: var(--sm-grad); transition: all .2s; box-shadow: 0 1px 2px rgba(0,0,0,.3), 0 0 12px rgba(99,102,241,.15); position: relative; overflow: hidden; }
-.n-solid::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(32,33,36,.08) 0%, transparent 50%); pointer-events: none; }
-.n-solid:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(99,102,241,.4); }
-.n-solid:active { transform: translateY(0) scale(.96); }
+/* ═══════════════════ BUTTONS ═══════════════════ */
+.btn-primary { background: linear-gradient(135deg, var(--lp-purple), var(--lp-purple-dark)); color: #fff; border: none; padding: 12px 28px; border-radius: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-block; transition: all 0.3s; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,58,237,0.4); }
+.btn-primary.lg { padding: 16px 36px; font-size: 1rem; border-radius: 14px; }
+.btn-primary-sm { background: var(--lp-purple); color: #fff; border: none; padding: 8px 20px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: inline-block; transition: all 0.2s; }
+.btn-primary-sm:hover { background: var(--lp-purple-dark); }
+.btn-outline { background: transparent; color: var(--lp-text); border: 1px solid rgba(255,255,255,0.2); padding: 12px 28px; border-radius: 12px; font-size: 0.9rem; font-weight: 500; cursor: pointer; display: inline-block; transition: all 0.3s; }
+.btn-outline:hover { border-color: var(--lp-purple-light); color: var(--lp-purple-light); }
+.btn-outline.lg { padding: 16px 36px; font-size: 1rem; border-radius: 14px; }
+.btn-outline-light { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 12px 28px; border-radius: 12px; font-size: 0.9rem; font-weight: 500; cursor: pointer; display: inline-block; transition: all 0.3s; }
+.btn-outline-light:hover { background: rgba(255,255,255,0.18); }
+.btn-outline-light.lg { padding: 16px 36px; font-size: 1rem; }
+.btn-ghost-sm { color: var(--lp-muted); font-size: 0.85rem; padding: 8px 14px; border-radius: 8px; transition: color 0.2s; }
+.btn-ghost-sm:hover { color: var(--lp-purple-light); }
+.glow-btn { box-shadow: 0 0 30px rgba(124,58,237,0.3), 0 0 60px rgba(124,58,237,0.1); }
 
-.hero { background: var(--dk); padding: 140px 24px 100px; text-align: center; position: relative; overflow: hidden; }
-.hero::before { content: ''; position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E"); opacity: .012; pointer-events: none; z-index: 0; }
-.hero-glow { position: absolute; left: 50%; top: -100px; transform: translateX(-50%); width: 1400px; height: 900px; background: none; pointer-events: none; z-index: 0; animation: glow-pulse 6s ease-in-out infinite; }
-.hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
+/* ═══════════════════ NAVBAR ═══════════════════ */
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba(11,13,23,0.7); backdrop-filter: blur(20px); border-bottom: 1px solid transparent; transition: all 0.3s; }
+.nav.scrolled { border-bottom-color: var(--lp-border); background: rgba(11,13,23,0.92); }
+.nav-inner { max-width: 1160px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; gap: 20px; }
+.logo-link { display: flex; align-items: center; gap: 8px; }
+.logo-text { font-weight: 700; font-size: 1.1rem; background: linear-gradient(135deg, #fff, var(--lp-purple-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.nav-links { display: flex; gap: 28px; flex: 1; margin-left: 40px; }
+.nav-links a { color: var(--lp-muted); font-size: 0.875rem; font-weight: 500; transition: color 0.2s; }
+.nav-links a:hover { color: #fff; }
+.nav-right { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+.lang-switch { display: flex; gap: 2px; background: var(--lp-surface); border-radius: 8px; padding: 2px; }
+.lang-switch button { background: none; border: none; color: var(--lp-muted); font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+.lang-switch button.active { color: #fff; background: var(--lp-purple); font-weight: 600; }
+.burger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; margin-left: auto; }
+.burger span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; }
+.mobile-menu { padding: 16px 24px 24px; display: flex; flex-direction: column; gap: 14px; border-top: 1px solid var(--lp-border); }
+.mobile-menu a { color: var(--lp-muted); font-size: 0.9rem; }
 
-.hero-badge { display: inline-flex; align-items: center; gap: 7px; padding: 7px 18px; border-radius: 100px; border: 1px solid rgba(59,130,246,.15); background: linear-gradient(135deg, rgba(59,130,246,.06), rgba(32,33,36,.03)); font-size: 13px; font-weight: 500; color: var(--dt2); margin-bottom: 32px; backdrop-filter: blur(16px); box-shadow: 0 0 20px rgba(59,130,246,.06), inset 0 1px rgba(32,33,36,.04); letter-spacing: -.01em; }
-.badge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px var(--teal-glow); animation: pulse 2.5s ease-in-out infinite; }
+/* ═══════════════════ HERO ═══════════════════ */
+.hero { padding: 140px 0 60px; position: relative; overflow: hidden; }
+.hero-glow { position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%); pointer-events: none; animation: pulse-glow 6s ease-in-out infinite; }
+.hero-content { text-align: center; position: relative; z-index: 1; }
+.hero-badge { display: inline-flex; align-items: center; gap: 10px; background: var(--lp-surface); border: 1px solid var(--lp-border); padding: 8px 20px; border-radius: 999px; font-size: 0.82rem; color: var(--lp-muted); margin-bottom: 32px; }
+.badge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lp-purple); box-shadow: 0 0 12px var(--lp-purple); }
+.hero-title { font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 800; line-height: 1.1; margin-bottom: 20px; letter-spacing: -0.02em; }
+.hero-title :deep(.accent) { background: linear-gradient(135deg, var(--lp-purple-light), #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero-sub { font-size: 1.05rem; color: var(--lp-muted); max-width: 580px; margin: 0 auto 36px; line-height: 1.7; }
+.hero-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+.proof-row { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+.proof-item { font-size: 0.8rem; color: var(--lp-muted); }
 
-.hero-h1 { font-family: var(--f-head); font-size: clamp(48px, 7vw, 88px); font-weight: 900; letter-spacing: -.04em; line-height: 1.08; color: var(--dt); margin-bottom: 24px; }
-.hero-h1 :deep(.accent) { background: var(--sm-grad); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; display: inline-block; animation: shimmer 6s linear infinite; }
-.hero-h1 :deep(.accent)::before { content: ''; position: absolute; inset: -30px -50px; background: radial-gradient(ellipse at 50% 50%, rgba(99,102,241,.04) 0%, transparent 60%); border-radius: 50%; z-index: -1; animation: glow-pulse 6s ease-in-out infinite; filter: blur(24px); pointer-events: none; }
-:deep(.accent) { background: var(--sm-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-@keyframes glow-pulse { 0%,100% { opacity: .6; } 50% { opacity: 1; } }
-@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+/* ═══════════════════ DASHBOARD MOCKUP ═══════════════════ */
+.mockup-wrapper { margin-top: 50px; perspective: 1200px; }
+.browser-chrome { background: #1a1d2e; border-radius: 16px 16px 0 0; padding: 12px 20px; display: flex; align-items: center; gap: 16px; border: 1px solid var(--lp-border); border-bottom: none; }
+.chrome-dots { display: flex; gap: 7px; }
+.chrome-dots span { width: 11px; height: 11px; border-radius: 50%; }
+.chrome-dots span:nth-child(1) { background: #ef4444; }
+.chrome-dots span:nth-child(2) { background: #f59e0b; }
+.chrome-dots span:nth-child(3) { background: #10b981; }
+.chrome-url { flex: 1; background: rgba(255,255,255,0.06); padding: 6px 14px; border-radius: 8px; font-size: 0.78rem; color: var(--lp-muted); }
+.chrome-lock { margin-right: 6px; }
+.chrome-live { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: var(--lp-green); font-weight: 600; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lp-green); animation: live-pulse 2s infinite; }
+.mockup-body { display: flex; background: var(--lp-bg2); border: 1px solid var(--lp-border); border-top: none; border-radius: 0 0 16px 16px; min-height: 380px; overflow: hidden; }
+.mock-sidebar { width: 180px; background: rgba(255,255,255,0.02); border-right: 1px solid var(--lp-border); padding: 12px 8px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px; }
+.mock-sidebar-logo { display: flex; align-items: center; gap: 6px; padding: 8px 10px 16px; font-weight: 700; font-size: 0.85rem; }
+.mock-tab { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; font-size: 0.78rem; color: var(--lp-muted); cursor: pointer; transition: all 0.2s; }
+.mock-tab:hover { background: rgba(255,255,255,0.04); color: #fff; }
+.mock-tab.active { background: rgba(124,58,237,0.15); color: var(--lp-purple-light); font-weight: 600; }
+.tab-icon { font-size: 1rem; }
+.mock-main { flex: 1; padding: 20px; overflow: hidden; }
 
-.hero-sub { font-size: clamp(16px, 2vw, 19px); font-weight: 400; color: var(--dt2); line-height: 1.65; max-width: 520px; margin: 0 auto 40px; }
-.hero-sub :deep(strong) { color: var(--dt); font-weight: 500; }
+/* Mock panels */
+.mock-panel { animation: mock-enter 0.3s ease; }
+@keyframes mock-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.mock-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.mock-header h3 { font-size: 0.95rem; font-weight: 600; }
+.mock-date { font-size: 0.75rem; color: var(--lp-muted); }
+.mock-badge { font-size: 0.68rem; padding: 3px 10px; border-radius: 6px; background: rgba(124,58,237,0.15); color: var(--lp-purple-light); }
+.mock-badge.warn { background: rgba(239,68,68,0.12); color: var(--lp-red); }
+.mock-badge.green { background: rgba(16,185,129,0.12); color: var(--lp-green); }
+.mock-kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.mock-kpi { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 10px; padding: 12px; text-align: center; }
+.kpi-value { display: block; font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
+.kpi-value.purple { color: var(--lp-purple-light); }
+.kpi-value.green { color: var(--lp-green); }
+.kpi-value.red { color: var(--lp-red); }
+.kpi-value.amber { color: var(--lp-amber); }
+.kpi-value.blue { color: var(--lp-blue); }
+.kpi-label { font-size: 0.7rem; color: var(--lp-muted); }
 
-.hero-cta { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 56px; }
-.btn-primary { display: flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 600; color: #fff; background: var(--sm-grad); transition: all .25s cubic-bezier(.16,1,.3,1); box-shadow: 0 1px 3px rgba(0,0,0,.3), 0 0 0 1px rgba(99,102,241,.3), 0 4px 16px rgba(99,102,241,.12); position: relative; overflow: hidden; }
-.btn-primary::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,.12) 0%, transparent 50%); pointer-events: none; }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(99,102,241,.3); }
-.btn-primary svg { transition: transform .2s; }
-.btn-primary:hover svg { transform: translateX(3px); }
-.btn-primary:active { transform: translateY(0) scale(.97); }
-.btn-secondary { padding: 14px 24px; border-radius: 10px; font-size: 15px; font-weight: 500; color: var(--dt2); border: 1px solid var(--dline2); transition: all .2s; background: rgba(32,33,36,.02); backdrop-filter: blur(8px); box-shadow: inset 0 1px rgba(32,33,36,.04); }
-.btn-secondary:hover { color: var(--dt); background: rgba(32,33,36,.04); border-color: rgba(99,102,241,.2); }
+/* Chart */
+.mock-chart { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 10px; padding: 14px; }
+.chart-label { font-size: 0.75rem; color: var(--lp-muted); margin-bottom: 10px; }
+.chart-bars { display: flex; align-items: flex-end; gap: 12px; height: 100px; }
+.chart-bar { flex: 1; background: linear-gradient(to top, var(--lp-purple), var(--lp-purple-light)); border-radius: 6px 6px 0 0; position: relative; min-height: 10px; transition: height 0.6s ease; }
+.bar-val { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 0.6rem; color: var(--lp-muted); white-space: nowrap; }
 
-.hero-social-proof { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; color: var(--dt3); flex-wrap: wrap; }
-.hsp-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--dk5); }
+/* Accounts */
+.mock-accounts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.mock-acc { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--lp-surface); border-radius: 8px; }
+.acc-avatar { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 0.75rem; flex-shrink: 0; }
+.acc-info { flex: 1; }
+.acc-info strong { font-size: 0.78rem; display: block; margin-bottom: 3px; }
+.health-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+.health-bar div { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+.acc-score { font-weight: 700; font-size: 0.85rem; min-width: 28px; text-align: right; }
+.acc-tag { font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+.acc-tag.stable { background: rgba(16,185,129,0.12); color: var(--lp-green); }
+.acc-tag.watch { background: rgba(245,158,11,0.12); color: var(--lp-amber); }
+.acc-tag.critical { background: rgba(239,68,68,0.12); color: var(--lp-red); }
 
-.hero-screenshot { max-width: 1320px; margin: 80px auto 0; padding: 0 32px; position: relative; }
-.screenshot-glow { position: absolute; bottom: -80px; left: 50%; transform: translateX(-50%); width: 80%; height: 400px; background: none; pointer-events: none; filter: blur(12px); }
-.app-shell { border-radius: 16px; overflow: hidden; border: 1px solid rgba(59,130,246,.15); box-shadow: 0 25px 80px rgba(32,33,36,.12), 0 8px 32px rgba(32,33,36,.08), 0 0 0 1px rgba(59,130,246,.1); transition: all .6s cubic-bezier(.16,1,.3,1); animation: heroScreenshotIn 1.2s cubic-bezier(.16,1,.3,1) .5s both; background: #fff; }
-@keyframes heroScreenshotIn { from { opacity: 0; transform: translateY(60px) scale(.97) perspective(1200px) rotateX(3deg); } to { opacity: 1; transform: none; } }
-.app-shell:hover { box-shadow: 0 32px 90px rgba(32,33,36,.15), 0 0 120px rgba(59,130,246,.08); transform: translateY(-4px) scale(1.003); }
-.app-topbar { height: 48px; background: #fff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; padding: 0 16px; gap: 12px; }
-.topbar-dots { display: flex; gap: 7px; }
-.td { width: 12px; height: 12px; border-radius: 50%; }
-.topbar-url { flex: 1; height: 30px; background: rgba(32,33,36,.03); border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; padding: 0 14px; font-size: 12px; color: var(--dt3); max-width: 280px; margin: 0 auto; }
-.topbar-actions { display: flex; gap: 6px; }
-.topbar-action-btn { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--dt3); transition: all .15s; }
-.topbar-action-btn:hover { background: #e2e8f0; }
-.app-layout { display: flex; min-height: 540px; background: #fff; }
-.app-sidebar { width: 200px; flex-shrink: 0; background: #fff; border-right: 1px solid #e2e8f0; padding: 0; display: flex; flex-direction: column; }
-.sb-brand { display: flex; align-items: center; gap: 10px; padding: 16px 16px 12px; border-bottom: 1px solid #e2e8f0; }
-.sb-logo-mark { width: 28px; height: 28px; border-radius: 8px; background: var(--sm-grad); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; }
-.sb-brand-text { display: flex; flex-direction: column; }
-.sb-brand-name { font-size: 14px; font-weight: 700; color: var(--dt); letter-spacing: -.02em; }
-.sb-brand-plan { font-size: 10px; color: var(--teal); font-weight: 600; letter-spacing: .03em; text-transform: uppercase; }
-.sb-section { padding: 8px 8px 0; }
-.sb-nav { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; font-size: 13px; color: var(--dt3); white-space: nowrap; cursor: default; margin-bottom: 2px; }
-.sb-nav.active { background: rgba(59,130,246,.08); color: var(--teal); font-weight: 600; }
-.sb-ico { width: 16px; text-align: center; font-size: 10px; flex-shrink: 0; }
-.sb-divider { height: 1px; background: #e2e8f0; margin: 8px 16px; }
-.sb-user { margin-top: auto; padding: 12px 16px; border-top: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; }
-.sb-user-avatar { width: 28px; height: 28px; border-radius: 8px; background: var(--sm-grad); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
-.sb-user-info { display: flex; flex-direction: column; }
-.sb-user-name { font-size: 12px; font-weight: 600; color: var(--dt); }
-.sb-user-role { font-size: 10px; color: var(--dt3); }
-.app-main { flex: 1; padding: 0; overflow: hidden; background: #fff; }
-.main-topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid #e2e8f0; }
-.main-topbar-left { display: flex; align-items: baseline; gap: 10px; }
-.main-page-title { font-size: 16px; font-weight: 700; color: var(--dt); }
-.main-page-date { font-size: 12px; color: var(--dt3); }
-.main-topbar-right { display: flex; align-items: center; gap: 8px; }
-.main-badge { font-size: 11px; padding: 4px 10px; border-radius: 100px; font-weight: 600; }
-.badge-teal { background: rgba(59,130,246,.1); color: var(--teal); border: 1px solid rgba(59,130,246,.2); }
-.badge-purple { background: rgba(168,85,247,.1); color: #a78bfa; border: 1px solid rgba(168,85,247,.2); }
-.main-notif { position: relative; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--dt3); background: rgba(32,33,36,.03); }
-.notif-dot { position: absolute; top: 6px; right: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--red); }
-.kpi-row { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; padding: 20px 24px 0; }
-.kpi-card { background: rgba(255,255,255,.5); border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px 18px; transition: all .2s; }
-.kpi-card:hover { border-color: rgba(59,130,246,.2); background: rgba(255,255,255,.7); }
-.kpi-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--dt3); }
-.kpi-icon { width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
-.kpi-icon-teal { background: rgba(59,130,246,.12); color: var(--teal); }
-.kpi-icon-green { background: rgba(34,197,94,.12); color: #22c55e; }
-.kpi-icon-red { background: rgba(248,113,113,.12); color: #f87171; }
-.kpi-icon-blue { background: rgba(96,165,250,.12); color: #60a5fa; }
-.kpi-value { font-size: 28px; font-weight: 800; letter-spacing: -.04em; line-height: 1; margin-bottom: 6px; color: var(--dt); font-family: 'JetBrains Mono', monospace; }
-.kpi-unit { font-size: 14px; color: var(--dt3); font-weight: 500; }
-.kpi-teal { color: var(--teal); }
-.kpi-red { color: #f87171; }
-.kpi-blue { color: #60a5fa; }
-.kpi-sub { font-size: 11px; color: var(--dt3); }
-.kpi-trend { font-weight: 700; margin-right: 4px; }
-.kpi-up { color: #22c55e; }
-.kpi-down { color: #f87171; }
-.content-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; padding: 16px 24px 24px; }
-.content-left, .content-right { display: flex; flex-direction: column; gap: 16px; }
-.alert-card { background: rgba(248,113,113,.04); border: 1px solid rgba(248,113,113,.1); border-radius: 16px; padding: 16px; }
-.alert-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.alert-title { font-size: 13px; font-weight: 700; color: #f87171; }
-.alert-action { font-size: 11px; color: rgba(248,113,113,.7); font-weight: 500; }
-.alert-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; background: rgba(248,113,113,.04); margin-bottom: 8px; }
-.alert-row:last-child { margin-bottom: 0; }
-.alert-avatar { width: 32px; height: 32px; border-radius: 10px; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
-.alert-avatar-red { background: linear-gradient(135deg, #ef4444, #f87171); }
-.alert-avatar-orange { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
-.alert-info { flex: 1; min-width: 0; }
-.alert-name { display: block; font-size: 12px; font-weight: 700; color: var(--dt); }
-.alert-reason { display: block; font-size: 10px; color: var(--dt3); margin-top: 2px; }
-.alert-meta { text-align: right; flex-shrink: 0; }
-.alert-amount { display: block; font-size: 12px; font-weight: 700; color: #f87171; }
-.alert-date { display: block; font-size: 10px; color: var(--dt3); }
-.chart-card { background: rgba(255,255,255,.5); border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; flex: 1; }
-.chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.chart-title { font-size: 13px; font-weight: 700; color: var(--dt); }
-.chart-tabs { display: flex; gap: 4px; }
-.chart-tab { font-size: 10px; padding: 4px 10px; border-radius: 6px; color: var(--dt3); font-weight: 600; }
-.chart-tab.active { background: rgba(59,130,246,.08); color: var(--teal); }
-.chart-area { position: relative; }
-.chart-svg { width: 100%; height: auto; display: block; }
-.chart-labels { display: flex; justify-content: space-between; font-size: 9px; color: var(--dt3); padding-top: 6px; }
-.roadmap-card { background: rgba(255,255,255,.5); border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; }
-.roadmap-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
-.roadmap-title { display: block; font-size: 13px; font-weight: 700; color: var(--dt); }
-.roadmap-phase { display: block; font-size: 10px; color: var(--dt3); margin-top: 2px; }
-.roadmap-pct { font-size: 24px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace; }
-.roadmap-bar { height: 5px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-bottom: 14px; }
-.roadmap-fill { height: 100%; background: var(--sm-grad-h); border-radius: 3px; }
-.roadmap-items { display: flex; flex-direction: column; gap: 6px; }
-.roadmap-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; font-size: 12px; color: var(--dt3); }
-.roadmap-item.done { background: rgba(32,33,36,.03); }
-.roadmap-item.done span:last-child { text-decoration: line-through; }
-.ri-check { color: var(--teal); font-size: 11px; font-weight: 700; width: 16px; text-align: center; }
-.roadmap-item.current { background: rgba(59,130,246,.05); border: 1px solid rgba(59,130,246,.15); color: var(--dt); font-weight: 600; }
-.ri-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
-.pending-dot { background: rgba(32,33,36,.15); }
-.roadmap-item.pending { opacity: .5; }
-.wb-card { background: rgba(255,255,255,.5); border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; flex: 1; }
-.wb-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.wb-title { font-size: 13px; font-weight: 700; color: var(--dt); }
-.wb-score-badge { font-size: 18px; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace; background: rgba(59,130,246,.1); padding: 4px 12px; border-radius: 8px; }
-.wb-members { display: flex; flex-direction: column; gap: 10px; }
-.wb-member { display: flex; align-items: center; gap: 10px; }
-.wb-m-avatar { width: 26px; height: 26px; border-radius: 8px; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
-.wb-m-name { font-size: 12px; font-weight: 600; color: var(--dt); width: 60px; }
-.wb-m-bar { flex: 1; height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden; }
-.wb-m-fill { height: 100%; border-radius: 2px; }
-.wb-m-val { font-size: 12px; font-weight: 700; width: 36px; text-align: right; }
+/* AI box */
+.mock-ai-box { background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.2); border-radius: 10px; padding: 12px; }
+.mock-ai-box.warn { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.15); }
+.ai-label { font-size: 0.72rem; font-weight: 600; color: var(--lp-purple-light); display: block; margin-bottom: 6px; }
+.mock-ai-box.warn .ai-label { color: var(--lp-red); }
+.mock-ai-box p { font-size: 0.78rem; color: var(--lp-muted); line-height: 1.5; }
+.mock-trend { font-size: 0.75rem; color: var(--lp-muted); margin-top: 10px; text-align: center; }
 
-.section-light, .section-dark { background: var(--dk); color: var(--dt); }
-.section-gray { background: #f8fafc; color: var(--dt); }
-.section { padding: 100px 24px; position: relative; }
-.section + .section::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 200px; height: 1px; background: linear-gradient(90deg, transparent, rgba(59,130,246,.15), transparent); }
-.container { max-width: 1100px; margin: 0 auto; }
-.container-narrow { max-width: 720px; margin: 0 auto; }
-.label { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; letter-spacing: -.01em; color: var(--teal); margin-bottom: 14px; }
-.label-line { width: 16px; height: 1.5px; background: var(--teal); border-radius: 1px; }
-.h2-light, .h2-dark { font-family: var(--f-head); font-size: clamp(30px, 3.8vw, 48px); font-weight: 800; letter-spacing: -.03em; line-height: 1.12; color: var(--dt); margin-bottom: 16px; }
-.sub-light, .sub-dark { font-size: 17px; color: var(--dt2); line-height: 1.75; max-width: 480px; }
+/* Chat */
+.mock-chat { display: flex; flex-direction: column; height: 340px; }
+.chat-header { border-bottom: 1px solid var(--lp-border); padding-bottom: 12px; }
+.online-badge { color: var(--lp-green); font-size: 0.75rem; }
+.chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 12px 0; }
+.chat-msg { padding: 10px 14px; border-radius: 12px; font-size: 0.8rem; line-height: 1.5; max-width: 85%; }
+.chat-msg.user { background: rgba(124,58,237,0.15); color: var(--lp-purple-light); align-self: flex-end; border-bottom-right-radius: 4px; }
+.chat-msg.ai { background: var(--lp-surface); border: 1px solid var(--lp-border); align-self: flex-start; border-bottom-left-radius: 4px; }
+.chat-tag { font-size: 0.68rem; font-weight: 600; color: var(--lp-purple-light); display: block; margin-bottom: 4px; }
+.chat-input-bar { display: flex; gap: 8px; padding-top: 10px; border-top: 1px solid var(--lp-border); }
+.chat-input-bar input { flex: 1; background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 10px; padding: 10px 14px; color: var(--lp-text); font-size: 0.82rem; outline: none; }
+.send-btn { background: var(--lp-purple); color: #fff; border: none; border-radius: 10px; padding: 10px 16px; cursor: pointer; font-size: 1rem; }
 
-.stats-bar { background: var(--dk2); border-top: 1px solid transparent; border-bottom: 1px solid transparent; border-image: linear-gradient(90deg, var(--dline), rgba(59,130,246,.12), var(--dline)) 1; position: relative; }
-.stats-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(4,1fr); }
-.stat-cell { padding: 36px 32px; border-right: 1px solid var(--dline); }
-.stat-cell:last-child { border-right: none; }
-.stat-number { font-size: 56px; font-weight: 900; letter-spacing: -.06em; line-height: 1; background: var(--sm-grad-h); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: shimmer 4s linear infinite; margin-bottom: 8px; }
-.stat-label { font-size: 15px; font-weight: 600; color: var(--dt); margin-bottom: 4px; }
-.stat-note { font-size: 12.5px; color: var(--dt3); line-height: 1.5; }
+/* Email */
+.email-tags { display: flex; gap: 6px; }
+.etag { font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; background: rgba(124,58,237,0.12); color: var(--lp-purple-light); }
+.mock-email { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 10px; padding: 14px; }
+.email-field { font-size: 0.78rem; padding: 6px 0; border-bottom: 1px solid var(--lp-border); color: var(--lp-muted); }
+.email-body { font-size: 0.8rem; padding: 12px 0; line-height: 1.6; color: var(--lp-text); }
+.email-footer-badge { font-size: 0.68rem; color: var(--lp-green); margin-top: 8px; }
 
-.feat-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
-.feat-panel.flip { direction: rtl; }
-.feat-panel.flip > * { direction: ltr; }
-.feat-title { font-size: clamp(24px, 2.5vw, 34px); font-weight: 700; letter-spacing: -.03em; line-height: 1.15; color: var(--dt); margin-bottom: 14px; }
-.feat-body { font-size: 16px; color: var(--dt2); line-height: 1.7; margin-bottom: 24px; }
-.feat-points { display: flex; flex-direction: column; gap: 10px; }
-.feat-point { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--dt2); line-height: 1.55; }
-.fp-check { width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0; margin-top: 1px; background: var(--teal2); border: 1px solid rgba(59,130,246,.2); display: grid; place-items: center; font-size: 9px; color: var(--teal); font-weight: 700; }
-.feat-visual { border-radius: 18px; overflow: hidden; border: 1.5px solid var(--dline2); box-shadow: 0 4px 16px rgba(32,33,36,.06), 0 16px 32px rgba(32,33,36,.04), inset 0 1px rgba(255,255,255,.4); background: linear-gradient(180deg, var(--dk3), var(--dk2)); transition: all .4s cubic-bezier(.16,1,.3,1); }
-.feat-visual:hover { transform: perspective(1000px) translateY(-6px) translateZ(8px) rotateX(1deg); box-shadow: 0 20px 40px rgba(0,0,0,.08), 0 0 0 1px rgba(59,130,246,.08); border-color: rgba(59,130,246,.25); }
-.feat-visual.dark-card { border-color: var(--dline2); background: var(--dk2); }
-.fv-pad { padding: 28px; }
-.fv-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-.fv-title { font-size: 14px; font-weight: 600; letter-spacing: -.02em; color: var(--dt); }
-.fv-badge { padding: 3px 9px; border-radius: 100px; font-size: 11px; font-weight: 600; }
-.badge-live { background: rgba(74,222,128,.08); color: #4ADE80; border: 1px solid rgba(74,222,128,.15); }
+/* Calendar */
+.mock-calendar { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 10px; padding: 14px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 12px; }
+.cal-day { text-align: center; font-size: 0.72rem; padding: 6px 2px; border-radius: 6px; position: relative; color: var(--lp-muted); }
+.cal-day.today { background: var(--lp-purple); color: #fff; font-weight: 600; }
+.cal-day.event { color: var(--lp-text); }
+.cal-dot { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: var(--lp-purple-light); border-radius: 50%; }
+.cal-event-preview { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; padding: 8px 10px; background: rgba(124,58,237,0.08); border-radius: 8px; }
+.cal-ev-icon { font-size: 1rem; }
 
-.wb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.wb-card { padding: 14px; border-radius: 10px; background: var(--dk4); border: 1px solid var(--dline); }
-.wb-label { font-size: 10.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--dt3); margin-bottom: 10px; }
-.wb-score { font-size: 36px; font-weight: 700; letter-spacing: -.04em; line-height: 1; margin-bottom: 4px; }
-.wb-sub { font-size: 11px; color: var(--dt3); }
-.wb-bar { height: 4px; border-radius: 2px; background: var(--dk5); margin-top: 10px; overflow: hidden; }
-.wb-fill { height: 100%; border-radius: 2px; animation: fillGrow 1.2s cubic-bezier(.16,1,.3,1) .4s both; transform-origin: left; }
-@keyframes fillGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* Kanban */
+.mock-kanban { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.kanban-col { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 10px; padding: 10px; }
+.kanban-col-title { font-size: 0.72rem; font-weight: 600; color: var(--lp-muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
+.col-count { background: var(--lp-border); padding: 1px 6px; border-radius: 4px; font-size: 0.65rem; }
+.kanban-card { background: rgba(255,255,255,0.04); border: 1px solid var(--lp-border); border-radius: 6px; padding: 8px; font-size: 0.72rem; margin-bottom: 6px; }
+.kanban-card.late { border-left: 3px solid var(--lp-red); }
+.kanban-card.active { border-left: 3px solid var(--lp-purple); }
+.kanban-card.done { opacity: 0.6; }
+.card-tag { display: block; font-size: 0.6rem; color: var(--lp-red); margin-top: 4px; }
+.done-date { display: block; font-size: 0.6rem; color: var(--lp-muted); margin-top: 4px; }
 
-.playbook-list { display: flex; flex-direction: column; gap: 8px; }
-.pb-step { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--dline); background: var(--dk3); }
-.pb-num { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; background: var(--teal2); border: 1px solid rgba(59,130,246,.2); display: grid; place-items: center; font-size: 10px; font-weight: 700; color: var(--teal); }
-.pb-done { background: rgba(74,222,128,.08); border-color: rgba(74,222,128,.15); }
-.pb-num.done { background: rgba(74,222,128,.1); border-color: rgba(74,222,128,.2); color: #4ADE80; }
-.pb-text { font-size: 12px; color: var(--dt2); }
-.pb-step.done .pb-text { color: var(--dt3); text-decoration: line-through; }
+/* Library */
+.mock-library { display: flex; flex-direction: column; gap: 8px; }
+.lib-card { display: flex; align-items: center; gap: 12px; background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 10px; padding: 12px; font-size: 0.78rem; }
+.lib-card.new { border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.05); }
+.lib-icon { font-size: 1.4rem; }
+.lib-card strong { font-size: 0.8rem; }
+.lib-card small { color: var(--lp-muted); font-size: 0.7rem; }
 
-.coach-msg { padding: 12px 14px; border-radius: 10px; background: var(--dk4); border: 1px solid var(--dline); font-size: 13px; color: var(--dt2); line-height: 1.6; margin-bottom: 10px; }
-.coach-msg.ai { background: var(--teal2); border-color: rgba(59,130,246,.15); color: var(--dt); border-radius: 10px 10px 10px 2px; }
-.coach-author { font-size: 10.5px; font-weight: 600; color: var(--teal); margin-bottom: 4px; }
-.coach-input { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 8px; background: var(--dk4); border: 1px solid var(--dline2); margin-top: 12px; }
-.coach-placeholder { font-size: 12.5px; color: var(--dt3); flex: 1; }
-.coach-send { width: 28px; height: 28px; border-radius: 7px; background: var(--teal); display: grid; place-items: center; color: white; font-size: 12px; }
+/* Mock transitions */
+.mock-fade-enter-active, .mock-fade-leave-active { transition: opacity 0.25s ease, transform 0.25s ease; }
+.mock-fade-enter-from { opacity: 0; transform: translateY(10px); }
+.mock-fade-leave-to { opacity: 0; transform: translateY(-10px); }
 
-.roi-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
-.roi-sliders { display: flex; flex-direction: column; gap: 28px; }
-.rsl-label { font-size: 14px; font-weight: 500; color: var(--dt); margin-bottom: 8px; display: flex; justify-content: space-between; }
-.rsl-label span { font-weight: 600; color: var(--teal); }
-input[type=range] { -webkit-appearance: none; width: 100%; height: 2px; outline: none; cursor: pointer; border-radius: 1px; background: linear-gradient(90deg, var(--teal) var(--pct,40%), var(--dline) var(--pct,40%)); }
-input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid var(--teal); cursor: pointer; box-shadow: 0 0 0 3px rgba(59,130,246,.08), 0 1px 4px rgba(0,0,0,.15); }
-.roi-big { font-size: 72px; font-weight: 800; letter-spacing: -.06em; line-height: 1; color: var(--teal); margin-bottom: 6px; }
-.roi-big-label { font-size: 15px; color: var(--dt2); margin-bottom: 40px; }
-.roi-table { border: 1px solid var(--dline2); border-radius: 10px; overflow: hidden; }
-.roi-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--dline); font-size: 14px; }
-.roi-row:last-child { border-bottom: none; }
-.roi-row-label { color: var(--dt2); }
-.roi-row-val { font-weight: 600; color: var(--dt); font-variant-numeric: tabular-nums; }
-.roi-cta-row { margin-top: 20px; padding: 16px 18px; border-radius: 10px; background: var(--sm-grad); display: flex; align-items: center; justify-content: space-between; }
-.roi-cta-plan { font-size: 13px; color: rgba(255,255,255,.7); margin-bottom: 2px; }
-.roi-cta-name { font-size: 15px; font-weight: 700; color: white; }
-.roi-cta-btn { padding: 8px 16px; border-radius: 7px; background: rgba(255,255,255,.2); color: white; font-size: 13px; font-weight: 600; border: 1px solid rgba(255,255,255,.25); transition: all .15s; white-space: nowrap; }
+/* ═══════════════════ STATS ═══════════════════ */
+.stats-section { padding: 80px 0; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.stat-card { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 16px; padding: 28px 20px; text-align: center; transition: transform 0.3s, box-shadow 0.3s; }
+.stat-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(124,58,237,0.12); }
+.stat-emoji { margin-bottom: 12px; }
+.stat-number { font-size: 2.6rem; font-weight: 800; background: linear-gradient(135deg, var(--lp-purple-light), #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px; }
+.stat-label { font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; }
+.stat-note { font-size: 0.78rem; color: var(--lp-muted); line-height: 1.5; }
 
-.pricing-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px; flex-wrap: wrap; gap: 20px; }
-.pricing-note { font-size: 13.5px; color: var(--dt2); line-height: 1.6; padding: 13px 16px; border-radius: 8px; background: var(--dk3); border: 1px solid var(--dline2); border-left: 2px solid var(--teal); max-width: 540px; margin-bottom: 40px; }
-.pricing-note :deep(strong) { color: var(--dt); font-weight: 600; }
-.plans { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
-.plan { border-radius: 16px; padding: 28px; background: linear-gradient(180deg, var(--dk3), var(--dk2)); border: 1.5px solid var(--dline2); position: relative; transition: all .4s cubic-bezier(.16,1,.3,1); box-shadow: 0 2px 8px rgba(32,33,36,.06), inset 0 1px rgba(255,255,255,.4); }
-.plan:hover { box-shadow: 0 20px 40px rgba(32,33,36,.1); transform: translateY(-6px); }
-.plan.featured { border-color: #3b82f6; background: linear-gradient(180deg, rgba(59,130,246,.04), var(--dk2)); box-shadow: 0 0 0 1px #3b82f6, 0 4px 16px rgba(59,130,246,.1); }
-.plan.featured:hover { transform: translateY(-8px); box-shadow: 0 0 0 1.5px var(--teal), 0 24px 48px rgba(59,130,246,.12); }
-.plan-top { height: 3px; background: transparent; border-radius: 14px 14px 0 0; margin: -28px -28px 24px; }
-.plan.featured .plan-top { background: var(--teal); }
-.plan-tag { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); padding: 3px 12px; border-radius: 100px; background: var(--teal); color: white; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
-.plan-name { font-size: 13px; font-weight: 600; color: var(--dt3); margin-bottom: 16px; text-transform: uppercase; letter-spacing: .06em; }
-.plan-price-main { font-size: 52px; font-weight: 800; letter-spacing: -.05em; line-height: 1; color: var(--dt); margin-bottom: 2px; }
-.plan-price-main .curr { font-size: 22px; font-weight: 500; color: var(--dt2); vertical-align: super; }
-.plan.featured .plan-price-main { color: var(--teal); }
-.plan-period { font-size: 13px; color: var(--dt3); margin-bottom: 4px; }
-.plan-seats { font-size: 13px; color: var(--dt2); margin-bottom: 22px; font-weight: 500; }
-.plan-divider { height: 1px; background: var(--dline); margin-bottom: 20px; }
-.plan-features { list-style: none; display: flex; flex-direction: column; gap: 9px; margin-bottom: 24px; }
-.plan-features li { display: flex; align-items: center; gap: 9px; font-size: 14px; color: var(--dt2); }
-.pf-yes { width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0; background: linear-gradient(135deg, rgba(59,130,246,.15), rgba(59,130,246,.08)); border: 1.5px solid rgba(59,130,246,.25); display: grid; place-items: center; font-size: 10px; color: var(--teal); font-weight: 800; }
-.pf-no { width: 17px; height: 17px; border-radius: 5px; flex-shrink: 0; background: var(--dk4); border: 1px solid var(--dline); display: grid; place-items: center; font-size: 8.5px; color: var(--dk5); }
-.plan-features li.na { color: var(--dt3); }
-.plan-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; transition: all .18s; }
-.pb-teal { background: var(--sm-grad); color: white; box-shadow: 0 2px 8px rgba(99,102,241,.2); }
-.pb-teal:hover { box-shadow: 0 4px 18px rgba(99,102,241,.3); }
-.pb-outline { border: 1.5px solid var(--dline2); color: var(--dt2); }
-.pb-outline:hover { background: var(--dk4); color: var(--dt); }
-.plan-footnote { font-size: 12px; color: var(--dt3); text-align: center; margin-top: 18px; }
+/* ═══════════════════ FEATURES ═══════════════════ */
+.features-section { padding: 80px 0; }
+.section-header { text-align: center; margin-bottom: 40px; }
+.section-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--lp-purple-light); margin-bottom: 14px; }
+.section-tag.light { color: rgba(255,255,255,0.7); }
+.section-header h2 { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; line-height: 1.15; margin-bottom: 14px; }
+.section-header h2 :deep(.accent) { background: linear-gradient(135deg, var(--lp-purple-light), #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.section-sub { font-size: 0.95rem; color: var(--lp-muted); max-width: 600px; margin: 0 auto; line-height: 1.6; }
 
-.testimonials { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
-.testi { padding: 28px; border-radius: 16px; background: linear-gradient(180deg, var(--lk), var(--dk2)); border: 1.5px solid var(--lline2); transition: all .4s cubic-bezier(.16,1,.3,1); box-shadow: 0 2px 8px rgba(32,33,36,.06), inset 0 1px rgba(255,255,255,.4); }
-.testi:hover { box-shadow: 0 20px 40px rgba(32,33,36,.08); transform: translateY(-6px); border-color: rgba(59,130,246,.15); }
-.testi-stars { display: flex; gap: 3px; margin-bottom: 14px; }
-.star { font-size: 18px; color: #fbbf24; }
-.testi-quote { font-size: 14.5px; color: var(--lt); line-height: 1.7; margin-bottom: 20px; }
-.testi-author { display: flex; align-items: center; gap: 10px; }
-.ta-ava { width: 44px; height: 44px; border-radius: 50%; background: var(--lk2); border: 2px solid var(--lline2); display: grid; place-items: center; font-size: 24px; flex-shrink: 0; }
-.ta-name { font-size: 13.5px; font-weight: 600; color: var(--lt); margin-bottom: 1px; }
-.ta-role { font-size: 12px; color: var(--lt3); }
-.ta-result { font-size: 11.5px; font-weight: 600; color: var(--teal); margin-top: 3px; }
+.module-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 48px; }
+.module-chip { display: flex; align-items: center; gap: 6px; background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 999px; padding: 8px 18px; font-size: 0.82rem; color: var(--lp-muted); cursor: pointer; transition: all 0.3s; }
+.module-chip:hover { border-color: var(--lp-purple); color: var(--lp-text); }
+.module-chip.active { background: rgba(124,58,237,0.15); border-color: var(--lp-purple); color: var(--lp-purple-light); font-weight: 600; }
+.chip-icon { font-size: 1.1rem; }
 
-.faq-list { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 0; }
-.faq-item { border-bottom: 1px solid var(--dline); }
-.faq-item:first-child { border-top: 1px solid var(--dline); }
-.faq-q { width: 100%; background: none; border: none; color: var(--dt); font-size: 17px; font-weight: 600; text-align: left; padding: 24px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; transition: color .2s; }
-.faq-q:hover { color: var(--teal); }
-.faq-icon { font-size: 22px; font-weight: 300; color: var(--teal); flex-shrink: 0; transition: transform .3s; }
-.faq-item.open .faq-icon { transform: rotate(45deg); }
-.faq-a { max-height: 0; overflow: hidden; transition: max-height .4s cubic-bezier(.16,1,.3,1), padding .4s ease; padding-bottom: 0; }
-.faq-item.open .faq-a { display: block; max-height: 300px; padding-bottom: 24px; }
-.faq-a p { color: var(--dt2); font-size: 15px; line-height: 1.7; margin: 0; }
+.module-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+.module-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--lp-purple-light); margin-bottom: 12px; }
+.module-title { font-size: 1.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 16px; }
+.module-title :deep(.accent) { background: linear-gradient(135deg, var(--lp-purple-light), #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.module-body { font-size: 0.9rem; color: var(--lp-muted); line-height: 1.7; margin-bottom: 20px; }
+.module-points { list-style: none; margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; }
+.module-points li { font-size: 0.85rem; display: flex; align-items: flex-start; gap: 8px; }
+.point-check { color: var(--lp-green); font-weight: 700; flex-shrink: 0; }
+.module-cta { margin-top: 4px; }
 
-.end-cta { background: var(--dk); padding: 140px 24px; text-align: center; position: relative; overflow: hidden; }
-.end-glow { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 900px; height: 500px; background: none; pointer-events: none; }
-.end-inner { position: relative; z-index: 1; }
-.end-h2 { font-family: var(--f-head); font-size: clamp(40px, 6vw, 72px); font-weight: 800; letter-spacing: -.04em; line-height: 1.05; color: var(--dt); margin-bottom: 20px; }
-.end-h2 :deep(em) { font-style: normal; background: var(--sm-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.end-sub { font-size: 17px; color: var(--dt2); line-height: 1.65; max-width: 500px; margin: 0 auto 40px; }
-.end-btns { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
-.end-note { margin-top: 20px; font-size: 13px; color: var(--dt3); }
+.module-visual { position: relative; }
+.module-mockup-card { background: var(--lp-bg2); border: 1px solid var(--lp-border); border-radius: 16px; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.mmock-content { min-height: 240px; }
+.mmock-head { font-size: 0.85rem; font-weight: 600; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+.mmock-badge { font-size: 0.65rem; padding: 3px 10px; border-radius: 6px; background: rgba(124,58,237,0.12); color: var(--lp-purple-light); }
+.mmock-badge.green { background: rgba(16,185,129,0.12); color: var(--lp-green); }
+.mmock-badge.warn { background: rgba(239,68,68,0.1); color: var(--lp-red); }
+.mmock-ai { background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.2); border-radius: 8px; padding: 10px; font-size: 0.78rem; color: var(--lp-muted); margin-top: 10px; line-height: 1.5; }
+.mmock-ai.warn { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.15); }
+.pb-step { display: flex; align-items: center; gap: 8px; padding: 8px 0; font-size: 0.8rem; border-bottom: 1px solid var(--lp-border); }
+.pb-step.done { color: var(--lp-muted); }
+.copil-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.copil-kpi { background: var(--lp-surface); border-radius: 10px; padding: 12px; text-align: center; }
+.copil-kpi strong { display: block; font-size: 0.72rem; color: var(--lp-muted); margin-bottom: 4px; }
+.copil-kpi span { font-size: 1.3rem; font-weight: 700; }
+.copil-kpi small { display: block; font-size: 0.65rem; color: var(--lp-muted); margin-top: 2px; }
+.copil-kpi .green { color: var(--lp-green); }
+.copil-kpi .red { color: var(--lp-red); }
+.copil-kpi .purple { color: var(--lp-purple-light); }
+.wb-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.wb-metric { background: var(--lp-surface); border-radius: 10px; padding: 14px; text-align: center; }
+.wb-val { display: block; font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+.wb-val.green { color: var(--lp-green); }
+.wb-val.amber { color: var(--lp-amber); }
+.wb-metric span:not(.wb-val) { font-size: 0.75rem; display: block; }
+.wb-metric small { font-size: 0.68rem; color: var(--lp-muted); display: block; }
+.online-dot { font-size: 0.75rem; color: var(--lp-green); }
+.mini-chat { display: flex; flex-direction: column; gap: 8px; }
+.mc-user { background: rgba(124,58,237,0.12); padding: 10px; border-radius: 10px; font-size: 0.8rem; align-self: flex-end; max-width: 85%; }
+.mc-ai { background: var(--lp-surface); border: 1px solid var(--lp-border); padding: 10px; border-radius: 10px; font-size: 0.8rem; line-height: 1.5; }
+.email-tags-mini { display: flex; gap: 6px; margin-bottom: 10px; }
+.email-tags-mini span { font-size: 0.68rem; padding: 3px 8px; border-radius: 4px; background: rgba(124,58,237,0.1); color: var(--lp-purple-light); }
+.mini-email-body { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 8px; padding: 12px; font-size: 0.8rem; color: var(--lp-muted); }
+.mini-cal { display: flex; gap: 6px; margin-bottom: 10px; }
+.mini-cal-day { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 0.78rem; background: var(--lp-surface); }
+.mini-cal-day.active { background: var(--lp-purple); color: #fff; font-weight: 600; }
+.cal-event-mini { font-size: 0.78rem; padding: 8px; background: rgba(124,58,237,0.08); border-radius: 8px; }
+.mini-kanban { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.mk-col { background: var(--lp-surface); border-radius: 8px; padding: 8px; }
+.mk-title { font-size: 0.65rem; font-weight: 600; color: var(--lp-muted); margin-bottom: 6px; }
+.mk-card { font-size: 0.7rem; padding: 6px; background: rgba(255,255,255,0.04); border-radius: 4px; margin-bottom: 4px; }
+.mk-card.warn { border-left: 2px solid var(--lp-red); }
+.mk-card.active { border-left: 2px solid var(--lp-purple); }
+.mk-card.done { opacity: 0.5; }
+.mini-lib { display: flex; flex-direction: column; gap: 6px; }
+.ml-card { font-size: 0.78rem; padding: 10px; background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 8px; }
+.ml-card.new { border-color: rgba(124,58,237,0.25); }
 
-footer { background: var(--dk); border-top: 1px solid var(--dline); padding: 60px 24px 32px; }
-.footer-grid { max-width: 1100px; margin: 0 auto 48px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; }
-.footer-desc { font-size: 13.5px; color: var(--dt3); line-height: 1.75; max-width: 240px; margin-top: 12px; }
-.footer-social { display: flex; gap: 7px; margin-top: 16px; }
-.fsoc { width: 32px; height: 32px; border-radius: 7px; background: var(--dk3); border: 1px solid var(--dline); display: grid; place-items: center; font-size: 13px; color: var(--dt3); transition: all .15s; }
-.fsoc:hover { background: var(--teal2); color: var(--teal); border-color: rgba(59,130,246,.2); }
-.footer-col h4 { font-size: 12px; font-weight: 600; color: var(--dt); margin-bottom: 14px; }
-.footer-col a { display: block; font-size: 13.5px; color: var(--dt3); margin-bottom: 10px; transition: color .15s; }
-.footer-col a:hover { color: var(--teal); }
-.footer-bottom { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-top: 24px; border-top: 1px solid var(--dline); font-size: 12.5px; color: var(--dt3); }
+.module-fade-enter-active, .module-fade-leave-active { transition: opacity 0.3s ease, transform 0.3s ease; }
+.module-fade-enter-from { opacity: 0; transform: translateX(20px); }
+.module-fade-leave-to { opacity: 0; transform: translateX(-20px); }
 
-.integ-cats { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
-.integ-cat-btn { display: flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 100px; font-size: 14px; font-weight: 600; font-family: var(--f); background: var(--dk3); border: 1.5px solid var(--dline2); color: var(--dt2); cursor: pointer; transition: all .3s cubic-bezier(.16,1,.3,1); }
-.integ-cat-btn:hover { border-color: var(--teal); color: var(--dt); transform: translateY(-2px); }
-.integ-cat-btn.active { background: var(--teal); border-color: var(--teal); color: #fff; }
-.integrations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 18px; max-width: 900px; margin: 0 auto; }
-.integration-card { background: linear-gradient(180deg, var(--dk3), var(--dk2)); border: 1.5px solid var(--dline2); border-radius: 16px; padding: 24px 16px; text-align: center; transition: all .4s cubic-bezier(.16,1,.3,1); box-shadow: 0 2px 12px rgba(32,33,36,.06), inset 0 1px rgba(255,255,255,.4); }
-.integration-card:hover { border-color: rgba(59,130,246,.4); transform: translateY(-6px); box-shadow: 0 16px 32px rgba(59,130,246,.08); }
-.integration-card.available { border-color: rgba(59,130,246,.25); }
-.integration-icon { font-size: 40px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; transition: transform .4s; }
-.integration-card:hover .integration-icon { transform: scale(1.15) translateY(-2px); }
-.integration-icon img { width: 48px; height: 48px; object-fit: contain; border-radius: 12px; }
-.integration-name { font-size: 14px; font-weight: 700; color: var(--dt); margin-bottom: 4px; }
-.integration-tag { font-size: 11px; color: var(--dt3); margin-bottom: 8px; }
-.integration-status { font-size: 10px; font-weight: 600; padding: 3px 12px; border-radius: 100px; display: inline-block; }
-.integration-status.live { background: rgba(59,130,246,.08); color: var(--teal); border: 1px solid rgba(59,130,246,.15); }
+/* ═══════════════════ ROI ═══════════════════ */
+.roi-section { padding: 80px 0; background: var(--lp-bg2); }
+.roi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+.roi-sliders { display: flex; flex-direction: column; gap: 24px; }
+.roi-field label { display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 10px; }
+.roi-field label strong { color: var(--lp-purple-light); }
+.roi-field input[type="range"] { width: 100%; height: 6px; -webkit-appearance: none; background: var(--lp-border); border-radius: 3px; outline: none; }
+.roi-field input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--lp-purple); cursor: pointer; box-shadow: 0 0 12px rgba(124,58,237,0.5); }
+.roi-results { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 20px; padding: 28px; }
+.roi-main-result { text-align: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--lp-border); }
+.roi-big { display: block; font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, var(--lp-green), #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+.roi-desc { font-size: 0.85rem; color: var(--lp-muted); }
+.roi-details { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.roi-detail { display: flex; justify-content: space-between; font-size: 0.85rem; }
+.roi-dl { color: var(--lp-muted); }
+.roi-dv { font-weight: 600; }
+.roi-dv.red { color: var(--lp-red); }
+.roi-dv.green { color: var(--lp-green); }
+.roi-dv.purple { color: var(--lp-purple-light); }
+.roi-plan { background: rgba(124,58,237,0.08); border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
+.roi-plan-label { color: var(--lp-muted); }
+.roi-plan-value { color: var(--lp-purple-light); font-weight: 600; }
 
-.vs-block { margin-top: 64px; max-width: 900px; margin-left: auto; margin-right: auto; }
-.vs-title { font-size: clamp(22px, 2.5vw, 30px); font-weight: 800; letter-spacing: -.03em; color: var(--dt); margin-bottom: 8px; text-align: center; }
-.vs-subtitle { font-size: 15px; color: var(--dt2); text-align: center; margin-bottom: 32px; line-height: 1.7; }
-.vs-table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 16px; overflow: hidden; border: 1px solid var(--dline2); background: var(--dk3); }
-.vs-table thead th { padding: 16px 20px; font-size: 13px; font-weight: 700; text-align: center; background: var(--dk2); border-bottom: 1px solid var(--dline); color: var(--dt); }
-.vs-table thead th:first-child { text-align: left; }
-.vs-table thead th.vs-scalyo { background: rgba(59,130,246,.05); color: var(--teal); }
-.vs-table tbody td { padding: 14px 20px; font-size: 14px; text-align: center; border-bottom: 1px solid var(--dline); color: var(--dt2); }
-.vs-table tbody td:first-child { text-align: left; font-weight: 600; color: var(--dt); }
-.vs-table tbody td.vs-scalyo { background: rgba(59,130,246,.02); }
-.vs-table tbody tr:last-child td { border-bottom: none; }
-.vs-check { color: var(--teal); font-weight: 700; font-size: 16px; }
-.vs-cross { color: #D4432F; font-size: 14px; }
-.vs-partial { color: #D4930F; font-size: 13px; font-weight: 500; }
-.sell-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
-.sell-card { background: linear-gradient(180deg, var(--dk3), var(--dk2)); border: 1.5px solid var(--dline2); border-radius: 16px; padding: 28px 22px; text-align: center; transition: all .4s cubic-bezier(.16,1,.3,1); box-shadow: 0 2px 12px rgba(32,33,36,.06), inset 0 1px rgba(255,255,255,.4); }
-.sell-card:hover { transform: translateY(-8px); border-color: rgba(59,130,246,.3); box-shadow: 0 20px 40px rgba(59,130,246,.08); }
-.sell-icon { font-size: 40px; margin-bottom: 14px; transition: transform .4s; animation: emojiFloat 3s ease-in-out infinite; display: inline-block; }
-.sell-card:hover .sell-icon { transform: scale(1.2) translateY(-4px); }
-@keyframes emojiFloat { 0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-6px) scale(1.05);} }
-.sell-label { font-size: 15px; font-weight: 700; color: var(--dt); margin-bottom: 8px; }
-.sell-desc { font-size: 13px; color: var(--dt2); line-height: 1.6; }
-.vs-highlights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 28px; }
-.vs-hl-card { background: rgba(59,130,246,.04); border: 1.5px solid rgba(59,130,246,.15); border-radius: 14px; padding: 20px; text-align: center; transition: all .4s; }
-.vs-hl-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(59,130,246,.08); border-color: rgba(59,130,246,.25); }
-.vs-hl-number { font-size: 28px; font-weight: 800; color: var(--teal); letter-spacing: -.04em; margin-bottom: 4px; }
-.vs-hl-text { font-size: 13px; color: var(--dt2); line-height: 1.5; }
+/* ═══════════════════ INTEGRATIONS ═══════════════════ */
+.integ-section { padding: 80px 0; }
+.integ-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 32px 0 20px; }
+.integ-card { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 14px; padding: 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: all 0.3s; }
+.integ-card:hover { border-color: var(--lp-purple); transform: translateY(-4px); box-shadow: 0 8px 30px rgba(124,58,237,0.1); }
+.integ-icon { font-size: 2rem; margin-bottom: 4px; }
+.integ-card strong { font-size: 0.9rem; }
+.integ-card small { font-size: 0.72rem; color: var(--lp-muted); }
+.integ-avail { font-size: 0.68rem; color: var(--lp-green); background: rgba(16,185,129,0.1); padding: 2px 10px; border-radius: 999px; }
+.integ-more { text-align: center; font-size: 0.82rem; color: var(--lp-muted); margin-top: 20px; }
 
-.chips-section { background: var(--dk); padding: 80px 24px 40px; text-align: center; }
-.chips-label { text-align: center; font-size: 12px; font-weight: 700; color: var(--dt3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 28px; }
-.chips-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; max-width: 960px; margin: 0 auto; }
-.chip { background: linear-gradient(180deg, var(--dk3), var(--dk2)); border: 1.5px solid var(--dline2); border-radius: 18px; padding: 22px 14px; text-align: center; cursor: default; transition: all .35s cubic-bezier(.16,1,.3,1); box-shadow: 0 2px 8px rgba(32,33,36,.06), inset 0 1px rgba(255,255,255,.4); }
-.chip:hover, .chip.active { border-color: var(--teal); background: linear-gradient(180deg, rgba(59,130,246,.06), rgba(59,130,246,.03)); transform: translateY(-4px); box-shadow: 0 8px 24px rgba(59,130,246,.08); }
-.chip-icon { font-size: 36px; margin-bottom: 10px; transition: transform .35s; animation: emojiFloat 3s ease-in-out infinite; display: inline-block; }
-.chip:nth-child(1) .chip-icon{animation-delay:0s;}.chip:nth-child(2) .chip-icon{animation-delay:.35s;}.chip:nth-child(3) .chip-icon{animation-delay:.7s;}.chip:nth-child(4) .chip-icon{animation-delay:1.05s;}.chip:nth-child(5) .chip-icon{animation-delay:1.4s;}.chip:nth-child(6) .chip-icon{animation-delay:1.75s;}.chip:nth-child(7) .chip-icon{animation-delay:2.1s;}.chip:nth-child(8) .chip-icon{animation-delay:2.45s;}
-.chip:hover .chip-icon { transform: scale(1.18) translateY(-4px); animation-play-state: paused; }
-.chip-label { font-size: 13px; font-weight: 700; color: var(--dt2); }
-.chip.active .chip-label { color: var(--teal); }
+/* ═══════════════════ WHY SCALYO ═══════════════════ */
+.why-section { padding: 80px 0; background: var(--lp-bg2); }
+.sell-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 36px; }
+.sell-card { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 16px; padding: 24px; transition: all 0.3s; }
+.sell-card:hover { border-color: var(--lp-purple); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(124,58,237,0.1); }
+.sell-icon { margin-bottom: 12px; font-size: 1.8rem; }
+.sell-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; }
+.sell-card p { font-size: 0.82rem; color: var(--lp-muted); line-height: 1.6; }
 
-.stats-band { background: var(--dk); padding: 40px 24px 80px; }
-.stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 28px; max-width: 900px; margin: 0 auto; text-align: center; }
-.stat-n { font-size: clamp(36px,5vw,56px); font-weight: 900; line-height: 1; background: var(--sm-grad-h); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: shimmer 4s linear infinite; }
-.stat-l { font-size: 14px; font-weight: 700; color: var(--dt); margin-top: 8px; }
-.stat-s { font-size: 12px; color: var(--dt3); margin-top: 4px; }
+/* ═══════════════════ PRICING ═══════════════════ */
+.pricing-section { padding: 80px 0; }
+.pricing-note { font-size: 0.82rem; color: var(--lp-muted); max-width: 600px; margin: 0 auto; line-height: 1.6; }
+.pricing-note :deep(strong) { color: var(--lp-purple-light); }
+.plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+.plan-card { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 20px; padding: 32px 24px; position: relative; transition: all 0.3s; }
+.plan-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+.plan-card.popular { border-color: var(--lp-purple); box-shadow: 0 0 40px rgba(124,58,237,0.15); background: rgba(124,58,237,0.04); }
+.popular-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--lp-purple), var(--lp-purple-dark)); color: #fff; font-size: 0.72rem; padding: 6px 20px; border-radius: 999px; font-weight: 600; white-space: nowrap; }
+.plan-name { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; color: var(--lp-muted); margin-bottom: 14px; }
+.plan-price { font-size: 2.8rem; font-weight: 800; margin-bottom: 6px; }
+.currency { font-size: 1.6rem; vertical-align: top; margin-top: 8px; display: inline-block; }
+.period { font-size: 0.9rem; color: var(--lp-muted); font-weight: 400; }
+.plan-desc { font-size: 0.82rem; color: var(--lp-muted); margin-bottom: 24px; }
+.plan-features { list-style: none; margin-bottom: 28px; display: flex; flex-direction: column; gap: 10px; }
+.plan-features li { font-size: 0.85rem; color: var(--lp-text); }
+.plan-btn { display: block; text-align: center; width: 100%; }
 
-.mod-section { padding: 72px 5%; border-top: 1px solid var(--dline); background: var(--dk); }
-.mod-inner { display: flex; align-items: center; gap: 56px; max-width: 1080px; margin: 0 auto; }
-.mod-section:nth-child(even) .mod-inner { flex-direction: row-reverse; }
-.mod-text, .mod-visual { flex: 1; min-width: 280px; }
-.mod-tag { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px; }
-.mod-tag-icon { font-size: 18px; }
-.mod-tag-label { font-size: 11px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: .08em; }
-.mod-h2 { font-family: var(--f-head); font-size: clamp(24px,3.5vw,38px); font-weight: 900; letter-spacing: -.025em; line-height: 1.2; margin-bottom: 14px; }
-.mod-body { font-size: 15px; color: var(--dt2); line-height: 1.7; margin-bottom: 22px; }
-.mod-list { list-style: none; display: flex; flex-direction: column; gap: 9px; margin-bottom: 28px; }
-.mod-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--dt2); }
-.mod-check { width: 18px; height: 18px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; font-size: 9px; color: var(--teal); }
-.mod-btn { display: inline-flex; align-items: center; gap: 8px; background: rgba(59,130,246,.06); border: 1px solid rgba(59,130,246,.2); color: var(--teal); font-weight: 700; font-size: 13px; padding: 10px 20px; border-radius: 9px; transition: all .2s; cursor: pointer; }
-.mod-btn:hover { background: rgba(59,130,246,.12); transform: translateY(-1px); }
-.mv::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--sm-grad-h); }
-.mv-head { font-size: 12px; font-weight: 700; color: var(--dt3); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
-.badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 100px; }
-.bg { background: rgba(59,130,246,.1); color: var(--teal); }
-.ba { background: rgba(245,158,11,.1); color: var(--amber); }
-.br { background: rgba(239,68,68,.1); color: var(--red); }
-.hr-name { font-size: 12px; font-weight: 600; min-width: 110px; }
-.hr-bar { flex: 1; height: 5px; background: var(--dline); border-radius: 100px; overflow: hidden; }
-.hr-fill { height: 100%; border-radius: 100px; }
-.hr-val { font-size: 11px; font-weight: 700; min-width: 26px; text-align: right; }
-.kpi-c { background: var(--bg3); border-radius: 11px; padding: 13px; }
-.kpi-l { font-size: 10px; color: var(--dt3); margin-bottom: 3px; }
-.kpi-v { font-size: 21px; font-weight: 900; }
-.kpi-d { font-size: 10px; font-weight: 700; margin-top: 2px; }
-.dp { color: var(--teal); }
-.dn { color: var(--red); }
-.wb-c { background: var(--bg3); border-radius: 10px; padding: 11px; text-align: center; }
-.wb-n { font-size: 21px; font-weight: 900; color: var(--teal); }
-.wb-l { font-size: 10px; color: var(--dt3); margin-top: 2px; }
-.msg { border-radius: 11px; padding: 11px 13px; font-size: 12px; line-height: 1.5; max-width: 92%; }
-.msg-u { background: rgba(59,130,246,.1); border: 1px solid rgba(59,130,246,.18); align-self: flex-end; }
-.msg-a { background: rgba(59,130,246,.06); border: 1px solid rgba(59,130,246,.14); color: var(--dt2); }
-.msg-tag { font-size: 10px; font-weight: 700; color: var(--teal); margin-bottom: 3px; }
-.ep-row { border-bottom: 1px solid var(--dline); padding: 5px 0; display: flex; gap: 8px; }
-.ep-lbl { color: var(--dt3); min-width: 44px; font-size: 10px; }
-.cal-c { background: var(--bg3); border-radius: 8px; padding: 8px; font-size: 11px; min-height: 52px; }
-.cal-ev { background: rgba(59,130,246,.05); border: 1px solid rgba(59,130,246,.12); }
-.cal-td { border: 1px solid rgba(59,130,246,.25); }
-.cal-title { font-size: 11px; font-weight: 700; color: var(--teal); }
-.cal-sub { font-size: 10px; color: var(--dt3); }
-.task-col-h { font-size: 10px; font-weight: 700; color: var(--dt3); margin-bottom: 7px; text-transform: uppercase; letter-spacing: .06em; }
-.task-card { border-radius: 8px; padding: 9px; font-size: 11px; margin-bottom: 6px; border-left: 2px solid; }
-.tc-t { border-color: var(--teal); background: rgba(59,130,246,.04); }
-.tc-a { border-color: var(--amber); background: rgba(245,158,11,.04); }
-.tc-b { border-color: var(--blue); background: rgba(59,130,246,.04); }
-.res-item { display: flex; align-items: center; gap: 12px; padding: 11px; background: var(--bg3); border-radius: 10px; transition: all .18s; cursor: pointer; }
-.res-item:hover { background: rgba(59,130,246,.06); }
-.res-icon { font-size: 20px; flex-shrink: 0; }
-.res-info strong { display: block; font-size: 13px; font-weight: 700; }
-.res-info span { font-size: 11px; color: var(--dt3); }
-.res-dl { margin-left: auto; font-size: 11px; color: var(--teal); font-weight: 700; }
-.res-new { background: rgba(59,130,246,.04); border: 1px solid rgba(59,130,246,.12); }
-.cta-h2 { font-size: clamp(26px,4.5vw,46px); font-weight: 900; letter-spacing: -.025em; margin-bottom: 14px; }
-.cta-sub { font-size: 16px; color: var(--dt2); max-width: 480px; margin: 0 auto 36px; line-height: 1.6; }
-.plan-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; max-width: 840px; margin: 0 auto 24px; }
-.plan-card { background: var(--bg2); border: 1px solid var(--dline); border-radius: 18px; padding: 26px; text-align: left; position: relative; transition: all .2s; }
-.plan-card.featured { border-color: var(--teal); background: rgba(59,130,246,.03); }
-.plan-card:hover { transform: translateY(-2px); }
-.plan-pop { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--teal); color: white; font-size: 10px; font-weight: 800; padding: 4px 14px; border-radius: 100px; white-space: nowrap; }
-.plan-name { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
-.plan-price { font-size: 30px; font-weight: 900; color: var(--teal); margin-bottom: 4px; }
-.plan-price span { font-size: 13px; font-weight: 500; color: var(--dt3); }
-.plan-desc { font-size: 12px; color: var(--dt3); margin-bottom: 18px; }
-.plan-btn { display: block; text-align: center; padding: 11px; border-radius: 10px; font-size: 13px; font-weight: 700; transition: all .2s; }
-.plan-btn-p { background: var(--sm-grad); color: white; }
-.plan-btn-p:hover { opacity: .9; }
-.plan-btn-o { border: 1px solid var(--dline2); color: var(--dt2); }
-.plan-btn-o:hover { border-color: var(--teal); color: var(--dt); }
-.plan-note { font-size: 12px; color: var(--dt3); }
-.plan-note strong { color: var(--teal); }
+.plan-footnote { text-align: center; font-size: 0.78rem; color: var(--lp-muted); margin-top: 28px; line-height: 1.6; }
+.plan-footnote :deep(strong) { color: var(--lp-purple-light); }
 
-.lm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(6px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
-.lm-overlay.open { display: flex; }
-.lm-box { background: var(--dk3); border: 1px solid var(--dline2); border-radius: 18px; width: 100%; max-width: 640px; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; }
-.lm-head { padding: 24px 28px 0; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-.lm-head h3 { font-size: 18px; font-weight: 700; color: var(--dt); margin: 0; }
-.lm-close { background: none; border: 1px solid var(--dline2); color: var(--dt3); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all .15s; }
-.lm-close:hover { background: rgba(32,33,36,.04); color: var(--dt); }
-.lm-body { padding: 20px 28px 28px; overflow-y: auto; flex: 1; }
-.lm-body p, .lm-body li { font-size: 14px; color: var(--dt2); line-height: 1.7; }
-.lm-body h4 { font-size: 13px; font-weight: 700; color: var(--teal); margin: 20px 0 6px; text-transform: uppercase; letter-spacing: .06em; }
-.lm-body ul { padding-left: 16px; margin: 4px 0 12px; }
-.lm-body li { margin: 4px 0; }
-.lm-body a { color: var(--teal); }
-.lm-email-link { display: flex; align-items: center; gap: 10px; background: rgba(59,130,246,.06); border: 1px solid rgba(59,130,246,.15); border-radius: 10px; padding: 14px 18px; margin-top: 16px; text-decoration: none; transition: all .2s; }
-.lm-email-link:hover { background: rgba(59,130,246,.1); }
-.lm-email-icon { font-size: 22px; flex-shrink: 0; }
-.lm-email-info strong { display: block; color: var(--dt); font-size: 14px; }
-.lm-email-info span { font-size: 13px; color: var(--dt3); }
-.lm-contact-form { margin-top: 20px; }
-.lm-contact-form label { display: block; font-size: 12px; font-weight: 600; color: var(--dt3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
-.lm-contact-form input, .lm-contact-form textarea { width: 100%; background: var(--dk2); border: 1px solid var(--dline); border-radius: 8px; color: var(--dt); font-size: 14px; padding: 10px 14px; font-family: var(--f); transition: border .15s; box-sizing: border-box; }
-.lm-contact-form input:focus, .lm-contact-form textarea:focus { outline: none; border-color: rgba(59,130,246,.4); }
-.lm-contact-form textarea { resize: vertical; min-height: 100px; }
-.lm-contact-form .lm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-.lm-contact-form .lm-field { margin-bottom: 12px; }
-.lm-submit { width: 100%; padding: 12px; background: var(--sm-grad); border: none; border-radius: 10px; color: #fff; font-weight: 700; font-size: 14px; cursor: pointer; transition: all .2s; margin-top: 4px; }
-.lm-submit:hover { opacity: .9; }
+/* ═══════════════════ FAQ ═══════════════════ */
+.faq-section { padding: 80px 0; background: var(--lp-bg2); }
+.faq-list { max-width: 700px; margin: 0 auto; }
+.faq-item { border-bottom: 1px solid var(--lp-border); cursor: pointer; transition: background 0.2s; }
+.faq-item:hover { background: rgba(255,255,255,0.02); }
+.faq-q { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; font-size: 0.95rem; font-weight: 500; }
+.faq-toggle { color: var(--lp-purple-light); font-size: 1.3rem; flex-shrink: 0; margin-left: 16px; }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; }
+.faq-item.open .faq-a { max-height: 250px; padding-bottom: 18px; }
+.faq-a p { font-size: 0.88rem; color: var(--lp-muted); line-height: 1.7; }
 
-@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.4);}70%{box-shadow:0 0 0 8px rgba(59,130,246,.0);} }
+/* ═══════════════════ FINAL CTA ═══════════════════ */
+.final-cta-section { padding: 120px 0; background: linear-gradient(135deg, #0f0a2e, #1e1145, #2d1b69); position: relative; overflow: hidden; }
+.final-cta-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%); pointer-events: none; animation: pulse-glow 5s ease-in-out infinite; }
+.final-cta-title { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; line-height: 1.15; margin-bottom: 16px; position: relative; }
+.final-cta-title :deep(em) { font-style: normal; background: linear-gradient(135deg, var(--lp-purple-light), #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.final-cta-sub { font-size: 1rem; color: rgba(255,255,255,0.6); margin-bottom: 36px; }
+.final-cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+.final-cta-note { font-size: 0.78rem; color: rgba(255,255,255,0.4); }
 
-@media (max-width: 1020px) {
-  .feat-panel { grid-template-columns: 1fr; gap: 40px; }
-  .feat-panel.flip { direction: ltr; }
-  .roi-wrap { grid-template-columns: 1fr; }
-  .plans { grid-template-columns: 1fr 1fr; gap: 14px; }
-  .footer-grid, .stats-inner { grid-template-columns: 1fr 1fr; }
-  .integrations-grid { grid-template-columns: repeat(3, 1fr); }
+/* ═══════════════════ FOOTER ═══════════════════ */
+.footer-section { background: #080a14; padding: 60px 0 24px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 36px; border-bottom: 1px solid var(--lp-border); }
+.footer-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1rem; margin-bottom: 14px; }
+.footer-brand p { font-size: 0.82rem; color: var(--lp-muted); line-height: 1.6; margin-bottom: 8px; }
+.footer-markets { font-size: 0.78rem; }
+.footer-col h4 { font-size: 0.875rem; font-weight: 600; margin-bottom: 14px; }
+.footer-col a { display: block; font-size: 0.82rem; color: var(--lp-muted); margin-bottom: 10px; transition: color 0.2s; }
+.footer-col a:hover { color: var(--lp-purple-light); }
+.footer-bottom { padding-top: 20px; text-align: center; font-size: 0.75rem; color: rgba(255,255,255,0.3); }
+
+/* ═══════════════════ RESPONSIVE ═══════════════════ */
+@media (max-width: 900px) {
+  .hide-mobile { display: none !important; }
+  .burger { display: flex; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .module-detail { grid-template-columns: 1fr; }
+  .roi-grid { grid-template-columns: 1fr; }
+  .plans-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
   .sell-grid { grid-template-columns: repeat(2, 1fr); }
-  .vs-highlights { gap: 10px; }
-  .stat-cell { border-right: none; border-bottom: 1px solid var(--dline); }
-  .stat-cell:nth-child(odd) { border-right: 1px solid var(--dline); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .mock-sidebar { width: auto; flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--lp-border); padding: 8px; }
+  .mock-sidebar-logo { display: none; }
+  .mockup-body { flex-direction: column; }
+  .tab-label { display: none; }
+  .mock-kanban { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 768px) {
-  nav { padding: 0 20px; height: 56px; }
-  .nav-links, .n-ghost { display: none; }
-  .n-solid { padding: 9px 16px; font-size: 13px; }
-  .nav-logo { font-size: 16px; }
-  .nav-logo-img { width: 32px; height: 32px; }
-  .hero { padding: 90px 20px 56px; }
-  .hero-badge { margin: 0 auto 20px; font-size: 12px; }
-  .hero-h1 { font-size: clamp(36px, 9vw, 52px); }
-  .hero-sub { font-size: 15px; max-width: 100%; margin: 0 auto 28px; }
-  .hero-cta { flex-direction: column; align-items: stretch; gap: 10px; max-width: 340px; margin: 0 auto 24px; }
-  .btn-primary { justify-content: center; padding: 15px 20px; font-size: 15px; }
-  .btn-secondary { justify-content: center; padding: 14px 20px; font-size: 15px; }
-  .hero-social-proof { flex-wrap: wrap; justify-content: center; gap: 10px; font-size: 12px; }
-  .hsp-sep { display: none; }
-  .hero-screenshot { margin-top: 40px; padding: 0 16px; }
-  .app-sidebar { width: 160px; }
-  .kpi-row { grid-template-columns: repeat(3,1fr); }
-  .content-grid { grid-template-columns: 1fr; }
-  .section { padding: 64px 20px; }
-  .h2-light, .h2-dark { font-size: clamp(26px, 7vw, 40px); margin-bottom: 12px; }
-  .sub-light, .sub-dark { font-size: 15px; max-width: 100%; }
-  .stats-inner { grid-template-columns: 1fr 1fr; gap: 0; }
-  .stat-cell { padding: 24px 16px; border-right: none; border-bottom: 1px solid var(--dline); }
-  .stat-cell:nth-child(odd) { border-right: 1px solid var(--dline); }
-  .stat-cell:nth-child(3), .stat-cell:nth-child(4) { border-bottom: none; }
-  .feat-panel { grid-template-columns: 1fr; gap: 32px; }
-  .feat-panel.flip { direction: ltr; }
-  .roi-wrap { grid-template-columns: 1fr; gap: 40px; }
-  .roi-big { font-size: 56px; }
-  .plans { grid-template-columns: 1fr; gap: 16px; max-width: 420px; margin: 0 auto; }
-  .plan { padding: 24px; }
-  .plan-top { margin: -24px -24px 20px; }
-  .plan-price-main { font-size: 44px; }
-  .pricing-header { flex-direction: column; align-items: flex-start; gap: 16px; }
-  .integrations-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .sell-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .sell-card { padding: 18px 14px; }
-  .vs-highlights { grid-template-columns: 1fr; }
-  .end-cta { padding: 80px 20px; }
-  .end-h2 { font-size: clamp(28px, 8vw, 44px); }
-  .end-sub { font-size: 15px; max-width: 100%; }
-  .end-btns { flex-direction: column; align-items: stretch; max-width: 320px; margin: 0 auto; gap: 10px; }
-  .footer-grid { grid-template-columns: 1fr; gap: 32px; }
-  .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
-  .testimonials { grid-template-columns: 1fr; }
+@media (max-width: 600px) {
+  .stats-grid, .sell-grid { grid-template-columns: 1fr; }
+  .hero { padding: 110px 0 40px; }
+  .hero-title { font-size: 2rem; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .module-chips { gap: 6px; }
+  .module-chip { padding: 6px 12px; font-size: 0.75rem; }
+  .integ-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 480px) {
-  .hero-inner { max-width: 100%; padding: 0 4px; }
-  .hero-screenshot { width: 100%; overflow: hidden; padding: 0 8px; }
-  .app-sidebar { display: none; }
-  .kpi-row { grid-template-columns: repeat(2,1fr); }
-  .container, .container-narrow { max-width: 100%; padding: 0 16px; }
-  .mod-inner { flex-direction: column !important; gap: 20px; padding: 0 4px; }
-  .mv, .fv-card { width: 100% !important; max-width: 100%; overflow: hidden; border-radius: 10px; }
-  .mod-visual, .feat-visual { width: 100%; border-radius: 10px; }
-  .task-g { grid-template-columns: 1fr !important; }
-  .kpi-g { grid-template-columns: 1fr !important; }
-  .plans { max-width: 100% !important; padding: 0 4px; }
-  .plan { padding: 20px 16px; }
-  .chips-grid { grid-template-columns: repeat(3,1fr) !important; gap: 6px; }
-  .section { padding: 48px 16px; }
-  .sell-grid { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
-  .plan-grid { grid-template-columns: 1fr; }
+@media (min-width: 901px) {
+  .hide-desktop { display: none !important; }
 }
 
-@media (max-width: 390px) {
-  .hero-h1 { font-size: 32px; }
-  .plans { max-width: 100%; }
-  .plan-price-main { font-size: 38px; }
-  .wb-grid { grid-template-columns: 1fr; }
-  .roi-big { font-size: 48px; }
-  .integrations-grid { grid-template-columns: repeat(2, 1fr); }
-  .sell-grid { grid-template-columns: 1fr; }
-}
-
-.hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; width: 36px; height: 36px; background: none; border: none; cursor: pointer; padding: 4px; }
-.hamburger span { display: block; height: 2px; width: 100%; background: var(--dt); border-radius: 2px; transition: all .25s cubic-bezier(.16,1,.3,1); }
-.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.hamburger.open span:nth-child(2) { opacity: 0; }
-.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-.mobile-menu { display: none; position: fixed; top: 56px; left: 0; right: 0; background: var(--dk); border-bottom: 1px solid var(--dline2); flex-direction: column; padding: 16px 20px 24px; gap: 4px; z-index: 99; box-shadow: 0 4px 16px rgba(32,33,36,.08); }
-.mobile-menu a { padding: 13px 0; font-size: 16px; font-weight: 500; color: var(--dt2); border-bottom: 1px solid var(--dline); text-decoration: none; transition: color .15s; }
-.mobile-menu a:last-child { border-bottom: none; }
-.mobile-menu a:hover { color: var(--dt); }
-.mobile-menu .mm-cta { margin-top: 12px; padding: 14px 20px; border-radius: 8px; background: var(--sm-grad); color: white !important; font-weight: 600; text-align: center; border: none; }
-.mobile-menu.open { display: flex; }
-@media (max-width: 768px) { .hamburger { display: flex; } }
-
-.lang-sw { display: flex; gap: 3px; align-items: center; margin-left: 8px; }
-.lang-sw button { background: none; border: 1px solid transparent; cursor: pointer; font-size: 13px; font-weight: 600; padding: 4px 9px; border-radius: 7px; color: var(--dt3); transition: all .15s; letter-spacing: .01em; }
-.lang-sw button:hover { background: rgba(32,33,36,.04); color: var(--dt); }
-.lang-sw button.active { background: rgba(59,130,246,.08); color: var(--teal); border-color: rgba(59,130,246,.2); }
-@media(max-width:640px){ .lang-sw { display: none; } }
-
-@media(max-width:900px){
-  .mod-inner { flex-direction: column !important; gap: 28px; }
-  .chips-grid { grid-template-columns: repeat(4,1fr); }
-  .stats-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
-  .plan-grid { grid-template-columns: 1fr; }
-}
+/* Slide transition for mobile menu */
+.slide-down-enter-active, .slide-down-leave-active { transition: all 0.3s ease; }
+.slide-down-enter-from, .slide-down-leave-to { opacity: 0; transform: translateY(-10px); }
+</style>
