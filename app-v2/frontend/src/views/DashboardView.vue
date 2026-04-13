@@ -13,6 +13,10 @@
     </div>
 
     <!-- KPI CARDS -->
+    <div class="kpi-header-row">
+      <h2 class="kpi-section-title">KPIs</h2>
+      <button class="btn-customize" @click="customizerOpen = true">⚙ {{ t('kpi_cust_title') }}</button>
+    </div>
     <div class="kpi-grid">
       <div v-for="kpi in kpis" :key="kpi.label" class="kpi-card" :class="kpi.trend">
         <div class="kpi-icon">{{ kpi.icon }}</div>
@@ -120,6 +124,9 @@
         </button>
       </div>
     </div>
+
+    <!-- KPI Customizer -->
+    <KpiCustomizer :open="customizerOpen" page-id="dashboard" :defaults="defaultKpis" v-model="selectedKpis" @close="customizerOpen = false" />
   </div>
 </template>
 
@@ -128,12 +135,17 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useClientStore } from '@/stores/clients'
+import KpiCustomizer from '@/components/KpiCustomizer.vue'
 import { useTaskStore } from '@/stores/tasks'
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const auth = useAuthStore()
 const clients = useClientStore()
 const tasks = useTaskStore()
+
+const customizerOpen = ref(false)
+const defaultKpis = ['arr', 'health_score', 'churn_rate', 'nps', 'nrr', 'active_users']
+const selectedKpis = ref([...defaultKpis])
 
 const activeTaskTab = ref('all')
 
@@ -201,6 +213,12 @@ function statusColor(status) {
 .badge { font-size: 0.7rem; font-weight: 600; padding: 4px 10px; border-radius: 6px; }
 .badge.plan { background: var(--purple-bg); color: var(--purple); }
 .badge.role { background: var(--green-bg); color: var(--green); }
+
+/* KPI header */
+.kpi-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.kpi-section-title { font-size: 0.9rem; font-weight: 700; }
+.btn-customize { background: #fff; border: 1px solid var(--border); padding: 6px 14px; border-radius: var(--radius-sm); font-size: 0.78rem; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+.btn-customize:hover { border-color: var(--purple); color: var(--purple); }
 
 /* KPI Grid */
 .kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 28px; }

@@ -168,6 +168,8 @@ export default {
   kpis_actual: 'Actual',
   kpis_vs_target: 'vs target',
 
+  kpi_cust_title: 'Customize my KPIs', kpi_cust_subtitle: 'Select up to 8 KPIs to display', kpi_cust_selected: 'Selected ({n}/8)', kpi_cust_apply: 'Apply', kpi_cust_reset: 'Reset to defaults', kpi_cust_recommended: 'recommended', kpi_cust_max: 'Maximum 8 KPIs reached', kpi_cust_drag: 'Drag to reorder',
+
   copil_title: 'KPI Dashboard', copil_subtitle: 'Steering committees and strategic dashboards', copil_new: '+ New Dashboard', copil_empty_title: 'Your first dashboard awaits', copil_empty_desc: 'Create a steering committee in 3 minutes and impress your leadership.', copil_empty_cta: '✦ Create my first COPIL',
   copil_open: 'Open', copil_present: '🖥 Present', copil_export: '📥 Export', copil_edit: 'Edit', copil_delete: 'Delete', copil_duplicate: 'Duplicate', copil_live: 'LIVE', copil_kpis_count: '{n} KPIs', copil_participants: '{n} participants', copil_created: 'Created {date}',
   copil_score: 'Global Score', copil_excellent: 'Excellent', copil_good: 'Good', copil_attention: 'Attention needed', copil_critical: 'Critical situation', copil_vs_target: 'vs target', copil_vs_prev: 'vs prev. period',

@@ -445,6 +445,16 @@ export default {
   kpis_actual: 'Réel',
   kpis_vs_target: 'vs objectif',
 
+  // KPI Customizer
+  kpi_cust_title: 'Personnaliser mes KPIs',
+  kpi_cust_subtitle: 'Sélectionnez jusqu\'à 8 KPIs à afficher en priorité',
+  kpi_cust_selected: 'Sélectionnés ({n}/8)',
+  kpi_cust_apply: 'Appliquer',
+  kpi_cust_reset: 'Réinitialiser',
+  kpi_cust_recommended: 'recommandé',
+  kpi_cust_max: 'Maximum 8 KPIs atteint',
+  kpi_cust_drag: 'Glissez pour réordonner',
+
   // COPIL module
   copil_title: 'KPIs COPIL',
   copil_subtitle: 'Comités de pilotage et tableaux de bord stratégiques',

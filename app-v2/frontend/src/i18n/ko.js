@@ -168,6 +168,8 @@ export default {
   kpis_actual: '실제',
   kpis_vs_target: '목표 대비',
 
+  kpi_cust_title: 'KPI 맞춤 설정', kpi_cust_subtitle: '표시할 KPI를 최대 8개 선택하세요', kpi_cust_selected: '선택됨 ({n}/8)', kpi_cust_apply: '적용하기', kpi_cust_reset: '기본값으로 재설정', kpi_cust_recommended: '추천', kpi_cust_max: '최대 8개 KPI에 도달했습니다', kpi_cust_drag: '드래그하여 순서 변경',
+
   copil_title: 'KPI 대시보드', copil_subtitle: '운영위원회 및 전략 대시보드', copil_new: '+ 새 대시보드', copil_empty_title: '첫 번째 대시보드가 기다리고 있습니다', copil_empty_desc: '3분 만에 운영위원회를 만들어 경영진을 감동시키세요.', copil_empty_cta: '✦ 첫 COPIL 만들기',
   copil_open: '열기', copil_present: '🖥 발표', copil_export: '📥 내보내기', copil_edit: '수정', copil_delete: '삭제', copil_duplicate: '복제', copil_live: 'LIVE', copil_kpis_count: '{n}개 KPI', copil_participants: '{n}명 참여', copil_created: '{date} 생성',
   copil_score: '전체 점수', copil_excellent: '우수', copil_good: '양호', copil_attention: '주의 필요', copil_critical: '위급 상황', copil_vs_target: '목표 대비', copil_vs_prev: '전기 대비',
