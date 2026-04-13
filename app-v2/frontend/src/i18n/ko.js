@@ -183,6 +183,7 @@ export default {
   copil_timeline: '12개월 추이', copil_zoom_3m: '3개월', copil_zoom_6m: '6개월', copil_zoom_12m: '12개월', copil_zoom_all: '전체',
   copil_waterfall: 'ARR 변동 구성', copil_health_dist: '포트폴리오 분포',
   copil_pres_slide: '슬라이드 {n}/{total}', copil_pres_auto: '자동', copil_pres_pause: '일시정지', copil_pres_exit: '나가기', copil_pres_questions: '질문?', copil_pres_next_steps: '다음 단계',
+  copil_export_pdf: 'PDF 내보내기', copil_export_png: 'PNG 내보내기', copil_export_csv: 'CSV 내보내기', copil_exporting: '생성 중...', copil_exported: '내보내기 완료 ✓',
 
   pb_title: '플레이북',
   pb_count: '{n} 플레이북',

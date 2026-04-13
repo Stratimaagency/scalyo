@@ -183,6 +183,7 @@ export default {
   copil_timeline: '12-month evolution', copil_zoom_3m: '3M', copil_zoom_6m: '6M', copil_zoom_12m: '12M', copil_zoom_all: 'All',
   copil_waterfall: 'ARR change composition', copil_health_dist: 'Portfolio distribution',
   copil_pres_slide: 'Slide {n}/{total}', copil_pres_auto: 'Auto', copil_pres_pause: 'Pause', copil_pres_exit: 'Exit', copil_pres_questions: 'Questions?', copil_pres_next_steps: 'Next steps',
+  copil_export_pdf: 'Export PDF', copil_export_png: 'Export PNG', copil_export_csv: 'Export CSV', copil_exporting: 'Generating...', copil_exported: 'Export complete ✓',
 
   pb_title: 'Playbooks',
   pb_count: '{n} Playbooks',

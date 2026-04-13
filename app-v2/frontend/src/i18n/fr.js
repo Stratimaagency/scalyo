@@ -532,6 +532,11 @@ export default {
   copil_pres_exit: 'Quitter',
   copil_pres_questions: 'Questions ?',
   copil_pres_next_steps: 'Prochaines étapes',
+  copil_export_pdf: 'Exporter PDF',
+  copil_export_png: 'Exporter PNG',
+  copil_export_csv: 'Exporter CSV',
+  copil_exporting: 'Génération en cours...',
+  copil_exported: 'Export terminé ✓',
 
   // Playbooks
   pb_title: 'Playbooks',

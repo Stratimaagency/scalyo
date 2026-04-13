@@ -15,6 +15,14 @@
           <span class="kgs-status">{{ t('copil_' + store.scoreStatus(globalScore)) }}</span>
         </div>
         <router-link :to="'/app/kpis/' + id + '/present'" class="btn-outline">{{ t('copil_present') }}</router-link>
+        <div class="export-dropdown" ref="exportRef">
+          <button class="btn-outline" @click="exportMenuOpen = !exportMenuOpen">{{ t('copil_export') }}</button>
+          <div v-if="exportMenuOpen" class="export-menu">
+            <button @click="exportPdf">{{ exporting ? t('copil_exporting') : t('copil_export_pdf') }}</button>
+            <button @click="exportPng">{{ t('copil_export_png') }}</button>
+            <button @click="exportCsv">{{ t('copil_export_csv') }}</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -141,8 +149,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { onClickOutside } from '@vueuse/core'
 import { useKpiStore } from '@/stores/kpis'
 import { useClientStore } from '@/stores/clients'
 
@@ -152,6 +161,53 @@ const store = useKpiStore()
 const clients = useClientStore()
 
 const activeTab = ref('overview')
+const exportMenuOpen = ref(false)
+const exportRef = ref(null)
+const exporting = ref(false)
+onClickOutside(exportRef, () => { exportMenuOpen.value = false })
+
+async function exportPdf() {
+  exporting.value = true
+  exportMenuOpen.value = false
+  await nextTick()
+  try {
+    const html2canvas = (await import('html2canvas')).default
+    const { jsPDF } = await import('jspdf')
+    const el = document.querySelector('.kd')
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' })
+    const imgData = canvas.toDataURL('image/png')
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width / 2, canvas.height / 2] })
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2)
+    pdf.save((copil.value?.name || 'COPIL') + '.pdf')
+  } catch (e) { console.error('PDF export failed:', e) }
+  exporting.value = false
+}
+
+async function exportPng() {
+  exportMenuOpen.value = false
+  try {
+    const html2canvas = (await import('html2canvas')).default
+    const el = document.querySelector('.kd')
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' })
+    const link = document.createElement('a')
+    link.download = (copil.value?.name || 'COPIL') + '.png'
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+  } catch (e) { console.error('PNG export failed:', e) }
+}
+
+function exportCsv() {
+  exportMenuOpen.value = false
+  if (!copil.value?.kpis?.length) return
+  const headers = ['KPI', 'Value', 'Target', 'Unit', 'Delta']
+  const rows = copil.value.kpis.map(k => [k.name, k.value, k.target, k.unit, k.value - k.target])
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(blob)
+  link.download = (copil.value?.name || 'COPIL') + '.csv'
+  link.click()
+}
 const tabs = [
   { key: 'overview', label: 'copil_overview' },
   { key: 'revenue', label: 'copil_revenue' },
@@ -294,6 +350,12 @@ const novaActions = computed(() => [
 .kd-header-right { display: flex; align-items: center; gap: 10px; }
 .btn-outline { background: #fff; border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; color: var(--text-secondary); text-decoration: none; }
 .btn-outline:hover { border-color: var(--purple); color: var(--purple); }
+
+/* Export dropdown */
+.export-dropdown { position: relative; }
+.export-menu { position: absolute; top: 100%; right: 0; margin-top: 6px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow-lg); z-index: 20; min-width: 160px; overflow: hidden; }
+.export-menu button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-size: 0.82rem; text-align: left; cursor: pointer; transition: background 0.15s; }
+.export-menu button:hover { background: var(--bg-hover); }
 
 /* Tabs */
 .kd-tabs { display: flex; gap: 1px; background: var(--border-light); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 24px; }
