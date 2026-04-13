@@ -23,7 +23,7 @@
       </div>
 
       <!-- Catalog grouped by category -->
-      <div class="kc-catalog">
+      <div class="kc-catalog" style="overflow-y: auto; max-height: calc(100vh - 380px); min-height: 0;">
         <div v-for="cat in filteredCategories" :key="cat.id" class="kc-cat">
           <h4 class="kc-cat-title" @click="catOpen[cat.id] = !catOpen[cat.id]">
             <span>{{ catOpen[cat.id] ? '▾' : '▸' }}</span>
