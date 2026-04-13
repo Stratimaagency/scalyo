@@ -288,22 +288,23 @@ function createProject() {
 .btn-primary:hover { background: var(--purple-dark); }
 .btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; }
 
-/* TABLE */
+/* TABLE — dual-axis scroll with sticky header + sticky left cols */
 .table-outer { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-.table-scroll { overflow-x: auto; }
-.pv-table { width: max-content; min-width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.table-scroll { overflow: auto; max-height: calc(100vh - 200px); }
+.pv-table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.82rem; }
 
-/* Header — sticky top + opaque */
-.pv-table thead th { padding: 10px 8px; font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid var(--border); white-space: nowrap; text-align: left; background: #f9fafb; position: sticky; top: 0; z-index: 10; }
-.pv-table thead th.col-fix { z-index: 15; background: #f9fafb; }
-.pv-table thead th.col-title { border-right: 2px solid var(--border); }
+/* Header — sticky top, opaque, always above everything */
+.pv-table thead th { padding: 10px 8px; font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e5e7eb; white-space: nowrap; text-align: left; background: #f9fafb; position: sticky; top: 0; z-index: 20; }
 
-/* Fixed columns — opaque backgrounds, always visible */
+/* Fixed columns — sticky left, opaque white */
 .col-fix { position: sticky; z-index: 5; background: #ffffff; }
 .col-exp { left: 0; width: 32px; min-width: 32px; }
 .col-num { left: 32px; width: 36px; min-width: 36px; text-align: center; color: var(--text-muted); }
-.col-title { left: 68px; min-width: 220px; max-width: 300px; border-right: 2px solid var(--border); }
-thead .col-fix { background: var(--bg); }
+.col-title { left: 68px; min-width: 220px; max-width: 300px; border-right: 2px solid #e5e7eb; }
+
+/* Corner cells: sticky BOTH top AND left — highest z-index */
+.pv-table thead th.col-fix { z-index: 30; background: #f9fafb; }
+.pv-table thead th.col-title { border-right: 2px solid #e5e7eb; }
 
 /* Scrollable columns */
 .col-scroll { white-space: nowrap; }
@@ -315,8 +316,9 @@ thead .col-fix { background: var(--bg); }
 .col-avg { background: rgba(124,58,237,0.03); }
 .col-desc { width: 200px; min-width: 200px; }
 
-/* Rows */
-.pv-table tbody tr { border-bottom: 1px solid var(--border-light); transition: background 0.1s; }
+/* Rows — border on td since border-collapse: separate */
+.pv-table tbody tr { transition: background 0.1s; }
+.pv-table tbody td { border-bottom: 1px solid var(--border-light); }
 .pv-table tbody tr:hover { background: rgba(0,0,0,0.015); }
 .pv-table tbody td { padding: 6px 8px; vertical-align: middle; }
 
