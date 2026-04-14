@@ -44,4 +44,4 @@ export const useTaskStore = defineStore('tasks', () => {
     projects, tasks, todoTasks, inProgressTasks, blockedTasks, doneTasks, overdueTasks,
     addTask, updateTask, deleteTask, moveTask, addProject,
   }
-})
+}, { persist: true })

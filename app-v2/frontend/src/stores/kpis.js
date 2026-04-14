@@ -117,4 +117,4 @@ export const useKpiStore = defineStore('kpis', () => {
     copils, createCopil, updateCopil, deleteCopil, duplicateCopil,
     getCopil, addBlock, updateBlock, deleteBlock, reorderBlocks, BLOCK_DEFAULTS,
   }
-})
+}, { persist: true })

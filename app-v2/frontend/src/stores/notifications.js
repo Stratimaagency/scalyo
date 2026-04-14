@@ -22,4 +22,4 @@ export const useNotificationStore = defineStore('notifications', () => {
   }
 
   return { notifications, unreadCount, markRead, markAllRead, addNotification }
-})
+}, { persist: true })

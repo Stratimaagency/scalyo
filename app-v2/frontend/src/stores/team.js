@@ -22,4 +22,4 @@ export const useTeamStore = defineStore('team', () => {
   }
 
   return { members, teamHealthScore, healthyMembers, overloadedMembers, totalArrManaged, updateMember }
-})
+}, { persist: true })

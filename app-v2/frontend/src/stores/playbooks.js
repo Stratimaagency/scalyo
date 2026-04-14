@@ -79,4 +79,4 @@ export const usePlaybookStore = defineStore('playbooks', () => {
     doneThisMonth, avgDuration, successRate,
     activateTemplate, toggleStep, completePlaybook, deletePlaybook,
   }
-})
+}, { persist: true })

@@ -154,4 +154,4 @@ export const useResourceStore = defineStore('resources', () => {
   }
 
   return { resources, masterclasses, guides, categories, levels, filteredResources }
-})
+}, { persist: true })

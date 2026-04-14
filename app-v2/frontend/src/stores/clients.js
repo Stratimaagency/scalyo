@@ -57,4 +57,4 @@ export const useClientStore = defineStore('clients', () => {
     churnRate, arrAtRisk, renewalsNext30,
     addClient, updateClient, deleteClient,
   }
-})
+}, { persist: true })

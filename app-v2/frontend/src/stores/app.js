@@ -31,4 +31,4 @@ export const useAppStore = defineStore('app', () => {
     toggleSidebar, toggleMobileSidebar, closeMobileSidebar,
     openSlideOver, closeSlideOver, toggleChat, setLocale,
   }
-})
+}, { persist: true })
