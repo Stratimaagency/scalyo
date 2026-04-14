@@ -360,6 +360,7 @@ export default {
   chat_nova_greeting: '안녕하세요! 저는 Nova, Scalyo 어시스턴트입니다. 모든 고객, 작업 및 KPI를 파악하고 있습니다. 어떻게 도와드릴까요?',
   chat_nova_sug1: '가장 위험한 고객은?', chat_nova_sug2: '이번 주 요약', chat_nova_sug3: 'COPIL 보고서 생성', chat_nova_sug4: '지연된 작업은?',
   chat_correction_level: '교정 수준', chat_correction_spell: '맞춤법만', chat_correction_grammar: '맞춤법 + 문법', chat_correction_pro: '전문적 스타일',
+  chat_create_channel: '채널 만들기', chat_channel_name: '채널 이름', chat_channel_name_ph: '예: 마케팅, 영업...', chat_channel_desc: '설명', chat_channel_desc_ph: '이 채널의 용도는?', chat_add_channel: '채널 추가', chat_pinned: '고정된 메시지', chat_create_task: '작업 만들기', chat_task_title: '작업 제목', chat_task_priority: '우선순위', chat_task_due: '기한', chat_yesterday: '어제',
 
   // Auth
   login_title: '로그인',

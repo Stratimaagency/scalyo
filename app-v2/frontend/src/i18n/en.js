@@ -360,6 +360,7 @@ export default {
   chat_nova_greeting: "Hello! I'm Nova, your Scalyo assistant. I know all your clients, tasks and KPIs. How can I help?",
   chat_nova_sug1: 'Which client is most at risk?', chat_nova_sug2: 'Summarize my week', chat_nova_sug3: 'Generate a COPIL report', chat_nova_sug4: 'Which tasks are overdue?',
   chat_correction_level: 'Correction level', chat_correction_spell: 'Spelling only', chat_correction_grammar: 'Spelling + Grammar', chat_correction_pro: 'Professional style',
+  chat_create_channel: 'Create a channel', chat_channel_name: 'Channel name', chat_channel_name_ph: 'e.g. marketing, sales...', chat_channel_desc: 'Description', chat_channel_desc_ph: 'What is this channel for?', chat_add_channel: 'Add channel', chat_pinned: 'Pinned messages', chat_create_task: 'Create a task', chat_task_title: 'Task title', chat_task_priority: 'Priority', chat_task_due: 'Due date', chat_yesterday: 'Yesterday',
 
   // Auth
   login_title: 'Sign in',

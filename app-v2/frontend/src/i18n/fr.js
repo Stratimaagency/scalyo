@@ -822,6 +822,17 @@ export default {
   chat_correction_spell: 'Orthographe seulement',
   chat_correction_grammar: 'Orthographe + Grammaire',
   chat_correction_pro: 'Style professionnel',
+  chat_create_channel: 'Créer un channel',
+  chat_channel_name: 'Nom du channel',
+  chat_channel_name_ph: 'ex: marketing, ventes...',
+  chat_channel_desc: 'Description',
+  chat_channel_desc_ph: 'À quoi sert ce channel ?',
+  chat_add_channel: 'Ajouter un channel',
+  chat_pinned: 'Messages épinglés',
+  chat_create_task: 'Créer une tâche',
+  chat_task_title: 'Titre de la tâche',
+  chat_task_priority: 'Priorité',
+  chat_task_due: 'Échéance',
 
   // Auth
   login_title: 'Connexion',

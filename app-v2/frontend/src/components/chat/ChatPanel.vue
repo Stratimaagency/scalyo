@@ -1,126 +1,256 @@
 <template>
-  <div class="chat-panel-full">
-    <!-- Sidebar -->
+  <div class="cp">
+
+    <!-- SIDEBAR -->
     <div class="cp-sidebar">
-      <div class="cp-sidebar-header">
-        <strong>{{ t('chat_title') }}</strong>
+      <div class="cp-sidebar-top">
+        <strong class="cp-workspace">Scalyo</strong>
         <button class="cp-close" @click="$emit('close')">✕</button>
       </div>
 
-      <!-- Search -->
-      <div class="cp-search"><span>🔍</span><input v-model="search" :placeholder="t('chat_search_msg')" /></div>
-
       <!-- Channels -->
-      <div class="cp-section-label">{{ t('chat_channels') }}</div>
-      <button v-for="ch in chatChannels" :key="ch.id" class="cp-ch" :class="{ active: store.activeChannel === ch.id }" @click="store.setActive(ch.id)">
-        <span class="cp-ch-icon">{{ ch.icon }}</span>
-        <span class="cp-ch-name">{{ ch.nameKey ? t(ch.nameKey) : ch.name }}</span>
-        <span v-if="store.unreadCounts[ch.id]" class="cp-ch-badge">{{ store.unreadCounts[ch.id] }}</span>
-      </button>
+      <div class="cp-section">
+        <div class="cp-section-header">
+          <span class="cp-section-label">{{ t('chat_channels') }}</span>
+          <button class="cp-add-btn" @click="showCreateChannel = true" :title="t('chat_add_channel')">+</button>
+        </div>
+        <button v-for="ch in store.channels.filter(c => c.type === 'channel')" :key="ch.id" class="cp-ch" :class="{ active: store.activeChannel === ch.id }" @click="store.setActive(ch.id)" @contextmenu.prevent="openChannelMenu($event, ch)">
+          <span class="cp-ch-hash">{{ ch.icon === '#' ? '#' : ch.icon }}</span>
+          <span class="cp-ch-name">{{ ch.name }}</span>
+          <span v-if="store.unreadCounts[ch.id]" class="cp-badge">{{ store.unreadCounts[ch.id] }}</span>
+        </button>
+      </div>
 
       <!-- Direct Messages -->
-      <div class="cp-section-label">{{ t('chat_direct') }}</div>
-      <button v-for="m in team.members" :key="m.id" class="cp-dm" :class="{ active: store.activeChannel === 'dm_' + m.id }" @click="openDM(m.id)">
-        <span class="cp-dm-avatar" :class="m.status">{{ m.name[0] }}</span>
-        <span class="cp-dm-name">{{ m.name }}</span>
-        <span class="cp-dm-status" :class="m.status === 'healthy' ? 'online' : 'busy'" />
-      </button>
+      <div class="cp-section">
+        <div class="cp-section-header">
+          <span class="cp-section-label">{{ t('chat_direct') }}</span>
+        </div>
+        <button v-for="m in teamMembers" :key="m.id" class="cp-dm" :class="{ active: store.activeChannel === 'dm_' + m.id }" @click="openDM(m.id)">
+          <div class="cp-dm-avatar" :style="{ background: m.color }">{{ m.name[0] }}</div>
+          <span class="cp-dm-name">{{ m.name }}</span>
+          <div class="cp-status-dot" :class="m.status" />
+        </button>
+      </div>
 
-      <!-- Nova -->
-      <div class="cp-section-label">{{ t('chat_nova') }}</div>
-      <button class="cp-ch nova" :class="{ active: store.activeChannel === 'nova' }" @click="store.setActive('nova')">
-        <span class="cp-ch-icon">🤖</span>
-        <span class="cp-ch-name">Nova</span>
-      </button>
+      <!-- Nova IA -->
+      <div class="cp-section">
+        <button class="cp-ch nova" :class="{ active: store.activeChannel === 'nova' }" @click="store.setActive('nova')">
+          <span class="cp-ch-hash">🤖</span>
+          <span class="cp-ch-name">Nova — IA</span>
+        </button>
+      </div>
+
+      <!-- User info bottom -->
+      <div class="cp-user-bottom">
+        <div class="cp-user-av">L</div>
+        <div class="cp-user-info">
+          <span class="cp-user-name">Lidia C.</span>
+          <span class="cp-user-status">● {{ t('chat_online') }}</span>
+        </div>
+      </div>
     </div>
 
-    <!-- Messages area -->
+    <!-- MAIN -->
     <div class="cp-main">
-      <div class="cp-main-header">
-        <strong>{{ activeChannelName }}</strong>
-        <div class="cp-main-actions">
-          <span v-if="store.activeChannel !== 'nova'" class="cp-members">{{ memberCount }}</span>
+
+      <!-- Header -->
+      <div class="cp-header">
+        <div class="cp-header-left">
+          <span class="cp-header-icon">{{ activeChannelMeta?.icon === '#' ? '#' : activeChannelMeta?.icon || '#' }}</span>
+          <div>
+            <strong class="cp-header-name">{{ activeChannelMeta?.name || store.activeChannel }}</strong>
+            <p class="cp-header-desc">{{ activeChannelMeta?.description || '' }}</p>
+          </div>
+        </div>
+        <div class="cp-header-actions">
+          <button v-if="store.pinnedMessages.length" class="cp-header-btn" @click="showPinned = !showPinned" :title="t('chat_pinned')">📌 {{ store.pinnedMessages.length }}</button>
+          <button class="cp-header-btn" @click="showSearch = !showSearch">🔍</button>
+        </div>
+      </div>
+
+      <!-- Search bar -->
+      <div v-if="showSearch" class="cp-searchbar">
+        <input v-model="searchQuery" :placeholder="t('chat_search_msg')" @keydown.esc="showSearch = false; searchQuery = ''" />
+        <button @click="showSearch = false; searchQuery = ''">✕</button>
+      </div>
+
+      <!-- Pinned messages panel -->
+      <div v-if="showPinned" class="cp-pinned-panel">
+        <div class="cp-pinned-header">
+          <span>📌 {{ t('chat_pinned') }} ({{ store.pinnedMessages.length }})</span>
+          <button @click="showPinned = false">✕</button>
+        </div>
+        <div v-for="msg in store.pinnedMessages" :key="msg.id" class="cp-pinned-item">
+          <strong>{{ msg.author }}</strong> : {{ msg.content.slice(0, 80) }}
         </div>
       </div>
 
       <!-- Messages -->
       <div class="cp-messages" ref="msgRef">
-        <!-- Nova greeting -->
+
+        <!-- Nova welcome -->
         <div v-if="store.activeChannel === 'nova' && !store.activeMessages.length" class="cp-nova-welcome">
-          <div class="nova-avatar">🤖</div>
+          <div class="nova-av">🤖</div>
           <div class="nova-bubble">
+            <strong>Nova — Assistante Scalyo</strong>
             <p>{{ t('chat_nova_greeting') }}</p>
-            <div class="nova-sugs">
-              <button v-for="s in novaSugs" :key="s" class="nova-sug" @click="sendNova(t(s))">{{ t(s) }}</button>
+            <div class="nova-chips">
+              <button v-for="s in novaSugs" :key="s" class="nova-chip" @click="sendNovaSuggestion(s)">{{ t(s) }}</button>
             </div>
           </div>
         </div>
 
-        <!-- Message list -->
-        <div v-for="msg in store.activeMessages" :key="msg.id" class="cp-msg" :class="{ own: msg.authorId === 'u1', nova: msg.authorId === 'nova', pinned: msg.pinned }">
-          <div class="cp-msg-avatar">{{ msg.authorId === 'nova' ? '🤖' : msg.author[0] }}</div>
-          <div class="cp-msg-body">
-            <div class="cp-msg-meta">
-              <strong>{{ msg.author }}</strong>
-              <span class="cp-msg-time">{{ msg.time }}</span>
-              <span v-if="msg.pinned" class="cp-pin-badge">📌</span>
+        <!-- Messages groupés par date -->
+        <template v-for="(group, date) in groupedMessages" :key="date">
+          <div class="cp-date-divider"><span>{{ formatDate(date) }}</span></div>
+          <div v-for="msg in filterMessages(group)" :key="msg.id" class="cp-msg" :class="{ own: msg.authorId === 'u1', nova: msg.authorId === 'nova', pinned: msg.pinned, editing: store.editingMessage?.msgId === msg.id }">
+            <div class="cp-msg-av" :style="{ background: getAvatarColor(msg.authorId) }">{{ msg.authorId === 'nova' ? '🤖' : msg.author[0] }}</div>
+            <div class="cp-msg-content">
+              <!-- Reply preview -->
+              <div v-if="msg.replyTo" class="cp-reply-preview">
+                <span>↩ {{ msg.replyTo.author }}</span>
+                <span>{{ msg.replyTo.preview }}</span>
+              </div>
+              <div class="cp-msg-meta">
+                <strong>{{ msg.author }}</strong>
+                <span class="cp-msg-time">{{ msg.time }}</span>
+                <span v-if="msg.edited" class="cp-edited">({{ t('chat_edited') }})</span>
+                <span v-if="msg.pinned" class="cp-pin">📌</span>
+              </div>
+              <!-- Editing mode -->
+              <div v-if="store.editingMessage?.msgId === msg.id" class="cp-edit-input">
+                <input v-model="editContent" @keydown.enter="confirmEdit(msg)" @keydown.esc="store.editingMessage = null" />
+                <button @click="confirmEdit(msg)">✓</button>
+                <button @click="store.editingMessage = null">✕</button>
+              </div>
+              <!-- Normal message -->
+              <div v-else class="cp-msg-text" v-html="renderMessage(msg.content)" />
+              <!-- Attachments -->
+              <div v-if="msg.attachments?.length" class="cp-attachments">
+                <div v-for="att in msg.attachments" :key="att.name" class="cp-attachment">
+                  <img v-if="att.type === 'image'" :src="att.data" :alt="att.name" class="cp-img-preview" />
+                  <span v-else class="cp-file-card">📎 {{ att.name }} ({{ att.size }})</span>
+                </div>
+              </div>
+              <!-- Alert actions -->
+              <div v-if="msg.actions?.length" class="cp-actions-row">
+                <button v-for="action in msg.actions" :key="action.label" class="cp-action-btn" @click="handleAction(action)">{{ action.label }}</button>
+              </div>
+              <!-- Reactions -->
+              <div v-if="Object.keys(msg.reactions).length" class="cp-reactions">
+                <button v-for="(users, emoji) in msg.reactions" :key="emoji" class="cp-reaction" :class="{ mine: users.includes('u1') }" @click="store.addReaction(store.activeChannel, msg.id, emoji)">{{ emoji }} {{ users.length }}</button>
+              </div>
             </div>
-            <div class="cp-msg-text" v-html="formatMsg(msg.content)" />
-
-            <!-- Actions on message (visible on hover) -->
-            <div v-if="msg.actions?.length" class="cp-msg-actions-row">
-              <button v-for="a in msg.actions" :key="a.label" class="cp-action-btn" @click="handleAction(a)">{{ a.label }}</button>
-            </div>
-
-            <!-- Reactions -->
-            <div v-if="Object.keys(msg.reactions).length" class="cp-reactions">
-              <button v-for="(users, emoji) in msg.reactions" :key="emoji" class="cp-reaction" :class="{ mine: users.includes('u1') }" @click="store.addReaction(store.activeChannel, msg.id, emoji)">
-                {{ emoji }} {{ users.length }}
-              </button>
+            <!-- Hover toolbar -->
+            <div class="cp-msg-toolbar">
+              <button @click="store.addReaction(store.activeChannel, msg.id, '👍')" title="👍">👍</button>
+              <button @click="store.addReaction(store.activeChannel, msg.id, '❤️')" title="❤️">❤️</button>
+              <button @click="store.setReplyTo(store.activeChannel, msg.id)" :title="t('chat_reply')">↩</button>
+              <button @click="store.pinMessage(store.activeChannel, msg.id)" :title="t('chat_pin')">📌</button>
+              <button v-if="msg.authorId === 'u1'" @click="startEdit(msg)" :title="t('chat_edit_msg')">✏️</button>
+              <button v-if="msg.authorId === 'u1'" @click="store.deleteMessage(store.activeChannel, msg.id)" :title="t('chat_delete_msg')">🗑</button>
             </div>
           </div>
-
-          <!-- Hover menu -->
-          <div class="cp-msg-hover">
-            <button @click="store.addReaction(store.activeChannel, msg.id, '👍')" title="👍">👍</button>
-            <button @click="store.addReaction(store.activeChannel, msg.id, '❤️')" title="❤️">❤️</button>
-            <button @click="store.pinMessage(store.activeChannel, msg.id)" :title="t('chat_pin')">📌</button>
-            <button v-if="msg.authorId === 'u1'" @click="store.deleteMessage(store.activeChannel, msg.id)" :title="t('chat_delete_msg')">🗑️</button>
-          </div>
-        </div>
+        </template>
 
         <!-- Nova thinking -->
         <div v-if="novaThinking" class="cp-msg nova">
-          <div class="cp-msg-avatar">🤖</div>
-          <div class="cp-msg-body"><div class="cp-thinking"><span /><span /><span /></div></div>
+          <div class="cp-msg-av">🤖</div>
+          <div class="cp-msg-content"><div class="cp-thinking"><span /><span /><span /></div></div>
         </div>
       </div>
 
-      <!-- Share menu -->
-      <transition name="fade">
-        <div v-if="shareMenuOpen" class="cp-share-menu">
-          <button @click="shareItem('client')"><span>👤</span> {{ t('chat_share_client') }}</button>
-          <button @click="shareItem('task')"><span>📋</span> {{ t('chat_share_task') }}</button>
-          <button @click="shareItem('kpi')"><span>📊</span> {{ t('chat_share_kpi') }}</button>
-          <button @click="shareItem('email')"><span>📧</span> {{ t('chat_share_email') }}</button>
-          <button @click="shareItem('roadmap')"><span>🗺️</span> {{ t('chat_share_roadmap') }}</button>
-        </div>
-      </transition>
+      <!-- Reply banner -->
+      <div v-if="store.replyingTo" class="cp-reply-banner">
+        <span>↩ {{ t('chat_reply') }} <strong>{{ store.replyingTo.author }}</strong> :</span>
+        <span class="cp-reply-text">{{ store.replyingTo.preview }}</span>
+        <button @click="store.replyingTo = null">✕</button>
+      </div>
 
-      <!-- Input -->
-      <div class="cp-input-area">
-        <button class="cp-btn-attach" @click="shareMenuOpen = !shareMenuOpen" :title="t('chat_share')">📊</button>
-        <input type="file" ref="fileRef" @change="onFileSelect" style="display:none" accept="image/*,.pdf,.xlsx,.docx,.csv" />
-        <button class="cp-btn-attach" @click="fileRef?.click()" :title="t('chat_attach')">📎</button>
-        <input v-model="input" :placeholder="t('chat_placeholder')" @keydown.enter="send" />
-        <button class="cp-btn-send" @click="send" :disabled="!input.trim()">→</button>
+      <!-- Input area -->
+      <div class="cp-input-wrap">
+        <div class="cp-fmt-bar">
+          <button @click="insertFmt('**')"><strong>B</strong></button>
+          <button @click="insertFmt('_')"><em>I</em></button>
+          <button @click="insertFmt('`')"><code style="font-size:0.75rem">code</code></button>
+        </div>
+        <div class="cp-input-row">
+          <input type="file" ref="fileRef" @change="onFileSelect" style="display:none" accept="image/*,.pdf,.xlsx,.docx,.csv,.txt" />
+          <button class="cp-tool-btn" @click="fileRef?.click()" :title="t('chat_attach')">📎</button>
+          <div class="cp-share-wrap">
+            <button class="cp-tool-btn" @click="shareMenuOpen = !shareMenuOpen" :title="t('chat_share')">📊</button>
+            <div v-if="shareMenuOpen" class="cp-share-menu">
+              <div class="cp-share-title">{{ t('chat_share') }}</div>
+              <button @click="shareItem('client')">👤 {{ t('chat_share_client') }}</button>
+              <button @click="shareItem('task')">📋 {{ t('chat_share_task') }}</button>
+              <button @click="shareItem('kpi')">📊 {{ t('chat_share_kpi') }}</button>
+              <button @click="shareItem('email')">📧 {{ t('chat_share_email') }}</button>
+              <button @click="shareItem('roadmap')">🗺️ {{ t('chat_share_roadmap') }}</button>
+            </div>
+          </div>
+          <div class="cp-emoji-wrap">
+            <button class="cp-tool-btn" @click="emojiOpen = !emojiOpen" :title="t('chat_emoji')">😊</button>
+            <div v-if="emojiOpen" class="cp-emoji-picker">
+              <button v-for="e in quickEmojis" :key="e" @click="input += e; emojiOpen = false">{{ e }}</button>
+            </div>
+          </div>
+          <textarea ref="inputRef" v-model="input" :placeholder="t('chat_placeholder')" class="cp-textarea" rows="1" @keydown.enter.exact.prevent="send" @input="autoResize" />
+          <button class="cp-send-btn" @click="send" :disabled="!input.trim()">→</button>
+        </div>
       </div>
     </div>
+
+    <!-- SLIDE-OVER : Créer un channel -->
+    <div v-if="showCreateChannel" class="cp-overlay" @click.self="showCreateChannel = false">
+      <div class="cp-slideover">
+        <div class="cp-so-header">
+          <strong>{{ t('chat_create_channel') }}</strong>
+          <button @click="showCreateChannel = false">✕</button>
+        </div>
+        <div class="cp-so-body">
+          <div class="fg"><label>{{ t('chat_channel_name') }}</label><input v-model="newChannelName" :placeholder="t('chat_channel_name_ph')" /></div>
+          <div class="fg"><label>{{ t('chat_channel_desc') }}</label><input v-model="newChannelDesc" :placeholder="t('chat_channel_desc_ph')" /></div>
+          <button class="btn-primary" @click="createChannel">{{ t('chat_create_channel') }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE-OVER : Créer une tâche -->
+    <div v-if="showCreateTask" class="cp-overlay" @click.self="showCreateTask = false">
+      <div class="cp-slideover">
+        <div class="cp-so-header">
+          <strong>{{ t('chat_create_task') }}</strong>
+          <button @click="showCreateTask = false">✕</button>
+        </div>
+        <div class="cp-so-body">
+          <div class="fg"><label>{{ t('chat_task_title') }}</label><input v-model="newTask.title" /></div>
+          <div class="fg"><label>{{ t('chat_task_priority') }}</label>
+            <select v-model="newTask.priority">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+          <div class="fg"><label>{{ t('chat_task_due') }}</label><input type="date" v-model="newTask.dueDate" /></div>
+          <button class="btn-primary" @click="confirmCreateTask">{{ t('create') }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Context menu channel -->
+    <div v-if="channelMenu.visible" class="cp-ctx-menu" :style="{ top: channelMenu.y + 'px', left: channelMenu.x + 'px' }">
+      <button @click="renameChannel">✏️ {{ t('chat_edit_msg') }}</button>
+      <button v-if="channelMenu.channel?.canDelete" @click="deleteChannelAction" class="danger">🗑 {{ t('chat_delete_msg') }}</button>
+      <button @click="channelMenu.visible = false">✕</button>
+    </div>
+
   </div>
 </template>
 
 <script setup>
-import { ref, computed, nextTick, watch } from 'vue'
+import { ref, computed, nextTick, watch, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useChatStore } from '@/stores/chat'
@@ -128,125 +258,146 @@ import { useTeamStore } from '@/stores/team'
 import { useClientStore } from '@/stores/clients'
 import { useTaskStore } from '@/stores/tasks'
 
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
 const router = useRouter()
 const store = useChatStore()
-const team = useTeamStore()
-const clients = useClientStore()
-const tasks = useTaskStore()
+const teamStore = useTeamStore()
+const clientsStore = useClientStore()
+const tasksStore = useTaskStore()
 
 defineEmits(['close'])
 
-const input = ref('')
-const search = ref('')
+// Refs UI
 const msgRef = ref(null)
-const shareMenuOpen = ref(false)
-const novaThinking = ref(false)
+const inputRef = ref(null)
 const fileRef = ref(null)
+const input = ref('')
+const editContent = ref('')
+const searchQuery = ref('')
+const showSearch = ref(false)
+const showPinned = ref(false)
+const shareMenuOpen = ref(false)
+const emojiOpen = ref(false)
+const novaThinking = ref(false)
+const showCreateChannel = ref(false)
+const showCreateTask = ref(false)
+const newChannelName = ref('')
+const newChannelDesc = ref('')
+const newTask = ref({ title: '', priority: 'medium', dueDate: '' })
+const channelMenu = ref({ visible: false, x: 0, y: 0, channel: null })
 
-function onFileSelect(e) {
-  const file = e.target.files[0]
-  if (!file) return
-  const isImage = file.type.startsWith('image/')
-  const reader = new FileReader()
-  reader.onload = (ev) => {
-    const content = isImage
-      ? `📎 **${file.name}**\n<img src="${ev.target.result}" style="max-width:200px;border-radius:8px;margin-top:6px" />`
-      : `📎 **${file.name}** (${(file.size/1024).toFixed(0)} KB)`
-    store.sendMessage(store.activeChannel, content)
-    nextTick(scrollBottom)
-  }
-  if (isImage) reader.readAsDataURL(file)
-  else reader.readAsText(file)
-  e.target.value = ''
-}
-
+const quickEmojis = ['👍', '❤️', '😂', '🎉', '🙏', '🔥', '✅', '⚠️', '📊', '🚀']
 const novaSugs = ['chat_nova_sug1', 'chat_nova_sug2', 'chat_nova_sug3', 'chat_nova_sug4']
 
-const chatChannels = computed(() => store.channels.filter(c => c.type === 'channel'))
-const memberCount = computed(() => team.members.length + ' membres')
-
-const activeChannelName = computed(() => {
-  const ch = store.channels.find(c => c.id === store.activeChannel)
-  if (ch) return (ch.icon === '#' ? '#' : '') + (ch.nameKey ? t(ch.nameKey) : ch.name)
-  if (store.activeChannel.startsWith('dm_')) {
-    const m = team.members.find(m => m.id === store.activeChannel.replace('dm_', ''))
-    return m?.name || ''
-  }
-  return ''
+// Team members
+const teamMembers = computed(() => {
+  const members = teamStore.members || []
+  const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4']
+  return members.map((m, i) => ({ ...m, color: colors[i % colors.length] }))
 })
 
-function openDM(memberId) {
-  const key = 'dm_' + memberId
-  if (!store.messages[key]) store.messages[key] = []
-  store.setActive(key)
+function getAvatarColor(authorId) {
+  const colors = { tm1: '#10b981', tm2: '#3b82f6', tm3: '#f59e0b', u1: '#7c3aed', nova: 'transparent' }
+  return colors[authorId] || '#6b7280'
 }
 
-function formatMsg(text) {
-  return text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+// Active channel metadata
+const activeChannelMeta = computed(() => {
+  const ch = store.channels.find(c => c.id === store.activeChannel)
+  if (ch) return ch
+  if (store.activeChannel.startsWith('dm_')) {
+    const m = (teamStore.members || []).find(m => m.id === store.activeChannel.replace('dm_', ''))
+    return m ? { name: m.name, icon: '💬', description: t('chat_direct') } : null
+  }
+  return null
+})
+
+// Messages groupés par date
+const groupedMessages = computed(() => {
+  const msgs = store.activeMessages
+  return msgs.reduce((acc, msg) => {
+    if (!acc[msg.date]) acc[msg.date] = []
+    acc[msg.date].push(msg)
+    return acc
+  }, {})
+})
+
+function filterMessages(msgs) {
+  if (!searchQuery.value) return msgs
+  const q = searchQuery.value.toLowerCase()
+  return msgs.filter(m => m.content.toLowerCase().includes(q))
 }
 
+function formatDate(dateStr) {
+  const d = new Date(dateStr)
+  const today = new Date()
+  const yesterday = new Date(today)
+  yesterday.setDate(today.getDate() - 1)
+  if (dateStr === today.toISOString().slice(0, 10)) return t('today')
+  if (dateStr === yesterday.toISOString().slice(0, 10)) return t('chat_yesterday')
+  return new Intl.DateTimeFormat(
+    locale.value === 'ko' ? 'ko-KR' : locale.value === 'en' ? 'en-US' : 'fr-FR',
+    { weekday: 'long', day: 'numeric', month: 'long' }
+  ).format(d)
+}
+
+// Render message (markdown simple)
+function renderMessage(text) {
+  return text
+    .replace(/\n/g, '<br>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/_(.*?)_/g, '<em>$1</em>')
+    .replace(/`(.*?)`/g, '<code>$1</code>')
+}
+
+// Send message
 async function send() {
-  if (!input.value.trim()) return
   const text = input.value.trim()
+  if (!text) return
   input.value = ''
   shareMenuOpen.value = false
-
+  emojiOpen.value = false
+  resetTextarea()
   store.sendMessage(store.activeChannel, text)
   await nextTick()
   scrollBottom()
-
-  // Nova auto-reply
-  if (store.activeChannel === 'nova') {
-    await sendNova(text)
-  }
+  if (store.activeChannel === 'nova') await sendNova(text)
 }
 
+// Nova IA
 async function sendNova(text) {
-  if (store.activeChannel !== 'nova') {
-    store.setActive('nova')
-    store.sendMessage('nova', text)
-  }
   novaThinking.value = true
   await nextTick()
   scrollBottom()
 
   const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
+  const context = buildContext()
 
   if (apiKey && apiKey !== 'REMPLACER_PAR_CLE_ANTHROPIC') {
     try {
-      const context = buildContext()
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01'
+          'anthropic-version': '2023-06-01',
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 500,
-          system: `Tu es Nova, assistante IA intégrée à Scalyo.
-Données actuelles :
-- ${context.totalClients} clients actifs, ARR total ${(context.totalArr/1000).toFixed(0)}K€
-- Health score moyen : ${context.avgHealth}/10
-- ${context.criticalCount} comptes critiques
-- ${context.overdueTasks.length} tâches en retard
-Réponds en français, de façon concise et actionnable. Max 3 paragraphes.`,
-          messages: [{ role: 'user', content: text }]
-        })
+          max_tokens: 600,
+          system: buildNovaSystemPrompt(context),
+          messages: buildNovaHistory(text),
+        }),
       })
       const data = await res.json()
-      const response = data.content?.[0]?.text || generateNovaResponse(text, context)
-      store.sendMessage('nova', response, 'Nova', 'nova')
-    } catch(e) {
-      const context = buildContext()
-      store.sendMessage('nova', generateNovaResponse(text, context), 'Nova', 'nova')
+      const reply = data.content?.[0]?.text || mockNovaResponse(text, context)
+      store.sendMessage('nova', reply, 'Nova', 'nova')
+    } catch {
+      store.sendMessage('nova', mockNovaResponse(text, context), 'Nova', 'nova')
     }
   } else {
-    await new Promise(r => setTimeout(r, 1500))
-    const context = buildContext()
-    store.sendMessage('nova', generateNovaResponse(text, context), 'Nova', 'nova')
+    await new Promise(r => setTimeout(r, 1200))
+    store.sendMessage('nova', mockNovaResponse(text, context), 'Nova', 'nova')
   }
 
   novaThinking.value = false
@@ -256,183 +407,396 @@ Réponds en français, de façon concise et actionnable. Max 3 paragraphes.`,
 
 function buildContext() {
   return {
-    totalClients: clients.clients.length,
-    totalArr: clients.totalArr,
-    avgHealth: clients.avgHealth,
-    criticalCount: clients.criticalCount,
-    criticalClients: clients.clients.filter(c => c.status === 'critical').map(c => ({ name: c.name, health: c.health, arr: c.arr, renewalDate: c.renewalDate })),
-    overdueTasks: tasks.overdueTasks.map(t => t.title),
-    teamScore: team.teamHealthScore,
+    totalClients: clientsStore.clients?.length || 0,
+    totalArr: clientsStore.totalArr || 0,
+    avgHealth: clientsStore.avgHealth || 0,
+    criticalCount: clientsStore.criticalCount || 0,
+    criticalClients: (clientsStore.clients || []).filter(c => c.status === 'critical').slice(0, 3).map(c => ({ name: c.name, health: c.health, arr: c.arr })),
+    overdueTasks: (tasksStore.overdueTasks || []).slice(0, 5).map(t => t.title),
+    lang: locale.value,
   }
 }
 
-function generateNovaResponse(question, ctx) {
-  const q = question.toLowerCase()
-
-  if (q.includes('risque') || q.includes('risk') || q.includes('위험')) {
-    const crit = ctx.criticalClients[0]
-    if (crit) return `**${crit.name}** est votre client le plus à risque.\n\n• Health score : **${crit.health}/10** 🔴\n• ARR : **${crit.arr.toLocaleString()}€**\n• Renouvellement : **${crit.renewalDate}**\n\nJe recommande un appel urgent cette semaine. Voici les actions prioritaires :\n1. Analyser l'utilisation des 30 derniers jours\n2. Préparer un script de rétention\n3. Planifier un call de 30 min avant vendredi`
-    return 'Aucun client en risque critique détecté. Votre portefeuille est en bonne santé !'
+function buildNovaSystemPrompt(ctx) {
+  const prompts = {
+    fr: `Tu es Nova, assistante IA de Scalyo. Données temps réel :
+- ${ctx.totalClients} clients, ARR ${(ctx.totalArr / 1000).toFixed(0)}K€
+- Health score moyen : ${ctx.avgHealth}/10
+- ${ctx.criticalCount} comptes critiques
+- ${ctx.overdueTasks.length} tâches en retard
+Réponds en français, concis et actionnable. Max 4 lignes.`,
+    en: `You are Nova, Scalyo's AI assistant. Real-time data:
+- ${ctx.totalClients} clients, ARR ${(ctx.totalArr / 1000).toFixed(0)}K€
+- Avg health: ${ctx.avgHealth}/10, ${ctx.criticalCount} critical
+Respond in English, concisely and actionably.`,
+    ko: `당신은 Scalyo의 AI 어시스턴트 Nova입니다.
+- 고객 ${ctx.totalClients}명, ARR ${(ctx.totalArr / 1000).toFixed(0)}K€
+한국어로 간결하고 실행 가능하게 답변하세요.`,
   }
-
-  if (q.includes('semaine') || q.includes('week') || q.includes('요약')) {
-    return `**Résumé de votre semaine** 📊\n\n• **${ctx.totalClients} clients** actifs, ARR total **${(ctx.totalArr / 1000).toFixed(0)}K€**\n• Health score moyen : **${ctx.avgHealth}/10**\n• **${ctx.criticalCount}** comptes critiques à surveiller\n• **${ctx.overdueTasks.length}** tâches en retard\n• Score bien-être équipe : **${ctx.teamScore}/100**\n\n${ctx.overdueTasks.length ? '⚠️ Tâches en retard : ' + ctx.overdueTasks.join(', ') : '✅ Aucune tâche en retard'}`
-  }
-
-  if (q.includes('copil') || q.includes('rapport') || q.includes('report') || q.includes('보고서')) {
-    return `**Rapport COPIL — Avril 2026** 📊\n\n| KPI | Valeur | Tendance |\n|-----|--------|----------|\n| ARR | ${(ctx.totalArr / 1000).toFixed(0)}K€ | ↗️ +12% |\n| Health Score | ${ctx.avgHealth}/10 | → stable |\n| Comptes critiques | ${ctx.criticalCount} | ⚠️ |\n| Équipe | ${ctx.teamScore}/100 | → |\n\n**Actions recommandées :**\n1. Prioriser les ${ctx.criticalCount} comptes critiques\n2. Planifier les QBR du Q2\n3. Réviser les playbooks de rétention`
-  }
-
-  if (q.includes('retard') || q.includes('overdue') || q.includes('지연')) {
-    if (ctx.overdueTasks.length) return `**${ctx.overdueTasks.length} tâches en retard** ⚠️\n\n${ctx.overdueTasks.map((t, i) => `${i + 1}. ${t}`).join('\n')}\n\nJe recommande de reprioritiser ces tâches dans le Kanban.`
-    return '✅ Aucune tâche en retard ! Votre équipe est dans les temps.'
-  }
-
-  return `Je comprends votre question. Voici ce que je peux vous dire :\n\n• Vous gérez **${ctx.totalClients} clients** pour un ARR de **${(ctx.totalArr / 1000).toFixed(0)}K€**\n• Score santé moyen : **${ctx.avgHealth}/10**\n• Score équipe : **${ctx.teamScore}/100**\n\nN'hésitez pas à me poser une question plus précise sur vos clients, tâches ou KPIs.`
+  return prompts[ctx.lang] || prompts.fr
 }
 
+function buildNovaHistory(currentText) {
+  const history = (store.messages['nova'] || []).slice(-10).map(m => ({
+    role: m.authorId === 'nova' ? 'assistant' : 'user',
+    content: m.content,
+  }))
+  if (!history.length || history[history.length - 1].role !== 'user') {
+    history.push({ role: 'user', content: currentText })
+  }
+  return history
+}
+
+function mockNovaResponse(q, ctx) {
+  const ql = q.toLowerCase()
+  if (ql.includes('risque') || ql.includes('risk') || ql.includes('위험')) {
+    if (ctx.criticalClients[0]) {
+      const c = ctx.criticalClients[0]
+      return `**${c.name}** est votre client le plus à risque.\n• Health: **${c.health}/10** 🔴 | ARR: **${(c.arr / 1000).toFixed(0)}K€**\nAction recommandée : appel de rétention cette semaine.`
+    }
+    return '✅ Aucun client en risque critique détecté.'
+  }
+  if (ql.includes('semaine') || ql.includes('résumé') || ql.includes('summarize') || ql.includes('요약')) {
+    return `**Résumé** : ${ctx.totalClients} clients | ARR ${(ctx.totalArr / 1000).toFixed(0)}K€ | Health ${ctx.avgHealth}/10 | ${ctx.criticalCount} critiques | ${ctx.overdueTasks.length} tâches en retard.`
+  }
+  if (ql.includes('tâche') || ql.includes('retard') || ql.includes('task') || ql.includes('overdue')) {
+    return ctx.overdueTasks.length
+      ? `**${ctx.overdueTasks.length} tâches en retard :**\n${ctx.overdueTasks.map((t, i) => `${i + 1}. ${t}`).join('\n')}`
+      : '✅ Aucune tâche en retard.'
+  }
+  if (ql.includes('copil') || ql.includes('rapport') || ql.includes('report') || ql.includes('보고서')) {
+    return `**Rapport COPIL**\n| KPI | Valeur |\n|-----|--------|\n| ARR | ${(ctx.totalArr / 1000).toFixed(0)}K€ |\n| Health | ${ctx.avgHealth}/10 |\n| Critiques | ${ctx.criticalCount} |\n\nCréez un COPIL complet dans → /app/kpis`
+  }
+  return `Je gère **${ctx.totalClients} clients** (ARR ${(ctx.totalArr / 1000).toFixed(0)}K€). Posez-moi une question précise sur vos clients, tâches ou KPIs.`
+}
+
+async function sendNovaSuggestion(key) {
+  const text = t(key)
+  store.setActive('nova')
+  store.sendMessage('nova', text)
+  await nextTick()
+  scrollBottom()
+  await sendNova(text)
+}
+
+// File upload
+function onFileSelect(e) {
+  const file = e.target.files[0]
+  if (!file) return
+  const isImage = file.type.startsWith('image/')
+  const reader = new FileReader()
+  reader.onload = ev => {
+    const att = {
+      name: file.name,
+      size: (file.size / 1024).toFixed(0) + ' KB',
+      type: isImage ? 'image' : 'file',
+      data: ev.target.result,
+    }
+    store.sendMessage(store.activeChannel, `📎 ${file.name}`, 'Lidia C.', 'u1', [att])
+    nextTick(scrollBottom)
+  }
+  reader.readAsDataURL(file)
+  e.target.value = ''
+}
+
+// Share Scalyo data
 function shareItem(type) {
   shareMenuOpen.value = false
   let content = ''
   if (type === 'client') {
-    const c = clients.clients[0]
-    if (c) content = `👤 **${c.name}** | Health: ${c.health}/10 | ARR: ${c.arr.toLocaleString()}€ | CSM: ${c.csm}`
+    const c = clientsStore.clients?.[0]
+    content = c ? `👤 **${c.name}** | Health: ${c.health}/10 | ARR: ${(c.arr / 1000).toFixed(0)}K€ | CSM: ${c.csm}` : '👤 Aucun client'
   } else if (type === 'task') {
-    const t = tasks.tasks.find(t => t.status !== 'done')
-    if (t) content = `📋 **${t.title}** | Due: ${t.dueDate} | Status: ${t.status}`
+    const task = tasksStore.tasks?.find(t => t.status !== 'done')
+    content = task ? `📋 **${task.title}** | Priorité: ${task.priority} | Statut: ${task.status}` : '📋 Aucune tâche en cours'
   } else if (type === 'kpi') {
-    content = `📊 **ARR Portfolio** : ${(clients.totalArr / 1000).toFixed(0)}K€ | Health: ${clients.avgHealth}/10 | Critiques: ${clients.criticalCount}`
+    content = `📊 **KPIs** | ARR: ${((clientsStore.totalArr || 0) / 1000).toFixed(0)}K€ | Health: ${clientsStore.avgHealth || 0}/10 | Critiques: ${clientsStore.criticalCount || 0}`
   } else if (type === 'email') {
-    content = `📧 **Template : Bienvenue & premiers pas**\nObjet : Bienvenue chez [Entreprise] — votre guide de démarrage\nDisponible dans Email Studio → /app/email-studio`
+    content = `📧 **Email Studio** → Templates disponibles\n→ /app/email-studio`
   } else if (type === 'roadmap') {
-    content = `🗺️ **Roadmap** partagée — consultez /app/roadmap`
+    content = `🗺️ **Roadmap** partagée → /app/roadmap`
   }
-  if (content) store.sendMessage(store.activeChannel, content)
+  if (content) { store.sendMessage(store.activeChannel, content); nextTick(scrollBottom) }
+}
+
+// Handle alert actions
+function handleAction(action) {
+  if (action.type === 'navigate' && action.route) {
+    router.push(action.route)
+  } else if (action.type === 'create_task') {
+    newTask.value = {
+      title: action.taskData?.title || '',
+      priority: action.taskData?.priority || 'medium',
+      dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+    }
+    showCreateTask.value = true
+  }
+}
+
+function confirmCreateTask() {
+  if (!newTask.value.title.trim()) return
+  tasksStore.addTask({ ...newTask.value, status: 'todo' })
+  store.sendMessage(store.activeChannel, `✅ Tâche créée : **${newTask.value.title}** | Priorité: ${newTask.value.priority}`, 'Nova', 'nova')
+  showCreateTask.value = false
+  newTask.value = { title: '', priority: 'medium', dueDate: '' }
+  nextTick(scrollBottom)
+}
+
+// Channel management
+function openChannelMenu(e, ch) {
+  channelMenu.value = { visible: true, x: e.clientX, y: e.clientY, channel: ch }
+}
+function createChannel() {
+  if (!newChannelName.value.trim()) return
+  const id = store.createChannel(newChannelName.value, newChannelDesc.value)
+  store.setActive(id)
+  newChannelName.value = ''
+  newChannelDesc.value = ''
+  showCreateChannel.value = false
+}
+function renameChannel() {
+  const name = prompt('Nouveau nom :', channelMenu.value.channel?.name)
+  if (name) store.updateChannel(channelMenu.value.channel.id, { name })
+  channelMenu.value.visible = false
+}
+function deleteChannelAction() {
+  store.deleteChannel(channelMenu.value.channel.id)
+  channelMenu.value.visible = false
+}
+
+// Edit message
+function startEdit(msg) {
+  store.editingMessage = { channelId: store.activeChannel, msgId: msg.id }
+  editContent.value = msg.content
+}
+function confirmEdit(msg) {
+  store.editMessage(store.activeChannel, msg.id, editContent.value)
+}
+
+// Format insert
+function insertFmt(marker) {
+  const el = inputRef.value
+  if (!el) return
+  const start = el.selectionStart
+  const end = el.selectionEnd
+  const selected = input.value.slice(start, end)
+  input.value = input.value.slice(0, start) + marker + selected + marker + input.value.slice(end)
+  nextTick(() => { el.selectionStart = el.selectionEnd = start + marker.length + selected.length + marker.length; el.focus() })
+}
+
+// DM
+function openDM(memberId) {
+  const key = 'dm_' + memberId
+  if (!store.messages[key]) store.messages[key] = []
+  store.setActive(key)
+}
+
+// Textarea auto-resize
+function autoResize() {
+  const el = inputRef.value
+  if (!el) return
+  el.style.height = 'auto'
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px'
+}
+function resetTextarea() {
+  const el = inputRef.value
+  if (el) el.style.height = 'auto'
 }
 
 function scrollBottom() {
   if (msgRef.value) msgRef.value.scrollTop = msgRef.value.scrollHeight
 }
 
-function handleAction(action) {
-  if (action.route) {
-    router.push(action.route)
-  } else if (action.action === 'create_task') {
-    tasks.addTask({
-      title: 'Contacter client à risque',
-      status: 'todo',
-      priority: 'high',
-      dueDate: new Date(Date.now() + 2*24*60*60*1000).toISOString().slice(0,10)
-    })
-    store.sendMessage(store.activeChannel, '✅ Tâche créée : "Contacter client à risque"', 'Nova', 'nova')
-  }
+// Close menus on outside click
+function onDocClick(e) {
+  if (!e.target.closest('.cp-share-wrap')) shareMenuOpen.value = false
+  if (!e.target.closest('.cp-emoji-wrap')) emojiOpen.value = false
+  if (!e.target.closest('.cp-ctx-menu')) channelMenu.value.visible = false
 }
+onMounted(() => document.addEventListener('click', onDocClick))
+onUnmounted(() => document.removeEventListener('click', onDocClick))
 
-watch(() => store.activeChannel, () => { nextTick(scrollBottom) })
+watch(() => store.activeChannel, () => nextTick(scrollBottom))
 </script>
 
 <style scoped>
-.chat-panel-full { display: flex; height: 100%; background: #fff; }
+.cp { display: flex; height: 100%; background: #fff; font-size: 0.85rem; }
 
-/* Sidebar */
-.cp-sidebar { width: 220px; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; }
-.cp-sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--border-light); }
-.cp-sidebar-header strong { font-size: 0.95rem; }
-.cp-close { background: none; border: none; font-size: 1rem; color: var(--text-muted); cursor: pointer; padding: 4px; }
-.cp-search { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border-light); }
-.cp-search input { border: none; outline: none; font-size: 0.78rem; width: 100%; background: transparent; }
-.cp-section-label { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.06em; padding: 12px 16px 4px; text-transform: uppercase; }
-.cp-ch, .cp-dm { display: flex; align-items: center; gap: 8px; padding: 7px 16px; background: none; border: none; width: 100%; text-align: left; font-size: 0.82rem; color: var(--text-secondary); cursor: pointer; transition: background 0.15s; }
-.cp-ch:hover, .cp-dm:hover { background: var(--bg-hover); }
-.cp-ch.active, .cp-dm.active { background: var(--purple-bg); color: var(--purple); font-weight: 600; }
-.cp-ch.nova { color: var(--purple); }
-.cp-ch-icon { font-size: 0.9rem; width: 20px; text-align: center; }
+/* ── Sidebar ── */
+.cp-sidebar { width: 220px; flex-shrink: 0; background: #1a1d2e; color: #c9d1d9; display: flex; flex-direction: column; overflow-y: auto; }
+.cp-sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.cp-workspace { font-size: 0.95rem; color: #fff; }
+.cp-close { background: none; border: none; color: #c9d1d9; cursor: pointer; font-size: 0.9rem; opacity: 0.6; }
+.cp-close:hover { opacity: 1; }
+
+.cp-section { padding: 8px 0; }
+.cp-section-header { display: flex; justify-content: space-between; align-items: center; padding: 4px 12px 4px 16px; }
+.cp-section-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.5; }
+.cp-add-btn { background: none; border: none; color: #c9d1d9; cursor: pointer; font-size: 1rem; opacity: 0.5; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+.cp-add-btn:hover { opacity: 1; }
+
+.cp-ch, .cp-dm { display: flex; align-items: center; gap: 8px; padding: 5px 16px; width: 100%; background: none; border: none; color: #c9d1d9; cursor: pointer; font-size: 0.82rem; text-align: left; transition: background 0.12s; }
+.cp-ch:hover, .cp-dm:hover { background: rgba(255,255,255,0.06); }
+.cp-ch.active, .cp-dm.active { background: rgba(124,58,237,0.3); color: #fff; }
+.cp-ch.nova { color: #a78bfa; }
+.cp-ch-hash { width: 16px; font-size: 0.8rem; opacity: 0.7; }
 .cp-ch-name { flex: 1; }
-.cp-ch-badge { background: var(--red); color: #fff; font-size: 0.6rem; font-weight: 700; padding: 1px 5px; border-radius: 8px; }
-.cp-dm-avatar { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.65rem; font-weight: 700; flex-shrink: 0; }
-.cp-dm-avatar.healthy { background: var(--green); }
-.cp-dm-avatar.overloaded { background: var(--red); }
+.cp-badge { background: #ef4444; color: #fff; font-size: 0.6rem; font-weight: 700; padding: 1px 5px; border-radius: 8px; }
+.cp-dm-avatar { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; flex-shrink: 0; }
 .cp-dm-name { flex: 1; }
-.cp-dm-status { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.cp-dm-status.online { background: var(--green); }
-.cp-dm-status.busy { background: var(--amber); }
+.cp-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #6b7280; }
+.cp-status-dot.healthy { background: #10b981; }
+.cp-status-dot.overloaded { background: #ef4444; }
 
-/* Main area */
+.cp-user-bottom { margin-top: auto; display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.08); }
+.cp-user-av { width: 28px; height: 28px; border-radius: 50%; background: #7c3aed; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; }
+.cp-user-name { font-size: 0.78rem; font-weight: 600; color: #fff; display: block; }
+.cp-user-status { font-size: 0.65rem; color: #10b981; }
+
+/* ── Main ── */
 .cp-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-.cp-main-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border-light); }
-.cp-main-header strong { font-size: 0.95rem; }
-.cp-members { font-size: 0.72rem; color: var(--text-muted); }
+.cp-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--border); background: #fff; }
+.cp-header-left { display: flex; align-items: center; gap: 10px; }
+.cp-header-icon { font-size: 1rem; color: var(--text-muted); }
+.cp-header-name { font-size: 0.9rem; display: block; }
+.cp-header-desc { font-size: 0.72rem; color: var(--text-muted); margin: 0; }
+.cp-header-actions { display: flex; gap: 6px; }
+.cp-header-btn { background: none; border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; color: var(--text-muted); }
+.cp-header-btn:hover { background: var(--bg); }
 
-/* Messages */
-.cp-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.cp-searchbar { display: flex; align-items: center; gap: 8px; padding: 8px 18px; border-bottom: 1px solid var(--border-light); background: var(--bg); }
+.cp-searchbar input { flex: 1; border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font-size: 0.82rem; outline: none; }
+.cp-searchbar button { background: none; border: none; cursor: pointer; color: var(--text-muted); }
 
-.cp-nova-welcome { display: flex; gap: 12px; padding: 16px; background: var(--purple-bg); border-radius: var(--radius-md); }
-.nova-avatar { font-size: 2rem; }
-.nova-bubble p { font-size: 0.88rem; margin-bottom: 12px; line-height: 1.5; }
-.nova-sugs { display: flex; flex-wrap: wrap; gap: 6px; }
-.nova-sug { background: #fff; border: 1px solid var(--purple-border); color: var(--purple); padding: 6px 14px; border-radius: 999px; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; }
-.nova-sug:hover { background: var(--purple); color: #fff; }
+.cp-pinned-panel { background: #fffbeb; border-bottom: 1px solid #fef3c7; padding: 10px 18px; }
+.cp-pinned-header { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 6px; }
+.cp-pinned-header button { background: none; border: none; cursor: pointer; color: var(--text-muted); }
+.cp-pinned-item { font-size: 0.75rem; color: var(--text-secondary); padding: 2px 0; border-bottom: 1px solid #fef3c7; }
 
-.cp-msg { display: flex; gap: 10px; position: relative; padding: 4px 0; }
+/* ── Messages ── */
+.cp-messages { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 2px; }
+.cp-date-divider { display: flex; align-items: center; gap: 10px; margin: 12px 0; color: var(--text-muted); font-size: 0.7rem; font-weight: 600; }
+.cp-date-divider::before, .cp-date-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-light); }
+
+.cp-nova-welcome { display: flex; gap: 14px; padding: 20px; margin: 12px 0; background: linear-gradient(135deg, #f5f3ff, #ede9fe); border-radius: 12px; }
+.nova-av { font-size: 2.5rem; }
+.nova-bubble strong { font-size: 0.95rem; display: block; margin-bottom: 6px; }
+.nova-bubble p { font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px; }
+.nova-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.nova-chip { background: #fff; border: 1px solid #c4b5fd; color: var(--purple); padding: 5px 12px; border-radius: 999px; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; }
+.nova-chip:hover { background: var(--purple); color: #fff; }
+
+.cp-msg { display: flex; gap: 10px; padding: 4px 8px; border-radius: 8px; position: relative; transition: background 0.12s; }
+.cp-msg:hover { background: var(--bg); }
 .cp-msg.own { flex-direction: row-reverse; }
-.cp-msg.pinned { background: rgba(251, 191, 36, 0.06); border-radius: 8px; padding: 6px 8px; }
-.cp-msg-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--purple); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.78rem; flex-shrink: 0; }
-.cp-msg.nova .cp-msg-avatar { background: transparent; font-size: 1.5rem; }
-.cp-msg-body { max-width: 75%; min-width: 0; }
-.cp-msg-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
-.cp-msg-meta strong { font-size: 0.78rem; }
-.cp-msg-time { font-size: 0.65rem; color: var(--text-muted); }
-.cp-pin-badge { font-size: 0.65rem; }
-.cp-msg-text { font-size: 0.85rem; line-height: 1.55; padding: 8px 12px; background: var(--bg); border-radius: 12px; border-top-left-radius: 4px; word-break: break-word; }
-.cp-msg.own .cp-msg-text { background: var(--purple); color: #fff; border-top-left-radius: 12px; border-top-right-radius: 4px; }
-.cp-msg.nova .cp-msg-text { background: var(--purple-bg); border-color: var(--purple-border); }
-.cp-msg-text :deep(strong) { font-weight: 700; }
+.cp-msg.pinned { background: rgba(251,191,36,0.08); }
+.cp-msg-av { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.78rem; color: #fff; flex-shrink: 0; align-self: flex-start; margin-top: 2px; }
+.cp-msg.nova .cp-msg-av { background: transparent !important; font-size: 1.6rem; }
+.cp-msg-content { max-width: 75%; min-width: 0; }
 
-/* Actions on alert messages */
-.cp-msg-actions-row { display: flex; gap: 6px; margin-top: 6px; }
-.cp-action-btn { background: #fff; border: 1px solid var(--border); padding: 4px 12px; border-radius: 6px; font-size: 0.72rem; cursor: pointer; transition: all 0.15s; }
+.cp-reply-preview { font-size: 0.72rem; color: var(--text-muted); border-left: 3px solid var(--purple); padding: 2px 8px; margin-bottom: 4px; background: var(--bg); border-radius: 0 4px 4px 0; display: flex; flex-direction: column; gap: 1px; }
+.cp-msg-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
+.cp-msg-meta strong { font-size: 0.8rem; }
+.cp-msg-time { font-size: 0.65rem; color: var(--text-muted); }
+.cp-edited { font-size: 0.62rem; color: var(--text-muted); }
+.cp-pin { font-size: 0.65rem; }
+
+.cp-msg-text { font-size: 0.85rem; line-height: 1.55; padding: 8px 12px; word-break: break-word; background: var(--bg); border-radius: 12px; border-top-left-radius: 4px; }
+.cp-msg.own .cp-msg-text { background: var(--purple); color: #fff; border-top-left-radius: 12px; border-top-right-radius: 4px; }
+.cp-msg.nova .cp-msg-text { background: #f5f3ff; border-top-left-radius: 4px; }
+.cp-msg-text :deep(strong) { font-weight: 700; }
+.cp-msg-text :deep(code) { background: rgba(0,0,0,0.08); padding: 1px 5px; border-radius: 3px; font-size: 0.82rem; }
+
+.cp-attachments { margin-top: 6px; display: flex; flex-direction: column; gap: 6px; }
+.cp-img-preview { max-width: 200px; border-radius: 8px; display: block; margin-top: 4px; }
+.cp-file-card { display: inline-flex; align-items: center; gap: 6px; background: var(--bg); border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; font-size: 0.78rem; }
+
+.cp-actions-row { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.cp-action-btn { background: #fff; border: 1px solid var(--border); padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; }
 .cp-action-btn:hover { border-color: var(--purple); color: var(--purple); }
 
-/* Reactions */
-.cp-reactions { display: flex; gap: 4px; margin-top: 4px; }
+.cp-reactions { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
 .cp-reaction { background: var(--bg); border: 1px solid var(--border-light); padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; cursor: pointer; transition: all 0.15s; }
 .cp-reaction.mine { background: var(--purple-bg); border-color: var(--purple-border); }
 .cp-reaction:hover { border-color: var(--purple); }
 
-/* Hover menu */
-.cp-msg-hover { display: none; position: absolute; top: 0; right: 0; background: #fff; border: 1px solid var(--border); border-radius: 6px; box-shadow: var(--shadow-sm); padding: 2px; }
-.cp-msg:hover .cp-msg-hover { display: flex; gap: 1px; }
-.cp-msg.own .cp-msg-hover { right: auto; left: 0; }
-.cp-msg-hover button { background: none; border: none; font-size: 0.8rem; padding: 4px 6px; cursor: pointer; border-radius: 4px; }
-.cp-msg-hover button:hover { background: var(--bg-hover); }
+/* Hover toolbar */
+.cp-msg-toolbar { display: none; position: absolute; top: -8px; right: 8px; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow-md); padding: 3px; gap: 1px; }
+.cp-msg:hover .cp-msg-toolbar { display: flex; }
+.cp-msg.own .cp-msg-toolbar { right: auto; left: 8px; }
+.cp-msg-toolbar button { background: none; border: none; font-size: 0.8rem; padding: 5px 7px; cursor: pointer; border-radius: 5px; }
+.cp-msg-toolbar button:hover { background: var(--bg-hover); }
+
+/* Edit input */
+.cp-edit-input { display: flex; gap: 6px; margin-top: 4px; }
+.cp-edit-input input { flex: 1; padding: 6px 10px; border: 1px solid var(--purple); border-radius: 6px; font-size: 0.85rem; outline: none; }
+.cp-edit-input button { background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; }
 
 /* Thinking */
-.cp-thinking { display: flex; gap: 4px; padding: 10px 14px; background: var(--purple-bg); border-radius: 12px; border-top-left-radius: 4px; }
-.cp-thinking span { width: 7px; height: 7px; background: var(--purple); border-radius: 50%; animation: think-b 1.4s infinite; }
+.cp-thinking { display: flex; gap: 4px; padding: 10px 14px; background: #f5f3ff; border-radius: 12px; border-top-left-radius: 4px; }
+.cp-thinking span { width: 7px; height: 7px; background: var(--purple); border-radius: 50%; animation: think 1.4s infinite; }
 .cp-thinking span:nth-child(2) { animation-delay: 0.2s; }
 .cp-thinking span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes think-b { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
+@keyframes think { 0%, 60%, 100% { transform: translateY(0); opacity: 0.7; } 30% { transform: translateY(-5px); opacity: 1; } }
+
+/* Reply banner */
+.cp-reply-banner { display: flex; align-items: center; gap: 8px; padding: 8px 18px; background: #f5f3ff; border-top: 1px solid #e9d5ff; font-size: 0.78rem; color: var(--purple); }
+.cp-reply-text { flex: 1; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cp-reply-banner button { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 0.8rem; }
+
+/* Input area */
+.cp-input-wrap { border-top: 1px solid var(--border-light); padding: 10px 18px 14px; }
+.cp-fmt-bar { display: flex; gap: 2px; margin-bottom: 6px; }
+.cp-fmt-bar button { background: none; border: none; cursor: pointer; padding: 3px 8px; border-radius: 4px; font-size: 0.78rem; color: var(--text-muted); }
+.cp-fmt-bar button:hover { background: var(--bg); color: var(--text); }
+.cp-input-row { display: flex; align-items: flex-end; gap: 6px; }
+.cp-tool-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 6px; opacity: 0.6; transition: opacity 0.15s; flex-shrink: 0; }
+.cp-tool-btn:hover { opacity: 1; }
+.cp-textarea { flex: 1; padding: 9px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: 0.85rem; outline: none; resize: none; line-height: 1.4; max-height: 120px; overflow-y: auto; font-family: inherit; }
+.cp-textarea:focus { border-color: var(--purple); }
+.cp-send-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--purple); color: #fff; border: none; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
+.cp-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.cp-send-btn:hover:not(:disabled) { background: var(--purple-dark); transform: scale(1.05); }
 
 /* Share menu */
-.cp-share-menu { position: absolute; bottom: 60px; left: 10px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); padding: 6px; z-index: 20; }
-.cp-share-menu button { display: flex; align-items: center; gap: 10px; padding: 8px 14px; width: 100%; background: none; border: none; font-size: 0.82rem; cursor: pointer; border-radius: 6px; text-align: left; }
+.cp-share-wrap { position: relative; }
+.cp-share-menu { position: absolute; bottom: 44px; left: 0; background: #fff; border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow-lg); padding: 6px; z-index: 100; min-width: 180px; }
+.cp-share-title { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); padding: 4px 10px 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+.cp-share-menu button { display: flex; align-items: center; gap: 10px; padding: 8px 12px; width: 100%; background: none; border: none; font-size: 0.82rem; cursor: pointer; border-radius: 6px; text-align: left; }
 .cp-share-menu button:hover { background: var(--bg-hover); }
-.cp-share-menu button span { font-size: 1rem; width: 20px; text-align: center; }
 
-/* Input */
-.cp-input-area { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-top: 1px solid var(--border-light); position: relative; }
-.cp-btn-attach { background: none; border: none; font-size: 1.1rem; cursor: pointer; padding: 4px; opacity: 0.6; transition: opacity 0.15s; }
-.cp-btn-attach:hover { opacity: 1; }
-.cp-input-area input { flex: 1; padding: 9px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: 0.85rem; outline: none; }
-.cp-input-area input:focus { border-color: var(--purple); }
-.cp-btn-send { background: var(--purple); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-.cp-btn-send:disabled { opacity: 0.4; cursor: not-allowed; }
-.cp-btn-send:hover:not(:disabled) { background: var(--purple-dark); }
+/* Emoji picker */
+.cp-emoji-wrap { position: relative; }
+.cp-emoji-picker { position: absolute; bottom: 44px; left: 0; background: #fff; border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow-lg); padding: 8px; z-index: 100; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.cp-emoji-picker button { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 4px; border-radius: 4px; }
+.cp-emoji-picker button:hover { background: var(--bg); }
 
-@media (max-width: 600px) {
-  .cp-sidebar { width: 64px; }
-  .cp-sidebar-header strong, .cp-ch-name, .cp-dm-name, .cp-section-label, .cp-search { display: none; }
+/* Slide-overs */
+.cp-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.3); display: flex; justify-content: flex-end; }
+.cp-slideover { width: 380px; height: 100vh; background: #fff; box-shadow: -4px 0 24px rgba(0,0,0,0.15); display: flex; flex-direction: column; }
+.cp-so-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+.cp-so-header strong { font-size: 1rem; }
+.cp-so-header button { background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--text-muted); }
+.cp-so-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+.fg { display: flex; flex-direction: column; gap: 6px; }
+.fg label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
+.fg input, .fg select, .fg textarea { padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem; outline: none; font-family: inherit; }
+.fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--purple); }
+.btn-primary { background: var(--purple); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.btn-primary:hover { background: var(--purple-dark); }
+
+/* Context menu */
+.cp-ctx-menu { position: fixed; z-index: 2000; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow-lg); padding: 4px; min-width: 140px; }
+.cp-ctx-menu button { display: block; width: 100%; padding: 8px 14px; background: none; border: none; text-align: left; font-size: 0.82rem; cursor: pointer; border-radius: 5px; }
+.cp-ctx-menu button:hover { background: var(--bg-hover); }
+.cp-ctx-menu button.danger { color: var(--red); }
+.cp-ctx-menu button.danger:hover { background: #fee2e2; }
+
+/* Mobile */
+@media (max-width: 640px) {
+  .cp-sidebar { width: 56px; }
+  .cp-workspace, .cp-section-label, .cp-ch-name, .cp-dm-name, .cp-user-info, .cp-header-desc { display: none; }
   .cp-ch, .cp-dm { justify-content: center; padding: 10px; }
-  .cp-share-menu { left: 80px; }
+  .cp-share-menu, .cp-emoji-picker { left: -60px; }
 }
 </style>
