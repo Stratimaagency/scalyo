@@ -30,7 +30,52 @@ export const useTaskStore = defineStore('tasks', () => {
   })
 
   function addTask(task) {
-    tasks.value.push({ id: 't' + Date.now(), status: 'todo', subtasks: [], createdAt: new Date().toISOString().slice(0, 10), ...task })
+    tasks.value.push({
+      id: 't' + Date.now(),
+      status: 'todo',
+      subtasks: [],
+      createdAt: new Date().toISOString().slice(0, 10),
+      startDate: '',
+      endDate: '',
+      urgency: 3,
+      importance: 3,
+      difficulty: 3,
+      finished: false,
+      pended: false,
+      actualHours: 0,
+      expectedHours: 0,
+      minHours: 0,
+      maxHours: 0,
+      level: 1,
+      type: 'task',
+      hasChildren: false,
+      ...task
+    })
+  }
+
+  function addSubtask(parentId, subtask) {
+    tasks.value.push({
+      id: 'st' + Date.now(),
+      status: 'todo',
+      subtasks: [],
+      createdAt: new Date().toISOString().slice(0, 10),
+      startDate: '',
+      endDate: '',
+      urgency: 3,
+      importance: 3,
+      difficulty: 3,
+      finished: false,
+      pended: false,
+      actualHours: 0,
+      expectedHours: 0,
+      minHours: 0,
+      maxHours: 0,
+      level: 2,
+      type: 'subtask',
+      hasChildren: false,
+      parentId,
+      ...subtask
+    })
   }
   function updateTask(id, data) {
     const i = tasks.value.findIndex(t => t.id === id)
@@ -38,10 +83,38 @@ export const useTaskStore = defineStore('tasks', () => {
   }
   function deleteTask(id) { tasks.value = tasks.value.filter(t => t.id !== id) }
   function moveTask(id, newStatus) { updateTask(id, { status: newStatus, ...(newStatus === 'done' ? { completedAt: new Date().toISOString().slice(0, 10) } : {}) }) }
-  function addProject(p) { projects.value.push({ id: 'p' + Date.now(), status: 'active', createdAt: new Date().toISOString().slice(0, 10), ...p }) }
+  function addProject(p) {
+    projects.value.push({
+      id: 'p' + Date.now(),
+      status: 'active',
+      createdAt: new Date().toISOString().slice(0, 10),
+      startDate: '',
+      endDate: '',
+      urgency: 3,
+      importance: 3,
+      difficulty: 3,
+      finished: false,
+      pended: false,
+      actualHours: 0,
+      expectedHours: 0,
+      minHours: 0,
+      maxHours: 0,
+      level: 0,
+      type: 'project',
+      hasChildren: false,
+      ...p
+    })
+  }
+
+  function updateProject(id, data) {
+    const i = projects.value.findIndex(p => p.id === id)
+    if (i !== -1) Object.assign(projects.value[i], data)
+  }
 
   function deleteProject(id) {
-    tasks.value = tasks.value.filter(t => t.projectId !== id)
+    const toRemove = new Set([id])
+    for (const t of tasks.value) { if (t.parentId && toRemove.has(t.parentId)) toRemove.add(t.id) }
+    tasks.value = tasks.value.filter(t => !toRemove.has(t.id) && t.projectId !== id)
     projects.value = projects.value.filter(p => p.id !== id)
   }
 
@@ -52,6 +125,6 @@ export const useTaskStore = defineStore('tasks', () => {
 
   return {
     projects, tasks, todoTasks, inProgressTasks, blockedTasks, doneTasks, overdueTasks,
-    addTask, updateTask, deleteTask, moveTask, addProject, deleteProject, resetAll,
+    addTask, addSubtask, updateTask, updateProject, deleteTask, moveTask, addProject, deleteProject, resetAll,
   }
 }, { persist: true })
