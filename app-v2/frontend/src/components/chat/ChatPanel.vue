@@ -213,6 +213,23 @@
       </div>
     </div>
 
+    <!-- SLIDE-OVER : Renommer un channel -->
+    <div v-if="renamingChannel" class="cp-overlay" @click.self="renamingChannel = null">
+      <div class="cp-slideover">
+        <div class="cp-so-header">
+          <strong>Renommer le channel</strong>
+          <button @click="renamingChannel = null">✕</button>
+        </div>
+        <div class="cp-so-body">
+          <div class="fg">
+            <label>Nouveau nom</label>
+            <input v-model="renamingChannel.name" @keydown.enter="confirmRename" />
+          </div>
+          <button class="btn-primary" @click="confirmRename">Enregistrer</button>
+        </div>
+      </div>
+    </div>
+
     <!-- SLIDE-OVER : Créer un channel -->
     <div v-if="showCreateChannel" class="cp-overlay" @click.self="showCreateChannel = false">
       <div class="cp-slideover">
@@ -300,6 +317,7 @@ const newChannelName = ref('')
 const newChannelDesc = ref('')
 const newTask = ref({ title: '', priority: 'medium', dueDate: '' })
 const channelMenu = ref({ visible: false, x: 0, y: 0, channel: null })
+const renamingChannel = ref(null)
 
 const quickEmojis = ['👍', '❤️', '😂', '🎉', '🙏', '🔥', '✅', '⚠️', '📊', '🚀']
 const novaSugs = ['chat_nova_sug1', 'chat_nova_sug2', 'chat_nova_sug3', 'chat_nova_sug4']
@@ -558,13 +576,14 @@ function confirmSharePick(item) {
 
 // Handle alert actions
 function handleAction(action) {
-  if (action.type === 'navigate' && action.route) {
+  if (action.route) {
     router.push(action.route)
-  } else if (action.type === 'create_task') {
+  } else if (action.action === 'create_task' || action.type === 'create_task') {
     newTask.value = {
       title: action.taskData?.title || '',
       priority: action.taskData?.priority || 'medium',
       dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      description: '',
     }
     showCreateTask.value = true
   }
@@ -592,9 +611,15 @@ function createChannel() {
   showCreateChannel.value = false
 }
 function renameChannel() {
-  const name = prompt('Nouveau nom :', channelMenu.value.channel?.name)
-  if (name) store.updateChannel(channelMenu.value.channel.id, { name })
+  renamingChannel.value = { id: channelMenu.value.channel.id, name: channelMenu.value.channel.name }
   channelMenu.value.visible = false
+}
+
+function confirmRename() {
+  if (renamingChannel.value?.name?.trim()) {
+    store.updateChannel(renamingChannel.value.id, { name: renamingChannel.value.name.trim() })
+  }
+  renamingChannel.value = null
 }
 function deleteChannelAction() {
   store.deleteChannel(channelMenu.value.channel.id)
