@@ -1,117 +1,120 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 
-export const KPI_CATALOG = [
-  // Revenue & Growth
-  { id: 'arr', name: 'ARR', cat: 'revenue', unit: '€', format: 'currency', benchmarkGood: null, recommended: true },
-  { id: 'mrr', name: 'MRR', cat: 'revenue', unit: '€', format: 'currency' },
-  { id: 'nrr', name: 'NRR', cat: 'revenue', unit: '%', format: 'pct', benchmarkGood: 110, recommended: true },
-  { id: 'grr', name: 'GRR', cat: 'revenue', unit: '%', format: 'pct', benchmarkGood: 90 },
-  { id: 'arr_new', name: 'ARR New', cat: 'revenue', unit: '€', format: 'currency' },
-  { id: 'arr_expansion', name: 'ARR Expansion', cat: 'revenue', unit: '€', format: 'currency' },
-  { id: 'arr_contraction', name: 'ARR Contraction', cat: 'revenue', unit: '€', format: 'currency', inverse: true },
-  { id: 'arr_churn', name: 'ARR Churn', cat: 'revenue', unit: '€', format: 'currency', inverse: true },
-  { id: 'revenue_growth', name: 'Revenue Growth Rate', cat: 'revenue', unit: '%', format: 'pct' },
-  { id: 'acv', name: 'ACV', cat: 'revenue', unit: '€', format: 'currency' },
-  { id: 'arpu', name: 'ARPU', cat: 'revenue', unit: '€', format: 'currency' },
-  { id: 'ltv', name: 'LTV', cat: 'revenue', unit: '€', format: 'currency' },
-  { id: 'ltv_cac', name: 'LTV/CAC', cat: 'revenue', unit: 'x', format: 'number' },
-  // Retention
-  { id: 'churn_clients', name: 'Churn Clients', cat: 'retention', unit: '%', format: 'pct', inverse: true, recommended: true, benchmarkGood: 5 },
-  { id: 'churn_revenue', name: 'Churn Revenus', cat: 'retention', unit: '%', format: 'pct', inverse: true },
-  { id: 'retention_net', name: 'Rétention Net', cat: 'retention', unit: '%', format: 'pct' },
-  { id: 'renewal_rate', name: 'Taux Renouvellement', cat: 'retention', unit: '%', format: 'pct' },
-  { id: 'logo_retention', name: 'Logo Retention', cat: 'retention', unit: '%', format: 'pct' },
-  { id: 'at_risk', name: 'At-Risk Accounts', cat: 'retention', unit: '', format: 'number' },
-  { id: 'saved_accounts', name: 'Saved Accounts', cat: 'retention', unit: '', format: 'number' },
-  // Health
-  { id: 'health_avg', name: 'Health Score Moyen', cat: 'health', unit: '/100', format: 'score', recommended: true },
-  { id: 'nps', name: 'NPS', cat: 'health', unit: '', format: 'number', recommended: true, benchmarkGood: 50 },
-  { id: 'csat', name: 'CSAT', cat: 'health', unit: '/5', format: 'score' },
-  { id: 'ces', name: 'CES', cat: 'health', unit: '/7', format: 'score' },
-  { id: 'critical_count', name: 'Comptes Critiques', cat: 'health', unit: '', format: 'number', inverse: true },
-  { id: 'watch_count', name: 'Comptes Vigilance', cat: 'health', unit: '', format: 'number' },
-  { id: 'healthy_count', name: 'Comptes Sains', cat: 'health', unit: '', format: 'number' },
-  // Expansion
-  { id: 'expansion_rate', name: 'Taux Expansion', cat: 'expansion', unit: '%', format: 'pct' },
-  { id: 'upsell_revenue', name: 'Upsell Revenue', cat: 'expansion', unit: '€', format: 'currency' },
-  { id: 'crosssell_revenue', name: 'Cross-sell Revenue', cat: 'expansion', unit: '€', format: 'currency' },
-  { id: 'net_new_arr', name: 'Net New ARR', cat: 'expansion', unit: '€', format: 'currency' },
-  { id: 'pipeline_expansion', name: 'Pipeline Expansion', cat: 'expansion', unit: '€', format: 'currency' },
-  // Activation
-  { id: 'ttfv', name: 'Time to First Value', cat: 'activation', unit: 'j', format: 'number', inverse: true },
-  { id: 'tta', name: 'Time to Activation', cat: 'activation', unit: 'j', format: 'number', inverse: true },
-  { id: 'activation_rate', name: 'Taux Activation', cat: 'activation', unit: '%', format: 'pct' },
-  { id: 'onboarding_rate', name: 'Onboarding Completion', cat: 'activation', unit: '%', format: 'pct' },
-  { id: 'feature_adoption', name: 'Feature Adoption', cat: 'activation', unit: '%', format: 'pct' },
-  { id: 'dau_mau', name: 'DAU/MAU', cat: 'activation', unit: '%', format: 'pct' },
-  // Team
-  { id: 'accounts_per_csm', name: 'Comptes / CSM', cat: 'team', unit: '', format: 'number' },
-  { id: 'arr_per_csm', name: 'ARR / CSM', cat: 'team', unit: '€', format: 'currency' },
-  { id: 'churn_per_csm', name: 'Churn / CSM', cat: 'team', unit: '%', format: 'pct', inverse: true },
-  { id: 'nps_per_csm', name: 'NPS / CSM', cat: 'team', unit: '', format: 'number' },
-  { id: 'response_time', name: 'Temps réponse client', cat: 'team', unit: 'h', format: 'number', inverse: true },
-  { id: 'wellbeing_team', name: 'Bien-être Équipe', cat: 'team', unit: '/100', format: 'score' },
-  // Engagement
-  { id: 'qbr_done', name: 'QBRs réalisés', cat: 'engagement', unit: '%', format: 'pct' },
-  { id: 'email_response', name: 'Taux réponse email', cat: 'engagement', unit: '%', format: 'pct' },
-  { id: 'touches_month', name: 'Touches / mois', cat: 'engagement', unit: '', format: 'number' },
-  { id: 'tickets_open', name: 'Tickets ouverts', cat: 'engagement', unit: '', format: 'number', inverse: true },
-  { id: 'resolution_time', name: 'Délai résolution', cat: 'engagement', unit: 'h', format: 'number', inverse: true },
-]
+function uid() { return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) }
+
+const BLOCK_DEFAULTS = {
+  kpi_grid: { kpis: [{ label: '', value: '', unit: '', trend: 'up', color: '#10b981' }] },
+  kpi_single: { label: '', value: '', unit: '', trend: 'up', previous: '', color: '#7c3aed' },
+  chart_bar: { labels: ['Jan', 'Fév', 'Mar'], datasets: [{ label: 'Série 1', data: [10, 20, 15], color: '#7c3aed' }] },
+  chart_line: { labels: ['Jan', 'Fév', 'Mar', 'Avr'], datasets: [{ label: 'Série 1', data: [5, 12, 8, 18], color: '#3b82f6' }] },
+  chart_donut: { labels: ['Sain', 'Vigilance', 'Critique'], data: [60, 25, 15], colors: ['#10b981', '#f59e0b', '#ef4444'] },
+  text: { content: '', size: 'normal' },
+  table: { headers: ['Col 1', 'Col 2', 'Col 3'], rows: [['', '', '']] },
+  divider: { style: 'line' },
+  image: { url: '', caption: '' },
+  checklist: { items: [{ text: '', done: false }] },
+  timeline: { events: [{ date: '', title: '', desc: '', status: 'done' }] },
+  quote: { text: '', author: '', role: '' },
+  action_plan: { actions: [{ what: '', who: '', when: '', status: 'todo' }] },
+}
 
 export const useKpiStore = defineStore('kpis', () => {
-  const copils = ref([])
+  const copils = ref(JSON.parse(localStorage.getItem('scalyo_copils') || '[]'))
 
-  function addCopil(data) {
-    const id = 'copil_' + Date.now()
-    copils.value.push({ id, createdAt: new Date().toISOString().slice(0, 10), ...data })
+  function save() { localStorage.setItem('scalyo_copils', JSON.stringify(copils.value)) }
+
+  function createCopil(partial = {}) {
+    const id = uid()
+    const copil = {
+      id,
+      title: partial.title || '',
+      subtitle: partial.subtitle || '',
+      clientName: partial.clientName || '',
+      clientLogo: null,
+      period: partial.period || '',
+      date: new Date().toISOString().slice(0, 10),
+      color: partial.color || '#7c3aed',
+      presenter: partial.presenter || '',
+      lang: partial.lang || 'fr',
+      blocks: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      shareToken: uid(),
+    }
+    copils.value.push(copil)
+    save()
     return id
   }
 
-  function updateCopil(id, data) {
-    const i = copils.value.findIndex(c => c.id === id)
-    if (i !== -1) Object.assign(copils.value[i], data)
+  function updateCopil(id, changes) {
+    const c = copils.value.find(c => c.id === id)
+    if (c) { Object.assign(c, changes, { updatedAt: new Date().toISOString() }); save() }
   }
 
   function deleteCopil(id) {
     copils.value = copils.value.filter(c => c.id !== id)
+    save()
   }
 
   function duplicateCopil(id) {
     const orig = copils.value.find(c => c.id === id)
-    if (orig) {
-      const copy = JSON.parse(JSON.stringify(orig))
-      copy.id = 'copil_' + Date.now()
-      copy.name = orig.name + ' (copy)'
-      copy.createdAt = new Date().toISOString().slice(0, 10)
-      copils.value.push(copy)
-    }
+    if (!orig) return null
+    const newId = uid()
+    const copy = JSON.parse(JSON.stringify(orig))
+    copy.id = newId
+    copy.title = orig.title + ' (copie)'
+    copy.createdAt = new Date().toISOString()
+    copy.updatedAt = new Date().toISOString()
+    copy.shareToken = uid()
+    copils.value.push(copy)
+    save()
+    return newId
   }
 
-  function getCopil(id) {
-    return copils.value.find(c => c.id === id)
+  function getCopil(id) { return copils.value.find(c => c.id === id) }
+
+  function addBlock(copilId, type) {
+    const c = copils.value.find(c => c.id === copilId)
+    if (!c) return
+    c.blocks.push({
+      id: uid(),
+      type,
+      title: '',
+      data: JSON.parse(JSON.stringify(BLOCK_DEFAULTS[type] || {})),
+      visible: true,
+      width: 'full',
+    })
+    c.updatedAt = new Date().toISOString()
+    save()
   }
 
-  function computeScore(copil) {
-    if (!copil?.kpis?.length) return 0
-    let total = 0, count = 0
-    for (const kpi of copil.kpis) {
-      if (!kpi.target || !kpi.value) continue
-      const catalog = KPI_CATALOG.find(k => k.id === kpi.kpiId)
-      const ratio = catalog?.inverse ? kpi.target / kpi.value : kpi.value / kpi.target
-      total += Math.min(ratio * 100, 120)
-      count++
-    }
-    return count ? Math.round(total / count) : 0
+  function updateBlock(copilId, blockId, changes) {
+    const c = copils.value.find(c => c.id === copilId)
+    if (!c) return
+    const b = c.blocks.find(b => b.id === blockId)
+    if (b) { Object.assign(b, changes); c.updatedAt = new Date().toISOString(); save() }
   }
 
-  function scoreStatus(score) {
-    if (score >= 95) return 'excellent'
-    if (score >= 75) return 'good'
-    if (score >= 50) return 'attention'
-    return 'critical'
+  function deleteBlock(copilId, blockId) {
+    const c = copils.value.find(c => c.id === copilId)
+    if (!c) return
+    c.blocks = c.blocks.filter(b => b.id !== blockId)
+    c.updatedAt = new Date().toISOString()
+    save()
   }
 
-  return { copils, addCopil, updateCopil, deleteCopil, duplicateCopil, getCopil, computeScore, scoreStatus }
+  function reorderBlocks(copilId, newOrder) {
+    const c = copils.value.find(c => c.id === copilId)
+    if (!c) return
+    const map = Object.fromEntries(c.blocks.map(b => [b.id, b]))
+    c.blocks = newOrder.map(id => map[id]).filter(Boolean)
+    c.updatedAt = new Date().toISOString()
+    save()
+  }
+
+  return {
+    copils, createCopil, updateCopil, deleteCopil, duplicateCopil,
+    getCopil, addBlock, updateBlock, deleteBlock, reorderBlocks, BLOCK_DEFAULTS,
+  }
 })
