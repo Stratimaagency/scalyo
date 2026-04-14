@@ -782,6 +782,9 @@ export default {
   res_mark_done: '✓ Marquer comme lu',
   res_download_cert: 'Télécharger mon certificat',
   res_lesson_coming: 'Contenu de la leçon disponible prochainement.',
+  res_prev: 'Précédent',
+  res_next: 'Suivant',
+  res_notes_ph: 'Écrivez vos réflexions, réponses aux questions, notes personnelles...',
   sidebar_res_wellbeing: 'Gestion du stress',
 
   // Slide-over

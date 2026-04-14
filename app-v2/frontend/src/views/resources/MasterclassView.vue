@@ -1,228 +1,568 @@
 <template>
-  <div class="mc-view">
-    <div class="mc-header">
-      <h1>🎓 {{ t('nav.masterclass') }}</h1>
-      <p>{{ t('nav.masterclassSub') }}</p>
+  <div class="mc">
+
+    <!-- Si aucune masterclass sélectionnée : liste des masterclasses -->
+    <div v-if="!activeMc" class="mc-list-view">
+      <div class="mc-list-header">
+        <h1>🎓 {{ t('nav.masterclass') }}</h1>
+        <p>{{ t('nav.masterclassSub') }}</p>
+      </div>
+
+      <div class="mc-cards">
+        <div v-for="mc in store.masterclasses" :key="mc.id"
+             class="mc-card"
+             :class="{ 'is-new': mc.isNew }"
+             @click="selectMc(mc)">
+
+          <div class="mc-card-accent" :class="mc.isNew ? 'accent-purple' : 'accent-green'" />
+
+          <div class="mc-card-body">
+            <div class="mc-card-top">
+              <span class="mc-badge" :class="mc.isNew ? 'badge-new' : 'badge-done'">
+                {{ mc.isNew ? '🆕 ' + mc.quarter : mc.quarter }}
+              </span>
+              <span class="mc-duration">⏱ {{ mc.totalDuration }}</span>
+            </div>
+
+            <h2>{{ mc.title }}</h2>
+            <p>{{ mc.description }}</p>
+
+            <div class="mc-card-stats">
+              <span>📚 {{ mc.modules.length }} modules</span>
+              <span>·</span>
+              <span>{{ totalLessonsCount(mc) }} {{ t('res_lessons') }}</span>
+            </div>
+
+            <div class="mc-progress-wrap">
+              <div class="mc-progress-bar">
+                <div class="mc-progress-fill"
+                     :style="{ width: getMcProgress(mc.id) + '%' }"
+                     :class="mc.isNew ? 'fill-purple' : 'fill-green'" />
+              </div>
+              <span class="mc-progress-pct">{{ getMcProgress(mc.id) }}%</span>
+            </div>
+
+            <button class="mc-start-btn" :class="{ 'btn-continue': getMcProgress(mc.id) > 0 }">
+              {{ getMcProgress(mc.id) === 0 ? t('res_start') :
+                 getMcProgress(mc.id) === 100 ? '🎓 ' + t('res_completed') :
+                 t('res_continue') }}
+            </button>
+          </div>
+
+          <div v-if="getMcProgress(mc.id) === 100" class="mc-card-badge">🏆</div>
+        </div>
+      </div>
     </div>
 
-    <div class="mc-list">
-      <div v-for="mc in store.masterclasses" :key="mc.id"
-           class="mc-card" :class="{ 'is-new': mc.isNew }">
+    <!-- Vue cours actif -->
+    <div v-else class="mc-course-view">
 
-        <!-- Card header -->
-        <div class="mcc-top">
-          <div class="mcc-left">
-            <div class="mcc-badges">
-              <span v-if="mc.isNew" class="badge-new">🎓 NOUVEAU · {{ mc.quarter }}</span>
-              <span v-else class="badge-quarter">{{ mc.quarter }}</span>
+      <!-- Sidebar -->
+      <aside class="mc-sidebar">
+        <button class="mc-back-btn" @click="activeMc = null; activeLesson = null">
+          ← {{ t('back') }}
+        </button>
+
+        <div class="mc-sidebar-title">{{ activeMc.title }}</div>
+
+        <div class="mc-sidebar-progress">
+          <div class="mc-progress-bar">
+            <div class="mc-progress-fill fill-purple"
+                 :style="{ width: getMcProgress(activeMc.id) + '%' }" />
+          </div>
+          <span>{{ getMcProgress(activeMc.id) }}% {{ t('res_completed') }}</span>
+        </div>
+
+        <div class="mc-sidebar-modules">
+          <div v-for="(mod, mi) in activeMc.modules" :key="mod.id" class="mc-sidebar-mod">
+
+            <div class="mc-mod-header"
+                 @click="openModules[mod.id] = !openModules[mod.id]"
+                 :class="{ 'mod-done': isModuleDone(mod) }">
+              <div class="mc-mod-num" :class="{ done: isModuleDone(mod) }">
+                {{ isModuleDone(mod) ? '✓' : mi + 1 }}
+              </div>
+              <span class="mc-mod-title">{{ mod.title }}</span>
+              <span class="mc-mod-chev">{{ openModules[mod.id] ? '▾' : '▸' }}</span>
             </div>
-            <h2>{{ mc.title }}</h2>
-            <div class="mcc-meta">
-              <span>{{ mc.modules?.length || 0 }} modules</span>
-              <span>·</span>
-              <span>{{ totalLessons(mc) }} {{ t('res_lessons') }}</span>
-              <span>·</span>
-              <span>{{ mc.totalDuration }}</span>
+
+            <div v-if="openModules[mod.id]" class="mc-sidebar-lessons">
+              <div v-for="lesson in mod.lessons" :key="lesson.id"
+                   class="mc-sidebar-lesson"
+                   :class="{ active: activeLesson?.id === lesson.id, done: completedLessons.includes(lesson.id) }"
+                   @click="selectLesson(lesson, mod)">
+                <span class="lesson-status">
+                  {{ completedLessons.includes(lesson.id) ? '✓' : activeLesson?.id === lesson.id ? '▶' : '○' }}
+                </span>
+                <div class="lesson-info">
+                  <span class="lesson-title">{{ lesson.title }}</span>
+                  <span class="lesson-dur">{{ lesson.duration }}</span>
+                </div>
+              </div>
+
+              <div v-for="ex in mod.exercises" :key="ex.id"
+                   class="mc-sidebar-lesson exercise"
+                   :class="{ active: activeLesson?.id === ex.id, done: completedLessons.includes(ex.id) }"
+                   @click="selectLesson(ex, mod, true)">
+                <span class="lesson-status">
+                  {{ completedLessons.includes(ex.id) ? '✓' : activeLesson?.id === ex.id ? '▶' : '📝' }}
+                </span>
+                <div class="lesson-info">
+                  <span class="lesson-title">{{ ex.title }}</span>
+                  <span class="lesson-dur exercise-tag">Exercice · {{ ex.duration }}</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="mcc-right">
-            <div class="mcc-progress-ring">
-              <svg viewBox="0 0 40 40">
-                <circle cx="20" cy="20" r="16" fill="none" stroke="#e5e7eb" stroke-width="3"/>
-                <circle cx="20" cy="20" r="16" fill="none"
-                  :stroke="mc.isNew ? '#7c3aed' : '#10b981'"
-                  stroke-width="3"
-                  stroke-dasharray="100.5"
-                  :stroke-dashoffset="100.5 - (mcProgress(mc) / 100 * 100.5)"
-                  transform="rotate(-90 20 20)" />
-              </svg>
-              <span>{{ mcProgress(mc) }}%</span>
+        </div>
+      </aside>
+
+      <!-- Contenu principal -->
+      <main class="mc-content" ref="contentRef">
+
+        <!-- Welcome screen -->
+        <div v-if="!activeLesson" class="mc-welcome">
+          <div class="mc-welcome-inner">
+            <div class="mc-welcome-icon">🎓</div>
+            <h2>{{ activeMc.title }}</h2>
+            <p>{{ activeMc.description }}</p>
+            <div class="mc-welcome-stats">
+              <div class="stat"><strong>{{ activeMc.modules.length }}</strong><span>modules</span></div>
+              <div class="stat"><strong>{{ totalLessonsCount(activeMc) }}</strong><span>{{ t('res_lessons') }}</span></div>
+              <div class="stat"><strong>{{ activeMc.totalDuration }}</strong><span>de contenu</span></div>
             </div>
-            <button class="btn-start" :class="{ 'btn-continue': mcProgress(mc) > 0 }"
-                    @click="openMc === mc.id ? openMc = null : openMc = mc.id">
-              {{ mcProgress(mc) === 0 ? t('res_start') :
-                 mcProgress(mc) === 100 ? t('res_completed') : t('res_continue') }}
+            <button class="mc-start-btn" @click="startFirst">
+              {{ getMcProgress(activeMc.id) > 0 ? t('res_continue') : t('res_start') }} →
             </button>
           </div>
         </div>
 
-        <!-- Modules list (expanded) -->
-        <div v-if="openMc === mc.id" class="mcc-modules">
-          <div v-for="(mod, mi) in mc.modules" :key="mod.id" class="mc-mod">
+        <!-- Leçon active -->
+        <div v-else class="mc-lesson">
 
-            <!-- Module header -->
-            <div class="mcm-header"
-                 @click="openMod === mod.id ? openMod = null : openMod = mod.id">
-              <div class="mcm-left">
-                <div class="mcm-num" :class="{ done: isModDone(mod) }">
-                  {{ isModDone(mod) ? '✓' : mi + 1 }}
-                </div>
-                <div>
-                  <strong>{{ mod.title }}</strong>
-                  <span class="mcm-meta">
-                    {{ mod.lessons?.length || 0 }} {{ t('res_lessons') }}
-                    · {{ mod.exercises?.length || 0 }} {{ t('res_exercises') }}
-                    · {{ mod.duration }}
-                  </span>
-                </div>
-              </div>
-              <span class="mcm-chev">{{ openMod === mod.id ? '▾' : '▸' }}</span>
+          <div class="mc-lesson-header">
+            <div class="mc-breadcrumb">
+              <span>{{ activeMc.title }}</span>
+              <span>›</span>
+              <span>{{ activeModule?.title }}</span>
             </div>
-
-            <!-- Lessons list -->
-            <div v-if="openMod === mod.id" class="mcm-lessons">
-
-              <!-- Lessons -->
-              <div v-for="lesson in mod.lessons" :key="lesson.id"
-                   class="mcl-item"
-                   @click="openLesson === lesson.id ? openLesson = null : openLesson = lesson.id">
-                <div class="mcl-left">
-                  <span class="mcl-icon" :class="{ done: completedLessons.includes(lesson.id) }">
-                    {{ completedLessons.includes(lesson.id) ? '✅' : '📖' }}
-                  </span>
-                  <div>
-                    <span class="mcl-title">{{ lesson.title }}</span>
-                    <span class="mcl-dur">{{ lesson.duration }}</span>
-                  </div>
-                </div>
-                <span class="mcl-chev">{{ openLesson === lesson.id ? '▾' : '▸' }}</span>
-              </div>
-
-              <!-- Lesson content expanded -->
-              <div v-if="openLesson && mod.lessons.find(l => l.id === openLesson)"
-                   class="mcl-content">
-                <p>{{ mod.lessons.find(l => l.id === openLesson)?.content || t('res_lesson_coming') }}</p>
-                <button class="btn-done"
-                        @click="markDone(openLesson)">
-                  {{ completedLessons.includes(openLesson) ? '✅ ' + t('res_completed') : t('res_mark_done') }}
-                </button>
-              </div>
-
-              <!-- Exercises -->
-              <div v-for="ex in mod.exercises" :key="ex.id" class="mcl-item exercise">
-                <div class="mcl-left">
-                  <span class="mcl-icon">📝</span>
-                  <div>
-                    <span class="mcl-title">{{ ex.title }}</span>
-                    <span class="mcl-dur">{{ ex.duration }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Empty state -->
-              <div v-if="!mod.lessons?.length" class="mcl-empty">
-                {{ t('res_lesson_coming') }}
-              </div>
-
+            <div class="mc-lesson-meta">
+              <span class="mc-lesson-type" :class="isExercise ? 'type-exercise' : 'type-lesson'">
+                {{ isExercise ? '📝 Exercice' : '📖 Leçon' }}
+              </span>
+              <span class="mc-lesson-dur">{{ activeLesson.duration }}</span>
             </div>
           </div>
-        </div>
 
-        <!-- Certificate button if 100% -->
-        <div v-if="mcProgress(mc) === 100" class="mcc-cert">
-          <button class="btn-cert">🎓 {{ t('res_download_cert') }}</button>
-        </div>
+          <h1 class="mc-lesson-title">{{ activeLesson.title }}</h1>
 
-      </div>
+          <!-- Contenu leçon -->
+          <div v-if="!isExercise" class="mc-lesson-body">
+            <div v-for="(block, i) in parsedContent" :key="i" class="mc-content-block">
+              <p v-if="block.type === 'paragraph'" class="mc-paragraph">{{ block.text }}</p>
+              <div v-else-if="block.type === 'list-item'" class="mc-list-item">
+                <span class="mc-bullet" :class="getBulletClass(block.text)">{{ getBulletIcon(block.text) }}</span>
+                <span>{{ cleanBullet(block.text) }}</span>
+              </div>
+              <h3 v-else-if="block.type === 'heading'" class="mc-heading">{{ block.text }}</h3>
+              <div v-else-if="block.type === 'highlight'" class="mc-highlight">{{ block.text }}</div>
+            </div>
+
+            <div class="mc-lesson-actions">
+              <button class="mc-mark-done" :class="{ done: completedLessons.includes(activeLesson.id) }"
+                      @click="toggleLessonDone(activeLesson.id)">
+                {{ completedLessons.includes(activeLesson.id) ? '✅ ' + t('res_completed') : '○ ' + t('res_mark_done') }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Exercice -->
+          <div v-else class="mc-exercise-body">
+
+            <!-- Type checklist -->
+            <div v-if="exerciseType === 'checklist'" class="ex-checklist">
+              <p class="ex-intro">{{ exerciseIntro }}</p>
+              <div class="ex-checks">
+                <label v-for="(item, i) in checklistItems" :key="i" class="ex-check-item">
+                  <input type="checkbox" v-model="checkedItems[i]" />
+                  <span :class="{ checked: checkedItems[i] }">{{ item }}</span>
+                </label>
+              </div>
+              <div class="ex-checklist-progress">
+                <div class="mc-progress-bar">
+                  <div class="mc-progress-fill fill-green" :style="{ width: (checkedItems.filter(Boolean).length / checklistItems.length * 100) + '%' }" />
+                </div>
+                <span>{{ checkedItems.filter(Boolean).length }}/{{ checklistItems.length }}</span>
+              </div>
+            </div>
+
+            <!-- Type notes (défaut) -->
+            <div v-else class="ex-notes">
+              <div class="ex-instructions">
+                <div v-for="(block, i) in parsedContent" :key="i">
+                  <p v-if="block.type === 'paragraph'" class="mc-paragraph">{{ block.text }}</p>
+                  <div v-else-if="block.type === 'list-item'" class="mc-list-item">
+                    <span class="mc-bullet">→</span>
+                    <span>{{ cleanBullet(block.text) }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="ex-notes-area">
+                <label>📝 Mes notes & réponses</label>
+                <textarea v-model="exerciseNotes[activeLesson.id]" :placeholder="t('res_notes_ph')" @input="saveNotes" rows="6" />
+                <span class="ex-notes-saved" v-if="notesSaved">✓ Sauvegardé</span>
+              </div>
+            </div>
+
+            <div class="mc-lesson-actions">
+              <button class="mc-mark-done" :class="{ done: completedLessons.includes(activeLesson.id) }"
+                      @click="toggleLessonDone(activeLesson.id)">
+                {{ completedLessons.includes(activeLesson.id) ? '✅ Exercice terminé' : '○ Marquer comme terminé' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Navigation leçons -->
+          <div class="mc-nav">
+            <button class="mc-nav-btn" @click="prevLesson" :disabled="!hasPrev">← {{ t('res_prev') }}</button>
+            <span class="mc-nav-pos">{{ currentPosition }}</span>
+            <button class="mc-nav-btn primary" @click="nextLesson" :disabled="!hasNext">{{ t('res_next') }} →</button>
+          </div>
+
+          <!-- Badge de module complété -->
+          <transition name="badge-pop">
+            <div v-if="showBadge" class="mc-badge-popup">
+              <div class="badge-icon">🏅</div>
+              <div><strong>Module terminé !</strong><p>{{ badgeModuleName }}</p></div>
+              <button @click="showBadge = false">✕</button>
+            </div>
+          </transition>
+
+        </div>
+      </main>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useResourceStore } from '@/stores/resources'
 
 const { t } = useI18n({ useScope: 'global' })
 const store = useResourceStore()
 
-const openMc = ref(null)
-const openMod = ref(null)
-const openLesson = ref(null)
-const completedLessons = ref([])
+const activeMc = ref(null)
+const activeLesson = ref(null)
+const activeModule = ref(null)
+const isExercise = ref(false)
+const contentRef = ref(null)
 
-function totalLessons(mc) {
-  return (mc.modules || []).reduce((s, m) => s + (m.lessons?.length || 0), 0)
+const completedLessons = ref(JSON.parse(localStorage.getItem('scalyo_mc_progress') || '[]'))
+const exerciseNotes = ref(JSON.parse(localStorage.getItem('scalyo_mc_notes') || '{}'))
+const openModules = ref({})
+
+const showBadge = ref(false)
+const badgeModuleName = ref('')
+const notesSaved = ref(false)
+const checkedItems = ref([])
+
+// ── Helpers ──
+
+function totalLessonsCount(mc) {
+  return mc.modules.reduce((s, m) => s + (m.lessons?.length || 0) + (m.exercises?.length || 0), 0)
 }
 
-function isModDone(mod) {
-  return (mod.lessons || []).every(l => completedLessons.value.includes(l.id))
-}
-
-function mcProgress(mc) {
-  const total = totalLessons(mc)
+function getMcProgress(mcId) {
+  const mc = store.masterclasses.find(m => m.id === mcId)
+  if (!mc) return 0
+  const total = totalLessonsCount(mc)
   if (!total) return 0
-  const done = (mc.modules || []).reduce((s, m) =>
-    s + (m.lessons || []).filter(l => completedLessons.value.includes(l.id)).length, 0)
+  const done = mc.modules.reduce((s, mod) => {
+    return s + (mod.lessons || []).filter(l => completedLessons.value.includes(l.id)).length
+             + (mod.exercises || []).filter(e => completedLessons.value.includes(e.id)).length
+  }, 0)
   return Math.round(done / total * 100)
 }
 
-function markDone(lessonId) {
+function isModuleDone(mod) {
+  const allIds = [...(mod.lessons || []).map(l => l.id), ...(mod.exercises || []).map(e => e.id)]
+  return allIds.length > 0 && allIds.every(id => completedLessons.value.includes(id))
+}
+
+const flatLessons = computed(() => {
+  if (!activeMc.value) return []
+  const list = []
+  activeMc.value.modules.forEach(mod => {
+    ;(mod.lessons || []).forEach(l => list.push({ ...l, modId: mod.id, isEx: false }))
+    ;(mod.exercises || []).forEach(e => list.push({ ...e, modId: mod.id, isEx: true }))
+  })
+  return list
+})
+
+const currentIndex = computed(() => activeLesson.value ? flatLessons.value.findIndex(l => l.id === activeLesson.value.id) : -1)
+const hasPrev = computed(() => currentIndex.value > 0)
+const hasNext = computed(() => currentIndex.value < flatLessons.value.length - 1)
+const currentPosition = computed(() => currentIndex.value >= 0 ? `${currentIndex.value + 1} / ${flatLessons.value.length}` : '')
+
+const parsedContent = computed(() => {
+  if (!activeLesson.value?.content) return []
+  return activeLesson.value.content.split('\n').filter(l => l.trim()).map(line => {
+    const trimmed = line.trim()
+    if (trimmed.startsWith('→') || trimmed.startsWith('-') || trimmed.match(/^\d+\./)) return { type: 'list-item', text: trimmed }
+    if (trimmed.match(/^[A-Z][A-Z\s]+:/) || trimmed.endsWith(':')) return { type: 'heading', text: trimmed }
+    if (trimmed.startsWith('"') && trimmed.endsWith('"')) return { type: 'highlight', text: trimmed }
+    return { type: 'paragraph', text: trimmed }
+  })
+})
+
+const exerciseType = computed(() => {
+  if (!activeLesson.value?.content) return 'notes'
+  const c = activeLesson.value.content
+  if (c.includes('☐') || c.includes('□')) return 'checklist'
+  return 'notes'
+})
+
+const checklistItems = computed(() => {
+  if (exerciseType.value !== 'checklist') return []
+  return activeLesson.value.content.split('\n').filter(l => l.includes('☐') || l.includes('□')).map(l => l.replace(/☐|□/g, '').trim())
+})
+
+const exerciseIntro = computed(() => {
+  if (!activeLesson.value?.content) return ''
+  return activeLesson.value.content.split('\n').find(l => !l.includes('☐') && !l.includes('□') && l.trim()) || ''
+})
+
+// ── Actions ──
+
+function selectMc(mc) {
+  activeMc.value = mc
+  activeLesson.value = null
+  if (mc.modules[0]) openModules.value[mc.modules[0].id] = true
+}
+
+function selectLesson(lesson, mod, asExercise = false) {
+  activeLesson.value = lesson
+  activeModule.value = mod
+  isExercise.value = asExercise
+  checkedItems.value = checklistItems.value.map(() => false)
+  nextTick(() => contentRef.value?.scrollTo(0, 0))
+}
+
+function startFirst() {
+  const first = flatLessons.value[0]
+  if (!first) return
+  const mod = activeMc.value.modules.find(m => m.id === first.modId)
+  if (mod) { openModules.value[mod.id] = true; selectLesson(first, mod, first.isEx) }
+}
+
+function toggleLessonDone(lessonId) {
   const idx = completedLessons.value.indexOf(lessonId)
-  if (idx >= 0) completedLessons.value.splice(idx, 1)
-  else completedLessons.value.push(lessonId)
+  if (idx >= 0) {
+    completedLessons.value.splice(idx, 1)
+  } else {
+    completedLessons.value.push(lessonId)
+    const mod = activeMc.value?.modules.find(m =>
+      m.lessons?.some(l => l.id === lessonId) || m.exercises?.some(e => e.id === lessonId))
+    if (mod && isModuleDone(mod)) {
+      badgeModuleName.value = mod.title
+      showBadge.value = true
+      setTimeout(() => showBadge.value = false, 4000)
+    }
+  }
+  localStorage.setItem('scalyo_mc_progress', JSON.stringify(completedLessons.value))
+}
+
+function saveNotes() {
+  localStorage.setItem('scalyo_mc_notes', JSON.stringify(exerciseNotes.value))
+  notesSaved.value = true
+  setTimeout(() => notesSaved.value = false, 2000)
+}
+
+function prevLesson() {
+  if (!hasPrev.value) return
+  const prev = flatLessons.value[currentIndex.value - 1]
+  const mod = activeMc.value.modules.find(m => m.id === prev.modId)
+  if (mod) { openModules.value[mod.id] = true; selectLesson(prev, mod, prev.isEx) }
+}
+
+function nextLesson() {
+  if (!hasNext.value) return
+  if (!completedLessons.value.includes(activeLesson.value.id)) toggleLessonDone(activeLesson.value.id)
+  const next = flatLessons.value[currentIndex.value + 1]
+  const mod = activeMc.value.modules.find(m => m.id === next.modId)
+  if (mod) { openModules.value[mod.id] = true; selectLesson(next, mod, next.isEx) }
+}
+
+function getBulletClass(text) {
+  if (text.includes('🔴') || text.includes('❌')) return 'bullet-red'
+  if (text.includes('🟠')) return 'bullet-orange'
+  if (text.includes('🟡')) return 'bullet-yellow'
+  if (text.includes('🟢') || text.includes('✅')) return 'bullet-green'
+  return 'bullet-default'
+}
+function getBulletIcon(text) {
+  if (text.startsWith('→')) return '→'
+  if (text.match(/^\d+\./)) return text.match(/^\d+/)[0] + '.'
+  return '·'
+}
+function cleanBullet(text) {
+  return text.replace(/^→\s*/, '').replace(/^\d+\.\s*/, '').trim()
 }
 </script>
 
 <style scoped>
-.mc-view { max-width: 800px; }
-.mc-header { margin-bottom: 28px; }
-.mc-header h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
-.mc-header p { font-size: 0.85rem; color: var(--text-secondary); }
-.mc-list { display: flex; flex-direction: column; gap: 16px; }
+.mc { height: 100%; }
 
-.mc-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; transition: box-shadow 0.2s; }
-.mc-card:hover { box-shadow: var(--shadow-sm); }
-.mc-card.is-new { border-color: var(--purple-border); }
+/* ── Liste masterclasses ── */
+.mc-list-view { max-width: 900px; }
+.mc-list-header { margin-bottom: 32px; }
+.mc-list-header h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
+.mc-list-header p { font-size: 0.85rem; color: var(--text-secondary); }
 
-.mcc-top { display: flex; justify-content: space-between; align-items: flex-start; padding: 24px; gap: 20px; }
-.mcc-left { flex: 1; }
-.mcc-badges { margin-bottom: 8px; }
-.badge-new { font-size: 0.65rem; font-weight: 700; background: var(--purple); color: #fff; padding: 3px 10px; border-radius: 4px; }
-.badge-quarter { font-size: 0.72rem; color: var(--text-muted); }
-.mcc-left h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
-.mcc-meta { display: flex; gap: 6px; font-size: 0.72rem; color: var(--text-muted); }
+.mc-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
+.mc-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
+.mc-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.mc-card-accent { height: 4px; }
+.accent-purple { background: linear-gradient(90deg, var(--purple), #a78bfa); }
+.accent-green { background: linear-gradient(90deg, var(--green), #34d399); }
+.mc-card-body { padding: 24px; }
+.mc-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.mc-badge { font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 99px; }
+.badge-new { background: var(--purple-bg); color: var(--purple); }
+.badge-done { background: var(--bg); color: var(--text-muted); }
+.mc-duration { font-size: 0.72rem; color: var(--text-muted); }
+.mc-card h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
+.mc-card p { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px; }
+.mc-card-stats { display: flex; gap: 8px; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 16px; }
 
-.mcc-right { display: flex; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0; }
-.mcc-progress-ring { position: relative; width: 48px; height: 48px; }
-.mcc-progress-ring svg { width: 100%; height: 100%; }
-.mcc-progress-ring span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: var(--text); }
+.mc-progress-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.mc-progress-bar { flex: 1; height: 6px; background: var(--bg); border-radius: 99px; overflow: hidden; }
+.mc-progress-fill { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+.fill-purple { background: var(--purple); }
+.fill-green { background: var(--green); }
+.mc-progress-pct { font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; }
 
-.btn-start { background: var(--purple); color: #fff; border: none; padding: 8px 18px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
-.btn-start:hover { background: var(--purple-dark); }
+.mc-start-btn { background: var(--purple); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.15s; width: 100%; }
+.mc-start-btn:hover { background: var(--purple-dark); }
 .btn-continue { background: var(--green); }
 .btn-continue:hover { background: #059669; }
+.mc-card-badge { position: absolute; top: 16px; right: 16px; font-size: 1.8rem; }
 
-.mcc-modules { border-top: 1px solid var(--border-light); }
+/* ── Vue cours ── */
+.mc-course-view { display: flex; height: calc(100vh - 80px); overflow: hidden; }
 
-.mc-mod { border-bottom: 1px solid var(--border-light); }
-.mc-mod:last-child { border-bottom: none; }
+.mc-sidebar { width: 280px; flex-shrink: 0; background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+.mc-back-btn { background: none; border: none; cursor: pointer; padding: 16px 20px; text-align: left; font-size: 0.82rem; color: var(--text-muted); border-bottom: 1px solid var(--border-light); transition: color 0.15s; }
+.mc-back-btn:hover { color: var(--purple); }
+.mc-sidebar-title { padding: 16px 20px 8px; font-size: 0.85rem; font-weight: 700; line-height: 1.4; }
+.mc-sidebar-progress { padding: 0 20px 16px; display: flex; flex-direction: column; gap: 4px; }
+.mc-sidebar-progress span { font-size: 0.7rem; color: var(--text-muted); }
 
-.mcm-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; cursor: pointer; transition: background 0.15s; }
-.mcm-header:hover { background: var(--bg-hover); }
-.mcm-left { display: flex; align-items: center; gap: 14px; }
-.mcm-num { width: 28px; height: 28px; border-radius: 50%; background: var(--purple-bg); color: var(--purple); font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.mcm-num.done { background: #d1fae5; color: #059669; }
-.mcm-left strong { font-size: 0.88rem; display: block; margin-bottom: 2px; }
-.mcm-meta { font-size: 0.72rem; color: var(--text-muted); }
-.mcm-chev { font-size: 0.8rem; color: var(--text-muted); }
+.mc-sidebar-modules { flex: 1; padding: 8px 0; }
+.mc-sidebar-mod { border-bottom: 1px solid var(--border-light); }
+.mc-mod-header { display: flex; align-items: center; gap: 10px; padding: 10px 16px; cursor: pointer; transition: background 0.12s; }
+.mc-mod-header:hover { background: var(--bg-hover); }
+.mc-mod-header.mod-done { opacity: 0.7; }
+.mc-mod-num { width: 22px; height: 22px; border-radius: 50%; background: var(--purple-bg); color: var(--purple); font-size: 0.68rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.mc-mod-num.done { background: #d1fae5; color: #059669; }
+.mc-mod-title { flex: 1; font-size: 0.78rem; font-weight: 600; line-height: 1.3; }
+.mc-mod-chev { font-size: 0.7rem; color: var(--text-muted); }
 
-.mcm-lessons { background: var(--bg); padding: 8px 24px 12px; }
+.mc-sidebar-lessons { background: var(--bg); padding: 4px 0; }
+.mc-sidebar-lesson { display: flex; align-items: flex-start; gap: 10px; padding: 8px 16px 8px 24px; cursor: pointer; transition: background 0.12s; border-radius: 4px; }
+.mc-sidebar-lesson:hover { background: var(--bg-hover); }
+.mc-sidebar-lesson.active { background: var(--purple-bg); }
+.mc-sidebar-lesson.done .lesson-title { color: var(--text-muted); text-decoration: line-through; }
+.lesson-status { font-size: 0.75rem; color: var(--text-muted); width: 14px; flex-shrink: 0; margin-top: 1px; }
+.mc-sidebar-lesson.active .lesson-status { color: var(--purple); }
+.mc-sidebar-lesson.done .lesson-status { color: var(--green); }
+.lesson-title { font-size: 0.78rem; display: block; line-height: 1.4; }
+.lesson-dur { font-size: 0.65rem; color: var(--text-muted); }
+.exercise-tag { color: var(--purple) !important; font-weight: 500; }
 
-.mcl-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: background 0.12s; }
-.mcl-item:hover { background: #fff; }
-.mcl-item.exercise { cursor: default; opacity: 0.8; }
-.mcl-left { display: flex; align-items: center; gap: 10px; }
-.mcl-icon { font-size: 1rem; }
-.mcl-title { font-size: 0.82rem; font-weight: 500; display: block; }
-.mcl-dur { font-size: 0.68rem; color: var(--text-muted); }
-.mcl-chev { font-size: 0.75rem; color: var(--text-muted); }
+/* ── Contenu principal ── */
+.mc-content { flex: 1; overflow-y: auto; background: #fafafa; }
 
-.mcl-content { background: #fff; border-radius: 8px; padding: 16px; margin: 4px 0 8px; font-size: 0.82rem; line-height: 1.6; color: var(--text-secondary); white-space: pre-wrap; }
-.btn-done { margin-top: 10px; background: var(--green); color: #fff; border: none; padding: 6px 16px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+.mc-welcome { display: flex; align-items: center; justify-content: center; min-height: 100%; padding: 40px; }
+.mc-welcome-inner { max-width: 500px; text-align: center; }
+.mc-welcome-icon { font-size: 4rem; margin-bottom: 20px; }
+.mc-welcome-inner h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 12px; }
+.mc-welcome-inner p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 28px; }
+.mc-welcome-stats { display: flex; justify-content: center; gap: 32px; margin-bottom: 28px; }
+.stat strong { display: block; font-size: 1.5rem; font-weight: 800; color: var(--purple); }
+.stat span { font-size: 0.75rem; color: var(--text-muted); }
 
-.mcl-empty { padding: 16px 12px; font-size: 0.82rem; color: var(--text-muted); text-align: center; }
+.mc-lesson { max-width: 700px; margin: 0 auto; padding: 32px 40px 80px; }
+.mc-lesson-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.mc-breadcrumb { font-size: 0.72rem; color: var(--text-muted); display: flex; gap: 6px; align-items: center; }
+.mc-lesson-meta { display: flex; gap: 10px; align-items: center; }
+.mc-lesson-type { font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 99px; }
+.type-lesson { background: var(--purple-bg); color: var(--purple); }
+.type-exercise { background: #fef3c7; color: #d97706; }
+.mc-lesson-dur { font-size: 0.72rem; color: var(--text-muted); }
+.mc-lesson-title { font-size: 1.6rem; font-weight: 800; line-height: 1.3; margin-bottom: 28px; color: #111; }
 
-.mcc-cert { padding: 16px 24px; border-top: 1px solid var(--border-light); text-align: center; }
-.btn-cert { background: linear-gradient(135deg, var(--purple), #7c3aed); color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+.mc-lesson-body { display: flex; flex-direction: column; gap: 4px; }
+.mc-paragraph { font-size: 0.95rem; line-height: 1.8; color: #374151; margin: 8px 0; }
+.mc-list-item { display: flex; gap: 12px; align-items: flex-start; padding: 6px 0; }
+.mc-bullet { font-size: 0.8rem; color: var(--text-muted); width: 20px; flex-shrink: 0; margin-top: 3px; font-weight: 600; }
+.bullet-red { color: #ef4444; }
+.bullet-orange { color: #f97316; }
+.bullet-yellow { color: #f59e0b; }
+.bullet-green { color: #10b981; }
+.mc-list-item span:last-child { font-size: 0.9rem; line-height: 1.7; color: #374151; }
+.mc-heading { font-size: 1rem; font-weight: 700; color: var(--purple); margin: 20px 0 8px; padding-top: 16px; border-top: 1px solid var(--border-light); }
+.mc-highlight { font-size: 0.95rem; font-style: italic; color: var(--purple); background: var(--purple-bg); padding: 14px 20px; border-radius: 8px; border-left: 3px solid var(--purple); margin: 12px 0; line-height: 1.7; }
+
+.mc-lesson-actions { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-light); }
+.mc-mark-done { background: none; border: 2px solid var(--border); padding: 10px 24px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.15s; color: var(--text-muted); }
+.mc-mark-done:hover { border-color: var(--green); color: var(--green); }
+.mc-mark-done.done { border-color: var(--green); color: var(--green); background: #d1fae5; }
+
+.mc-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border-light); }
+.mc-nav-btn { background: none; border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
+.mc-nav-btn:hover:not(:disabled) { border-color: var(--purple); color: var(--purple); }
+.mc-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.mc-nav-btn.primary { background: var(--purple); color: #fff; border-color: var(--purple); }
+.mc-nav-btn.primary:hover { background: var(--purple-dark); }
+.mc-nav-pos { font-size: 0.78rem; color: var(--text-muted); }
+
+/* ── Exercices ── */
+.mc-exercise-body { display: flex; flex-direction: column; gap: 24px; }
+
+.ex-intro { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6; }
+.ex-checks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.ex-check-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #fff; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s; font-size: 0.88rem; }
+.ex-check-item:hover { border-color: var(--purple-border); }
+.ex-check-item input { accent-color: var(--green); width: 16px; height: 16px; }
+.ex-check-item span.checked { text-decoration: line-through; color: var(--text-muted); }
+.ex-checklist-progress { display: flex; align-items: center; gap: 12px; }
+.ex-checklist-progress span { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; }
+
+.ex-instructions { margin-bottom: 20px; }
+.ex-notes-area { display: flex; flex-direction: column; gap: 8px; }
+.ex-notes-area label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
+.ex-notes-area textarea { padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.88rem; line-height: 1.7; outline: none; resize: vertical; font-family: inherit; background: #fff; }
+.ex-notes-area textarea:focus { border-color: var(--purple); }
+.ex-notes-saved { font-size: 0.72rem; color: var(--green); }
+
+/* Badge popup */
+.mc-badge-popup { position: fixed; bottom: 32px; right: 32px; background: #fff; border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-xl); padding: 16px 20px; display: flex; align-items: center; gap: 14px; z-index: 100; max-width: 320px; }
+.badge-icon { font-size: 2.5rem; flex-shrink: 0; }
+.mc-badge-popup strong { font-size: 0.9rem; display: block; margin-bottom: 2px; }
+.mc-badge-popup p { font-size: 0.78rem; color: var(--text-secondary); margin: 0; }
+.mc-badge-popup button { background: none; border: none; cursor: pointer; color: var(--text-muted); margin-left: auto; flex-shrink: 0; }
+
+.badge-pop-enter-active { animation: badge-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.badge-pop-leave-active { animation: badge-out 0.3s ease; }
+@keyframes badge-in { from { opacity: 0; transform: translateY(20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes badge-out { from { opacity: 1; } to { opacity: 0; transform: translateY(10px); } }
+
+@media (max-width: 768px) {
+  .mc-course-view { flex-direction: column; }
+  .mc-sidebar { width: 100%; height: auto; max-height: 250px; }
+  .mc-lesson { padding: 20px 16px 60px; }
+  .mc-cards { grid-template-columns: 1fr; }
+}
 </style>

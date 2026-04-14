@@ -348,6 +348,7 @@ export default {
   'nav.masterclass': '마스터클래스', 'nav.masterclassSub': 'CS 전문성을 키우는 분기별 종합 강좌',
   res_lessons: '레슨', res_exercises: '연습문제', res_exercise: '연습문제',
   res_start: '시작하기', res_continue: '계속하기', res_completed: '완료 ✓', res_mark_done: '✓ 완료로 표시', res_download_cert: '수료증 다운로드', res_lesson_coming: '레슨 내용은 곧 제공됩니다.',
+  res_prev: '이전', res_next: '다음', res_notes_ph: '생각, 질문에 대한 답변, 개인 메모를 작성하세요...',
   sidebar_res_wellbeing: '스트레스 관리',
 
   slide_over_close: '패널 닫기',
