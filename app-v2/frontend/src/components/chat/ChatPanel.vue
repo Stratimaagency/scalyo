@@ -197,7 +197,6 @@
               <div class="cp-share-title">{{ t('chat_share') }}</div>
               <button @click="shareItem('client')">👤 {{ t('chat_share_client') }}</button>
               <button @click="shareItem('task')">📋 {{ t('chat_share_task') }}</button>
-              <button @click="shareItem('kpi')">📊 {{ t('chat_share_kpi') }}</button>
               <button @click="shareItem('email')">📧 {{ t('chat_share_email') }}</button>
             </div>
           </div>
@@ -535,11 +534,7 @@ function onFileSelect(e) {
 // Share Scalyo data
 function shareItem(type) {
   shareMenuOpen.value = false
-  if (type === 'kpi') {
-    const content = `📊 **KPIs** | ARR: ${((clientsStore.totalArr||0)/1000).toFixed(0)}K€ | Health: ${clientsStore.avgHealth||0}/10 | Critiques: ${clientsStore.criticalCount||0}`
-    store.sendMessage(store.activeChannel, content)
-    nextTick(scrollBottom)
-  } else if (type === 'email') {
+  if (type === 'email') {
     sharePickerItems.value = [
       { id: 'welcome', label: 'Bienvenue & premiers pas', meta: 'Onboarding', content: '📧 **Template : Bienvenue & premiers pas**\nObjet : Bienvenue chez [Entreprise] — votre guide de démarrage\nCorps : Bonjour [Prénom], je suis [Votre prénom], votre CSM dédié. Voici vos 3 premières actions...' },
       { id: 'qbr', label: 'Invitation QBR trimestriel', meta: 'QBR', content: '📧 **Template : Invitation QBR**\nObjet : QBR Q2 2026 — [Entreprise]\nCorps : Bonjour [Prénom], je vous propose un bilan trimestriel de 60 min...' },
