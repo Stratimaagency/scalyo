@@ -236,23 +236,49 @@
                   <h3>{{ t('demo_tb_head') }}</h3>
                   <span class="mock-badge warn">{{ t('demo_tb_late') }}</span>
                 </div>
-                <div class="mock-kanban">
+                <div class="mock-kanban mock-kanban-4">
                   <div class="kanban-col">
-                    <div class="kanban-col-title">{{ t('demo_col_1') }} <span class="col-count">3</span></div>
+                    <div class="kanban-col-title">{{ t('demo_col_1') }} <span class="col-count">2</span></div>
                     <div class="kanban-card late">QBR Acme Corp <span class="card-tag">{{ t('demo_card_late') }}</span></div>
                     <div class="kanban-card">Check-in TechScale</div>
-                    <div class="kanban-card late">Onboarding Biotech <span class="card-tag">{{ t('demo_card_late') }}</span></div>
                   </div>
                   <div class="kanban-col">
                     <div class="kanban-col-title">{{ t('demo_col_2') }} <span class="col-count">2</span></div>
                     <div class="kanban-card active">Playbook Leroy Finance</div>
                     <div class="kanban-card active">Email expansion NovaTech</div>
                   </div>
+                  <div class="kanban-col blocked-col">
+                    <div class="kanban-col-title">{{ t('demo_col_4') }} <span class="col-count">1</span></div>
+                    <div class="kanban-card blocked">Health check DataVault</div>
+                  </div>
                   <div class="kanban-col done-col">
                     <div class="kanban-col-title">{{ t('demo_col_3') }} <span class="col-count">2</span></div>
                     <div class="kanban-card done">QBR MegaCorp <span class="done-date">{{ t('demo_done_1') }}</span></div>
-                    <div class="kanban-card done">Health check Rapid <span class="done-date">{{ t('demo_done_2') }}</span></div>
+                    <div class="kanban-card done">Onboarding Biotech <span class="done-date">{{ t('demo_done_2') }}</span></div>
                   </div>
+                </div>
+              </div>
+
+              <!-- Import IA -->
+              <div v-else-if="activeDemo === 7" key="import" class="mock-panel">
+                <div class="mock-header">
+                  <h3>🤖 {{ t('demo_import') }}</h3>
+                  <span class="mock-badge green">{{ t('demo_import_badge') }}</span>
+                </div>
+                <div class="import-steps">
+                  <div class="imp-step done"><span class="imp-dot done">✓</span><span>{{ t('demo_imp_s1') }}</span></div>
+                  <div class="imp-step done"><span class="imp-dot done">✓</span><span>{{ t('demo_imp_s2') }}</span></div>
+                  <div class="imp-step active"><span class="imp-dot active">3</span><span>{{ t('demo_imp_s3') }}</span></div>
+                  <div class="imp-step"><span class="imp-dot">4</span><span>{{ t('demo_imp_s4') }}</span></div>
+                </div>
+                <div class="mock-ai-box">
+                  <span class="ai-label">🤖 {{ t('demo_imp_detected') }}</span>
+                  <p>{{ t('demo_imp_result') }}</p>
+                </div>
+                <div class="imp-preview-mini">
+                  <div class="ipm-row header"><span>{{ t('demo_imp_col1') }}</span><span>ARR</span><span>Health</span><span>CSM</span></div>
+                  <div class="ipm-row"><span>TechScale</span><span class="green">€120K</span><span class="green">9.1</span><span>Sophie M.</span></div>
+                  <div class="ipm-row"><span>Acme Corp</span><span>€85K</span><span class="amber">6.4</span><span>Thomas R.</span></div>
                 </div>
               </div>
 
@@ -392,9 +418,10 @@
                   <!-- Task Board -->
                   <template v-else-if="activeModule === 6">
                     <div class="mmock-head">{{ t('demo_tb_head') }} <span class="mmock-badge warn">{{ t('demo_tb_late') }}</span></div>
-                    <div class="mini-kanban">
-                      <div class="mk-col"><div class="mk-title">{{ t('demo_col_1') }}</div><div class="mk-card">QBR Acme</div><div class="mk-card warn">Onboarding</div></div>
+                    <div class="mini-kanban mini-kanban-4">
+                      <div class="mk-col"><div class="mk-title">{{ t('demo_col_1') }}</div><div class="mk-card">QBR Acme</div></div>
                       <div class="mk-col"><div class="mk-title">{{ t('demo_col_2') }}</div><div class="mk-card active">Playbook</div></div>
+                      <div class="mk-col"><div class="mk-title">{{ t('demo_col_4') }}</div><div class="mk-card blocked-card">DataVault</div></div>
                       <div class="mk-col"><div class="mk-title">{{ t('demo_col_3') }}</div><div class="mk-card done">QBR Mega</div></div>
                     </div>
                   </template>
@@ -697,6 +724,7 @@ const demoTabs = [
   { key: 'email',     icon: '📧', labelKey: 'demo_email_head' },
   { key: 'planning',  icon: '📅', labelKey: 'fl_c6' },
   { key: 'tasks',     icon: '✅', labelKey: 'fl_c7' },
+  { key: 'import',    icon: '🤖', labelKey: 'demo_import' },
   { key: 'resources', icon: '📚', labelKey: 'fl_c8' },
 ]
 
@@ -810,7 +838,7 @@ onUnmounted(() => {
 <style scoped>
 /* ═══════════════════ BASE ═══════════════════ */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-.landing { --lp-purple: #7c3aed; --lp-purple-dark: #6d28d9; --lp-purple-light: #a78bfa; --lp-bg: #0b0d17; --lp-bg2: #111427; --lp-surface: rgba(255,255,255,0.04); --lp-border: rgba(255,255,255,0.08); --lp-text: #f0f0f5; --lp-muted: rgba(240,240,245,0.55); --lp-green: #10b981; --lp-red: #ef4444; --lp-amber: #f59e0b; --lp-blue: #3b82f6; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--lp-text); background: var(--lp-bg); line-height: 1.6; overflow-x: hidden; min-height: 100vh; }
+.landing { --lp-purple: #7c3aed; --lp-purple-dark: #6d28d9; --lp-purple-light: #a78bfa; --lp-bg: #f8f9fb; --lp-bg2: #f3f4f6; --lp-surface: #ffffff; --lp-border: #e5e7eb; --lp-text: #1a1a2e; --lp-muted: #6b7280; --lp-green: #10b981; --lp-red: #ef4444; --lp-amber: #f59e0b; --lp-blue: #3b82f6; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--lp-text); background: var(--lp-bg); line-height: 1.6; overflow-x: hidden; min-height: 100vh; }
 .container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
 .center { text-align: center; }
 .accent { color: var(--lp-purple-light); }
@@ -835,7 +863,7 @@ a { color: inherit; text-decoration: none; }
 .btn-primary.lg { padding: 16px 36px; font-size: 1rem; border-radius: 14px; }
 .btn-primary-sm { background: var(--lp-purple); color: #fff; border: none; padding: 8px 20px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: inline-block; transition: all 0.2s; }
 .btn-primary-sm:hover { background: var(--lp-purple-dark); }
-.btn-outline { background: transparent; color: var(--lp-text); border: 1px solid rgba(255,255,255,0.2); padding: 12px 28px; border-radius: 12px; font-size: 0.9rem; font-weight: 500; cursor: pointer; display: inline-block; transition: all 0.3s; }
+.btn-outline { background: transparent; color: var(--lp-text); border: 1px solid var(--lp-border); padding: 12px 28px; border-radius: 12px; font-size: 0.9rem; font-weight: 500; cursor: pointer; display: inline-block; transition: all 0.3s; }
 .btn-outline:hover { border-color: var(--lp-purple-light); color: var(--lp-purple-light); }
 .btn-outline.lg { padding: 16px 36px; font-size: 1rem; border-radius: 14px; }
 .btn-outline-light { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 12px 28px; border-radius: 12px; font-size: 0.9rem; font-weight: 500; cursor: pointer; display: inline-block; transition: all 0.3s; }
@@ -846,21 +874,21 @@ a { color: inherit; text-decoration: none; }
 .glow-btn { box-shadow: 0 0 30px rgba(124,58,237,0.3), 0 0 60px rgba(124,58,237,0.1); }
 
 /* ═══════════════════ NAVBAR ═══════════════════ */
-.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba(11,13,23,0.7); backdrop-filter: blur(20px); border-bottom: 1px solid transparent; transition: all 0.3s; }
-.nav.scrolled { border-bottom-color: var(--lp-border); background: rgba(11,13,23,0.92); }
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba(248,249,251,0.88); backdrop-filter: blur(20px); border-bottom: 1px solid transparent; transition: all 0.3s; }
+.nav.scrolled { border-bottom-color: var(--lp-border); background: rgba(255,255,255,0.97); box-shadow: 0 1px 12px rgba(0,0,0,0.06); }
 .nav-inner { max-width: 1160px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; gap: 20px; }
 .logo-link { display: flex; align-items: center; gap: 8px; }
-.logo-text { font-weight: 700; font-size: 1.1rem; background: linear-gradient(135deg, #fff, var(--lp-purple-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.logo-text { font-weight: 700; font-size: 1.1rem; color: var(--lp-text); }
 .nav-links { display: flex; gap: 28px; flex: 1; margin-left: 40px; }
 .nav-links a { color: var(--lp-muted); font-size: 0.875rem; font-weight: 500; transition: color 0.2s; }
-.nav-links a:hover { color: #fff; }
+.nav-links a:hover { color: var(--lp-purple); }
 .nav-right { display: flex; align-items: center; gap: 12px; margin-left: auto; }
 .lang-switch { display: flex; gap: 2px; background: var(--lp-surface); border-radius: 8px; padding: 2px; }
 .lang-switch button { background: none; border: none; color: var(--lp-muted); font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
 .lang-switch button.active { color: #fff; background: var(--lp-purple); font-weight: 600; }
 .burger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; margin-left: auto; }
-.burger span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; }
-.mobile-menu { padding: 16px 24px 24px; display: flex; flex-direction: column; gap: 14px; border-top: 1px solid var(--lp-border); }
+.burger span { display: block; width: 22px; height: 2px; background: var(--lp-text); border-radius: 2px; }
+.mobile-menu { padding: 16px 24px 24px; display: flex; flex-direction: column; gap: 14px; border-top: 1px solid var(--lp-border); background: #fff; }
 .mobile-menu a { color: var(--lp-muted); font-size: 0.9rem; }
 
 /* ═══════════════════ HERO ═══════════════════ */
@@ -878,13 +906,13 @@ a { color: inherit; text-decoration: none; }
 
 /* ═══════════════════ DASHBOARD MOCKUP ═══════════════════ */
 .mockup-wrapper { margin-top: 50px; perspective: 1200px; }
-.browser-chrome { background: #1a1d2e; border-radius: 16px 16px 0 0; padding: 12px 20px; display: flex; align-items: center; gap: 16px; border: 1px solid var(--lp-border); border-bottom: none; }
+.browser-chrome { background: #f3f4f6; border-radius: 16px 16px 0 0; padding: 12px 20px; display: flex; align-items: center; gap: 16px; border: 1px solid var(--lp-border); border-bottom: none; }
 .chrome-dots { display: flex; gap: 7px; }
 .chrome-dots span { width: 11px; height: 11px; border-radius: 50%; }
 .chrome-dots span:nth-child(1) { background: #ef4444; }
 .chrome-dots span:nth-child(2) { background: #f59e0b; }
 .chrome-dots span:nth-child(3) { background: #10b981; }
-.chrome-url { flex: 1; background: rgba(255,255,255,0.06); padding: 6px 14px; border-radius: 8px; font-size: 0.78rem; color: var(--lp-muted); }
+.chrome-url { flex: 1; background: rgba(0,0,0,0.05); padding: 6px 14px; border-radius: 8px; font-size: 0.78rem; color: var(--lp-muted); }
 .chrome-lock { margin-right: 6px; }
 .chrome-live { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: var(--lp-green); font-weight: 600; }
 .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lp-green); animation: live-pulse 2s infinite; }
@@ -978,10 +1006,12 @@ a { color: inherit; text-decoration: none; }
 
 /* Kanban */
 .mock-kanban { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.mock-kanban-4 { grid-template-columns: repeat(4, 1fr); }
+.kanban-card.blocked { border-left: 3px solid var(--lp-amber); }
 .kanban-col { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 10px; padding: 10px; }
 .kanban-col-title { font-size: 0.72rem; font-weight: 600; color: var(--lp-muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
 .col-count { background: var(--lp-border); padding: 1px 6px; border-radius: 4px; font-size: 0.65rem; }
-.kanban-card { background: rgba(255,255,255,0.04); border: 1px solid var(--lp-border); border-radius: 6px; padding: 8px; font-size: 0.72rem; margin-bottom: 6px; }
+.kanban-card { background: #ffffff; border: 1px solid var(--lp-border); border-radius: 6px; padding: 8px; font-size: 0.72rem; margin-bottom: 6px; }
 .kanban-card.late { border-left: 3px solid var(--lp-red); }
 .kanban-card.active { border-left: 3px solid var(--lp-purple); }
 .kanban-card.done { opacity: 0.6; }
@@ -996,6 +1026,20 @@ a { color: inherit; text-decoration: none; }
 .lib-card strong { font-size: 0.8rem; }
 .lib-card small { color: var(--lp-muted); font-size: 0.7rem; }
 
+.import-steps { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.imp-step { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: var(--lp-muted); }
+.imp-step.done { color: var(--lp-text); }
+.imp-step.active { color: var(--lp-purple); font-weight: 600; }
+.imp-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--lp-border); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; flex-shrink: 0; color: var(--lp-muted); background: var(--lp-surface); }
+.imp-dot.done { background: var(--lp-green); border-color: var(--lp-green); color: #fff; }
+.imp-dot.active { background: var(--lp-purple); border-color: var(--lp-purple); color: #fff; }
+.imp-preview-mini { margin-top: 10px; border: 1px solid var(--lp-border); border-radius: 8px; overflow: hidden; font-size: 0.7rem; }
+.ipm-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; padding: 6px 10px; gap: 4px; }
+.ipm-row.header { background: var(--lp-bg2); font-weight: 600; color: var(--lp-muted); font-size: 0.65rem; text-transform: uppercase; }
+.ipm-row:not(.header) { border-top: 1px solid var(--lp-border); }
+.ipm-row .green { color: var(--lp-green); font-weight: 600; }
+.ipm-row .amber { color: var(--lp-amber); font-weight: 600; }
+
 /* Mock transitions */
 .mock-fade-enter-active, .mock-fade-leave-active { transition: opacity 0.25s ease, transform 0.25s ease; }
 .mock-fade-enter-from { opacity: 0; transform: translateY(10px); }
@@ -1007,14 +1051,14 @@ a { color: inherit; text-decoration: none; }
 .stat-card { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 16px; padding: 28px 20px; text-align: center; transition: transform 0.3s, box-shadow 0.3s; }
 .stat-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(124,58,237,0.12); }
 .stat-emoji { margin-bottom: 12px; }
-.stat-number { font-size: 2.6rem; font-weight: 800; background: linear-gradient(135deg, var(--lp-purple-light), #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px; }
+.stat-number { font-size: 2.6rem; font-weight: 800; background: linear-gradient(135deg, var(--lp-purple), var(--lp-purple-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px; }
 .stat-label { font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; }
 .stat-note { font-size: 0.78rem; color: var(--lp-muted); line-height: 1.5; }
 
 /* ═══════════════════ FEATURES ═══════════════════ */
 .features-section { padding: 80px 0; }
 .section-header { text-align: center; margin-bottom: 40px; }
-.section-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--lp-purple-light); margin-bottom: 14px; }
+.section-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--lp-purple); margin-bottom: 14px; }
 .section-tag.light { color: rgba(255,255,255,0.7); }
 .section-header h2 { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; line-height: 1.15; margin-bottom: 14px; }
 .section-header h2 :deep(.accent) { background: linear-gradient(135deg, var(--lp-purple-light), #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -1037,7 +1081,7 @@ a { color: inherit; text-decoration: none; }
 .module-cta { margin-top: 4px; }
 
 .module-visual { position: relative; }
-.module-mockup-card { background: var(--lp-bg2); border: 1px solid var(--lp-border); border-radius: 16px; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.module-mockup-card { background: var(--lp-bg2); border: 1px solid var(--lp-border); border-radius: 16px; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
 .mmock-content { min-height: 240px; }
 .mmock-head { font-size: 0.85rem; font-weight: 600; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
 .mmock-badge { font-size: 0.65rem; padding: 3px 10px; border-radius: 6px; background: rgba(124,58,237,0.12); color: var(--lp-purple-light); }
@@ -1074,9 +1118,11 @@ a { color: inherit; text-decoration: none; }
 .mini-cal-day.active { background: var(--lp-purple); color: #fff; font-weight: 600; }
 .cal-event-mini { font-size: 0.78rem; padding: 8px; background: rgba(124,58,237,0.08); border-radius: 8px; }
 .mini-kanban { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.mini-kanban-4 { grid-template-columns: repeat(4, 1fr); }
+.mk-card.blocked-card { border-left: 2px solid var(--lp-amber); }
 .mk-col { background: var(--lp-surface); border-radius: 8px; padding: 8px; }
 .mk-title { font-size: 0.65rem; font-weight: 600; color: var(--lp-muted); margin-bottom: 6px; }
-.mk-card { font-size: 0.7rem; padding: 6px; background: rgba(255,255,255,0.04); border-radius: 4px; margin-bottom: 4px; }
+.mk-card { font-size: 0.7rem; padding: 6px; background: #ffffff; border: 1px solid var(--lp-border); border-radius: 4px; margin-bottom: 4px; }
 .mk-card.warn { border-left: 2px solid var(--lp-red); }
 .mk-card.active { border-left: 2px solid var(--lp-purple); }
 .mk-card.done { opacity: 0.5; }
@@ -1156,7 +1202,7 @@ a { color: inherit; text-decoration: none; }
 .faq-section { padding: 80px 0; background: var(--lp-bg2); }
 .faq-list { max-width: 700px; margin: 0 auto; }
 .faq-item { border-bottom: 1px solid var(--lp-border); cursor: pointer; transition: background 0.2s; }
-.faq-item:hover { background: rgba(255,255,255,0.02); }
+.faq-item:hover { background: rgba(124,58,237,0.03); }
 .faq-q { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; font-size: 0.95rem; font-weight: 500; }
 .faq-toggle { color: var(--lp-purple-light); font-size: 1.3rem; flex-shrink: 0; margin-left: 16px; }
 .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; }
