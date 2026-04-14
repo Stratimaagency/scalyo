@@ -39,7 +39,7 @@
         <span class="c-arr">ARR</span>
         <span class="c-h">Health</span>
         <span class="c-st hide-sm">{{ t('port_field_status') }}</span>
-        <span class="c-csm hide-md">CSM</span>
+        <span class="c-csm hide-md">Agent</span>
         <span class="c-ren hide-md">{{ t('port_renewal') }}</span>
         <span class="c-act hide-sm"></span>
       </div>
@@ -94,7 +94,7 @@
           <div class="fg"><label>{{ t('port_field_nps') }}</label><input v-model.number="form.nps" type="number" min="-100" max="100" class="fi" /></div>
         </div>
         <div class="fr">
-          <div class="fg"><label>{{ t('port_field_csm') }}</label>
+          <div class="fg"><label>{{ t('port_field_agent') }}</label>
             <select v-model="form.csmId" class="fi"><option v-for="m in team.members" :key="m.id" :value="m.id">{{ m.name }}</option></select>
           </div>
           <div class="fg"><label>{{ t('port_field_renewal') }}</label><input v-model="form.renewalDate" type="date" class="fi" /></div>
@@ -179,7 +179,7 @@ function save() {
 function doDelete(c) { clients.deleteClient(c.id) }
 
 function exportCsv() {
-  const h = ['Name','Industry','ARR','Health','NPS','Status','CSM','Renewal']
+  const h = ['Name','Industry','ARR','Health','NPS','Status','Agent','Renewal']
   const rows = clients.clients.map(c => [c.name, c.industry, c.arr, c.health, c.nps, c.status, c.csm, c.renewalDate])
   const csv = [h.join(','), ...rows.map(r => r.join(','))].join('\n')
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'scalyo-portfolio.csv'; a.click()

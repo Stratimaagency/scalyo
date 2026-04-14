@@ -726,7 +726,7 @@ export default {
   port_field_health: 'Health Score (0-10)',
   port_field_nps: 'NPS (-100 à 100)',
   port_field_status: 'Statut',
-  port_field_csm: 'CSM assigné',
+  port_field_csm: 'CSM assigné', port_field_agent: 'Agent',
   port_field_renewal: 'Date de renouvellement',
   port_field_contact_name: 'Nom du contact',
   port_field_contact_email: 'Email du contact',

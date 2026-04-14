@@ -303,7 +303,7 @@ export default {
   port_field_health: 'Health Score (0-10)',
   port_field_nps: 'NPS (-100 to 100)',
   port_field_status: 'Status',
-  port_field_csm: 'Assigned CSM',
+  port_field_csm: 'Assigned CSM', port_field_agent: 'Agent',
   port_field_renewal: 'Renewal date',
   port_field_contact_name: 'Contact name',
   port_field_contact_email: 'Contact email',

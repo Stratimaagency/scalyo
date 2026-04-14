@@ -303,7 +303,7 @@ export default {
   port_field_health: '건강 점수 (0-10)',
   port_field_nps: 'NPS (-100~100)',
   port_field_status: '상태',
-  port_field_csm: '담당 CSM',
+  port_field_csm: '담당 CSM', port_field_agent: '담당자',
   port_field_renewal: '갱신일',
   port_field_contact_name: '연락처 이름',
   port_field_contact_email: '연락처 이메일',
