@@ -177,7 +177,7 @@ function generate() {
 </script>
 
 <style scoped>
-.kn { max-width: 720px; margin: 0 auto; min-height: 100vh; }
+.kn { max-width: 720px; margin: 0 auto; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 .kn-header { margin-bottom: 24px; }
 .kn-back { font-size: 0.82rem; color: var(--text-muted); display: block; margin-bottom: 8px; }
 .kn-back:hover { color: var(--purple); }
@@ -194,7 +194,7 @@ function generate() {
 .kn-step span { font-size: 0.68rem; color: var(--text-muted); }
 .kn-step.active span { color: var(--purple); font-weight: 600; }
 
-.kn-panel { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 28px; margin-bottom: 20px; animation: fadeIn 0.2s ease; overflow: hidden; }
+.kn-panel { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 28px; margin-bottom: 20px; animation: fadeIn 0.2s ease; flex: 1; overflow: hidden; display: flex; flex-direction: column; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .kn-panel h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; }
 
