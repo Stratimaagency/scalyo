@@ -219,7 +219,7 @@ function generate() {
 .part-check input { accent-color: var(--purple); }
 .part-role { font-size: 0.72rem; color: var(--text-muted); margin-left: auto; }
 
-.kpi-catalog { display: flex; flex-direction: column; gap: 6px; height: 55vh; overflow-y: auto; }
+.kpi-catalog { display: flex; flex-direction: column; gap: 6px; flex: 1; overflow-y: auto; min-height: 0; }
 .kcat { background: var(--bg); border-radius: var(--radius-sm); overflow: hidden; }
 .kcat-title { display: flex; align-items: center; gap: 8px; padding: 10px 14px; font-size: 0.88rem; font-weight: 700; cursor: pointer; margin: 0; }
 .kcat-title:hover { background: var(--bg-hover); }
