@@ -171,7 +171,7 @@
       <!-- Share picker -->
       <div v-if="showSharePicker" class="cp-picker">
         <div class="cp-picker-header">
-          <span>{{ shareType === 'client' ? t('chat_share_client') : t('chat_share_task') }}</span>
+          <span>{{ shareType === 'client' ? t('chat_share_client') : shareType === 'task' ? t('chat_share_task') : t('chat_share_email') }}</span>
           <button @click="showSharePicker = false">✕</button>
         </div>
         <div v-if="!sharePickerItems.length" class="cp-picker-empty">Aucun élément disponible</div>
@@ -199,7 +199,6 @@
               <button @click="shareItem('task')">📋 {{ t('chat_share_task') }}</button>
               <button @click="shareItem('kpi')">📊 {{ t('chat_share_kpi') }}</button>
               <button @click="shareItem('email')">📧 {{ t('chat_share_email') }}</button>
-              <button @click="shareItem('roadmap')">🗺️ {{ t('chat_share_roadmap') }}</button>
             </div>
           </div>
           <div class="cp-emoji-wrap">
@@ -523,11 +522,14 @@ function shareItem(type) {
     store.sendMessage(store.activeChannel, content)
     nextTick(scrollBottom)
   } else if (type === 'email') {
-    store.sendMessage(store.activeChannel, '📧 **Email Studio** → /app/email-studio')
-    nextTick(scrollBottom)
-  } else if (type === 'roadmap') {
-    store.sendMessage(store.activeChannel, '🗺️ **Roadmap** → /app/roadmap')
-    nextTick(scrollBottom)
+    sharePickerItems.value = [
+      { id: 'welcome', label: 'Bienvenue & premiers pas', meta: 'Onboarding', content: '📧 **Template : Bienvenue & premiers pas**\nObjet : Bienvenue chez [Entreprise] — votre guide de démarrage\nCorps : Bonjour [Prénom], je suis [Votre prénom], votre CSM dédié. Voici vos 3 premières actions...' },
+      { id: 'qbr', label: 'Invitation QBR trimestriel', meta: 'QBR', content: '📧 **Template : Invitation QBR**\nObjet : QBR Q2 2026 — [Entreprise]\nCorps : Bonjour [Prénom], je vous propose un bilan trimestriel de 60 min...' },
+      { id: 'risk', label: 'Relance compte à risque', meta: 'Risque', content: '📧 **Template : Relance compte à risque**\nObjet : [Prénom], une question rapide\nCorps : Je voulais m\'assurer que tout se passe bien...' },
+      { id: 'renewal', label: 'Préparation renouvellement', meta: 'Renouvellement', content: '📧 **Template : Renouvellement**\nObjet : Renouvellement [Entreprise] — prochaines étapes\nCorps : Votre contrat arrive à échéance dans 30 jours...' },
+    ]
+    shareType.value = 'email'
+    showSharePicker.value = true
   } else if (type === 'client') {
     sharePickerItems.value = (clientsStore.clients||[]).map(c => ({
       id: c.id, label: c.name,
