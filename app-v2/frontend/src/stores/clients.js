@@ -52,9 +52,13 @@ export const useClientStore = defineStore('clients', () => {
     clients.value = clients.value.filter(c => c.id !== id)
   }
 
+  function resetAll() {
+    clients.value = []
+  }
+
   return {
     clients, totalArr, avgHealth, avgNps, criticalCount, watchCount, healthyCount,
     churnRate, arrAtRisk, renewalsNext30,
-    addClient, updateClient, deleteClient,
+    addClient, updateClient, deleteClient, resetAll,
   }
 }, { persist: true })

@@ -2,7 +2,22 @@
   <div class="kanban-view">
     <div class="kb-header">
       <h1>📋 {{ t('sm_kanban_title') }}</h1>
-      <button class="btn-primary" @click="openCreate">{{ t('sm_new_task') }}</button>
+      <div class="kb-header-actions">
+        <div v-if="resetStep === 0">
+          <button class="btn-danger-outline" @click="resetStep = 1">{{ t('sm_reset_all') }}</button>
+        </div>
+        <div v-else-if="resetStep === 1" class="reset-confirm">
+          <span class="reset-msg">{{ t('sm_reset_step1') }}</span>
+          <button class="btn-danger-outline" @click="resetStep = 2">{{ t('sm_reset_confirm') }}</button>
+          <button class="btn-outline" @click="resetStep = 0">{{ t('sm_reset_cancel') }}</button>
+        </div>
+        <div v-else-if="resetStep === 2" class="reset-confirm">
+          <span class="reset-msg warn">{{ t('sm_reset_step2') }}</span>
+          <button class="btn-danger" @click="doResetAll">{{ t('sm_reset_confirm') }}</button>
+          <button class="btn-outline" @click="resetStep = 0">{{ t('sm_reset_cancel') }}</button>
+        </div>
+        <button class="btn-primary" @click="openCreate">{{ t('sm_new_task') }}</button>
+      </div>
     </div>
 
     <div class="kb-board">
@@ -107,7 +122,13 @@ const team = useTeamStore()
 
 const slideOpen = ref(false)
 const editId = ref(null)
+const resetStep = ref(0)
 let draggedTask = null
+
+function doResetAll() {
+  tasks.resetAll()
+  resetStep.value = 0
+}
 
 const columns = [
   { key: 'todo', label: 'sm_col_todo' },
@@ -227,6 +248,15 @@ function deleteTask() {
 .ta { resize: vertical; }
 .fr { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .fa { display: flex; gap: 10px; align-items: center; padding-top: 8px; border-top: 1px solid var(--border-light); }
+
+.kb-header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.reset-confirm { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.reset-msg { font-size: 0.82rem; color: var(--text-secondary); }
+.reset-msg.warn { color: #ef4444; font-weight: 600; }
+.btn-danger { background: #ef4444; color: #fff; border: none; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-danger:hover { background: #dc2626; }
+.btn-danger-outline { background: none; color: #ef4444; border: 1px solid #ef4444; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-danger-outline:hover { background: #fef2f2; }
 
 @media (max-width: 900px) { .kb-board { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .kb-board { grid-template-columns: 1fr; } .fr { grid-template-columns: 1fr; } }

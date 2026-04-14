@@ -40,8 +40,18 @@ export const useTaskStore = defineStore('tasks', () => {
   function moveTask(id, newStatus) { updateTask(id, { status: newStatus, ...(newStatus === 'done' ? { completedAt: new Date().toISOString().slice(0, 10) } : {}) }) }
   function addProject(p) { projects.value.push({ id: 'p' + Date.now(), status: 'active', createdAt: new Date().toISOString().slice(0, 10), ...p }) }
 
+  function deleteProject(id) {
+    tasks.value = tasks.value.filter(t => t.projectId !== id)
+    projects.value = projects.value.filter(p => p.id !== id)
+  }
+
+  function resetAll() {
+    tasks.value = []
+    projects.value = []
+  }
+
   return {
     projects, tasks, todoTasks, inProgressTasks, blockedTasks, doneTasks, overdueTasks,
-    addTask, updateTask, deleteTask, moveTask, addProject,
+    addTask, updateTask, deleteTask, moveTask, addProject, deleteProject, resetAll,
   }
 }, { persist: true })

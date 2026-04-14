@@ -6,6 +6,19 @@
       <div class="port-actions">
         <button class="btn-outline" @click="$router.push('/app/import')">{{ t('port_import') }}</button>
         <button class="btn-outline" @click="exportCsv">{{ t('port_export') }}</button>
+        <div v-if="resetStep === 0">
+          <button class="btn-danger-outline" @click="resetStep = 1">{{ t('port_reset_all') }}</button>
+        </div>
+        <div v-else-if="resetStep === 1" class="reset-confirm">
+          <span class="reset-msg">{{ t('port_reset_step1') }}</span>
+          <button class="btn-danger-outline" @click="resetStep = 2">{{ t('port_reset_confirm') }}</button>
+          <button class="btn-outline" @click="resetStep = 0">{{ t('sm_reset_cancel') }}</button>
+        </div>
+        <div v-else-if="resetStep === 2" class="reset-confirm">
+          <span class="reset-msg warn">{{ t('port_reset_step2') }}</span>
+          <button class="btn-danger" @click="doResetAll">{{ t('port_reset_confirm') }}</button>
+          <button class="btn-outline" @click="resetStep = 0">{{ t('sm_reset_cancel') }}</button>
+        </div>
         <button class="btn-primary" @click="openCreate">{{ t('port_add') }}</button>
       </div>
     </div>
@@ -56,7 +69,11 @@
         <span class="c-ren hide-md" :class="{ soon: renewSoon(c) }">{{ fmtDate(c.renewalDate) }}</span>
         <span class="c-act hide-sm">
           <button class="rb" @click.stop="openEdit(c)" :title="t('edit')">✏️</button>
-          <button class="rb del" @click.stop="doDelete(c)" :title="t('delete')">🗑️</button>
+          <template v-if="deleteConfirmId === c.id">
+            <button class="rb del active" @click.stop="doDelete(c)" :title="t('port_delete_step2')">✓</button>
+            <button class="rb" @click.stop="deleteConfirmId = null" :title="t('sm_reset_cancel')">✕</button>
+          </template>
+          <button v-else class="rb del" @click.stop="deleteConfirmId = c.id" :title="t('port_delete_step1')">🗑️</button>
         </span>
       </div>
     </div>
@@ -129,6 +146,13 @@ const search = ref('')
 const activeFilter = ref('all')
 const slideOpen = ref(false)
 const editId = ref(null)
+const resetStep = ref(0)
+const deleteConfirmId = ref(null)
+
+function doResetAll() {
+  clients.resetAll()
+  resetStep.value = 0
+}
 
 const initForm = () => ({ name: '', industry: 'SaaS', arr: 0, mrr: 0, health: 7, nps: 50, status: 'healthy', csmId: 'tm1', renewalDate: '', cName: '', cEmail: '', cRole: '', churnRisk: 0.05 })
 const form = reactive(initForm())
@@ -261,6 +285,15 @@ function exportCsv() {
 .fr { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .fdiv { font-size: 0.78rem; font-weight: 700; color: var(--text); padding: 8px 0 0; border-top: 1px solid var(--border-light); margin-top: 4px; }
 .fa { display: flex; gap: 10px; justify-content: flex-end; padding-top: 8px; border-top: 1px solid var(--border-light); }
+
+.reset-confirm { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.reset-msg { font-size: 0.82rem; color: var(--text-secondary); }
+.reset-msg.warn { color: #ef4444; font-weight: 600; }
+.btn-danger { background: #ef4444; color: #fff; border: none; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-danger:hover { background: #dc2626; }
+.btn-danger-outline { background: none; color: #ef4444; border: 1px solid #ef4444; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-danger-outline:hover { background: #fef2f2; }
+.rb.del.active { opacity: 1; background: #fef2f2; color: #ef4444; }
 
 @media (max-width: 1024px) { .hide-md { display: none !important; } .th, .tr { grid-template-columns: 2fr 1fr 1fr 0.7fr 0.8fr 0.6fr; } }
 @media (max-width: 768px) { .hide-sm { display: none !important; } .port-kpis { grid-template-columns: repeat(2, 1fr); } .th, .tr { grid-template-columns: 2fr 1fr 0.8fr; } .fr { grid-template-columns: 1fr; } .port-actions { width: 100%; justify-content: flex-end; } }
