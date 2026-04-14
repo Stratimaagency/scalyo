@@ -1,8 +1,8 @@
 <template>
   <div class="library-view">
     <div class="lib-header">
-      <h1>📚 {{ t('sidebar_res_library') }}</h1>
-      <p class="lib-sub">{{ t('es_subtitle') }}</p>
+      <h1>📚 {{ t('res_library_title') }}</h1>
+      <p class="lib-sub">{{ t('res_library_sub') }}</p>
     </div>
     <div class="lib-toolbar">
       <div class="lib-cats">
