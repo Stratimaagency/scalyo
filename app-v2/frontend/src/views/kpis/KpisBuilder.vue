@@ -68,31 +68,22 @@
                 <strong>{{ block.data.value || '—' }}</strong><span>{{ block.data.label || '...' }} {{ block.data.unit }}</span>
               </div>
               <!-- Chart Bar -->
-              <div v-else-if="block.type === 'chart_bar'" class="prev-chart prev-chart-bar">
-                <div class="chart-bars">
-                  <div v-for="(val, vi) in block.data.datasets[0]?.data || []" :key="vi" class="chart-bar-col">
-                    <div class="chart-bar-fill" :style="{ height: barHeight(val, block.data.datasets[0].data) + '%', background: block.data.datasets[0].color }"></div>
-                    <span class="chart-bar-label">{{ block.data.labels[vi] || '' }}</span>
-                  </div>
-                </div>
+              <div v-else-if="block.type === 'chart_bar'" class="prev-chart">
+                <apexchart type="bar" height="160"
+                  :options="{ chart:{toolbar:{show:false},animations:{enabled:false}}, colors:[block.data.datasets[0]?.color||'#7c3aed'], xaxis:{categories:block.data.labels}, dataLabels:{enabled:false}, grid:{borderColor:'#f3f4f6'}, plotOptions:{bar:{borderRadius:3}} }"
+                  :series="block.data.datasets.map(d=>({name:d.label,data:d.data}))" />
               </div>
               <!-- Chart Line -->
-              <div v-else-if="block.type === 'chart_line'" class="prev-chart prev-chart-line">
-                <svg viewBox="0 0 200 60" class="chart-line-svg">
-                  <polyline v-for="(ds, dsi) in block.data.datasets" :key="dsi" :points="linePoints(ds.data, 200, 60)" fill="none" :stroke="ds.color" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                <div class="chart-line-labels">
-                  <span v-for="(l, li) in block.data.labels" :key="li">{{ l }}</span>
-                </div>
+              <div v-else-if="block.type === 'chart_line'" class="prev-chart">
+                <apexchart type="line" height="160"
+                  :options="{ chart:{toolbar:{show:false},animations:{enabled:false}}, colors:block.data.datasets.map(d=>d.color||'#3b82f6'), xaxis:{categories:block.data.labels}, stroke:{curve:'smooth',width:2}, dataLabels:{enabled:false}, grid:{borderColor:'#f3f4f6'} }"
+                  :series="block.data.datasets.map(d=>({name:d.label,data:d.data}))" />
               </div>
               <!-- Chart Donut -->
-              <div v-else-if="block.type === 'chart_donut'" class="prev-chart prev-chart-donut">
-                <svg viewBox="0 0 80 80" class="chart-donut-svg">
-                  <circle v-for="(seg, si) in donutSegments(block.data)" :key="si" cx="40" cy="40" r="30" fill="none" :stroke="seg.color" stroke-width="12" :stroke-dasharray="seg.dash" :stroke-dashoffset="seg.offset" />
-                </svg>
-                <div class="chart-donut-legend">
-                  <span v-for="(l, li) in block.data.labels" :key="li"><i :style="{ background: block.data.colors[li] }"></i>{{ l }}</span>
-                </div>
+              <div v-else-if="block.type === 'chart_donut'" class="prev-chart">
+                <apexchart type="donut" height="160"
+                  :options="{ labels:block.data.labels, colors:block.data.colors, legend:{position:'bottom',fontSize:'10px'}, dataLabels:{enabled:false}, plotOptions:{pie:{donut:{size:'55%'}}} }"
+                  :series="block.data.data" />
               </div>
               <!-- Text -->
               <div v-else-if="block.type === 'text'" class="prev-text" :class="'sz-' + block.data.size">{{ block.data.content || '...' }}</div>
@@ -397,31 +388,7 @@ function toggleVisible(block) {
   saveBlocks()
 }
 
-// Chart helpers
-function barHeight(val, data) {
-  const max = Math.max(...data, 1)
-  return Math.round((val / max) * 100)
-}
 
-function linePoints(data, w, h) {
-  if (!data.length) return ''
-  const max = Math.max(...data, 1)
-  const step = w / Math.max(data.length - 1, 1)
-  return data.map((v, i) => `${i * step},${h - (v / max) * (h - 6) - 3}`).join(' ')
-}
-
-function donutSegments(data) {
-  const total = data.data.reduce((a, b) => a + b, 0) || 1
-  const circ = 2 * Math.PI * 30
-  let offset = circ * 0.25
-  return data.data.map((val, i) => {
-    const pct = val / total
-    const dash = `${pct * circ} ${circ}`
-    const seg = { color: data.colors[i] || '#ccc', dash, offset: -offset }
-    offset -= pct * circ
-    return seg
-  })
-}
 </script>
 
 <style scoped>
@@ -524,18 +491,6 @@ function donutSegments(data) {
 .prev-image img { max-width: 100%; max-height: 200px; border-radius: 6px; object-fit: contain; }
 .prev-image-placeholder { padding: 30px; color: var(--text-muted); background: var(--bg); border-radius: 6px; font-size: 0.85rem; }
 .prev-image-caption { display: block; font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; }
-
-/* Chart previews */
-.chart-bars { display: flex; align-items: flex-end; gap: 6px; height: 80px; padding: 0 8px; }
-.chart-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
-.chart-bar-fill { width: 100%; border-radius: 3px 3px 0 0; min-height: 2px; transition: height 0.2s; }
-.chart-bar-label { font-size: 0.6rem; color: var(--text-muted); margin-top: 3px; }
-.chart-line-svg { width: 100%; height: 60px; }
-.chart-line-labels { display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--text-muted); padding: 0 4px; }
-.chart-donut-svg { width: 80px; height: 80px; margin: 0 auto; display: block; }
-.prev-chart-donut { display: flex; align-items: center; gap: 16px; justify-content: center; }
-.chart-donut-legend { display: flex; flex-direction: column; gap: 3px; font-size: 0.7rem; }
-.chart-donut-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; }
 
 /* Block hidden state */
 .kb-block.hidden { opacity: 0.45; }
