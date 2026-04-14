@@ -356,6 +356,7 @@ export default {
   chat_share_email: '템플릿 공유', chat_share_quote: '견적서 공유', chat_share_roadmap: '로드맵 공유',
   chat_pin: '고정', chat_reply: '답장', chat_edit_msg: '수정', chat_delete_msg: '삭제', chat_copy_link: '링크 복사',
   chat_mark_unread: '읽지 않음으로 표시', chat_search_msg: '메시지 검색', chat_reactions: '반응', chat_edited: '수정됨',
+  chat_ch_general: '일반', chat_ch_csteam: 'CS팀', chat_ch_alerts: '알림', chat_ch_resources: '리소스',
   chat_nova_greeting: '안녕하세요! 저는 Nova, Scalyo 어시스턴트입니다. 모든 고객, 작업 및 KPI를 파악하고 있습니다. 어떻게 도와드릴까요?',
   chat_nova_sug1: '가장 위험한 고객은?', chat_nova_sug2: '이번 주 요약', chat_nova_sug3: 'COPIL 보고서 생성', chat_nova_sug4: '지연된 작업은?',
   chat_correction_level: '교정 수준', chat_correction_spell: '맞춤법만', chat_correction_grammar: '맞춤법 + 문법', chat_correction_pro: '전문적 스타일',

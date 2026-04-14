@@ -14,7 +14,7 @@
       <div class="cp-section-label">{{ t('chat_channels') }}</div>
       <button v-for="ch in chatChannels" :key="ch.id" class="cp-ch" :class="{ active: store.activeChannel === ch.id }" @click="store.setActive(ch.id)">
         <span class="cp-ch-icon">{{ ch.icon }}</span>
-        <span class="cp-ch-name">{{ ch.name }}</span>
+        <span class="cp-ch-name">{{ ch.nameKey ? t(ch.nameKey) : ch.name }}</span>
         <span v-if="store.unreadCounts[ch.id]" class="cp-ch-badge">{{ store.unreadCounts[ch.id] }}</span>
       </button>
 
@@ -69,7 +69,7 @@
 
             <!-- Actions on message (visible on hover) -->
             <div v-if="msg.actions?.length" class="cp-msg-actions-row">
-              <button v-for="a in msg.actions" :key="a.label" class="cp-action-btn" @click="a.route ? $router.push(a.route) : null">{{ a.label }}</button>
+              <button v-for="a in msg.actions" :key="a.label" class="cp-action-btn" @click="handleAction(a)">{{ a.label }}</button>
             </div>
 
             <!-- Reactions -->
@@ -110,7 +110,8 @@
       <!-- Input -->
       <div class="cp-input-area">
         <button class="cp-btn-attach" @click="shareMenuOpen = !shareMenuOpen" :title="t('chat_share')">📊</button>
-        <button class="cp-btn-attach" :title="t('chat_attach')">📎</button>
+        <input type="file" ref="fileRef" @change="onFileSelect" style="display:none" accept="image/*,.pdf,.xlsx,.docx,.csv" />
+        <button class="cp-btn-attach" @click="fileRef?.click()" :title="t('chat_attach')">📎</button>
         <input v-model="input" :placeholder="t('chat_placeholder')" @keydown.enter="send" />
         <button class="cp-btn-send" @click="send" :disabled="!input.trim()">→</button>
       </div>
@@ -121,12 +122,14 @@
 <script setup>
 import { ref, computed, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { useChatStore } from '@/stores/chat'
 import { useTeamStore } from '@/stores/team'
 import { useClientStore } from '@/stores/clients'
 import { useTaskStore } from '@/stores/tasks'
 
 const { t } = useI18n({ useScope: 'global' })
+const router = useRouter()
 const store = useChatStore()
 const team = useTeamStore()
 const clients = useClientStore()
@@ -139,6 +142,24 @@ const search = ref('')
 const msgRef = ref(null)
 const shareMenuOpen = ref(false)
 const novaThinking = ref(false)
+const fileRef = ref(null)
+
+function onFileSelect(e) {
+  const file = e.target.files[0]
+  if (!file) return
+  const isImage = file.type.startsWith('image/')
+  const reader = new FileReader()
+  reader.onload = (ev) => {
+    const content = isImage
+      ? `📎 **${file.name}**\n<img src="${ev.target.result}" style="max-width:200px;border-radius:8px;margin-top:6px" />`
+      : `📎 **${file.name}** (${(file.size/1024).toFixed(0)} KB)`
+    store.sendMessage(store.activeChannel, content)
+    nextTick(scrollBottom)
+  }
+  if (isImage) reader.readAsDataURL(file)
+  else reader.readAsText(file)
+  e.target.value = ''
+}
 
 const novaSugs = ['chat_nova_sug1', 'chat_nova_sug2', 'chat_nova_sug3', 'chat_nova_sug4']
 
@@ -147,7 +168,7 @@ const memberCount = computed(() => team.members.length + ' membres')
 
 const activeChannelName = computed(() => {
   const ch = store.channels.find(c => c.id === store.activeChannel)
-  if (ch) return (ch.icon === '#' ? '#' : '') + ch.name
+  if (ch) return (ch.icon === '#' ? '#' : '') + (ch.nameKey ? t(ch.nameKey) : ch.name)
   if (store.activeChannel.startsWith('dm_')) {
     const m = team.members.find(m => m.id === store.activeChannel.replace('dm_', ''))
     return m?.name || ''
@@ -186,17 +207,48 @@ async function sendNova(text) {
     store.setActive('nova')
     store.sendMessage('nova', text)
   }
-
   novaThinking.value = true
   await nextTick()
   scrollBottom()
 
-  await new Promise(r => setTimeout(r, 1500))
+  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
 
-  const context = buildContext()
-  const response = generateNovaResponse(text, context)
+  if (apiKey && apiKey !== 'REMPLACER_PAR_CLE_ANTHROPIC') {
+    try {
+      const context = buildContext()
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 500,
+          system: `Tu es Nova, assistante IA intégrée à Scalyo.
+Données actuelles :
+- ${context.totalClients} clients actifs, ARR total ${(context.totalArr/1000).toFixed(0)}K€
+- Health score moyen : ${context.avgHealth}/10
+- ${context.criticalCount} comptes critiques
+- ${context.overdueTasks.length} tâches en retard
+Réponds en français, de façon concise et actionnable. Max 3 paragraphes.`,
+          messages: [{ role: 'user', content: text }]
+        })
+      })
+      const data = await res.json()
+      const response = data.content?.[0]?.text || generateNovaResponse(text, context)
+      store.sendMessage('nova', response, 'Nova', 'nova')
+    } catch(e) {
+      const context = buildContext()
+      store.sendMessage('nova', generateNovaResponse(text, context), 'Nova', 'nova')
+    }
+  } else {
+    await new Promise(r => setTimeout(r, 1500))
+    const context = buildContext()
+    store.sendMessage('nova', generateNovaResponse(text, context), 'Nova', 'nova')
+  }
 
-  store.sendMessage('nova', response, 'Nova', 'nova')
   novaThinking.value = false
   await nextTick()
   scrollBottom()
@@ -250,6 +302,8 @@ function shareItem(type) {
     if (t) content = `📋 **${t.title}** | Due: ${t.dueDate} | Status: ${t.status}`
   } else if (type === 'kpi') {
     content = `📊 **ARR Portfolio** : ${(clients.totalArr / 1000).toFixed(0)}K€ | Health: ${clients.avgHealth}/10 | Critiques: ${clients.criticalCount}`
+  } else if (type === 'email') {
+    content = `📧 **Template : Bienvenue & premiers pas**\nObjet : Bienvenue chez [Entreprise] — votre guide de démarrage\nDisponible dans Email Studio → /app/email-studio`
   } else if (type === 'roadmap') {
     content = `🗺️ **Roadmap** partagée — consultez /app/roadmap`
   }
@@ -258,6 +312,20 @@ function shareItem(type) {
 
 function scrollBottom() {
   if (msgRef.value) msgRef.value.scrollTop = msgRef.value.scrollHeight
+}
+
+function handleAction(action) {
+  if (action.route) {
+    router.push(action.route)
+  } else if (action.action === 'create_task') {
+    tasks.addTask({
+      title: 'Contacter client à risque',
+      status: 'todo',
+      priority: 'high',
+      dueDate: new Date(Date.now() + 2*24*60*60*1000).toISOString().slice(0,10)
+    })
+    store.sendMessage(store.activeChannel, '✅ Tâche créée : "Contacter client à risque"', 'Nova', 'nova')
+  }
 }
 
 watch(() => store.activeChannel, () => { nextTick(scrollBottom) })
@@ -346,13 +414,13 @@ watch(() => store.activeChannel, () => { nextTick(scrollBottom) })
 @keyframes think-b { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
 
 /* Share menu */
-.cp-share-menu { position: absolute; bottom: 60px; left: 240px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); padding: 6px; z-index: 20; }
+.cp-share-menu { position: absolute; bottom: 60px; left: 10px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); padding: 6px; z-index: 20; }
 .cp-share-menu button { display: flex; align-items: center; gap: 10px; padding: 8px 14px; width: 100%; background: none; border: none; font-size: 0.82rem; cursor: pointer; border-radius: 6px; text-align: left; }
 .cp-share-menu button:hover { background: var(--bg-hover); }
 .cp-share-menu button span { font-size: 1rem; width: 20px; text-align: center; }
 
 /* Input */
-.cp-input-area { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-top: 1px solid var(--border-light); }
+.cp-input-area { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-top: 1px solid var(--border-light); position: relative; }
 .cp-btn-attach { background: none; border: none; font-size: 1.1rem; cursor: pointer; padding: 4px; opacity: 0.6; transition: opacity 0.15s; }
 .cp-btn-attach:hover { opacity: 1; }
 .cp-input-area input { flex: 1; padding: 9px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: 0.85rem; outline: none; }

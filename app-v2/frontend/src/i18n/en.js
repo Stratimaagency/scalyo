@@ -356,6 +356,7 @@ export default {
   chat_share_email: 'Share a template', chat_share_quote: 'Share a quote', chat_share_roadmap: 'Share the roadmap',
   chat_pin: 'Pin', chat_reply: 'Reply', chat_edit_msg: 'Edit', chat_delete_msg: 'Delete', chat_copy_link: 'Copy link',
   chat_mark_unread: 'Mark as unread', chat_search_msg: 'Search messages', chat_reactions: 'Reactions', chat_edited: 'edited',
+  chat_ch_general: 'general', chat_ch_csteam: 'cs-team', chat_ch_alerts: 'alerts', chat_ch_resources: 'resources',
   chat_nova_greeting: "Hello! I'm Nova, your Scalyo assistant. I know all your clients, tasks and KPIs. How can I help?",
   chat_nova_sug1: 'Which client is most at risk?', chat_nova_sug2: 'Summarize my week', chat_nova_sug3: 'Generate a COPIL report', chat_nova_sug4: 'Which tasks are overdue?',
   chat_correction_level: 'Correction level', chat_correction_spell: 'Spelling only', chat_correction_grammar: 'Spelling + Grammar', chat_correction_pro: 'Professional style',

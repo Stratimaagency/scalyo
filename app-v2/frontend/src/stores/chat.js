@@ -3,10 +3,10 @@ import { ref, computed } from 'vue'
 
 export const useChatStore = defineStore('chat', () => {
   const channels = ref([
-    { id: 'general', name: 'général', icon: '#', type: 'channel' },
-    { id: 'cs-team', name: 'cs-team', icon: '#', type: 'channel' },
-    { id: 'alerts', name: 'alertes', icon: '#', type: 'channel' },
-    { id: 'resources', name: 'ressources', icon: '#', type: 'channel' },
+    { id: 'general', nameKey: 'chat_ch_general', icon: '#', type: 'channel' },
+    { id: 'cs-team', nameKey: 'chat_ch_csteam', icon: '#', type: 'channel' },
+    { id: 'alerts', nameKey: 'chat_ch_alerts', icon: '#', type: 'channel' },
+    { id: 'resources', nameKey: 'chat_ch_resources', icon: '#', type: 'channel' },
     { id: 'nova', name: 'Nova — IA', icon: '🤖', type: 'assistant' },
   ])
 
@@ -76,4 +76,4 @@ export const useChatStore = defineStore('chat', () => {
     channels, messages, activeChannel, unreadCounts, totalUnread, activeMessages,
     sendMessage, addReaction, deleteMessage, pinMessage, setActive,
   }
-})
+}, { persist: true })

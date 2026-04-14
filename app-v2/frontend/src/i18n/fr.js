@@ -812,6 +812,7 @@ export default {
   chat_search_msg: 'Rechercher dans les messages',
   chat_reactions: 'Réactions',
   chat_edited: 'modifié',
+  chat_ch_general: 'général', chat_ch_csteam: 'cs-team', chat_ch_alerts: 'alertes', chat_ch_resources: 'ressources',
   chat_nova_greeting: 'Bonjour ! Je suis Nova, votre assistante Scalyo. Je connais tous vos clients, tâches et KPIs. Comment puis-je vous aider ?',
   chat_nova_sug1: 'Quel est mon client le plus à risque ?',
   chat_nova_sug2: 'Résume ma semaine',
