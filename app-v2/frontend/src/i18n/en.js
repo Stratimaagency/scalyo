@@ -349,6 +349,10 @@ export default {
   res_lessons: 'lessons', res_exercises: 'exercises', res_exercise: 'Exercise',
   res_start: 'Start', res_continue: 'Continue', res_completed: 'Completed ✓', res_mark_done: '✓ Mark as done', res_download_cert: 'Download certificate', res_lesson_coming: 'Lesson content coming soon.',
   res_prev: 'Previous', res_next: 'Next', res_notes_ph: 'Write your thoughts, answers to questions, personal notes...',
+  'nav.guides': 'Guides & Processes', 'nav.guidesSub': 'Step-by-step processes for every Customer Success situation',
+  'nav.tools': 'My tools', 'nav.toolsSub': 'Your personal stack and reference links',
+  'nav.wellbeing': 'Wellbeing & Balance', 'nav.wellbeingSub': 'Resources to last in the role without burning out',
+  wbr_readings: 'Quarterly reading list', wbr_refresh_note: 'Updated every quarter',
   sidebar_res_wellbeing: 'Stress Management',
 
   slide_over_close: 'Close panel',

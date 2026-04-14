@@ -785,6 +785,14 @@ export default {
   res_prev: 'Précédent',
   res_next: 'Suivant',
   res_notes_ph: 'Écrivez vos réflexions, réponses aux questions, notes personnelles...',
+  'nav.guides': 'Guides & Process',
+  'nav.guidesSub': 'Process étape par étape pour chaque situation Customer Success',
+  'nav.tools': 'Mes outils',
+  'nav.toolsSub': 'Votre stack personnelle et vos liens de référence',
+  'nav.wellbeing': 'Bien-être & Équilibre',
+  'nav.wellbeingSub': 'Ressources pour durer dans le métier sans s\'épuiser',
+  wbr_readings: 'Lectures du trimestre',
+  wbr_refresh_note: 'Mis à jour chaque trimestre',
   sidebar_res_wellbeing: 'Gestion du stress',
 
   // Slide-over

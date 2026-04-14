@@ -349,6 +349,10 @@ export default {
   res_lessons: '레슨', res_exercises: '연습문제', res_exercise: '연습문제',
   res_start: '시작하기', res_continue: '계속하기', res_completed: '완료 ✓', res_mark_done: '✓ 완료로 표시', res_download_cert: '수료증 다운로드', res_lesson_coming: '레슨 내용은 곧 제공됩니다.',
   res_prev: '이전', res_next: '다음', res_notes_ph: '생각, 질문에 대한 답변, 개인 메모를 작성하세요...',
+  'nav.guides': '가이드 & 프로세스', 'nav.guidesSub': '모든 고객 성공 상황을 위한 단계별 프로세스',
+  'nav.tools': '나의 도구', 'nav.toolsSub': '개인 스택 및 참고 링크',
+  'nav.wellbeing': '웰빙 & 균형', 'nav.wellbeingSub': '번아웃 없이 오래 일하기 위한 자원',
+  wbr_readings: '분기별 추천 도서', wbr_refresh_note: '매 분기 업데이트',
   sidebar_res_wellbeing: '스트레스 관리',
 
   slide_over_close: '패널 닫기',
