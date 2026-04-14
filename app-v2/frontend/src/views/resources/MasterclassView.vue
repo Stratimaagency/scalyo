@@ -20,9 +20,9 @@
             <div class="mcc-meta">
               <span>{{ mc.modules?.length || 0 }} modules</span>
               <span>·</span>
-              <span>{{ totalLessons(mc) }} leçons</span>
+              <span>{{ totalLessons(mc) }} {{ t('res_lessons') }}</span>
               <span>·</span>
-              <span>{{ mc.totalHours }}</span>
+              <span>{{ mc.totalDuration }}</span>
             </div>
           </div>
           <div class="mcc-right">
@@ -60,8 +60,8 @@
                 <div>
                   <strong>{{ mod.title }}</strong>
                   <span class="mcm-meta">
-                    {{ mod.lessonDetails?.length || mod.lessons || 0 }} leçons
-                    · {{ mod.exercises || 0 }} exercices
+                    {{ mod.lessons?.length || 0 }} {{ t('res_lessons') }}
+                    · {{ mod.exercises?.length || 0 }} {{ t('res_exercises') }}
                     · {{ mod.duration }}
                   </span>
                 </div>
@@ -73,25 +73,25 @@
             <div v-if="openMod === mod.id" class="mcm-lessons">
 
               <!-- Lessons -->
-              <div v-for="(lesson, li) in (mod.lessonDetails || [])" :key="mod.id + '_' + li"
+              <div v-for="lesson in mod.lessons" :key="lesson.id"
                    class="mcl-item"
-                   @click="openLesson === lessonKey(mod, li) ? openLesson = null : openLesson = lessonKey(mod, li)">
+                   @click="openLesson === lesson.id ? openLesson = null : openLesson = lesson.id">
                 <div class="mcl-left">
-                  <span class="mcl-icon" :class="{ done: completedLessons.includes(lessonKey(mod, li)) }">
-                    {{ completedLessons.includes(lessonKey(mod, li)) ? '✅' : '📖' }}
+                  <span class="mcl-icon" :class="{ done: completedLessons.includes(lesson.id) }">
+                    {{ completedLessons.includes(lesson.id) ? '✅' : '📖' }}
                   </span>
                   <div>
                     <span class="mcl-title">{{ lesson.title }}</span>
                     <span class="mcl-dur">{{ lesson.duration }}</span>
                   </div>
                 </div>
-                <span class="mcl-chev">{{ openLesson === lessonKey(mod, li) ? '▾' : '▸' }}</span>
+                <span class="mcl-chev">{{ openLesson === lesson.id ? '▾' : '▸' }}</span>
               </div>
 
               <!-- Lesson content expanded -->
-              <div v-if="openLesson && openLesson.startsWith(mod.id + '_')"
+              <div v-if="openLesson && mod.lessons.find(l => l.id === openLesson)"
                    class="mcl-content">
-                <p>{{ getOpenLessonSummary(mod) }}</p>
+                <p>{{ mod.lessons.find(l => l.id === openLesson)?.content || t('res_lesson_coming') }}</p>
                 <button class="btn-done"
                         @click="markDone(openLesson)">
                   {{ completedLessons.includes(openLesson) ? '✅ ' + t('res_completed') : t('res_mark_done') }}
@@ -99,17 +99,18 @@
               </div>
 
               <!-- Exercises -->
-              <div v-for="ei in mod.exercises" :key="'ex_' + mod.id + '_' + ei" class="mcl-item exercise">
+              <div v-for="ex in mod.exercises" :key="ex.id" class="mcl-item exercise">
                 <div class="mcl-left">
                   <span class="mcl-icon">📝</span>
                   <div>
-                    <span class="mcl-title">Exercice {{ ei }}</span>
+                    <span class="mcl-title">{{ ex.title }}</span>
+                    <span class="mcl-dur">{{ ex.duration }}</span>
                   </div>
                 </div>
               </div>
 
               <!-- Empty state -->
-              <div v-if="!mod.lessonDetails?.length" class="mcl-empty">
+              <div v-if="!mod.lessons?.length" class="mcl-empty">
                 {{ t('res_lesson_coming') }}
               </div>
 
@@ -140,35 +141,26 @@ const openMod = ref(null)
 const openLesson = ref(null)
 const completedLessons = ref([])
 
-function lessonKey(mod, idx) { return mod.id + '_' + idx }
-
 function totalLessons(mc) {
-  return (mc.modules || []).reduce((s, m) => s + (m.lessonDetails?.length || m.lessons || 0), 0)
+  return (mc.modules || []).reduce((s, m) => s + (m.lessons?.length || 0), 0)
 }
 
 function isModDone(mod) {
-  if (!mod.lessonDetails?.length) return false
-  return mod.lessonDetails.every((_, i) => completedLessons.value.includes(lessonKey(mod, i)))
+  return (mod.lessons || []).every(l => completedLessons.value.includes(l.id))
 }
 
 function mcProgress(mc) {
   const total = totalLessons(mc)
   if (!total) return 0
   const done = (mc.modules || []).reduce((s, m) =>
-    s + (m.lessonDetails || []).filter((_, i) => completedLessons.value.includes(lessonKey(m, i))).length, 0)
+    s + (m.lessons || []).filter(l => completedLessons.value.includes(l.id)).length, 0)
   return Math.round(done / total * 100)
 }
 
-function getOpenLessonSummary(mod) {
-  if (!openLesson.value) return ''
-  const idx = parseInt(openLesson.value.split('_').pop())
-  return mod.lessonDetails?.[idx]?.summary || t('res_lesson_coming')
-}
-
-function markDone(key) {
-  const idx = completedLessons.value.indexOf(key)
+function markDone(lessonId) {
+  const idx = completedLessons.value.indexOf(lessonId)
   if (idx >= 0) completedLessons.value.splice(idx, 1)
-  else completedLessons.value.push(key)
+  else completedLessons.value.push(lessonId)
 }
 </script>
 
@@ -199,7 +191,7 @@ function markDone(key) {
 .btn-start { background: var(--purple); color: #fff; border: none; padding: 8px 18px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
 .btn-start:hover { background: var(--purple-dark); }
 .btn-continue { background: var(--green); }
-.btn-continue:hover { background: var(--green-dark); }
+.btn-continue:hover { background: #059669; }
 
 .mcc-modules { border-top: 1px solid var(--border-light); }
 
@@ -210,7 +202,7 @@ function markDone(key) {
 .mcm-header:hover { background: var(--bg-hover); }
 .mcm-left { display: flex; align-items: center; gap: 14px; }
 .mcm-num { width: 28px; height: 28px; border-radius: 50%; background: var(--purple-bg); color: var(--purple); font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.mcm-num.done { background: var(--green-bg); color: var(--green); }
+.mcm-num.done { background: #d1fae5; color: #059669; }
 .mcm-left strong { font-size: 0.88rem; display: block; margin-bottom: 2px; }
 .mcm-meta { font-size: 0.72rem; color: var(--text-muted); }
 .mcm-chev { font-size: 0.8rem; color: var(--text-muted); }
@@ -222,12 +214,11 @@ function markDone(key) {
 .mcl-item.exercise { cursor: default; opacity: 0.8; }
 .mcl-left { display: flex; align-items: center; gap: 10px; }
 .mcl-icon { font-size: 1rem; }
-.mcl-icon.done { filter: none; }
 .mcl-title { font-size: 0.82rem; font-weight: 500; display: block; }
 .mcl-dur { font-size: 0.68rem; color: var(--text-muted); }
 .mcl-chev { font-size: 0.75rem; color: var(--text-muted); }
 
-.mcl-content { background: #fff; border-radius: 8px; padding: 16px; margin: 4px 0 8px; font-size: 0.82rem; line-height: 1.6; color: var(--text-secondary); }
+.mcl-content { background: #fff; border-radius: 8px; padding: 16px; margin: 4px 0 8px; font-size: 0.82rem; line-height: 1.6; color: var(--text-secondary); white-space: pre-wrap; }
 .btn-done { margin-top: 10px; background: var(--green); color: #fff; border: none; padding: 6px 16px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
 
 .mcl-empty { padding: 16px 12px; font-size: 0.82rem; color: var(--text-muted); text-align: center; }
