@@ -177,7 +177,7 @@ function generate() {
 </script>
 
 <style scoped>
-.kn { max-width: 720px; margin: 0 auto; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+.kn { max-width: 720px; margin: 0 auto; }
 .kn-header { margin-bottom: 24px; }
 .kn-back { font-size: 0.82rem; color: var(--text-muted); display: block; margin-bottom: 8px; }
 .kn-back:hover { color: var(--purple); }
@@ -219,7 +219,7 @@ function generate() {
 .part-check input { accent-color: var(--purple); }
 .part-role { font-size: 0.72rem; color: var(--text-muted); margin-left: auto; }
 
-.kpi-catalog { display: flex; flex-direction: column; gap: 6px; flex: 1; overflow-y: auto; min-height: 0; }
+.kpi-catalog { display: flex; flex-direction: column; gap: 6px; max-height: 50vh; overflow-y: auto; }
 .kcat { background: var(--bg); border-radius: var(--radius-sm); overflow: hidden; }
 .kcat-title { display: flex; align-items: center; gap: 8px; padding: 10px 14px; font-size: 0.88rem; font-weight: 700; cursor: pointer; margin: 0; }
 .kcat-title:hover { background: var(--bg-hover); }
