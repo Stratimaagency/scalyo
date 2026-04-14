@@ -220,7 +220,7 @@ function generate() {
 .part-role { font-size: 0.72rem; color: var(--text-muted); margin-left: auto; }
 
 .kpi-catalog { display: flex; flex-direction: column; gap: 6px; max-height: 50vh; overflow-y: auto; }
-.kcat { background: var(--bg); border-radius: var(--radius-sm); overflow: hidden; }
+.kcat { background: var(--bg); border-radius: var(--radius-sm); }
 .kcat-title { display: flex; align-items: center; gap: 8px; padding: 10px 14px; font-size: 0.88rem; font-weight: 700; cursor: pointer; margin: 0; }
 .kcat-title:hover { background: var(--bg-hover); }
 .kcat-chev { font-size: 0.7rem; color: var(--text-muted); width: 14px; }
