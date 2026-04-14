@@ -41,12 +41,6 @@
       </div>
     </div>
 
-    <!-- Citation du trimestre -->
-    <div class="wbr-quote">
-      <div class="wbr-quote-mark">"</div>
-      <p>{{ currentQuote.text }}</p>
-      <span>— {{ currentQuote.author }}</span>
-    </div>
   </div>
 </template>
 
@@ -128,16 +122,9 @@ const allBooks = [
   ],
 ]
 
-const allQuotes = [
-  { text: 'Le succès n\'est pas la clé du bonheur. Le bonheur est la clé du succès. Si vous aimez ce que vous faites, vous réussirez.', author: 'Albert Schweitzer' },
-  { text: 'Prendre soin de vous n\'est pas de l\'égoïsme. C\'est de la gestion de ressources.', author: 'Anonyme' },
-  { text: 'Les vacances ne sont pas un luxe. Ce sont une stratégie de performance à long terme.', author: 'Greg McKeown' },
-  { text: 'Ce que vous faites en décembre définit qui vous êtes en janvier.', author: 'Anonyme' },
-]
 
 const currentTips = computed(() => allTips[currentQuarter.value])
 const currentBooks = computed(() => allBooks[currentQuarter.value])
-const currentQuote = computed(() => allQuotes[currentQuarter.value])
 </script>
 
 <style scoped>
@@ -174,10 +161,6 @@ const currentQuote = computed(() => allQuotes[currentQuarter.value])
 .wbrb-author { font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 6px; }
 .wbrb-why { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.5; margin: 0; }
 
-.wbr-quote { background: linear-gradient(135deg, var(--purple-bg), #ede9fe); border-radius: 16px; padding: 28px 32px; position: relative; }
-.wbr-quote-mark { font-size: 5rem; color: var(--purple); opacity: 0.2; line-height: 0.5; margin-bottom: 12px; font-family: Georgia, serif; }
-.wbr-quote p { font-size: 1rem; font-style: italic; line-height: 1.7; color: #374151; margin-bottom: 12px; }
-.wbr-quote span { font-size: 0.78rem; color: var(--text-muted); }
 
 @media (max-width: 768px) {
   .wbr-grid { grid-template-columns: 1fr; }
