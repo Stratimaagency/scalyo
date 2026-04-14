@@ -168,6 +168,19 @@
         <button @click="store.replyingTo = null">✕</button>
       </div>
 
+      <!-- Share picker -->
+      <div v-if="showSharePicker" class="cp-picker">
+        <div class="cp-picker-header">
+          <span>{{ shareType === 'client' ? t('chat_share_client') : t('chat_share_task') }}</span>
+          <button @click="showSharePicker = false">✕</button>
+        </div>
+        <div v-if="!sharePickerItems.length" class="cp-picker-empty">Aucun élément disponible</div>
+        <button v-for="item in sharePickerItems" :key="item.id" class="cp-picker-item" @click="confirmSharePick(item)">
+          <span class="cp-picker-label">{{ item.label }}</span>
+          <span class="cp-picker-meta">{{ item.meta }}</span>
+        </button>
+      </div>
+
       <!-- Input area -->
       <div class="cp-input-wrap">
         <div class="cp-fmt-bar">
@@ -277,6 +290,9 @@ const searchQuery = ref('')
 const showSearch = ref(false)
 const showPinned = ref(false)
 const shareMenuOpen = ref(false)
+const shareType = ref(null)
+const showSharePicker = ref(false)
+const sharePickerItems = ref([])
 const emojiOpen = ref(false)
 const novaThinking = ref(false)
 const showCreateChannel = ref(false)
@@ -502,21 +518,40 @@ function onFileSelect(e) {
 // Share Scalyo data
 function shareItem(type) {
   shareMenuOpen.value = false
-  let content = ''
-  if (type === 'client') {
-    const c = clientsStore.clients?.[0]
-    content = c ? `👤 **${c.name}** | Health: ${c.health}/10 | ARR: ${(c.arr / 1000).toFixed(0)}K€ | CSM: ${c.csm}` : '👤 Aucun client'
-  } else if (type === 'task') {
-    const task = tasksStore.tasks?.find(t => t.status !== 'done')
-    content = task ? `📋 **${task.title}** | Priorité: ${task.priority} | Statut: ${task.status}` : '📋 Aucune tâche en cours'
-  } else if (type === 'kpi') {
-    content = `📊 **KPIs** | ARR: ${((clientsStore.totalArr || 0) / 1000).toFixed(0)}K€ | Health: ${clientsStore.avgHealth || 0}/10 | Critiques: ${clientsStore.criticalCount || 0}`
+  if (type === 'kpi') {
+    const content = `📊 **KPIs** | ARR: ${((clientsStore.totalArr||0)/1000).toFixed(0)}K€ | Health: ${clientsStore.avgHealth||0}/10 | Critiques: ${clientsStore.criticalCount||0}`
+    store.sendMessage(store.activeChannel, content)
+    nextTick(scrollBottom)
   } else if (type === 'email') {
-    content = `📧 **Email Studio** → Templates disponibles\n→ /app/email-studio`
+    store.sendMessage(store.activeChannel, '📧 **Email Studio** → /app/email-studio')
+    nextTick(scrollBottom)
   } else if (type === 'roadmap') {
-    content = `🗺️ **Roadmap** partagée → /app/roadmap`
+    store.sendMessage(store.activeChannel, '🗺️ **Roadmap** → /app/roadmap')
+    nextTick(scrollBottom)
+  } else if (type === 'client') {
+    sharePickerItems.value = (clientsStore.clients||[]).map(c => ({
+      id: c.id, label: c.name,
+      meta: `Health: ${c.health}/10 | ARR: ${(c.arr/1000).toFixed(0)}K€`,
+      content: `👤 **${c.name}** | Health: ${c.health}/10 | ARR: ${(c.arr/1000).toFixed(0)}K€ | CSM: ${c.csm}`
+    }))
+    shareType.value = 'client'
+    showSharePicker.value = true
+  } else if (type === 'task') {
+    sharePickerItems.value = (tasksStore.tasks||[]).filter(t => t.status !== 'done').map(t => ({
+      id: t.id, label: t.title,
+      meta: `${t.priority} | ${t.status}`,
+      content: `📋 **${t.title}** | Priorité: ${t.priority} | Statut: ${t.status}`
+    }))
+    shareType.value = 'task'
+    showSharePicker.value = true
   }
-  if (content) { store.sendMessage(store.activeChannel, content); nextTick(scrollBottom) }
+}
+
+function confirmSharePick(item) {
+  store.sendMessage(store.activeChannel, item.content)
+  showSharePicker.value = false
+  sharePickerItems.value = []
+  nextTick(scrollBottom)
 }
 
 // Handle alert actions
@@ -793,6 +828,15 @@ watch(() => store.activeChannel, () => nextTick(scrollBottom))
 .cp-ctx-menu button.danger:hover { background: #fee2e2; }
 
 /* Mobile */
+.cp-picker { border-top: 1px solid var(--border-light); background: #fff; max-height: 200px; overflow-y: auto; }
+.cp-picker-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); border-bottom: 1px solid var(--border-light); position: sticky; top: 0; background: #fff; }
+.cp-picker-header button { background: none; border: none; cursor: pointer; color: var(--text-muted); }
+.cp-picker-item { display: flex; flex-direction: column; gap: 2px; padding: 8px 14px; width: 100%; background: none; border: none; border-bottom: 1px solid var(--border-light); text-align: left; cursor: pointer; transition: background 0.12s; }
+.cp-picker-item:hover { background: var(--bg-hover); }
+.cp-picker-label { font-size: 0.82rem; font-weight: 500; }
+.cp-picker-meta { font-size: 0.72rem; color: var(--text-muted); }
+.cp-picker-empty { padding: 12px 14px; font-size: 0.82rem; color: var(--text-muted); }
+
 @media (max-width: 640px) {
   .cp-sidebar { width: 56px; }
   .cp-workspace, .cp-section-label, .cp-ch-name, .cp-dm-name, .cp-user-info, .cp-header-desc { display: none; }
