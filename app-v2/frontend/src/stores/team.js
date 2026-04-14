@@ -21,5 +21,21 @@ export const useTeamStore = defineStore('team', () => {
     if (i !== -1) Object.assign(members.value[i], data)
   }
 
-  return { members, teamHealthScore, healthyMembers, overloadedMembers, totalArrManaged, updateMember }
+  function addMember(member) {
+    members.value.push({
+      id: 'tm' + Date.now(),
+      avatar: null,
+      status: 'healthy',
+      wellbeingScore: 70,
+      workload: 50,
+      clientCount: 0,
+      arrManaged: 0,
+      mood: 'neutral',
+      burnoutRisk: 'low',
+      weekMoods: ['neutral', 'neutral', 'neutral', 'neutral', 'neutral'],
+      ...member,
+    })
+  }
+
+  return { members, teamHealthScore, healthyMembers, overloadedMembers, totalArrManaged, updateMember, addMember }
 }, { persist: true })
