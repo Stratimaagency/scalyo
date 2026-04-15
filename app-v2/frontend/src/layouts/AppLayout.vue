@@ -1,64 +1,36 @@
 <template>
   <div class="app-layout" :class="{ collapsed: app.sidebarCollapsed }">
 
-    <!-- Mobile overlay -->
     <div v-if="app.sidebarMobileOpen" class="sidebar-overlay" @click="app.closeMobileSidebar()" />
 
     <!-- SIDEBAR -->
     <aside class="sidebar" :class="{ open: app.sidebarMobileOpen }">
-      <!-- Logo -->
       <div class="sidebar-logo">
         <ScalyoLogo :size="app.sidebarCollapsed ? 28 : 32" />
         <span v-if="!app.sidebarCollapsed" class="logo-text">Scalyo</span>
       </div>
-
-      <!-- Nav -->
       <nav class="sidebar-nav">
         <template v-for="section in sidebarSections" :key="section.label">
-          <div v-if="!app.sidebarCollapsed" class="nav-section-label">{{ t(section.label) }}</div>
-
+          <div v-if="!app.sidebarCollapsed && section.label" class="nav-section-label">{{ t(section.label) }}</div>
           <template v-for="item in section.items" :key="item.name">
-            <!-- Item with subnav -->
             <div v-if="item.children" class="nav-group">
-              <router-link
-                :to="item.to"
-                class="nav-item"
-                :class="{ active: isActiveGroup(item) }"
-                @click="app.closeMobileSidebar()"
-              >
+              <router-link :to="item.to" class="nav-item" :class="{ active: isActiveGroup(item) }" @click="app.closeMobileSidebar()">
                 <span class="nav-icon">{{ item.icon }}</span>
                 <span v-if="!app.sidebarCollapsed" class="nav-label">{{ t(item.label) }}</span>
               </router-link>
               <div v-if="isActiveGroup(item) && !app.sidebarCollapsed" class="nav-subitems">
-                <router-link
-                  v-for="sub in item.children"
-                  :key="sub.name"
-                  :to="sub.to"
-                  class="nav-subitem"
-                  :class="{ active: route.name === sub.name }"
-                  @click="app.closeMobileSidebar()"
-                >
+                <router-link v-for="sub in item.children" :key="sub.name" :to="sub.to" class="nav-subitem" :class="{ active: route.name === sub.name }" @click="app.closeMobileSidebar()">
                   {{ t(sub.label) }}
                 </router-link>
               </div>
             </div>
-
-            <!-- Simple item -->
-            <router-link
-              v-else
-              :to="item.to"
-              class="nav-item"
-              :class="{ active: route.name === item.name }"
-              @click="app.closeMobileSidebar()"
-            >
+            <router-link v-else :to="item.to" class="nav-item" :class="{ active: route.name === item.name }" @click="app.closeMobileSidebar()">
               <span class="nav-icon">{{ item.icon }}</span>
               <span v-if="!app.sidebarCollapsed" class="nav-label">{{ t(item.label) }}</span>
             </router-link>
           </template>
         </template>
       </nav>
-
-      <!-- Collapse toggle (desktop) -->
       <button class="sidebar-toggle hide-mobile" @click="app.toggleSidebar()">
         {{ app.sidebarCollapsed ? '→' : '←' }}
       </button>
@@ -71,11 +43,9 @@
         <button class="topbar-burger hide-desktop" @click="app.toggleMobileSidebar()">
           <span /><span /><span />
         </button>
-
         <div class="topbar-left">
           <ScalyoLogo :size="24" class="hide-desktop topbar-logo-mobile" />
         </div>
-
         <div class="topbar-right">
           <!-- Lang switch -->
           <div class="lang-switch">
@@ -92,15 +62,26 @@
               <div v-if="notifOpen" class="notif-dropdown">
                 <div class="notif-header">
                   <strong>{{ t('topbar_notifications') }}</strong>
-                  <button v-if="notifications.unreadCount" class="notif-mark-read" @click="notifications.markAllRead()">{{ t('topbar_mark_all_read') }}</button>
+                  <div class="notif-header-actions">
+                    <button v-if="notifications.unreadCount" class="notif-mark-read" @click="notifications.markAllRead()">{{ t('topbar_mark_all_read') }}</button>
+                    <button v-if="notifications.notifications.length" class="notif-clear" @click="notifications.clearAll()" title="Vider">🗑</button>
+                  </div>
                 </div>
                 <div class="notif-list">
-                  <div v-for="n in notifications.notifications" :key="n.id" class="notif-item" :class="{ unread: !n.read }" @click="notifications.markRead(n.id)">
+                  <div
+                    v-for="n in notifications.notifications"
+                    :key="n.id"
+                    class="notif-item"
+                    :class="{ unread: !n.read }"
+                    @click="onNotifClick(n)"
+                  >
                     <span class="notif-icon">{{ n.icon }}</span>
                     <div class="notif-content">
                       <strong>{{ n.title }}</strong>
                       <p>{{ n.body }}</p>
+                      <span class="notif-time">{{ fmtNotifDate(n.createdAt) }}</span>
                     </div>
+                    <span v-if="!n.read" class="notif-unread-dot" />
                   </div>
                   <div v-if="!notifications.notifications.length" class="notif-empty">{{ t('topbar_no_notifications') }}</div>
                 </div>
@@ -137,8 +118,6 @@
       💬
       <span v-if="chatStore.totalUnread" class="chat-fab-badge">{{ chatStore.totalUnread }}</span>
     </button>
-
-    <!-- Chat panel -->
     <transition name="slide-right">
       <div v-if="app.chatOpen" class="chat-panel-wrapper">
         <ChatPanel @close="app.toggleChat()" />
@@ -149,7 +128,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { onClickOutside } from '@vueuse/core'
 import ScalyoLogo from '@/components/ScalyoLogo.vue'
@@ -158,18 +137,55 @@ import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notifications'
 import { useChatStore } from '@/stores/chat'
+import { useClientStore } from '@/stores/clients'
+import { useTaskStore } from '@/stores/tasks'
+import { useTeamStore } from '@/stores/team'
 
 const route = useRoute()
+const router = useRouter()
 const { t, locale } = useI18n({ useScope: 'global' })
 const app = useAppStore()
 const auth = useAuthStore()
 const notifications = useNotificationStore()
 const chatStore = useChatStore()
+const clientStore = useClientStore()
+const taskStore = useTaskStore()
+const teamStore = useTeamStore()
 
+// ─── Notifications ─────────────────────────────────────────────────────────────
 const notifOpen = ref(false)
 const notifRef = ref(null)
 onClickOutside(notifRef, () => { notifOpen.value = false })
 
+// Génère les notifications depuis les vraies données au démarrage
+// Les doublons sont ignorés — les notifs déjà lues restent lues
+notifications.generateFromData(
+  clientStore.clients,
+  taskStore.tasks,
+  teamStore.members,
+)
+
+function onNotifClick(n) {
+  notifications.markRead(n.id)
+  notifOpen.value = false
+  if (n.route) router.push(n.route)
+}
+
+function fmtNotifDate(iso) {
+  if (!iso) return ''
+  const d = new Date(iso)
+  const now = new Date()
+  const diffMin = Math.round((now - d) / 60000)
+  if (diffMin < 2) return "à l'instant"
+  if (diffMin < 60) return `il y a ${diffMin} min`
+  const diffH = Math.round(diffMin / 60)
+  if (diffH < 24) return `il y a ${diffH}h`
+  const diffD = Math.round(diffH / 24)
+  if (diffD < 7) return `il y a ${diffD}j`
+  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+}
+
+// ─── Langue ────────────────────────────────────────────────────────────────────
 const currentLocale = computed(() => locale.value)
 const langs = [
   { code: 'fr', label: 'FR' },
@@ -181,6 +197,7 @@ function switchLocale(code) {
   app.setLocale(code)
 }
 
+// ─── Sidebar ───────────────────────────────────────────────────────────────────
 function isActiveGroup(item) {
   return item.children?.some(c => route.name === c.name) || route.name === item.name
 }
@@ -268,7 +285,7 @@ const sidebarSections = [
 </script>
 
 <style scoped>
-/* ═══ LAYOUT GRID ═══ */
+/* ═══ LAYOUT ═══ */
 .app-layout { display: flex; min-height: 100vh; }
 .main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; margin-left: var(--sidebar-width); transition: margin-left var(--transition-slow); }
 .app-layout.collapsed .main-wrapper { margin-left: var(--sidebar-collapsed); }
@@ -303,24 +320,30 @@ const sidebarSections = [
 .lang-switch button { background: none; border: none; color: var(--text-muted); font-size: 0.72rem; padding: 4px 8px; border-radius: 6px; transition: all 0.15s; font-weight: 500; }
 .lang-switch button.active { background: var(--purple); color: #fff; font-weight: 600; }
 
-/* Notifications */
+/* ─── Notifications ────────────────────────────────────────────────────────── */
 .topbar-notif { position: relative; }
-.notif-btn { background: none; border: none; font-size: 1.2rem; padding: 4px; position: relative; }
+.notif-btn { background: none; border: none; font-size: 1.2rem; padding: 4px; position: relative; cursor: pointer; }
 .notif-badge { position: absolute; top: -2px; right: -4px; background: var(--red); color: #fff; font-size: 0.6rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 .notif-dropdown { position: absolute; top: 100%; right: 0; margin-top: 8px; width: 360px; background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--border); z-index: 200; }
 .notif-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--border-light); }
 .notif-header strong { font-size: 0.9rem; }
-.notif-mark-read { background: none; border: none; color: var(--purple); font-size: 0.75rem; font-weight: 500; }
+.notif-header-actions { display: flex; align-items: center; gap: 8px; }
+.notif-mark-read { background: none; border: none; color: var(--purple); font-size: 0.75rem; font-weight: 500; cursor: pointer; }
+.notif-clear { background: none; border: none; font-size: 0.85rem; cursor: pointer; opacity: 0.5; transition: opacity 0.15s; padding: 0; }
+.notif-clear:hover { opacity: 1; }
 .notif-list { max-height: 320px; overflow-y: auto; }
-.notif-item { display: flex; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border-light); cursor: pointer; transition: background 0.15s; }
+.notif-item { display: flex; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border-light); cursor: pointer; transition: background 0.15s; align-items: flex-start; }
 .notif-item:hover { background: var(--bg-hover); }
 .notif-item.unread { background: var(--purple-bg); }
 .notif-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+.notif-content { flex: 1; min-width: 0; }
 .notif-content strong { font-size: 0.82rem; display: block; margin-bottom: 2px; }
-.notif-content p { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.4; }
+.notif-content p { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.4; margin: 0; }
+.notif-time { font-size: 0.68rem; color: var(--text-muted); margin-top: 3px; display: block; }
+.notif-unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--purple); flex-shrink: 0; margin-top: 6px; }
 .notif-empty { padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
 
-/* User */
+/* ─── User ─────────────────────────────────────────────────────────────────── */
 .topbar-user { display: flex; align-items: center; gap: 8px; }
 .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), var(--purple-dark)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
 .user-info { display: flex; flex-direction: column; }
@@ -338,8 +361,6 @@ const sidebarSections = [
 .chat-fab:hover { transform: scale(1.08); box-shadow: 0 8px 30px rgba(124,58,237,0.3); }
 .chat-fab.active { background: var(--text); }
 .chat-fab-badge { position: absolute; top: -4px; right: -4px; background: var(--red); color: #fff; font-size: 0.6rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-
-/* Chat panel */
 .chat-panel-wrapper { position: fixed; bottom: 88px; right: 24px; width: 680px; height: 520px; background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); z-index: 399; border: 1px solid var(--border); overflow: hidden; }
 
 /* ═══ RESPONSIVE ═══ */

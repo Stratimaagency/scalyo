@@ -2,13 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
 export const useNotificationStore = defineStore('notifications', () => {
-  const notifications = ref([
-    { id: 'n1', type: 'churn_risk', title: 'Risque churn — Leroy Finance', body: 'Health score tombé à 3.2. Usage -40% ce mois.', read: false, createdAt: '2026-04-11T10:30:00', clientId: 'cl4', icon: '🔴' },
-    { id: 'n2', type: 'renewal', title: 'Renouvellement dans 28j — Leroy Finance', body: 'Date de renouvellement : 10 mai 2026', read: false, createdAt: '2026-04-11T09:00:00', clientId: 'cl4', icon: '📅' },
-    { id: 'n3', type: 'burnout', title: 'Alerte burnout — Thomas R.', body: 'Charge 92%, wellbeing 52/100 depuis 3 semaines.', read: false, createdAt: '2026-04-10T16:00:00', memberId: 'tm2', icon: '⚠️' },
-    { id: 'n4', type: 'task_overdue', title: 'Tâche en retard — QBR Acme Corp', body: 'Devait être terminé le 15 avril.', read: true, createdAt: '2026-04-10T08:00:00', taskId: 't1', icon: '⏰' },
-    { id: 'n5', type: 'nps_drop', title: 'NPS en baisse — DataVault', body: 'NPS passé de 45 à 22 ce trimestre.', read: true, createdAt: '2026-04-09T14:00:00', clientId: 'cl8', icon: '📉' },
-  ])
+  const notifications = ref([])
 
   const unreadCount = computed(() => notifications.value.filter(n => !n.read).length)
 
@@ -16,10 +10,105 @@ export const useNotificationStore = defineStore('notifications', () => {
     const n = notifications.value.find(n => n.id === id)
     if (n) n.read = true
   }
-  function markAllRead() { notifications.value.forEach(n => n.read = true) }
-  function addNotification(notif) {
-    notifications.value.unshift({ id: 'n' + Date.now(), read: false, createdAt: new Date().toISOString(), ...notif })
+
+  function markAllRead() {
+    notifications.value.forEach(n => n.read = true)
   }
 
-  return { notifications, unreadCount, markRead, markAllRead, addNotification }
+  function clearAll() {
+    notifications.value = []
+  }
+
+  function addNotification(notif) {
+    const exists = notifications.value.find(n =>
+      n.type === notif.type && n.targetId === notif.targetId
+    )
+    if (exists) return
+    notifications.value.unshift({
+      id: 'n' + Date.now() + Math.random().toString(36).slice(2, 5),
+      read: false,
+      createdAt: new Date().toISOString(),
+      ...notif,
+    })
+  }
+
+  function generateFromData(clients, tasks, teamMembers) {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const todayStr = today.toISOString().slice(0, 10)
+
+    for (const client of (clients || [])) {
+      if (typeof client.health === 'number' && client.health < 4) {
+        addNotification({
+          type: 'churn_risk',
+          icon: '🔴',
+          title: `Risque churn — ${client.name}`,
+          body: `Health score ${client.health}/10. Intervention urgente recommandée.`,
+          targetId: client.id,
+          route: '/app/portfolio',
+        })
+      }
+      if (client.renewalDate) {
+        const renewal = new Date(client.renewalDate)
+        if (!isNaN(renewal.getTime())) {
+          const daysLeft = Math.round((renewal.getTime() - today.getTime()) / 86400000)
+          if (daysLeft >= 0 && daysLeft <= 30) {
+            addNotification({
+              type: 'renewal',
+              icon: '📅',
+              title: `Renouvellement dans ${daysLeft}j — ${client.name}`,
+              body: `Date de renouvellement : ${client.renewalDate}`,
+              targetId: client.id,
+              route: '/app/portfolio',
+            })
+          }
+        }
+      }
+      if (typeof client.nps === 'number' && client.nps < 20) {
+        addNotification({
+          type: 'nps_drop',
+          icon: '📉',
+          title: `NPS bas — ${client.name}`,
+          body: `Score NPS : ${client.nps}. En dessous du seuil critique.`,
+          targetId: client.id,
+          route: '/app/satisfaction',
+        })
+      }
+    }
+
+    for (const task of (tasks || [])) {
+      if (task.status !== 'done' && task.dueDate && task.dueDate < todayStr) {
+        const daysLate = Math.round((today.getTime() - new Date(task.dueDate).getTime()) / 86400000)
+        addNotification({
+          type: 'task_overdue',
+          icon: '⏰',
+          title: `Tâche en retard — ${task.title}`,
+          body: `En retard de ${daysLate} jour${daysLate > 1 ? 's' : ''}. Statut : ${task.status}.`,
+          targetId: task.id,
+          route: '/app/tasks/kanban',
+        })
+      }
+    }
+
+    for (const member of (teamMembers || [])) {
+      if (member.wellbeingScore < 55 || member.workload > 85) {
+        const reasons = []
+        if (member.wellbeingScore < 55) reasons.push(`bien-être ${member.wellbeingScore}/100`)
+        if (member.workload > 85) reasons.push(`charge ${member.workload}%`)
+        addNotification({
+          type: 'burnout',
+          icon: '⚠️',
+          title: `Alerte burnout — ${member.name}`,
+          body: `${reasons.join(', ')}. Vérification recommandée.`,
+          targetId: member.id,
+          route: '/app/workload',
+        })
+      }
+    }
+  }
+
+  return {
+    notifications, unreadCount,
+    markRead, markAllRead, clearAll, addNotification, generateFromData,
+  }
 }, { persist: true })
