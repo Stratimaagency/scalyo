@@ -160,7 +160,7 @@
           <div class="pm-kpi-row">
             <div class="pm-kpi"><span class="pm-kpi-v">€{{ (clients.totalArr / 1000).toFixed(0) }}K</span><span>{{ t('kpi_arr') }}</span></div>
             <div class="pm-kpi"><span class="pm-kpi-v red">€{{ (clients.arrAtRisk / 1000).toFixed(0) }}K</span><span>{{ t('kpi_arr_at_risk') }}</span></div>
-            <div class="pm-kpi"><span class="pm-kpi-v">{{ clients.renewalsNext30.length }}</span><span>{{ t('kpi_renewals_30d') }}</span></div>
+            <div class="pm-kpi"><span class="pm-kpi-v">{{ clients.renewalsNext30 }}</span><span>{{ t('kpi_renewals_30d') }}</span></div>
           </div>
         </div>
       </section>

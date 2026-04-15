@@ -1,12 +1,25 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
+function load(key, fallback) {
+  try {
+    const v = localStorage.getItem(key)
+    return v ? JSON.parse(v) : fallback
+  } catch { return fallback }
+}
+
+function save(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
+}
+
+const DEMO_MEMBERS = [
+  { id: 'tm1', name: 'Sophie M.', email: 'sophie@stratima.com', role: 'CSM Senior', avatar: null, status: 'healthy', wellbeingScore: 78, workload: 65, clientCount: 3, arrManaged: 372000, mood: 'happy', burnoutRisk: 'low', weekMoods: ['happy', 'happy', 'neutral', 'happy', 'happy'] },
+  { id: 'tm2', name: 'Thomas R.', email: 'thomas@stratima.com', role: 'CSM', avatar: null, status: 'overloaded', wellbeingScore: 52, workload: 92, clientCount: 3, arrManaged: 306000, mood: 'stressed', burnoutRisk: 'high', weekMoods: ['stressed', 'stressed', 'exhausted', 'stressed', 'neutral'] },
+  { id: 'tm3', name: 'Julie K.', email: 'julie@stratima.com', role: 'CSM', avatar: null, status: 'healthy', wellbeingScore: 85, workload: 55, clientCount: 2, arrManaged: 275000, mood: 'great', burnoutRisk: 'none', weekMoods: ['happy', 'great', 'happy', 'great', 'great'] },
+]
+
 export const useTeamStore = defineStore('team', () => {
-  const members = ref([
-    { id: 'tm1', name: 'Sophie M.', email: 'sophie@stratima.com', role: 'CSM Senior', avatar: null, status: 'healthy', wellbeingScore: 78, workload: 65, clientCount: 3, arrManaged: 372000, mood: 'happy', burnoutRisk: 'low', weekMoods: ['happy', 'happy', 'neutral', 'happy', 'happy'] },
-    { id: 'tm2', name: 'Thomas R.', email: 'thomas@stratima.com', role: 'CSM', avatar: null, status: 'overloaded', wellbeingScore: 52, workload: 92, clientCount: 3, arrManaged: 306000, mood: 'stressed', burnoutRisk: 'high', weekMoods: ['stressed', 'stressed', 'exhausted', 'stressed', 'neutral'] },
-    { id: 'tm3', name: 'Julie K.', email: 'julie@stratima.com', role: 'CSM', avatar: null, status: 'healthy', wellbeingScore: 85, workload: 55, clientCount: 2, arrManaged: 275000, mood: 'great', burnoutRisk: 'none', weekMoods: ['happy', 'great', 'happy', 'great', 'great'] },
-  ])
+  const members = ref(load('scalyo_team', DEMO_MEMBERS))
 
   const teamHealthScore = computed(() => {
     if (!members.value.length) return 0
@@ -18,7 +31,10 @@ export const useTeamStore = defineStore('team', () => {
 
   function updateMember(id, data) {
     const i = members.value.findIndex(m => m.id === id)
-    if (i !== -1) Object.assign(members.value[i], data)
+    if (i !== -1) {
+      Object.assign(members.value[i], data)
+      save('scalyo_team', members.value)
+    }
   }
 
   function addMember(member) {
@@ -35,7 +51,21 @@ export const useTeamStore = defineStore('team', () => {
       weekMoods: ['neutral', 'neutral', 'neutral', 'neutral', 'neutral'],
       ...member,
     })
+    save('scalyo_team', members.value)
   }
 
-  return { members, teamHealthScore, healthyMembers, overloadedMembers, totalArrManaged, updateMember, addMember }
-}, { persist: true })
+  function deleteMember(id) {
+    members.value = members.value.filter(m => m.id !== id)
+    save('scalyo_team', members.value)
+  }
+
+  function resetAll() {
+    members.value = []
+    save('scalyo_team', [])
+  }
+
+  return {
+    members, teamHealthScore, healthyMembers, overloadedMembers, totalArrManaged,
+    updateMember, addMember, deleteMember, resetAll,
+  }
+}, { persist: false })
