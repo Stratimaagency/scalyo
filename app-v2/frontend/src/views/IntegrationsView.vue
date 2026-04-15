@@ -15,7 +15,7 @@
         <span class="iv-icon">{{ ig.icon }}</span>
         <div class="iv-info">
           <strong>{{ ig.name }}</strong>
-          <p>{{ ig.desc }}</p>
+          <p>{{ t(ig.descKey) }}</p>
         </div>
 
         <!-- Not connected -->
@@ -176,19 +176,19 @@ import SlideOver from '@/components/SlideOver.vue'
 const { t } = useI18n({ useScope: 'global' })
 
 const integrations = [
-  { key: 'hubspot', name: 'HubSpot', icon: '🟠', desc: t('integ_subtitle') === 'Connect your existing tools to Scalyo' ? 'Automatically import your contacts and deals into the portfolio' : t('integ_subtitle') === '기존 도구를 Scalyo에 연결하세요' ? '연락처와 딜을 포트폴리오에 자동 가져오기' : 'Importe automatiquement vos contacts et deals dans le portefeuille', authType: 'oauth' },
-  { key: 'pipedrive', name: 'Pipedrive', icon: '🟢', desc: 'Importe vos contacts et deals dans le portefeuille', authType: 'oauth' },
-  { key: 'intercom', name: 'Intercom', icon: '🔵', desc: 'Importe vos contacts et conversations dans le portefeuille', authType: 'oauth' },
-  { key: 'zendesk', name: 'Zendesk', icon: '🟣', desc: 'Importe vos tickets de support et contacts clients', authType: 'api' },
-  { key: 'jira', name: 'Jira', icon: '🔷', desc: 'Importe vos tickets et tâches dans le Task Board', authType: 'api' },
-  { key: 'notion', name: 'Notion', icon: '⬛', desc: 'Importe vos bases de données et pages dans Scalyo', authType: 'oauth' },
-  { key: 'asana', name: 'Asana', icon: '🌈', desc: 'Importe vos tâches et projets dans le Task Board', authType: 'oauth' },
-  { key: 'calendly', name: 'Calendly', icon: '📅', desc: 'Importe vos rendez-vous dans le planning', authType: 'oauth' },
-  { key: 'gmail', name: 'Gmail / Google Workspace', icon: '📧', desc: 'Connectez votre compte Gmail pour envoyer des emails et devis depuis Scalyo', authType: 'oauth' },
-  { key: 'outlook', name: 'Outlook / Microsoft 365', icon: '📬', desc: 'Connectez votre compte Outlook pour envoyer des emails et devis depuis Scalyo', authType: 'oauth' },
-  { key: 'smtp', name: 'SMTP personnalisé', icon: '⚙️', desc: 'Connectez n\'importe quel serveur SMTP (OVH, Ionos, Infomaniak, etc.)', authType: 'api' },
-  { key: 'slack', name: 'Slack', icon: '💬', desc: 'Recevez des alertes quand un compte client est en danger', authType: 'oauth' },
-  { key: 'teams', name: 'Microsoft Teams', icon: '💜', desc: 'Recevez des alertes quand un compte client est en danger', authType: 'oauth' },
+  { key: 'hubspot',   name: 'HubSpot',                   icon: '🟠', descKey: 'integ_desc_hubspot',   authType: 'oauth' },
+  { key: 'pipedrive', name: 'Pipedrive',                  icon: '🟢', descKey: 'integ_desc_pipedrive', authType: 'oauth' },
+  { key: 'intercom',  name: 'Intercom',                   icon: '🔵', descKey: 'integ_desc_intercom',  authType: 'oauth' },
+  { key: 'zendesk',   name: 'Zendesk',                    icon: '🟣', descKey: 'integ_desc_zendesk',   authType: 'api' },
+  { key: 'jira',      name: 'Jira',                       icon: '🔷', descKey: 'integ_desc_jira',      authType: 'api' },
+  { key: 'notion',    name: 'Notion',                     icon: '⬛', descKey: 'integ_desc_notion',    authType: 'oauth' },
+  { key: 'asana',     name: 'Asana',                      icon: '🌈', descKey: 'integ_desc_asana',     authType: 'oauth' },
+  { key: 'calendly',  name: 'Calendly',                   icon: '📅', descKey: 'integ_desc_calendly',  authType: 'oauth' },
+  { key: 'gmail',     name: 'Gmail / Google Workspace',   icon: '📧', descKey: 'integ_desc_gmail',     authType: 'oauth' },
+  { key: 'outlook',   name: 'Outlook / Microsoft 365',    icon: '📬', descKey: 'integ_desc_outlook',   authType: 'oauth' },
+  { key: 'smtp',      name: 'SMTP personnalisé',           icon: '⚙️', descKey: 'integ_desc_smtp',     authType: 'api' },
+  { key: 'slack',     name: 'Slack',                      icon: '💬', descKey: 'integ_desc_slack',     authType: 'oauth' },
+  { key: 'teams',     name: 'Microsoft Teams',             icon: '💜', descKey: 'integ_desc_teams',    authType: 'oauth' },
 ]
 
 const steps = [
