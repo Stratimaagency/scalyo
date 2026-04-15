@@ -27,7 +27,7 @@
           <strong>{{ t(col.label) }}</strong>
           <span class="kbc-count">{{ colTasks(col.key).length }}</span>
         </div>
-        <div class="kbc-body">
+        <div class="kbc-body" @dragover.prevent="onDragOver($event)" @drop="onDrop($event, col.key)" :class="{ 'drag-over': dragOverCol === col.key }">
           <div
             v-for="task in colTasks(col.key)"
             :key="task.id"
@@ -35,6 +35,7 @@
             :class="'prio-' + priorityLevel(task.priority)"
             draggable="true"
             @dragstart="onDragStart($event, task)"
+            @dragend="dragOverCol = null"
             @click="openEdit(task)"
           >
             <div class="kcard-top">
@@ -124,6 +125,7 @@ const slideOpen = ref(false)
 const editId = ref(null)
 const resetStep = ref(0)
 let draggedTask = null
+const dragOverCol = ref(null)
 
 function doResetAll() {
   tasks.resetAll()
@@ -157,7 +159,8 @@ function priorityLabel(p) {
 }
 
 function onDragStart(e, task) { draggedTask = task; e.dataTransfer.effectAllowed = 'move' }
-function onDrop(e, newStatus) { if (draggedTask) { tasks.moveTask(draggedTask.id, newStatus); draggedTask = null } }
+function onDragOver(e) { e.preventDefault(); const col = e.currentTarget.closest('.kb-col'); if (col) dragOverCol.value = col.classList[1] }
+function onDrop(e, newStatus) { if (draggedTask) { tasks.moveTask(draggedTask.id, newStatus); draggedTask = null; dragOverCol.value = null } }
 
 function openCreate() { editId.value = null; Object.assign(form, initForm()); slideOpen.value = true }
 function openEdit(task) {
@@ -239,6 +242,7 @@ function deleteTask() {
 
 .kb-dropzone { min-height: 40px; border: 2px dashed transparent; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 0.78rem; color: var(--text-muted); }
 .kb-dropzone:hover { border-color: var(--purple-border); background: var(--purple-bg); }
+.kbc-body.drag-over { background: var(--purple-bg); border: 2px dashed var(--purple-border); border-radius: var(--radius-sm); }
 
 .sf { display: flex; flex-direction: column; gap: 14px; }
 .fg { display: flex; flex-direction: column; gap: 4px; }
