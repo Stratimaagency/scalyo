@@ -172,6 +172,7 @@ export default {
   imp_module_tasks: 'Smart Matrice',
   imp_module_team: 'Équipe',
   imp_module_playbooks: 'Playbooks',
+  imp_module_copil: 'KPIs COPIL',
   imp_file_too_large: 'Fichier trop volumineux (max 10 MB)',
   imp_api_error: "Erreur de connexion à l'IA — vérifiez votre clé DeepSeek",
 

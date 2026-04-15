@@ -91,6 +91,7 @@ export default {
   imp_module_tasks: '스마트 매트릭스',
   imp_module_team: '팀',
   imp_module_playbooks: '플레이북',
+  imp_module_copil: 'KPI 대시보드',
   imp_file_too_large: '파일이 너무 큽니다 (최대 10 MB)',
   imp_api_error: 'AI 연결 오류 — DeepSeek 키를 확인하세요',
   integ_title: '통합', integ_subtitle: '기존 도구를 Scalyo에 연결하세요', integ_available: '현재 사용 가능', integ_connect: '연결', integ_missing: '통합이 빠졌나요?', integ_missing_desc: 'Scalyo에 연결하고 싶은 도구를 알려주세요', integ_suggest: '통합 제안',

@@ -91,6 +91,7 @@ export default {
   imp_module_tasks: 'Smart Matrix',
   imp_module_team: 'Team',
   imp_module_playbooks: 'Playbooks',
+  imp_module_copil: 'KPIs Dashboard',
   imp_file_too_large: 'File too large (max 10 MB)',
   imp_api_error: 'AI connection error — check your DeepSeek key',
   integ_title: 'Integrations', integ_subtitle: 'Connect your existing tools to Scalyo', integ_available: 'Available now', integ_connect: 'Connect', integ_missing: 'Missing an integration?', integ_missing_desc: 'Tell us which tool you\'d like to connect to Scalyo', integ_suggest: 'Suggest an integration',
