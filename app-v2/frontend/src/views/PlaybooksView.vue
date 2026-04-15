@@ -155,7 +155,7 @@ const activeFilter = ref('all')
 const slideTemplate = ref(false)
 const slideActivate = ref(false)
 const activatingTpl = ref(null)
-const activateForm = reactive({ clientId: '', csmId: 'tm1' })
+const activateForm = reactive({ clientId: '', csmId: '' })
 
 const filterTabs = computed(() => [
   { key: 'all', label: 'pb_filter_all', count: store.playbooks.length },
@@ -194,7 +194,7 @@ function fmtDate(d) {
 function selectTemplate(tpl) {
   activatingTpl.value = tpl
   activateForm.clientId = ''
-  activateForm.csmId = 'tm1'
+  activateForm.csmId = team.members[0]?.id || ''
   slideTemplate.value = false
   slideActivate.value = true
 }
