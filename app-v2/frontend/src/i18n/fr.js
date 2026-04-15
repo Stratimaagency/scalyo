@@ -289,6 +289,11 @@ export default {
   wb_nova_sug3: 'Trop de comptes à gérer',
   wb_nova_sug4: 'Conflit avec mon manager',
   wb_nova_sug5: 'Je doute de mes compétences',
+  wb_tip1: 'Prenez 5 minutes pour respirer profondément entre deux calls.',
+  wb_tip2: 'Bloquez 30 minutes sans réunion dans votre agenda chaque jour.',
+  wb_tip3: 'Célébrez vos petites victoires — elles comptent autant que les grandes.',
+  wb_tip4: 'Faites une promenade de 10 minutes après le déjeuner.',
+  wb_tip5: "Parlez à un collègue de quelque chose qui n'est pas le travail.",
   wb_emergency: 'Parler à quelqu\'un',
   wb_emergency_desc: 'Numéros d\'urgence',
 
