@@ -113,7 +113,8 @@
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useKpiStore, KPI_CATALOG } from '@/stores/kpis'
+import { useKpiStore } from '@/stores/kpis'
+import { KPI_CATALOG } from '@/data/kpiCatalog'
 import { useTeamStore } from '@/stores/team'
 
 const { t } = useI18n({ useScope: 'global' })
@@ -167,10 +168,12 @@ const canNext = computed(() => {
   return true
 })
 function generate() {
-  const id = store.addCopil({
-    name: form.name, period: form.periodType === 'custom' ? form.periodStart + ' → ' + form.periodEnd : form.period,
-    color: form.color, participants: form.participants, subtitle: form.subtitle, narrative: form.narrative,
-    layout: form.layout, kpis: JSON.parse(JSON.stringify(form.kpis)),
+  const id = store.createCopil({
+    title: form.name,
+    subtitle: form.subtitle,
+    period: form.periodType === 'custom' ? form.periodStart + ' → ' + form.periodEnd : form.period,
+    color: form.color,
+    presenter: '',
   })
   router.push('/app/kpis/' + id)
 }
