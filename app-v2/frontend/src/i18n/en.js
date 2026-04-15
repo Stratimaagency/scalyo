@@ -226,6 +226,7 @@ export default {
   okr_kr_target: 'Target',
   okr_kr_current: 'Current',
   okr_delete_kr: 'Delete',
+  okr_delete_confirm: 'Delete this objective?',
 
   kpis_title: 'KPIs Dashboard',
   kpis_subtitle: 'Track your key performance indicators',

@@ -503,6 +503,7 @@ export default {
   okr_kr_target: 'Cible',
   okr_kr_current: 'Actuel',
   okr_delete_kr: 'Supprimer',
+  okr_delete_confirm: 'Supprimer cet objectif ?',
 
   // KPIs COPIL
   kpis_title: 'KPIs Copil',

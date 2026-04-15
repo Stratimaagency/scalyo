@@ -37,9 +37,17 @@
             <span class="oc-status" :class="okr.status">{{ t('okr_status_' + okr.status) }}</span>
             <span class="oc-pct">{{ okrProgress(okr) }}%</span>
             <button class="rb" @click="openEdit(okr)">✏️</button>
-            <button class="rb del" @click="deleteOkr(okr.id)">🗑️</button>
+            <button class="rb del" @click="pendingDeleteId = okr.id">🗑️</button>
           </div>
         </div>
+
+        <!-- Confirmation inline suppression -->
+        <div v-if="pendingDeleteId === okr.id" class="delete-confirm">
+          <span>{{ t('okr_delete_confirm') }}</span>
+          <button class="btn-sm-cancel" @click="pendingDeleteId = null">{{ t('cancel') }}</button>
+          <button class="btn-sm-delete" @click="confirmDelete(okr.id)">{{ t('delete') }}</button>
+        </div>
+
         <div class="oc-progress"><div class="oc-bar"><div class="oc-fill" :class="okr.status" :style="{ width: okrProgress(okr) + '%' }" /></div></div>
         <!-- Key Results -->
         <div class="kr-list">
@@ -64,7 +72,7 @@
 
     <!-- Slide-over -->
     <SlideOver :open="slideOpen" :title="editId ? t('okr_title') : t('okr_create_title')" @close="slideOpen = false" :width="520">
-      <form @submit.prevent="save" class="sf">
+      <form @submit.prevent="saveOkr" class="sf">
         <div class="fg"><label>{{ t('okr_field_title') }} *</label><input v-model="form.title" required class="fi" /></div>
         <div class="fr">
           <div class="fg"><label>{{ t('okr_field_period') }}</label><select v-model="form.period" class="fi"><option v-for="p in periods" :key="p" :value="p">{{ p }}</option></select></div>
@@ -98,7 +106,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTeamStore } from '@/stores/team'
 import SlideOver from '@/components/SlideOver.vue'
@@ -106,15 +114,21 @@ import SlideOver from '@/components/SlideOver.vue'
 const { t } = useI18n({ useScope: 'global' })
 const team = useTeamStore()
 
-const okrs = ref([])
+function loadData(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback } catch { return fallback } }
+function saveData(key, value) { localStorage.setItem(key, JSON.stringify(value)) }
+
+const okrs = ref(loadData('scalyo_okrs', []))
+watch(okrs, val => saveData('scalyo_okrs', val), { deep: true })
+
 const slideOpen = ref(false)
 const editId = ref(null)
+const pendingDeleteId = ref(null)
 const filterPeriod = ref('all')
 const filterOwner = ref('all')
 const filterStatus = ref('all')
 const periods = ['Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026']
 
-const initForm = () => ({ title: '', period: 'Q2 2026', ownerId: 'tm1', status: 'on_track', keyResults: [{ id: 1, title: '', target: 100, current: 0 }] })
+const initForm = () => ({ title: '', period: 'Q2 2026', ownerId: team.members[0]?.id || '', status: 'on_track', keyResults: [{ id: 1, title: '', target: 100, current: 0 }] })
 const form = reactive(initForm())
 
 const filtered = computed(() => {
@@ -145,7 +159,7 @@ function openEdit(okr) {
   Object.assign(form, { title: okr.title, period: okr.period, ownerId: okr.ownerId, status: okr.status, keyResults: JSON.parse(JSON.stringify(okr.keyResults)) })
   slideOpen.value = true
 }
-function save() {
+function saveOkr() {
   if (editId.value) {
     const i = okrs.value.findIndex(o => o.id === editId.value)
     if (i !== -1) Object.assign(okrs.value[i], { ...form, keyResults: JSON.parse(JSON.stringify(form.keyResults)) })
@@ -154,7 +168,7 @@ function save() {
   }
   slideOpen.value = false
 }
-function deleteOkr(id) { okrs.value = okrs.value.filter(o => o.id !== id) }
+function confirmDelete(id) { okrs.value = okrs.value.filter(o => o.id !== id); pendingDeleteId.value = null }
 </script>
 
 <style scoped>
@@ -166,16 +180,13 @@ function deleteOkr(id) { okrs.value = okrs.value.filter(o => o.id !== id) }
 .btn-primary:hover { background: var(--purple-dark); }
 .btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; }
 .btn-outline:hover { border-color: var(--purple); color: var(--purple); }
-
 .og-label { font-size: 0.78rem; color: var(--text-secondary); margin-right: 10px; }
 .okr-global { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
 .og-bar { width: 160px; height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden; }
 .og-fill { height: 100%; background: var(--purple); border-radius: 3px; transition: width 0.5s; }
 .og-pct { font-size: 0.85rem; font-weight: 700; color: var(--purple); }
-
 .okr-filters { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
 .fsel { padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.82rem; background: #fff; outline: none; cursor: pointer; }
-
 .okr-list { display: flex; flex-direction: column; gap: 14px; }
 .okr-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; }
 .oc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 12px; }
@@ -193,7 +204,10 @@ function deleteOkr(id) { okrs.value = okrs.value.filter(o => o.id !== id) }
 .rb { background: none; border: none; font-size: 0.85rem; padding: 4px; border-radius: 4px; opacity: 0.4; cursor: pointer; }
 .rb:hover { opacity: 1; background: var(--bg-hover); }
 .rb.del:hover { background: var(--red-bg); }
-
+.delete-confirm { display: flex; align-items: center; gap: 10px; background: var(--red-bg); border: 1px solid var(--red); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 12px; font-size: 0.82rem; color: var(--red); font-weight: 500; }
+.delete-confirm span { flex: 1; }
+.btn-sm-cancel { background: #fff; border: 1px solid var(--border); color: var(--text-secondary); padding: 4px 12px; border-radius: var(--radius-sm); font-size: 0.78rem; cursor: pointer; }
+.btn-sm-delete { background: var(--red); border: none; color: #fff; padding: 4px 12px; border-radius: var(--radius-sm); font-size: 0.78rem; font-weight: 600; cursor: pointer; }
 .oc-progress { margin-bottom: 14px; }
 .oc-bar { height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden; }
 .oc-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
@@ -201,7 +215,6 @@ function deleteOkr(id) { okrs.value = okrs.value.filter(o => o.id !== id) }
 .oc-fill.at_risk { background: var(--amber); }
 .oc-fill.behind { background: var(--red); }
 .oc-fill.done { background: var(--blue); }
-
 .kr-list { display: flex; flex-direction: column; gap: 8px; }
 .kr-item { padding: 10px; background: var(--bg); border-radius: var(--radius-sm); }
 .kr-info { display: flex; justify-content: space-between; margin-bottom: 6px; }
@@ -209,12 +222,10 @@ function deleteOkr(id) { okrs.value = okrs.value.filter(o => o.id !== id) }
 .kr-vals { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
 .kr-bar { height: 4px; background: var(--border-light); border-radius: 2px; overflow: hidden; }
 .kr-fill { height: 100%; background: var(--purple); border-radius: 2px; transition: width 0.4s; }
-
 .okr-empty { text-align: center; padding: 60px 20px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); }
 .empty-icon { font-size: 3rem; margin-bottom: 16px; }
 .okr-empty h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
 .okr-empty p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; }
-
 .sf { display: flex; flex-direction: column; gap: 14px; }
 .fg { display: flex; flex-direction: column; gap: 4px; }
 .fg label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
@@ -231,6 +242,5 @@ function deleteOkr(id) { okrs.value = okrs.value.filter(o => o.id !== id) }
 .btn-sm-del:hover { opacity: 1; }
 .btn-add-kr { background: var(--purple-bg); color: var(--purple); border: 1px dashed var(--purple-border); padding: 10px; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 600; cursor: pointer; }
 .btn-add-kr:hover { background: rgba(124,58,237,0.1); }
-
 @media (max-width: 768px) { .fr { grid-template-columns: 1fr; } }
 </style>

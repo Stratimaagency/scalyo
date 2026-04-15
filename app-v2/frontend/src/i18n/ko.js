@@ -226,6 +226,7 @@ export default {
   okr_kr_target: '목표',
   okr_kr_current: '현재',
   okr_delete_kr: '삭제',
+  okr_delete_confirm: '이 목표를 삭제하시겠습니까?',
 
   kpis_title: 'KPI 대시보드',
   kpis_subtitle: '핵심 성과 지표를 추적하세요',
