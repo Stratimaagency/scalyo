@@ -1,12 +1,20 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
+function load(key, fallback) {
+  try {
+    const v = localStorage.getItem(key)
+    return v ? JSON.parse(v) : fallback
+  } catch { return fallback }
+}
+
+function save(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
+}
+
 export const TEMPLATES = [
   {
-    id: 'tpl_project',
-    key: 'project_launch',
-    icon: '🚀',
-    color: '#7c3aed',
+    id: 'tpl_project', key: 'project_launch', icon: '🚀', color: '#7c3aed',
     milestones: [
       { title: 'Cadrage & objectifs', duration: 7 },
       { title: 'Planification détaillée', duration: 14 },
@@ -17,10 +25,7 @@ export const TEMPLATES = [
     ],
   },
   {
-    id: 'tpl_sales',
-    key: 'sales_cycle',
-    icon: '🤝',
-    color: '#10b981',
+    id: 'tpl_sales', key: 'sales_cycle', icon: '🤝', color: '#10b981',
     milestones: [
       { title: 'Qualification prospect', duration: 7 },
       { title: 'Démo & découverte', duration: 7 },
@@ -31,10 +36,7 @@ export const TEMPLATES = [
     ],
   },
   {
-    id: 'tpl_session',
-    key: 'session_launch',
-    icon: '🏫',
-    color: '#3b82f6',
+    id: 'tpl_session', key: 'session_launch', icon: '🏫', color: '#3b82f6',
     milestones: [
       { title: 'Ouverture des inscriptions', duration: 30 },
       { title: 'Préparation pédagogique', duration: 21 },
@@ -45,10 +47,7 @@ export const TEMPLATES = [
     ],
   },
   {
-    id: 'tpl_deployment',
-    key: 'deployment',
-    icon: '📦',
-    color: '#f59e0b',
+    id: 'tpl_deployment', key: 'deployment', icon: '📦', color: '#f59e0b',
     milestones: [
       { title: 'Audit & analyse besoins', duration: 7 },
       { title: 'Préparation & configuration', duration: 14 },
@@ -59,10 +58,7 @@ export const TEMPLATES = [
     ],
   },
   {
-    id: 'tpl_renewal',
-    key: 'renewal',
-    icon: '🔄',
-    color: '#ec4899',
+    id: 'tpl_renewal', key: 'renewal', icon: '🔄', color: '#ec4899',
     milestones: [
       { title: 'Bilan de la période', duration: 7 },
       { title: 'Identification des enjeux', duration: 7 },
@@ -73,10 +69,7 @@ export const TEMPLATES = [
     ],
   },
   {
-    id: 'tpl_quarterly',
-    key: 'quarterly_goals',
-    icon: '📈',
-    color: '#06b6d4',
+    id: 'tpl_quarterly', key: 'quarterly_goals', icon: '📈', color: '#06b6d4',
     milestones: [
       { title: 'Définir les objectifs du trimestre', duration: 7 },
       { title: 'Aligner l\'équipe', duration: 7 },
@@ -89,7 +82,7 @@ export const TEMPLATES = [
 ]
 
 export const useRoadmapStore = defineStore('roadmap', () => {
-  const roadmaps = ref([])
+  const roadmaps = ref(load('scalyo_roadmaps', []))
 
   const activeRoadmaps = computed(() => roadmaps.value.filter(r => r.status === 'active'))
   const doneRoadmaps = computed(() => roadmaps.value.filter(r => r.status === 'done'))
@@ -128,6 +121,7 @@ export const useRoadmapStore = defineStore('roadmap', () => {
       milestones,
       createdAt: new Date().toISOString().slice(0, 10),
     })
+    save('scalyo_roadmaps', roadmaps.value)
   }
 
   function createBlank(name, icon, color) {
@@ -141,32 +135,46 @@ export const useRoadmapStore = defineStore('roadmap', () => {
       milestones: [],
       createdAt: new Date().toISOString().slice(0, 10),
     })
+    save('scalyo_roadmaps', roadmaps.value)
   }
 
   function addMilestone(roadmapId, milestone) {
     const rm = roadmaps.value.find(r => r.id === roadmapId)
-    if (rm) rm.milestones.push({ id: 'm_' + Date.now(), done: false, status: 'todo', notes: '', ...milestone })
+    if (rm) {
+      rm.milestones.push({ id: 'm_' + Date.now(), done: false, status: 'todo', notes: '', ...milestone })
+      save('scalyo_roadmaps', roadmaps.value)
+    }
   }
 
   function updateMilestone(roadmapId, milestoneId, data) {
     const rm = roadmaps.value.find(r => r.id === roadmapId)
     if (!rm) return
     const mi = rm.milestones.findIndex(m => m.id === milestoneId)
-    if (mi !== -1) Object.assign(rm.milestones[mi], data)
+    if (mi !== -1) {
+      Object.assign(rm.milestones[mi], data)
+      save('scalyo_roadmaps', roadmaps.value)
+    }
   }
 
   function deleteMilestone(roadmapId, milestoneId) {
     const rm = roadmaps.value.find(r => r.id === roadmapId)
-    if (rm) rm.milestones = rm.milestones.filter(m => m.id !== milestoneId)
+    if (rm) {
+      rm.milestones = rm.milestones.filter(m => m.id !== milestoneId)
+      save('scalyo_roadmaps', roadmaps.value)
+    }
   }
 
   function updateRoadmap(id, data) {
     const i = roadmaps.value.findIndex(r => r.id === id)
-    if (i !== -1) Object.assign(roadmaps.value[i], data)
+    if (i !== -1) {
+      Object.assign(roadmaps.value[i], data)
+      save('scalyo_roadmaps', roadmaps.value)
+    }
   }
 
   function deleteRoadmap(id) {
     roadmaps.value = roadmaps.value.filter(r => r.id !== id)
+    save('scalyo_roadmaps', roadmaps.value)
   }
 
   function roadmapProgress(rm) {
@@ -181,4 +189,4 @@ export const useRoadmapStore = defineStore('roadmap', () => {
     addMilestone, updateMilestone, deleteMilestone,
     updateRoadmap, deleteRoadmap, roadmapProgress,
   }
-}, { persist: true })
+}, { persist: false })

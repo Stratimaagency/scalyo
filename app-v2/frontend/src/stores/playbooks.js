@@ -1,6 +1,17 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
+function load(key, fallback) {
+  try {
+    const v = localStorage.getItem(key)
+    return v ? JSON.parse(v) : fallback
+  } catch { return fallback }
+}
+
+function save(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
+}
+
 const TEMPLATES = [
   { id: 'tpl_onboard', key: 'onboarding', icon: '🚀', color: '#3b82f6', steps: ['Kick-off call avec le client', 'Configuration du compte', 'Formation utilisateurs', 'Check-in J+15', 'Revue adoption J+30', 'QBR J+90'], avgDays: 90 },
   { id: 'tpl_retention', key: 'retention', icon: '🛡️', color: '#ef4444', steps: ['Email d\'ouverture de dialogue', 'Analyse utilisation produit', 'Call de 30 minutes', 'Présenter la roadmap produit'], avgDays: 21 },
@@ -11,17 +22,19 @@ const TEMPLATES = [
 ]
 
 export const usePlaybookStore = defineStore('playbooks', () => {
-  const playbooks = ref([])
+  const playbooks = ref(load('scalyo_playbooks', []))
 
   const templates = TEMPLATES
 
   const activePlaybooks = computed(() => playbooks.value.filter(p => p.status === 'active'))
   const donePlaybooks = computed(() => playbooks.value.filter(p => p.status === 'done'))
+
   const doneThisMonth = computed(() => {
     const now = new Date()
     const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
     return donePlaybooks.value.filter(p => p.completedAt >= start).length
   })
+
   const avgDuration = computed(() => {
     const done = donePlaybooks.value.filter(p => p.completedAt && p.startedAt)
     if (!done.length) return 0
@@ -30,6 +43,7 @@ export const usePlaybookStore = defineStore('playbooks', () => {
     }, 0)
     return Math.round(total / done.length)
   })
+
   const successRate = computed(() => {
     const total = playbooks.value.length
     if (!total) return 0
@@ -52,13 +66,17 @@ export const usePlaybookStore = defineStore('playbooks', () => {
       startedAt: new Date().toISOString().slice(0, 10),
       completedAt: null,
     })
+    save('scalyo_playbooks', playbooks.value)
   }
 
   function toggleStep(playbookId, stepId) {
     const pb = playbooks.value.find(p => p.id === playbookId)
     if (!pb) return
     const step = pb.steps.find(s => s.id === stepId)
-    if (step) step.done = !step.done
+    if (step) {
+      step.done = !step.done
+      save('scalyo_playbooks', playbooks.value)
+    }
   }
 
   function completePlaybook(playbookId) {
@@ -67,11 +85,13 @@ export const usePlaybookStore = defineStore('playbooks', () => {
       pb.status = 'done'
       pb.completedAt = new Date().toISOString().slice(0, 10)
       pb.steps.forEach(s => s.done = true)
+      save('scalyo_playbooks', playbooks.value)
     }
   }
 
   function deletePlaybook(playbookId) {
     playbooks.value = playbooks.value.filter(p => p.id !== playbookId)
+    save('scalyo_playbooks', playbooks.value)
   }
 
   return {
@@ -79,4 +99,4 @@ export const usePlaybookStore = defineStore('playbooks', () => {
     doneThisMonth, avgDuration, successRate,
     activateTemplate, toggleStep, completePlaybook, deletePlaybook,
   }
-}, { persist: true })
+}, { persist: false })
