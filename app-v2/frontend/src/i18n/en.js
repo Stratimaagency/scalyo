@@ -147,6 +147,8 @@ export default {
   imp_success: 'Import successful!',
   imp_success_desc: '{n} record(s) imported into {module}',
   imp_go_to_module: 'Go to module',
+  imp_more_rows: '+ {n} additional rows',
+  imp_rejected_count: '{n} row(s) could not be imported — enter manually',
   imp_module_clients: 'Client portfolio',
   imp_module_tasks: 'Smart Matrix',
   imp_module_team: 'Team',

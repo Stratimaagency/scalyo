@@ -102,7 +102,7 @@
             </table>
           </div>
           <p v-if="allMappedRows.length > 5" class="preview-more">
-            + {{ allMappedRows.length - 5 }} lignes supplémentaires
+            {{ t('imp_more_rows', { n: allMappedRows.length - 5 }) }}
           </p>
         </div>
 
@@ -110,7 +110,7 @@
         <div v-if="rejectedRows.length > 0" class="imp-rejected">
           <div class="rej-header">
             <span>⚠️</span>
-            <strong>{{ rejectedRows.length }} ligne(s) non importable(s) — à saisir manuellement</strong>
+            <strong>{{ t('imp_rejected_count', { n: rejectedRows.length }) }}</strong>
           </div>
           <div class="rej-list">
             <div v-for="(row, i) in rejectedRows" :key="i" class="rej-row">
@@ -165,7 +165,7 @@
       <div v-if="rejectedRows.length > 0" class="imp-rejected">
         <div class="rej-header">
           <span>⚠️</span>
-          <strong>{{ rejectedRows.length }} ligne(s) non importée(s) — à saisir manuellement</strong>
+          <strong>{{ t('imp_rejected_count', { n: rejectedRows.length }) }}</strong>
         </div>
         <div class="rej-list">
           <div v-for="(row, i) in rejectedRows" :key="i" class="rej-row">

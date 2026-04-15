@@ -228,6 +228,8 @@ export default {
   imp_success: 'Import réussi !',
   imp_success_desc: '{n} enregistrement(s) importé(s) dans {module}',
   imp_go_to_module: 'Voir dans le module',
+  imp_more_rows: '+ {n} lignes supplémentaires',
+  imp_rejected_count: '{n} ligne(s) non importable(s) — à saisir manuellement',
   imp_module_clients: 'Portefeuille clients',
   imp_module_tasks: 'Smart Matrice',
   imp_module_team: 'Équipe',

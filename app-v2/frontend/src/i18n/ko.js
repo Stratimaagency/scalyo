@@ -147,6 +147,8 @@ export default {
   imp_success: '가져오기 성공!',
   imp_success_desc: '{module}에 {n}개의 레코드 가져옴',
   imp_go_to_module: '모듈로 이동',
+  imp_more_rows: '+ {n}개 추가 행',
+  imp_rejected_count: '{n}개 행을 가져올 수 없습니다 — 수동으로 입력하세요',
   imp_module_clients: '고객 포트폴리오',
   imp_module_tasks: '스마트 매트릭스',
   imp_module_team: '팀',
