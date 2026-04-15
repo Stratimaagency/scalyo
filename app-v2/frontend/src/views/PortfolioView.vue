@@ -154,7 +154,7 @@ function doResetAll() {
   resetStep.value = 0
 }
 
-const initForm = () => ({ name: '', industry: 'SaaS', arr: 0, mrr: 0, health: 7, nps: 50, status: 'healthy', csmId: 'tm1', renewalDate: '', cName: '', cEmail: '', cRole: '', churnRisk: 0.05 })
+const initForm = () => ({ name: '', industry: 'SaaS', arr: 0, mrr: 0, health: 7, nps: 50, status: 'healthy', csmId: team.members[0]?.id || '', renewalDate: '', cName: '', cEmail: '', cRole: '', churnRisk: 0.05 })
 const form = reactive(initForm())
 
 const industries = computed(() => t('port_industries').split(','))
