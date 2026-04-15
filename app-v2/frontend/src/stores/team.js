@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useClientStore } from '@/stores/clients'
 
 function load(key, fallback) {
   try {
@@ -22,12 +23,21 @@ export const useTeamStore = defineStore('team', () => {
   const members = ref(load('scalyo_team', DEMO_MEMBERS))
 
   // Members enrichis avec burnoutRisk et mood calculés en temps réel
-  const enrichedMembers = computed(() => members.value.map(m => ({
-    ...m,
-    burnoutRisk: calcBurnoutRisk(m.wellbeingScore, m.workload),
-    mood: calcMood(m.wellbeingScore),
-    status: m.workload > 80 || m.wellbeingScore < 55 ? 'overloaded' : 'healthy',
-  })))
+  const enrichedMembers = computed(() => {
+    // Importer le store clients ici pour éviter les imports circulaires
+    const clientStore = useClientStore()
+    return members.value.map(m => {
+      const csmClients = clientStore.clients.filter(c => c.csmId === m.id)
+      return {
+        ...m,
+        burnoutRisk: calcBurnoutRisk(m.wellbeingScore, m.workload),
+        mood: calcMood(m.wellbeingScore),
+        status: m.workload > 80 || m.wellbeingScore < 55 ? 'overloaded' : 'healthy',
+        clientCount: csmClients.length,
+        arrManaged: csmClients.reduce((s, c) => s + (c.arr || 0), 0),
+      }
+    })
+  })
 
   const teamHealthScore = computed(() => {
     if (!members.value.length) return 0
