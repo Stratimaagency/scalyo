@@ -125,6 +125,15 @@
           </div>
         </div>
 
+        <div v-if="analysisResult && analysisResult.module === 'tasks'" class="imp-project-select">
+          <label>{{ t('imp_assign_project') }}</label>
+          <select v-model="selectedProjectId" class="fi">
+            <option value="new">{{ t('imp_create_project') }}</option>
+            <option value="">{{ t('imp_no_project') }}</option>
+            <option v-for="p in taskStore.projects" :key="p.id" :value="p.id">{{ p.name }}</option>
+          </select>
+        </div>
+
         <!-- Actions -->
         <div class="imp-actions">
           <button class="btn-outline" @click="reset">{{ t('cancel') }}</button>
@@ -248,6 +257,7 @@ const allMappedRows = ref([])
 const rejectedRows = ref([])
 const showMapping = ref(false)
 const importing = ref(false)
+const selectedProjectId = ref('new')
 const importedCount = ref(0)
 const errorMsg = ref('')
 
@@ -518,15 +528,26 @@ async function importData() {
     }
 
     else if (module === 'tasks') {
+      let projectId = selectedProjectId.value === '' ? null : selectedProjectId.value
+      if (selectedProjectId.value === 'new') {
+        const newId = 'p' + Date.now()
+        taskStore.addProject({
+          id: newId,
+          name: t('imp_import_project_name', { date: new Date().toLocaleDateString('fr-FR') }),
+          color: '#7c3aed',
+          status: 'active',
+        })
+        projectId = newId
+      }
       rows.forEach(row => {
         taskStore.addTask({
-          title: row.title || 'Tâche importée',
+          title: row.title || t('imp_default_task'),
           status: row.status || 'todo',
           priority: row.priority || 'important',
           dueDate: row.dueDate || '',
           description: row.description || '',
           assignee: row.assignee || null,
-          projectId: null,
+          projectId: projectId,
           clientId: null,
         })
         count++
@@ -604,6 +625,7 @@ function reset() {
   importing.value = false
   importedCount.value = 0
   errorMsg.value = ''
+  selectedProjectId.value = 'new'
 }
 </script>
 
@@ -645,6 +667,8 @@ function reset() {
 .btn-map { background: none; border: 1px solid var(--purple); color: var(--purple); padding: 8px 14px; border-radius: var(--radius-sm); font-size: 0.8rem; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
 .btn-map:hover { background: var(--purple); color: #fff; }
 .btn-import { padding: 12px 28px; font-size: 0.95rem; }
+.imp-project-select { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.imp-project-select label { font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); }
 
 /* ─── Animation analyse ───────────────────────────────────────────────────────── */
 .imp-analyzing { display: flex; flex-direction: column; align-items: center; padding: 80px 20px; gap: 16px; }
