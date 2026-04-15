@@ -75,7 +75,7 @@
               <span v-else>{{ i + 1 }}</span>
             </div>
             <div class="rmt-label">
-              <span class="rmt-title">{{ ms.title }}</span>
+              <span class="rmt-title">{{ ms.titleKey ? t(ms.titleKey) : ms.title }}</span>
               <span class="rmt-date">{{ ms.endDate }}</span>
               <span v-if="daysInfo(ms)" class="rmt-days" :class="daysInfo(ms).late ? 'late' : 'ok'">
                 {{ daysInfo(ms).days }} {{ daysInfo(ms).late ? t('rm_days_late') : t('rm_days_left') }}
@@ -211,7 +211,7 @@ function openCreate() {
 function doCreate() {
   if (!createForm.name) return
   if (selectedTpl.value) {
-    store.createFromTemplate(selectedTpl.value, createForm.name, createForm.startDate, t)
+    store.createFromTemplate(selectedTpl.value, createForm.name, createForm.startDate)
   } else {
     store.createBlank(createForm.name)
   }

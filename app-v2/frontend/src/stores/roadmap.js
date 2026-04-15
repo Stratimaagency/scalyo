@@ -93,7 +93,7 @@ export const useRoadmapStore = defineStore('roadmap', () => {
     return Math.round(all.filter(m => m.done).length / all.length * 100)
   })
 
-  function createFromTemplate(templateId, customName, startDate, t) {
+  function createFromTemplate(templateId, customName, startDate) {
     const tpl = TEMPLATES.find(tpl => tpl.id === templateId)
     if (!tpl) return
     let currentDate = new Date(startDate || new Date())
@@ -103,7 +103,7 @@ export const useRoadmapStore = defineStore('roadmap', () => {
       const end = currentDate.toISOString().slice(0, 10)
       return {
         id: 'm_' + Date.now() + '_' + i,
-        title: t(m.titleKey),
+        titleKey: m.titleKey,
         startDate: start,
         endDate: end,
         done: false,
