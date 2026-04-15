@@ -28,7 +28,11 @@
             <button class="btn-sm outline" @click="menuOpen = menuOpen === c.id ? null : c.id">···</button>
             <div v-if="menuOpen === c.id" class="klc-dropdown">
               <button @click="doDuplicate(c.id)">{{ t('copil_duplicate') }}</button>
-              <button class="danger" @click="doDelete(c.id)">{{ t('copil_delete') }}</button>
+              <template v-if="deleteConfirmId === c.id">
+                <button class="danger confirm" @click="store.deleteCopil(c.id); deleteConfirmId = null; menuOpen = null">✓ {{ t('copil_delete') }}</button>
+                <button @click="deleteConfirmId = null; menuOpen.value = null">✕</button>
+              </template>
+              <button v-else class="danger" @click="deleteConfirmId = c.id">{{ t('copil_delete') }}</button>
             </div>
           </div>
         </div>
@@ -58,6 +62,7 @@ import { useKpiStore } from '@/stores/kpis'
 const { t, locale } = useI18n({ useScope: 'global' })
 const store = useKpiStore()
 const menuOpen = ref(null)
+const deleteConfirmId = ref(null)
 
 function fmtDate(d) {
   if (!d) return ''
@@ -65,7 +70,7 @@ function fmtDate(d) {
   return new Date(d).toLocaleDateString(loc, { day: 'numeric', month: 'short' })
 }
 function doDuplicate(id) { store.duplicateCopil(id); menuOpen.value = null }
-function doDelete(id) { if (confirm(t('copil_delete_confirm'))) { store.deleteCopil(id); menuOpen.value = null } }
+function doDelete(id) { store.deleteCopil(id); menuOpen.value = null }
 </script>
 
 <style scoped>
