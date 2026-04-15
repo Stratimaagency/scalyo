@@ -48,33 +48,41 @@
     </div>
 
     <!-- Slide-over: Create quote -->
-    <SlideOver :open="slideOpen" :title="t('qt_create_title')" @close="slideOpen = false">
-      <form @submit.prevent="createQuote" class="sf">
-        <div class="fg"><label>{{ t('qt_field_title') }} *</label><input v-model="form.title" required class="fi" /></div>
-        <div class="fg"><label>{{ t('qt_field_company') }}</label><input v-model="form.company" class="fi" /></div>
-        <div class="fg"><label>{{ t('qt_field_client') }}</label>
-          <select v-model="form.clientId" class="fi"><option value="">—</option><option v-for="c in clients.clients" :key="c.id" :value="c.id">{{ c.name }}</option></select>
+    <Transition name="modal-fade">
+      <div v-if="slideOpen" class="modal-overlay" @click.self="slideOpen = false">
+        <div class="modal-box">
+          <div class="modal-head">
+            <h3>{{ t('qt_create_title') }}</h3>
+            <button class="modal-close" @click="slideOpen = false">✕</button>
+          </div>
+          <form @submit.prevent="createQuote" class="sf">
+            <div class="fg"><label>{{ t('qt_field_title') }} *</label><input v-model="form.title" required class="fi" /></div>
+            <div class="fg"><label>{{ t('qt_field_company') }}</label><input v-model="form.company" class="fi" /></div>
+            <div class="fg"><label>{{ t('qt_field_client') }}</label>
+              <select v-model="form.clientId" class="fi"><option value="">—</option><option v-for="c in clients.clients" :key="c.id" :value="c.id">{{ c.name }}</option></select>
+            </div>
+            <div class="fr">
+              <div class="fg"><label>{{ t('qt_field_amount') }} ({{ laws.currencySymbol }})</label><input v-model.number="form.amount" type="number" min="0" class="fi" /></div>
+              <div class="fg"><label>{{ t('qt_field_tax') }} ({{ laws.tva }}%)</label><input v-model.number="form.tax" type="number" min="0" max="100" class="fi" /></div>
+            </div>
+            <div class="fg calc-ttc"><span>{{ t('qt_ttc') }}:</span><strong>{{ laws.currencySymbol }}{{ ttc.toLocaleString() }}</strong></div>
+            <div class="fg"><label>{{ t('qt_field_status') }}</label>
+              <select v-model="form.status" class="fi">
+                <option value="draft">{{ t('qt_filter_draft') }}</option>
+                <option value="sent">{{ t('qt_filter_sent') }}</option>
+                <option value="won">{{ t('qt_filter_won') }}</option>
+                <option value="lost">{{ t('qt_filter_lost') }}</option>
+              </select>
+            </div>
+            <div class="fg"><label>{{ t('qt_field_notes') }}</label><textarea v-model="form.notes" class="fi ta" rows="3" /></div>
+            <div class="fa">
+              <button type="button" class="btn-outline" @click="slideOpen = false">{{ t('cancel') }}</button>
+              <button type="submit" class="btn-primary">{{ t('create') }}</button>
+            </div>
+          </form>
         </div>
-        <div class="fr">
-          <div class="fg"><label>{{ t('qt_field_amount') }} ({{ laws.currencySymbol }})</label><input v-model.number="form.amount" type="number" min="0" class="fi" /></div>
-          <div class="fg"><label>{{ t('qt_field_tax') }} ({{ laws.tva }}%)</label><input v-model.number="form.tax" type="number" min="0" max="100" class="fi" /></div>
-        </div>
-        <div class="fg calc-ttc"><span>{{ t('qt_ttc') }}:</span><strong>{{ laws.currencySymbol }}{{ ttc.toLocaleString() }}</strong></div>
-        <div class="fg"><label>{{ t('qt_field_status') }}</label>
-          <select v-model="form.status" class="fi">
-            <option value="draft">{{ t('qt_filter_draft') }}</option>
-            <option value="sent">{{ t('qt_filter_sent') }}</option>
-            <option value="won">{{ t('qt_filter_won') }}</option>
-            <option value="lost">{{ t('qt_filter_lost') }}</option>
-          </select>
-        </div>
-        <div class="fg"><label>{{ t('qt_field_notes') }}</label><textarea v-model="form.notes" class="fi ta" rows="3" /></div>
-        <div class="fa">
-          <button type="button" class="btn-outline" @click="slideOpen = false">{{ t('cancel') }}</button>
-          <button type="submit" class="btn-primary">{{ t('create') }}</button>
-        </div>
-      </form>
-    </SlideOver>
+      </div>
+    </Transition>
 
     <!-- Slide-over: Country config -->
     <SlideOver :open="configOpen" :title="t('qt_config')" @close="configOpen = false">
@@ -267,6 +275,17 @@ function createQuote() {
 .qtc-company { font-size: 0.72rem; color: var(--purple); font-weight: 500; display: block; margin-top: 2px; }
 .btn-pdf { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 8px; border-radius: var(--radius-sm); font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
 .btn-pdf:hover { border-color: var(--purple); color: var(--purple); }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-box { background: #fff; border-radius: var(--radius-lg); width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: #fff; z-index: 1; }
+.modal-head h3 { font-size: 1rem; font-weight: 700; margin: 0; }
+.modal-close { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-muted); padding: 4px 8px; border-radius: 4px; }
+.modal-close:hover { background: var(--bg-secondary); }
+.modal-box .sf { padding: 20px 24px; }
+.modal-fade-enter-active, .modal-fade-leave-active { transition: opacity 0.2s ease; }
+.modal-fade-enter-active :deep(.modal-box), .modal-fade-leave-active :deep(.modal-box) { transition: transform 0.2s ease; }
+.modal-fade-enter-from, .modal-fade-leave-to { opacity: 0; }
+.modal-fade-enter-from :deep(.modal-box), .modal-fade-leave-to :deep(.modal-box) { transform: scale(0.95); }
 
 .qt-empty { text-align: center; padding: 60px 20px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); }
 .empty-icon { font-size: 3rem; margin-bottom: 16px; }
