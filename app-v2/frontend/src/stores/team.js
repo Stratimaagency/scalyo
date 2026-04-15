@@ -21,6 +21,14 @@ const DEMO_MEMBERS = [
 export const useTeamStore = defineStore('team', () => {
   const members = ref(load('scalyo_team', DEMO_MEMBERS))
 
+  // Members enrichis avec burnoutRisk et mood calculés en temps réel
+  const enrichedMembers = computed(() => members.value.map(m => ({
+    ...m,
+    burnoutRisk: calcBurnoutRisk(m.wellbeingScore, m.workload),
+    mood: calcMood(m.wellbeingScore),
+    status: m.workload > 80 || m.wellbeingScore < 55 ? 'overloaded' : 'healthy',
+  })))
+
   const teamHealthScore = computed(() => {
     if (!members.value.length) return 0
     return Math.round(members.value.reduce((s, m) => s + m.wellbeingScore, 0) / members.value.length)
@@ -35,6 +43,34 @@ export const useTeamStore = defineStore('team', () => {
       Object.assign(members.value[i], data)
       save('scalyo_team', members.value)
     }
+  }
+
+  // Calcule burnoutRisk depuis wellbeingScore + workload en temps réel
+  function calcBurnoutRisk(wellbeingScore, workload) {
+    if (wellbeingScore < 40 || workload > 90) return 'high'
+    if (wellbeingScore < 55 || workload > 80) return 'medium'
+    if (wellbeingScore < 70 || workload > 70) return 'low'
+    return 'none'
+  }
+
+  // Calcule mood depuis wellbeingScore
+  function calcMood(wellbeingScore) {
+    if (wellbeingScore >= 80) return 'great'
+    if (wellbeingScore >= 65) return 'happy'
+    if (wellbeingScore >= 50) return 'neutral'
+    if (wellbeingScore >= 35) return 'stressed'
+    return 'exhausted'
+  }
+
+  // Enregistre le mood du jour pour un membre (appelé depuis WellbeingView)
+  function recordDailyMood(memberId, mood) {
+    const i = members.value.findIndex(m => m.id === memberId)
+    if (i === -1) return
+    const m = members.value[i]
+    // Décaler les moods — garder les 5 derniers jours
+    const moods = [...(m.weekMoods || []), mood].slice(-5)
+    Object.assign(members.value[i], { mood, weekMoods: moods })
+    save('scalyo_team', members.value)
   }
 
   function addMember(member) {
@@ -65,7 +101,7 @@ export const useTeamStore = defineStore('team', () => {
   }
 
   return {
-    members, teamHealthScore, healthyMembers, overloadedMembers, totalArrManaged,
-    updateMember, addMember, deleteMember, resetAll,
+    members, enrichedMembers, teamHealthScore, healthyMembers, overloadedMembers, totalArrManaged,
+    updateMember, addMember, deleteMember, resetAll, recordDailyMood, calcBurnoutRisk, calcMood,
   }
 }, { persist: false })

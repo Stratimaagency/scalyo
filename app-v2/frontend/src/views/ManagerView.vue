@@ -29,12 +29,11 @@
     <div class="mgr-filters">
       <select v-model="filterCsm" class="filter-select">
         <option value="all">{{ t('mgr_filter_all_csm') }}</option>
-        <option v-for="m in team.members" :key="m.id" :value="m.id">{{ m.name }}</option>
+        <option v-for="m in team.enrichedMembers" :key="m.id" :value="m.id">{{ m.name }}</option>
       </select>
       <select v-model="filterLevel" class="filter-select">
         <option value="all">{{ t('mgr_filter_all_levels') }}</option>
-        <option value="CSM Senior">CSM Senior</option>
-        <option value="CSM">CSM</option>
+        <option v-for="role in uniqueRoles" :key="role" :value="role">{{ role }}</option>
       </select>
       <select v-model="filterStatus" class="filter-select">
         <option value="all">{{ t('mgr_filter_all_statuses') }}</option>
@@ -202,13 +201,15 @@ const healthClass = computed(() => {
 })
 
 const filteredMembers = computed(() => {
-  return team.members.filter(m => {
+  return team.enrichedMembers.filter(m => {
     if (filterCsm.value !== 'all' && m.id !== filterCsm.value) return false
     if (filterLevel.value !== 'all' && m.role !== filterLevel.value) return false
     if (filterStatus.value !== 'all' && m.status !== filterStatus.value) return false
     return true
   })
 })
+
+const uniqueRoles = computed(() => [...new Set(team.enrichedMembers.map(m => m.role))])
 
 const activeAlerts = computed(() => notifications.notifications.filter(n => !n.read).slice(0, 5))
 
