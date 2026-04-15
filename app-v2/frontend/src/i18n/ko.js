@@ -123,7 +123,12 @@ export default {
   wb_tip4: '점심 후 10분 산책을 하세요.',
   wb_tip5: '업무 외의 주제로 동료와 대화해보세요.',
   wb_emergency: '누군가와 대화하기', wb_emergency_desc: '긴급 번호',
-  coach_title: 'AI 고객 성공 코치', coach_counter: '메시지', coach_welcome: '환영합니다! CS AI 코치입니다. 도움드릴 수 있는 것:', coach_cap1: '이탈 방지 — 리텐션 전략', coach_cap2: '온보딩 — 첫 날 구조화', coach_cap3: 'NPS — 만족도 향상', coach_cap4: 'QBR — 효과적인 리뷰 준비', coach_cap5: '확장 — 기회 식별', coach_cap6: '웰빙 — 팀 케어', coach_sug1: '이탈률 줄이는 방법?', coach_sug2: 'QBR 구조화', coach_sug3: 'NPS 개선', coach_sug4: '번아웃 예방', coach_sug5: '확장 전략', coach_placeholder: 'CS 질문하기...', coach_thinking: '생각 중...',
+  coach_title: 'AI 고객 성공 코치', coach_counter: '메시지', coach_welcome: '환영합니다! CS AI 코치입니다. 도움드릴 수 있는 것:', coach_cap1: '이탈 방지 — 리텐션 전략', coach_cap2: '온보딩 — 첫 날 구조화', coach_cap3: 'NPS — 만족도 향상', coach_cap4: 'QBR — 효과적인 리뷰 준비', coach_cap5: '확장 — 기회 식별', coach_cap6: '웰빙 — 팀 케어', coach_sug1: '이탈률 줄이는 방법?', coach_sug2: 'QBR 구조화', coach_sug3: 'NPS 개선', coach_sug4: '번아웃 예방', coach_sug5: '확장 전략',
+  coach_error: '연결 오류가 발생했습니다. 다시 시도해주세요.',
+  coach_mock1: "**훌륭한 질문입니다!** 다음을 추천드립니다:\n\n1. **약한 신호 분석** — 제품 사용량, 지원 티켓, 상호작용 빈도를 모니터링하세요.\n2. **계정 세분화** — 높은 ARR 계정에 먼저 집중하세요.\n3. **플레이북 구축** — 고객 유지 프로세스를 표준화하세요.\n\n더 자세히 알고 싶은 부분이 있으신가요?",
+  coach_mock2: "**좋은 접근입니다!** 효과적인 QBR 구성:\n\n1. **지난 분기 KPI 준비**\n2. **고객과 함께 축하할 3가지 성공 식별**\n3. **다음 분기 계획 제안**\n4. **상호 약속으로 마무리**\n\nQBR은 최대 45분을 넘지 않도록 하세요.",
+  coach_mock3: "**번아웃 예방**은 CS에서 매우 중요합니다:\n\n1. **업무 균형** — CSM 한 명이 전략 계정 15개 이상을 담당하지 않도록 하세요.\n2. **반복 작업 자동화**\n3. **주간 체크인** — 10분으로 팀 상태 파악\n4. **휴식 장려** — 번아웃된 CSM은 고객을 잃습니다.",
+  coach_placeholder: 'CS 질문하기...', coach_thinking: '생각 중...',
 
   sm_stats_title: '통계', sm_total_tasks: '전체 작업', sm_completed: '완료', sm_in_progress: '진행 중', sm_overdue: '지연', sm_completion_rate: '완료율', sm_by_status: '상태별', sm_by_priority: '우선순위별',
   sm_planning_title: '플래닝', sm_view_week: '주간', sm_view_month: '월간',

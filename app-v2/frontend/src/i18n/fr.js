@@ -312,6 +312,10 @@ export default {
   coach_sug3: 'Améliorer le NPS',
   coach_sug4: 'Prévenir le burnout',
   coach_sug5: 'Stratégie d\'expansion',
+  coach_error: 'Erreur de connexion. Veuillez réessayer.',
+  coach_mock1: "**Excellente question !** Voici mes recommandations :\n\n1. **Analysez les signaux faibles** — Surveillez l'usage produit, les tickets support, et la fréquence des interactions.\n2. **Segmentez vos comptes** — Concentrez vos efforts sur les comptes à fort ARR en premier.\n3. **Mettez en place des playbooks** — Standardisez vos processus de rétention.\n\nVoulez-vous que j'approfondisse un de ces points ?",
+  coach_mock2: "**Bonne approche !** Pour structurer un QBR efficace :\n\n1. **Préparez les KPIs** du trimestre écoulé\n2. **Identifiez 3 succès** à célébrer avec le client\n3. **Proposez un plan** pour le prochain trimestre\n4. **Terminez par des engagements mutuels**\n\nLe QBR doit durer 45 min max.",
+  coach_mock3: "**La prévention du burnout** est cruciale en CS :\n\n1. **Répartissez la charge** — Aucun CSM ne devrait gérer plus de 15 comptes stratégiques\n2. **Automatisez** les tâches répétitives\n3. **Check-ins hebdomadaires** — 10 min pour prendre le pouls\n4. **Encouragez les pauses** — Un CSM épuisé perd ses clients.",
   coach_placeholder: 'Posez votre question CS...',
   coach_thinking: 'Réflexion en cours...',
 
