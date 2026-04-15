@@ -119,7 +119,7 @@
             <div class="ind">
               <span class="ind-icon">📅</span>
               <div>
-                <span class="ind-val">{{ clients.renewalsNext30.length }}</span>
+                <span class="ind-val">{{ clients.renewalsNext30 }}</span>
                 <span class="ind-label">{{ t('sat_renewals_30d') }}</span>
               </div>
             </div>
