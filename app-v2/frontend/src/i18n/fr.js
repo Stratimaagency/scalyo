@@ -196,6 +196,9 @@ export default {
   qt_field_status: 'Statut',
   qt_field_notes: 'Notes',
   qt_ttc: 'Total TTC',
+  qt_field_company: "Nom de l'entreprise (marque blanche)",
+  qt_download_pdf: 'Télécharger le devis PDF',
+  qt_create_date: 'Date de création',
 
   // Import
   imp_title: 'Import intelligent',

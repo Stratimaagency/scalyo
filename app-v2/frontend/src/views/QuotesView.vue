@@ -30,10 +30,12 @@
         <div class="qtc-left">
           <strong>{{ q.title }}</strong>
           <span class="qtc-client">{{ clientName(q.clientId) }}</span>
+              <span class="qtc-company" v-if="q.company">{{ q.company }}</span>
         </div>
         <div class="qtc-right">
           <span class="qtc-amount">{{ laws.currencySymbol }}{{ q.amount.toLocaleString() }}</span>
           <span class="qtc-status" :class="q.status">{{ t('qt_filter_' + q.status) }}</span>
+              <button class="btn-pdf" @click="downloadPdf(q)" :title="t('qt_download_pdf')">📄</button>
         </div>
       </div>
     </div>
@@ -49,6 +51,7 @@
     <SlideOver :open="slideOpen" :title="t('qt_create_title')" @close="slideOpen = false">
       <form @submit.prevent="createQuote" class="sf">
         <div class="fg"><label>{{ t('qt_field_title') }} *</label><input v-model="form.title" required class="fi" /></div>
+        <div class="fg"><label>{{ t('qt_field_company') }}</label><input v-model="form.company" class="fi" /></div>
         <div class="fg"><label>{{ t('qt_field_client') }}</label>
           <select v-model="form.clientId" class="fi"><option value="">—</option><option v-for="c in clients.clients" :key="c.id" :value="c.id">{{ c.name }}</option></select>
         </div>
@@ -103,6 +106,7 @@ import { useI18n } from 'vue-i18n'
 import { useClientStore } from '@/stores/clients'
 import { useCountryLawStore } from '@/stores/countryLaws'
 import SlideOver from '@/components/SlideOver.vue'
+import { jsPDF } from 'jspdf'
 
 const { t } = useI18n({ useScope: 'global' })
 function load(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback } catch { return fallback } }
@@ -124,7 +128,7 @@ const legalLabel = computed(() => {
   return map[billingCountry.value] || t('cl_legal_number')
 })
 
-const form = reactive({ title: '', clientId: '', amount: 0, tax: laws.value.taxRate, status: 'draft', notes: '' })
+const form = reactive({ title: '', clientId: '', company: '', amount: 0, tax: laws.value.taxRate, status: 'draft', notes: '' })
 
 // Auto-update TVA when country changes
 watch(billingCountry, (country) => {
@@ -147,9 +151,78 @@ const ttc = computed(() => Math.round(form.amount * (1 + form.tax / 100)))
 
 function clientName(id) { return clients.clients.find(c => c.id === id)?.name || '—' }
 
+function downloadPdf(q) {
+  const doc = new jsPDF()
+  const l = countryLaws.getLaws(q.country || billingCountry.value)
+
+  // En-tête entreprise client (marque blanche)
+  doc.setFontSize(20)
+  doc.setFont('helvetica', 'bold')
+  doc.text(q.company || clientName(q.clientId) || 'Entreprise', 20, 25)
+
+  // Ligne séparatrice
+  doc.setDrawColor(200, 200, 200)
+  doc.line(20, 32, 190, 32)
+
+  // Titre devis
+  doc.setFontSize(14)
+  doc.setFont('helvetica', 'bold')
+  doc.text(t('qt_title') + ' — ' + q.id, 20, 45)
+
+  // Date + statut
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  doc.text(t('qt_create_date') + ' : ' + q.createdAt, 20, 55)
+  doc.text(t('qt_field_status') + ' : ' + t('qt_filter_' + q.status), 20, 62)
+
+  // Pays + fiscalité (sans emoji — jsPDF ne supporte pas les emojis)
+  doc.text(l.name + ' — ' + l.taxName + ' ' + l.tva + '%', 20, 72)
+
+  // Ligne séparatrice
+  doc.line(20, 78, 190, 78)
+
+  // Objet du devis — splitTextToSize pour éviter le débordement
+  doc.setFontSize(11)
+  doc.setFont('helvetica', 'bold')
+  doc.text(t('qt_field_title') + ' :', 20, 88)
+  doc.setFont('helvetica', 'normal')
+  const titleLines = doc.splitTextToSize(q.title, 170)
+  doc.text(titleLines, 20, 96)
+
+  // Montants — toLocaleString('fr-FR') pour format universel stable
+  doc.setFontSize(10)
+  doc.text(t('qt_field_amount') + ' (HT) : ' + l.currencySymbol + q.amount.toLocaleString('fr-FR'), 20, 110)
+  doc.text(t('qt_field_tax') + ' (' + q.tax + '%) : ' + l.currencySymbol + Math.round(q.amount * q.tax / 100).toLocaleString('fr-FR'), 20, 118)
+
+  doc.setFontSize(13)
+  doc.setFont('helvetica', 'bold')
+  doc.text(t('qt_ttc') + ' : ' + l.currencySymbol + Math.round(q.amount * (1 + q.tax / 100)).toLocaleString('fr-FR'), 20, 130)
+
+  // Notes — splitTextToSize pour éviter le débordement
+  if (q.notes) {
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'normal')
+    doc.line(20, 138, 190, 138)
+    doc.text(t('qt_field_notes') + ' :', 20, 148)
+    const noteLines = doc.splitTextToSize(q.notes, 170)
+    doc.text(noteLines, 20, 156)
+  }
+
+  // Mentions légales pays en pied de page — position dynamique pour éviter le chevauchement
+  doc.setFontSize(8)
+  doc.setTextColor(150)
+  const privacyLines = doc.splitTextToSize(l.privacy, 170)
+  doc.text(privacyLines, 20, 268)
+  const legalY = 268 + (privacyLines.length * 4)
+  const legalLines = doc.splitTextToSize(l.legalMentions, 170)
+  doc.text(legalLines, 20, legalY)
+
+  doc.save('devis-' + q.id + '.pdf')
+}
+
 function createQuote() {
   quotes.value.push({ id: 'q' + Date.now(), ...form, country: billingCountry.value, currency: laws.value.currencySymbol, createdAt: new Date().toISOString().slice(0, 10) })
-  Object.assign(form, { title: '', clientId: '', amount: 0, tax: laws.value.taxRate, status: 'draft', notes: '' })
+  Object.assign(form, { title: '', clientId: '', company: '', amount: 0, tax: laws.value.taxRate, status: 'draft', notes: '' })
   slideOpen.value = false
 }
 </script>
@@ -191,6 +264,9 @@ function createQuote() {
 .qtc-status.sent { background: var(--blue-bg); color: var(--blue); }
 .qtc-status.won { background: var(--green-bg); color: var(--green); }
 .qtc-status.lost { background: var(--red-bg); color: var(--red); }
+.qtc-company { font-size: 0.72rem; color: var(--purple); font-weight: 500; display: block; margin-top: 2px; }
+.btn-pdf { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 8px; border-radius: var(--radius-sm); font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
+.btn-pdf:hover { border-color: var(--purple); color: var(--purple); }
 
 .qt-empty { text-align: center; padding: 60px 20px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); }
 .empty-icon { font-size: 3rem; margin-bottom: 16px; }
