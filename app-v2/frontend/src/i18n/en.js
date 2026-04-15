@@ -123,6 +123,7 @@ export default {
   qt_title: 'Quotes & Proposals', qt_subtitle: 'Manage your proposals and track conversion', qt_config: 'Country config', qt_new: '+ New quote', qt_total: 'Total quotes', qt_conversion: 'Conversion rate', qt_won: 'Won amount', qt_filter_all: 'All', qt_filter_draft: 'Draft', qt_filter_sent: 'Sent', qt_filter_won: 'Won', qt_filter_lost: 'Lost', qt_empty_title: 'No quotes yet', qt_empty_note: '0 quotes saved · Unlimited storage', qt_create_title: 'New quote', qt_field_client: 'Client', qt_field_title: 'Quote title', qt_field_amount: 'Amount excl. tax (€)', qt_field_tax: 'Tax (%)', qt_field_status: 'Status', qt_field_notes: 'Notes', qt_ttc: 'Total incl. tax',
   qt_field_company: 'Company name (white label)',
   qt_download_pdf: 'Download quote PDF',
+  qt_delete: 'Delete this quote',
   qt_create_date: 'Creation date',
   imp_title: 'Smart Import', imp_subtitle: 'Import a complex file — Scalyo analyzes and distributes data automatically', imp_drop: 'Drag your file or click to select', imp_formats: 'All formats: Excel, CSV, PDF, Word, PowerPoint, JSON, Notion, TXT — Automatic smart analysis', imp_choose: '✦ Choose a file',
   imp_step1: 'Upload',

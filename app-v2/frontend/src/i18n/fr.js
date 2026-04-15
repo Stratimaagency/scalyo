@@ -198,6 +198,7 @@ export default {
   qt_ttc: 'Total TTC',
   qt_field_company: "Nom de l'entreprise (marque blanche)",
   qt_download_pdf: 'Télécharger le devis PDF',
+  qt_delete: 'Supprimer ce devis',
   qt_create_date: 'Date de création',
 
   // Import

@@ -36,6 +36,7 @@
           <span class="qtc-amount">{{ laws.currencySymbol }}{{ q.amount.toLocaleString() }}</span>
           <span class="qtc-status" :class="q.status">{{ t('qt_filter_' + q.status) }}</span>
               <button class="btn-pdf" @click="downloadPdf(q)" :title="t('qt_download_pdf')">📄</button>
+              <button class="btn-delete" @click="deleteQuote(q.id)" :title="t('qt_delete')">🗑</button>
         </div>
       </div>
     </div>
@@ -228,6 +229,10 @@ function downloadPdf(q) {
   doc.save('devis-' + q.id + '.pdf')
 }
 
+function deleteQuote(id) {
+  quotes.value = quotes.value.filter(q => q.id !== id)
+}
+
 function createQuote() {
   quotes.value.push({ id: 'q' + Date.now(), ...form, country: billingCountry.value, currency: laws.value.currencySymbol, createdAt: new Date().toISOString().slice(0, 10) })
   Object.assign(form, { title: '', clientId: '', company: '', amount: 0, tax: laws.value.taxRate, status: 'draft', notes: '' })
@@ -275,6 +280,8 @@ function createQuote() {
 .qtc-company { font-size: 0.72rem; color: var(--purple); font-weight: 500; display: block; margin-top: 2px; }
 .btn-pdf { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 8px; border-radius: var(--radius-sm); font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
 .btn-pdf:hover { border-color: var(--purple); color: var(--purple); }
+.btn-delete { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 8px; border-radius: var(--radius-sm); font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
+.btn-delete:hover { border-color: var(--red); color: var(--red); }
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .modal-box { background: #fff; border-radius: var(--radius-lg); width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
 .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: #fff; z-index: 1; }
