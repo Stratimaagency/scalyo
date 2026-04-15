@@ -1304,7 +1304,7 @@ a { color: inherit; text-decoration: none; }
 .slide-down-enter-active, .slide-down-leave-active { transition: all 0.3s ease; }
 .slide-down-enter-from, .slide-down-leave-to { opacity: 0; transform: translateY(-10px); }
 .lm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.lm-box { background: #fff; border-radius: 16px; width: 100%; max-width: 680px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+.lm-box { background: #ffffff; border-radius: 16px; width: 100%; max-width: 680px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.2); color: #1a1a1a; }
 .lm-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; background: #fff; border-radius: 16px 16px 0 0; }
 .lm-legal-tabs { display: flex; gap: 4px; }
 .lm-tab { background: none; border: none; padding: 8px 16px; font-size: 0.88rem; font-weight: 500; cursor: pointer; border-radius: 8px; color: #6b7280; transition: all 0.15s; }
@@ -1312,7 +1312,7 @@ a { color: inherit; text-decoration: none; }
 .lm-tab:hover:not(.active) { background: #f3f4f6; }
 .lm-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #9ca3af; padding: 4px 8px; border-radius: 6px; }
 .lm-close:hover { background: #f3f4f6; }
-.lm-body { overflow-y: auto; padding: 20px 24px; flex: 1; }
+.lm-body { overflow-y: auto; padding: 20px 24px; flex: 1; background: #ffffff; color: #1a1a1a; }
 .lm-body h4 { font-size: 1rem; font-weight: 700; margin: 16px 0 6px; }
 .lm-body p { font-size: 0.88rem; line-height: 1.7; color: #374151; margin-bottom: 10px; }
 .lm-body ul { margin: 6px 0 10px 20px; }
