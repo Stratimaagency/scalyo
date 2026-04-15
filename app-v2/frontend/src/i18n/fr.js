@@ -79,6 +79,7 @@ export default {
 
   // KPI labels
   kpi_arr: 'ARR Portefeuille',
+  kpi_nrr: 'NRR',
   kpi_health: 'Health Score Moy.',
   kpi_critical: 'Comptes Critiques',
   kpi_nps: 'NPS',

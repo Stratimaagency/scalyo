@@ -48,7 +48,7 @@ export default {
   status_healthy: '양호', status_watch: '주의', status_critical: '위험',
   status_todo: '할 일', status_in_progress: '진행 중', status_blocked: '차단됨', status_done: '완료',
 
-  kpi_arr: '포트폴리오 ARR', kpi_health: '평균 건강 점수', kpi_critical: '위험 계정',
+  kpi_arr: '포트폴리오 ARR', kpi_nrr: 'NRR', kpi_health: '평균 건강 점수', kpi_critical: '위험 계정',
   kpi_nps: 'NPS', kpi_churn: '이탈률', kpi_active: '활성 계정',
   kpi_members: '멤버', kpi_healthy_members: '양호', kpi_overloaded: '과부하',
   kpi_at_risk_clients: '위험 고객', kpi_arr_at_risk: '위험 ARR', kpi_renewals_30d: '30일 내 갱신',

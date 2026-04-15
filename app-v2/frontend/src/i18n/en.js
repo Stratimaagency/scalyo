@@ -48,7 +48,7 @@ export default {
   status_healthy: 'Healthy', status_watch: 'Watch', status_critical: 'Critical',
   status_todo: 'To do', status_in_progress: 'In progress', status_blocked: 'Blocked', status_done: 'Done',
 
-  kpi_arr: 'Portfolio ARR', kpi_health: 'Avg Health Score', kpi_critical: 'Critical Accounts',
+  kpi_arr: 'Portfolio ARR', kpi_nrr: 'NRR', kpi_health: 'Avg Health Score', kpi_critical: 'Critical Accounts',
   kpi_nps: 'NPS', kpi_churn: 'Churn Rate', kpi_active: 'Active Accounts',
   kpi_members: 'Members', kpi_healthy_members: 'Healthy', kpi_overloaded: 'Overloaded',
   kpi_at_risk_clients: 'At-risk clients', kpi_arr_at_risk: 'ARR at risk', kpi_renewals_30d: 'Renewals 30d',
