@@ -28,7 +28,7 @@
       <p>{{ t('rm_empty_desc') }}</p>
       <div class="rme-actions">
         <button class="btn-primary" @click="openCreate">{{ t('rm_choose_template') }}</button>
-        <button class="btn-outline" @click="openBlank">{{ t('rm_blank') }}</button>
+        <button class="btn-outline" @click="openCreate">{{ t('rm_blank') }}</button>
       </div>
     </div>
 
@@ -208,17 +208,10 @@ function openCreate() {
   showCreate.value = true
 }
 
-function openBlank() {
-  selectedTpl.value = null
-  createForm.name = ''
-  createForm.startDate = new Date().toISOString().slice(0, 10)
-  showCreate.value = true
-}
-
 function doCreate() {
   if (!createForm.name) return
   if (selectedTpl.value) {
-    store.createFromTemplate(selectedTpl.value, createForm.name, createForm.startDate)
+    store.createFromTemplate(selectedTpl.value, createForm.name, createForm.startDate, t)
   } else {
     store.createBlank(createForm.name)
   }
