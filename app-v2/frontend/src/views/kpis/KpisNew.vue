@@ -168,13 +168,19 @@ const canNext = computed(() => {
   return true
 })
 function generate() {
+  const period = form.periodType === 'custom'
+    ? `${form.periodStart} → ${form.periodEnd}`
+    : form.period
+
   const id = store.createCopil({
     title: form.name,
-    subtitle: form.subtitle,
-    period: form.periodType === 'custom' ? form.periodStart + ' → ' + form.periodEnd : form.period,
+    subtitle: form.subtitle || '',
+    period,
     color: form.color,
+    clientName: '',
     presenter: '',
   })
+
   router.push('/app/kpis/' + id)
 }
 </script>
