@@ -4,15 +4,15 @@
     <div class="kd-header">
       <div class="kd-header-left">
         <router-link to="/app/kpis" class="kd-back">← {{ t('back') }}</router-link>
-        <h1><span class="kd-dot" :style="{ background: copil.color }" /> {{ copil.name }}</h1>
+        <h1><span class="kd-dot" :style="{ background: copil.color }" /> {{ copil.title }}</h1>
         <p class="kd-period">{{ copil.period }} · {{ copil.subtitle || '' }}</p>
       </div>
       <div class="kd-header-right">
-        <div class="kd-global-score" :class="store.scoreStatus(globalScore)">
+        <div class="kd-global-score" :class="scoreStatus(globalScore)">
           <span class="kgs-label">{{ t('copil_score') }}</span>
           <span class="kgs-value">{{ globalScore }}</span>
           <span class="kgs-max">/100</span>
-          <span class="kgs-status">{{ t('copil_' + store.scoreStatus(globalScore)) }}</span>
+          <span class="kgs-status">{{ t('copil_' + scoreStatus(globalScore)) }}</span>
         </div>
         <router-link :to="'/app/kpis/' + id + '/present'" class="btn-outline">{{ t('copil_present') }}</router-link>
         <div class="export-dropdown" ref="exportRef">
@@ -124,7 +124,7 @@
       <table class="details-table">
         <thead><tr><th>KPI</th><th>{{ t('copil_wiz_current') }}</th><th>{{ t('copil_wiz_target') }}</th><th>Δ</th><th>%</th></tr></thead>
         <tbody>
-          <tr v-for="kpi in copil.kpis" :key="kpi.kpiId">
+          <tr v-for="kpi in allKpis" :key="kpi.kpiId">
             <td><strong>{{ kpi.name }}</strong></td>
             <td>{{ fmtVal(kpi) }}</td>
             <td>{{ fmtVal({ ...kpi, value: kpi.target }) }}</td>
@@ -166,48 +166,38 @@ const exportRef = ref(null)
 const exporting = ref(false)
 onClickOutside(exportRef, () => { exportMenuOpen.value = false })
 
-async function exportPdf() {
-  exporting.value = true
-  exportMenuOpen.value = false
-  await nextTick()
-  try {
-    const html2canvas = (await import('html2canvas')).default
-    const { jsPDF } = await import('jspdf')
-    const el = document.querySelector('.kd')
-    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' })
-    const imgData = canvas.toDataURL('image/png')
-    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width / 2, canvas.height / 2] })
-    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2)
-    pdf.save((copil.value?.name || 'COPIL') + '.pdf')
-  } catch (e) { console.error('PDF export failed:', e) }
-  exporting.value = false
+const copil = computed(() => store.getCopil(props.id))
+
+// KPIs extraits depuis les blocs
+const allKpis = computed(() => {
+  const blocks = copil.value?.blocks || []
+  const kpis = []
+  blocks.filter(b => b.type === 'kpi_grid' || b.type === 'kpi_single').forEach(b => {
+    if (b.type === 'kpi_grid') kpis.push(...(b.data?.kpis || []).map(k => ({ ...k, name: k.label || k.name, kpiId: k.label })))
+    if (b.type === 'kpi_single') kpis.push({ ...b.data, name: b.data?.label || b.data?.name, kpiId: b.data?.label })
+  })
+  return kpis
+})
+const heroKpis = computed(() => allKpis.value.slice(0, 4))
+const secondaryKpis = computed(() => allKpis.value.slice(4))
+
+// Score inline — sans store.computeScore
+const globalScore = computed(() => {
+  const healthy = clients.healthyCount
+  const total = clients.clients.length
+  if (!total) return 0
+  const healthPct = Math.round((healthy / total) * 100)
+  return Math.min(Math.round((healthPct + (100 - clients.criticalCount * 10)) / 2), 100)
+})
+
+// Status inline — sans store.scoreStatus
+function scoreStatus(score) {
+  if (score >= 80) return 'excellent'
+  if (score >= 60) return 'good'
+  if (score >= 40) return 'attention'
+  return 'critical'
 }
 
-async function exportPng() {
-  exportMenuOpen.value = false
-  try {
-    const html2canvas = (await import('html2canvas')).default
-    const el = document.querySelector('.kd')
-    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' })
-    const link = document.createElement('a')
-    link.download = (copil.value?.name || 'COPIL') + '.png'
-    link.href = canvas.toDataURL('image/png')
-    link.click()
-  } catch (e) { console.error('PNG export failed:', e) }
-}
-
-function exportCsv() {
-  exportMenuOpen.value = false
-  if (!copil.value?.kpis?.length) return
-  const headers = ['KPI', 'Value', 'Target', 'Unit', 'Delta']
-  const rows = copil.value.kpis.map(k => [k.name, k.value, k.target, k.unit, k.value - k.target])
-  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
-  const blob = new Blob([csv], { type: 'text/csv' })
-  const link = document.createElement('a')
-  link.href = URL.createObjectURL(blob)
-  link.download = (copil.value?.name || 'COPIL') + '.csv'
-  link.click()
-}
 const tabs = [
   { key: 'overview', label: 'copil_overview' },
   { key: 'revenue', label: 'copil_revenue' },
@@ -215,11 +205,6 @@ const tabs = [
   { key: 'team', label: 'copil_team' },
   { key: 'details', label: 'copil_details' },
 ]
-
-const copil = computed(() => store.getCopil(props.id))
-const globalScore = computed(() => store.computeScore(copil.value))
-const heroKpis = computed(() => (copil.value?.kpis || []).slice(0, 4))
-const secondaryKpis = computed(() => (copil.value?.kpis || []).slice(4))
 
 function fmtVal(kpi) {
   const v = kpi.value
@@ -273,7 +258,6 @@ function sparkColor(kpi) {
   return s === 'status-good' ? '#10b981' : s === 'status-warn' ? '#f59e0b' : '#ef4444'
 }
 
-// Waterfall mock
 const waterfallBars = computed(() => {
   const arrStart = clients.totalArr
   const newArr = 85000
@@ -291,18 +275,14 @@ const waterfallBars = computed(() => {
 })
 const waterfallMax = computed(() => Math.max(...waterfallBars.value.map(b => Math.abs(b.value))))
 
-// Health donut
 const circumference = 314.16
 const total = computed(() => clients.clients.length || 1)
 const healthyArc = computed(() => ((clients.healthyCount / total.value) * circumference).toFixed(1))
 const watchArc = computed(() => ((clients.watchCount / total.value) * circumference).toFixed(1))
 const criticalArc = computed(() => ((clients.criticalCount / total.value) * circumference).toFixed(1))
 
-// Nova analysis (mock)
 const novaStrengths = computed(() => {
   const s = []
-  const nrr = copil.value?.kpis?.find(k => k.kpiId === 'nrr')
-  if (nrr && nrr.value > 110) s.push(`NRR à ${nrr.value}% — rétention revenue excellente, top 15% industrie SaaS B2B`)
   if (clients.healthyCount > clients.criticalCount * 2) s.push(`${clients.healthyCount} comptes sains sur ${clients.clients.length} — portefeuille globalement solide`)
   s.push(`ARR portefeuille : ${fmtCurrency(clients.totalArr)}`)
   return s
@@ -310,11 +290,7 @@ const novaStrengths = computed(() => {
 
 const novaWarnings = computed(() => {
   const w = []
-  const churn = copil.value?.kpis?.find(k => k.kpiId === 'churn_clients')
-  if (churn && churn.value > churn.target) w.push(`Churn clients à ${churn.value}% vs objectif ${churn.target}% — ${clients.criticalCount} comptes critiques à traiter`)
   if (clients.criticalCount > 0) w.push(`${clients.criticalCount} comptes en statut critique nécessitent une intervention immédiate`)
-  const nps = copil.value?.kpis?.find(k => k.kpiId === 'nps')
-  if (nps && nps.value < 50) w.push(`NPS à ${nps.value} — sous la moyenne industrie (42)`)
   return w.length ? w : ['Aucun point d\'attention majeur détecté']
 })
 
@@ -323,6 +299,49 @@ const novaActions = computed(() => [
   'Planifier les QBR du trimestre prochain',
   'Lancer une campagne NPS promoteurs avant fin de période',
 ])
+
+async function exportPdf() {
+  exporting.value = true
+  exportMenuOpen.value = false
+  await nextTick()
+  try {
+    const html2canvas = (await import('html2canvas')).default
+    const { jsPDF } = await import('jspdf')
+    const el = document.querySelector('.kd')
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' })
+    const imgData = canvas.toDataURL('image/png')
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width / 2, canvas.height / 2] })
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2)
+    pdf.save((copil.value?.title || 'COPIL') + '.pdf')
+  } catch (e) { console.error('PDF export failed:', e) }
+  exporting.value = false
+}
+
+async function exportPng() {
+  exportMenuOpen.value = false
+  try {
+    const html2canvas = (await import('html2canvas')).default
+    const el = document.querySelector('.kd')
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' })
+    const link = document.createElement('a')
+    link.download = (copil.value?.title || 'COPIL') + '.png'
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+  } catch (e) { console.error('PNG export failed:', e) }
+}
+
+function exportCsv() {
+  exportMenuOpen.value = false
+  if (!allKpis.value.length) return
+  const headers = ['KPI', 'Value', 'Target', 'Unit', 'Delta']
+  const rows = allKpis.value.map(k => [k.name, k.value, k.target, k.unit, k.value - k.target])
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(blob)
+  link.download = (copil.value?.title || 'COPIL') + '.csv'
+  link.click()
+}
 </script>
 
 <style scoped>
