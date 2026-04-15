@@ -23,7 +23,7 @@
             <text x="100" y="120" text-anchor="middle" font-size="16" fill="rgba(255,255,255,0.5)">/100</text>
           </svg>
         </div>
-        <p class="ss-status" :style="{ color: scoreColor }">{{ t('copil_' + store.scoreStatus(globalScore)) }}</p>
+        <p class="ss-status" :style="{ color: scoreColor }">{{ globalScore >= 80 ? t('copil_excellent') : globalScore >= 60 ? t('copil_good') : globalScore >= 40 ? t('copil_attention') : t('copil_critical') }}</p>
       </div>
 
       <!-- Slide 2: Hero KPIs -->
@@ -105,11 +105,27 @@ let autoTimer = null
 let hideTimer = null
 
 const copil = computed(() => store.getCopil(props.id))
-const globalScore = computed(() => store.computeScore(copil.value))
-const heroKpis = computed(() => (copil.value?.kpis || []).slice(0, 4))
+const globalScore = computed(() => {
+  const c = copil.value
+  if (!c) return 0
+  const healthy = clients.healthyCount
+  const total = clients.clients.length
+  const healthPct = total ? Math.round((healthy / total) * 100) : 0
+  return Math.min(Math.round((healthPct + (100 - clients.criticalCount * 10)) / 2), 100)
+})
+const heroKpis = computed(() => {
+  const blocks = copil.value?.blocks || []
+  const kpiBlocks = blocks.filter(b => b.type === 'kpi_grid' || b.type === 'kpi_single')
+  const kpis = []
+  kpiBlocks.forEach(b => {
+    if (b.type === 'kpi_grid') kpis.push(...(b.data?.kpis || []).map(k => ({ ...k, name: k.label || k.name })))
+    if (b.type === 'kpi_single') kpis.push({ ...b.data, name: b.data?.label || b.data?.name })
+  })
+  return kpis.slice(0, 4)
+})
 const scoreColor = computed(() => {
-  const s = store.scoreStatus(globalScore.value)
-  return s === 'excellent' ? '#10b981' : s === 'good' ? '#3b82f6' : s === 'attention' ? '#f59e0b' : '#ef4444'
+  const s = globalScore.value
+  return s >= 80 ? '#10b981' : s >= 60 ? '#3b82f6' : s >= 40 ? '#f59e0b' : '#ef4444'
 })
 const scoreArc = computed(() => ((globalScore.value / 100) * 534).toFixed(1))
 
