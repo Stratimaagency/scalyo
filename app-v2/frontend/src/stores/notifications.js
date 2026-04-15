@@ -19,7 +19,9 @@ export const useNotificationStore = defineStore('notifications', () => {
     notifications.value = []
   }
 
-  function addNotification(notif) {
+  // N'ajoute QUE si cette combinaison type+targetId n'existe pas encore
+  // Ne touche JAMAIS aux notifications existantes — leur état lu/non-lu est préservé
+  function addIfNew(notif) {
     const exists = notifications.value.find(n =>
       n.type === notif.type && n.targetId === notif.targetId
     )
@@ -32,6 +34,8 @@ export const useNotificationStore = defineStore('notifications', () => {
     })
   }
 
+  // Appelé au démarrage — ajoute uniquement les nouvelles notifications
+  // Les notifications déjà présentes (lues ou non) ne sont pas recréées
   function generateFromData(clients, tasks, teamMembers) {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
@@ -39,7 +43,7 @@ export const useNotificationStore = defineStore('notifications', () => {
 
     for (const client of (clients || [])) {
       if (typeof client.health === 'number' && client.health < 4) {
-        addNotification({
+        addIfNew({
           type: 'churn_risk',
           icon: '🔴',
           title: `Risque churn — ${client.name}`,
@@ -53,7 +57,7 @@ export const useNotificationStore = defineStore('notifications', () => {
         if (!isNaN(renewal.getTime())) {
           const daysLeft = Math.round((renewal.getTime() - today.getTime()) / 86400000)
           if (daysLeft >= 0 && daysLeft <= 30) {
-            addNotification({
+            addIfNew({
               type: 'renewal',
               icon: '📅',
               title: `Renouvellement dans ${daysLeft}j — ${client.name}`,
@@ -65,7 +69,7 @@ export const useNotificationStore = defineStore('notifications', () => {
         }
       }
       if (typeof client.nps === 'number' && client.nps < 20) {
-        addNotification({
+        addIfNew({
           type: 'nps_drop',
           icon: '📉',
           title: `NPS bas — ${client.name}`,
@@ -79,7 +83,7 @@ export const useNotificationStore = defineStore('notifications', () => {
     for (const task of (tasks || [])) {
       if (task.status !== 'done' && task.dueDate && task.dueDate < todayStr) {
         const daysLate = Math.round((today.getTime() - new Date(task.dueDate).getTime()) / 86400000)
-        addNotification({
+        addIfNew({
           type: 'task_overdue',
           icon: '⏰',
           title: `Tâche en retard — ${task.title}`,
@@ -95,7 +99,7 @@ export const useNotificationStore = defineStore('notifications', () => {
         const reasons = []
         if (member.wellbeingScore < 55) reasons.push(`bien-être ${member.wellbeingScore}/100`)
         if (member.workload > 85) reasons.push(`charge ${member.workload}%`)
-        addNotification({
+        addIfNew({
           type: 'burnout',
           icon: '⚠️',
           title: `Alerte burnout — ${member.name}`,
@@ -109,6 +113,6 @@ export const useNotificationStore = defineStore('notifications', () => {
 
   return {
     notifications, unreadCount,
-    markRead, markAllRead, clearAll, addNotification, generateFromData,
+    markRead, markAllRead, clearAll, generateFromData,
   }
 }, { persist: true })
