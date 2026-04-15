@@ -88,8 +88,8 @@
     <div class="stg-card legal">
       <h3>⚖️ {{ laws.flag }} {{ laws.name }} — {{ t('cl_work_law') }}</h3>
       <div class="legal-grid">
-        <div class="legal-item"><span class="li-label">{{ t('cl_work_law') }}</span><span>{{ laws.laborLaw }}</span></div>
-        <div class="legal-item"><span class="li-label">{{ t('cl_data_law') }}</span><span>{{ laws.privacy }}</span></div>
+        <div class="legal-item"><span class="li-label">{{ t('cl_work_law') }}</span><span>{{ t('law_' + form.country.toLowerCase() + '_labor') }}</span></div>
+        <div class="legal-item"><span class="li-label">{{ t('cl_data_law') }}</span><span>{{ t('law_' + form.country.toLowerCase() + '_privacy') }}</span></div>
         <div class="legal-item"><span class="li-label">{{ t('cl_hours_week') }}</span><span>{{ laws.hoursPerWeek }}h</span></div>
         <div class="legal-item"><span class="li-label">{{ t('cl_vacation') }}</span><span>{{ laws.vacationDays }} {{ t('sm_vacation_days').split('/')[0] }}</span></div>
         <div class="legal-item"><span class="li-label">{{ t('cl_holidays') }}</span><span>{{ laws.publicHolidays }}</span></div>
@@ -98,7 +98,7 @@
       <div class="legal-rights">
         <strong>{{ t('cl_rights_title') }}</strong>
         <ul>
-          <li v-for="right in laws.dataRights" :key="right">{{ right }}</li>
+          <li v-for="i in lawRightsCount" :key="i">{{ t('law_' + form.country.toLowerCase() + '_r' + i) }}</li>
         </ul>
       </div>
     </div>
@@ -131,6 +131,7 @@ const form = reactive({
 })
 
 const laws = computed(() => countryLaws.getLaws(form.country))
+const lawRightsCount = computed(() => ({ fr: 4, be: 3, ch: 3, ca: 3, us: 3, kr: 3 })[form.country.toLowerCase()] || 3)
 
 // Watch country → auto-fill fields + toast
 watch(() => form.country, (newCountry) => {

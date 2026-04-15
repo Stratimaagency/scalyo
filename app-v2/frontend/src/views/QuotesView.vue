@@ -222,7 +222,7 @@ function downloadPdf(q) {
   const privacyLines = doc.splitTextToSize(l.privacy, 170)
   doc.text(privacyLines, 20, 268)
   const legalY = 268 + (privacyLines.length * 4)
-  const legalLines = doc.splitTextToSize(l.legalMentions, 170)
+  const legalLines = doc.splitTextToSize(t('law_' + (q.country || billingCountry.value).toLowerCase() + '_legal'), 170)
   doc.text(legalLines, 20, legalY)
 
   doc.save('devis-' + q.id + '.pdf')
