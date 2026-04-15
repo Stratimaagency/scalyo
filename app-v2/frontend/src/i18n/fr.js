@@ -100,6 +100,14 @@ export default {
   dash_action_client: '+ Ajouter un client',
   dash_action_import: 'Importer des données',
   dash_action_portfolio: 'Voir le portefeuille',
+  dash_watch_accounts: 'Comptes à surveiller',
+  dash_compare_with: 'Comparer avec :',
+  dash_period_day: 'Hier',
+  dash_period_week: 'Semaine dernière',
+  dash_period_month: 'Mois dernier',
+  dash_no_history: 'Pas encore de données historiques',
+  dash_my_tasks_empty: 'Aucune tâche assignée',
+  dash_tasks_all: 'Toutes',
 
   // Email Studio
   es_title: 'Email Studio',
