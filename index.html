@@ -960,6 +960,16 @@ nav.scrolled .lang-sw button.active { background:rgba(13,148,136,.13); color:var
 /* ── MODALES LÉGALES ── */
 .lm-overlay{position:fixed;inset:0;background:rgba(55,53,47,.5);backdrop-filter:blur(6px);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;}
 .lm-overlay.open{display:flex;}
+.lm-box-legal { max-width: 680px; width: 100%; }
+.lm-legal-tabs { display: flex; gap: 4px; flex: 1; }
+.lm-tab { background: none; border: none; padding: 8px 16px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border-radius: 6px; color: var(--dt2); transition: all 0.15s; }
+.lm-tab.active { background: var(--teal); color: #fff; font-weight: 600; }
+.lm-tab:hover:not(.active) { background: rgba(0,0,0,0.05); }
+.lm-panel { font-size: 0.88rem; line-height: 1.7; }
+.lm-panel h4 { font-size: 1rem; font-weight: 700; margin: 16px 0 6px; }
+.lm-panel p { margin-bottom: 10px; color: var(--dt2); }
+.lm-panel ul { margin: 6px 0 10px 20px; }
+.lm-panel li { margin-bottom: 4px; color: var(--dt2); }
 .lm-box{background:#FFFFFF;border:1px solid rgba(55,53,47,.12);border-radius:18px;width:100%;max-width:640px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;}
 .lm-head{padding:24px 28px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .lm-head h3{font-size:18px;font-weight:700;color:var(--dt);margin:0;}
@@ -2183,8 +2193,7 @@ nav.scrolled .lang-sw button.active { background:rgba(13,148,136,.13); color:var
     <div class="footer-col">
       <h4 id="fc-contact">Contact</h4>
       <a href="javascript:void(0)" onclick="openSupport()" id="fl-support">Support</a>
-      <a href="javascript:void(0)" onclick="openRGPD()" id="fl-rgpd">RGPD</a>
-      <a href="javascript:void(0)" onclick="openLegal()" id="fl-legal">Mentions légales</a>
+      <a href="javascript:void(0)" onclick="openRGPD()" id="fl-rgpd">Politique légale</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -3792,10 +3801,16 @@ function setLang(l) {
 /* ── MODAL HANDLERS ── */
 function openSupport(){ applyModalLang(_lang);  document.getElementById('modal-support').classList.add('open'); document.body.style.overflow='hidden'; }
 function openRGPD(){ applyModalLang(_lang); document.getElementById('modal-rgpd').classList.add('open'); document.body.style.overflow='hidden'; }
-function openLegal(){ applyModalLang(_lang); document.getElementById('modal-legal').classList.add('open'); document.body.style.overflow='hidden'; }
+function openLegal(){ applyModalLang(_lang); switchLegalTab('legal'); document.getElementById('modal-rgpd').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeAllModals(){
   document.querySelectorAll('.lm-overlay').forEach(function(m){ m.classList.remove('open'); });
   document.body.style.overflow='';
+}
+function switchLegalTab(tab){
+  document.getElementById('panel-rgpd').style.display = tab==='rgpd' ? '' : 'none';
+  document.getElementById('panel-legal').style.display = tab==='legal' ? '' : 'none';
+  document.getElementById('tab-rgpd').classList.toggle('active', tab==='rgpd');
+  document.getElementById('tab-legal').classList.toggle('active', tab==='legal');
 }
 document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeAllModals(); });
 
@@ -4270,4 +4285,22 @@ function applyModuleLang(l){
   </div>
 </div>
 
-<!-- ── MODAL RGPD
+<!-- ── MODAL LÉGAL (RGPD + Mentions légales) ── -->
+<div class="lm-overlay" id="modal-rgpd" onclick="if(event.target===this)closeAllModals()">
+  <div class="lm-box lm-box-legal">
+    <div class="lm-head">
+      <div class="lm-legal-tabs">
+        <button class="lm-tab active" id="tab-rgpd" onclick="switchLegalTab('rgpd')"><span id="mr-title">Politique de confidentialité</span></button>
+        <button class="lm-tab" id="tab-legal" onclick="switchLegalTab('legal')"><span id="ml-title">Mentions légales</span></button>
+      </div>
+      <button class="lm-close" onclick="closeAllModals()">×</button>
+    </div>
+    <div class="lm-body">
+      <div id="panel-rgpd" class="lm-panel"><div id="mr-body"></div></div>
+      <div id="panel-legal" class="lm-panel" style="display:none"><div id="ml-body"></div></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
