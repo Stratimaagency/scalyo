@@ -269,6 +269,7 @@ export default {
   integ_api_key_ph: 'Votre clé API...',
   integ_api_secret: 'Secret API',
   integ_where_key: 'Où trouver cette clé ?',
+  integ_support_subject: 'Aide — Clé API intégration Scalyo',
   integ_what_import: 'Que souhaitez-vous importer ?',
   integ_import_contacts: 'Contacts / Clients → Portefeuille',
   integ_import_deals: 'Deals / Opportunités → Devis',

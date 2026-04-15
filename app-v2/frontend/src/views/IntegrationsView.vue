@@ -75,7 +75,7 @@
               <label>{{ t('integ_api_secret') }}</label>
               <input v-model="connectForm.apiSecret" type="password" class="fi" />
             </div>
-            <a href="#" class="help-link">{{ t('integ_where_key') }}</a>
+            <a :href="'mailto:contact@scalyo.app?subject=' + encodeURIComponent(t('integ_support_subject'))" class="help-link" target="_blank">{{ t('integ_where_key') }}</a>
           </div>
           <div class="step-nav">
             <div />

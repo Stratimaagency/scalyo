@@ -173,6 +173,7 @@ export default {
   integ_connect_title: 'Connect {name}',
   integ_step_auth: 'Authorization', integ_step_config: 'Configuration', integ_step_test: 'Test', integ_step_active: 'Active',
   integ_oauth: 'Connect with OAuth', integ_api_key: 'API Key', integ_api_key_ph: 'Your API key...', integ_api_secret: 'API Secret', integ_where_key: 'Where to find this key?',
+  integ_support_subject: 'Help — Scalyo integration API key',
   integ_what_import: 'What do you want to import?', integ_import_contacts: 'Contacts / Clients → Portfolio', integ_import_deals: 'Deals / Opportunities → Quotes', integ_import_tasks: 'Tasks → Smart Matrix', integ_import_convos: 'Conversations → Client history',
   integ_sync_freq: 'Sync frequency', integ_sync_realtime: 'Real-time', integ_sync_hourly: 'Every hour', integ_sync_daily: 'Daily',
   integ_sync_dir: 'Direction', integ_sync_bidi: 'Bidirectional ↔', integ_sync_import_only: 'Import only →', integ_sync_export_only: 'Export only ←',

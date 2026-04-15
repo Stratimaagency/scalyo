@@ -173,6 +173,7 @@ export default {
   integ_connect_title: '{name} 연결',
   integ_step_auth: '인증', integ_step_config: '설정', integ_step_test: '테스트', integ_step_active: '활성',
   integ_oauth: 'OAuth로 연결', integ_api_key: 'API 키', integ_api_key_ph: 'API 키 입력...', integ_api_secret: 'API 시크릿', integ_where_key: '키를 어디서 찾나요?',
+  integ_support_subject: '도움말 — Scalyo 통합 API 키',
   integ_what_import: '무엇을 가져오시겠습니까?', integ_import_contacts: '연락처 / 고객 → 포트폴리오', integ_import_deals: '딜 / 기회 → 견적서', integ_import_tasks: '작업 → 스마트 매트릭스', integ_import_convos: '대화 → 고객 이력',
   integ_sync_freq: '동기화 빈도', integ_sync_realtime: '실시간', integ_sync_hourly: '매시간', integ_sync_daily: '매일',
   integ_sync_dir: '방향', integ_sync_bidi: '양방향 ↔', integ_sync_import_only: '가져오기만 →', integ_sync_export_only: '내보내기만 ←',
