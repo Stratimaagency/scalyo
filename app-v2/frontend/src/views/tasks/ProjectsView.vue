@@ -374,7 +374,7 @@ function createProject() {
 .col-title { left: 68px; min-width: 220px; max-width: 300px; border-right: 2px solid #e5e7eb; }
 .pv-table thead th.col-fix { z-index: 30; background: #f9fafb; }
 .pv-table thead th.col-title { border-right: 2px solid #e5e7eb; }
-.col-scroll { white-space: nowrap; }
+.col-scroll { white-space: nowrap; position: relative; z-index: 1; }
 .col-date { width: 110px; min-width: 110px; }
 .col-badge { width: 70px; min-width: 70px; text-align: center; }
 .col-status { width: 100px; min-width: 100px; }
@@ -382,7 +382,7 @@ function createProject() {
 .col-num-input { width: 80px; min-width: 80px; text-align: right; }
 .col-avg { background: rgba(124,58,237,0.03); }
 .col-desc { width: 200px; min-width: 200px; }
-.col-actions { width: 180px; min-width: 180px; }
+.col-actions { width: 180px; min-width: 180px; position: relative; z-index: 2; }
 .pv-table tbody tr { transition: background 0.1s; }
 .pv-table tbody td { border-bottom: 1px solid var(--border-light); padding: 6px 8px; vertical-align: middle; }
 .pv-table tbody tr:hover { background: rgba(0,0,0,0.015); }
