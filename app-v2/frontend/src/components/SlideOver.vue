@@ -51,7 +51,7 @@ onUnmounted(() => {
 .slide-over-title { font-size: 1.1rem; font-weight: 700; color: var(--text); }
 .slide-over-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--bg-hover); color: var(--text-secondary); font-size: 1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s; }
 .slide-over-close:hover { background: var(--border); }
-.slide-over-body { flex: 1 1 0; overflow: hidden; padding: 0; min-height: 0; display: flex; flex-direction: column; }
+.slide-over-body { flex: 1 1 0; overflow-y: auto; padding: 0; min-height: 0; display: flex; flex-direction: column; }
 
 /* Transitions */
 .slide-over-enter-active .slide-over-overlay { transition: opacity 0.3s ease; }
