@@ -1,45 +1,60 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
+const STORAGE_KEY = 'scalyo_notifications'
+
+function loadFromStorage() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') }
+  catch { return [] }
+}
+
+function saveToStorage(notifs) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(notifs)) }
+  catch {}
+}
+
 export const useNotificationStore = defineStore('notifications', () => {
-  const notifications = ref([])
+  const notifications = ref(loadFromStorage())
 
   const unreadCount = computed(() => notifications.value.filter(n => !n.read).length)
 
   function markRead(id) {
     const n = notifications.value.find(n => n.id === id)
-    if (n) n.read = true
+    if (!n) return
+    n.read = true
+    saveToStorage(notifications.value)
   }
 
   function markAllRead() {
     notifications.value.forEach(n => n.read = true)
+    saveToStorage(notifications.value)
   }
 
   function clearAll() {
     notifications.value = []
+    saveToStorage([])
   }
 
-  // N'ajoute QUE si cette combinaison type+targetId n'existe pas encore
-  // Ne touche JAMAIS aux notifications existantes — leur état lu/non-lu est préservé
-  function addIfNew(notif) {
-    const exists = notifications.value.find(n =>
-      n.type === notif.type && n.targetId === notif.targetId
-    )
-    if (exists) return
-    notifications.value.unshift({
-      id: 'n' + Date.now() + Math.random().toString(36).slice(2, 5),
-      read: false,
-      createdAt: new Date().toISOString(),
-      ...notif,
-    })
-  }
-
-  // Appelé au démarrage — ajoute uniquement les nouvelles notifications
-  // Les notifications déjà présentes (lues ou non) ne sont pas recréées
   function generateFromData(clients, tasks, teamMembers) {
+    // Charger l'état actuel depuis localStorage
+    const current = loadFromStorage()
+
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const todayStr = today.toISOString().slice(0, 10)
+
+    function addIfNew(notif) {
+      const exists = current.find(n =>
+        n.type === notif.type && n.targetId === notif.targetId
+      )
+      if (exists) return
+      current.unshift({
+        id: 'n' + Date.now() + Math.random().toString(36).slice(2, 5),
+        read: false,
+        createdAt: new Date().toISOString(),
+        ...notif,
+      })
+    }
 
     for (const client of (clients || [])) {
       if (typeof client.health === 'number' && client.health < 4) {
@@ -109,10 +124,14 @@ export const useNotificationStore = defineStore('notifications', () => {
         })
       }
     }
+
+    // Sauvegarder et mettre à jour le state réactif
+    saveToStorage(current)
+    notifications.value = current
   }
 
   return {
     notifications, unreadCount,
     markRead, markAllRead, clearAll, generateFromData,
   }
-}, { persist: true })
+}, { persist: false })
