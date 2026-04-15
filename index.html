@@ -3786,6 +3786,7 @@ function setLang(l) {
   try { localStorage.setItem('scalyo_lang', l); } catch(e){}
   applyLang();
   applyDemoLang(l);
+  applyModalLang(l);
   /* Fallback direct pour garantir la traduction des modules */
   setTimeout(function(){ try{applyModuleLang(l);}catch(e){} }, 0);
 
