@@ -199,12 +199,12 @@ function downloadPdf(q) {
 
   // Montants — toLocaleString('fr-FR') pour format universel stable
   doc.setFontSize(10)
-  doc.text(t('qt_field_amount') + ' (HT) : ' + l.currencySymbol + q.amount.toLocaleString('fr-FR'), 20, 110)
-  doc.text(t('qt_field_tax') + ' (' + q.tax + '%) : ' + l.currencySymbol + Math.round(q.amount * q.tax / 100).toLocaleString('fr-FR'), 20, 118)
+  doc.text(t('qt_field_amount') + ' (HT) : ' + l.currencySymbol + Number(q.amount).toFixed(2), 20, 110)
+  doc.text(t('qt_field_tax') + ' (' + q.tax + '%) : ' + l.currencySymbol + Math.round(q.amount * q.tax / 100).toFixed(2), 20, 118)
 
   doc.setFontSize(13)
   doc.setFont('helvetica', 'bold')
-  doc.text(t('qt_ttc') + ' : ' + l.currencySymbol + Math.round(q.amount * (1 + q.tax / 100)).toLocaleString('fr-FR'), 20, 130)
+  doc.text(t('qt_ttc') + ' : ' + l.currencySymbol + Math.round(q.amount * (1 + q.tax / 100)).toFixed(2), 20, 130)
 
   // Notes — splitTextToSize pour éviter le débordement
   if (q.notes) {
