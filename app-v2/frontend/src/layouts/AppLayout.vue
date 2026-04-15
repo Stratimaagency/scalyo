@@ -157,13 +157,6 @@ const notifOpen = ref(false)
 const notifRef = ref(null)
 onClickOutside(notifRef, () => { notifOpen.value = false })
 
-// Génère les notifications depuis les vraies données au démarrage
-// Les doublons sont ignorés — les notifs déjà lues restent lues
-notifications.generateFromData(
-  clientStore.clients,
-  taskStore.tasks,
-  teamStore.members,
-)
 
 function onNotifClick(n) {
   notifications.markRead(n.id)
