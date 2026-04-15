@@ -1,59 +1,77 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
-export const useClientStore = defineStore('clients', () => {
-  const clients = ref([
-    { id: 'cl1', name: 'TechScale', industry: 'SaaS', arr: 120000, health: 9.1, nps: 72, status: 'healthy', csm: 'Sophie M.', csmId: 'tm1', logo: '🟢', renewalDate: '2026-09-15', mrr: 10000, churnRisk: 0.02, contacts: [{ name: 'Marc Duval', email: 'marc@techscale.io', role: 'CTO' }], createdAt: '2024-06-01', lastActivity: '2026-04-10' },
-    { id: 'cl2', name: 'Acme Corp', industry: 'Manufacturing', arr: 85000, health: 6.4, nps: 35, status: 'watch', csm: 'Thomas R.', csmId: 'tm2', logo: '🟡', renewalDate: '2026-06-20', mrr: 7083, churnRisk: 0.15, contacts: [{ name: 'Claire Petit', email: 'claire@acme.fr', role: 'VP Ops' }], createdAt: '2024-09-10', lastActivity: '2026-04-08' },
-    { id: 'cl3', name: 'Biotech Group', industry: 'Healthcare', arr: 210000, health: 8.7, nps: 68, status: 'healthy', csm: 'Sophie M.', csmId: 'tm1', logo: '🟢', renewalDate: '2026-12-01', mrr: 17500, churnRisk: 0.03, contacts: [{ name: 'Dr. Faure', email: 'faure@biotech.com', role: 'CEO' }], createdAt: '2024-03-15', lastActivity: '2026-04-11' },
-    { id: 'cl4', name: 'Leroy Finance', industry: 'Finance', arr: 65000, health: 3.2, nps: 12, status: 'critical', csm: 'Thomas R.', csmId: 'tm2', logo: '🔴', renewalDate: '2026-05-10', mrr: 5417, churnRisk: 0.45, contacts: [{ name: 'Jean Leroy', email: 'j.leroy@leroyfinance.fr', role: 'DG' }], createdAt: '2025-01-20', lastActivity: '2026-03-28' },
-    { id: 'cl5', name: 'NovaTech', industry: 'SaaS', arr: 95000, health: 7.8, nps: 55, status: 'healthy', csm: 'Julie K.', csmId: 'tm3', logo: '🟢', renewalDate: '2026-08-15', mrr: 7917, churnRisk: 0.05, contacts: [{ name: 'Yuki Tanaka', email: 'yuki@novatech.io', role: 'Head CS' }], createdAt: '2024-11-01', lastActivity: '2026-04-09' },
-    { id: 'cl6', name: 'MegaCorp', industry: 'Retail', arr: 180000, health: 7.2, nps: 48, status: 'watch', csm: 'Julie K.', csmId: 'tm3', logo: '🟡', renewalDate: '2026-07-30', mrr: 15000, churnRisk: 0.10, contacts: [{ name: 'Sophie Martin', email: 'smartin@megacorp.com', role: 'COO' }], createdAt: '2024-05-20', lastActivity: '2026-04-07' },
-    { id: 'cl7', name: 'Rapid SaaS', industry: 'SaaS', arr: 42000, health: 8.5, nps: 65, status: 'healthy', csm: 'Sophie M.', csmId: 'tm1', logo: '🟢', renewalDate: '2026-10-01', mrr: 3500, churnRisk: 0.04, contacts: [{ name: 'Alex Dubois', email: 'alex@rapidsaas.com', role: 'Founder' }], createdAt: '2025-03-01', lastActivity: '2026-04-11' },
-    { id: 'cl8', name: 'DataVault', industry: 'Security', arr: 156000, health: 4.5, nps: 22, status: 'critical', csm: 'Thomas R.', csmId: 'tm2', logo: '🔴', renewalDate: '2026-05-25', mrr: 13000, churnRisk: 0.35, contacts: [{ name: 'Pierre Noir', email: 'pnoir@datavault.eu', role: 'CISO' }], createdAt: '2024-07-10', lastActivity: '2026-04-02' },
-  ])
+function load(key, fallback) {
+  try {
+    const v = localStorage.getItem(key)
+    return v ? JSON.parse(v) : fallback
+  } catch { return fallback }
+}
 
-  const totalArr = computed(() => clients.value.reduce((s, c) => s + c.arr, 0))
-  const avgHealth = computed(() => {
-    if (!clients.value.length) return 0
-    return +(clients.value.reduce((s, c) => s + c.health, 0) / clients.value.length).toFixed(1)
-  })
-  const avgNps = computed(() => {
-    if (!clients.value.length) return 0
-    return Math.round(clients.value.reduce((s, c) => s + c.nps, 0) / clients.value.length)
-  })
+function save(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
+}
+
+const DEMO_CLIENTS = [
+  { id: 'cl1', name: 'TechScale', industry: 'SaaS', arr: 120000, mrr: 10000, health: 8.2, nps: 45, status: 'healthy', csm: 'Lidia', csmId: 'tm1', logo: '🟢', churnRisk: 0.05, renewalDate: '2026-09-01', contacts: [{ name: 'Marc Dupont', email: 'marc@techscale.io', role: 'CTO' }] },
+  { id: 'cl2', name: 'Acme Corp', industry: 'Retail', arr: 85000, mrr: 7083, health: 7.1, nps: 38, status: 'healthy', csm: 'Thomas', csmId: 'tm2', logo: '🟢', churnRisk: 0.08, renewalDate: '2026-07-15', contacts: [] },
+  { id: 'cl3', name: 'Biotech Group', industry: 'Santé', arr: 200000, mrr: 16667, health: 9.1, nps: 72, status: 'healthy', csm: 'Lidia', csmId: 'tm1', logo: '🟢', churnRisk: 0.02, renewalDate: '2026-11-30', contacts: [] },
+  { id: 'cl4', name: 'Leroy Finance', industry: 'Finance', arr: 95000, mrr: 7917, health: 3.2, nps: 12, status: 'critical', csm: 'Thomas', csmId: 'tm2', logo: '🔴', churnRisk: 0.72, renewalDate: '2026-05-10', contacts: [{ name: 'Sophie Leroy', email: 'sleroy@leroyfi.com', role: 'CEO' }] },
+  { id: 'cl5', name: 'NovaTech', industry: 'Tech', arr: 150000, mrr: 12500, health: 7.8, nps: 55, status: 'healthy', csm: 'Lidia', csmId: 'tm1', logo: '🟢', churnRisk: 0.06, renewalDate: '2026-08-20', contacts: [] },
+  { id: 'cl6', name: 'MediaGroup', industry: 'Média', arr: 60000, mrr: 5000, health: 5.5, nps: 22, status: 'watch', csm: 'Sarah', csmId: 'tm3', logo: '🟡', churnRisk: 0.28, renewalDate: '2026-06-01', contacts: [] },
+  { id: 'cl7', name: 'LogiPro', industry: 'Logistique', arr: 75000, mrr: 6250, health: 6.3, nps: 31, status: 'watch', csm: 'Thomas', csmId: 'tm2', logo: '🟡', churnRisk: 0.19, renewalDate: '2026-10-15', contacts: [] },
+  { id: 'cl8', name: 'DataVault', industry: 'Data', arr: 110000, mrr: 9167, health: 2.8, nps: 8, status: 'critical', csm: 'Sarah', csmId: 'tm3', logo: '🔴', churnRisk: 0.81, renewalDate: '2026-04-30', contacts: [] },
+]
+
+export const useClientStore = defineStore('clients', () => {
+  const clients = ref(load('scalyo_clients', DEMO_CLIENTS))
+
+  const totalArr = computed(() => clients.value.reduce((s, c) => s + (c.arr || 0), 0))
+  const avgHealth = computed(() => clients.value.length ? parseFloat((clients.value.reduce((s, c) => s + (c.health || 0), 0) / clients.value.length).toFixed(1)) : 0)
+  const avgNps = computed(() => clients.value.length ? Math.round(clients.value.reduce((s, c) => s + (c.nps || 0), 0) / clients.value.length) : 0)
   const criticalCount = computed(() => clients.value.filter(c => c.status === 'critical').length)
   const watchCount = computed(() => clients.value.filter(c => c.status === 'watch').length)
   const healthyCount = computed(() => clients.value.filter(c => c.status === 'healthy').length)
-  const churnRate = computed(() => {
-    if (!clients.value.length) return 0
-    return +(clients.value.reduce((s, c) => s + c.churnRisk, 0) / clients.value.length * 100).toFixed(1)
-  })
-  const arrAtRisk = computed(() => clients.value.filter(c => c.status === 'critical').reduce((s, c) => s + c.arr, 0))
+  const churnRate = computed(() => clients.value.length ? parseFloat((clients.value.reduce((s, c) => s + (c.churnRisk || 0), 0) / clients.value.length * 100).toFixed(1)) : 0)
+  const arrAtRisk = computed(() => clients.value.filter(c => c.status === 'critical').reduce((s, c) => s + (c.arr || 0), 0))
   const renewalsNext30 = computed(() => {
     const now = new Date()
     const in30 = new Date(now.getTime() + 30 * 86400000)
     return clients.value.filter(c => {
+      if (!c.renewalDate) return false
       const d = new Date(c.renewalDate)
       return d >= now && d <= in30
-    })
+    }).length
   })
 
   function addClient(client) {
-    clients.value.push({ id: 'cl' + Date.now(), createdAt: new Date().toISOString().slice(0, 10), lastActivity: new Date().toISOString().slice(0, 10), ...client })
+    clients.value.push({
+      id: 'cl' + Date.now(),
+      logo: '🟡',
+      contacts: [],
+      churnRisk: 0.1,
+      renewalDate: '',
+      ...client,
+    })
+    save('scalyo_clients', clients.value)
   }
 
   function updateClient(id, data) {
     const i = clients.value.findIndex(c => c.id === id)
-    if (i !== -1) Object.assign(clients.value[i], data)
+    if (i !== -1) {
+      Object.assign(clients.value[i], data)
+      save('scalyo_clients', clients.value)
+    }
   }
 
   function deleteClient(id) {
     clients.value = clients.value.filter(c => c.id !== id)
+    save('scalyo_clients', clients.value)
   }
 
   function resetAll() {
     clients.value = []
+    save('scalyo_clients', [])
   }
 
   return {
@@ -61,4 +79,4 @@ export const useClientStore = defineStore('clients', () => {
     churnRate, arrAtRisk, renewalsNext30,
     addClient, updateClient, deleteClient, resetAll,
   }
-}, { persist: true })
+}, { persist: false })
