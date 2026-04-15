@@ -105,10 +105,13 @@ import { useCountryLawStore } from '@/stores/countryLaws'
 import SlideOver from '@/components/SlideOver.vue'
 
 const { t } = useI18n({ useScope: 'global' })
+function load(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback } catch { return fallback } }
+function save(key, value) { localStorage.setItem(key, JSON.stringify(value)) }
 const clients = useClientStore()
 const countryLaws = useCountryLawStore()
 
-const quotes = ref([])
+const quotes = ref(load('scalyo_quotes', []))
+watch(quotes, val => save('scalyo_quotes', val), { deep: true })
 const slideOpen = ref(false)
 const configOpen = ref(false)
 const activeFilter = ref('all')

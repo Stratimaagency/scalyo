@@ -89,4 +89,4 @@ export const useCountryLawStore = defineStore('countryLaws', () => {
   }
 
   return { currentCountry, laws, allCountries, getLaws, LAWS }
-}, { persist: true })
+})
