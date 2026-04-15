@@ -67,10 +67,59 @@
         <div class="billing-plan">
           <div class="bp-current">
             <span class="bp-badge">{{ auth.company?.planLabel }}</span>
-            <span class="bp-price">{{ auth.company?.plan === 'elite' ? '697' : auth.company?.plan === 'growth' ? '297' : '97' }}€/mois</span>
+            <span class="bp-price">{{ auth.company?.plan === 'elite' ? '697' : auth.company?.plan === 'growth' ? '297' : '97' }}€/{{ t('stg_per_month') }}</span>
           </div>
-          <p class="bp-note">Stripe sera activé prochainement.</p>
+          <p class="bp-note">{{ t('stg_stripe_soon') }}</p>
         </div>
+      </div>
+      <div class="sv-section">
+        <h3>{{ t('stg_change_plan') }}</h3>
+        <div class="plans-grid">
+          <div class="plan-card" :class="{ active: auth.company?.plan === 'starter' }">
+            <div class="plan-header">
+              <span class="plan-name">Starter</span>
+              <span class="plan-price">97€<span class="plan-period">/{{ t('stg_per_month') }}</span></span>
+            </div>
+            <ul class="plan-features">
+              <li>{{ t('stg_plan_starter_f1') }}</li>
+              <li>{{ t('stg_plan_starter_f2') }}</li>
+              <li>{{ t('stg_plan_starter_f3') }}</li>
+            </ul>
+            <button class="btn-plan" :class="{ current: auth.company?.plan === 'starter' }" :disabled="auth.company?.plan === 'starter'">
+              {{ auth.company?.plan === 'starter' ? t('stg_plan_current') : t('stg_plan_downgrade') }}
+            </button>
+          </div>
+          <div class="plan-card featured" :class="{ active: auth.company?.plan === 'growth' }">
+            <div class="plan-badge-popular">{{ t('stg_plan_popular') }}</div>
+            <div class="plan-header">
+              <span class="plan-name">Growth</span>
+              <span class="plan-price">297€<span class="plan-period">/{{ t('stg_per_month') }}</span></span>
+            </div>
+            <ul class="plan-features">
+              <li>{{ t('stg_plan_growth_f1') }}</li>
+              <li>{{ t('stg_plan_growth_f2') }}</li>
+              <li>{{ t('stg_plan_growth_f3') }}</li>
+            </ul>
+            <button class="btn-plan" :class="{ current: auth.company?.plan === 'growth' }" :disabled="auth.company?.plan === 'growth'">
+              {{ auth.company?.plan === 'growth' ? t('stg_plan_current') : auth.company?.plan === 'elite' ? t('stg_plan_downgrade') : t('stg_plan_upgrade') }}
+            </button>
+          </div>
+          <div class="plan-card" :class="{ active: auth.company?.plan === 'elite' }">
+            <div class="plan-header">
+              <span class="plan-name">Elite</span>
+              <span class="plan-price">697€<span class="plan-period">/{{ t('stg_per_month') }}</span></span>
+            </div>
+            <ul class="plan-features">
+              <li>{{ t('stg_plan_elite_f1') }}</li>
+              <li>{{ t('stg_plan_elite_f2') }}</li>
+              <li>{{ t('stg_plan_elite_f3') }}</li>
+            </ul>
+            <button class="btn-plan" :class="{ current: auth.company?.plan === 'elite' }" :disabled="auth.company?.plan === 'elite'">
+              {{ auth.company?.plan === 'elite' ? t('stg_plan_current') : t('stg_plan_upgrade') }}
+            </button>
+          </div>
+        </div>
+        <p class="bp-note">{{ t('stg_stripe_soon') }}</p>
       </div>
     </div>
 
@@ -79,11 +128,11 @@
       <div class="sv-section">
         <h3>{{ t('stg_tab_notif') }}</h3>
         <div class="notif-settings">
-          <label class="ns-row"><input type="checkbox" checked /> Alertes churn</label>
-          <label class="ns-row"><input type="checkbox" checked /> Renouvellements</label>
-          <label class="ns-row"><input type="checkbox" checked /> Alertes burnout</label>
-          <label class="ns-row"><input type="checkbox" checked /> Tâches en retard</label>
-          <label class="ns-row"><input type="checkbox" /> NPS en baisse</label>
+          <label class="ns-row"><input type="checkbox" v-model="notif.churn" /> {{ t('stg_notif_churn') }}</label>
+          <label class="ns-row"><input type="checkbox" v-model="notif.renewal" /> {{ t('stg_notif_renewal') }}</label>
+          <label class="ns-row"><input type="checkbox" v-model="notif.burnout" /> {{ t('stg_notif_burnout') }}</label>
+          <label class="ns-row"><input type="checkbox" v-model="notif.late_tasks" /> {{ t('stg_notif_late_tasks') }}</label>
+          <label class="ns-row"><input type="checkbox" v-model="notif.nps" /> {{ t('stg_notif_nps') }}</label>
         </div>
       </div>
     </div>
@@ -135,6 +184,7 @@ const profile = reactive({
 })
 
 const pwd = reactive({ current: '', newPwd: '', confirm: '' })
+const notif = reactive({ churn: true, renewal: true, burnout: true, late_tasks: true, nps: false })
 
 function saveProfile() {
   // Mock save
@@ -189,6 +239,24 @@ function saveProfile() {
 .bp-badge { background: var(--purple-bg); color: var(--purple); font-size: 0.85rem; font-weight: 700; padding: 6px 16px; border-radius: 8px; }
 .bp-price { font-size: 1.3rem; font-weight: 800; }
 .bp-note { font-size: 0.82rem; color: var(--text-muted); }
+.plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
+.plan-card { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; display: flex; flex-direction: column; gap: 14px; position: relative; transition: all 0.2s; }
+.plan-card:hover { box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+.plan-card.active { border-color: var(--purple); background: var(--purple-bg); }
+.plan-card.featured { border-color: var(--purple); }
+.plan-badge-popular { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--purple); color: #fff; font-size: 0.65rem; font-weight: 700; padding: 2px 12px; border-radius: 10px; white-space: nowrap; }
+.plan-header { display: flex; justify-content: space-between; align-items: baseline; }
+.plan-name { font-size: 0.95rem; font-weight: 700; }
+.plan-price { font-size: 1.2rem; font-weight: 800; color: var(--purple); }
+.plan-period { font-size: 0.72rem; font-weight: 400; color: var(--text-muted); }
+.plan-features { list-style: none; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.plan-features li { font-size: 0.78rem; color: var(--text-secondary); padding-left: 16px; position: relative; }
+.plan-features li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+.btn-plan { width: 100%; padding: 8px; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 600; cursor: pointer; border: 1px solid var(--purple); color: var(--purple); background: #fff; transition: all 0.15s; }
+.btn-plan:hover:not(:disabled) { background: var(--purple); color: #fff; }
+.btn-plan.current { background: var(--purple); color: #fff; cursor: default; }
+.btn-plan:disabled { opacity: 0.6; cursor: not-allowed; }
+@media (max-width: 600px) { .plans-grid { grid-template-columns: 1fr; } }
 
 /* Notifications */
 .notif-settings { display: flex; flex-direction: column; gap: 10px; }
