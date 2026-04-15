@@ -694,6 +694,10 @@ import { L } from '@/i18n/landing'
 const showLegal = ref(false)
 const legalTab = ref('rgpd')
 
+const appUrl = 'http://localhost:5174'
+
+const locale = ref('fr')
+
 const rgpdContent = computed(() => {
   const lang = locale.value
   const content = {
@@ -713,10 +717,6 @@ const legalContent = computed(() => {
   }
   return content[lang] || content.fr
 })
-
-const appUrl = 'http://localhost:5174'
-
-const locale = ref('fr')
 function t(key) {
   return (L[locale.value] || L.fr)[key] || L.fr[key] || key
 }
