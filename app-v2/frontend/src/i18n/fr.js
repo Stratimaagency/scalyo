@@ -1220,7 +1220,7 @@ export default {
   login_title: 'Connexion',
   login_subtitle: 'Accédez à votre espace Customer Success',
   login_email: 'Email',
-  login_email_ph: 'vous@entreprise.com',
+  login_email_ph: 'vous\\@entreprise.com',
   login_password: 'Mot de passe',
   login_submit: 'Se connecter',
   login_no_account: 'Pas encore de compte ?',
