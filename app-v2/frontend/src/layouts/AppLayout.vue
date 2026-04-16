@@ -91,7 +91,7 @@
 
           <!-- User -->
           <div class="topbar-user">
-            <div class="user-avatar">{{ auth.user?.firstName?.[0] || 'U' }}</div>
+            <div class="user-avatar" @click="$router.push('/app/profile')" style="cursor:pointer" title="Mon profil">{{ auth.user?.firstName?.[0] || 'U' }}</div>
             <div class="user-info hide-mobile">
               <span class="user-company">{{ auth.company?.name }}</span>
               <span class="user-badges">
