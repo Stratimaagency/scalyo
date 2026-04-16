@@ -395,7 +395,7 @@ export default {
   copil_add_block: '블록 추가', copil_block_title: '블록 제목', copil_add_kpi: '+ KPI 추가', copil_kpi_label: '지표', copil_kpi_value: '값', copil_kpi_unit: '단위', copil_kpi_trend: '추세',
   copil_trend_up: '↑ 상승', copil_trend_stable: '→ 유지', copil_trend_down: '↓ 하락', copil_prev_value: '이전 값',
   copil_text_content: '내용', copil_text_size: '크기', copil_size_small: '작게', copil_size_normal: '보통', copil_size_large: '크게', copil_size_title: '제목',
-  copil_table_headers: "헤더 ({'|'}로 구분)", copil_table_row: '{n}행', copil_add_row: '+ 행 추가', copil_add_item: '+ 항목 추가', copil_add_action: '+ 액션 추가',
+  copil_table_headers: "헤더 (｜로 구분)", copil_table_row: '{n}행', copil_add_row: '+ 행 추가', copil_add_item: '+ 항목 추가', copil_add_action: '+ 액션 추가',
   copil_quote_text: '인용문', copil_quote_author: '저자', copil_quote_role: '직책 / 회사',
   copil_action_what: '액션', copil_action_who: '담당자', copil_action_when: '기한', copil_action_status: '상태',
   copil_status_todo: '할 일', copil_status_progress: '진행 중', copil_status_done: '완료',
