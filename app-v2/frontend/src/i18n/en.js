@@ -843,4 +843,14 @@ export default {
   pl_gantt_today: 'Today', pl_gantt_milestone: 'Milestone', pl_gantt_dependency: 'Dependency', pl_gantt_progress: 'Progress',
   pl_zoom_day: 'Days', pl_zoom_week: 'Weeks', pl_zoom_month: 'Months', pl_zoom_quarter: 'Quarters',
   pl_color_by: 'Color by', pl_color_project: 'Project', pl_color_status: 'Status', pl_color_priority: 'Priority',
+
+  // ─── Register ──────────────────────────────────────────────────────────────
+  register_title: 'Create an account',
+  register_subtitle: 'Join Scalyo and transform your Customer Success',
+  register_check_email: 'Check your email to confirm your account.',
+  register_firstname: 'First name',
+  register_lastname: 'Last name',
+  register_submit: 'Create my account',
+  register_has_account: 'Already have an account?',
+
 }

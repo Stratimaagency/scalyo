@@ -843,4 +843,14 @@ export default {
   pl_gantt_today: '오늘', pl_gantt_milestone: '마일스톤', pl_gantt_dependency: '종속성', pl_gantt_progress: '진행률',
   pl_zoom_day: '일', pl_zoom_week: '주', pl_zoom_month: '월', pl_zoom_quarter: '분기',
   pl_color_by: '색상 기준', pl_color_project: '프로젝트', pl_color_status: '상태', pl_color_priority: '우선순위',
+
+  // ─── Register ──────────────────────────────────────────────────────────────
+  register_title: '계정 만들기',
+  register_subtitle: 'Scalyo에 가입하여 고객 성공을 혁신하세요',
+  register_check_email: '계정 확인을 위해 이메일을 확인하세요.',
+  register_firstname: '이름',
+  register_lastname: '성',
+  register_submit: '계정 만들기',
+  register_has_account: '이미 계정이 있으신가요?',
+
 }

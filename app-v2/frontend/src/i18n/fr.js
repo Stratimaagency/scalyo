@@ -1395,4 +1395,14 @@ export default {
   pl_color_project: 'Projet',
   pl_color_status: 'Statut',
   pl_color_priority: 'Priorité',
+
+  // ─── Register ──────────────────────────────────────────────────────────────
+  register_title: 'Créer un compte',
+  register_subtitle: 'Rejoignez Scalyo et transformez votre Customer Success',
+  register_check_email: 'Vérifiez votre email pour confirmer votre compte.',
+  register_firstname: 'Prénom',
+  register_lastname: 'Nom',
+  register_submit: 'Créer mon compte',
+  register_has_account: 'Déjà un compte ?',
+
 }
