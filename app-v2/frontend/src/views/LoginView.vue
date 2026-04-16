@@ -3,6 +3,10 @@
     <div class="auth-card">
       <div class="auth-logo"><ScalyoLogo :size="48" /><span class="auth-brand">Scalyo</span></div>
       <h1>{{ t('login_title') }}</h1>
+      <!-- Email verified banner -->
+      <div v-if="emailVerified" class="verified-banner">
+        {{ t('login_email_verified') }}
+      </div>
       <p class="auth-sub">{{ t('login_subtitle') }}</p>
       <div v-if="errorMsg" class="auth-error">{{ errorMsg }}</div>
       <form @submit.prevent="handleLogin" class="auth-form">
@@ -19,14 +23,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import ScalyoLogo from '@/components/ScalyoLogo.vue'
 
 const { t } = useI18n({ useScope: 'global' })
 const router = useRouter()
+const route = useRoute()
+const emailVerified = computed(() => route.query.verified === 'true' || route.query.verified === '1')
 const authStore = useAuthStore()
 const email = ref('')
 const password = ref('')
@@ -64,4 +70,21 @@ async function handleLogin() {
 .auth-error { background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:10px 14px;font-size:0.85rem;margin-bottom:16px; }
 .spinner { width:18px;height:18px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block; }
 @keyframes spin { to { transform:rotate(360deg); } }
+
+.verified-banner {
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  color: #166534;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 4px;
+  animation: slide-in 0.3s ease;
+}
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 </style>
