@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 
 const routes = [
   { path: '/', name: 'landing', component: () => import('@/views/LandingPage.vue'), meta: { guest: true } },
+  { path: '/payment-success', name: 'payment-success', component: () => import('@/views/PaymentSuccessView.vue') },
   { path: '/login', name: 'login', component: () => import('@/views/LoginView.vue'), meta: { guest: true } },
   { path: '/register', name: 'register', component: () => import('@/views/RegisterView.vue'), meta: { guest: true } },
   {
@@ -39,13 +40,15 @@ const routes = [
       { path: 'import', name: 'import', component: () => import('@/views/ImportView.vue') },
       { path: 'integrations', name: 'integrations', component: () => import('@/views/IntegrationsView.vue') },
       { path: 'settings', name: 'settings', component: () => import('@/views/SettingsView.vue') },
+        { path: 'profile', name: 'profile', component: () => import('@/views/ProfileView.vue'), meta: { requiresAuth: true } },
       { path: 'resources', name: 'resources', redirect: { name: 'resources-library' } },
       { path: 'resources/library', name: 'resources-library', component: () => import('@/views/resources/LibraryView.vue') },
       { path: 'resources/masterclass', name: 'resources-masterclass', component: () => import('@/views/resources/MasterclassView.vue') },
       { path: 'resources/guides', name: 'resources-guides', component: () => import('@/views/resources/GuidesView.vue') },
       { path: 'resources/tools', name: 'resources-tools', component: () => import('@/views/resources/ToolsView.vue') },
       { path: 'resources/wellbeing', name: 'resources-wellbeing', component: () => import('@/views/resources/WellbeingResourcesView.vue') },
-    ],
+      { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('@/views/NotFoundView.vue') },
+],
   },
 ]
 
@@ -62,6 +65,26 @@ router.beforeEach(async (to) => {
   if (to.meta.guest && authStore.isAuthenticated) {
     return { name: 'dashboard' }
   }
+})
+
+// SEO: dynamic title per route
+router.afterEach((to) => {
+  const titles = {
+    'login': 'Connexion — Scalyo',
+    'register': 'Inscription — Scalyo',
+    'dashboard': 'Dashboard — Scalyo',
+    'portfolio': 'Portefeuille clients — Scalyo',
+    'kpis': 'KPIs COPIL — Scalyo',
+    'import': 'Import intelligent — Scalyo',
+    'settings': 'Paramètres — Scalyo',
+    'profile': 'Mon profil — Scalyo',
+    'payment-success': 'Paiement confirmé — Scalyo',
+    'NotFound': 'Page introuvable — Scalyo',
+  }
+  document.title = (to.name && titles[to.name]) || to.meta?.title || 'Scalyo — Customer Success Platform'
+  let metaDesc = document.querySelector('meta[name="description"]')
+  if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.setAttribute('name', 'description'); document.head.appendChild(metaDesc) }
+  metaDesc.setAttribute('content', to.meta?.description || 'Scalyo — La plateforme SaaS B2B Customer Success. Gérez vos clients, KPIs et équipes efficacement.')
 })
 
 export default router
