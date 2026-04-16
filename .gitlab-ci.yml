@@ -48,27 +48,26 @@ deploy_production:
     - build_app
   script:
     - npm install -g wrangler
-    - mkdir -p dist
+    - mkdir -p dist dist/assets dist/landing
 
-    # 1. Copy landing first (includes its index.html + hashed assets)
-    - cp -r frontend/dist/. dist/
+    # 1. Copy landing assets to dist/assets (hashed filenames — no conflict with app)
+    - cp -r frontend/dist/assets/. dist/assets/
 
-    # 2. Rename landing index.html to preserve it
-    - mv dist/index.html dist/index-landing.html
+    # 2. Copy landing index.html into dist/landing/ subfolder
+    - cp frontend/dist/index.html dist/landing/index.html
 
-    # 3. Copy app (includes app index.html + hashed assets — no filename clash)
-    - cp -r app-v2/frontend/dist/. dist/
+    # 3. Copy app to dist/ (app index.html at root + app assets merged into dist/assets/)
+    - cp app-v2/frontend/dist/index.html dist/index.html
+    - cp -r app-v2/frontend/dist/assets/. dist/assets/
 
-    # 4. Create Cloudflare Pages _redirects routing rules
+    # 4. Cloudflare Pages _redirects
+    # / and /legal → serve landing (dist/landing/index.html)
+    # Everything else → serve app SPA (dist/index.html)
     - |
-      cat > dist/_redirects << 'EOF'
-      /                     /index-landing.html   200
-      /legal                /index-landing.html   200
-      /login                /index.html           200
-      /register             /index.html           200
-      /app/*                /index.html           200
-      /*                    /index-landing.html   200
-      EOF
+      printf '/ /landing/ 200
+/legal /landing/ 200
+/* /index.html 200
+' > dist/_redirects
 
-    # 5. Deploy unified dist to Cloudflare Pages production
+    # 5. Deploy
     - wrangler pages deploy dist --project-name=scalyo-app --branch=main
