@@ -690,6 +690,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import ScalyoLogo from '@/components/ScalyoLogo.vue'
 import { L } from '@/i18n/landing'
+import { useAuthStore } from '@/stores/auth'
 
 const showLegal = ref(false)
 const legalTab = ref('rgpd')
