@@ -775,7 +775,7 @@ export default {
   copil_size_normal: 'Normal',
   copil_size_large: 'Grand',
   copil_size_title: 'Titre',
-  copil_table_headers: 'En-têtes (séparés par |)',
+  copil_table_headers: "En-têtes (séparés par {'|'})",
   copil_table_row: 'Ligne {n}',
   copil_add_row: '+ Ajouter une ligne',
   copil_add_item: '+ Ajouter un élément',
