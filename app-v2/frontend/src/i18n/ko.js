@@ -735,7 +735,7 @@ export default {
   login_title: '로그인',
   login_subtitle: 'Customer Success 작업 공간에 접속하세요',
   login_email: '이메일',
-  login_email_ph: 'you@company.com',
+  login_email_ph: 'you\\@company.com',
   login_password: '비밀번호',
   login_submit: '로그인하기',
   login_no_account: '계정이 없으신가요?',
