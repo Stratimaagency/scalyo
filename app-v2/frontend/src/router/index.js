@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
-  { path: '/', redirect: '/app/dashboard' },
+  { path: '/', name: 'landing', component: () => import('@/views/LandingPage.vue'), meta: { guest: true } },
   { path: '/login', name: 'login', component: () => import('@/views/LoginView.vue'), meta: { guest: true } },
   { path: '/register', name: 'register', component: () => import('@/views/RegisterView.vue'), meta: { guest: true } },
   {
