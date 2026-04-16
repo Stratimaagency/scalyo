@@ -551,7 +551,7 @@
               <li>✓ {{ t('feat_wb') }}</li>
               <li>✓ {{ t('feat_coach') }}</li>
             </ul>
-            <a :href="appUrl + '/login'" class="btn-outline plan-btn">{{ t('cta_trial') }}</a>
+            <a href="https://buy.stripe.com/bJebJ1amncpL7mBekAdfG01" target="_blank" rel="noopener" class="btn-outline plan-btn">{{ t('cta_trial') }}</a>
           </div>
 
           <!-- Growth -->
@@ -568,7 +568,7 @@
               <li>✓ {{ t('feat_import') }}</li>
               <li>✓ {{ t('feat_support') }}</li>
             </ul>
-            <a :href="appUrl + '/login'" class="btn-primary plan-btn glow-btn">{{ t('cta_trial') }}</a>
+            <a href="https://buy.stripe.com/eVqbJ10LN6ln5et90gdfG00" target="_blank" rel="noopener" class="btn-primary plan-btn glow-btn">{{ t('cta_trial') }}</a>
           </div>
 
           <!-- Elite -->
@@ -584,7 +584,7 @@
               <li>✓ {{ t('feat_sla') }}</li>
               <li>✓ {{ t('feat_multi') }}</li>
             </ul>
-            <a :href="appUrl + '/login'" class="btn-outline plan-btn">{{ t('cta_trial') }}</a>
+            <a href="https://buy.stripe.com/eVqaEXeCD1L736l7WcdfG05" target="_blank" rel="noopener" class="btn-outline plan-btn">{{ t('cta_trial') }}</a>
           </div>
         </div>
 
