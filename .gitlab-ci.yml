@@ -30,4 +30,4 @@ deploy_production:
   script:
     - cd app-v2/frontend
     - npm install -g wrangler
-    - wrangler pages deploy dist --project-name=scalyo-app --branch=production
+    - wrangler pages deploy dist --project-name=scalyo-app --branch=main
