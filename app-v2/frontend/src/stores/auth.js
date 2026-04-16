@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
   const profile = ref(null)
@@ -71,6 +73,19 @@ export const useAuthStore = defineStore('auth', () => {
     })
     loading.value = false
     if (err) { error.value = err.message; return { success: false, error: err.message } }
+
+    // Envoyer l'email de bienvenue via Edge Function (best-effort)
+    if (data.user) {
+      fetch(SUPABASE_URL + '/functions/v1/send-welcome-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({ email, firstName, lastName })
+      }).catch(() => {}) // silent fail — ne bloque pas l'inscription
+    }
+
     return { success: true, needsConfirmation: !data.session }
   }
 
