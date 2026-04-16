@@ -395,7 +395,7 @@ export default {
   copil_add_block: 'Add a block', copil_block_title: 'Block title', copil_add_kpi: '+ Add KPI', copil_kpi_label: 'Indicator', copil_kpi_value: 'Value', copil_kpi_unit: 'Unit', copil_kpi_trend: 'Trend',
   copil_trend_up: '↑ Up', copil_trend_stable: '→ Stable', copil_trend_down: '↓ Down', copil_prev_value: 'Previous value',
   copil_text_content: 'Content', copil_text_size: 'Size', copil_size_small: 'Small', copil_size_normal: 'Normal', copil_size_large: 'Large', copil_size_title: 'Title',
-  copil_table_headers: "Headers (separated by {'|'})", copil_table_row: 'Row {n}', copil_add_row: '+ Add row', copil_add_item: '+ Add item', copil_add_action: '+ Add action',
+  copil_table_headers: "Headers (separated by ｜)", copil_table_row: 'Row {n}', copil_add_row: '+ Add row', copil_add_item: '+ Add item', copil_add_action: '+ Add action',
   copil_quote_text: 'Quote', copil_quote_author: 'Author', copil_quote_role: 'Role / Company',
   copil_action_what: 'Action', copil_action_who: 'Owner', copil_action_when: 'Due date', copil_action_status: 'Status',
   copil_status_todo: 'To do', copil_status_progress: 'In progress', copil_status_done: 'Done',
