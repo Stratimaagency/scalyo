@@ -2,25 +2,7 @@ stages:
   - build
   - deploy
 
-build_landing:
-  stage: build
-  image: node:20-alpine
-  only:
-    - production
-  cache:
-    key: "landing-${CI_COMMIT_REF_SLUG}"
-    paths:
-      - frontend/node_modules/
-  script:
-    - cd frontend
-    - npm ci
-    - npm run build
-  artifacts:
-    paths:
-      - frontend/dist/
-    expire_in: 1 hour
-
-build_app:
+build:
   stage: build
   image: node:20-alpine
   only:
@@ -44,30 +26,8 @@ deploy_production:
   only:
     - production
   needs:
-    - build_landing
-    - build_app
+    - build
   script:
+    - cd app-v2/frontend
     - npm install -g wrangler
-    - mkdir -p dist dist/assets dist/landing
-
-    # 1. Copy landing assets to dist/assets (hashed filenames — no conflict with app)
-    - cp -r frontend/dist/assets/. dist/assets/
-
-    # 2. Copy landing index.html into dist/landing/ subfolder
-    - cp frontend/dist/index.html dist/landing/index.html
-
-    # 3. Copy app to dist/ (app index.html at root + app assets merged into dist/assets/)
-    - cp app-v2/frontend/dist/index.html dist/index.html
-    - cp -r app-v2/frontend/dist/assets/. dist/assets/
-
-    # 4. Cloudflare Pages _redirects
-    # / and /legal → serve landing (dist/landing/index.html)
-    # Everything else → serve app SPA (dist/index.html)
-    - |
-      printf '/ /landing/ 200
-/legal /landing/ 200
-/* /index.html 200
-' > dist/_redirects
-
-    # 5. Deploy
     - wrangler pages deploy dist --project-name=scalyo-app --branch=main
