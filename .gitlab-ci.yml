@@ -2,13 +2,31 @@ stages:
   - build
   - deploy
 
-build:
+build_landing:
   stage: build
   image: node:20-alpine
   only:
     - production
   cache:
-    key: "${CI_COMMIT_REF_SLUG}"
+    key: "landing-${CI_COMMIT_REF_SLUG}"
+    paths:
+      - frontend/node_modules/
+  script:
+    - cd frontend
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/dist/
+    expire_in: 1 hour
+
+build_app:
+  stage: build
+  image: node:20-alpine
+  only:
+    - production
+  cache:
+    key: "app-${CI_COMMIT_REF_SLUG}"
     paths:
       - app-v2/frontend/node_modules/
   script:
@@ -26,8 +44,11 @@ deploy_production:
   only:
     - production
   needs:
-    - build
+    - build_landing
+    - build_app
   script:
-    - cd app-v2/frontend
     - npm install -g wrangler
+    - mkdir -p dist
+    - cp -r frontend/dist/. dist/
+    - cp -r app-v2/frontend/dist/. dist/
     - wrangler pages deploy dist --project-name=scalyo-app --branch=main
