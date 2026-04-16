@@ -8,11 +8,7 @@
     <div class="success-card">
       <!-- Logo -->
       <div class="sc-logo">
-        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-          <rect width="36" height="36" rx="10" fill="#7c3aed"/>
-          <path d="M10 22c0-2.2 1.8-4 4-4h8a4 4 0 0 0 0-8H10" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M26 14c0 2.2-1.8 4-4 4H14a4 4 0 0 0 0 8h12" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
+        <ScalyoLogo :size="40" />
         <span class="sc-brand">Scalyo</span>
       </div>
 
@@ -57,6 +53,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import ScalyoLogo from '@/components/ScalyoLogo.vue'
 
 const { t } = useI18n({ useScope: 'global' })
 const router = useRouter()
