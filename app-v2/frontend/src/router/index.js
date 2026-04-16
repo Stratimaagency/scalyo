@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const routes = [
   { path: '/', name: 'landing', component: () => import('@/views/LandingPage.vue'), meta: { guest: true } },
@@ -38,7 +39,6 @@ const routes = [
       { path: 'import', name: 'import', component: () => import('@/views/ImportView.vue') },
       { path: 'integrations', name: 'integrations', component: () => import('@/views/IntegrationsView.vue') },
       { path: 'settings', name: 'settings', component: () => import('@/views/SettingsView.vue') },
-      // Resources
       { path: 'resources', name: 'resources', redirect: { name: 'resources-library' } },
       { path: 'resources/library', name: 'resources-library', component: () => import('@/views/resources/LibraryView.vue') },
       { path: 'resources/masterclass', name: 'resources-masterclass', component: () => import('@/views/resources/MasterclassView.vue') },
@@ -51,11 +51,17 @@ const routes = [
 
 const router = createRouter({ history: createWebHistory(), routes })
 
-// Auth guard — in mock mode, always allow
-router.beforeEach((to) => {
-  // For now mock auth is always true — real guard would check tokens
-  if (to.meta.guest) return true
-  return true
+router.beforeEach(async (to) => {
+  const authStore = useAuthStore()
+  if (!authStore.user && !authStore.loading) {
+    await authStore.init()
+  }
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    return { name: 'login' }
+  }
+  if (to.meta.guest && authStore.isAuthenticated) {
+    return { name: 'dashboard' }
+  }
 })
 
 export default router

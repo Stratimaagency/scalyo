@@ -2,72 +2,72 @@
   <div class="auth-page">
     <div class="auth-card">
       <div class="auth-logo"><ScalyoLogo :size="48" /><span class="auth-brand">Scalyo</span></div>
-      <h1>{{ t('reg_title') }}</h1>
-      <p class="auth-sub">{{ t('reg_subtitle') }}</p>
-      <form @submit.prevent="register" class="auth-form">
-        <div class="fr">
-          <div class="fg"><label>{{ t('reg_firstname') }}</label><input v-model="form.firstName" required class="fi" /></div>
-          <div class="fg"><label>{{ t('reg_lastname') }}</label><input v-model="form.lastName" required class="fi" /></div>
-        </div>
-        <div class="fg"><label>{{ t('reg_email') }}</label><input v-model="form.email" type="email" required class="fi" :placeholder="t('login_email_ph')" /></div>
-        <div class="fg"><label>{{ t('reg_company') }}</label><input v-model="form.company" required class="fi" /></div>
-        <div class="fg"><label>{{ t('login_password') }}</label><input v-model="form.password" type="password" required class="fi" :placeholder="t('reg_pwd_hint')" minlength="8" /></div>
-        <div class="fg"><label>{{ t('reg_plan') }}</label>
-          <div class="plan-selector">
-            <button type="button" v-for="p in plans" :key="p.key" class="plan-opt" :class="{ active: form.plan === p.key }" @click="form.plan = p.key">
-              <strong>{{ p.name }}</strong><span>{{ p.price }}</span>
-            </button>
+      <h1>{{ t('register_title') }}</h1>
+      <p class="auth-sub">{{ t('register_subtitle') }}</p>
+      <div v-if="success" class="auth-success">{{ t('register_check_email') }}</div>
+      <template v-else>
+        <div v-if="errorMsg" class="auth-error">{{ errorMsg }}</div>
+        <form @submit.prevent="handleRegister" class="auth-form">
+          <div class="fg-row">
+            <div class="fg"><label>{{ t('register_firstname') }}</label><input v-model="firstName" type="text" required class="fi" /></div>
+            <div class="fg"><label>{{ t('register_lastname') }}</label><input v-model="lastName" type="text" required class="fi" /></div>
           </div>
-        </div>
-        <button type="submit" class="btn-primary full">{{ t('reg_submit') }}</button>
-      </form>
-      <p class="auth-footer">{{ t('reg_has_account') }} <router-link to="/login" class="link">{{ t('login_submit') }}</router-link></p>
+          <div class="fg"><label>{{ t('login_email') }}</label><input v-model="email" type="email" required class="fi" autocomplete="email" /></div>
+          <div class="fg"><label>{{ t('login_password') }}</label><input v-model="password" type="password" required class="fi" minlength="8" placeholder="8 caractères minimum" /></div>
+          <button type="submit" class="btn-primary full" :disabled="loading">
+            <span v-if="loading" class="spinner" />
+            <span v-else>{{ t('register_submit') }}</span>
+          </button>
+        </form>
+        <p class="auth-footer">{{ t('register_has_account') }} <router-link to="/login" class="link">{{ t('login_submit') }}</router-link></p>
+      </template>
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useAuthStore } from '@/stores/auth'
 import ScalyoLogo from '@/components/ScalyoLogo.vue'
 
 const { t } = useI18n({ useScope: 'global' })
+const authStore = useAuthStore()
+const firstName = ref(''); const lastName = ref('')
+const email = ref(''); const password = ref('')
+const errorMsg = ref(''); const loading = ref(false); const success = ref(false)
 
-const router = useRouter()
-const form = reactive({ firstName: '', lastName: '', email: '', company: '', password: '', plan: 'growth' })
-const plans = [
-  { key: 'starter', name: 'Starter', price: '97€/mois' },
-  { key: 'growth', name: 'Growth', price: '297€/mois' },
-  { key: 'elite', name: 'Elite', price: '697€/mois' },
-]
-
-function register() { router.push('/app/dashboard') }
+async function handleRegister() {
+  errorMsg.value = ''
+  loading.value = true
+  const result = await authStore.register(email.value, password.value, firstName.value, lastName.value)
+  loading.value = false
+  if (result.success) { success.value = true }
+  else { errorMsg.value = result.error }
+}
 </script>
 
 <style scoped>
-.auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #f8f9fb, #ede9fe); padding: 20px; }
-.auth-card { background: #fff; border-radius: 20px; padding: 40px; width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
-.auth-logo { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 24px; }
-.auth-brand { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #7c3aed, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.auth-card h1 { font-size: 1.4rem; font-weight: 800; text-align: center; margin-bottom: 4px; }
-.auth-sub { font-size: 0.85rem; color: #6b7280; text-align: center; margin-bottom: 24px; }
-.auth-form { display: flex; flex-direction: column; gap: 14px; }
-.fg { display: flex; flex-direction: column; gap: 4px; }
-.fg label { font-size: 0.78rem; font-weight: 600; color: #6b7280; }
-.fi { padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.88rem; outline: none; width: 100%; }
-.fi:focus { border-color: #7c3aed; }
-.fr { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.btn-primary { background: #7c3aed; color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
-.btn-primary:hover { background: #6d28d9; }
-.btn-primary.full { width: 100%; }
-.auth-footer { text-align: center; margin-top: 18px; font-size: 0.85rem; color: #6b7280; }
-.link { color: #7c3aed; font-weight: 600; }
-.plan-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.plan-opt { background: #f8f9fb; border: 2px solid #e5e7eb; border-radius: 10px; padding: 12px 8px; text-align: center; cursor: pointer; transition: all 0.2s; }
-.plan-opt:hover { border-color: #a78bfa; }
-.plan-opt.active { border-color: #7c3aed; background: rgba(124,58,237,0.06); }
-.plan-opt strong { display: block; font-size: 0.85rem; margin-bottom: 2px; }
-.plan-opt span { font-size: 0.72rem; color: #6b7280; }
-.plan-opt.active span { color: #7c3aed; }
+.auth-page { min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f8f9fb,#ede9fe);padding:20px; }
+.auth-card { background:#fff;border-radius:20px;padding:48px 40px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,0.08); }
+.auth-logo { display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:32px; }
+.auth-brand { font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,#7c3aed,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+.auth-card h1 { font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:6px; }
+.auth-sub { font-size:0.88rem;color:#6b7280;text-align:center;margin-bottom:28px; }
+.auth-form { display:flex;flex-direction:column;gap:16px; }
+.fg-row { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+.fg { display:flex;flex-direction:column;gap:4px; }
+.fg label { font-size:0.78rem;font-weight:600;color:#6b7280; }
+.fi { padding:11px 14px;border:1px solid #e5e7eb;border-radius:10px;font-size:0.9rem;outline:none;transition:border-color 0.15s; }
+.fi:focus { border-color:#7c3aed; }
+.btn-primary { background:#7c3aed;color:#fff;border:none;padding:12px;border-radius:10px;font-size:0.95rem;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;min-height:44px; }
+.btn-primary:hover:not(:disabled) { background:#6d28d9;transform:translateY(-1px); }
+.btn-primary:disabled { opacity:0.65;cursor:not-allowed; }
+.btn-primary.full { width:100%; }
+.auth-footer { text-align:center;margin-top:20px;font-size:0.85rem;color:#6b7280; }
+.link { color:#7c3aed;font-weight:600; }
+.auth-error { background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:10px 14px;font-size:0.85rem;margin-bottom:16px; }
+.auth-success { background:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a;border-radius:8px;padding:16px;font-size:0.9rem;text-align:center; }
+.spinner { width:18px;height:18px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block; }
+@keyframes spin { to { transform:rotate(360deg); } }
 </style>

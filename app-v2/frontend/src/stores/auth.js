@@ -1,31 +1,20 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { supabase } from '@/lib/supabase'
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref({
-    id: 'u1',
-    firstName: 'Lidia',
-    lastName: 'Chikhoune',
-    email: 'stratimaagency@gmail.com',
-    displayName: 'lidia',
-    avatar: null,
-    role: 'manager_cs',
-    roleLabel: 'Manager CS',
-  })
-
-  const company = ref({
-    id: 'c1',
-    name: 'stratima',
-    plan: 'elite',
-    planLabel: 'Elite',
-    country: 'FR',
-    industry: 'SaaS',
-    createdAt: '2025-01-15',
-  })
-
+  const user = ref(null)
+  const profile = ref(null)
   const loading = ref(false)
+  const error = ref(null)
+
   const isAuthenticated = computed(() => !!user.value)
-  const fullName = computed(() => `${user.value?.firstName} ${user.value?.lastName}`)
+
+  const fullName = computed(() => {
+    if (!profile.value) return ''
+    return (profile.value.first_name + ' ' + profile.value.last_name).trim()
+  })
+
   const greeting = computed(() => {
     const h = new Date().getHours()
     if (h < 12) return 'morning'
@@ -33,10 +22,63 @@ export const useAuthStore = defineStore('auth', () => {
     return 'evening'
   })
 
-  function logout() {
-    user.value = null
-    company.value = null
+  async function init() {
+    loading.value = true
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session && session.user) {
+      user.value = session.user
+      await fetchProfile(session.user.id)
+    }
+    loading.value = false
+    supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session && session.user) {
+        user.value = session.user
+        await fetchProfile(session.user.id)
+      } else {
+        user.value = null
+        profile.value = null
+      }
+    })
   }
 
-  return { user, company, loading, isAuthenticated, fullName, greeting, logout }
-}, { persist: true })
+  async function fetchProfile(userId) {
+    const { data, error: err } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+    if (!err && data) profile.value = data
+  }
+
+  async function login(email, password) {
+    loading.value = true
+    error.value = null
+    const { data, error: err } = await supabase.auth.signInWithPassword({ email, password })
+    loading.value = false
+    if (err) { error.value = err.message; return { success: false, error: err.message } }
+    user.value = data.user
+    await fetchProfile(data.user.id)
+    return { success: true }
+  }
+
+  async function register(email, password, firstName, lastName) {
+    loading.value = true
+    error.value = null
+    const { data, error: err } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { first_name: firstName, last_name: lastName } },
+    })
+    loading.value = false
+    if (err) { error.value = err.message; return { success: false, error: err.message } }
+    return { success: true, needsConfirmation: !data.session }
+  }
+
+  async function logout() {
+    await supabase.auth.signOut()
+    user.value = null
+    profile.value = null
+  }
+
+  return { user, profile, loading, error, isAuthenticated, fullName, greeting, init, login, register, logout }
+})
