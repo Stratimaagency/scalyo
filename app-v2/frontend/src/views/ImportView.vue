@@ -195,7 +195,49 @@
       </div>
     </div>
 
-    <!-- Slide-over : mapping des colonnes -->
+  
+  <!-- Module picker modal -->
+  <Transition name="modal-fade">
+    <div v-if="showModulePicker" class="mp-overlay" @click.self="cancelModulePicker">
+      <div class="mp-panel">
+        <div class="mp-head">
+          <div class="mp-file-info">
+            <span class="mp-file-icon">📄</span>
+            <span class="mp-file-name">{{ pendingFile?.name }}</span>
+          </div>
+          <button class="so-close" @click="cancelModulePicker">✕</button>
+        </div>
+        <div class="mp-body">
+          <h3 class="mp-title">{{ t('imp_select_module_title') }}</h3>
+          <p class="mp-hint">{{ t('imp_select_module_hint') }}</p>
+          <div class="mp-grid">
+            <button class="mp-card" @click="confirmModule('clients')">
+              <span class="mp-card-icon">👥</span>
+              <strong>{{ t('imp_module_clients') }}</strong>
+              <span class="mp-card-desc">{{ t('imp_module_desc_clients') }}</span>
+            </button>
+            <button class="mp-card" @click="confirmModule('tasks')">
+              <span class="mp-card-icon">✅</span>
+              <strong>{{ t('imp_module_tasks') }}</strong>
+              <span class="mp-card-desc">{{ t('imp_module_desc_tasks') }}</span>
+            </button>
+            <button class="mp-card" @click="confirmModule('team')">
+              <span class="mp-card-icon">🙋</span>
+              <strong>{{ t('imp_module_team') }}</strong>
+              <span class="mp-card-desc">{{ t('imp_module_desc_team') }}</span>
+            </button>
+            <button class="mp-card" @click="confirmModule('copil')">
+              <span class="mp-card-icon">📊</span>
+              <strong>{{ t('imp_module_copil') }}</strong>
+              <span class="mp-card-desc">{{ t('imp_module_desc_copil') }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Transition>
+
+  <!-- Slide-over : mapping des colonnes -->
     <Transition name="so-slide">
       <div v-if="showMapping" class="so-overlay" @click.self="showMapping = false">
         <div class="so-panel">
@@ -260,6 +302,9 @@ const importing = ref(false)
 const selectedProjectId = ref('new')
 const importedCount = ref(0)
 const errorMsg = ref('')
+const pendingFile = ref(null)
+const showModulePicker = ref(false)
+const manualModule = ref(null)
 
 const moduleIcons = { clients: '👥', tasks: '✅', team: '🙋', copil: '📊' }
 
@@ -282,13 +327,34 @@ const previewRows = computed(() => allMappedRows.value.slice(0, 5))
 function onDrop(e) {
   dragover.value = false
   const file = e.dataTransfer?.files?.[0]
-  if (file) processFile(file)
+  if (!file) return
+  errorMsg.value = ''
+  if (file.size > 10 * 1024 * 1024) { errorMsg.value = t('imp_file_too_large'); return }
+  pendingFile.value = file
+  showModulePicker.value = true
 }
 
 function onFileSelect(e) {
   const file = e.target?.files?.[0]
-  if (file) processFile(file)
+  if (file) {
+    errorMsg.value = ''
+    if (file.size > 10 * 1024 * 1024) { errorMsg.value = t('imp_file_too_large'); return }
+    pendingFile.value = file
+    showModulePicker.value = true
+  }
   e.target.value = ''
+}
+
+// ─── Module picker ───────────────────────────────────────────────────────────────
+function confirmModule(module) {
+  manualModule.value = module
+  showModulePicker.value = false
+  processFile(pendingFile.value, module)
+}
+function cancelModulePicker() {
+  showModulePicker.value = false
+  pendingFile.value = null
+  errorMsg.value = ''
 }
 
 // ─── Parse : extraction universelle tous formats, tous onglets ─────────────────
@@ -365,7 +431,7 @@ async function parseFile(file) {
 }
 
 // ─── DeepSeek : analyse sémantique universelle, toutes langues ─────────────────
-async function analyzeWithDeepSeek(parsed, fileName) {
+async function analyzeWithDeepSeek(parsed, fileName, forcedModule = null) {
   const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY
 
   let fileContext = `FILE: "${fileName}"\n`
@@ -396,9 +462,12 @@ async function analyzeWithDeepSeek(parsed, fileName) {
 You understand ANY file in ANY language (Korean, Japanese, French, English, Arabic, Spanish, German, Chinese, etc.) and ANY structure.
 Respond ONLY with valid JSON. No markdown. No text outside JSON.`
 
+  const forcedInstruction = forcedModule
+    ? `\n\n⚠️ CRITICAL OVERRIDE: The user has EXPLICITLY chosen the "${forcedModule}" module. You MUST set "module": "${forcedModule}" in your JSON. Do NOT suggest any other module. Analyze and transform ALL data to match the ${forcedModule.toUpperCase()} row format defined below.\n`
+    : ''
   const userPrompt = `Analyze this file and transform ALL data into Scalyo format.
 
-${fileContext}
+${fileContext}${forcedInstruction}
 
 SCALYO MODULES — pick best semantic match:
 
@@ -476,14 +545,13 @@ Return EXACTLY this JSON:
 }
 
 // ─── Orchestrateur principal ───────────────────────────────────────────────────
-async function processFile(file) {
+async function processFile(file, forcedModule = null) {
   errorMsg.value = ''
-  if (file.size > 10 * 1024 * 1024) { errorMsg.value = t('imp_file_too_large'); return }
   selectedFile.value = file
   currentStep.value = 1
   try {
     const parsed = await parseFile(file)
-    const result = await analyzeWithDeepSeek(parsed, file.name)
+    const result = await analyzeWithDeepSeek(parsed, file.name, forcedModule)
     analysisResult.value = result
     allMappedRows.value = result.validRows || []
     rejectedRows.value = result.rejectedRows || []
@@ -626,6 +694,9 @@ function reset() {
   importedCount.value = 0
   errorMsg.value = ''
   selectedProjectId.value = 'new'
+  pendingFile.value = null
+  showModulePicker.value = false
+  manualModule.value = null
 }
 </script>
 
@@ -763,4 +834,90 @@ function reset() {
 .so-slide-enter-active .so-panel, .so-slide-leave-active .so-panel { transition: transform 0.3s ease; }
 .so-slide-enter-from, .so-slide-leave-to { opacity: 0; }
 .so-slide-enter-from .so-panel, .so-slide-leave-to .so-panel { transform: translateX(100%); }
+
+/* ─── Module Picker Modal ───────────────────────────────────────────────────── */
+.mp-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.mp-panel {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 540px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+.mp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary, #f9fafb);
+}
+.mp-file-info { display: flex; align-items: center; gap: 8px; }
+.mp-file-icon { font-size: 1.1rem; }
+.mp-file-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mp-body { padding: 24px 24px 28px; }
+.mp-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+  text-align: center;
+}
+.mp-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+.mp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.mp-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: #fff;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 12px;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: center;
+}
+.mp-card:hover {
+  border-color: var(--purple);
+  background: #f5f3ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(124,58,237,0.12);
+}
+.mp-card-icon { font-size: 1.9rem; margin-bottom: 3px; }
+.mp-card strong { font-size: 0.86rem; font-weight: 700; }
+.mp-card-desc { font-size: 0.73rem; color: var(--text-muted); line-height: 1.4; }
+/* Modal fade transition */
+.modal-fade-enter-active, .modal-fade-leave-active { transition: opacity 0.2s ease; }
+.modal-fade-enter-from, .modal-fade-leave-to { opacity: 0; }
+.modal-fade-enter-active .mp-panel, .modal-fade-leave-active .mp-panel { transition: transform 0.22s ease; }
+.modal-fade-enter-from .mp-panel, .modal-fade-leave-to .mp-panel { transform: scale(0.94) translateY(8px); }
+
 </style>
