@@ -243,6 +243,12 @@ export default {
   imp_module_copil: 'KPIs COPIL',
   imp_file_too_large: 'Fichier trop volumineux (max 10 MB)',
   imp_api_error: "Erreur de connexion à l'IA — vérifiez votre clé DeepSeek",
+  imp_select_module_title: 'Dans quel module souhaitez-vous importer ?',
+  imp_select_module_hint: 'Choisir le module cible avant l\'analyse garantit une importation précise et sans erreur',
+  imp_module_desc_clients: 'Clients, comptes, ARR, scores de santé',
+  imp_module_desc_tasks: 'Tâches, projets, sprints, objectifs',
+  imp_module_desc_team: 'Membres de l\'équipe, rôles, charge de travail',
+  imp_module_desc_copil: 'KPIs, tableaux de bord, rapports COPIL',
 
   // Integrations
   integ_title: 'Intégrations',
