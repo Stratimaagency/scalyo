@@ -69,7 +69,7 @@ export const useAuthStore = defineStore('auth', () => {
     const { data, error: err } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { first_name: firstName, last_name: lastName } },
+      options: { data: { first_name: firstName, last_name: lastName }, emailRedirectTo: `${window.location.origin}/login?verified=true` },
     })
     loading.value = false
     if (err) { error.value = err.message; return { success: false, error: err.message } }
