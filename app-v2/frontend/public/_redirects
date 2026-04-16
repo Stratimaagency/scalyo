@@ -1,0 +1,5 @@
+# Neutralise l'ancienne redirection index-landing
+/index-landing  /  302
+
+# SPA fallback — toutes les routes Vue Router → index.html
+/*  /index.html  200
