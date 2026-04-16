@@ -735,7 +735,7 @@ export default {
   login_title: 'Sign in',
   login_subtitle: 'Access your Customer Success workspace',
   login_email: 'Email',
-  login_email_ph: 'you@company.com',
+  login_email_ph: 'you\\@company.com',
   login_password: 'Password',
   login_submit: 'Sign in',
   login_no_account: 'No account yet?',
