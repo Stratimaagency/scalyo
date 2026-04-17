@@ -103,7 +103,7 @@ import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import ScalyoLogo from '@/components/ScalyoLogo.vue'
 
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale: currentLocale } = useI18n({ useScope: 'global' })
 const authStore = useAuthStore()
 
 const firstName = ref('')
@@ -131,7 +131,7 @@ const eliteUrl = computed(() => {
 async function handleRegister() {
   errorMsg.value = ''
   loading.value = true
-  const result = await authStore.register(email.value, password.value, firstName.value, lastName.value)
+  const result = await authStore.register(email.value, password.value, firstName.value, lastName.value, currentLocale.value)
   loading.value = false
   if (result.success) {
     success.value = true
