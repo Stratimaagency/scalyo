@@ -20,42 +20,7 @@ export const useChatStore = defineStore('chat', () => {
   ])
 
   // Messages par channel
-  const messages = ref({
-    general: [
-      { id: 'm1', author: 'Sophie M.', authorId: 'tm1',
-        content: 'Bonjour l\'équipe ! Quelqu\'un a des nouvelles de Leroy Finance ?',
-        time: '09:14', date: '2026-04-12', reactions: { '👍': ['tm2'] },
-        pinned: false, edited: false, attachments: [] },
-      { id: 'm2', author: 'Thomas R.', authorId: 'tm2',
-        content: 'J\'ai un call avec eux cet après-midi. Health score critique (3.2). Je vous tiens au courant.',
-        time: '09:18', date: '2026-04-12', reactions: {}, pinned: false,
-        edited: false, attachments: [] },
-    ],
-    'cs-team': [
-      { id: 'm4', author: 'Sophie M.', authorId: 'tm1',
-        content: 'Rappel : QBR Acme Corp prévu le 15 avril.',
-        time: '10:30', date: '2026-04-11', reactions: {},
-        pinned: true, edited: false, attachments: [] },
-    ],
-    alerts: [
-      { id: 'm5', author: 'Nova', authorId: 'nova',
-        content: '⚠️ **Leroy Finance** n\'a pas été contacté depuis 14 jours.\nHealth score: 3.2/10 | ARR: 240K€',
-        time: '08:00', date: '2026-04-12', reactions: {}, pinned: false,
-        edited: false, attachments: [],
-        actions: [
-          { label: '👤 Voir le client', type: 'navigate', route: '/app/portfolio' },
-          { label: '📋 Créer une tâche', type: 'create_task',
-            taskData: { title: 'Contacter Leroy Finance', priority: 'high' } },
-          { label: '📧 Envoyer un email', type: 'navigate', route: '/app/email-studio' }
-        ]
-      },
-      { id: 'm6', author: 'Nova', authorId: 'nova',
-        content: '📅 **Renouvellement** Leroy Finance dans **28 jours** (10 mai 2026) — ARR: 240K€',
-        time: '08:01', date: '2026-04-12', reactions: {}, pinned: false,
-        edited: false, attachments: [] },
-    ],
-    nova: [],
-  })
+  const messages = ref({ general: [], csm: [], management: [] })
 
   const activeChannel = ref('general')
   const unreadCounts = ref({ general: 0, 'cs-team': 1, alerts: 2, nova: 0 })
