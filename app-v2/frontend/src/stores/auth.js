@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const TRIAL_DAYS = 14
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
@@ -24,7 +25,49 @@ export const useAuthStore = defineStore('auth', () => {
     return 'evening'
   })
 
-  // Clear all user data from localStorage on login/logout
+  // ─── Trial logic ──────────────────────────────────────────────────────────
+  const hasActiveSubscription = computed(() => {
+    const sub = profile.value?.stripe_subscription_id
+    return !!sub && sub !== '' && sub !== 'none'
+  })
+
+  const trialStartedAt = computed(() => {
+    const d = profile.value?.trial_started_at
+    return d ? new Date(d) : null
+  })
+
+  const trialUsed = computed(() => !!profile.value?.trial_used)
+
+  const trialDaysLeft = computed(() => {
+    if (!trialStartedAt.value) return 0
+    const elapsed = (Date.now() - trialStartedAt.value.getTime()) / (1000 * 60 * 60 * 24)
+    return Math.max(0, TRIAL_DAYS - Math.floor(elapsed))
+  })
+
+  const isOnTrial = computed(() => {
+    if (hasActiveSubscription.value) return false
+    if (!trialStartedAt.value) return false
+    if (trialUsed.value && trialDaysLeft.value === 0) return false
+    return trialDaysLeft.value > 0
+  })
+
+  const trialExpired = computed(() => {
+    if (hasActiveSubscription.value) return false
+    // Never started trial
+    if (!trialStartedAt.value && !trialUsed.value) return false
+    // Trial used (already expired once) with no active subscription
+    if (trialUsed.value && !hasActiveSubscription.value) return true
+    // Trial started but 14 days elapsed
+    if (trialStartedAt.value && trialDaysLeft.value === 0) return true
+    return false
+  })
+
+  const needsPayment = computed(() => trialExpired.value && !hasActiveSubscription.value)
+
+  // ─── Locale ───────────────────────────────────────────────────────────────
+  const userLocale = computed(() => profile.value?.locale || 'fr')
+
+  // ─── Stores cleanup ───────────────────────────────────────────────────────
   function clearAllStores() {
     const storeKeys = [
       'scalyo_clients', 'scalyo_tasks', 'scalyo_team', 'scalyo_projects',
@@ -34,6 +77,7 @@ export const useAuthStore = defineStore('auth', () => {
     storeKeys.forEach(k => localStorage.removeItem(k))
   }
 
+  // ─── Init ─────────────────────────────────────────────────────────────────
   async function init() {
     loading.value = true
     const { data: { session } } = await supabase.auth.getSession()
@@ -53,15 +97,27 @@ export const useAuthStore = defineStore('auth', () => {
     })
   }
 
+  // ─── Fetch profile ────────────────────────────────────────────────────────
   async function fetchProfile(userId) {
     const { data, error: err } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
       .single()
-    if (!err && data) profile.value = data
+    if (!err && data) {
+      profile.value = data
+      // Mark trial as used if expired
+      if (data.trial_started_at && !data.trial_used) {
+        const elapsed = (Date.now() - new Date(data.trial_started_at).getTime()) / (1000 * 60 * 60 * 24)
+        if (elapsed >= TRIAL_DAYS) {
+          await supabase.from('profiles').update({ trial_used: true }).eq('id', userId)
+          profile.value = { ...profile.value, trial_used: true }
+        }
+      }
+    }
   }
 
+  // ─── Login ────────────────────────────────────────────────────────────────
   async function login(email, password) {
     loading.value = true
     error.value = null
@@ -74,14 +130,15 @@ export const useAuthStore = defineStore('auth', () => {
     return { success: true }
   }
 
-  async function register(email, password, firstName, lastName) {
+  // ─── Register ─────────────────────────────────────────────────────────────
+  async function register(email, password, firstName, lastName, locale = 'fr') {
     loading.value = true
     error.value = null
     const { data, error: err } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { first_name: firstName, last_name: lastName },
+        data: { first_name: firstName, last_name: lastName, locale },
         emailRedirectTo: `${window.location.origin}/login?verified=true`
       },
     })
@@ -97,6 +154,14 @@ export const useAuthStore = defineStore('auth', () => {
     return { success: true, needsConfirmation: !data.session }
   }
 
+  // ─── Save locale ──────────────────────────────────────────────────────────
+  async function saveLocale(locale) {
+    if (!user.value) return
+    await supabase.from('profiles').update({ locale }).eq('id', user.value.id)
+    if (profile.value) profile.value = { ...profile.value, locale }
+  }
+
+  // ─── Logout ───────────────────────────────────────────────────────────────
   async function logout() {
     clearAllStores()
     await supabase.auth.signOut()
@@ -104,5 +169,11 @@ export const useAuthStore = defineStore('auth', () => {
     profile.value = null
   }
 
-  return { user, profile, loading, error, isAuthenticated, fullName, greeting, init, login, clearAllStores, register, logout }
+  return {
+    user, profile, loading, error,
+    isAuthenticated, fullName, greeting,
+    hasActiveSubscription, isOnTrial, trialExpired, trialDaysLeft, trialUsed, needsPayment,
+    userLocale,
+    init, login, register, logout, clearAllStores, saveLocale, fetchProfile
+  }
 })
