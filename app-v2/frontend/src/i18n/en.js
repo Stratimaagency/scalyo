@@ -928,4 +928,7 @@ export default {
   stg_theme_light: 'Light',
   stg_theme_dark: 'Dark',
   stg_theme_auto: 'Automatic (system)',
+
+  dashboard_reset: 'Reset data',
+  dashboard_reset_confirm: 'Delete all data? This action is irreversible.',
 }
