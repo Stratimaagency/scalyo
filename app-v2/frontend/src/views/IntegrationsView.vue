@@ -5,375 +5,360 @@
       <p class="iv-sub">{{ t('integ_subtitle') }}</p>
     </div>
 
-    <h2 class="iv-section-title">● {{ t('integ_available') }}</h2>
+    <!-- ─── Tabs ──────────────────────────────────────────────── -->
+    <div class="iv-tabs">
+      <button class="iv-tab" :class="{ active: tab === 'api' }" @click="tab = 'api'">🔑 API REST</button>
+      <button class="iv-tab" :class="{ active: tab === 'webhook' }" @click="tab = 'webhook'">⚡ Webhooks (Zapier/Make)</button>
+      <button class="iv-tab" :class="{ active: tab === 'import' }" @click="tab = 'import'">📥 Import CSV</button>
+    </div>
 
-    <div class="iv-grid">
-      <div v-for="ig in integrations" :key="ig.key" class="iv-card" :class="{ connected: state[ig.key]?.connected }">
-        <!-- Connected badge -->
-        <div v-if="state[ig.key]?.connected" class="iv-connected-badge">{{ t('integ_connected') }}</div>
-
-        <span class="iv-icon">{{ ig.icon }}</span>
-        <div class="iv-info">
-          <strong>{{ ig.name }}</strong>
-          <p>{{ t(ig.descKey) }}</p>
+    <!-- ─── API REST (Option C) ──────────────────────────────── -->
+    <div v-if="tab === 'api'" class="iv-section">
+      <div class="iv-card">
+        <div class="iv-card-header">
+          <div>
+            <h2>🔑 {{ t('integ_api_title') }}</h2>
+            <p class="iv-card-sub">{{ t('integ_api_desc') }}</p>
+          </div>
+          <button class="btn-create-key" @click="showCreateKey = true">+ {{ t('integ_create_key') }}</button>
         </div>
 
-        <!-- Not connected -->
-        <div v-if="!state[ig.key]?.connected" class="iv-actions">
-          <button class="btn-connect" @click="openConnect(ig)">{{ t('integ_connect') }}</button>
+        <!-- Base URL -->
+        <div class="iv-info-box">
+          <span class="iv-info-label">Base URL</span>
+          <code class="iv-code">{{ apiBaseUrl }}</code>
+          <button class="btn-copy-sm" @click="copy(apiBaseUrl)">📋</button>
         </div>
 
-        <!-- Connected -->
-        <div v-else class="iv-actions-connected">
-          <span class="iv-last-sync">{{ t('integ_last_sync', { time: '2 min' }) }}</span>
-          <div class="iv-btns">
-            <button class="btn-sm-outline" @click="doSync(ig.key)">{{ t('integ_sync_now') }}</button>
-            <button class="btn-sm-outline" @click="openConnect(ig)">{{ t('integ_configure') }}</button>
-            <button class="btn-sm-outline danger" @click="doDisconnect(ig)">{{ t('integ_disconnect') }}</button>
+        <!-- Keys list -->
+        <div v-if="apiKeys.length === 0" class="iv-empty">
+          <p>{{ t('integ_no_keys') }}</p>
+        </div>
+        <div v-else class="iv-keys-list">
+          <div v-for="key in apiKeys" :key="key.id" class="iv-key-row">
+            <div class="iv-key-info">
+              <span class="iv-key-name">{{ key.name }}</span>
+              <code class="iv-key-prefix">{{ key.key_prefix }}••••••••</code>
+              <span class="iv-key-scopes">{{ key.scopes?.join(', ') }}</span>
+            </div>
+            <div class="iv-key-meta">
+              <span class="iv-key-date">Créée {{ formatDate(key.created_at) }}</span>
+              <span v-if="key.last_used_at" class="iv-key-used">Utilisée {{ formatDate(key.last_used_at) }}</span>
+              <span v-else class="iv-key-unused">Jamais utilisée</span>
+            </div>
+            <button class="btn-revoke" @click="revokeKey(key.id)" :title="t('integ_revoke_key')">🗑️</button>
+          </div>
+        </div>
+
+        <!-- New key reveal -->
+        <div v-if="newKeyValue" class="iv-new-key-reveal">
+          <p>⚠️ {{ t('integ_key_shown_once') }}</p>
+          <code class="iv-new-key-code">{{ newKeyValue }}</code>
+          <button class="btn-copy" @click="copy(newKeyValue); newKeyCopied = true">
+            {{ newKeyCopied ? '✓ Copié !' : '📋 Copier la clé' }}
+          </button>
+        </div>
+
+        <!-- Documentation -->
+        <div class="iv-doc-section">
+          <h3>📖 Endpoints disponibles</h3>
+          <div class="iv-endpoints">
+            <div v-for="ep in endpoints" :key="ep.method + ep.path" class="iv-endpoint">
+              <span class="iv-method" :class="ep.method.toLowerCase()">{{ ep.method }}</span>
+              <code class="iv-path">{{ ep.path }}</code>
+              <span class="iv-ep-desc">{{ ep.desc }}</span>
+            </div>
+          </div>
+          <div class="iv-example">
+            <h4>Exemple curl</h4>
+            <code class="iv-code-block">curl -H "x-api-key: sk_..." {{ apiBaseUrl }}/clients</code>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Missing integration -->
-    <div class="iv-missing">
-      <div class="ivm-icon">⚡</div>
-      <div class="ivm-text">
-        <strong>{{ t('integ_missing') }}</strong>
-        <p>{{ t('integ_missing_desc') }}</p>
+    <!-- ─── Webhooks (Option B) ──────────────────────────────── -->
+    <div v-if="tab === 'webhook'" class="iv-section">
+      <div class="iv-card">
+        <div class="iv-card-header">
+          <div>
+            <h2>⚡ {{ t('integ_webhook_title') }}</h2>
+            <p class="iv-card-sub">{{ t('integ_webhook_desc') }}</p>
+          </div>
+          <button class="btn-create-key" @click="createWebhook">+ {{ t('integ_create_webhook') }}</button>
+        </div>
+
+        <div v-if="webhooks.length === 0" class="iv-empty">
+          <p>{{ t('integ_no_webhooks') }}</p>
+        </div>
+
+        <div v-for="wh in webhooks" :key="wh.id" class="iv-webhook-row">
+          <div class="iv-wh-info">
+            <span class="iv-key-name">{{ wh.name }}</span>
+            <div class="iv-wh-url-row">
+              <span class="iv-info-label">URL</span>
+              <code class="iv-code-sm">{{ getWebhookUrl(wh) }}</code>
+              <button class="btn-copy-sm" @click="copy(getWebhookUrl(wh))">📋</button>
+            </div>
+            <div class="iv-wh-url-row">
+              <span class="iv-info-label">Secret</span>
+              <code class="iv-code-sm">{{ wh.secret }}</code>
+              <button class="btn-copy-sm" @click="copy(wh.secret)">📋</button>
+            </div>
+          </div>
+          <div class="iv-key-meta">
+            <span>{{ wh.trigger_count || 0 }} appels</span>
+            <span v-if="wh.last_triggered_at">Dernier: {{ formatDate(wh.last_triggered_at) }}</span>
+          </div>
+          <button class="btn-revoke" @click="deleteWebhook(wh.id)">🗑️</button>
+        </div>
+
+        <!-- Instructions Zapier/Make -->
+        <div class="iv-doc-section">
+          <h3>🔧 Comment connecter Zapier ou Make</h3>
+          <div class="iv-steps">
+            <div class="iv-step">
+              <span class="iv-step-num">1</span>
+              <div>Dans Zapier → Créer un Zap → Choisir "Webhooks by Zapier" comme trigger ou action</div>
+            </div>
+            <div class="iv-step">
+              <span class="iv-step-num">2</span>
+              <div>Coller l'URL webhook Scalyo + ajouter le header <code>x-webhook-secret: [votre secret]</code></div>
+            </div>
+            <div class="iv-step">
+              <span class="iv-step-num">3</span>
+              <div>Paramètre URL <code>event</code> : <code>client.created</code> | <code>client.updated</code> | <code>task.created</code></div>
+            </div>
+            <div class="iv-step">
+              <span class="iv-step-num">4</span>
+              <div>Les données sont automatiquement importées dans votre Scalyo</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <button class="btn-outline">{{ t('integ_suggest') }}</button>
     </div>
 
-    <!-- SLIDE-OVER: Connect / Configure -->
-    <SlideOver :open="slideOpen" :title="currentInteg ? t('integ_connect_title', { name: currentInteg.name }) : ''" @close="closeSlide" :width="500">
-      <div v-if="currentInteg" class="connect-flow">
+    <!-- ─── Import CSV ───────────────────────────────────────── -->
+    <div v-if="tab === 'import'" class="iv-section">
+      <div class="iv-card">
+        <h2>📥 {{ t('integ_import_title') }}</h2>
+        <p class="iv-card-sub">{{ t('integ_import_desc') }}</p>
+        <router-link to="/app/import" class="btn-goto-import">
+          🤖 {{ t('integ_goto_import') }} →
+        </router-link>
+      </div>
+    </div>
 
-        <!-- Stepper -->
-        <div class="stepper">
-          <div v-for="(s, i) in steps" :key="s.key" class="step" :class="{ active: currentStep === i, done: currentStep > i }">
-            <div class="step-dot">{{ currentStep > i ? '✓' : i + 1 }}</div>
-            <span class="step-label">{{ t(s.label) }}</span>
+    <!-- ─── Modal créer clé ──────────────────────────────────── -->
+    <div v-if="showCreateKey" class="modal-overlay" @click.self="showCreateKey = false">
+      <div class="modal-card">
+        <h3>🔑 {{ t('integ_create_key') }}</h3>
+        <div class="modal-form">
+          <div class="fg">
+            <label>{{ t('integ_key_name') }}</label>
+            <input v-model="newKeyName" type="text" class="modal-input" placeholder="Ex: HubSpot, Zapier..." />
           </div>
-        </div>
-
-        <!-- Step 1: Authorization -->
-        <div v-if="currentStep === 0" class="step-content">
-          <div v-if="currentInteg.authType === 'oauth'" class="auth-oauth">
-            <p class="auth-desc">{{ t('integ_oauth') }}</p>
-            <button class="btn-oauth" @click="mockOAuth">
-              <span class="oauth-icon">{{ currentInteg.icon }}</span>
-              {{ t('integ_oauth') }} — {{ currentInteg.name }}
-            </button>
-          </div>
-          <div v-else class="auth-api">
-            <div class="fg">
-              <label>{{ t('integ_api_key') }}</label>
-              <input v-model="connectForm.apiKey" class="fi" :placeholder="t('integ_api_key_ph')" />
-            </div>
-            <div class="fg">
-              <label>{{ t('integ_api_secret') }}</label>
-              <input v-model="connectForm.apiSecret" type="password" class="fi" />
-            </div>
-            <a :href="'mailto:contact@scalyo.app?subject=' + encodeURIComponent(t('integ_support_subject'))" class="help-link" target="_blank">{{ t('integ_where_key') }}</a>
-          </div>
-          <div class="step-nav">
-            <div />
-            <button class="btn-primary" @click="nextStep" :disabled="!canProceedStep0">{{ t('integ_next') }}</button>
-          </div>
-        </div>
-
-        <!-- Step 2: Configuration -->
-        <div v-if="currentStep === 1" class="step-content">
-          <h3>{{ t('integ_what_import') }}</h3>
-          <div class="config-checks">
-            <label class="config-check"><input type="checkbox" v-model="connectForm.importContacts" /> {{ t('integ_import_contacts') }}</label>
-            <label class="config-check"><input type="checkbox" v-model="connectForm.importDeals" /> {{ t('integ_import_deals') }}</label>
-            <label class="config-check"><input type="checkbox" v-model="connectForm.importTasks" /> {{ t('integ_import_tasks') }}</label>
-            <label class="config-check"><input type="checkbox" v-model="connectForm.importConvos" /> {{ t('integ_import_convos') }}</label>
-          </div>
-
-          <div class="fg mt">
-            <label>{{ t('integ_sync_freq') }}</label>
-            <select v-model="connectForm.syncFreq" class="fi">
-              <option value="realtime">{{ t('integ_sync_realtime') }}</option>
-              <option value="hourly">{{ t('integ_sync_hourly') }}</option>
-              <option value="daily">{{ t('integ_sync_daily') }}</option>
-            </select>
-          </div>
-
-          <div class="fg mt">
-            <label>{{ t('integ_sync_dir') }}</label>
-            <div class="dir-options">
-              <label class="dir-opt" :class="{ active: connectForm.syncDir === 'bidi' }">
-                <input type="radio" v-model="connectForm.syncDir" value="bidi" /> {{ t('integ_sync_bidi') }}
+          <div class="fg">
+            <label>{{ t('integ_key_scopes') }}</label>
+            <div class="scope-toggles">
+              <label class="scope-toggle">
+                <input type="checkbox" v-model="newKeyScopes" value="read" /> Lecture (GET)
               </label>
-              <label class="dir-opt" :class="{ active: connectForm.syncDir === 'import' }">
-                <input type="radio" v-model="connectForm.syncDir" value="import" /> {{ t('integ_sync_import_only') }}
-              </label>
-              <label class="dir-opt" :class="{ active: connectForm.syncDir === 'export' }">
-                <input type="radio" v-model="connectForm.syncDir" value="export" /> {{ t('integ_sync_export_only') }}
+              <label class="scope-toggle">
+                <input type="checkbox" v-model="newKeyScopes" value="write" /> Écriture (POST/PUT/DELETE)
               </label>
             </div>
           </div>
-
-          <div class="step-nav">
-            <button class="btn-outline" @click="currentStep = 0">{{ t('integ_prev') }}</button>
-            <button class="btn-primary" @click="nextStep">{{ t('integ_next') }}</button>
-          </div>
         </div>
-
-        <!-- Step 3: Test -->
-        <div v-if="currentStep === 2" class="step-content">
-          <div class="test-section">
-            <button v-if="!testResult" class="btn-test" :disabled="testing" @click="runTest">
-              <span v-if="testing" class="test-spinner" />
-              {{ testing ? t('integ_testing') : t('integ_test_btn') }}
-            </button>
-
-            <div v-if="testResult === 'ok'" class="test-result ok">
-              <span class="test-icon">✅</span>
-              <p>{{ t('integ_test_ok', { n: testCount }) }}</p>
-            </div>
-
-            <div v-if="testResult === 'fail'" class="test-result fail">
-              <span class="test-icon">❌</span>
-              <p>{{ t('integ_test_fail') }}</p>
-            </div>
-          </div>
-
-          <div class="step-nav">
-            <button class="btn-outline" @click="currentStep = 1">{{ t('integ_prev') }}</button>
-            <button class="btn-primary" @click="nextStep" :disabled="testResult !== 'ok'">{{ t('integ_next') }}</button>
-          </div>
-        </div>
-
-        <!-- Step 4: Active -->
-        <div v-if="currentStep === 3" class="step-content">
-          <div class="active-summary">
-            <div class="as-icon">🎉</div>
-            <h3>{{ t('integ_summary') }}</h3>
-            <div class="as-details">
-              <div class="as-row"><span>{{ currentInteg.name }}</span><span class="as-badge ok">{{ t('integ_connected') }}</span></div>
-              <div class="as-row"><span>{{ t('integ_items_found', { n: testCount }) }}</span></div>
-              <div class="as-row"><span>{{ t('integ_sync_freq') }}</span><span>{{ t('integ_sync_' + connectForm.syncFreq) }}</span></div>
-              <div class="as-row"><span>{{ t('integ_sync_dir') }}</span><span>{{ connectForm.syncDir === 'bidi' ? t('integ_sync_bidi') : connectForm.syncDir === 'import' ? t('integ_sync_import_only') : t('integ_sync_export_only') }}</span></div>
-            </div>
-          </div>
-
-          <button class="btn-primary full" @click="finishConnect">{{ t('integ_launch_sync') }}</button>
+        <div class="modal-actions">
+          <button class="btn-cancel" @click="showCreateKey = false">Annuler</button>
+          <button class="btn-save" @click="createApiKey" :disabled="!newKeyName || newKeyScopes.length === 0">
+            Générer la clé
+          </button>
         </div>
       </div>
-    </SlideOver>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import SlideOver from '@/components/SlideOver.vue'
+import { supabase } from '@/lib/supabase'
 
 const { t } = useI18n({ useScope: 'global' })
 
-const integrations = [
-  { key: 'hubspot',   name: 'HubSpot',                   icon: '🟠', descKey: 'integ_desc_hubspot',   authType: 'oauth' },
-  { key: 'pipedrive', name: 'Pipedrive',                  icon: '🟢', descKey: 'integ_desc_pipedrive', authType: 'oauth' },
-  { key: 'intercom',  name: 'Intercom',                   icon: '🔵', descKey: 'integ_desc_intercom',  authType: 'oauth' },
-  { key: 'zendesk',   name: 'Zendesk',                    icon: '🟣', descKey: 'integ_desc_zendesk',   authType: 'api' },
-  { key: 'jira',      name: 'Jira',                       icon: '🔷', descKey: 'integ_desc_jira',      authType: 'api' },
-  { key: 'notion',    name: 'Notion',                     icon: '⬛', descKey: 'integ_desc_notion',    authType: 'oauth' },
-  { key: 'asana',     name: 'Asana',                      icon: '🌈', descKey: 'integ_desc_asana',     authType: 'oauth' },
-  { key: 'calendly',  name: 'Calendly',                   icon: '📅', descKey: 'integ_desc_calendly',  authType: 'oauth' },
-  { key: 'gmail',     name: 'Gmail / Google Workspace',   icon: '📧', descKey: 'integ_desc_gmail',     authType: 'oauth' },
-  { key: 'outlook',   name: 'Outlook / Microsoft 365',    icon: '📬', descKey: 'integ_desc_outlook',   authType: 'oauth' },
-  { key: 'smtp',      name: 'SMTP personnalisé',           icon: '⚙️', descKey: 'integ_desc_smtp',     authType: 'api' },
-  { key: 'slack',     name: 'Slack',                      icon: '💬', descKey: 'integ_desc_slack',     authType: 'oauth' },
-  { key: 'teams',     name: 'Microsoft Teams',             icon: '💜', descKey: 'integ_desc_teams',    authType: 'oauth' },
+const tab = ref('api')
+const apiKeys = ref([])
+const webhooks = ref([])
+const showCreateKey = ref(false)
+const newKeyName = ref('')
+const newKeyScopes = ref(['read', 'write'])
+const newKeyValue = ref('')
+const newKeyCopied = ref(false)
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const apiBaseUrl = computed(() => SUPABASE_URL + '/functions/v1/scalyo-api')
+const webhookBaseUrl = computed(() => SUPABASE_URL + '/functions/v1/scalyo-webhook')
+
+const endpoints = [
+  { method: 'GET', path: '/clients', desc: 'Lister tous vos clients' },
+  { method: 'POST', path: '/clients', desc: 'Créer un client' },
+  { method: 'PUT', path: '/clients/:id', desc: 'Modifier un client' },
+  { method: 'DELETE', path: '/clients/:id', desc: 'Supprimer un client' },
+  { method: 'GET', path: '/team', desc: 'Lister les membres de l'équipe' },
+  { method: 'POST', path: '/team', desc: 'Ajouter un membre' },
+  { method: 'GET', path: '/tasks', desc: 'Lister les tâches' },
+  { method: 'POST', path: '/tasks', desc: 'Créer une tâche' },
+  { method: 'GET', path: '/me', desc: 'Informations du compte' },
 ]
 
-const steps = [
-  { key: 'auth', label: 'integ_step_auth' },
-  { key: 'config', label: 'integ_step_config' },
-  { key: 'test', label: 'integ_step_test' },
-  { key: 'active', label: 'integ_step_active' },
-]
-
-const state = reactive({})
-const slideOpen = ref(false)
-const currentInteg = ref(null)
-const currentStep = ref(0)
-const testing = ref(false)
-const testResult = ref(null)
-const testCount = ref(0)
-
-const connectForm = reactive({
-  apiKey: '', apiSecret: '', oauthDone: false,
-  importContacts: true, importDeals: true, importTasks: false, importConvos: false,
-  syncFreq: 'hourly', syncDir: 'bidi',
-})
-
-const canProceedStep0 = computed(() => {
-  if (!currentInteg.value) return false
-  if (currentInteg.value.authType === 'oauth') return connectForm.oauthDone
-  return connectForm.apiKey.length > 3
-})
-
-function openConnect(ig) {
-  currentInteg.value = ig
-  currentStep.value = 0
-  testResult.value = null
-  testing.value = false
-  Object.assign(connectForm, { apiKey: '', apiSecret: '', oauthDone: false, importContacts: true, importDeals: true, importTasks: false, importConvos: false, syncFreq: 'hourly', syncDir: 'bidi' })
-  // If already connected, go to config step
-  if (state[ig.key]?.connected) currentStep.value = 1
-  slideOpen.value = true
+function formatDate(d) {
+  if (!d) return ''
+  return new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
 }
 
-function closeSlide() {
-  slideOpen.value = false
-  currentInteg.value = null
+function getWebhookUrl(wh) {
+  const { data: { user } } = { data: { user: null } }
+  return webhookBaseUrl.value + '?user=' + wh.user_id + '&event=client.created'
 }
 
-function mockOAuth() {
-  connectForm.oauthDone = true
+async function loadApiKeys() {
+  const { data } = await supabase.from('api_keys').select('*').eq('is_active', true).order('created_at', { ascending: false })
+  if (data) apiKeys.value = data
 }
 
-function nextStep() {
-  if (currentStep.value < 3) currentStep.value++
+async function loadWebhooks() {
+  const { data } = await supabase.from('webhooks').select('*').order('created_at', { ascending: false })
+  if (data) webhooks.value = data
 }
 
-async function runTest() {
-  testing.value = true
-  testResult.value = null
-  await new Promise(r => setTimeout(r, 1500))
-  testing.value = false
-  testResult.value = 'ok'
-  testCount.value = Math.floor(Math.random() * 80) + 12
-}
-
-function finishConnect() {
-  if (!currentInteg.value) return
-  state[currentInteg.value.key] = {
-    connected: true,
-    lastSync: new Date().toISOString(),
-    config: { ...connectForm },
-    stats: { imported: testCount.value, errors: 0 },
+async function createApiKey() {
+  const rawKey = 'sk_' + Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2,'0')).join('')
+  const prefix = rawKey.slice(0, 12)
+  
+  // Hash the key
+  const encoder = new TextEncoder()
+  const keyBytes = encoder.encode(rawKey)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', keyBytes)
+  const keyHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2,'0')).join('')
+  
+  const { error } = await supabase.from('api_keys').insert([{
+    name: newKeyName.value,
+    key_hash: keyHash,
+    key_prefix: prefix,
+    scopes: newKeyScopes.value,
+  }])
+  
+  if (!error) {
+    newKeyValue.value = rawKey
+    newKeyCopied.value = false
+    showCreateKey.value = false
+    newKeyName.value = ''
+    await loadApiKeys()
   }
-  slideOpen.value = false
 }
 
-function doSync(key) {
-  if (state[key]) state[key].lastSync = new Date().toISOString()
+async function revokeKey(id) {
+  if (!confirm('Révoquer cette clé API ? Elle ne fonctionnera plus immédiatement.')) return
+  await supabase.from('api_keys').update({ is_active: false }).eq('id', id)
+  await loadApiKeys()
 }
 
-function doDisconnect(ig) {
-  delete state[ig.key]
+async function createWebhook() {
+  const secret = 'whsec_' + Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b => b.toString(16).padStart(2,'0')).join('')
+  const { error } = await supabase.from('webhooks').insert([{
+    name: 'Webhook Zapier/Make',
+    secret,
+    events: ['client.created', 'client.updated', 'task.created'],
+  }])
+  if (!error) await loadWebhooks()
 }
+
+async function deleteWebhook(id) {
+  if (!confirm('Supprimer ce webhook ?')) return
+  await supabase.from('webhooks').delete().eq('id', id)
+  await loadWebhooks()
+}
+
+function copy(text) {
+  navigator.clipboard.writeText(text).catch(() => {})
+}
+
+onMounted(() => {
+  loadApiKeys()
+  loadWebhooks()
+})
 </script>
 
 <style scoped>
-.integ-view { max-width: 1100px; }
-.iv-header { margin-bottom: 28px; }
-.iv-header h1 { font-size: 1.5rem; font-weight: 800; }
-.iv-sub { font-size: 0.88rem; color: var(--text-secondary); margin-top: 4px; }
-.iv-section-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 16px; color: var(--green); }
-
-.iv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-bottom: 32px; }
-.iv-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; display: flex; flex-direction: column; gap: 12px; transition: all 0.2s; position: relative; overflow: hidden; }
-.iv-card:hover { box-shadow: var(--shadow-sm); transform: translateY(-2px); }
-.iv-card.connected { border-color: var(--green-border); }
-.iv-card.connected:hover { border-color: var(--green); }
-.iv-connected-badge { position: absolute; top: 12px; right: 12px; font-size: 0.68rem; font-weight: 600; color: var(--green); }
-.iv-icon { font-size: 2rem; }
-.iv-info strong { font-size: 0.92rem; display: block; margin-bottom: 4px; }
-.iv-info p { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; }
-.iv-actions { margin-top: auto; }
-.btn-connect { background: var(--green); color: #fff; border: none; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
-.btn-connect:hover { background: var(--green-dark); }
-.iv-actions-connected { margin-top: auto; }
-.iv-last-sync { font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 8px; }
-.iv-btns { display: flex; gap: 6px; flex-wrap: wrap; }
-.btn-sm-outline { background: #fff; border: 1px solid var(--border); padding: 5px 12px; border-radius: 6px; font-size: 0.72rem; font-weight: 500; cursor: pointer; color: var(--text-secondary); transition: all 0.15s; }
-.btn-sm-outline:hover { border-color: var(--purple); color: var(--purple); }
-.btn-sm-outline.danger:hover { border-color: var(--red); color: var(--red); }
-
-.iv-missing { display: flex; align-items: center; gap: 16px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; flex-wrap: wrap; }
-.ivm-icon { font-size: 2rem; }
-.ivm-text { flex: 1; min-width: 200px; }
-.ivm-text strong { font-size: 0.95rem; display: block; margin-bottom: 4px; }
-.ivm-text p { font-size: 0.82rem; color: var(--text-secondary); }
-.btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-.btn-outline:hover { border-color: var(--purple); color: var(--purple); }
-
-/* Stepper */
-.stepper { display: flex; gap: 0; margin-bottom: 28px; }
-.step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; }
-.step::after { content: ''; position: absolute; top: 14px; left: 55%; right: -45%; height: 2px; background: var(--border-light); z-index: 0; }
-.step:last-child::after { display: none; }
-.step.done::after { background: var(--green); }
-.step.active::after { background: linear-gradient(90deg, var(--purple), var(--border-light)); }
-.step-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); background: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); z-index: 1; transition: all 0.2s; }
-.step.active .step-dot { border-color: var(--purple); color: var(--purple); background: var(--purple-bg); }
-.step.done .step-dot { border-color: var(--green); color: #fff; background: var(--green); }
-.step-label { font-size: 0.68rem; color: var(--text-muted); font-weight: 500; }
-.step.active .step-label { color: var(--purple); font-weight: 600; }
-.step.done .step-label { color: var(--green); }
-
-/* Step content */
-.step-content { min-height: 200px; }
-.fg { display: flex; flex-direction: column; gap: 4px; }
-.fg label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
-.fi { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; background: #fff; width: 100%; }
-.fi:focus { border-color: var(--purple); }
-.mt { margin-top: 16px; }
-.help-link { font-size: 0.75rem; color: var(--purple); margin-top: 6px; }
-
-/* OAuth */
-.auth-desc { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 16px; }
-.btn-oauth { display: flex; align-items: center; gap: 10px; width: 100%; padding: 14px 20px; background: var(--bg); border: 2px solid var(--border); border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-.btn-oauth:hover { border-color: var(--purple); background: var(--purple-bg); }
-.oauth-icon { font-size: 1.5rem; }
-
-/* Config */
-.step-content h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; }
-.config-checks { display: flex; flex-direction: column; gap: 10px; }
-.config-check { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; padding: 10px 12px; background: var(--bg); border-radius: var(--radius-sm); cursor: pointer; transition: background 0.15s; }
-.config-check:hover { background: var(--bg-hover); }
-.config-check input { accent-color: var(--purple); width: 16px; height: 16px; }
-
-.dir-options { display: flex; flex-direction: column; gap: 6px; }
-.dir-opt { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--bg); border: 2px solid transparent; border-radius: var(--radius-sm); font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
-.dir-opt.active { border-color: var(--purple); background: var(--purple-bg); }
-.dir-opt input { accent-color: var(--purple); }
-
-/* Test */
-.test-section { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 160px; gap: 16px; }
-.btn-test { background: var(--purple); color: #fff; border: none; padding: 14px 32px; border-radius: var(--radius-md); font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.2s; }
-.btn-test:hover:not(:disabled) { background: var(--purple-dark); transform: translateY(-1px); }
-.btn-test:disabled { opacity: 0.7; cursor: wait; }
-.test-spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.test-result { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 500; animation: fadeIn 0.3s ease; }
-.test-result.ok { background: var(--green-bg); color: var(--green); }
-.test-result.fail { background: var(--red-bg); color: var(--red); }
-.test-icon { font-size: 1.5rem; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Active summary */
-.active-summary { text-align: center; padding: 20px 0; }
-.as-icon { font-size: 3rem; margin-bottom: 12px; }
-.active-summary h3 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
-.as-details { display: flex; flex-direction: column; gap: 8px; text-align: left; margin-bottom: 20px; }
-.as-row { display: flex; justify-content: space-between; padding: 8px 12px; background: var(--bg); border-radius: 6px; font-size: 0.82rem; }
-.as-badge { font-size: 0.72rem; font-weight: 600; padding: 2px 10px; border-radius: 4px; }
-.as-badge.ok { background: var(--green-bg); color: var(--green); }
-
-/* Navigation */
-.step-nav { display: flex; justify-content: space-between; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-light); }
-.btn-primary { background: var(--purple); color: #fff; border: none; padding: 9px 20px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
-.btn-primary:hover { background: var(--purple-dark); }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-primary.full { width: 100%; text-align: center; padding: 12px; font-size: 0.9rem; }
-
-@media (max-width: 600px) { .iv-grid { grid-template-columns: 1fr; } .stepper { gap: 0; } .step-label { font-size: 0.6rem; } }
+.integ-view { padding:32px;max-width:900px;margin:0 auto; }
+.iv-header { margin-bottom:24px; }
+.iv-header h1 { font-size:1.5rem;font-weight:800; }
+.iv-sub { color:var(--text-muted,#6b7280);font-size:0.9rem;margin-top:4px; }
+.iv-tabs { display:flex;gap:8px;margin-bottom:24px;border-bottom:2px solid var(--border,#e5e7eb);padding-bottom:0; }
+.iv-tab { padding:10px 18px;border:none;background:none;font-size:0.88rem;font-weight:500;color:var(--text-muted,#6b7280);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s; }
+.iv-tab.active { color:var(--purple,#7c3aed);border-bottom-color:var(--purple,#7c3aed);font-weight:700; }
+.iv-section { }
+.iv-card { background:var(--bg-card,#fff);border-radius:16px;padding:28px;border:1px solid var(--border,#e5e7eb); }
+.iv-card-header { display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px; }
+.iv-card-header h2 { font-size:1.05rem;font-weight:700;margin-bottom:4px; }
+.iv-card-sub { font-size:0.85rem;color:var(--text-muted,#6b7280); }
+.btn-create-key { background:var(--purple,#7c3aed);color:#fff;border:none;padding:10px 16px;border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;white-space:nowrap; }
+.iv-info-box { display:flex;align-items:center;gap:8px;background:var(--bg,#f8f9fb);border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:10px 14px;margin-bottom:20px; }
+.iv-info-label { font-size:0.75rem;font-weight:600;color:var(--text-muted,#6b7280);min-width:60px; }
+.iv-code { font-family:monospace;font-size:0.82rem;color:var(--purple,#7c3aed);flex:1;word-break:break-all; }
+.iv-code-sm { font-family:monospace;font-size:0.78rem;color:var(--purple,#7c3aed);flex:1;word-break:break-all; }
+.btn-copy-sm { background:none;border:1px solid var(--border,#e5e7eb);border-radius:5px;padding:3px 8px;cursor:pointer;font-size:0.75rem; }
+.iv-empty { text-align:center;padding:32px;color:var(--text-muted,#6b7280);font-size:0.9rem; }
+.iv-keys-list { display:flex;flex-direction:column;gap:10px;margin-bottom:20px; }
+.iv-key-row { display:flex;align-items:center;gap:16px;padding:12px 16px;background:var(--bg,#f8f9fb);border-radius:10px;border:1px solid var(--border,#e5e7eb); }
+.iv-key-info { display:flex;flex-direction:column;gap:3px;flex:1; }
+.iv-key-name { font-weight:600;font-size:0.88rem; }
+.iv-key-prefix { font-family:monospace;font-size:0.8rem;color:var(--purple,#7c3aed); }
+.iv-key-scopes { font-size:0.75rem;color:var(--text-muted,#6b7280); }
+.iv-key-meta { display:flex;flex-direction:column;gap:2px;font-size:0.75rem;color:var(--text-muted,#6b7280);min-width:140px; }
+.iv-key-unused { color:#f59e0b; }
+.btn-revoke { background:none;border:none;cursor:pointer;opacity:0.5;font-size:1rem; }
+.btn-revoke:hover { opacity:1; }
+.iv-new-key-reveal { background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;margin-bottom:20px; }
+.iv-new-key-reveal p { font-size:0.82rem;color:#166534;margin-bottom:8px;font-weight:600; }
+.iv-new-key-code { display:block;font-family:monospace;font-size:0.85rem;background:#fff;padding:10px;border-radius:6px;margin-bottom:10px;word-break:break-all; }
+.btn-copy { background:var(--purple,#7c3aed);color:#fff;border:none;padding:8px 14px;border-radius:7px;font-size:0.82rem;cursor:pointer;font-weight:600; }
+.iv-doc-section { margin-top:24px;padding-top:20px;border-top:1px solid var(--border,#e5e7eb); }
+.iv-doc-section h3 { font-size:0.95rem;font-weight:700;margin-bottom:14px; }
+.iv-endpoints { display:flex;flex-direction:column;gap:8px;margin-bottom:16px; }
+.iv-endpoint { display:flex;align-items:center;gap:10px;font-size:0.82rem;padding:6px 0; }
+.iv-method { font-family:monospace;font-weight:700;padding:2px 8px;border-radius:4px;font-size:0.75rem;min-width:58px;text-align:center; }
+.iv-method.get { background:#dbeafe;color:#1d4ed8; }
+.iv-method.post { background:#dcfce7;color:#166534; }
+.iv-method.put { background:#fef9c3;color:#854d0e; }
+.iv-method.delete { background:#fee2e2;color:#b91c1c; }
+.iv-path { font-family:monospace;font-size:0.8rem;color:var(--purple,#7c3aed);min-width:180px; }
+.iv-ep-desc { color:var(--text-muted,#6b7280); }
+.iv-example { background:var(--bg,#f8f9fb);border-radius:8px;padding:14px; }
+.iv-example h4 { font-size:0.82rem;font-weight:600;margin-bottom:8px; }
+.iv-code-block { display:block;font-family:monospace;font-size:0.78rem;word-break:break-all; }
+.iv-webhook-row { display:flex;align-items:flex-start;gap:16px;padding:14px;background:var(--bg,#f8f9fb);border-radius:10px;border:1px solid var(--border,#e5e7eb);margin-bottom:10px; }
+.iv-wh-info { flex:1;display:flex;flex-direction:column;gap:6px; }
+.iv-wh-url-row { display:flex;align-items:center;gap:8px; }
+.iv-steps { display:flex;flex-direction:column;gap:10px; }
+.iv-step { display:flex;gap:12px;align-items:flex-start;font-size:0.85rem; }
+.iv-step-num { background:var(--purple,#7c3aed);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;margin-top:1px; }
+.iv-step code { background:var(--bg,#f8f9fb);padding:1px 6px;border-radius:4px;font-size:0.78rem; }
+.btn-goto-import { display:inline-flex;align-items:center;gap:8px;background:var(--purple,#7c3aed);color:#fff;text-decoration:none;padding:12px 20px;border-radius:10px;font-weight:600;font-size:0.9rem;margin-top:16px; }
+.modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:1000; }
+.modal-card { background:var(--bg-card,#fff);border-radius:16px;padding:32px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.15); }
+.modal-card h3 { font-size:1.05rem;font-weight:700;margin-bottom:20px; }
+.modal-form { display:flex;flex-direction:column;gap:14px; }
+.fg { display:flex;flex-direction:column;gap:4px; }
+.fg label { font-size:0.78rem;font-weight:600;color:var(--text-muted,#6b7280); }
+.modal-input { padding:10px 12px;border:1px solid var(--border,#e5e7eb);border-radius:8px;font-size:0.9rem;background:var(--bg,#f8f9fb);color:var(--text,#1a1a2e); }
+.modal-input:focus { border-color:var(--purple,#7c3aed);outline:none; }
+.scope-toggles { display:flex;gap:16px; }
+.scope-toggle { display:flex;align-items:center;gap:6px;font-size:0.85rem;cursor:pointer; }
+.modal-actions { display:flex;gap:10px;justify-content:flex-end;margin-top:20px; }
+.btn-cancel { background:none;border:1px solid var(--border,#e5e7eb);color:var(--text-muted,#6b7280);padding:9px 18px;border-radius:8px;cursor:pointer;font-size:0.88rem; }
+.btn-save { background:var(--purple,#7c3aed);color:#fff;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:0.88rem;font-weight:600; }
+.btn-save:disabled { opacity:0.5;cursor:not-allowed; }
 </style>
