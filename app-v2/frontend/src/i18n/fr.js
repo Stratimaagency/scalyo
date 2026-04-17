@@ -1445,6 +1445,13 @@ export default {
   register_firstname: 'Prénom',
   register_lastname: 'Nom',
   register_submit: 'Créer mon compte',
+  register_success_title: 'Compte créé avec succès !',
+  register_success_subtitle: 'Confirmez votre email puis choisissez votre forfait pour accéder à Scalyo.',
+  register_choose_plan: 'Choisissez votre forfait',
+  register_select_plan: 'Choisir ce forfait',
+  register_most_popular: 'Le plus populaire',
+  register_confirm_email_first: 'Vous avez déjà confirmé votre email ?',
+  register_go_login: 'Se connecter →',
   register_has_account: 'Déjà un compte ?',
 
 }
