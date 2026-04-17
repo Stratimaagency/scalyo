@@ -71,7 +71,15 @@
           {{ t('register_confirm_email_first') }}
           <router-link to="/login" class="link">{{ t('register_go_login') }}</router-link>
         </p>
-      </template>
+      
+    <!-- Footer légal -->
+    <div class="auth-legal-footer">
+      En créant un compte, vous acceptez nos
+      <router-link to="/cgu" target="_blank">CGU</router-link>
+      et notre
+      <router-link to="/privacy" target="_blank">Politique de confidentialité</router-link>
+    </div>
+</template>
 
       <!-- Étape formulaire -->
       <template v-else>
@@ -219,4 +227,7 @@ async function handleRegister() {
 .spinner { width:18px;height:18px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block; }
 @keyframes spin { to { transform:rotate(360deg); } }
 @media (max-width: 640px) { .plans-grid { grid-template-columns: 1fr; } .auth-card--wide { padding: 32px 20px; } }
+.auth-legal-footer { text-align:center; font-size:0.78rem; color:var(--text-muted,#6b7280); margin-top:16px; line-height:1.6; }
+.auth-legal-footer a { color:var(--purple,#7c3aed); text-decoration:none; }
+.auth-legal-footer a:hover { text-decoration:underline; }
 </style>
