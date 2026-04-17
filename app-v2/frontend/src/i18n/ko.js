@@ -928,4 +928,7 @@ export default {
   stg_theme_light: '라이트',
   stg_theme_dark: '다크',
   stg_theme_auto: '자동 (시스템)',
+
+  dashboard_reset: '데이터 초기화',
+  dashboard_reset_confirm: '모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
 }
