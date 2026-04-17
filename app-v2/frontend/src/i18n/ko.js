@@ -889,6 +889,13 @@ export default {
   register_firstname: '이름',
   register_lastname: '성',
   register_submit: '계정 만들기',
+  register_success_title: '계정이 성공적으로 생성되었습니다!',
+  register_success_subtitle: '이메일을 확인한 후 Scalyo에 접속할 플랜을 선택하세요.',
+  register_choose_plan: '플랜 선택',
+  register_select_plan: '이 플랜 선택',
+  register_most_popular: '가장 인기 있는',
+  register_confirm_email_first: '이미 이메일을 확인하셨나요?',
+  register_go_login: '로그인 →',
   register_has_account: '이미 계정이 있으신가요?',
 
 }
