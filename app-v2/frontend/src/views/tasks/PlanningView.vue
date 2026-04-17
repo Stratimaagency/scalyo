@@ -173,7 +173,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, watch, reactive, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -240,15 +240,8 @@ const defaultEvent = () => ({
 const eventForm = reactive(defaultEvent())
 
 // Mock events
-const events = ref([
-  { id: 'ev1', title: 'QBR Acme Corp', start: '2026-04-14T10:00:00', end: '2026-04-14T11:00:00', color: '#3b82f6', extendedProps: { clientId: 'cl2', projectId: 'p3' } },
-  { id: 'ev2', title: 'Check-in TechScale', start: '2026-04-15T14:00:00', end: '2026-04-15T14:30:00', color: '#10b981', extendedProps: { clientId: 'cl1' } },
-  { id: 'ev3', title: 'Call rétention Leroy', start: '2026-04-16T09:00:00', end: '2026-04-16T10:00:00', color: '#ef4444', extendedProps: { clientId: 'cl4' } },
-  { id: 'ev4', title: 'Onboarding Biotech', start: '2026-04-17T11:00:00', end: '2026-04-17T12:00:00', color: '#7c3aed', extendedProps: { clientId: 'cl3' } },
-  { id: 'ev5', title: 'Team standup', start: '2026-04-14T09:00:00', end: '2026-04-14T09:15:00', color: '#f59e0b' },
-  { id: 'ev6', title: 'Planning sprint', start: '2026-04-14T15:00:00', end: '2026-04-14T16:00:00', color: '#8b5cf6' },
-  { id: 'ev7', title: 'NPS Review', start: '2026-04-18T10:00:00', end: '2026-04-18T11:30:00', color: '#ec4899', extendedProps: { clientId: 'cl5' } },
-])
+const events = ref(JSON.parse(localStorage.getItem('scalyo_planning_events') || '[]'))
+watch(events, (val) => { localStorage.setItem('scalyo_planning_events', JSON.stringify(val)) }, { deep: true })
 
 const fcLocale = computed(() => locale.value === 'ko' ? 'ko' : locale.value === 'en' ? 'en' : 'fr')
 const slotHeight = computed(() => planningSettings.density === 'compact' ? 32 : planningSettings.density === 'comfortable' ? 56 : 44)
