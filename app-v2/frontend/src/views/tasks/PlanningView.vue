@@ -173,7 +173,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, reactive, computed, onMounted } from 'vue'
+import { ref, watch, onMounted, reactive, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { supabase } from '@/lib/supabase'
 import FullCalendar from '@fullcalendar/vue3'
