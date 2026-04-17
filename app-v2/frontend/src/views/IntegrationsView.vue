@@ -242,7 +242,7 @@ function nextStep() {
   if (currentStep.value < 3) currentStep.value++
 }
 
-async async function runTest() {
+async function runTest() {
   testing.value = true
   testResult.value = null
   await new Promise(r => setTimeout(r, 1500))
