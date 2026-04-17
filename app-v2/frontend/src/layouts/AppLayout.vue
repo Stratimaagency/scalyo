@@ -264,6 +264,17 @@ const sidebarSections = [
     ],
   },
 ]
+
+import { onMounted } from 'vue'
+onMounted(async () => {
+  try {
+    const { useClientStore } = await import('@/stores/clients')
+    const { useTeamStore } = await import('@/stores/team')
+    const { useTaskStore } = await import('@/stores/tasks')
+    const cs = useClientStore(); const ts = useTeamStore(); const tk = useTaskStore()
+    await Promise.all([cs.loadClients(), ts.loadMembers(), tk.loadTasks()])
+  } catch(e) { console.error('AppLayout loadStores:', e) }
+})
 </script>
 
 <style scoped>
