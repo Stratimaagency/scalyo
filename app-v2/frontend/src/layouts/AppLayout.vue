@@ -47,11 +47,6 @@
           <ScalyoLogo :size="24" class="hide-desktop topbar-logo-mobile" />
         </div>
         <div class="topbar-right">
-          <!-- Lang switch -->
-          <div class="lang-switch">
-            <button v-for="l in langs" :key="l.code" :class="{ active: currentLocale === l.code }" @click="switchLocale(l.code)">{{ l.label }}</button>
-          </div>
-
           <!-- Notifications -->
           <div class="topbar-notif" ref="notifRef">
             <button class="notif-btn" @click="notifOpen = !notifOpen">
@@ -184,18 +179,6 @@ function fmtNotifDate(iso) {
   return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
 }
 
-// ─── Langue ────────────────────────────────────────────────────────────────────
-const currentLocale = computed(() => locale.value)
-const langs = [
-  { code: 'fr', label: 'FR' },
-  { code: 'en', label: 'EN' },
-  { code: 'ko', label: '한국어' },
-]
-function switchLocale(code) {
-  locale.value = code
-  app.setLocale(code)
-}
-
 // ─── Sidebar ───────────────────────────────────────────────────────────────────
 function isActiveGroup(item) {
   return item.children?.some(c => route.name === c.name) || route.name === item.name
@@ -315,9 +298,7 @@ const sidebarSections = [
 .topbar-burger span { display: block; width: 20px; height: 2px; background: var(--text); border-radius: 1px; }
 .topbar-left { flex: 1; }
 .topbar-right { display: flex; align-items: center; gap: 12px; }
-.lang-switch { display: flex; gap: 2px; background: var(--bg); border-radius: 8px; padding: 2px; }
-.lang-switch button { background: none; border: none; color: var(--text-muted); font-size: 0.72rem; padding: 4px 8px; border-radius: 6px; transition: all 0.15s; font-weight: 500; }
-.lang-switch button.active { background: var(--purple); color: #fff; font-weight: 600; }
+
 
 /* ─── Notifications ────────────────────────────────────────────────────────── */
 .topbar-notif { position: relative; }
