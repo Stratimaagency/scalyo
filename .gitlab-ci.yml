@@ -31,8 +31,3 @@ deploy_production:
     - cd app-v2/frontend
     - npm install -g wrangler
     - wrangler pages deploy dist --project-name=scalyo-app --branch=main
-    - cd ../..
-    - apk add --no-cache curl
-    - curl -fsSL https://raw.githubusercontent.com/supabase/cli/main/install.sh | sh
-    - supabase functions deploy scalyo-api --project-ref hcqninmpmzpqjtedyjyj --no-verify-jwt
-    - supabase functions deploy scalyo-webhook --project-ref hcqninmpmzpqjtedyjyj --no-verify-jwt
