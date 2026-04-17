@@ -1,155 +1,139 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-
-function load(key, fallback) {
-  try {
-    const v = localStorage.getItem(key)
-    return v ? JSON.parse(v) : fallback
-  } catch { return fallback }
-}
-
-function save(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
-}
-
+import { supabase } from '@/lib/supabase'
 
 export const useTaskStore = defineStore('tasks', () => {
-  const projects = ref(load('scalyo_projects', []))
-  const tasks = ref(load('scalyo_tasks', []))
+  const tasks = ref([])
+  const projects = ref([])
+  const loading = ref(false)
 
-  const byStatus = (status) => tasks.value.filter(t => t.status === status)
-  const todoTasks = computed(() => byStatus('todo'))
-  const inProgressTasks = computed(() => byStatus('in_progress'))
-  const blockedTasks = computed(() => byStatus('blocked'))
-  const doneTasks = computed(() => byStatus('done'))
+  // ─── Computed ─────────────────────────────────────────────────
+  const tasksByStatus = computed(() => ({
+    todo: tasks.value.filter(t => t.status === 'todo'),
+    in_progress: tasks.value.filter(t => t.status === 'in_progress'),
+    blocked: tasks.value.filter(t => t.status === 'blocked'),
+    done: tasks.value.filter(t => t.status === 'done'),
+  }))
+
+  const urgentTasks = computed(() =>
+    tasks.value.filter(t => (t.priority === 'urgent_important' || t.priority === 'urgent') && t.status !== 'done')
+  )
+
   const overdueTasks = computed(() => {
-    const now = new Date().toISOString().slice(0, 10)
-    return tasks.value.filter(t => t.status !== 'done' && t.dueDate < now)
+    const today = new Date().toISOString().slice(0, 10)
+    return tasks.value.filter(t => t.dueDate && t.dueDate < today && t.status !== 'done')
   })
 
-  function addTask(task) {
-    tasks.value.push({
-      id: 't' + Date.now(),
-      status: 'todo',
-      subtasks: [],
-      createdAt: new Date().toISOString().slice(0, 10),
-      startDate: '',
-      endDate: '',
-      urgency: 3,
-      importance: 3,
-      difficulty: 3,
-      finished: false,
-      pended: false,
-      actualHours: 0,
-      expectedHours: 0,
-      minHours: 0,
-      maxHours: 0,
-      level: 1,
-      type: 'task',
-      hasChildren: false,
-      ...task,
-    })
-    save('scalyo_tasks', tasks.value)
+  // ─── Load ─────────────────────────────────────────────────────
+  async function loadTasks() {
+    loading.value = true
+    const [{ data: tasksData }, { data: projectsData }] = await Promise.all([
+      supabase.from('tasks').select('*').order('created_at', { ascending: false }),
+      supabase.from('projects').select('*').order('created_at', { ascending: false }),
+    ])
+    if (tasksData) tasks.value = tasksData.map(dbToTask)
+    if (projectsData) projects.value = projectsData.map(dbToProject)
+    loading.value = false
   }
 
-  function addSubtask(parentId, subtask) {
-    tasks.value.push({
-      id: 'st' + Date.now(),
-      status: 'todo',
-      subtasks: [],
-      createdAt: new Date().toISOString().slice(0, 10),
-      startDate: '',
-      endDate: '',
-      urgency: 3,
-      importance: 3,
-      difficulty: 3,
-      finished: false,
-      pended: false,
-      actualHours: 0,
-      expectedHours: 0,
-      minHours: 0,
-      maxHours: 0,
-      level: 2,
-      type: 'subtask',
-      hasChildren: false,
-      parentId,
-      ...subtask,
-    })
-    save('scalyo_tasks', tasks.value)
+  // ─── Project CRUD ─────────────────────────────────────────────
+  async function addProject(project) {
+    const { data, error } = await supabase.from('projects').insert([projectToDb(project)]).select().single()
+    if (!error && data) projects.value.unshift(dbToProject(data))
+    return data
   }
 
-  function updateTask(id, data) {
-    const i = tasks.value.findIndex(t => t.id === id)
-    if (i !== -1) {
-      Object.assign(tasks.value[i], data)
-      save('scalyo_tasks', tasks.value)
+  async function updateProject(project) {
+    const { error } = await supabase.from('projects').update(projectToDb(project)).eq('id', project.id)
+    if (!error) {
+      const idx = projects.value.findIndex(p => p.id === project.id)
+      if (idx > -1) projects.value[idx] = { ...projects.value[idx], ...project }
     }
   }
 
-  function deleteTask(id) {
-    tasks.value = tasks.value.filter(t => t.id !== id)
-    save('scalyo_tasks', tasks.value)
-  }
-
-  function moveTask(id, newStatus) {
-    updateTask(id, {
-      status: newStatus,
-      ...(newStatus === 'done' ? { completedAt: new Date().toISOString().slice(0, 10) } : {}),
-    })
-  }
-
-  function addProject(p) {
-    projects.value.push({
-      id: 'p' + Date.now(),
-      status: 'active',
-      createdAt: new Date().toISOString().slice(0, 10),
-      startDate: '',
-      endDate: '',
-      urgency: 3,
-      importance: 3,
-      difficulty: 3,
-      finished: false,
-      pended: false,
-      actualHours: 0,
-      expectedHours: 0,
-      minHours: 0,
-      maxHours: 0,
-      level: 0,
-      type: 'project',
-      hasChildren: false,
-      ...p,
-    })
-    save('scalyo_projects', projects.value)
-  }
-
-  function updateProject(id, data) {
-    const i = projects.value.findIndex(p => p.id === id)
-    if (i !== -1) {
-      Object.assign(projects.value[i], data)
-      save('scalyo_projects', projects.value)
-    }
-  }
-
-  function deleteProject(id) {
-    const toRemove = new Set([id])
-    for (const t of tasks.value) {
-      if (t.parentId && toRemove.has(t.parentId)) toRemove.add(t.id)
-    }
-    tasks.value = tasks.value.filter(t => !toRemove.has(t.id) && t.projectId !== id)
+  async function deleteProject(id) {
+    await supabase.from('tasks').delete().eq('project_id', id)
+    await supabase.from('projects').delete().eq('id', id)
     projects.value = projects.value.filter(p => p.id !== id)
-    save('scalyo_tasks', tasks.value)
-    save('scalyo_projects', projects.value)
+    tasks.value = tasks.value.filter(t => t.projectId !== id)
   }
 
-  function resetAll() {
+  // ─── Task CRUD ────────────────────────────────────────────────
+  async function addTask(task) {
+    const { data, error } = await supabase.from('tasks').insert([taskToDb(task)]).select().single()
+    if (!error && data) tasks.value.unshift(dbToTask(data))
+    return data
+  }
+
+  async function updateTask(task) {
+    const { error } = await supabase.from('tasks').update(taskToDb(task)).eq('id', task.id)
+    if (!error) {
+      const idx = tasks.value.findIndex(t => t.id === task.id)
+      if (idx > -1) tasks.value[idx] = { ...tasks.value[idx], ...task }
+    }
+  }
+
+  async function deleteTask(id) {
+    await supabase.from('tasks').delete().eq('id', id)
+    tasks.value = tasks.value.filter(t => t.id !== id)
+  }
+
+  async function moveTask(taskId, newStatus) {
+    await updateTask({ id: taskId, status: newStatus })
+  }
+
+  // ─── Reset ────────────────────────────────────────────────────
+  async function resetAll() {
+    await supabase.from('tasks').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+    await supabase.from('projects').delete().neq('id', '00000000-0000-0000-0000-000000000000')
     tasks.value = []
     projects.value = []
-    save('scalyo_tasks', [])
-    save('scalyo_projects', [])
+  }
+
+  // ─── Mappers ──────────────────────────────────────────────────
+  function dbToTask(r) {
+    return {
+      id: r.id,
+      projectId: r.project_id || '',
+      title: r.title,
+      description: r.description || '',
+      status: r.status || 'todo',
+      priority: r.priority || 'important',
+      assignee: r.assignee || '',
+      dueDate: r.due_date || '',
+      clientId: r.client_id || '',
+      tags: r.tags || [],
+      subtasks: r.subtasks || [],
+    }
+  }
+
+  function taskToDb(t) {
+    return {
+      project_id: t.projectId || null,
+      title: t.title,
+      description: t.description || '',
+      status: t.status || 'todo',
+      priority: t.priority || 'important',
+      assignee: t.assignee || '',
+      due_date: t.dueDate || null,
+      client_id: t.clientId || '',
+      tags: t.tags || [],
+      subtasks: t.subtasks || [],
+      updated_at: new Date().toISOString(),
+    }
+  }
+
+  function dbToProject(r) {
+    return { id: r.id, name: r.name, color: r.color || '#7c3aed', status: r.status || 'active' }
+  }
+
+  function projectToDb(p) {
+    return { name: p.name, color: p.color || '#7c3aed', status: p.status || 'active' }
   }
 
   return {
-    projects, tasks, todoTasks, inProgressTasks, blockedTasks, doneTasks, overdueTasks,
-    addTask, addSubtask, updateTask, updateProject, deleteTask, moveTask, addProject, deleteProject, resetAll,
+    tasks, projects, loading, tasksByStatus, urgentTasks, overdueTasks,
+    loadTasks, addTask, updateTask, deleteTask, moveTask,
+    addProject, updateProject, deleteProject, resetAll,
   }
-}, { persist: false })
+})
