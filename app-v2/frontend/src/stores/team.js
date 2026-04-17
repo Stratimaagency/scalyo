@@ -13,14 +13,9 @@ function save(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
 }
 
-const DEMO_MEMBERS = [
-  { id: 'tm1', name: 'Sophie M.', email: 'sophie@stratima.com', role: 'CSM Senior', avatar: null, status: 'healthy', wellbeingScore: 78, workload: 65, clientCount: 3, arrManaged: 372000, mood: 'happy', burnoutRisk: 'low', weekMoods: ['happy', 'happy', 'neutral', 'happy', 'happy'] },
-  { id: 'tm2', name: 'Thomas R.', email: 'thomas@stratima.com', role: 'CSM', avatar: null, status: 'overloaded', wellbeingScore: 52, workload: 92, clientCount: 3, arrManaged: 306000, mood: 'stressed', burnoutRisk: 'high', weekMoods: ['stressed', 'stressed', 'exhausted', 'stressed', 'neutral'] },
-  { id: 'tm3', name: 'Julie K.', email: 'julie@stratima.com', role: 'CSM', avatar: null, status: 'healthy', wellbeingScore: 85, workload: 55, clientCount: 2, arrManaged: 275000, mood: 'great', burnoutRisk: 'none', weekMoods: ['happy', 'great', 'happy', 'great', 'great'] },
-]
 
 export const useTeamStore = defineStore('team', () => {
-  const members = ref(load('scalyo_team', DEMO_MEMBERS))
+  const members = ref(load('scalyo_team', []))
 
   // Members enrichis avec burnoutRisk et mood calculés en temps réel
   const enrichedMembers = computed(() => {
