@@ -185,6 +185,7 @@
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+import { useTeamStore } from '@/stores/team'
 import { useClientStore } from '@/stores/clients'
 import { useTaskStore } from '@/stores/tasks'
 import { useSnapshotStore } from '@/stores/snapshots'
@@ -348,6 +349,20 @@ function formatDate(d) {
 function statusColor(status) {
   return status === 'healthy' ? '#10b981' : status === 'watch' ? '#f59e0b' : '#ef4444'
 }
+
+// ─── Reset all data ────────────────────────────────────────────────────────
+function resetAllData() {
+  if (!confirm(t('dashboard_reset_confirm'))) return
+  clients.clients.length = 0
+  team.members.length = 0
+  tasks.tasks.length = 0
+  tasks.projects.length = 0
+  // Clear localStorage
+  ['scalyo_clients','scalyo_tasks','scalyo_team','scalyo_projects','scalyo_kpis',
+   'scalyo_playbooks','scalyo_snapshots','scalyo_okr','scalyo_roadmap',
+   'scalyo_quotes','scalyo_dashboard_kpis','scalyo_coach_messages'].forEach(k => localStorage.removeItem(k))
+}
+
 </script>
 
 <style scoped>
@@ -467,4 +482,9 @@ function statusColor(status) {
   .kpi-grid { grid-template-columns: 1fr 1fr; }
   .actions-grid { grid-template-columns: 1fr; }
 }
+
+.dash-header-row { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
+.dash-header-row .section-title { margin-bottom:0; }
+.btn-reset-data { background:none;border:1px solid var(--border,#e5e7eb);color:var(--text-muted,#6b7280);padding:7px 14px;border-radius:8px;font-size:0.82rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px; }
+.btn-reset-data:hover { border-color:#ef4444;color:#ef4444; }
 </style>
