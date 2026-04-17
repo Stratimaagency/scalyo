@@ -12,19 +12,9 @@ function save(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
 }
 
-const DEMO_CLIENTS = [
-  { id: 'cl1', name: 'TechScale', industry: 'SaaS', arr: 120000, mrr: 10000, health: 8.2, nps: 45, status: 'healthy', csm: 'Lidia', csmId: 'tm1', logo: '🟢', churnRisk: 0.05, renewalDate: '2026-09-01', contacts: [{ name: 'Marc Dupont', email: 'marc@techscale.io', role: 'CTO' }] },
-  { id: 'cl2', name: 'Acme Corp', industry: 'Retail', arr: 85000, mrr: 7083, health: 7.1, nps: 38, status: 'healthy', csm: 'Thomas', csmId: 'tm2', logo: '🟢', churnRisk: 0.08, renewalDate: '2026-07-15', contacts: [] },
-  { id: 'cl3', name: 'Biotech Group', industry: 'Santé', arr: 200000, mrr: 16667, health: 9.1, nps: 72, status: 'healthy', csm: 'Lidia', csmId: 'tm1', logo: '🟢', churnRisk: 0.02, renewalDate: '2026-11-30', contacts: [] },
-  { id: 'cl4', name: 'Leroy Finance', industry: 'Finance', arr: 95000, mrr: 7917, health: 3.2, nps: 12, status: 'critical', csm: 'Thomas', csmId: 'tm2', logo: '🔴', churnRisk: 0.72, renewalDate: '2026-05-10', contacts: [{ name: 'Sophie Leroy', email: 'sleroy@leroyfi.com', role: 'CEO' }] },
-  { id: 'cl5', name: 'NovaTech', industry: 'Tech', arr: 150000, mrr: 12500, health: 7.8, nps: 55, status: 'healthy', csm: 'Lidia', csmId: 'tm1', logo: '🟢', churnRisk: 0.06, renewalDate: '2026-08-20', contacts: [] },
-  { id: 'cl6', name: 'MediaGroup', industry: 'Média', arr: 60000, mrr: 5000, health: 5.5, nps: 22, status: 'watch', csm: 'Sarah', csmId: 'tm3', logo: '🟡', churnRisk: 0.28, renewalDate: '2026-06-01', contacts: [] },
-  { id: 'cl7', name: 'LogiPro', industry: 'Logistique', arr: 75000, mrr: 6250, health: 6.3, nps: 31, status: 'watch', csm: 'Thomas', csmId: 'tm2', logo: '🟡', churnRisk: 0.19, renewalDate: '2026-10-15', contacts: [] },
-  { id: 'cl8', name: 'DataVault', industry: 'Data', arr: 110000, mrr: 9167, health: 2.8, nps: 8, status: 'critical', csm: 'Sarah', csmId: 'tm3', logo: '🔴', churnRisk: 0.81, renewalDate: '2026-04-30', contacts: [] },
-]
 
 export const useClientStore = defineStore('clients', () => {
-  const clients = ref(load('scalyo_clients', DEMO_CLIENTS))
+  const clients = ref(load('scalyo_clients', []))
 
   const totalArr = computed(() => clients.value.reduce((s, c) => s + (c.arr || 0), 0))
   const avgHealth = computed(() => clients.value.length ? parseFloat((clients.value.reduce((s, c) => s + (c.health || 0), 0) / clients.value.length).toFixed(1)) : 0)
