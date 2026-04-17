@@ -20,6 +20,14 @@
       <p class="auth-footer">{{ t('login_no_account') }} <router-link to="/register" class="link">{{ t('login_signup') }}</router-link></p>
     </div>
   </div>
+
+    <!-- Footer légal -->
+    <div class="auth-legal-footer">
+      En créant un compte, vous acceptez nos
+      <router-link to="/cgu" target="_blank">CGU</router-link>
+      et notre
+      <router-link to="/privacy" target="_blank">Politique de confidentialité</router-link>
+    </div>
 </template>
 
 <script setup>
@@ -87,4 +95,7 @@ async function handleLogin() {
   from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: translateY(0); }
 }
+.auth-legal-footer { text-align:center; font-size:0.78rem; color:var(--text-muted,#6b7280); margin-top:16px; line-height:1.6; }
+.auth-legal-footer a { color:var(--purple,#7c3aed); text-decoration:none; }
+.auth-legal-footer a:hover { text-decoration:underline; }
 </style>
