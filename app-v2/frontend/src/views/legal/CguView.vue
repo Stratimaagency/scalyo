@@ -60,8 +60,8 @@
 </template>
 
 <script setup>
-import { useHead } from '@vueuse/head'
-useHead({ title: 'CGU — Scalyo', meta: [{ name: 'description', content: 'Conditions Générales d\'Utilisation de Scalyo' }] })
+import { onMounted } from 'vue'
+onMounted(() => { document.title = 'CGU — Scalyo' })
 </script>
 
 <style scoped>
