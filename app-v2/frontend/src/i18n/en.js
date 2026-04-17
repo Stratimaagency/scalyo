@@ -198,6 +198,8 @@ export default {
   paywall_title: 'Your free trial has ended',
   paywall_subtitle: 'You enjoyed 14 days of free trial. To continue using Scalyo, choose the plan that suits your business.',
   paywall_choose: 'Choose this plan',
+  trial_banner: 'Free trial — {days} day(s) remaining',
+  trial_choose_plan: 'Choose a plan →',
   paywall_logout: 'Sign out',
   notfound_title: 'Page not found',
   notfound_desc: 'The page you are looking for does not exist or has been moved.',
