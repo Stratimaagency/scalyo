@@ -117,6 +117,11 @@ async function sendMessage(text) {
 function scrollBottom() {
   if (chatRef.value) chatRef.value.scrollTop = chatRef.value.scrollHeight
 }
+
+function clearHistory() {
+  if (!confirm('Effacer tout l\u0027historique du chat ?')) return
+  messages.value = []
+}
 </script>
 
 <style scoped>
@@ -154,4 +159,6 @@ function scrollBottom() {
 .send-btn { background: var(--purple); color: #fff; border: none; border-radius: var(--radius-sm); padding: 10px 18px; font-size: 1.1rem; cursor: pointer; transition: all 0.15s; }
 .send-btn:hover:not(:disabled) { background: var(--purple-dark); }
 .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-clear-chat { background:none;border:1px solid var(--border,#e5e7eb);color:var(--text-muted,#6b7280);padding:5px 10px;border-radius:7px;font-size:0.8rem;cursor:pointer;margin-left:auto;margin-right:8px; }
+.btn-clear-chat:hover { border-color:#ef4444;color:#ef4444; }
 </style>
