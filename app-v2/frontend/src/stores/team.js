@@ -2,6 +2,11 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 
+async function getCurrentUserId() {
+  const { data: { user } } = await supabase.auth.getUser()
+  return user?.id
+}
+
 export const useTeamStore = defineStore('team', () => {
   const members = ref([])
   const loading = ref(false)
@@ -39,14 +44,14 @@ export const useTeamStore = defineStore('team', () => {
 
   // ─── Add ──────────────────────────────────────────────────────
   async function addMember(member) {
-    const { data, error } = await supabase.from('team_members').insert([memberToDb(member)]).select().single()
+    const { data, error } = await supabase.from('team_members').insert([await memberToDb(member)]).select().single()
     if (!error && data) members.value.push(dbToMember(data))
     return data
   }
 
   // ─── Update ───────────────────────────────────────────────────
   async function updateMember(member) {
-    const { error } = await supabase.from('team_members').update(memberToDb(member)).eq('id', member.id)
+    const { error } = await supabase.from('team_members').update(await memberToDb(member)).eq('id', member.id)
     if (!error) {
       const idx = members.value.findIndex(m => m.id === member.id)
       if (idx > -1) members.value[idx] = { ...members.value[idx], ...member }
@@ -89,8 +94,9 @@ export const useTeamStore = defineStore('team', () => {
     }
   }
 
-  function memberToDb(m) {
-    return {
+  async function memberToDb(m) {
+    const user_id = await getCurrentUserId()
+    return { user_id,
       name: m.name,
       email: m.email || '',
       role: m.role || '',
