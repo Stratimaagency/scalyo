@@ -70,8 +70,8 @@
   </div>
 </template>
 <script setup>
-import { useHead } from '@vueuse/head'
-useHead({ title: 'Confidentialité — Scalyo' })
+import { onMounted } from 'vue'
+onMounted(() => { document.title = 'Politique de confidentialité — Scalyo' })
 </script>
 <style scoped>
 .legal-page { min-height: 100vh; background: var(--bg, #f8f9fb); padding: 40px 20px; }
