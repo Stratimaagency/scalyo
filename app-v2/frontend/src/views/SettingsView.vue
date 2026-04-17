@@ -173,6 +173,40 @@
         </div>
         <p v-if="langSaved" class="stg-saved">✓ {{ t('stg_lang_saved') }}</p>
       </div>
+
+      <!-- ─── Section Forfait ────────────────────────────────────────────────── -->
+      <div class="stg-section" id="stg-forfait">
+        <h2 class="stg-section-title">💳 {{ t('stg_plan_title') }}</h2>
+        <p class="stg-section-desc">{{ t('stg_plan_desc') }}</p>
+        <div class="plan-current">
+          <span class="plan-badge">{{ currentPlanLabel }}</span>
+          <span class="plan-status" :class="{ active: auth.hasActiveSubscription, trial: auth.isOnTrial }">
+            {{ auth.hasActiveSubscription ? t('stg_plan_active') : auth.isOnTrial ? t('stg_trial_days', { days: auth.trialDaysLeft }) : t('stg_plan_none') }}
+          </span>
+        </div>
+        <div class="plan-actions">
+          <a :href="starterUrl" target="_blank" class="btn-plan-change starter">Starter — 97€/mois</a>
+          <a :href="growthUrl" target="_blank" class="btn-plan-change growth">Growth — 297€/mois</a>
+          <a :href="eliteUrl" target="_blank" class="btn-plan-change elite">Elite — 697€/mois</a>
+        </div>
+      </div>
+
+      <!-- ─── Section Apparence ──────────────────────────────────────────────── -->
+      <div class="stg-section" id="stg-apparence">
+        <h2 class="stg-section-title">🌙 {{ t('stg_dark_title') }}</h2>
+        <p class="stg-section-desc">{{ t('stg_dark_desc') }}</p>
+        <div class="theme-cards">
+          <button class="theme-card" :class="{ active: theme === 'light' }" @click="setTheme('light')">
+            ☀️ {{ t('stg_theme_light') }}
+          </button>
+          <button class="theme-card" :class="{ active: theme === 'dark' }" @click="setTheme('dark')">
+            🌙 {{ t('stg_theme_dark') }}
+          </button>
+          <button class="theme-card" :class="{ active: theme === 'auto' }" @click="setTheme('auto')">
+            🖥️ {{ t('stg_theme_auto') }}
+          </button>
+        </div>
+      </div>
 </div>
 </template>
 
@@ -229,6 +263,41 @@ async function changeLang(code) {
   langSaved.value = true
   setTimeout(() => { langSaved.value = false }, 2000)
 }
+
+// ─── Plan & Theme ─────────────────────────────────────────────────────────
+const currentPlanLabel = computed(() => {
+  if (auth.hasActiveSubscription) return auth.profile?.plan || 'Abonnement actif'
+  if (auth.isOnTrial) return 'Essai gratuit'
+  return 'Aucun forfait'
+})
+
+const email = computed(() => auth.user?.email || '')
+const starterUrl = computed(() => 'https://buy.stripe.com/bJebJ1amncpL7mBekAdfG01' + (email.value ? '?prefilled_email=' + encodeURIComponent(email.value) : ''))
+const growthUrl = computed(() => 'https://buy.stripe.com/eVqbJ10LN6ln5et90gdfG00' + (email.value ? '?prefilled_email=' + encodeURIComponent(email.value) : ''))
+const eliteUrl = computed(() => 'https://buy.stripe.com/eVqaEXeCD1L736l7WcdfG05' + (email.value ? '?prefilled_email=' + encodeURIComponent(email.value) : ''))
+
+const theme = ref(localStorage.getItem('scalyo_theme') || 'auto')
+
+function setTheme(t) {
+  theme.value = t
+  localStorage.setItem('scalyo_theme', t)
+  applyTheme(t)
+}
+
+function applyTheme(t) {
+  const root = document.documentElement
+  if (t === 'dark') {
+    root.setAttribute('data-theme', 'dark')
+  } else if (t === 'light') {
+    root.setAttribute('data-theme', 'light')
+  } else {
+    root.removeAttribute('data-theme')
+  }
+}
+
+// Apply on mount
+applyTheme(theme.value)
+
 </script>
 
 <style scoped>
@@ -319,5 +388,24 @@ async function changeLang(code) {
 .lang-flag { font-size:1.2rem; }
 .lang-check { color:var(--green);font-weight:700; }
 .stg-saved { margin-top:8px;font-size:0.82rem;color:var(--green);font-weight:500; }
+
+
+.plan-current { display:flex;align-items:center;gap:12px;margin-bottom:16px; }
+.plan-badge { background:var(--purple-light,#ede9fe);color:var(--purple,#7c3aed);padding:4px 12px;border-radius:20px;font-size:0.82rem;font-weight:600; }
+.plan-status { font-size:0.85rem;font-weight:500; }
+.plan-status.active { color:var(--green,#16a34a); }
+.plan-status.trial { color:#f59e0b; }
+.plan-actions { display:flex;gap:10px;flex-wrap:wrap; }
+.btn-plan-change { padding:10px 18px;border-radius:10px;font-size:0.85rem;font-weight:600;text-decoration:none;transition:all 0.2s; }
+.btn-plan-change.starter { background:#ede9fe;color:#5b21b6; }
+.btn-plan-change.starter:hover { background:#7c3aed;color:#fff; }
+.btn-plan-change.growth { background:#7c3aed;color:#fff; }
+.btn-plan-change.growth:hover { background:#6d28d9;transform:translateY(-1px); }
+.btn-plan-change.elite { background:#1f2937;color:#fff; }
+.btn-plan-change.elite:hover { background:#111827; }
+.theme-cards { display:flex;gap:12px;flex-wrap:wrap;margin-top:12px; }
+.theme-card { display:flex;align-items:center;gap:8px;padding:12px 18px;border:2px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg-card,#fff);cursor:pointer;font-size:0.9rem;transition:all 0.18s;color:var(--text,#1a1a2e); }
+.theme-card:hover { border-color:var(--purple,#7c3aed); }
+.theme-card.active { border-color:var(--purple,#7c3aed);background:var(--purple-light,#ede9fe);color:var(--purple,#7c3aed);font-weight:600; }
 
 </style>
