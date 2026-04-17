@@ -1,6 +1,29 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
+// Lazy imports to avoid circular deps
+async function loadAllStores() {
+  try {
+    const { useClientStore } = await import('@/stores/clients')
+    const { useTeamStore } = await import('@/stores/team')
+    const { useTaskStore } = await import('@/stores/tasks')
+    const clientStore = useClientStore()
+    const teamStore = useTeamStore()
+    const taskStore = useTaskStore()
+    await Promise.all([clientStore.loadClients(), teamStore.loadMembers(), taskStore.loadTasks()])
+  } catch(e) { console.error('loadAllStores error:', e) }
+}
+
+async function clearAllStoreData() {
+  try {
+    const { useClientStore } = await import('@/stores/clients')
+    const { useTeamStore } = await import('@/stores/team')
+    const { useTaskStore } = await import('@/stores/tasks')
+    useClientStore().clients.length = 0
+    useTeamStore().members.length = 0
+    const ts = useTaskStore(); ts.tasks.length = 0; ts.projects.length = 0
+  } catch(e) {}
+}
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const TRIAL_DAYS = 14
@@ -124,6 +147,7 @@ export const useAuthStore = defineStore('auth', () => {
     clearAllStores()
     user.value = data.user
     await fetchProfile(data.user.id)
+    await loadAllStores()
     return { success: true }
   }
 
@@ -160,6 +184,7 @@ export const useAuthStore = defineStore('auth', () => {
   // ─── Logout ───────────────────────────────────────────────────────────────
   async function logout() {
     clearAllStores()
+    await clearAllStoreData()
     await supabase.auth.signOut()
     user.value = null
     profile.value = null
