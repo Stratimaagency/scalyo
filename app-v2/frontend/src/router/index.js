@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 
 const routes = [
   { path: '/', name: 'landing', component: () => import('@/views/LandingPage.vue'), meta: { guest: true } },
+  { path: '/paywall', name: 'paywall', component: () => import('@/views/PaywallView.vue') },
   { path: '/payment-success', name: 'payment-success', component: () => import('@/views/PaymentSuccessView.vue') },
   { path: '/login', name: 'login', component: () => import('@/views/LoginView.vue'), meta: { guest: true } },
   { path: '/register', name: 'register', component: () => import('@/views/RegisterView.vue'), meta: { guest: true } },
@@ -59,11 +60,18 @@ router.beforeEach(async (to) => {
   if (!authStore.user && !authStore.loading) {
     await authStore.init()
   }
+  // Unauthenticated → login
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return { name: 'login' }
   }
+  // Authenticated + guest route → dashboard or paywall
   if (to.meta.guest && authStore.isAuthenticated) {
+    if (authStore.needsPayment) return { name: 'paywall' }
     return { name: 'dashboard' }
+  }
+  // Authenticated + requiresAuth + trial expired → paywall (except paywall itself)
+  if (to.meta.requiresAuth && authStore.isAuthenticated && authStore.needsPayment && to.name !== 'paywall') {
+    return { name: 'paywall' }
   }
 })
 
@@ -79,6 +87,7 @@ router.afterEach((to) => {
     'settings': 'Paramètres — Scalyo',
     'profile': 'Mon profil — Scalyo',
     'payment-success': 'Paiement confirmé — Scalyo',
+    'paywall': 'Choisissez votre forfait — Scalyo',
     'NotFound': 'Page introuvable — Scalyo',
   }
   document.title = (to.name && titles[to.name]) || to.meta?.title || 'Scalyo — Customer Success Platform'
