@@ -3,7 +3,7 @@
     <!-- HEADER -->
     <div class="mgr-header">
       <div>
-        <h1>👥 {{ t('mgr_title') }}</h1>
+        <div class="manager-header-row"><h1>👥 {{ t('mgr_title') }}</h1><button class="btn-reset-data" @click="resetAllData" title="Réinitialiser les données">🔄 Réinitialiser</button></div>
         <p class="mgr-date">{{ formattedDate }}</p>
       </div>
       <div class="mgr-header-actions">
@@ -170,6 +170,8 @@
 </template>
 
 <script setup>
+import { useTaskStore } from '@/stores/tasks'
+
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTeamStore } from '@/stores/team'
@@ -238,6 +240,22 @@ const total = computed(() => clients.clients.length || 1)
 const healthyArcMini = computed(() => ((clients.healthyCount / total.value) * circumMini).toFixed(1))
 const watchArcMini = computed(() => ((clients.watchCount / total.value) * circumMini).toFixed(1))
 const criticalArcMini = computed(() => ((clients.criticalCount / total.value) * circumMini).toFixed(1))
+
+
+
+const tasks = useTaskStore()
+
+function resetAllData() {
+  if (!confirm('Supprimer toutes les données ? Cette action est irréversible.')) return
+  if (clients.clients) clients.clients.length = 0
+  if (team.members) team.members.length = 0
+  if (tasks.tasks) tasks.tasks.length = 0
+  if (tasks.projects) tasks.projects.length = 0
+  ;['scalyo_clients','scalyo_tasks','scalyo_team','scalyo_projects','scalyo_kpis',
+    'scalyo_playbooks','scalyo_snapshots','scalyo_okr','scalyo_roadmap',
+    'scalyo_quotes','scalyo_dashboard_kpis','scalyo_coach_messages'].forEach(k => localStorage.removeItem(k))
+}
+
 </script>
 
 <style scoped>
@@ -370,4 +388,9 @@ const criticalArcMini = computed(() => ((clients.criticalCount / total.value) * 
   .wellbeing-grid { grid-template-columns: 1fr; }
   .perf-header, .perf-row { grid-template-columns: 1.5fr 0.8fr 0.8fr 0.8fr; font-size: 0.75rem; }
 }
+
+.manager-header-row { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px; }
+.manager-header-row h1 { margin-bottom:0; }
+.btn-reset-data { background:none;border:1px solid var(--border,#e5e7eb);color:var(--text-muted,#6b7280);padding:7px 14px;border-radius:8px;font-size:0.82rem;cursor:pointer;transition:all 0.2s; }
+.btn-reset-data:hover { border-color:#ef4444;color:#ef4444; }
 </style>
