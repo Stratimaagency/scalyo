@@ -1487,4 +1487,22 @@ export default {
 
   dashboard_reset: 'Réinitialiser les données',
   dashboard_reset_confirm: 'Supprimer toutes les données ? Cette action est irréversible.',
+
+  integ_title: 'Intégrations',
+  integ_subtitle: 'Connectez Scalyo à vos outils via API REST ou Webhooks.',
+  integ_api_title: 'API REST publique',
+  integ_api_desc: 'Accédez à vos données Scalyo depuis n\'importe quel outil via notre API REST sécurisée.',
+  integ_create_key: 'Créer une clé API',
+  integ_no_keys: 'Aucune clé API. Créez-en une pour commencer.',
+  integ_key_name: 'Nom de la clé',
+  integ_key_scopes: 'Permissions',
+  integ_revoke_key: 'Révoquer cette clé',
+  integ_key_shown_once: 'Copiez cette clé maintenant — elle ne sera plus jamais affichée.',
+  integ_webhook_title: 'Webhooks entrants',
+  integ_webhook_desc: 'Recevez des données depuis Zapier, Make ou tout outil compatible webhook.',
+  integ_create_webhook: 'Créer un webhook',
+  integ_no_webhooks: 'Aucun webhook configuré.',
+  integ_import_title: 'Import intelligent',
+  integ_import_desc: 'Importez vos clients depuis Excel, CSV, ou n\'importe quel fichier.',
+  integ_goto_import: 'Aller vers l\'Import intelligent',
 }
