@@ -1,72 +1,113 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-
-function load(key, fallback) {
-  try {
-    const v = localStorage.getItem(key)
-    return v ? JSON.parse(v) : fallback
-  } catch { return fallback }
-}
-
-function save(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
-}
-
+import { supabase } from '@/lib/supabase'
 
 export const useClientStore = defineStore('clients', () => {
-  const clients = ref(load('scalyo_clients', []))
+  const clients = ref([])
+  const loading = ref(false)
 
+  // ─── Computed ─────────────────────────────────────────────────
   const totalArr = computed(() => clients.value.reduce((s, c) => s + (c.arr || 0), 0))
-  const avgHealth = computed(() => clients.value.length ? parseFloat((clients.value.reduce((s, c) => s + (c.health || 0), 0) / clients.value.length).toFixed(1)) : 0)
-  const avgNps = computed(() => clients.value.length ? Math.round(clients.value.reduce((s, c) => s + (c.nps || 0), 0) / clients.value.length) : 0)
-  const criticalCount = computed(() => clients.value.filter(c => c.status === 'critical').length)
-  const watchCount = computed(() => clients.value.filter(c => c.status === 'watch').length)
-  const healthyCount = computed(() => clients.value.filter(c => c.status === 'healthy').length)
-  const churnRate = computed(() => clients.value.length ? parseFloat((clients.value.reduce((s, c) => s + (c.churnRisk || 0), 0) / clients.value.length * 100).toFixed(1)) : 0)
-  const arrAtRisk = computed(() => clients.value.filter(c => c.status === 'critical').reduce((s, c) => s + (c.arr || 0), 0))
-  const renewalsNext30 = computed(() => {
-    const now = new Date()
-    const in30 = new Date(now.getTime() + 30 * 86400000)
-    return clients.value.filter(c => {
-      if (!c.renewalDate) return false
-      const d = new Date(c.renewalDate)
-      return d >= now && d <= in30
-    }).length
+  const avgHealth = computed(() => {
+    if (!clients.value.length) return 0
+    return (clients.value.reduce((s, c) => s + (c.health || 0), 0) / clients.value.length).toFixed(1)
   })
+  const avgNps = computed(() => {
+    if (!clients.value.length) return 0
+    return Math.round(clients.value.reduce((s, c) => s + (c.nps || 0), 0) / clients.value.length)
+  })
+  const churnRate = computed(() => {
+    if (!clients.value.length) return 0
+    return ((clients.value.filter(c => c.churn_risk > 0.3).length / clients.value.length) * 100).toFixed(1)
+  })
+  const nrr = computed(() => {
+    const expanded = clients.value.filter(c => c.status === 'healthy').reduce((s, c) => s + (c.arr || 0), 0)
+    return totalArr.value > 0 ? ((expanded / totalArr.value) * 100).toFixed(1) : 100
+  })
+  const criticalCount = computed(() => clients.value.filter(c => c.status === 'critical' || c.health <= 3).length)
+  const watchCount = computed(() => clients.value.filter(c => c.status === 'watch' || (c.health > 3 && c.health <= 6)).length)
+  const healthyCount = computed(() => clients.value.filter(c => c.status === 'healthy' && c.health > 6).length)
+  const arrAtRisk = computed(() => clients.value.filter(c => c.churn_risk > 0.3).reduce((s, c) => s + (c.arr || 0), 0))
 
-  function addClient(client) {
-    clients.value.push({
-      id: 'cl' + Date.now(),
-      logo: '🟡',
-      contacts: [],
-      churnRisk: 0.1,
-      renewalDate: '',
-      ...client,
-    })
-    save('scalyo_clients', clients.value)
+  // ─── Load from Supabase ───────────────────────────────────────
+  async function loadClients() {
+    loading.value = true
+    const { data, error } = await supabase.from('clients').select('*').order('created_at', { ascending: false })
+    if (!error && data) clients.value = data.map(dbToClient)
+    loading.value = false
   }
 
-  function updateClient(id, data) {
-    const i = clients.value.findIndex(c => c.id === id)
-    if (i !== -1) {
-      Object.assign(clients.value[i], data)
-      save('scalyo_clients', clients.value)
+  // ─── Add ──────────────────────────────────────────────────────
+  async function addClient(client) {
+    const { data, error } = await supabase.from('clients').insert([clientToDb(client)]).select().single()
+    if (!error && data) clients.value.unshift(dbToClient(data))
+    return data
+  }
+
+  // ─── Update ───────────────────────────────────────────────────
+  async function updateClient(client) {
+    const { error } = await supabase.from('clients').update(clientToDb(client)).eq('id', client.id)
+    if (!error) {
+      const idx = clients.value.findIndex(c => c.id === client.id)
+      if (idx > -1) clients.value[idx] = { ...clients.value[idx], ...client }
     }
   }
 
-  function deleteClient(id) {
-    clients.value = clients.value.filter(c => c.id !== id)
-    save('scalyo_clients', clients.value)
+  // ─── Delete ───────────────────────────────────────────────────
+  async function deleteClient(id) {
+    const { error } = await supabase.from('clients').delete().eq('id', id)
+    if (!error) clients.value = clients.value.filter(c => c.id !== id)
   }
 
-  function resetAll() {
+  // ─── Reset ────────────────────────────────────────────────────
+  async function resetAll() {
+    await supabase.from('clients').delete().neq('id', '00000000-0000-0000-0000-000000000000')
     clients.value = []
-    save('scalyo_clients', [])
+  }
+
+  // ─── Mappers DB ↔ Store ───────────────────────────────────────
+  function dbToClient(r) {
+    return {
+      id: r.id,
+      name: r.name,
+      industry: r.industry || '',
+      arr: r.arr || 0,
+      mrr: r.mrr || 0,
+      health: r.health || 5,
+      nps: r.nps || 0,
+      status: r.status || 'healthy',
+      csm: r.csm || '',
+      churnRisk: r.churn_risk || 0,
+      churn_risk: r.churn_risk || 0,
+      renewalDate: r.renewal_date || '',
+      contacts: r.contacts || [],
+      logo: r.logo || '',
+      notes: r.notes || '',
+    }
+  }
+
+  function clientToDb(c) {
+    return {
+      name: c.name,
+      industry: c.industry || '',
+      arr: c.arr || 0,
+      mrr: c.mrr || 0,
+      health: c.health || 5,
+      nps: c.nps || 0,
+      status: c.status || 'healthy',
+      csm: c.csm || '',
+      churn_risk: c.churnRisk ?? c.churn_risk ?? 0,
+      renewal_date: c.renewalDate || null,
+      contacts: c.contacts || [],
+      logo: c.logo || '',
+      notes: c.notes || '',
+      updated_at: new Date().toISOString(),
+    }
   }
 
   return {
-    clients, totalArr, avgHealth, avgNps, criticalCount, watchCount, healthyCount,
-    churnRate, arrAtRisk, renewalsNext30,
-    addClient, updateClient, deleteClient, resetAll,
+    clients, loading, totalArr, avgHealth, avgNps, churnRate, nrr,
+    criticalCount, watchCount, healthyCount, arrAtRisk,
+    loadClients, addClient, updateClient, deleteClient, resetAll,
   }
-}, { persist: false })
+})
