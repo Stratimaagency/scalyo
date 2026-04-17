@@ -931,4 +931,22 @@ export default {
 
   dashboard_reset: 'Reset data',
   dashboard_reset_confirm: 'Delete all data? This action is irreversible.',
+
+  integ_title: 'Integrations',
+  integ_subtitle: 'Connect Scalyo to your tools via REST API or Webhooks.',
+  integ_api_title: 'Public REST API',
+  integ_api_desc: 'Access your Scalyo data from any tool via our secure REST API.',
+  integ_create_key: 'Create API key',
+  integ_no_keys: 'No API keys. Create one to get started.',
+  integ_key_name: 'Key name',
+  integ_key_scopes: 'Permissions',
+  integ_revoke_key: 'Revoke this key',
+  integ_key_shown_once: 'Copy this key now — it will never be shown again.',
+  integ_webhook_title: 'Incoming Webhooks',
+  integ_webhook_desc: 'Receive data from Zapier, Make, or any webhook-compatible tool.',
+  integ_create_webhook: 'Create webhook',
+  integ_no_webhooks: 'No webhooks configured.',
+  integ_import_title: 'Smart Import',
+  integ_import_desc: 'Import your clients from Excel, CSV, or any file.',
+  integ_goto_import: 'Go to Smart Import',
 }
