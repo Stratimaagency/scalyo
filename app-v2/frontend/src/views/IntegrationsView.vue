@@ -206,7 +206,7 @@ const endpoints = [
   { method: 'POST', path: '/clients', desc: 'Créer un client' },
   { method: 'PUT', path: '/clients/:id', desc: 'Modifier un client' },
   { method: 'DELETE', path: '/clients/:id', desc: 'Supprimer un client' },
-  { method: 'GET', path: '/team', desc: 'Lister les membres de l'équipe' },
+  { method: 'GET', path: '/team', desc: "Lister les membres de l'équipe" },
   { method: 'POST', path: '/team', desc: 'Ajouter un membre' },
   { method: 'GET', path: '/tasks', desc: 'Lister les tâches' },
   { method: 'POST', path: '/tasks', desc: 'Créer une tâche' },
@@ -219,7 +219,6 @@ function formatDate(d) {
 }
 
 function getWebhookUrl(wh) {
-  const { data: { user } } = { data: { user: null } }
   return webhookBaseUrl.value + '?user=' + wh.user_id + '&event=client.created'
 }
 
