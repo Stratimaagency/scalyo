@@ -1484,4 +1484,7 @@ export default {
   stg_theme_light: 'Clair',
   stg_theme_dark: 'Sombre',
   stg_theme_auto: 'Automatique (système)',
+
+  dashboard_reset: 'Réinitialiser les données',
+  dashboard_reset_confirm: 'Supprimer toutes les données ? Cette action est irréversible.',
 }
