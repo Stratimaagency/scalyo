@@ -282,6 +282,8 @@ export default {
   paywall_title: 'Votre essai gratuit est terminé',
   paywall_subtitle: 'Vous avez bénéficié de 14 jours d\'essai. Pour continuer à utiliser Scalyo, choisissez le forfait adapté à votre activité.',
   paywall_choose: 'Choisir ce forfait',
+  trial_banner: 'Essai gratuit — {days} jour(s) restant(s)',
+  trial_choose_plan: 'Choisir un forfait →',
   paywall_logout: 'Se déconnecter',
   notfound_title: 'Page introuvable',
   notfound_desc: 'La page que vous cherchez n\'existe pas ou a été déplacée.',
