@@ -25,12 +25,13 @@ export const useAuthStore = defineStore('auth', () => {
     return 'evening'
   })
 
-  // ─── Trial logic ──────────────────────────────────────────────────────────
+  // ─── Subscription ─────────────────────────────────────────────────────────
   const hasActiveSubscription = computed(() => {
     const sub = profile.value?.stripe_subscription_id
     return !!sub && sub !== '' && sub !== 'none'
   })
 
+  // ─── Trial ────────────────────────────────────────────────────────────────
   const trialStartedAt = computed(() => {
     const d = profile.value?.trial_started_at
     return d ? new Date(d) : null
@@ -44,21 +45,22 @@ export const useAuthStore = defineStore('auth', () => {
     return Math.max(0, TRIAL_DAYS - Math.floor(elapsed))
   })
 
+  // Active trial = started + days remaining + not already consumed
   const isOnTrial = computed(() => {
     if (hasActiveSubscription.value) return false
     if (!trialStartedAt.value) return false
-    if (trialUsed.value && trialDaysLeft.value === 0) return false
+    if (trialUsed.value) return false
     return trialDaysLeft.value > 0
   })
 
+  // Expired = trial started but 0 days left, OR trial_used flag
+  // NEVER expired while isOnTrial is true
   const trialExpired = computed(() => {
     if (hasActiveSubscription.value) return false
-    // Never started trial
-    if (!trialStartedAt.value && !trialUsed.value) return false
-    // Trial used (already expired once) with no active subscription
-    if (trialUsed.value && !hasActiveSubscription.value) return true
-    // Trial started but 14 days elapsed
+    if (isOnTrial.value) return false  // ← clé : trial actif = jamais expired
+    if (!trialStartedAt.value && !trialUsed.value) return false  // jamais commencé = pas expired
     if (trialStartedAt.value && trialDaysLeft.value === 0) return true
+    if (trialUsed.value) return true
     return false
   })
 
@@ -67,14 +69,12 @@ export const useAuthStore = defineStore('auth', () => {
   // ─── Locale ───────────────────────────────────────────────────────────────
   const userLocale = computed(() => profile.value?.locale || 'fr')
 
-  // ─── Stores cleanup ───────────────────────────────────────────────────────
+  // ─── Store cleanup ────────────────────────────────────────────────────────
   function clearAllStores() {
-    const storeKeys = [
-      'scalyo_clients', 'scalyo_tasks', 'scalyo_team', 'scalyo_projects',
-      'scalyo_kpis', 'scalyo_playbooks', 'scalyo_snapshots', 'scalyo_okr',
-      'scalyo_roadmap', 'scalyo_quotes', 'scalyo_dashboard_kpis'
-    ]
-    storeKeys.forEach(k => localStorage.removeItem(k))
+    const keys = ['scalyo_clients','scalyo_tasks','scalyo_team','scalyo_projects',
+      'scalyo_kpis','scalyo_playbooks','scalyo_snapshots','scalyo_okr',
+      'scalyo_roadmap','scalyo_quotes','scalyo_dashboard_kpis']
+    keys.forEach(k => localStorage.removeItem(k))
   }
 
   // ─── Init ─────────────────────────────────────────────────────────────────
@@ -100,13 +100,10 @@ export const useAuthStore = defineStore('auth', () => {
   // ─── Fetch profile ────────────────────────────────────────────────────────
   async function fetchProfile(userId) {
     const { data, error: err } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
+      .from('profiles').select('*').eq('id', userId).single()
     if (!err && data) {
       profile.value = data
-      // Mark trial as used if expired
+      // Auto-mark trial as used when it expires
       if (data.trial_started_at && !data.trial_used) {
         const elapsed = (Date.now() - new Date(data.trial_started_at).getTime()) / (1000 * 60 * 60 * 24)
         if (elapsed >= TRIAL_DAYS) {
@@ -135,8 +132,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     const { data, error: err } = await supabase.auth.signUp({
-      email,
-      password,
+      email, password,
       options: {
         data: { first_name: firstName, last_name: lastName, locale },
         emailRedirectTo: `${window.location.origin}/login?verified=true`
