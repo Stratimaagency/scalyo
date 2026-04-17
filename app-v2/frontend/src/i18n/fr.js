@@ -279,6 +279,10 @@ export default {
   plan_feat_import: 'Import intelligent',
   plan_feat_support: 'Support prioritaire',
   // 404
+  paywall_title: 'Votre essai gratuit est terminé',
+  paywall_subtitle: 'Vous avez bénéficié de 14 jours d\'essai. Pour continuer à utiliser Scalyo, choisissez le forfait adapté à votre activité.',
+  paywall_choose: 'Choisir ce forfait',
+  paywall_logout: 'Se déconnecter',
   notfound_title: 'Page introuvable',
   notfound_desc: 'La page que vous cherchez n\'existe pas ou a été déplacée.',
   notfound_back: 'Retour',
