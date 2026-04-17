@@ -153,7 +153,27 @@
         <button class="btn-danger">{{ t('stg_delete_btn') }}</button>
       </div>
     </div>
-  </div>
+  
+      <!-- ─── Section Langue ─────────────────────────────────────────────── -->
+      <div class="stg-section" id="stg-langue">
+        <h2 class="stg-section-title">🌐 {{ t('stg_lang_title') }}</h2>
+        <p class="stg-section-desc">{{ t('stg_lang_desc') }}</p>
+        <div class="lang-cards">
+          <button
+            v-for="lang in langOptions"
+            :key="lang.code"
+            class="lang-card"
+            :class="{ active: selectedLang === lang.code }"
+            @click="changeLang(lang.code)"
+          >
+            <span class="lang-flag">{{ lang.flag }}</span>
+            <span class="lang-name">{{ lang.name }}</span>
+            <span v-if="selectedLang === lang.code" class="lang-check">✓</span>
+          </button>
+        </div>
+        <p v-if="langSaved" class="stg-saved">✓ {{ t('stg_lang_saved') }}</p>
+      </div>
+</div>
 </template>
 
 <script setup>
@@ -188,6 +208,26 @@ const notif = reactive({ churn: true, renewal: true, burnout: true, late_tasks: 
 
 function saveProfile() {
   // Mock save
+}
+
+// ─── Language settings ────────────────────────────────────────────────────
+const { locale } = useI18n({ useScope: 'global' })
+
+const langOptions = [
+  { code: 'fr', flag: '🇫🇷', name: 'Français' },
+  { code: 'en', flag: '🇬🇧', name: 'English' },
+  { code: 'ko', flag: '🇰🇷', name: '한국어' },
+]
+
+const selectedLang = ref(auth.userLocale || locale.value || 'fr')
+const langSaved = ref(false)
+
+async function changeLang(code) {
+  selectedLang.value = code
+  locale.value = code
+  await auth.saveLocale(code)
+  langSaved.value = true
+  setTimeout(() => { langSaved.value = false }, 2000)
 }
 </script>
 
@@ -271,4 +311,13 @@ function saveProfile() {
 .danger-section p { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 16px; }
 
 @media (max-width: 600px) { .sv-tabs { overflow-x: auto; flex-wrap: nowrap; } }
+
+.lang-cards { display:flex;gap:12px;flex-wrap:wrap;margin-top:12px; }
+.lang-card { display:flex;align-items:center;gap:8px;padding:12px 18px;border:2px solid var(--border);border-radius:var(--radius-sm);background:#fff;cursor:pointer;font-size:0.9rem;transition:all 0.18s; }
+.lang-card:hover { border-color:var(--purple);color:var(--purple); }
+.lang-card.active { border-color:var(--purple);background:#f5f3ff;color:var(--purple);font-weight:600; }
+.lang-flag { font-size:1.2rem; }
+.lang-check { color:var(--green);font-weight:700; }
+.stg-saved { margin-top:8px;font-size:0.82rem;color:var(--green);font-weight:500; }
+
 </style>
