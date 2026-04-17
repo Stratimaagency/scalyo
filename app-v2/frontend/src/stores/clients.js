@@ -2,6 +2,11 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 
+async function getCurrentUserId() {
+  const { data: { user } } = await supabase.auth.getUser()
+  return user?.id
+}
+
 export const useClientStore = defineStore('clients', () => {
   const clients = ref([])
   const loading = ref(false)
@@ -39,14 +44,14 @@ export const useClientStore = defineStore('clients', () => {
 
   // ─── Add ──────────────────────────────────────────────────────
   async function addClient(client) {
-    const { data, error } = await supabase.from('clients').insert([clientToDb(client)]).select().single()
+    const { data, error } = await supabase.from('clients').insert([await clientToDb(client)]).select().single()
     if (!error && data) clients.value.unshift(dbToClient(data))
     return data
   }
 
   // ─── Update ───────────────────────────────────────────────────
   async function updateClient(client) {
-    const { error } = await supabase.from('clients').update(clientToDb(client)).eq('id', client.id)
+    const { error } = await supabase.from('clients').update(await clientToDb(client)).eq('id', client.id)
     if (!error) {
       const idx = clients.value.findIndex(c => c.id === client.id)
       if (idx > -1) clients.value[idx] = { ...clients.value[idx], ...client }
@@ -86,8 +91,9 @@ export const useClientStore = defineStore('clients', () => {
     }
   }
 
-  function clientToDb(c) {
-    return {
+  async function clientToDb(c) {
+    const user_id = await getCurrentUserId()
+    return { user_id,
       name: c.name,
       industry: c.industry || '',
       arr: c.arr || 0,
