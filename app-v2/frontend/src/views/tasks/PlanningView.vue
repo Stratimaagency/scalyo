@@ -329,18 +329,32 @@ function handleEventResize(info) {
   if (ev) { ev.end = info.event.endStr }
 }
 
-function saveEvent() {
+async function saveEvent() {
   if (editingEvent.value) {
     const ev = events.value.find(e => e.id === editingEvent.value)
-    if (ev) { Object.assign(ev, { title: eventForm.title, start: eventForm.start, end: eventForm.end, color: eventForm.color }) }
+    if (ev) {
+      Object.assign(ev, { title: eventForm.title, start: eventForm.start, end: eventForm.end, color: eventForm.color })
+      await supabase.from('planning_events').update({
+        title: eventForm.title, start_at: eventForm.start, end_at: eventForm.end, color: eventForm.color
+      }).eq('id', editingEvent.value)
+    }
   } else {
-    events.value.push({
-      id: 'ev_' + Date.now(), title: eventForm.title, start: eventForm.start, end: eventForm.end || eventForm.start,
-      color: eventForm.color, allDay: eventForm.allDay,
-      extendedProps: { clientId: eventForm.clientId, projectId: eventForm.projectId },
+    const row = {
+      title: eventForm.title, start_at: eventForm.start, end_at: eventForm.end || eventForm.start,
+      color: eventForm.color || '#7c3aed', all_day: eventForm.allDay || false,
+      client_id: eventForm.clientId || '', project_id: eventForm.projectId || '',
+    }
+    const { data } = await supabase.from('planning_events').insert([row]).select().single()
+    if (data) events.value.push({
+      id: data.id, title: data.title, start: data.start_at, end: data.end_at,
+      color: data.color, allDay: data.all_day,
+      extendedProps: { clientId: data.client_id, projectId: data.project_id }
     })
   }
-  eventSlideOpen.value = false
+  eventForm.title = ''; eventForm.start = ''; eventForm.end = '';
+  eventForm.color = '#7c3aed'; eventForm.allDay = false;
+  eventForm.clientId = ''; eventForm.projectId = '';
+  showEventModal.value = false; editingEvent.value = null
 }
 
 function deleteEvent() {
@@ -407,22 +421,6 @@ async function loadEvents() {
   }))
 }
 
-async function saveEvent(ev) {
-  const row = {
-    title: ev.title, start_at: ev.start, end_at: ev.end || ev.start,
-    color: ev.color || '#7c3aed', all_day: ev.allDay || false,
-    client_id: ev.extendedProps?.clientId || '',
-    project_id: ev.extendedProps?.projectId || '',
-    description: ev.extendedProps?.description || '',
-  }
-  if (ev.id && !ev.id.startsWith('ev_')) {
-    await supabase.from('planning_events').update(row).eq('id', ev.id)
-  } else {
-    const { data } = await supabase.from('planning_events').insert([row]).select().single()
-    if (data) return data.id
-  }
-  return ev.id
-}
 
 async function removeEvent(id) {
   await supabase.from('planning_events').delete().eq('id', id)
