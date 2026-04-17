@@ -101,6 +101,12 @@
             </div>
           </div>
         </div>
+      
+      <!-- Trial banner -->
+      <div v-if="auth.isOnTrial" class="trial-banner">
+        🕐 {{ t('trial_banner', { days: auth.trialDaysLeft }) }}
+        <a href="/#pricing" class="trial-cta">{{ t('trial_choose_plan') }}</a>
+      </div>
       </header>
 
       <!-- CONTENT -->
@@ -376,4 +382,29 @@ const sidebarSections = [
 }
 @media (min-width: 769px) { .hide-desktop { display: none !important; } }
 @media (min-width: 769px) { .topbar-logo-mobile { display: none; } }
+
+.trial-banner {
+  background: linear-gradient(90deg, #7c3aed, #a78bfa);
+  color: #fff;
+  text-align: center;
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.trial-cta {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+  padding: 3px 12px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.78rem;
+  transition: background 0.2s;
+}
+.trial-cta:hover { background: rgba(255,255,255,0.4); }
+
 </style>
