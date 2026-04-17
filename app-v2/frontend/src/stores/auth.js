@@ -24,6 +24,16 @@ export const useAuthStore = defineStore('auth', () => {
     return 'evening'
   })
 
+  // Clear all user data from localStorage on login/logout
+  function clearAllStores() {
+    const storeKeys = [
+      'scalyo_clients', 'scalyo_tasks', 'scalyo_team', 'scalyo_projects',
+      'scalyo_kpis', 'scalyo_playbooks', 'scalyo_snapshots', 'scalyo_okr',
+      'scalyo_roadmap', 'scalyo_quotes', 'scalyo_dashboard_kpis'
+    ]
+    storeKeys.forEach(k => localStorage.removeItem(k))
+  }
+
   async function init() {
     loading.value = true
     const { data: { session } } = await supabase.auth.getSession()
@@ -70,34 +80,23 @@ export const useAuthStore = defineStore('auth', () => {
     const { data, error: err } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { first_name: firstName, last_name: lastName }, emailRedirectTo: `${window.location.origin}/login?verified=true` },
+      options: {
+        data: { first_name: firstName, last_name: lastName },
+        emailRedirectTo: `${window.location.origin}/login?verified=true`
+      },
     })
     loading.value = false
     if (err) { error.value = err.message; return { success: false, error: err.message } }
-
-    // Envoyer l'email de bienvenue via Edge Function (best-effort)
     if (data.user) {
       fetch(SUPABASE_URL + '/functions/v1/send-welcome-email', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-        },
+        headers: { 'Content-Type': 'application/json', 'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY },
         body: JSON.stringify({ email, firstName, lastName })
-      }).catch(() => {}) // silent fail — ne bloque pas l'inscription
+      }).catch(() => {})
     }
-
     return { success: true, needsConfirmation: !data.session }
   }
 
-  async 
-  // Clear all user data stores (called on login/logout to ensure clean state)
-  function clearAllStores() {
-    const storeKeys = ['scalyo_clients', 'scalyo_tasks', 'scalyo_team', 'scalyo_projects',
-      'scalyo_kpis', 'scalyo_playbooks', 'scalyo_snapshots', 'scalyo_okr',
-      'scalyo_roadmap', 'scalyo_quotes', 'scalyo_dashboard_kpis']
-    storeKeys.forEach(k => localStorage.removeItem(k))
-  }
   async function logout() {
     clearAllStores()
     await supabase.auth.signOut()
