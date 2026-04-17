@@ -173,8 +173,9 @@
 </template>
 
 <script setup>
-import { ref, watch, reactive, computed, onMounted } from 'vue'
+import { ref, watch, onMounted, reactive, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { supabase } from '@/lib/supabase'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -240,8 +241,7 @@ const defaultEvent = () => ({
 const eventForm = reactive(defaultEvent())
 
 // Mock events
-const events = ref(JSON.parse(localStorage.getItem('scalyo_planning_events') || '[]'))
-watch(events, (val) => { localStorage.setItem('scalyo_planning_events', JSON.stringify(val)) }, { deep: true })
+const events = ref([])
 
 const fcLocale = computed(() => locale.value === 'ko' ? 'ko' : locale.value === 'en' ? 'en' : 'fr')
 const slotHeight = computed(() => planningSettings.density === 'compact' ? 32 : planningSettings.density === 'comfortable' ? 56 : 44)
@@ -395,6 +395,42 @@ function taskProg(task) {
 }
 
 onMounted(() => { setTimeout(() => { currentTitle.value = getApi()?.view?.title || '' }, 100) })
+
+// ─── Supabase sync ────────────────────────────────────────────
+async function loadEvents() {
+  const { data } = await supabase.from('planning_events').select('*').order('start_at', { ascending: true })
+  if (data) events.value = data.map(r => ({
+    id: r.id, title: r.title,
+    start: r.start_at, end: r.end_at,
+    color: r.color || '#7c3aed', allDay: r.all_day || false,
+    extendedProps: { clientId: r.client_id, projectId: r.project_id, description: r.description }
+  }))
+}
+
+async function saveEvent(ev) {
+  const row = {
+    title: ev.title, start_at: ev.start, end_at: ev.end || ev.start,
+    color: ev.color || '#7c3aed', all_day: ev.allDay || false,
+    client_id: ev.extendedProps?.clientId || '',
+    project_id: ev.extendedProps?.projectId || '',
+    description: ev.extendedProps?.description || '',
+  }
+  if (ev.id && !ev.id.startsWith('ev_')) {
+    await supabase.from('planning_events').update(row).eq('id', ev.id)
+  } else {
+    const { data } = await supabase.from('planning_events').insert([row]).select().single()
+    if (data) return data.id
+  }
+  return ev.id
+}
+
+async function removeEvent(id) {
+  await supabase.from('planning_events').delete().eq('id', id)
+  events.value = events.value.filter(e => e.id !== id)
+}
+
+onMounted(() => { loadEvents() })
+
 </script>
 
 <style scoped>
