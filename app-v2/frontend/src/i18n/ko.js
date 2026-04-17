@@ -198,6 +198,8 @@ export default {
   paywall_title: '무료 체험이 종료되었습니다',
   paywall_subtitle: '14일 무료 체험을 사용하셨습니다. Scalyo를 계속 사용하려면 플랜을 선택하세요.',
   paywall_choose: '이 플랜 선택',
+  trial_banner: '무료 체험 — {days}일 남음',
+  trial_choose_plan: '플랜 선택 →',
   paywall_logout: '로그아웃',
   notfound_title: '페이지를 찾을 수 없습니다',
   notfound_desc: '찾고 있는 페이지가 없거나 이동되었습니다.',
