@@ -90,6 +90,40 @@ const filtered = computed(() => {
 
 function wellbeingClass(s) { return s >= 70 ? 'green' : s >= 50 ? 'amber' : 'red' }
 function workloadClass(l) { return l <= 60 ? 'green' : l <= 80 ? 'amber' : 'red' }
+
+// ─── Member CRUD ──────────────────────────────────────────────────────────
+const showMemberModal = ref(false)
+const editingMember = ref(null)
+const memberForm = ref({ name: '', email: '', role: '', wellbeingScore: 75, workload: 60 })
+
+function openAddMember() {
+  editingMember.value = null
+  memberForm.value = { name: '', email: '', role: '', wellbeingScore: 75, workload: 60 }
+  showMemberModal.value = true
+}
+
+function openEditMember(member) {
+  editingMember.value = member
+  memberForm.value = { name: member.name, email: member.email || '', role: member.role || '', wellbeingScore: member.wellbeingScore || 75, workload: member.workload || 60 }
+  showMemberModal.value = true
+}
+
+function saveMember() {
+  if (!memberForm.value.name.trim()) return
+  if (editingMember.value) {
+    team.updateMember({ ...editingMember.value, ...memberForm.value })
+  } else {
+    team.addMember({ ...memberForm.value, id: 'member_' + Date.now(), clientCount: 0, arrManaged: 0 })
+  }
+  showMemberModal.value = false
+}
+
+function confirmDeleteMember(member) {
+  if (confirm(t('wl_confirm_delete') + ' ' + member.name + ' ?')) {
+    team.deleteMember(member.id)
+  }
+}
+
 </script>
 
 <style scoped>
@@ -150,4 +184,28 @@ function workloadClass(l) { return l <= 60 ? 'green' : l <= 80 ? 'amber' : 'red'
 .wl-empty h3 { font-size: 1.2rem; font-weight: 700; color: var(--text-secondary); }
 
 @media (max-width: 768px) { .wl-kpis { grid-template-columns: repeat(2, 1fr); } .wlc-metrics { grid-template-columns: 1fr; } }
+
+.wl-header-actions { display:flex; justify-content:flex-end; margin-bottom:12px; }
+.btn-add-member { background:var(--purple);color:#fff;border:none;padding:10px 18px;border-radius:10px;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all 0.2s; }
+.btn-add-member:hover { background:#6d28d9;transform:translateY(-1px); }
+.member-actions { display:flex;gap:6px;position:absolute;top:12px;right:12px;opacity:0;transition:opacity 0.18s; }
+.member-card:hover .member-actions { opacity:1; }
+.member-card { position:relative; }
+.btn-member-edit, .btn-member-delete { background:rgba(255,255,255,0.9);border:1px solid var(--border);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:0.8rem;transition:all 0.15s; }
+.btn-member-edit:hover { background:#ede9fe; }
+.btn-member-delete:hover { background:#fef2f2; }
+.modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:1000; }
+.modal-card { background:var(--bg-card,#fff);border-radius:16px;padding:32px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,0.15); }
+.modal-title { font-size:1.1rem;font-weight:700;margin-bottom:20px; }
+.modal-form { display:flex;flex-direction:column;gap:14px; }
+.fg-row { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+.fg { display:flex;flex-direction:column;gap:4px; }
+.fg label { font-size:0.78rem;font-weight:600;color:var(--text-muted,#6b7280); }
+.modal-input { padding:10px 12px;border:1px solid var(--border,#e5e7eb);border-radius:8px;font-size:0.9rem;outline:none;background:var(--bg,#f8f9fb);color:var(--text,#1a1a2e); }
+.modal-input:focus { border-color:var(--purple,#7c3aed); }
+.modal-range { width:100%;accent-color:var(--purple,#7c3aed); }
+.modal-actions { display:flex;gap:10px;justify-content:flex-end;margin-top:20px; }
+.btn-cancel { background:none;border:1px solid var(--border,#e5e7eb);color:var(--text-muted,#6b7280);padding:9px 18px;border-radius:8px;cursor:pointer;font-size:0.88rem; }
+.btn-save { background:var(--purple,#7c3aed);color:#fff;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:0.88rem;font-weight:600; }
+
 </style>
