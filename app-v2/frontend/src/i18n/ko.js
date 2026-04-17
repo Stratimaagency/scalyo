@@ -931,4 +931,22 @@ export default {
 
   dashboard_reset: '데이터 초기화',
   dashboard_reset_confirm: '모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
+
+  integ_title: '통합',
+  integ_subtitle: 'REST API 또는 웹훅을 통해 Scalyo를 도구에 연결하세요.',
+  integ_api_title: '공개 REST API',
+  integ_api_desc: '보안 REST API를 통해 모든 도구에서 Scalyo 데이터에 액세스하세요.',
+  integ_create_key: 'API 키 생성',
+  integ_no_keys: 'API 키가 없습니다. 시작하려면 키를 만드세요.',
+  integ_key_name: '키 이름',
+  integ_key_scopes: '권한',
+  integ_revoke_key: '이 키 취소',
+  integ_key_shown_once: '지금 이 키를 복사하세요 — 다시는 표시되지 않습니다.',
+  integ_webhook_title: '수신 웹훅',
+  integ_webhook_desc: 'Zapier, Make 또는 웹훅 호환 도구에서 데이터를 받으세요.',
+  integ_create_webhook: '웹훅 생성',
+  integ_no_webhooks: '구성된 웹훅이 없습니다.',
+  integ_import_title: '스마트 임포트',
+  integ_import_desc: 'Excel, CSV 또는 모든 파일에서 클라이언트를 가져옵니다.',
+  integ_goto_import: '스마트 임포트로 이동',
 }
