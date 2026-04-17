@@ -58,6 +58,7 @@ export const useAuthStore = defineStore('auth', () => {
     const { data, error: err } = await supabase.auth.signInWithPassword({ email, password })
     loading.value = false
     if (err) { error.value = err.message; return { success: false, error: err.message } }
+    clearAllStores()
     user.value = data.user
     await fetchProfile(data.user.id)
     return { success: true }
@@ -89,11 +90,20 @@ export const useAuthStore = defineStore('auth', () => {
     return { success: true, needsConfirmation: !data.session }
   }
 
-  async function logout() {
+  async 
+  // Clear all user data stores (called on login/logout to ensure clean state)
+  function clearAllStores() {
+    const storeKeys = ['scalyo_clients', 'scalyo_tasks', 'scalyo_team', 'scalyo_projects',
+      'scalyo_kpis', 'scalyo_playbooks', 'scalyo_snapshots', 'scalyo_okr',
+      'scalyo_roadmap', 'scalyo_quotes', 'scalyo_dashboard_kpis']
+    storeKeys.forEach(k => localStorage.removeItem(k))
+  }
+  function logout() {
+    clearAllStores()
     await supabase.auth.signOut()
     user.value = null
     profile.value = null
   }
 
-  return { user, profile, loading, error, isAuthenticated, fullName, greeting, init, login, register, logout }
+  return { user, profile, loading, error, isAuthenticated, fullName, greeting, init, login, clearAllStores, register, logout }
 })
