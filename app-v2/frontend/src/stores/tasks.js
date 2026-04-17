@@ -2,6 +2,11 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 
+async function getCurrentUserId() {
+  const { data: { user } } = await supabase.auth.getUser()
+  return user?.id
+}
+
 export const useTaskStore = defineStore('tasks', () => {
   const tasks = ref([])
   const projects = ref([])
@@ -38,13 +43,13 @@ export const useTaskStore = defineStore('tasks', () => {
 
   // ─── Project CRUD ─────────────────────────────────────────────
   async function addProject(project) {
-    const { data, error } = await supabase.from('projects').insert([projectToDb(project)]).select().single()
+    const { data, error } = await supabase.from('projects').insert([await projectToDb(project)]).select().single()
     if (!error && data) projects.value.unshift(dbToProject(data))
     return data
   }
 
   async function updateProject(project) {
-    const { error } = await supabase.from('projects').update(projectToDb(project)).eq('id', project.id)
+    const { error } = await supabase.from('projects').update(await projectToDb(project)).eq('id', project.id)
     if (!error) {
       const idx = projects.value.findIndex(p => p.id === project.id)
       if (idx > -1) projects.value[idx] = { ...projects.value[idx], ...project }
@@ -60,13 +65,13 @@ export const useTaskStore = defineStore('tasks', () => {
 
   // ─── Task CRUD ────────────────────────────────────────────────
   async function addTask(task) {
-    const { data, error } = await supabase.from('tasks').insert([taskToDb(task)]).select().single()
+    const { data, error } = await supabase.from('tasks').insert([await taskToDb(task)]).select().single()
     if (!error && data) tasks.value.unshift(dbToTask(data))
     return data
   }
 
   async function updateTask(task) {
-    const { error } = await supabase.from('tasks').update(taskToDb(task)).eq('id', task.id)
+    const { error } = await supabase.from('tasks').update(await taskToDb(task)).eq('id', task.id)
     if (!error) {
       const idx = tasks.value.findIndex(t => t.id === task.id)
       if (idx > -1) tasks.value[idx] = { ...tasks.value[idx], ...task }
@@ -107,8 +112,9 @@ export const useTaskStore = defineStore('tasks', () => {
     }
   }
 
-  function taskToDb(t) {
-    return {
+  async function taskToDb(t) {
+    const user_id = await getCurrentUserId()
+    return { user_id,
       project_id: t.projectId || null,
       title: t.title,
       description: t.description || '',
@@ -127,8 +133,9 @@ export const useTaskStore = defineStore('tasks', () => {
     return { id: r.id, name: r.name, color: r.color || '#7c3aed', status: r.status || 'active' }
   }
 
-  function projectToDb(p) {
-    return { name: p.name, color: p.color || '#7c3aed', status: p.status || 'active' }
+  async function projectToDb(p) {
+    const user_id = await getCurrentUserId()
+    return { user_id, name: p.name, color: p.color || '#7c3aed', status: p.status || 'active' }
   }
 
   return {
