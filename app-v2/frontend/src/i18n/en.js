@@ -889,6 +889,13 @@ export default {
   register_firstname: 'First name',
   register_lastname: 'Last name',
   register_submit: 'Create my account',
+  register_success_title: 'Account created successfully!',
+  register_success_subtitle: 'Confirm your email then choose your plan to access Scalyo.',
+  register_choose_plan: 'Choose your plan',
+  register_select_plan: 'Choose this plan',
+  register_most_popular: 'Most popular',
+  register_confirm_email_first: 'Already confirmed your email?',
+  register_go_login: 'Sign in →',
   register_has_account: 'Already have an account?',
 
 }
