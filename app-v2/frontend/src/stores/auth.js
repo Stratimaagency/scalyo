@@ -98,7 +98,7 @@ export const useAuthStore = defineStore('auth', () => {
       'scalyo_roadmap', 'scalyo_quotes', 'scalyo_dashboard_kpis']
     storeKeys.forEach(k => localStorage.removeItem(k))
   }
-  function logout() {
+  async function logout() {
     clearAllStores()
     await supabase.auth.signOut()
     user.value = null
