@@ -31,3 +31,7 @@ deploy_production:
     - cd app-v2/frontend
     - npm install -g wrangler
     - wrangler pages deploy dist --project-name=scalyo-app --branch=main
+    - cd ../..
+    - npm install -g supabase
+    - supabase functions deploy scalyo-api --project-ref hcqninmpmzpqjtedyjyj
+    - supabase functions deploy scalyo-webhook --project-ref hcqninmpmzpqjtedyjyj
