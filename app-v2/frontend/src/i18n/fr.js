@@ -1513,7 +1513,7 @@ export default {
   reset_back_login: '← Retour à la connexion',
   reset_success: 'Email envoyé ! Vérifiez votre boîte de réception.',
   reset_check_spam: "Vérifiez aussi vos spams si vous ne le trouvez pas.",
-  reset_resend: 'Renvoyer l'email',
+  reset_resend: "Renvoyer l'email",
   reset_err_required: 'Email requis',
   reset_err_not_found: 'Aucun compte trouvé avec cet email',
   reset_err_generic: "Erreur lors de l'envoi de l'email",
