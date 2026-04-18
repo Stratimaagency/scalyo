@@ -578,6 +578,7 @@
             <ul class="plan-features">
               <li>✓ {{ t('feat_all_growth') }}</li>
               <li>✓ {{ t('feat_playbooks') }}</li>
+              <li>✓ {{ t('feat_coach_elite') }}</li>
               <li>✓ {{ t('feat_coaching') }}</li>
               <li>✓ {{ t('feat_onboarding') }}</li>
               <li>✓ {{ t('feat_sla') }}</li>
