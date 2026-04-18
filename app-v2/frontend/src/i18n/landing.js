@@ -3,7 +3,7 @@
 
 export const L = {
   fr: {
-    title: "Scalyo — The AI Agent Behind Your CS Team",
+    title: "Scalyo — L'agent IA derrière vos équipes CS",
     // Nav
     nav_features:"Fonctionnalités", nav_roi:"ROI", nav_pricing:"Tarifs",
     nav_faq:"FAQ", nav_login:"Connexion", nav_cta:"Essai gratuit →",
@@ -753,13 +753,13 @@ export const L = {
   },
 
   kr: {
-    title: "Scalyo — Customer Success, 재발명.",
+    title: "Scalyo — CS팀의 AI 에이전트",
     nav_features:"기능", nav_roi:"ROI", nav_pricing:"요금제",
     nav_faq:"FAQ", nav_login:"로그인", nav_cta:"무료 체험 →",
     nav_cta_mobile:"무료로 시작 →",
-    hero_badge:"Customer Success 플랫폼 — 차세대",
+    hero_badge:"AI 기반 고객 성공 플랫폼",
     hero_h1:"팀이 정렬되면,<br/><span class=\"accent\">고객은 남습니다.</span>",
-    hero_sub:"Scalyo는 팀이 성과를 내는 데 필요한 모든 것을 중앙화합니다 — 단 한 명의 고객도 잃지 않고.",
+    hero_sub:"Scalyo는 AI 에이전트입니다. CS팀이 단 한 명의 고객도 잃지 않도록 중앙화하고 분석하며 행동합니다.",
     cta_free_14:"무료로 시작 — 14일",
     see_pricing:"요금제 보기",
     proof_14d:"14일 무료",
