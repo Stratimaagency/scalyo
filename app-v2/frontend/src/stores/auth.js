@@ -190,11 +190,30 @@ export const useAuthStore = defineStore('auth', () => {
     profile.value = null
   }
 
+  // ─── Reset Password ──────────────────────────────────────────────────────
+  async function resetPassword(email) {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password-confirm`
+      })
+      if (error) {
+        console.error('Reset password error:', error)
+        return { error }
+      }
+      return { success: true }
+    } catch (error) {
+      console.error('Reset password exception:', error)
+      return { error }
+    }
+  }
+
+  
   return {
     user, profile, loading, error,
     isAuthenticated, fullName, greeting,
     hasActiveSubscription, isOnTrial, trialExpired, trialDaysLeft, trialUsed, needsPayment,
     userLocale,
-    init, login, register, logout, clearAllStores, saveLocale, fetchProfile
+    init, login, register, logout, clearAllStores, saveLocale, fetchProfile,
+    resetPassword
   }
 })

@@ -12,6 +12,9 @@
       <form @submit.prevent="handleLogin" class="auth-form">
         <div class="fg"><label>{{ t('login_email') }}</label><input v-model="email" type="email" required class="fi" :placeholder="t('login_email_ph')" autocomplete="email" /></div>
         <div class="fg"><label>{{ t('login_password') }}</label><input v-model="password" type="password" required class="fi" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022" autocomplete="current-password" /></div>
+        <div class="forgot-pw-wrap">
+          <router-link to="/reset-password" class="link-forgot">{{ t('login_forgot_password') }}</router-link>
+        </div>
         <button type="submit" class="btn-primary full" :disabled="loading">
           <span v-if="loading" class="spinner" />
           <span v-else>{{ t('login_submit') }}</span>

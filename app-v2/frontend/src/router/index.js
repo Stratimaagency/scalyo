@@ -48,10 +48,26 @@ const routes = [
       { path: 'resources/guides', name: 'resources-guides', component: () => import('@/views/resources/GuidesView.vue') },
       { path: 'resources/tools', name: 'resources-tools', component: () => import('@/views/resources/ToolsView.vue') },
       { path: 'resources/wellbeing', name: 'resources-wellbeing', component: () => import('@/views/resources/WellbeingResourcesView.vue') },
-        { path: '/cgu', component: () => import('@/views/legal/CguView.vue') },
-  { path: '/privacy', component: () => import('@/views/legal/PrivacyView.vue') },
-  { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('@/views/NotFoundView.vue') },
-],
+    ],
+  },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: () => import('@/views/auth/ResetPasswordView.vue'),
+    meta: { guest: true }
+  },
+  {
+    path: '/cgu',
+    component: () => import('@/views/legal/CguView.vue')
+  },
+  {
+    path: '/privacy',
+    component: () => import('@/views/legal/PrivacyView.vue')
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/NotFoundView.vue')
   },
 ]
 
