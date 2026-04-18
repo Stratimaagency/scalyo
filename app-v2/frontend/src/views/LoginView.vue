@@ -13,7 +13,7 @@
         <div class="fg"><label>{{ t('login_email') }}</label><input v-model="email" type="email" required class="fi" :placeholder="t('login_email_ph')" autocomplete="email" /></div>
         <div class="fg"><label>{{ t('login_password') }}</label><input v-model="password" type="password" required class="fi" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022" autocomplete="current-password" /></div>
         <div class="forgot-pw-wrap">
-          <router-link to="/reset-password" class="link-forgot">{{ t('login_forgot_password') }}</router-link>
+          <router-link to="/reset-password" class="link">{{ t('login_forgot_password') }}</router-link>
         </div>
         <button type="submit" class="btn-primary full" :disabled="loading">
           <span v-if="loading" class="spinner" />
@@ -76,6 +76,7 @@ async function handleLogin() {
 .btn-primary:hover:not(:disabled) { background:#6d28d9;transform:translateY(-1px); }
 .btn-primary:disabled { opacity:0.65;cursor:not-allowed; }
 .btn-primary.full { width:100%; }
+.forgot-pw-wrap { text-align:right; margin-top:-4px; }
 .auth-footer { text-align:center;margin-top:20px;font-size:0.85rem;color:#6b7280; }
 .link { color:#7c3aed;font-weight:600; }
 .auth-error { background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:10px 14px;font-size:0.85rem;margin-bottom:16px; }
