@@ -64,7 +64,6 @@
         </div>
 
         <div class="proof-row">
-          <span class="proof-item">✓ {{ t('proof_no_card') }}</span>
           <span class="proof-item">✓ {{ t('proof_14d') }}</span>
           <span class="proof-item">✓ {{ t('proof_rgpd') }}</span>
           <span class="proof-item">✓ {{ t('proof_support') }}</span>
