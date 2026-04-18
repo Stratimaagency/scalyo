@@ -31,6 +31,7 @@
             <div class="esp-actions">
               <span class="esp-cat" :class="catClass(selected.categoryKey)">{{ t('es_cat_' + selected.categoryKey) }}</span>
               <button class="btn-primary" @click="copyEmail">{{ copied ? t('es_copied') : t('es_copy') }}</button>
+              <button class="btn-send" @click="showSendModal = true" :disabled="!selected">{{ t('es_send') }}</button>
             </div>
           </div>
           <div class="esp-field"><strong>{{ t('es_subject') }}</strong><p>{{ t(selected.subjectKey) }}</p></div>
@@ -46,11 +47,48 @@
       </div>
     </div>
   </div>
+
+  <!-- ─── Send Email Modal ──────────────────────────────────────── -->
+  <div v-if="showSendModal" class="send-modal-overlay" @click.self="showSendModal = false">
+    <div class="send-modal">
+      <div class="sm-header">
+        <h3>{{ t('es_send_title') }}</h3>
+        <button class="sm-close" @click="showSendModal = false">✕</button>
+      </div>
+      <div class="sm-body">
+        <div v-if="sendResult?.success" class="sm-success">
+          ✓ {{ t('es_send_success') }}
+        </div>
+        <div v-else-if="sendResult?.error" class="sm-error">
+          ✕ {{ sendResult.error }}
+        </div>
+        <template v-else>
+          <div class="sm-field">
+            <label>{{ t('es_send_to') }}</label>
+            <input v-model="sendTo" type="email" :placeholder="t('es_send_to_placeholder')" class="sm-input" />
+          </div>
+          <div class="sm-field">
+            <label>{{ t('es_send_from_name') }}</label>
+            <input v-model="sendFromName" type="text" :placeholder="auth.fullName || t('es_send_from_placeholder')" class="sm-input" />
+          </div>
+          <div class="sm-preview">
+            <strong>{{ t('es_subject') }} :</strong> {{ selected ? t(selected.subjectKey) : '' }}
+          </div>
+          <button class="btn-primary sm-send-btn" @click="sendEmail" :disabled="!sendTo || sending">
+            {{ sending ? t('es_sending') : t('es_send_btn') }}
+          </button>
+        </template>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { supabase } from '@/lib/supabase'
+import { useAuthStore } from '@/stores/auth'
 
 const { t } = useI18n({ useScope: 'global' })
 
@@ -59,6 +97,14 @@ const activeCat = ref('all')
 const search = ref('')
 const selectedId = ref(null)
 const copied = ref(false)
+
+// Send email modal
+const showSendModal = ref(false)
+const sendTo = ref('')
+const sendFromName = ref('')
+const sending = ref(false)
+const sendResult = ref(null) // { success, error }
+const auth = useAuthStore()
 
 const tabs = [
   { key: 'all', label: 'es_tab_all' },
@@ -103,6 +149,44 @@ const selected = computed(() => templates.find(tpl => tpl.id === selectedId.valu
 function catClass(key) {
   const map = { onboarding: 'cat-blue', qbr: 'cat-purple', suivi: 'cat-teal', risque: 'cat-red', renouvellement: 'cat-amber', expansion: 'cat-green', nps: 'cat-pink', prospection: 'cat-indigo', negociation: 'cat-orange', relance: 'cat-slate', closing: 'cat-dark', retention: 'cat-red', all: 'cat-gray' }
   return map[key] || 'cat-gray'
+}
+
+async function sendEmail() {
+  if (!selected.value || !sendTo.value) return
+  sending.value = true
+  sendResult.value = null
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    const resp = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-email`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({
+          to: sendTo.value,
+          subject: t(selected.value.subjectKey),
+          html: `<div style="font-family:sans-serif;line-height:1.6;max-width:600px;margin:0 auto">${t(selected.value.bodyKey).replace(/\n/g, '<br>')}</div>`,
+          from_name: sendFromName.value || auth.fullName || 'Scalyo',
+          reply_to: auth.user?.email,
+        })
+      }
+    )
+    const data = await resp.json()
+    if (resp.ok && data.success) {
+      sendResult.value = { success: true }
+      sendTo.value = ''
+      setTimeout(() => { showSendModal.value = false; sendResult.value = null }, 2000)
+    } else {
+      sendResult.value = { error: data.error || 'Erreur envoi' }
+    }
+  } catch (e) {
+    sendResult.value = { error: e.message }
+  } finally {
+    sending.value = false
+  }
 }
 
 function copyEmail() {
@@ -168,4 +252,59 @@ function copyEmail() {
 .esp-empty-icon { font-size: 3rem; margin-bottom: 12px; }
 .esp-empty p { font-size: 0.9rem; }
 @media (max-width: 900px) { .es-layout { grid-template-columns: 1fr; } .es-right { min-height: 300px; } }
+
+.btn-send {
+  background: #10b981;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-send:hover { background: #059669; }
+.btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.send-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.send-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.sm-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px;
+}
+.sm-header h3 { font-size: 1.1rem; font-weight: 700; color: #111827; margin: 0; }
+.sm-close {
+  background: none; border: none; cursor: pointer;
+  font-size: 1.1rem; color: #6b7280;
+}
+.sm-field { margin-bottom: 16px; }
+.sm-field label { display: block; font-size: 0.8rem; font-weight: 600; color: #374151; margin-bottom: 6px; }
+.sm-input {
+  width: 100%; padding: 10px 14px;
+  border: 1.5px solid #e5e7eb; border-radius: 8px;
+  font-size: 0.9rem; outline: none; box-sizing: border-box;
+}
+.sm-input:focus { border-color: #7c3aed; }
+.sm-preview {
+  background: #f9fafb; border-radius: 8px;
+  padding: 10px 14px; font-size: 0.82rem; color: #6b7280;
+  margin-bottom: 16px;
+}
+.sm-send-btn { width: 100%; padding: 12px; font-size: 0.95rem; }
+.sm-success { color: #10b981; font-weight: 600; text-align: center; padding: 20px 0; font-size: 1rem; }
+.sm-error { color: #ef4444; font-weight: 600; text-align: center; padding: 12px 0; font-size: 0.9rem; }
+
 </style>
