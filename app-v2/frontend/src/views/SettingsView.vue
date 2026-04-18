@@ -213,12 +213,19 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTeamStore } from '@/stores/team'
 
 const { t } = useI18n({ useScope: 'global' })
+const router = useRouter()
 const auth = useAuthStore()
 const team = useTeamStore()
+
+async function handleLogout() {
+  await auth.logout()
+  router.push('/login')
+}
 
 const activeTab = ref('profile')
 

@@ -1525,4 +1525,6 @@ export default {
   reset_confirm_success: 'Mot de passe mis à jour ! Vous pouvez vous connecter.',
   reset_confirm_err_mismatch: 'Les mots de passe ne correspondent pas',
   reset_confirm_err_short: 'Le mot de passe doit contenir au moins 8 caractères',
+  sidebar_profile: 'Mon profil',
+  sidebar_logout: 'Se déconnecter',
 }

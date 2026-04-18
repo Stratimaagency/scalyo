@@ -31,6 +31,10 @@
           </template>
         </template>
       </nav>
+      <button class="sidebar-logout" @click="handleLogout" :title="t('sidebar_logout')">
+        <span class="nav-icon">🚪</span>
+        <span v-if="!app.sidebarCollapsed" class="nav-label">{{ t('sidebar_logout') }}</span>
+      </button>
       <button class="sidebar-toggle hide-mobile" @click="app.toggleSidebar()">
         {{ app.sidebarCollapsed ? '→' : '←' }}
       </button>
@@ -260,6 +264,7 @@ const sidebarSections = [
   {
     label: '',
     items: [
+      { name: 'profile',  icon: '👤', label: 'sidebar_profile',  to: '/app/profile'  },
       { name: 'settings', icon: '⚙️', label: 'sidebar_settings', to: '/app/settings' },
     ],
   },
@@ -275,6 +280,11 @@ onMounted(async () => {
     await Promise.all([cs.loadClients(), ts.loadMembers(), tk.loadTasks()])
   } catch(e) { console.error('AppLayout loadStores:', e) }
 })
+
+async function handleLogout() {
+  await auth.logout()
+  router.push('/login')
+}
 </script>
 
 <style scoped>
@@ -300,6 +310,10 @@ onMounted(async () => {
 .nav-subitem:hover { color: var(--text); background: var(--bg-hover); }
 .nav-subitem.active { color: var(--purple); font-weight: 600; }
 .sidebar-toggle { width: 100%; padding: 12px; border: none; background: none; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border-light); transition: background 0.15s; }
+.sidebar-logout { width: 100%; padding: 12px 16px; border: none; background: none; color: #ef4444; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: background 0.15s; text-align: left; }
+.sidebar-logout:hover { background: #fef2f2; }
+.sidebar-logout .nav-icon { font-size: 1rem; flex-shrink: 0; }
+.sidebar-logout .nav-label { font-weight: 500; white-space: nowrap; }
 .sidebar-toggle:hover { background: var(--bg-hover); }
 .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; }
 

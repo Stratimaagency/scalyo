@@ -969,4 +969,6 @@ export default {
   reset_confirm_success: '비밀번호가 업데이트되었습니다! 이제 로그인할 수 있습니다.',
   reset_confirm_err_mismatch: '비밀번호가 일치하지 않습니다',
   reset_confirm_err_short: '비밀번호는 8자 이상이어야 합니다',
+  sidebar_profile: '내 프로필',
+  sidebar_logout: '로그아웃',
 }

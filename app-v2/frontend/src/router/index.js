@@ -63,10 +63,12 @@ const routes = [
   },
   {
     path: '/cgu',
+    name: 'CGU',
     component: () => import('@/views/legal/CguView.vue')
   },
   {
     path: '/privacy',
+    name: 'Privacy',
     component: () => import('@/views/legal/PrivacyView.vue')
   },
   {
@@ -112,6 +114,10 @@ router.afterEach((to) => {
     'payment-success': 'Paiement confirmé — Scalyo',
     'paywall': 'Choisissez votre forfait — Scalyo',
     'NotFound': 'Page introuvable — Scalyo',
+    'ResetPassword': 'Mot de passe oublié — Scalyo',
+    'ResetPasswordConfirm': 'Nouveau mot de passe — Scalyo',
+    'CGU': 'Conditions d\'utilisation — Scalyo',
+    'Privacy': 'Politique de confidentialité — Scalyo',
   }
   document.title = (to.name && titles[to.name]) || to.meta?.title || 'Scalyo — Customer Success Platform'
   let metaDesc = document.querySelector('meta[name="description"]')

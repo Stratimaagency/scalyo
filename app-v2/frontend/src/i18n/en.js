@@ -969,4 +969,6 @@ export default {
   reset_confirm_success: 'Password updated! You can now sign in.',
   reset_confirm_err_mismatch: 'Passwords do not match',
   reset_confirm_err_short: 'Password must be at least 8 characters',
+  sidebar_profile: 'My profile',
+  sidebar_logout: 'Sign out',
 }
