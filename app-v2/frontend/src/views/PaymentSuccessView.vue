@@ -49,10 +49,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { supabase } from '@/lib/supabase'
 import ScalyoLogo from '@/components/ScalyoLogo.vue'
 
 const { t } = useI18n({ useScope: 'global' })
@@ -61,11 +62,31 @@ const route = useRoute()
 const auth = useAuthStore()
 
 const planLabel = computed(() => {
-  const p = route.query.plan || auth.company?.plan || ''
+  const p = route.query.plan || auth.currentPlan || ''
   if (p === 'elite') return 'Elite — 697€/mois'
   if (p === 'growth') return 'Growth — 297€/mois'
   if (p === 'starter') return 'Starter — 97€/mois'
-  return auth.company?.planLabel || ''
+  return auth.currentPlan ? (auth.currentPlan.charAt(0).toUpperCase() + auth.currentPlan.slice(1)) : ''
+})
+
+// ─── Persist plan in Supabase after Stripe redirect ──────────────────────
+onMounted(async () => {
+  const plan = route.query.plan
+  if (plan && auth.user?.id && ['starter','growth','elite'].includes(plan)) {
+    try {
+      await supabase
+        .from('profiles')
+        .update({
+          stripe_subscription_id: 'stripe_' + plan,
+          plan: plan,
+          trial_used: true,
+        })
+        .eq('id', auth.user.id)
+      await auth.fetchProfile(auth.user.id)
+    } catch (e) {
+      console.error('plan update error', e)
+    }
+  }
 })
 
 function goToDashboard() {
@@ -75,6 +96,7 @@ function goToDashboard() {
     router.push('/login?verified=true')
   }
 }
+
 
 function confettiStyle(i) {
   const colors = ['#7c3aed','#a78bfa','#10b981','#f59e0b','#ef4444','#3b82f6','#ec4899']

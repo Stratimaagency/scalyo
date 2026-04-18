@@ -72,9 +72,9 @@ const router = useRouter()
 const auth = useAuthStore()
 
 const email = computed(() => auth.user?.email || '')
-const starterUrl = computed(() => 'https://buy.stripe.com/bJebJ1amncpL7mBekAdfG01' + (email.value ? '?prefilled_email=' + encodeURIComponent(email.value) : ''))
-const growthUrl = computed(() => 'https://buy.stripe.com/eVqbJ10LN6ln5et90gdfG00' + (email.value ? '?prefilled_email=' + encodeURIComponent(email.value) : ''))
-const eliteUrl = computed(() => 'https://buy.stripe.com/eVqaEXeCD1L736l7WcdfG05' + (email.value ? '?prefilled_email=' + encodeURIComponent(email.value) : ''))
+const starterUrl = computed(() => { const p = []; if (email.value) p.push('prefilled_email=' + encodeURIComponent(email.value)); if (auth.user?.id) p.push('client_reference_id=' + auth.user.id); return 'https://buy.stripe.com/bJebJ1amncpL7mBekAdfG01' + (p.length ? '?' + p.join('&') : '') })
+const growthUrl = computed(() => { const p = []; if (email.value) p.push('prefilled_email=' + encodeURIComponent(email.value)); if (auth.user?.id) p.push('client_reference_id=' + auth.user.id); return 'https://buy.stripe.com/eVqbJ10LN6ln5et90gdfG00' + (p.length ? '?' + p.join('&') : '') })
+const eliteUrl = computed(() => { const p = []; if (email.value) p.push('prefilled_email=' + encodeURIComponent(email.value)); if (auth.user?.id) p.push('client_reference_id=' + auth.user.id); return 'https://buy.stripe.com/eVqaEXeCD1L736l7WcdfG05' + (p.length ? '?' + p.join('&') : '') })
 
 async function handleLogout() {
   await auth.logout()

@@ -66,8 +66,8 @@
         <h3>{{ t('stg_tab_billing') }}</h3>
         <div class="billing-plan">
           <div class="bp-current">
-            <span class="bp-badge">{{ auth.company?.planLabel }}</span>
-            <span class="bp-price">{{ auth.company?.plan === 'elite' ? '697' : auth.company?.plan === 'growth' ? '297' : '97' }}€/{{ t('stg_per_month') }}</span>
+            <span class="bp-badge">{{ auth.currentPlanLabel }}</span>
+            <span class="bp-price">{{ auth.currentPlan === 'elite' ? '697' : auth.currentPlan === 'growth' ? '297' : '97' }}€/{{ t('stg_per_month') }}</span>
           </div>
           <p class="bp-note">{{ t('stg_stripe_soon') }}</p>
         </div>
@@ -75,7 +75,7 @@
       <div class="sv-section">
         <h3>{{ t('stg_change_plan') }}</h3>
         <div class="plans-grid">
-          <div class="plan-card" :class="{ active: auth.company?.plan === 'starter' }">
+          <div class="plan-card" :class="{ active: auth.currentPlan === 'starter' }">
             <div class="plan-header">
               <span class="plan-name">Starter</span>
               <span class="plan-price">97€<span class="plan-period">/{{ t('stg_per_month') }}</span></span>
@@ -85,11 +85,11 @@
               <li>{{ t('stg_plan_starter_f2') }}</li>
               <li>{{ t('stg_plan_starter_f3') }}</li>
             </ul>
-            <button class="btn-plan" :class="{ current: auth.company?.plan === 'starter' }" :disabled="auth.company?.plan === 'starter'">
-              {{ auth.company?.plan === 'starter' ? t('stg_plan_current') : t('stg_plan_downgrade') }}
+            <button class="btn-plan" :class="{ current: auth.currentPlan === 'starter' }" :disabled="auth.currentPlan === 'starter'" @click="handlePlanChange(starterUrl, 'starter')">
+              {{ auth.currentPlan === 'starter' ? t('stg_plan_current') : t('stg_plan_downgrade') }}
             </button>
           </div>
-          <div class="plan-card featured" :class="{ active: auth.company?.plan === 'growth' }">
+          <div class="plan-card featured" :class="{ active: auth.currentPlan === 'growth' }">
             <div class="plan-badge-popular">{{ t('stg_plan_popular') }}</div>
             <div class="plan-header">
               <span class="plan-name">Growth</span>
@@ -100,11 +100,11 @@
               <li>{{ t('stg_plan_growth_f2') }}</li>
               <li>{{ t('stg_plan_growth_f3') }}</li>
             </ul>
-            <button class="btn-plan" :class="{ current: auth.company?.plan === 'growth' }" :disabled="auth.company?.plan === 'growth'">
-              {{ auth.company?.plan === 'growth' ? t('stg_plan_current') : auth.company?.plan === 'elite' ? t('stg_plan_downgrade') : t('stg_plan_upgrade') }}
+            <button class="btn-plan" :class="{ current: auth.currentPlan === 'growth' }" :disabled="auth.currentPlan === 'growth'" @click="handlePlanChange(growthUrl, 'growth')">
+              {{ auth.currentPlan === 'growth' ? t('stg_plan_current') : auth.currentPlan === 'elite' ? t('stg_plan_downgrade') : t('stg_plan_upgrade') }}
             </button>
           </div>
-          <div class="plan-card" :class="{ active: auth.company?.plan === 'elite' }">
+          <div class="plan-card" :class="{ active: auth.currentPlan === 'elite' }">
             <div class="plan-header">
               <span class="plan-name">Elite</span>
               <span class="plan-price">697€<span class="plan-period">/{{ t('stg_per_month') }}</span></span>
@@ -114,8 +114,8 @@
               <li>{{ t('stg_plan_elite_f2') }}</li>
               <li>{{ t('stg_plan_elite_f3') }}</li>
             </ul>
-            <button class="btn-plan" :class="{ current: auth.company?.plan === 'elite' }" :disabled="auth.company?.plan === 'elite'">
-              {{ auth.company?.plan === 'elite' ? t('stg_plan_current') : t('stg_plan_upgrade') }}
+            <button class="btn-plan" :class="{ current: auth.currentPlan === 'elite' }" :disabled="auth.currentPlan === 'elite'" @click="handlePlanChange(eliteUrl, 'elite')">
+              {{ auth.currentPlan === 'elite' ? t('stg_plan_current') : t('stg_plan_upgrade') }}
             </button>
           </div>
         </div>
@@ -241,7 +241,7 @@ const tabs = [
 const profile = reactive({
   displayName: auth.user?.displayName || '',
   email: auth.user?.email || '',
-  company: auth.company?.name || '',
+  company: auth.profile?.company || auth.profile?.company_name || '',
 })
 
 const pwd = reactive({ current: '', newPwd: '', confirm: '' })
@@ -279,6 +279,10 @@ const currentPlanLabel = computed(() => {
 })
 
 const email = computed(() => auth.user?.email || '')
+function handlePlanChange(url, plan) {
+  if (auth.currentPlan !== plan) window.open(url, '_blank')
+}
+
 const starterUrl = computed(() => 'https://buy.stripe.com/bJebJ1amncpL7mBekAdfG01' + (email.value ? '?prefilled_email=' + encodeURIComponent(email.value) : ''))
 const growthUrl = computed(() => 'https://buy.stripe.com/eVqbJ10LN6ln5et90gdfG00' + (email.value ? '?prefilled_email=' + encodeURIComponent(email.value) : ''))
 const eliteUrl = computed(() => 'https://buy.stripe.com/eVqaEXeCD1L736l7WcdfG05' + (email.value ? '?prefilled_email=' + encodeURIComponent(email.value) : ''))

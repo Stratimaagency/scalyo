@@ -89,6 +89,15 @@ export const useAuthStore = defineStore('auth', () => {
 
   const needsPayment = computed(() => trialExpired.value && !hasActiveSubscription.value)
 
+  // ─── Current Plan ─────────────────────────────────────────────────────────
+  const currentPlan = computed(() => {
+    const sub = profile.value?.stripe_subscription_id
+    if (!sub || sub === '' || sub === 'none') return null
+    // Formats: 'stripe_starter', 'plan_growth', or raw Stripe ID
+    if (sub.startsWith('stripe_') || sub.startsWith('plan_')) return sub.split('_').pop()
+    return profile.value?.plan || 'active'
+  })
+
   // ─── Locale ───────────────────────────────────────────────────────────────
   const userLocale = computed(() => profile.value?.locale || 'fr')
 
@@ -212,7 +221,7 @@ export const useAuthStore = defineStore('auth', () => {
     user, profile, loading, error,
     isAuthenticated, fullName, greeting,
     hasActiveSubscription, isOnTrial, trialExpired, trialDaysLeft, trialUsed, needsPayment,
-    userLocale,
+    userLocale, currentPlan,
     init, login, register, logout, clearAllStores, saveLocale, fetchProfile,
     resetPassword
   }
