@@ -1517,4 +1517,12 @@ export default {
   reset_err_required: 'Email requis',
   reset_err_not_found: 'Aucun compte trouvé avec cet email',
   reset_err_generic: "Erreur lors de l'envoi de l'email",
+  reset_confirm_title: 'Nouveau mot de passe',
+  reset_confirm_subtitle: 'Choisissez un nouveau mot de passe pour votre compte',
+  reset_confirm_new_pw: 'Nouveau mot de passe',
+  reset_confirm_repeat_pw: 'Confirmer le mot de passe',
+  reset_confirm_submit: 'Enregistrer le nouveau mot de passe',
+  reset_confirm_success: 'Mot de passe mis à jour ! Vous pouvez vous connecter.',
+  reset_confirm_err_mismatch: 'Les mots de passe ne correspondent pas',
+  reset_confirm_err_short: 'Le mot de passe doit contenir au moins 8 caractères',
 }

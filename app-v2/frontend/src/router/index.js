@@ -57,6 +57,11 @@ const routes = [
     meta: { guest: true }
   },
   {
+    path: '/reset-password-confirm',
+    name: 'ResetPasswordConfirm',
+    component: () => import('@/views/auth/ResetPasswordConfirmView.vue')
+  },
+  {
     path: '/cgu',
     component: () => import('@/views/legal/CguView.vue')
   },
