@@ -916,7 +916,6 @@ export default {
   wl_wellbeing: '웰빙',
   wl_workload_pct: '업무 부하',
   wl_confirm_delete: '멤버 삭제',
-  save: '저장',
   cancel: '취소',
   stg_plan_title: '플랜 및 구독',
   stg_plan_desc: '플랜을 관리하거나 팀에 맞는 요금제를 선택하세요.',
@@ -932,7 +931,6 @@ export default {
   dashboard_reset: '데이터 초기화',
   dashboard_reset_confirm: '모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
 
-  integ_title: '통합',
   integ_subtitle: 'REST API 또는 웹훅을 통해 Scalyo를 도구에 연결하세요.',
   integ_api_title: '공개 REST API',
   integ_api_desc: '보안 REST API를 통해 모든 도구에서 Scalyo 데이터에 액세스하세요.',

@@ -916,7 +916,6 @@ export default {
   wl_wellbeing: 'Wellbeing',
   wl_workload_pct: 'Workload',
   wl_confirm_delete: 'Delete member',
-  save: 'Save',
   cancel: 'Cancel',
   stg_plan_title: 'Plan & subscription',
   stg_plan_desc: 'Manage your plan or choose a formula adapted to your team.',
@@ -932,7 +931,6 @@ export default {
   dashboard_reset: 'Reset data',
   dashboard_reset_confirm: 'Delete all data? This action is irreversible.',
 
-  integ_title: 'Integrations',
   integ_subtitle: 'Connect Scalyo to your tools via REST API or Webhooks.',
   integ_api_title: 'Public REST API',
   integ_api_desc: 'Access your Scalyo data from any tool via our secure REST API.',
