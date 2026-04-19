@@ -5,6 +5,16 @@
       <p class="es-sub">{{ t('es_subtitle') }}</p>
     </div>
 
+    <!-- ─── Bandeau transparence email ─────────────────────────── -->
+    <div class="es-email-banner">
+      <span class="es-banner-icon">✉️</span>
+      <div class="es-banner-text">
+        <strong>{{ t('es_quota_title') }}</strong>
+        <span>{{ t('es_quota_desc') }}</span>
+      </div>
+      <a href="https://scalyo.app/#pricing" target="_blank" class="es-banner-link">{{ t('es_quota_link') }}</a>
+    </div>
+
     <div class="es-layout">
       <div class="es-left">
         <div class="es-tabs">
@@ -31,7 +41,15 @@
             <div class="esp-actions">
               <span class="esp-cat" :class="catClass(selected.categoryKey)">{{ t('es_cat_' + selected.categoryKey) }}</span>
               <button class="btn-primary" @click="copyEmail">{{ copied ? t('es_copied') : t('es_copy') }}</button>
-              <button class="btn-send" @click="showSendModal = true" :disabled="!selected">{{ t('es_send') }}</button>
+              <template v-if="isElite">
+                <button class="btn-send" @click="showSendModal = true" :disabled="!selected">{{ t('es_send') }}</button>
+              </template>
+              <template v-else>
+                <div class="es-elite-gate" :title="t('es_elite_tooltip')">
+                  <span>{{ t('es_elite_badge') }}</span>
+                  <span class="es-elite-lock">🔒 {{ t('es_elite_required') }}</span>
+                </div>
+              </template>
             </div>
           </div>
           <div class="esp-field"><strong>{{ t('es_subject') }}</strong><p>{{ t(selected.subjectKey) }}</p></div>
@@ -105,6 +123,9 @@ const sendFromName = ref('')
 const sending = ref(false)
 const sendResult = ref(null) // { success, error }
 const auth = useAuthStore()
+const isElite = computed(() => auth.currentPlan === 'elite')
+const EMAIL_FREE_QUOTA = 3000
+const EMAIL_OVERAGE_RATE = 1.5 // €/1000 au-delà
 
 const tabs = [
   { key: 'all', label: 'es_tab_all' },
@@ -306,5 +327,38 @@ function copyEmail() {
 .sm-send-btn { width: 100%; padding: 12px; font-size: 0.95rem; }
 .sm-success { color: #10b981; font-weight: 600; text-align: center; padding: 20px 0; font-size: 1rem; }
 .sm-error { color: #ef4444; font-weight: 600; text-align: center; padding: 12px 0; font-size: 0.9rem; }
+
+
+/* ─── Email Banner ───────────────────────────────────────────────── */
+.es-email-banner {
+  display: flex; align-items: center; gap: 12px;
+  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 20px;
+  font-size: 0.82rem;
+}
+.es-banner-icon { font-size: 1.3rem; flex-shrink: 0; }
+.es-banner-text { display: flex; flex-direction: column; flex: 1; gap: 2px; }
+.es-banner-text strong { color: #15803d; font-size: 0.85rem; }
+.es-banner-text span { color: #4b7c60; }
+.es-banner-link {
+  color: #7c3aed; font-weight: 600; text-decoration: none;
+  white-space: nowrap; font-size: 0.8rem;
+}
+.es-banner-link:hover { text-decoration: underline; }
+
+/* ─── Elite Gate ─────────────────────────────────────────────────── */
+.es-elite-gate {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+}
+.es-elite-gate span:first-child {
+  font-size: 0.7rem; font-weight: 700; color: #7c3aed;
+  background: #f3e8ff; padding: 2px 8px; border-radius: 20px;
+}
+.es-elite-lock {
+  font-size: 0.75rem; color: #9ca3af; font-weight: 500;
+}
 
 </style>
