@@ -12,7 +12,6 @@ serve(async (req) => {
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 })
 
   try {
-    // Authenticate user via Supabase JWT
     const authHeader = req.headers.get('authorization') || ''
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
@@ -28,7 +27,7 @@ serve(async (req) => {
     }
 
     const body = await req.json()
-    const { to, subject, html, from_name, reply_to } = body
+    const { to, subject, html, from_name, reply_to, template_id } = body
 
     if (!to || !subject || !html) {
       return new Response(JSON.stringify({ error: 'Missing required fields: to, subject, html' }), {
@@ -36,7 +35,6 @@ serve(async (req) => {
       })
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(to)) {
       return new Response(JSON.stringify({ error: 'Invalid email address' }), {
@@ -51,7 +49,14 @@ serve(async (req) => {
       })
     }
 
-    // Send via Resend
+    // Generate unique tracking ID
+    const trackingId = crypto.randomUUID()
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const trackingPixel = `<img src="${supabaseUrl}/functions/v1/track-open?id=${trackingId}" width="1" height="1" style="display:none" alt="" />`
+
+    // Inject tracking pixel at end of HTML
+    const htmlWithTracking = html + trackingPixel
+
     const resendResp = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -63,23 +68,41 @@ serve(async (req) => {
         to: [to],
         reply_to: reply_to || user.email,
         subject,
-        html,
+        html: htmlWithTracking,
       })
     })
 
     const resendData = await resendResp.json()
 
     if (!resendResp.ok) {
-      console.error('Resend error:', resendData)
       return new Response(JSON.stringify({ error: 'Failed to send email', details: resendData }), {
         status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
 
-    // Log the sent email in Supabase for tracking
-    await supabase.from('profiles').select('id').eq('id', user.id).single() // just a ping to confirm connection
+    // Save to sent_emails table using service role
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    )
+    await supabaseAdmin.from('sent_emails').insert({
+      user_id: user.id,
+      to_email: to,
+      subject,
+      template_id: template_id || null,
+      from_name: from_name || null,
+      resend_id: resendData.id,
+      tracking_id: trackingId,
+      sent_at: new Date().toISOString(),
+      open_count: 0,
+    })
 
-    return new Response(JSON.stringify({ success: true, id: resendData.id, message: 'Email sent successfully' }), {
+    return new Response(JSON.stringify({
+      success: true,
+      id: resendData.id,
+      tracking_id: trackingId,
+      message: 'Email sent successfully'
+    }), {
       status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
 

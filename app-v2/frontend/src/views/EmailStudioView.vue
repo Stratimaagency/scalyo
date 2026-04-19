@@ -15,7 +15,7 @@
       <a href="https://scalyo.app/#pricing" target="_blank" class="es-banner-link">{{ t('es_quota_link') }}</a>
     </div>
 
-    <div class="es-layout">
+    <div v-if="activeTab !== 'history'" class="es-layout">
       <div class="es-left">
         <div class="es-tabs">
           <button v-for="tab in tabs" :key="tab.key" class="es-tab" :class="{ active: activeTab === tab.key }" @click="activeTab = tab.key">{{ t(tab.label) }}</button>
@@ -66,6 +66,59 @@
     </div>
   </div>
 
+
+  <!-- ─── History Tab Panel ──────────────────────────────────────── -->
+  <div v-if="activeTab === 'history'" class="es-history">
+    <div v-if="!isElite" class="es-history-gate">
+      <span class="es-elite-gate">
+        <span>Elite</span>
+        <span class="es-elite-lock">🔒 {{ t('es_history_elite') }}</span>
+      </span>
+    </div>
+    <template v-else>
+      <!-- KPI bar -->
+      <div class="es-history-kpis">
+        <div class="es-kpi">
+          <span class="es-kpi-value">{{ sentEmails.length }}</span>
+          <span class="es-kpi-label">{{ t('es_history_sent') }}</span>
+        </div>
+        <div class="es-kpi">
+          <span class="es-kpi-value">{{ sentEmails.filter(e => e.opened_at).length }}</span>
+          <span class="es-kpi-label">{{ t('es_history_opened') }}</span>
+        </div>
+        <div class="es-kpi">
+          <span class="es-kpi-value">{{ openRate }}</span>
+          <span class="es-kpi-label">{{ t('es_history_rate') }}</span>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div v-if="historyLoading" class="es-history-loading">⏳ {{ t('es_history_loading') }}</div>
+      <div v-else-if="historyError" class="es-history-error">{{ historyError }}</div>
+      <div v-else-if="!sentEmails.length" class="es-history-empty">{{ t('es_history_empty') }}</div>
+
+      <!-- Table -->
+      <div v-else class="es-history-table">
+        <div class="es-history-head">
+          <span>{{ t('es_history_col_to') }}</span>
+          <span>{{ t('es_history_col_subject') }}</span>
+          <span>{{ t('es_history_col_sent') }}</span>
+          <span>{{ t('es_history_col_status') }}</span>
+          <span>{{ t('es_history_col_opens') }}</span>
+        </div>
+        <div v-for="email in sentEmails" :key="email.id" class="es-history-row">
+          <span class="es-history-to" :title="email.to_email">{{ email.to_email }}</span>
+          <span class="es-history-subject" :title="t(email.subject)">{{ email.subject }}</span>
+          <span class="es-history-date">{{ formatDate(email.sent_at) }}</span>
+          <span :class="['es-history-status', email.opened_at ? 'opened' : 'pending']">
+            {{ email.opened_at ? '✓ ' + t('es_history_read') : t('es_history_unread') }}
+          </span>
+          <span class="es-history-opens">{{ email.open_count || 0 }}x</span>
+        </div>
+      </div>
+    </template>
+  </div>
+
   <!-- ─── Send Email Modal ──────────────────────────────────────── -->
   <div v-if="showSendModal" class="send-modal-overlay" @click.self="showSendModal = false">
     <div class="send-modal">
@@ -103,7 +156,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
@@ -127,11 +180,53 @@ const isElite = computed(() => auth.currentPlan === 'elite')
 const EMAIL_FREE_QUOTA = 3000
 const EMAIL_OVERAGE_RATE = 1.5 // €/1000 au-delà
 
+// ─── Email History ────────────────────────────────────────────────
+const sentEmails = ref([])
+const historyLoading = ref(false)
+const historyError = ref(null)
+
+async function loadSentEmails() {
+  if (!isElite.value) return
+  historyLoading.value = true
+  historyError.value = null
+  try {
+    const { data, error } = await supabase
+      .from('sent_emails')
+      .select('id, to_email, subject, template_id, sent_at, opened_at, open_count, from_name')
+      .order('sent_at', { ascending: false })
+      .limit(50)
+    if (error) throw error
+    sentEmails.value = data || []
+  } catch (e) {
+    historyError.value = e.message
+  } finally {
+    historyLoading.value = false
+  }
+}
+
+// Load history when tab is switched to 'history'
+watch(activeTab, (val) => {
+  if (val === 'history') loadSentEmails()
+})
+
+function formatDate(iso) {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })
+}
+
+const openRate = computed(() => {
+  if (!sentEmails.value.length) return '0%'
+  const opened = sentEmails.value.filter(e => e.opened_at).length
+  return Math.round((opened / sentEmails.value.length) * 100) + '%'
+})
+
 const tabs = [
   { key: 'all', label: 'es_tab_all' },
   { key: 'csm', label: 'es_tab_csm' },
   { key: 'commercial', label: 'es_tab_commercial' },
   { key: 'kam', label: 'es_tab_kam' },
+  { key: 'history', label: 'es_tab_history' },
 ]
 
 const templates = [
@@ -360,5 +455,44 @@ function copyEmail() {
 .es-elite-lock {
   font-size: 0.75rem; color: #9ca3af; font-weight: 500;
 }
+
+
+/* ─── History Tab ────────────────────────────────────────────────── */
+.es-history { padding: 0 0 24px; }
+.es-history-gate { text-align: center; padding: 40px 0; }
+.es-history-kpis {
+  display: flex; gap: 16px; margin-bottom: 20px;
+}
+.es-kpi {
+  flex: 1; background: #f9fafb; border-radius: 12px;
+  padding: 16px; text-align: center;
+}
+.es-kpi-value { display: block; font-size: 1.6rem; font-weight: 800; color: #7c3aed; }
+.es-kpi-label { font-size: 0.75rem; color: #6b7280; margin-top: 4px; display: block; }
+.es-history-loading, .es-history-empty, .es-history-error {
+  text-align: center; padding: 32px; color: #9ca3af; font-size: 0.85rem;
+}
+.es-history-error { color: #ef4444; }
+.es-history-table { border: 1px solid #f3f4f6; border-radius: 12px; overflow: hidden; }
+.es-history-head {
+  display: grid; grid-template-columns: 1.5fr 2fr 1.2fr 1fr 0.5fr;
+  background: #f9fafb; padding: 10px 16px;
+  font-size: 0.72rem; font-weight: 700; color: #6b7280; text-transform: uppercase;
+  gap: 12px;
+}
+.es-history-row {
+  display: grid; grid-template-columns: 1.5fr 2fr 1.2fr 1fr 0.5fr;
+  padding: 12px 16px; gap: 12px;
+  border-top: 1px solid #f3f4f6; font-size: 0.8rem; align-items: center;
+}
+.es-history-row:hover { background: #fafafa; }
+.es-history-to, .es-history-subject {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #374151;
+}
+.es-history-date { color: #6b7280; font-size: 0.75rem; }
+.es-history-status { font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.es-history-status.opened { color: #10b981; }
+.es-history-status.pending { color: #9ca3af; }
+.es-history-opens { color: #7c3aed; font-weight: 600; text-align: center; }
 
 </style>
