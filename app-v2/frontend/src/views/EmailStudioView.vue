@@ -6,13 +6,13 @@
     </div>
 
     <!-- ─── Bandeau transparence email ─────────────────────────── -->
-    <div class="es-email-banner">
-      <span class="es-banner-icon">✉️</span>
+    <div :class="['es-email-banner', hasResendKey ? 'connected' : 'setup-needed']">
+      <span class="es-banner-icon">{{ hasResendKey ? '✅' : '✉️' }}</span>
       <div class="es-banner-text">
-        <strong>{{ t('es_quota_title') }}</strong>
-        <span>{{ t('es_quota_desc') }}</span>
+        <strong>{{ hasResendKey ? t('es_resend_connected') : t('es_resend_setup_title') }}</strong>
+        <span>{{ hasResendKey ? t('es_resend_connected_desc') : t('es_resend_setup_desc') }}</span>
       </div>
-      <a href="https://scalyo.app/#pricing" target="_blank" class="es-banner-link">{{ t('es_quota_link') }}</a>
+      <router-link v-if="!hasResendKey" to="/app/settings?tab=integrations" class="es-banner-link">{{ t('es_resend_setup_link') }}</router-link>
     </div>
 
     <div v-if="activeTab !== 'history'" class="es-layout">
@@ -42,7 +42,9 @@
               <span class="esp-cat" :class="catClass(selected.categoryKey)">{{ t('es_cat_' + selected.categoryKey) }}</span>
               <button class="btn-primary" @click="copyEmail">{{ copied ? t('es_copied') : t('es_copy') }}</button>
               <template v-if="isElite">
-                <button class="btn-send" @click="showSendModal = true" :disabled="!selected">{{ t('es_send') }}</button>
+                <button class="btn-send" @click="showSendModal = true" :disabled="!selected || !hasResendKey">
+                  {{ !hasResendKey ? t('es_resend_required') : t('es_send') }}
+                </button>
               </template>
               <template v-else>
                 <div class="es-elite-gate" :title="t('es_elite_tooltip')">
@@ -177,6 +179,7 @@ const sending = ref(false)
 const sendResult = ref(null) // { success, error }
 const auth = useAuthStore()
 const isElite = computed(() => auth.currentPlan === 'elite')
+const hasResendKey = computed(() => !!(auth.profile?.resend_api_key && auth.profile.resend_api_key.startsWith('re_')))
 const EMAIL_FREE_QUOTA = 3000
 const EMAIL_OVERAGE_RATE = 1.5 // €/1000 au-delà
 
@@ -287,6 +290,8 @@ async function sendEmail() {
           html: `<div style="font-family:sans-serif;line-height:1.6;max-width:600px;margin:0 auto">${t(selected.value.bodyKey).replace(/\n/g, '<br>')}</div>`,
           from_name: sendFromName.value || auth.fullName || 'Scalyo',
           reply_to: auth.user?.email,
+          resend_api_key: auth.profile?.resend_api_key || null,
+          template_id: selected.value.id,
         })
       }
     )

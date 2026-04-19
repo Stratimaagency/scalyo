@@ -207,6 +207,53 @@
           </button>
         </div>
       </div>
+      <!-- ─── Integrations Tab ─────────────────────────────────────── -->
+      <div v-if="activeTab === 'integrations'" class="sv-panel">
+        <div class="sv-section">
+          <h3>{{ t('stg_resend_title') }}</h3>
+          <p class="stg-resend-desc">{{ t('stg_resend_desc') }}</p>
+
+          <div class="stg-resend-box">
+            <div class="stg-resend-header">
+              <span class="stg-resend-logo">📧</span>
+              <div>
+                <strong>Resend</strong>
+                <span :class="['stg-resend-badge', auth.profile?.resend_api_key ? 'active' : '']">
+                  {{ auth.profile?.resend_api_key ? '✓ ' + t('stg_resend_active') : t('stg_resend_inactive') }}
+                </span>
+              </div>
+            </div>
+
+            <div class="fg">
+              <label>{{ t('stg_resend_key_label') }}</label>
+              <input
+                v-model="resendKey"
+                type="password"
+                :placeholder="t('stg_resend_key_placeholder')"
+                class="fi"
+                autocomplete="off"
+              />
+            </div>
+
+            <p class="stg-resend-help">
+              {{ t('stg_resend_help') }}
+              <a href="https://resend.com/api-keys" target="_blank" rel="noopener">resend.com →</a>
+            </p>
+
+            <div v-if="resendError" class="stg-resend-error">{{ resendError }}</div>
+            <div v-if="resendSaved" class="stg-resend-success">✓ {{ t('stg_resend_saved') }}</div>
+
+            <button class="btn-save" @click="saveResendKey" :disabled="resendSaving">
+              {{ resendSaving ? t('stg_saving') : t('stg_resend_save') }}
+            </button>
+          </div>
+
+          <div class="stg-resend-info">
+            <span>💡</span>
+            <span>{{ t('stg_resend_free_info') }}</span>
+          </div>
+        </div>
+      </div>
 </div>
 </template>
 
@@ -215,6 +262,7 @@ import { ref, reactive, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { supabase } from '@/lib/supabase'
 import { useTeamStore } from '@/stores/team'
 
 const { t } = useI18n({ useScope: 'global' })
@@ -233,6 +281,7 @@ const tabs = [
   { key: 'profile', label: 'stg_tab_profile' },
   { key: 'team', label: 'stg_tab_team' },
   { key: 'billing', label: 'stg_tab_billing' },
+    { key: 'integrations', label: 'stg_tab_integrations' },
   { key: 'notifications', label: 'stg_tab_notif' },
   { key: 'appearance', label: 'stg_tab_appearance' },
   { key: 'delete', label: 'stg_tab_delete', danger: true },
@@ -243,6 +292,35 @@ const profile = reactive({
   email: auth.user?.email || '',
   company: auth.profile?.company || auth.profile?.company_name || '',
 })
+const resendKey = ref(auth.profile?.resend_api_key || '')
+const resendSaving = ref(false)
+const resendSaved = ref(false)
+const resendError = ref('')
+
+async function saveResendKey() {
+  resendSaving.value = true
+  resendError.value = ''
+  resendSaved.value = false
+  try {
+    // Validate key format
+    if (resendKey.value && !resendKey.value.startsWith('re_')) {
+      resendError.value = t('stg_resend_invalid')
+      return
+    }
+    const { error } = await supabase
+      .from('profiles')
+      .update({ resend_api_key: resendKey.value || null })
+      .eq('id', auth.user?.id)
+    if (error) throw error
+    await auth.fetchProfile(auth.user?.id)
+    resendSaved.value = true
+    setTimeout(() => { resendSaved.value = false }, 3000)
+  } catch (e) {
+    resendError.value = e.message
+  } finally {
+    resendSaving.value = false
+  }
+}
 
 const pwd = reactive({ current: '', newPwd: '', confirm: '' })
 const notif = reactive({ churn: true, renewal: true, burnout: true, late_tasks: true, nps: false })
@@ -418,5 +496,32 @@ applyTheme(theme.value)
 .theme-card { display:flex;align-items:center;gap:8px;padding:12px 18px;border:2px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg-card,#fff);cursor:pointer;font-size:0.9rem;transition:all 0.18s;color:var(--text,#1a1a2e); }
 .theme-card:hover { border-color:var(--purple,#7c3aed); }
 .theme-card.active { border-color:var(--purple,#7c3aed);background:var(--purple-light,#ede9fe);color:var(--purple,#7c3aed);font-weight:600; }
+
+
+/* ─── Integrations Tab ─────────────────────────────────────────── */
+.stg-resend-desc { font-size: 0.85rem; color: #6b7280; margin-bottom: 16px; line-height: 1.6; }
+.stg-resend-box {
+  border: 1.5px solid #e5e7eb; border-radius: 12px;
+  padding: 20px; margin-bottom: 16px;
+}
+.stg-resend-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.stg-resend-logo { font-size: 1.5rem; }
+.stg-resend-badge {
+  display: inline-block; margin-left: 8px;
+  font-size: 0.72rem; font-weight: 600; padding: 2px 8px;
+  border-radius: 20px; background: #f3f4f6; color: #6b7280;
+}
+.stg-resend-badge:has-text('✓') { background: #dcfce7; color: #15803d; }
+.stg-resend-help { font-size: 0.78rem; color: #9ca3af; margin: 8px 0 12px; }
+.stg-resend-help a { color: #7c3aed; }
+.stg-resend-error { color: #ef4444; font-size: 0.8rem; margin-bottom: 8px; }
+.stg-resend-success { color: #10b981; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; }
+.stg-resend-info {
+  display: flex; gap: 8px; align-items: flex-start;
+  background: #f0fdf4; border-radius: 10px; padding: 12px 14px;
+  font-size: 0.78rem; color: #4b7c60; line-height: 1.5;
+}
 
 </style>

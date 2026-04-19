@@ -27,7 +27,7 @@ serve(async (req) => {
     }
 
     const body = await req.json()
-    const { to, subject, html, from_name, reply_to, template_id } = body
+    const { to, subject, html, from_name, reply_to, template_id, resend_api_key } = body
 
     if (!to || !subject || !html) {
       return new Response(JSON.stringify({ error: 'Missing required fields: to, subject, html' }), {
@@ -42,9 +42,10 @@ serve(async (req) => {
       })
     }
 
-    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
+    // Use customer's own Resend key if provided, otherwise use Scalyo's key
+    const RESEND_API_KEY = resend_api_key || Deno.env.get('RESEND_API_KEY')
     if (!RESEND_API_KEY) {
-      return new Response(JSON.stringify({ error: 'Email service not configured' }), {
+      return new Response(JSON.stringify({ error: 'No Resend API key configured. Please add your Resend API key in Settings → Integrations.' }), {
         status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
