@@ -527,28 +527,28 @@
       </div>
     </section>
 
-    <!-- ═══════════════════ PRICING ═══════════════════ -->
+    <!-- ─────────────────── PRICING ─────────────────── -->
     <section id="pricing" class="pricing-section">
       <div class="container">
         <div class="section-header anim-section" data-anim="fade-up">
           <span class="section-tag">{{ t('pricing_tag') }}</span>
           <h2 v-html="t('pricing_h2')"></h2>
-          <p class="pricing-note" v-html="t('pricing_note')"></p>
+          <p class="pricing-sub">{{ t('pricing_sub') }}</p>
         </div>
 
         <div class="plans-grid anim-section" data-anim="fade-up">
           <!-- Starter -->
           <div class="plan-card">
             <div class="plan-name">STARTER</div>
-            <div class="plan-price"><span class="currency">€</span>97<span class="period">/{{ locale === 'kr' ? '월' : locale === 'en' ? 'mo' : 'mois' }}</span></div>
-            <div class="plan-desc">{{ t('plan_1csm') }}</div>
+            <div class="plan-price"><span class="currency">€</span>79<span class="period">{{ t('plan_per_user') }}</span></div>
+            <div class="plan-desc">{{ t('plan_starter_desc') }}</div>
             <ul class="plan-features">
-              <li>✓ {{ t('feat_5acc') }}</li>
-              <li>✓ {{ t('feat_dash') }}</li>
-              <li>✓ {{ t('feat_tasks') }}</li>
-              <li>✓ {{ t('feat_res') }}</li>
-              <li>✓ {{ t('feat_wb') }}</li>
-              <li>✓ {{ t('feat_coach') }}</li>
+              <li>✓ {{ t('feat_s1') }}</li>
+              <li>✓ {{ t('feat_s2') }}</li>
+              <li>✓ {{ t('feat_s3') }}</li>
+              <li>✓ {{ t('feat_s4') }}</li>
+              <li>✓ {{ t('feat_s5') }}</li>
+              <li>✓ {{ t('feat_s6') }}</li>
             </ul>
             <a :href="stripeUrl('starter')" target="_blank" rel="noopener" class="btn-outline plan-btn">{{ t('cta_trial') }}</a>
           </div>
@@ -557,33 +557,49 @@
           <div class="plan-card popular">
             <div class="popular-badge">⭐ {{ t('badge_popular') }}</div>
             <div class="plan-name">GROWTH</div>
-            <div class="plan-price"><span class="currency">€</span>297<span class="period">/{{ locale === 'kr' ? '월' : locale === 'en' ? 'mo' : 'mois' }}</span></div>
-            <div class="plan-desc">{{ t('plan_10csm') }}</div>
+            <div class="plan-price"><span class="currency">€</span>119<span class="period">{{ t('plan_per_user') }}</span></div>
+            <div class="plan-desc">{{ t('plan_growth_desc') }}</div>
             <ul class="plan-features">
-              <li>✓ {{ t('feat_unlim_acc') }}</li>
-              <li>✓ {{ t('feat_dash_adv') }}</li>
-              <li>✓ {{ t('feat_coach_cs') }}</li>
-              <li>✓ {{ t('feat_email_ai') }}</li>
-              <li>✓ {{ t('feat_import') }}</li>
-              <li>✓ {{ t('feat_support') }}</li>
+              <li>✓ {{ t('feat_g1') }}</li>
+              <li>✓ {{ t('feat_g2') }}</li>
+              <li>✓ {{ t('feat_g3') }}</li>
+              <li>✓ {{ t('feat_g4') }}</li>
+              <li>✓ {{ t('feat_g5') }}</li>
+              <li>✓ {{ t('feat_g6') }}</li>
             </ul>
-            <a :href="stripeUrl('growth')" target="_blank" rel="noopener" class="btn-primary plan-btn glow-btn">{{ t('cta_trial') }}</a>
+            <a :href="stripeUrl('growth')" target="_blank" rel="noopener" class="btn-primary plan-btn">{{ t('cta_trial') }}</a>
           </div>
 
-          <!-- Elite -->
+          <!-- Scale -->
           <div class="plan-card">
-            <div class="plan-name">ELITE</div>
-            <div class="plan-price"><span class="currency">€</span>697<span class="period">/{{ locale === 'kr' ? '월' : locale === 'en' ? 'mo' : 'mois' }}</span></div>
-            <div class="plan-desc">{{ t('plan_unlim_csm') }}</div>
+            <div class="plan-name">SCALE</div>
+            <div class="plan-price"><span class="currency">€</span>159<span class="period">{{ t('plan_per_user') }}</span></div>
+            <div class="plan-desc">{{ t('plan_scale_desc') }}</div>
             <ul class="plan-features">
-              <li>✓ {{ t('feat_all_growth') }}</li>
-              <li>✓ {{ t('feat_playbooks') }}</li>
-              <li>✓ {{ t('feat_coaching') }}</li>
-              <li>✓ {{ t('feat_onboarding') }}</li>
-              <li>✓ {{ t('feat_sla') }}</li>
-              <li>✓ {{ t('feat_multi') }}</li>
+              <li>✓ {{ t('feat_sc1') }}</li>
+              <li>✓ {{ t('feat_sc2') }}</li>
+              <li>✓ {{ t('feat_sc3') }}</li>
+              <li>✓ {{ t('feat_sc4') }}</li>
+              <li>✓ {{ t('feat_sc5') }}</li>
+              <li>✓ {{ t('feat_sc6') }}</li>
             </ul>
-            <a :href="stripeUrl('elite')" target="_blank" rel="noopener" class="btn-outline plan-btn">{{ t('cta_trial') }}</a>
+            <a :href="stripeUrl('scale')" target="_blank" rel="noopener" class="btn-outline plan-btn">{{ t('cta_trial') }}</a>
+          </div>
+
+          <!-- Enterprise -->
+          <div class="plan-card enterprise">
+            <div class="plan-name">ENTERPRISE</div>
+            <div class="plan-price plan-price-custom">{{ t('plan_custom') }}<span class="period">{{ t('plan_viewers') }}</span></div>
+            <div class="plan-desc">{{ t('plan_enterprise_desc') }}</div>
+            <ul class="plan-features">
+              <li>✓ {{ t('feat_e1') }}</li>
+              <li>✓ {{ t('feat_e2') }}</li>
+              <li>✓ {{ t('feat_e3') }}</li>
+              <li>✓ {{ t('feat_e4') }}</li>
+              <li>✓ {{ t('feat_e5') }}</li>
+              <li>✓ {{ t('feat_e6') }}</li>
+            </ul>
+            <a href="mailto:contact@scalyo.app" class="btn-outline plan-btn">{{ t('cta_contact') }}</a>
           </div>
         </div>
 
@@ -1232,8 +1248,9 @@ a { color: inherit; text-decoration: none; }
 /* ═══════════════════ PRICING ═══════════════════ */
 .pricing-section { padding: 80px 0; }
 .pricing-note { font-size: 0.82rem; color: var(--lp-muted); max-width: 600px; margin: 0 auto; line-height: 1.6; }
-.pricing-note :deep(strong) { color: var(--lp-purple-light); }
-.plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+.pricing-sub { font-size: 0.95rem; color: var(--lp-muted); max-width: 640px; margin: 8px auto 0; line-height: 1.5; }
+.plan-price-custom { font-size: 2rem; }
+.plans-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 40px; }
 .plan-card { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 20px; padding: 32px 24px; position: relative; transition: all 0.3s; }
 .plan-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
 .plan-card.popular { border-color: var(--lp-purple); box-shadow: 0 0 40px rgba(124,58,237,0.15); background: rgba(124,58,237,0.04); }
@@ -1282,6 +1299,9 @@ a { color: inherit; text-decoration: none; }
 .footer-bottom { padding-top: 20px; text-align: center; font-size: 0.75rem; color: rgba(255,255,255,0.3); }
 
 /* ═══════════════════ RESPONSIVE ═══════════════════ */
+@media (max-width: 1100px) {
+  .plans-grid { grid-template-columns: repeat(2, 1fr); }
+}
 @media (max-width: 900px) {
   .hide-mobile { display: none !important; }
   .burger { display: flex; }
