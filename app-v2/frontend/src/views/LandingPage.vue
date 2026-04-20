@@ -542,7 +542,7 @@
             <div class="plan-top">
               <div class="plan-name">STARTER</div>
               <div class="plan-price-wrap">
-                <div class="plan-price"><span class="currency">€</span>79</div>
+                <div class="plan-price"><span class="currency">{{ t('plan_currency') }}</span>{{ t('plan_starter_price') }}</div>
                 <div class="plan-period">{{ t('plan_per_user') }}</div>
               </div>
               <div class="plan-desc">{{ t('plan_starter_desc') }}</div>
@@ -564,7 +564,7 @@
             <div class="plan-top">
               <div class="plan-name">GROWTH</div>
               <div class="plan-price-wrap">
-                <div class="plan-price"><span class="currency">€</span>119</div>
+                <div class="plan-price"><span class="currency">{{ t('plan_currency') }}</span>{{ t('plan_growth_price') }}</div>
                 <div class="plan-period">{{ t('plan_per_user') }}</div>
               </div>
               <div class="plan-desc">{{ t('plan_growth_desc') }}</div>
@@ -583,12 +583,12 @@
           <!-- Scale -->
           <div class="plan-card">
             <div class="plan-top">
-              <div class="plan-name">SCALE</div>
+              <div class="plan-name">ELITE</div>
               <div class="plan-price-wrap">
-                <div class="plan-price"><span class="currency">€</span>159</div>
+                <div class="plan-price"><span class="currency">{{ t('plan_currency') }}</span>{{ t('plan_elite_price') }}</div>
                 <div class="plan-period">{{ t('plan_per_user') }}</div>
               </div>
-              <div class="plan-desc">{{ t('plan_scale_desc') }}</div>
+              <div class="plan-desc">{{ t('plan_elite_desc') }}</div>
             </div>
             <ul class="plan-features">
               <li>✓ {{ t('feat_sc1') }}</li>
@@ -598,7 +598,7 @@
               <li>✓ {{ t('feat_sc5') }}</li>
               <li>✓ {{ t('feat_sc6') }}</li>
             </ul>
-            <a :href="stripeUrl('scale')" target="_blank" rel="noopener" class="btn-outline plan-btn">{{ t('cta_trial') }}</a>
+            <a :href="stripeUrl('elite')" target="_blank" rel="noopener" class="btn-outline plan-btn">{{ t('cta_trial') }}</a>
           </div>
 
           <!-- Enterprise -->
