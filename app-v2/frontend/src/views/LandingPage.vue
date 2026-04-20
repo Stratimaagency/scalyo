@@ -734,9 +734,9 @@ const appUrl = ''
 
   const authStore = useAuthStore()
   const STRIPE_LINKS = {
-    starter: 'https://buy.stripe.com/bJebJ1amncpL7mBekAdfG01',
-    growth:  'https://buy.stripe.com/eVqbJ10LN6ln5et90gdfG00',
-    scale:   'https://buy.stripe.com/eVqaEXeCD1L736l7WcdfG05',  // PLACEHOLDER - update with real Scale link
+    starter: 'https://buy.stripe.com/4gM3cvdyzcpLbCRb8odfG06',
+    growth:  'https://buy.stripe.com/eVqfZh2TVdtPdKZccsdfG07',
+    elite:   'https://buy.stripe.com/14A3cv667gG18qFccsdfG08',
   }
   function stripeUrl(plan) {
     const base = STRIPE_LINKS[plan]
