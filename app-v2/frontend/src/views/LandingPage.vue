@@ -539,9 +539,14 @@
         <div class="plans-grid anim-section" data-anim="fade-up">
           <!-- Starter -->
           <div class="plan-card">
-            <div class="plan-name">STARTER</div>
-            <div class="plan-price"><span class="currency">€</span>79<span class="period">{{ t('plan_per_user') }}</span></div>
-            <div class="plan-desc">{{ t('plan_starter_desc') }}</div>
+            <div class="plan-top">
+              <div class="plan-name">STARTER</div>
+              <div class="plan-price-wrap">
+                <div class="plan-price"><span class="currency">€</span>79</div>
+                <div class="plan-period">{{ t('plan_per_user') }}</div>
+              </div>
+              <div class="plan-desc">{{ t('plan_starter_desc') }}</div>
+            </div>
             <ul class="plan-features">
               <li>✓ {{ t('feat_s1') }}</li>
               <li>✓ {{ t('feat_s2') }}</li>
@@ -556,9 +561,14 @@
           <!-- Growth -->
           <div class="plan-card popular">
             <div class="popular-badge">⭐ {{ t('badge_popular') }}</div>
-            <div class="plan-name">GROWTH</div>
-            <div class="plan-price"><span class="currency">€</span>119<span class="period">{{ t('plan_per_user') }}</span></div>
-            <div class="plan-desc">{{ t('plan_growth_desc') }}</div>
+            <div class="plan-top">
+              <div class="plan-name">GROWTH</div>
+              <div class="plan-price-wrap">
+                <div class="plan-price"><span class="currency">€</span>119</div>
+                <div class="plan-period">{{ t('plan_per_user') }}</div>
+              </div>
+              <div class="plan-desc">{{ t('plan_growth_desc') }}</div>
+            </div>
             <ul class="plan-features">
               <li>✓ {{ t('feat_g1') }}</li>
               <li>✓ {{ t('feat_g2') }}</li>
@@ -572,9 +582,14 @@
 
           <!-- Scale -->
           <div class="plan-card">
-            <div class="plan-name">SCALE</div>
-            <div class="plan-price"><span class="currency">€</span>159<span class="period">{{ t('plan_per_user') }}</span></div>
-            <div class="plan-desc">{{ t('plan_scale_desc') }}</div>
+            <div class="plan-top">
+              <div class="plan-name">SCALE</div>
+              <div class="plan-price-wrap">
+                <div class="plan-price"><span class="currency">€</span>159</div>
+                <div class="plan-period">{{ t('plan_per_user') }}</div>
+              </div>
+              <div class="plan-desc">{{ t('plan_scale_desc') }}</div>
+            </div>
             <ul class="plan-features">
               <li>✓ {{ t('feat_sc1') }}</li>
               <li>✓ {{ t('feat_sc2') }}</li>
@@ -587,11 +602,15 @@
           </div>
 
           <!-- Enterprise -->
-          <div class="plan-card enterprise">
-            <div class="plan-name">ENTERPRISE</div>
-            <div class="plan-price plan-price-custom">{{ t('plan_custom') }}</div>
-            <div class="plan-viewers-label">{{ t('plan_viewers') }}</div>
-            <div class="plan-desc">{{ t('plan_enterprise_desc') }}</div>
+          <div class="plan-card">
+            <div class="plan-top">
+              <div class="plan-name">ENTERPRISE</div>
+              <div class="plan-price-wrap">
+                <div class="plan-price plan-price-custom">{{ t('plan_custom') }}</div>
+                <div class="plan-period">{{ t('plan_viewers') }}</div>
+              </div>
+              <div class="plan-desc">{{ t('plan_enterprise_desc') }}</div>
+            </div>
             <ul class="plan-features">
               <li>✓ {{ t('feat_e1') }}</li>
               <li>✓ {{ t('feat_e2') }}</li>
@@ -1248,27 +1267,25 @@ a { color: inherit; text-decoration: none; }
 
 /* ═══════════════════ PRICING ═══════════════════ */
 .pricing-section { padding: 80px 0; }
-.pricing-note { font-size: 0.82rem; color: var(--lp-muted); max-width: 600px; margin: 0 auto; line-height: 1.6; }
-.pricing-sub { font-size: 0.95rem; color: var(--lp-muted); max-width: 640px; margin: 8px auto 0; line-height: 1.5; }
-.plan-price-custom { font-size: 1.8rem; font-weight: 700; line-height: 1.2; margin-bottom: 2px; }
-.plan-viewers-label { font-size: 0.82rem; color: var(--lp-muted); margin-bottom: 10px; }
-.plans-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 40px; }
-.plan-card { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 20px; padding: 32px 24px; position: relative; transition: all 0.3s; }
+.pricing-sub { font-size: 1rem; color: var(--lp-muted); max-width: 640px; margin: 10px auto 0; line-height: 1.6; text-align: center; }
+.plans-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 40px; align-items: stretch; }
+.plan-card { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 20px; padding: 36px 24px 28px; position: relative; transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; text-align: center; }
 .plan-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-.plan-card.popular { border-color: var(--lp-purple); box-shadow: 0 0 40px rgba(124,58,237,0.15); background: rgba(124,58,237,0.04); }
-.popular-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--lp-purple), var(--lp-purple-dark)); color: #fff; font-size: 0.72rem; padding: 6px 20px; border-radius: 999px; font-weight: 600; white-space: nowrap; }
-.plan-name { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; color: var(--lp-muted); margin-bottom: 14px; }
-.plan-price { font-size: 2.4rem; font-weight: 800; margin-bottom: 6px; }
-.currency { font-size: 1.6rem; vertical-align: top; margin-top: 8px; display: inline-block; }
-.period { font-size: 0.78rem; color: var(--lp-muted); font-weight: 400; }
-.plan-desc { font-size: 0.82rem; color: var(--lp-muted); margin-bottom: 24px; }
-.plan-features { list-style: none; margin-bottom: 28px; display: flex; flex-direction: column; gap: 10px; }
-.plan-features li { font-size: 0.85rem; color: var(--lp-text); }
-.plan-btn { display: block; text-align: center; width: 100%; }
-
-.plan-footnote { text-align: center; font-size: 0.78rem; color: var(--lp-muted); margin-top: 28px; line-height: 1.6; }
+.plan-card.popular { border-color: var(--lp-purple); box-shadow: 0 0 40px rgba(124,58,237,0.15); background: linear-gradient(180deg, rgba(124,58,237,0.04), transparent 60%); }
+.popular-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--lp-purple); color: #fff; font-size: 0.72rem; font-weight: 700; padding: 4px 16px; border-radius: 20px; white-space: nowrap; letter-spacing: 0.04em; }
+.plan-top { min-height: 160px; display: flex; flex-direction: column; align-items: center; }
+.plan-name { font-size: 0.85rem; font-weight: 800; letter-spacing: 0.14em; color: var(--lp-heading); margin-bottom: 16px; text-transform: uppercase; }
+.plan-price-wrap { margin-bottom: 12px; text-align: center; }
+.plan-price { font-size: 2.6rem; font-weight: 800; color: var(--lp-purple); text-shadow: 0 0 30px rgba(124,58,237,0.3), 0 0 60px rgba(124,58,237,0.1); line-height: 1; }
+.plan-price .currency { font-size: 1.4rem; vertical-align: top; margin-right: 2px; position: relative; top: 6px; }
+.plan-price-custom { font-size: 2rem; }
+.plan-period { font-size: 0.82rem; color: var(--lp-muted); margin-top: 4px; }
+.plan-desc { font-size: 0.82rem; color: var(--lp-muted); line-height: 1.45; margin-top: 4px; }
+.plan-features { list-style: none; padding: 0; margin: 0 0 24px 0; text-align: left; flex: 1; }
+.plan-features li { padding: 5px 0; font-size: 0.82rem; color: var(--lp-text); border-bottom: 1px solid rgba(255,255,255,0.04); }
+.plan-btn { display: block; text-align: center; padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: all 0.3s; margin-top: auto; }
+.plan-footnote { text-align: center; font-size: 0.75rem; color: var(--lp-muted); margin-top: 28px; line-height: 1.6; }
 .plan-footnote :deep(strong) { color: var(--lp-purple-light); }
-
 /* ═══════════════════ FAQ ═══════════════════ */
 .faq-section { padding: 80px 0; background: var(--lp-bg2); }
 .faq-list { max-width: 700px; margin: 0 auto; }
