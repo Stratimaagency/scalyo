@@ -591,12 +591,13 @@
               <div class="plan-desc">{{ t('plan_elite_desc') }}</div>
             </div>
             <ul class="plan-features">
-              <li>✓ {{ t('feat_sc1') }}</li>
-              <li>✓ {{ t('feat_sc2') }}</li>
-              <li>✓ {{ t('feat_sc3') }}</li>
-              <li>✓ {{ t('feat_sc4') }}</li>
-              <li>✓ {{ t('feat_sc5') }}</li>
-              <li>✓ {{ t('feat_sc6') }}</li>
+              <li>✓ {{ t('feat_all_growth') }}</li>
+              <li>✓ {{ t('feat_playbooks') }}</li>
+              <li>✓ {{ t('feat_coach_elite') }}</li>
+              <li>✓ {{ t('feat_coaching') }}</li>
+              <li>✓ {{ t('feat_onboarding') }}</li>
+              <li>✓ {{ t('feat_sla') }}</li>
+              <li>✓ {{ t('feat_multi') }}</li>
             </ul>
             <a :href="stripeUrl('elite')" target="_blank" rel="noopener" class="btn-outline plan-btn">{{ t('cta_trial') }}</a>
           </div>

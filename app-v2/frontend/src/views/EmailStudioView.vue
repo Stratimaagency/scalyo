@@ -1,16 +1,26 @@
 <template>
   <div class="email-studio">
     <div class="es-header">
-      <h1>📧 {{ t('es_title') }}</h1>
+      <h1>ð§ {{ t('es_title') }}</h1>
       <p class="es-sub">{{ t('es_subtitle') }}</p>
     </div>
 
-    <div class="es-layout">
+    <!-- âââ Bandeau transparence email âââââââââââââââââââââââââââ -->
+    <div :class="['es-email-banner', hasResendKey ? 'connected' : 'setup-needed']">
+      <span class="es-banner-icon">{{ hasResendKey ? 'â' : 'âï¸' }}</span>
+      <div class="es-banner-text">
+        <strong>{{ hasResendKey ? t('es_resend_connected') : t('es_resend_setup_title') }}</strong>
+        <span>{{ hasResendKey ? t('es_resend_connected_desc') : t('es_resend_setup_desc') }}</span>
+      </div>
+      <router-link v-if="!hasResendKey" to="/app/settings?tab=integrations" class="es-banner-link">{{ t('es_resend_setup_link') }}</router-link>
+    </div>
+
+    <div v-if="activeTab !== 'history'" class="es-layout">
       <div class="es-left">
         <div class="es-tabs">
           <button v-for="tab in tabs" :key="tab.key" class="es-tab" :class="{ active: activeTab === tab.key }" @click="activeTab = tab.key">{{ t(tab.label) }}</button>
         </div>
-        <div class="es-search"><span>🔍</span><input v-model="search" :placeholder="t('es_search')" /></div>
+        <div class="es-search"><span>ð</span><input v-model="search" :placeholder="t('es_search')" /></div>
 
         <div class="es-cats">
           <button v-for="cat in categoryKeys" :key="cat" class="es-cat" :class="{ active: activeCat === cat, [catClass(cat)]: true }" @click="activeCat = activeCat === cat ? 'all' : cat">{{ cat === 'all' ? t('es_cat_all') : t('es_cat_' + cat) }}</button>
@@ -31,6 +41,18 @@
             <div class="esp-actions">
               <span class="esp-cat" :class="catClass(selected.categoryKey)">{{ t('es_cat_' + selected.categoryKey) }}</span>
               <button class="btn-primary" @click="copyEmail">{{ copied ? t('es_copied') : t('es_copy') }}</button>
+              <template v-if="isElite">
+                <button class="btn-send" @click="showSendModal = true" :disabled="!selected || !hasResendKey">
+                  {{ !hasResendKey ? t('es_resend_required') : t('es_send') }}
+                </button>
+              <ResendSetupWizard v-if="showResendWizard" @close="showResendWizard = false" @connected="showResendWizard = false" />
+</template>
+              <template v-else>
+                <div class="es-elite-gate" :title="t('es_elite_tooltip')">
+                  <span>{{ t('es_elite_badge') }}</span>
+                  <span class="es-elite-lock">ð {{ t('es_elite_required') }}</span>
+                </div>
+              </template>
             </div>
           </div>
           <div class="esp-field"><strong>{{ t('es_subject') }}</strong><p>{{ t(selected.subjectKey) }}</p></div>
@@ -40,31 +62,177 @@
           </div>
         </div>
         <div v-else class="esp-empty">
-          <span class="esp-empty-icon">📧</span>
+          <span class="esp-empty-icon">ð§</span>
           <p>{{ t('es_preview') }}</p>
         </div>
       </div>
     </div>
   </div>
+
+
+  <!-- âââ History Tab Panel ââââââââââââââââââââââââââââââââââââââââ -->
+  <div v-if="activeTab === 'history'" class="es-history">
+    <div v-if="!isElite" class="es-history-gate">
+      <span class="es-elite-gate">
+        <span>Elite</span>
+        <span class="es-elite-lock">ð {{ t('es_history_elite') }}</span>
+      </span>
+    </div>
+    <template v-else>
+      <!-- KPI bar -->
+      <div class="es-history-kpis">
+        <div class="es-kpi">
+          <span class="es-kpi-value">{{ sentEmails.length }}</span>
+          <span class="es-kpi-label">{{ t('es_history_sent') }}</span>
+        </div>
+        <div class="es-kpi">
+          <span class="es-kpi-value">{{ sentEmails.filter(e => e.opened_at).length }}</span>
+          <span class="es-kpi-label">{{ t('es_history_opened') }}</span>
+        </div>
+        <div class="es-kpi">
+          <span class="es-kpi-value">{{ openRate }}</span>
+          <span class="es-kpi-label">{{ t('es_history_rate') }}</span>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div v-if="historyLoading" class="es-history-loading">â³ {{ t('es_history_loading') }}</div>
+      <div v-else-if="historyError" class="es-history-error">{{ historyError }}</div>
+      <div v-else-if="!sentEmails.length" class="es-history-empty">{{ t('es_history_empty') }}</div>
+
+      <!-- Table -->
+      <div v-else class="es-history-table">
+        <div class="es-history-head">
+          <span>{{ t('es_history_col_to') }}</span>
+          <span>{{ t('es_history_col_subject') }}</span>
+          <span>{{ t('es_history_col_sent') }}</span>
+          <span>{{ t('es_history_col_status') }}</span>
+          <span>{{ t('es_history_col_opens') }}</span>
+        </div>
+        <div v-for="email in sentEmails" :key="email.id" class="es-history-row">
+          <span class="es-history-to" :title="email.to_email">{{ email.to_email }}</span>
+          <span class="es-history-subject" :title="t(email.subject)">{{ email.subject }}</span>
+          <span class="es-history-date">{{ formatDate(email.sent_at) }}</span>
+          <span :class="['es-history-status', email.opened_at ? 'opened' : 'pending']">
+            {{ email.opened_at ? 'â ' + t('es_history_read') : t('es_history_unread') }}
+          </span>
+          <span class="es-history-opens">{{ email.open_count || 0 }}x</span>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <!-- âââ Send Email Modal ââââââââââââââââââââââââââââââââââââââââ -->
+  <div v-if="showSendModal" class="send-modal-overlay" @click.self="showSendModal = false">
+    <div class="send-modal">
+      <div class="sm-header">
+        <h3>{{ t('es_send_title') }}</h3>
+        <button class="sm-close" @click="showSendModal = false">â</button>
+      </div>
+      <div class="sm-body">
+        <div v-if="sendResult?.success" class="sm-success">
+          â {{ t('es_send_success') }}
+        </div>
+        <div v-else-if="sendResult?.error" class="sm-error">
+          â {{ sendResult.error }}
+        </div>
+        <template v-else>
+          <div class="sm-field">
+            <label>{{ t('es_send_to') }}</label>
+            <input v-model="sendTo" type="email" :placeholder="t('es_send_to_placeholder')" class="sm-input" />
+          </div>
+          <div class="sm-field">
+            <label>{{ t('es_send_from_name') }}</label>
+            <input v-model="sendFromName" type="text" :placeholder="auth.fullName || t('es_send_from_placeholder')" class="sm-input" />
+          </div>
+          <div class="sm-preview">
+            <strong>{{ t('es_subject') }} :</strong> {{ selected ? t(selected.subjectKey) : '' }}
+          </div>
+          <button class="btn-primary sm-send-btn" @click="sendEmail" :disabled="!sendTo || sending">
+            {{ sending ? t('es_sending') : t('es_send_btn') }}
+          </button>
+        </template>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { supabase } from '@/lib/supabase'
+import { useAuthStore } from '@/stores/auth'
+import ResendSetupWizard from '@/components/modals/ResendSetupWizard.vue'
 
 const { t } = useI18n({ useScope: 'global' })
 
 const activeTab = ref('all')
+const showResendWizard = ref(false)
 const activeCat = ref('all')
 const search = ref('')
 const selectedId = ref(null)
 const copied = ref(false)
+
+// Send email modal
+const showSendModal = ref(false)
+const sendTo = ref('')
+const sendFromName = ref('')
+const sending = ref(false)
+const sendResult = ref(null) // { success, error }
+const auth = useAuthStore()
+const isElite = computed(() => auth.currentPlan === 'elite')
+const hasResendKey = computed(() => !!(auth.profile?.resend_api_key && auth.profile.resend_api_key.startsWith('re_')))
+const EMAIL_FREE_QUOTA = 3000
+const EMAIL_OVERAGE_RATE = 1.5 // â¬/1000 au-delÃ 
+
+// âââ Email History ââââââââââââââââââââââââââââââââââââââââââââââââ
+const sentEmails = ref([])
+const historyLoading = ref(false)
+const historyError = ref(null)
+
+async function loadSentEmails() {
+  if (!isElite.value) return
+  historyLoading.value = true
+  historyError.value = null
+  try {
+    const { data, error } = await supabase
+      .from('sent_emails')
+      .select('id, to_email, subject, template_id, sent_at, opened_at, open_count, from_name')
+      .order('sent_at', { ascending: false })
+      .limit(50)
+    if (error) throw error
+    sentEmails.value = data || []
+  } catch (e) {
+    historyError.value = e.message
+  } finally {
+    historyLoading.value = false
+  }
+}
+
+// Load history when tab is switched to 'history'
+watch(activeTab, (val) => {
+  if (val === 'history') loadSentEmails()
+})
+
+function formatDate(iso) {
+  if (!iso) return 'â'
+  const d = new Date(iso)
+  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })
+}
+
+const openRate = computed(() => {
+  if (!sentEmails.value.length) return '0%'
+  const opened = sentEmails.value.filter(e => e.opened_at).length
+  return Math.round((opened / sentEmails.value.length) * 100) + '%'
+})
 
 const tabs = [
   { key: 'all', label: 'es_tab_all' },
   { key: 'csm', label: 'es_tab_csm' },
   { key: 'commercial', label: 'es_tab_commercial' },
   { key: 'kam', label: 'es_tab_kam' },
+  { key: 'history', label: 'es_tab_history' },
 ]
 
 const templates = [
@@ -103,6 +271,47 @@ const selected = computed(() => templates.find(tpl => tpl.id === selectedId.valu
 function catClass(key) {
   const map = { onboarding: 'cat-blue', qbr: 'cat-purple', suivi: 'cat-teal', risque: 'cat-red', renouvellement: 'cat-amber', expansion: 'cat-green', nps: 'cat-pink', prospection: 'cat-indigo', negociation: 'cat-orange', relance: 'cat-slate', closing: 'cat-dark', retention: 'cat-red', all: 'cat-gray' }
   return map[key] || 'cat-gray'
+}
+
+async function sendEmail() {
+  if (auth.currentPlan === 'elite' && !auth.profile?.resend_api_key) { showResendWizard.value = true; return }
+  if (!selected.value || !sendTo.value) return
+  sending.value = true
+  sendResult.value = null
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    const resp = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-email`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({
+          to: sendTo.value,
+          subject: t(selected.value.subjectKey),
+          html: `<div style="font-family:sans-serif;line-height:1.6;max-width:600px;margin:0 auto">${t(selected.value.bodyKey).replace(/\n/g, '<br>')}</div>`,
+          from_name: sendFromName.value || auth.fullName || 'Scalyo',
+          reply_to: auth.user?.email,
+          resend_api_key: auth.profile?.resend_api_key || null,
+          template_id: selected.value.id,
+        })
+      }
+    )
+    const data = await resp.json()
+    if (resp.ok && data.success) {
+      sendResult.value = { success: true }
+      sendTo.value = ''
+      setTimeout(() => { showSendModal.value = false; sendResult.value = null }, 2000)
+    } else {
+      sendResult.value = { error: data.error || 'Erreur envoi' }
+    }
+  } catch (e) {
+    sendResult.value = { error: e.message }
+  } finally {
+    sending.value = false
+  }
 }
 
 function copyEmail() {
@@ -168,4 +377,131 @@ function copyEmail() {
 .esp-empty-icon { font-size: 3rem; margin-bottom: 12px; }
 .esp-empty p { font-size: 0.9rem; }
 @media (max-width: 900px) { .es-layout { grid-template-columns: 1fr; } .es-right { min-height: 300px; } }
+
+.btn-send {
+  background: #10b981;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-send:hover { background: #059669; }
+.btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.send-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.send-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.sm-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px;
+}
+.sm-header h3 { font-size: 1.1rem; font-weight: 700; color: #111827; margin: 0; }
+.sm-close {
+  background: none; border: none; cursor: pointer;
+  font-size: 1.1rem; color: #6b7280;
+}
+.sm-field { margin-bottom: 16px; }
+.sm-field label { display: block; font-size: 0.8rem; font-weight: 600; color: #374151; margin-bottom: 6px; }
+.sm-input {
+  width: 100%; padding: 10px 14px;
+  border: 1.5px solid #e5e7eb; border-radius: 8px;
+  font-size: 0.9rem; outline: none; box-sizing: border-box;
+}
+.sm-input:focus { border-color: #7c3aed; }
+.sm-preview {
+  background: #f9fafb; border-radius: 8px;
+  padding: 10px 14px; font-size: 0.82rem; color: #6b7280;
+  margin-bottom: 16px;
+}
+.sm-send-btn { width: 100%; padding: 12px; font-size: 0.95rem; }
+.sm-success { color: #10b981; font-weight: 600; text-align: center; padding: 20px 0; font-size: 1rem; }
+.sm-error { color: #ef4444; font-weight: 600; text-align: center; padding: 12px 0; font-size: 0.9rem; }
+
+
+/* âââ Email Banner âââââââââââââââââââââââââââââââââââââââââââââââââ */
+.es-email-banner {
+  display: flex; align-items: center; gap: 12px;
+  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 20px;
+  font-size: 0.82rem;
+}
+.es-banner-icon { font-size: 1.3rem; flex-shrink: 0; }
+.es-banner-text { display: flex; flex-direction: column; flex: 1; gap: 2px; }
+.es-banner-text strong { color: #15803d; font-size: 0.85rem; }
+.es-banner-text span { color: #4b7c60; }
+.es-banner-link {
+  color: #7c3aed; font-weight: 600; text-decoration: none;
+  white-space: nowrap; font-size: 0.8rem;
+}
+.es-banner-link:hover { text-decoration: underline; }
+
+/* âââ Elite Gate âââââââââââââââââââââââââââââââââââââââââââââââââââ */
+.es-elite-gate {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+}
+.es-elite-gate span:first-child {
+  font-size: 0.7rem; font-weight: 700; color: #7c3aed;
+  background: #f3e8ff; padding: 2px 8px; border-radius: 20px;
+}
+.es-elite-lock {
+  font-size: 0.75rem; color: #9ca3af; font-weight: 500;
+}
+
+
+/* âââ History Tab ââââââââââââââââââââââââââââââââââââââââââââââââââ */
+.es-history { padding: 0 0 24px; }
+.es-history-gate { text-align: center; padding: 40px 0; }
+.es-history-kpis {
+  display: flex; gap: 16px; margin-bottom: 20px;
+}
+.es-kpi {
+  flex: 1; background: #f9fafb; border-radius: 12px;
+  padding: 16px; text-align: center;
+}
+.es-kpi-value { display: block; font-size: 1.6rem; font-weight: 800; color: #7c3aed; }
+.es-kpi-label { font-size: 0.75rem; color: #6b7280; margin-top: 4px; display: block; }
+.es-history-loading, .es-history-empty, .es-history-error {
+  text-align: center; padding: 32px; color: #9ca3af; font-size: 0.85rem;
+}
+.es-history-error { color: #ef4444; }
+.es-history-table { border: 1px solid #f3f4f6; border-radius: 12px; overflow: hidden; }
+.es-history-head {
+  display: grid; grid-template-columns: 1.5fr 2fr 1.2fr 1fr 0.5fr;
+  background: #f9fafb; padding: 10px 16px;
+  font-size: 0.72rem; font-weight: 700; color: #6b7280; text-transform: uppercase;
+  gap: 12px;
+}
+.es-history-row {
+  display: grid; grid-template-columns: 1.5fr 2fr 1.2fr 1fr 0.5fr;
+  padding: 12px 16px; gap: 12px;
+  border-top: 1px solid #f3f4f6; font-size: 0.8rem; align-items: center;
+}
+.es-history-row:hover { background: #fafafa; }
+.es-history-to, .es-history-subject {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #374151;
+}
+.es-history-date { color: #6b7280; font-size: 0.75rem; }
+.es-history-status { font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.es-history-status.opened { color: #10b981; }
+.es-history-status.pending { color: #9ca3af; }
+.es-history-opens { color: #7c3aed; font-weight: 600; text-align: center; }
+
 </style>

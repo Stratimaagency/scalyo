@@ -2,6 +2,7 @@ stages:
   - build
   - deploy
 
+# ─── PRODUCTION ────────────────────────────────────────────────────
 build:
   stage: build
   image: node:20-alpine
@@ -31,3 +32,34 @@ deploy_production:
     - cd app-v2/frontend
     - npm install -g wrangler
     - wrangler pages deploy dist --project-name=scalyo-app --branch=main
+
+# ─── PREPROD ───────────────────────────────────────────────────────
+build_preprod:
+  stage: build
+  image: node:20-alpine
+  only:
+    - preprod-v2
+  cache:
+    key: "app-${CI_COMMIT_REF_SLUG}"
+    paths:
+      - app-v2/frontend/node_modules/
+  script:
+    - cd app-v2/frontend
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - app-v2/frontend/dist/
+    expire_in: 1 hour
+
+deploy_preprod:
+  stage: deploy
+  image: node:20-alpine
+  only:
+    - preprod-v2
+  needs:
+    - build_preprod
+  script:
+    - cd app-v2/frontend
+    - npm install -g wrangler
+    - wrangler pages deploy dist --project-name=scalyo-app --branch=preprod
