@@ -1258,9 +1258,9 @@ a { color: inherit; text-decoration: none; }
 .plan-card.popular { border-color: var(--lp-purple); box-shadow: 0 0 40px rgba(124,58,237,0.15); background: rgba(124,58,237,0.04); }
 .popular-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--lp-purple), var(--lp-purple-dark)); color: #fff; font-size: 0.72rem; padding: 6px 20px; border-radius: 999px; font-weight: 600; white-space: nowrap; }
 .plan-name { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; color: var(--lp-muted); margin-bottom: 14px; }
-.plan-price { font-size: 2.8rem; font-weight: 800; margin-bottom: 6px; }
+.plan-price { font-size: 2.4rem; font-weight: 800; margin-bottom: 6px; }
 .currency { font-size: 1.6rem; vertical-align: top; margin-top: 8px; display: inline-block; }
-.period { font-size: 0.9rem; color: var(--lp-muted); font-weight: 400; }
+.period { font-size: 0.78rem; color: var(--lp-muted); font-weight: 400; }
 .plan-desc { font-size: 0.82rem; color: var(--lp-muted); margin-bottom: 24px; }
 .plan-features { list-style: none; margin-bottom: 28px; display: flex; flex-direction: column; gap: 10px; }
 .plan-features li { font-size: 0.85rem; color: var(--lp-text); }
