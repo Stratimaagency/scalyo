@@ -589,7 +589,8 @@
           <!-- Enterprise -->
           <div class="plan-card enterprise">
             <div class="plan-name">ENTERPRISE</div>
-            <div class="plan-price plan-price-custom">{{ t('plan_custom') }}<span class="period">{{ t('plan_viewers') }}</span></div>
+            <div class="plan-price plan-price-custom">{{ t('plan_custom') }}</div>
+            <div class="plan-viewers-label">{{ t('plan_viewers') }}</div>
             <div class="plan-desc">{{ t('plan_enterprise_desc') }}</div>
             <ul class="plan-features">
               <li>✓ {{ t('feat_e1') }}</li>
@@ -716,7 +717,7 @@ const appUrl = ''
   const STRIPE_LINKS = {
     starter: 'https://buy.stripe.com/bJebJ1amncpL7mBekAdfG01',
     growth:  'https://buy.stripe.com/eVqbJ10LN6ln5et90gdfG00',
-    elite:   'https://buy.stripe.com/eVqaEXeCD1L736l7WcdfG05',
+    scale:   'https://buy.stripe.com/eVqaEXeCD1L736l7WcdfG05',  // PLACEHOLDER - update with real Scale link
   }
   function stripeUrl(plan) {
     const base = STRIPE_LINKS[plan]
@@ -1249,7 +1250,8 @@ a { color: inherit; text-decoration: none; }
 .pricing-section { padding: 80px 0; }
 .pricing-note { font-size: 0.82rem; color: var(--lp-muted); max-width: 600px; margin: 0 auto; line-height: 1.6; }
 .pricing-sub { font-size: 0.95rem; color: var(--lp-muted); max-width: 640px; margin: 8px auto 0; line-height: 1.5; }
-.plan-price-custom { font-size: 2rem; }
+.plan-price-custom { font-size: 1.8rem; font-weight: 700; line-height: 1.2; margin-bottom: 2px; }
+.plan-viewers-label { font-size: 0.82rem; color: var(--lp-muted); margin-bottom: 10px; }
 .plans-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 40px; }
 .plan-card { background: var(--lp-surface); border: 1px solid var(--lp-border); border-radius: 20px; padding: 32px 24px; position: relative; transition: all 0.3s; }
 .plan-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
