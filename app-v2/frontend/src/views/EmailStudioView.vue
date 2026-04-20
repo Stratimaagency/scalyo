@@ -1,13 +1,13 @@
 <template>
   <div class="email-studio">
     <div class="es-header">
-      <h1>📧 {{ t('es_title') }}</h1>
+      <h1>ð§ {{ t('es_title') }}</h1>
       <p class="es-sub">{{ t('es_subtitle') }}</p>
     </div>
 
-    <!-- ─── Bandeau transparence email ─────────────────────────── -->
+    <!-- âââ Bandeau transparence email âââââââââââââââââââââââââââ -->
     <div :class="['es-email-banner', hasResendKey ? 'connected' : 'setup-needed']">
-      <span class="es-banner-icon">{{ hasResendKey ? '✅' : '✉️' }}</span>
+      <span class="es-banner-icon">{{ hasResendKey ? 'â' : 'âï¸' }}</span>
       <div class="es-banner-text">
         <strong>{{ hasResendKey ? t('es_resend_connected') : t('es_resend_setup_title') }}</strong>
         <span>{{ hasResendKey ? t('es_resend_connected_desc') : t('es_resend_setup_desc') }}</span>
@@ -20,7 +20,7 @@
         <div class="es-tabs">
           <button v-for="tab in tabs" :key="tab.key" class="es-tab" :class="{ active: activeTab === tab.key }" @click="activeTab = tab.key">{{ t(tab.label) }}</button>
         </div>
-        <div class="es-search"><span>🔍</span><input v-model="search" :placeholder="t('es_search')" /></div>
+        <div class="es-search"><span>ð</span><input v-model="search" :placeholder="t('es_search')" /></div>
 
         <div class="es-cats">
           <button v-for="cat in categoryKeys" :key="cat" class="es-cat" :class="{ active: activeCat === cat, [catClass(cat)]: true }" @click="activeCat = activeCat === cat ? 'all' : cat">{{ cat === 'all' ? t('es_cat_all') : t('es_cat_' + cat) }}</button>
@@ -45,11 +45,12 @@
                 <button class="btn-send" @click="showSendModal = true" :disabled="!selected || !hasResendKey">
                   {{ !hasResendKey ? t('es_resend_required') : t('es_send') }}
                 </button>
-              </template>
+              <ResendSetupWizard v-if="showResendWizard" @close="showResendWizard = false" @connected="showResendWizard = false" />
+</template>
               <template v-else>
                 <div class="es-elite-gate" :title="t('es_elite_tooltip')">
                   <span>{{ t('es_elite_badge') }}</span>
-                  <span class="es-elite-lock">🔒 {{ t('es_elite_required') }}</span>
+                  <span class="es-elite-lock">ð {{ t('es_elite_required') }}</span>
                 </div>
               </template>
             </div>
@@ -61,7 +62,7 @@
           </div>
         </div>
         <div v-else class="esp-empty">
-          <span class="esp-empty-icon">📧</span>
+          <span class="esp-empty-icon">ð§</span>
           <p>{{ t('es_preview') }}</p>
         </div>
       </div>
@@ -69,12 +70,12 @@
   </div>
 
 
-  <!-- ─── History Tab Panel ──────────────────────────────────────── -->
+  <!-- âââ History Tab Panel ââââââââââââââââââââââââââââââââââââââââ -->
   <div v-if="activeTab === 'history'" class="es-history">
     <div v-if="!isElite" class="es-history-gate">
       <span class="es-elite-gate">
         <span>Elite</span>
-        <span class="es-elite-lock">🔒 {{ t('es_history_elite') }}</span>
+        <span class="es-elite-lock">ð {{ t('es_history_elite') }}</span>
       </span>
     </div>
     <template v-else>
@@ -95,7 +96,7 @@
       </div>
 
       <!-- Loading -->
-      <div v-if="historyLoading" class="es-history-loading">⏳ {{ t('es_history_loading') }}</div>
+      <div v-if="historyLoading" class="es-history-loading">â³ {{ t('es_history_loading') }}</div>
       <div v-else-if="historyError" class="es-history-error">{{ historyError }}</div>
       <div v-else-if="!sentEmails.length" class="es-history-empty">{{ t('es_history_empty') }}</div>
 
@@ -113,7 +114,7 @@
           <span class="es-history-subject" :title="t(email.subject)">{{ email.subject }}</span>
           <span class="es-history-date">{{ formatDate(email.sent_at) }}</span>
           <span :class="['es-history-status', email.opened_at ? 'opened' : 'pending']">
-            {{ email.opened_at ? '✓ ' + t('es_history_read') : t('es_history_unread') }}
+            {{ email.opened_at ? 'â ' + t('es_history_read') : t('es_history_unread') }}
           </span>
           <span class="es-history-opens">{{ email.open_count || 0 }}x</span>
         </div>
@@ -121,19 +122,19 @@
     </template>
   </div>
 
-  <!-- ─── Send Email Modal ──────────────────────────────────────── -->
+  <!-- âââ Send Email Modal ââââââââââââââââââââââââââââââââââââââââ -->
   <div v-if="showSendModal" class="send-modal-overlay" @click.self="showSendModal = false">
     <div class="send-modal">
       <div class="sm-header">
         <h3>{{ t('es_send_title') }}</h3>
-        <button class="sm-close" @click="showSendModal = false">✕</button>
+        <button class="sm-close" @click="showSendModal = false">â</button>
       </div>
       <div class="sm-body">
         <div v-if="sendResult?.success" class="sm-success">
-          ✓ {{ t('es_send_success') }}
+          â {{ t('es_send_success') }}
         </div>
         <div v-else-if="sendResult?.error" class="sm-error">
-          ✕ {{ sendResult.error }}
+          â {{ sendResult.error }}
         </div>
         <template v-else>
           <div class="sm-field">
@@ -162,10 +163,12 @@ import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
+import ResendSetupWizard from '@/components/modals/ResendSetupWizard.vue'
 
 const { t } = useI18n({ useScope: 'global' })
 
 const activeTab = ref('all')
+const showResendWizard = ref(false)
 const activeCat = ref('all')
 const search = ref('')
 const selectedId = ref(null)
@@ -181,9 +184,9 @@ const auth = useAuthStore()
 const isElite = computed(() => auth.currentPlan === 'elite')
 const hasResendKey = computed(() => !!(auth.profile?.resend_api_key && auth.profile.resend_api_key.startsWith('re_')))
 const EMAIL_FREE_QUOTA = 3000
-const EMAIL_OVERAGE_RATE = 1.5 // €/1000 au-delà
+const EMAIL_OVERAGE_RATE = 1.5 // â¬/1000 au-delÃ 
 
-// ─── Email History ────────────────────────────────────────────────
+// âââ Email History ââââââââââââââââââââââââââââââââââââââââââââââââ
 const sentEmails = ref([])
 const historyLoading = ref(false)
 const historyError = ref(null)
@@ -213,7 +216,7 @@ watch(activeTab, (val) => {
 })
 
 function formatDate(iso) {
-  if (!iso) return '—'
+  if (!iso) return 'â'
   const d = new Date(iso)
   return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })
 }
@@ -271,6 +274,7 @@ function catClass(key) {
 }
 
 async function sendEmail() {
+  if (auth.currentPlan === 'elite' && !auth.profile?.resend_api_key) { showResendWizard.value = true; return }
   if (!selected.value || !sendTo.value) return
   sending.value = true
   sendResult.value = null
@@ -429,7 +433,7 @@ function copyEmail() {
 .sm-error { color: #ef4444; font-weight: 600; text-align: center; padding: 12px 0; font-size: 0.9rem; }
 
 
-/* ─── Email Banner ───────────────────────────────────────────────── */
+/* âââ Email Banner âââââââââââââââââââââââââââââââââââââââââââââââââ */
 .es-email-banner {
   display: flex; align-items: center; gap: 12px;
   background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
@@ -449,7 +453,7 @@ function copyEmail() {
 }
 .es-banner-link:hover { text-decoration: underline; }
 
-/* ─── Elite Gate ─────────────────────────────────────────────────── */
+/* âââ Elite Gate âââââââââââââââââââââââââââââââââââââââââââââââââââ */
 .es-elite-gate {
   display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
 }
@@ -462,7 +466,7 @@ function copyEmail() {
 }
 
 
-/* ─── History Tab ────────────────────────────────────────────────── */
+/* âââ History Tab ââââââââââââââââââââââââââââââââââââââââââââââââââ */
 .es-history { padding: 0 0 24px; }
 .es-history-gate { text-align: center; padding: 40px 0; }
 .es-history-kpis {
