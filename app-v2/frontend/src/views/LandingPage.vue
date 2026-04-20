@@ -1274,16 +1274,16 @@ a { color: inherit; text-decoration: none; }
 .plan-card.popular { border-color: var(--lp-purple); box-shadow: 0 0 40px rgba(124,58,237,0.15); background: linear-gradient(180deg, rgba(124,58,237,0.04), transparent 60%); }
 .popular-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--lp-purple); color: #fff; font-size: 0.72rem; font-weight: 700; padding: 4px 16px; border-radius: 20px; white-space: nowrap; letter-spacing: 0.04em; }
 .plan-top { min-height: 160px; display: flex; flex-direction: column; align-items: center; }
-.plan-name { font-size: 0.85rem; font-weight: 800; letter-spacing: 0.14em; color: var(--lp-heading); margin-bottom: 16px; text-transform: uppercase; }
+.plan-name { font-size: 1.05rem; font-weight: 800; letter-spacing: 0.12em; color: var(--lp-heading); margin-bottom: 16px; text-transform: uppercase; }
 .plan-price-wrap { margin-bottom: 12px; text-align: center; }
-.plan-price { font-size: 2.6rem; font-weight: 800; color: var(--lp-purple); text-shadow: 0 0 30px rgba(124,58,237,0.3), 0 0 60px rgba(124,58,237,0.1); line-height: 1; }
+.plan-price { font-size: 2.8rem; font-weight: 800; color: var(--lp-purple); text-shadow: 0 0 30px rgba(124,58,237,0.3), 0 0 60px rgba(124,58,237,0.1); line-height: 1; }
 .plan-price .currency { font-size: 1.4rem; vertical-align: top; margin-right: 2px; position: relative; top: 6px; }
 .plan-price-custom { font-size: 2rem; }
-.plan-period { font-size: 0.82rem; color: var(--lp-muted); margin-top: 4px; }
-.plan-desc { font-size: 0.82rem; color: var(--lp-muted); line-height: 1.45; margin-top: 4px; }
+.plan-period { font-size: 0.9rem; color: var(--lp-text); margin-top: 4px; }
+.plan-desc { font-size: 0.9rem; color: var(--lp-text); line-height: 1.45; margin-top: 4px; }
 .plan-features { list-style: none; padding: 0; margin: 0 0 24px 0; text-align: left; flex: 1; }
-.plan-features li { padding: 5px 0; font-size: 0.82rem; color: var(--lp-text); border-bottom: 1px solid rgba(255,255,255,0.04); }
-.plan-btn { display: block; text-align: center; padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: all 0.3s; margin-top: auto; }
+.plan-features li { padding: 7px 0; font-size: 0.9rem; color: var(--lp-heading); border-bottom: 1px solid rgba(255,255,255,0.04); }
+.plan-btn { display: block; text-align: center; padding: 14px 20px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; text-decoration: none; transition: all 0.3s; margin-top: auto; }
 .plan-footnote { text-align: center; font-size: 0.75rem; color: var(--lp-muted); margin-top: 28px; line-height: 1.6; }
 .plan-footnote :deep(strong) { color: var(--lp-purple-light); }
 /* ═══════════════════ FAQ ═══════════════════ */
