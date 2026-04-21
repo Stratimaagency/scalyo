@@ -192,7 +192,7 @@ const processes = [
     desc: 'Les 4 chiffres qui comptent. Chaque matin. Sans Excel.',
     outcome: 'Vous savez lire votre Dashboard et réagir aux signaux.',
     steps: [
-      { title: 'ARR Portfolio', desc: 'Combien vos clients vous rapportent au total.', tip: 'S'il baisse, un client est parti.' },
+      { title: 'ARR Portfolio', desc: 'Combien vos clients vous rapportent au total.', tip: 'S\'il baisse, un client est parti.' },
       { title: 'Santé moyenne', desc: 'Score de 0 à 10 de tous vos clients. Sous 7 = attention.', tip: '' },
       { title: 'Comptes critiques', desc: 'Nombre de clients en danger. Au-dessus de 0 = agissez.', tip: '' },
       { title: 'Roadmap 90 jours', desc: 'Les renouvellements qui arrivent. Préparez-vous 30 jours avant.', tip: 'Ouvrez Scalyo chaque matin : 30 secondes pour savoir où vous en êtes.' }
@@ -219,7 +219,7 @@ const processes = [
     steps: [
       { title: 'Choisir un template', desc: 'Email Studio → parcourez : bienvenue, check-in, relance, QBR, renouvellement.', tip: '' },
       { title: 'Personnaliser', desc: 'Changez le nom du client, ajoutez un détail personnel.', tip: 'Un email générique, ça se voit. Un email personnalisé, ça se sent.' },
-      { title: 'Copier et envoyer', desc: 'Cliquez Copier → collez dans Gmail/Outlook. L'envoi direct est réservé au plan Elite.', tip: '' }
+      { title: 'Copier et envoyer', desc: 'Cliquez Copier → collez dans Gmail/Outlook. L\'envoi direct est réservé au plan Elite.', tip: '' }
     ]
   },
   // ===== ONBOARDING GROWTH (visible Growth + Elite) =====
@@ -232,7 +232,7 @@ const processes = [
     steps: [
       { title: 'Déposer le fichier', desc: 'Import → glissez votre CSV ou Excel dans la zone.', tip: 'Importez d\'abord 5-10 clients pour tester.' },
       { title: 'Vérifier le mapping', desc: 'Scalyo détecte les colonnes automatiquement : nom, email, ARR, renouvellement.', tip: 'Pas de colonne Health Score ? Tous les clients démarrent à 5/10.' },
-      { title: 'Importer', desc: 'Cliquez Importer. C'est fait.', tip: '' }
+      { title: 'Importer', desc: 'Cliquez Importer. C\'est fait.', tip: '' }
     ]
   },
   {
@@ -243,7 +243,7 @@ const processes = [
     outcome: 'Vous savez générer du contenu email adapté à chaque client.',
     steps: [
       { title: 'Choisir un template', desc: 'Email Studio → choisissez le type d\'email.', tip: '' },
-      { title: 'Génération IA', desc: 'Le contenu est généré et adapté au contexte de votre client.', tip: 'Relisez toujours avant d\'envoyer. L'IA est un assistant, pas un remplaçant.' },
+      { title: 'Génération IA', desc: 'Le contenu est généré et adapté au contexte de votre client.', tip: 'Relisez toujours avant d\'envoyer. L\'IA est un assistant, pas un remplaçant.' },
       { title: 'Personnaliser et copier', desc: 'Ajoutez votre touche personnelle, puis copiez-collez.', tip: '' }
     ]
   },
