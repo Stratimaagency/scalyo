@@ -80,6 +80,8 @@ const categories = [
   { key: 'organization', icon: '📅', label: 'Organisation' },
   { key: 'onboarding', icon: '🎓', label: 'Onboarding' },
   { key: 'integrations', icon: '🔗', label: 'Intégrations' },
+  { key: 'management', icon: '🎯', label: 'Management CS' },
+  { key: 'excellence', icon: '💎', label: 'Excellence' },
 ]
 
 const processes = [
@@ -305,6 +307,139 @@ const processes = [
       { title: 'Resend (Elite)', desc: 'Service d'envoi d'emails. Créez un compte gratuit sur resend.com, récupérez votre clé API, collez dans Settings.', tip: '3 000 emails/mois gratuits. Au-delà : $0,80/1 000 emails facturés par Resend.' },
       { title: 'Chat interne', desc: 'Déjà intégré dans Scalyo. 3 channels par défaut : général, cs-team, alertes. Messages en temps réel.', tip: '' },
       { title: 'Prochainement', desc: 'Slack, HubSpot/Salesforce, Intercom/Zendesk, Google Calendar, Zapier/Make. Contactez support@scalyo.app pour prioriser.', tip: '' }
+    ]
+  },
+  // ===== MANAGEMENT CS — GROWTH+ =====
+  {
+    id: 'mg1', category: 'management', icon: '🗣', duration: '8 min',
+    level: 'intermediate', plan: 'growth',
+    title: 'Communication transverse — CS × Sales × Produit',
+    desc: 'Comment collaborer avec les autres équipes sans friction ni perte d’information.',
+    outcome: 'Un framework de communication inter-équipes que votre équipe peut appliquer dès demain.',
+    steps: [
+      { title: 'Identifier vos interlocuteurs clés', desc: 'Cartographiez qui parle à qui entre CS, Sales, Produit et Support. Chaque équipe a un point de contact principal.', tip: 'Un Slack/channel dédié par sujet (pas un channel fourre-tout) réduit le bruit de 60%.' },
+      { title: 'Le rituel hebdo 15 min', desc: 'Un stand-up cross-équipes de 15 min le lundi : CS partage les comptes à risque, Sales partage les deals en cours, Produit partage les releases.', tip: '15 min max. Pas de PowerPoint. Tour de table debout.' },
+      { title: 'Le document partagé de handoff', desc: 'Quand Sales signe un client, un document structuré est transmis au CS : attentes, promesses faites, contacts clés, délais.', tip: 'Le pire ennemi du CS : les promesses de Sales dont personne ne parle.' },
+      { title: 'Feedback loop Produit', desc: 'Chaque mois, envoyez au Produit les 3 features les plus demandées par vos clients. Pas 30 — juste 3. Avec des vrais verbatims.', tip: 'Un verbatim client vaut 100 tickets Jira.' }
+    ]
+  },
+  {
+    id: 'mg2', category: 'management', icon: '🌍', duration: '10 min',
+    level: 'intermediate', plan: 'growth',
+    title: 'Manager une équipe CS à distance',
+    desc: 'Rituels, check-ins et feedback constructif pour une équipe distribuée qui performe.',
+    outcome: 'Un système de management à distance structuré et humain.',
+    steps: [
+      { title: 'Les 3 rituels non négociables', desc: 'Lundi : stand-up équipe 15 min (objectifs semaine). Mercredi : 1:1 avec chaque CSM 20 min (blocages + moral). Vendredi : célébration équipe 10 min (victoires de la semaine).', tip: 'Ne jamais annuler le 1:1. C’est le moment où les vrais problèmes remontent.' },
+      { title: 'Le feedback constructif', desc: 'Utilisez le modèle SBI : Situation (quand), Behavior (ce que tu as fait), Impact (l’effet). Jamais de jugement de personne — toujours des faits.', tip: 'Un bon feedback commence par "J’ai observé que..." jamais par "Tu es..."' },
+      { title: 'Détecter la surcharge à distance', desc: 'Les signaux : réponses plus courtes, caméra désactivée, retards répétés. Utilisez le module Bien-être de Scalyo pour tracker.', tip: 'Demandez "Comment tu vas vraiment ?" — pas "Tout va bien ?"' },
+      { title: 'Créer de la cohésion', desc: 'Un rituel mensuel informel : café virtuel, quiz, partage de lecture. L’humain d’abord, le travail ensuite.', tip: '' }
+    ]
+  },
+  {
+    id: 'mg3', category: 'management', icon: '📊', duration: '12 min',
+    level: 'intermediate', plan: 'growth',
+    title: 'Préparer et animer un QBR parfait',
+    desc: 'Le Quarterly Business Review de A à Z — structure, données, questions, suivi.',
+    outcome: 'Un template QBR prêt à l’emploi + la méthode pour que le client en redemande.',
+    steps: [
+      { title: 'J-14 : collecter les données', desc: 'Utilisez Scalyo pour extraire : Health Score, évolution ARR, tickets ouverts, NPS, adoption des features. Pas de données = pas de QBR.', tip: 'Un QBR sans chiffres, c’est une conversation. Un QBR avec chiffres, c’est une décision.' },
+      { title: 'J-7 : structurer la présentation', desc: '4 slides max : Résultats (ce qu’on a fait), Valeur (ce que ça a rapporté), Défis (ce qui bloque), Prochaines étapes (ce qu’on va faire).', tip: 'Le client ne veut pas un rapport — il veut savoir si son investissement est rentable.' },
+      { title: 'Jour J : l’animation', desc: 'Règle des 50/50 : vous parlez 50% du temps, le client parle 50%. Posez des questions ouvertes : "Qu’est-ce qui a le plus d’impact pour vous ?"', tip: 'Si le client ne parle pas, votre QBR est un monologue. Changez de méthode.' },
+      { title: 'J+1 : le suivi', desc: 'Email récap dans les 24h avec les actions, les propriétaires, les deadlines. Créez les tâches dans Scalyo immédiatement.', tip: 'Un QBR sans suivi est un QBR oublié dans 48h.' }
+    ]
+  },
+  // ===== EXCELLENCE — ELITE =====
+  {
+    id: 'ex1', category: 'excellence', icon: '🤝', duration: '12 min',
+    level: 'expert', plan: 'elite',
+    title: 'Négociation de renouvellement',
+    desc: 'Le renouvellement ne se joue pas le jour de la signature. Il se prépare 90 jours avant.',
+    outcome: 'Un framework de préparation qui maximise le taux de renouvellement.',
+    steps: [
+      { title: 'J-90 : audit du compte', desc: 'Analysez l’usage réel, les features utilisées, la satisfaction des utilisateurs clés. Identifiez le ROI concret que le client a obtenu.', tip: 'Si vous ne pouvez pas prouver le ROI, le client ne renouvellera pas.' },
+      { title: 'J-60 : multi-thread', desc: 'Ne dépendez jamais d’un seul interlocuteur. Assurez-vous d’avoir une relation avec le sponsor économique, l’utilisateur principal, ET le décideur.', tip: 'Si votre seul contact quitte l’entreprise, votre renouvellement est en danger.' },
+      { title: 'J-30 : présenter la valeur', desc: 'Organisez un "Business Review" ciblé renouvellement : résultats obtenus, ROI prouvé, feuille de route pour la période suivante.', tip: 'Chiffrez toujours : "Nous avons réduit votre churn de 12% — soit 180K€ de revenus protégés."' },
+      { title: 'Les objections fréquentes', desc: '"C’est trop cher" → comparez au coût du churn sans solution. "On n’utilise pas tout" → proposez un plan d’adoption des features sous-utilisées. "On veut voir les alternatives" → respectez, proposez un pilot comparatif.', tip: 'Ne bradez jamais votre prix. Négociez de la valeur ajoutée, pas des remises.' }
+    ]
+  },
+  {
+    id: 'ex2', category: 'excellence', icon: '📈', duration: '10 min',
+    level: 'expert', plan: 'elite',
+    title: 'Expansion de compte — Upsell & Cross-sell',
+    desc: 'Comment faire grandir un compte sans devenir un vendeur. L’expansion naturelle.',
+    outcome: 'Vous savez identifier les signaux d’expansion et positionner la valeur.',
+    steps: [
+      { title: 'Les 5 signaux d’expansion', desc: '1) Usage en croissance. 2) Demande de features premium. 3) Ajout d’utilisateurs. 4) Sponsor qui monte en grade. 5) Le client vous recommande.', tip: 'L’expansion se détecte — elle ne se force pas.' },
+      { title: 'Le bon timing', desc: 'Après une victoire (un problème résolu, un QBR positif, un NPS élevé). Jamais quand le client est en crise ou insatisfait.', tip: 'La meilleure phrase : "D’autres équipes chez vous pourraient bénéficier de ce qu’on fait ensemble ?"' },
+      { title: 'Positionner sans vendre', desc: 'Partagez un cas d’usage d’un client similaire qui a étendu. Montrez l’impact, pas le prix. Laissez le client demander.', tip: 'Le CS qui vend le mieux est celui qui ne vend pas — il recommande.' },
+      { title: 'Collaborer avec Sales', desc: 'Préparez un brief pour Sales avec le contexte, les besoins identifiés, les contacts. Vous introduisez, Sales conclut. Rôles clairs.', tip: 'Votre rôle : ouvrir la porte. Le rôle de Sales : signer. Ne mélangez pas.' }
+    ]
+  },
+  {
+    id: 'ex3', category: 'excellence', icon: '🚨', duration: '10 min',
+    level: 'expert', plan: 'elite',
+    title: 'Gestion de crise client — Le framework CARE',
+    desc: 'Quand un client est en colère, la vitesse et la méthode font la différence.',
+    outcome: 'Un process d’escalade structuré que toute l’équipe peut suivre sous pression.',
+    steps: [
+      { title: 'C — Contenir', desc: 'Première réponse en moins de 2h. Accusez réception, montrez que vous prenez au sérieux. Pas de solution encore — de l’empathie.', tip: '"Je comprends que c’est frustrant. Je prends personnellement en charge votre dossier."' },
+      { title: 'A — Analyser', desc: 'Identifiez la cause racine en interne AVANT de répondre. Parlez aux équipes techniques, support, produit. Ne spéculez jamais devant le client.', tip: 'Un client pardonne un problème. Il ne pardonne pas un mensonge.' },
+      { title: 'R — Résoudre', desc: 'Proposez une solution concrète avec un calendrier précis. "Nous corrigeons d’ici mercredi" — pas "on va regarder".', tip: 'Sous-promettez, sur-délivrez. Si vous dites mercredi, livrez mardi.' },
+      { title: 'E — Évaluer', desc: '72h après la résolution : appelez le client. "Est-ce que tout fonctionne comme prévu ?" Documentez l’incident pour éviter la répétition.', tip: 'Un client bien géré en crise devient souvent votre meilleur ambassadeur.' }
+    ]
+  },
+  {
+    id: 'ex4', category: 'excellence', icon: '🎯', duration: '10 min',
+    level: 'expert', plan: 'elite',
+    title: 'Présenter au C-Level — L’art du storytelling CS',
+    desc: 'Comment présenter des résultats CS à un comité de direction en 15 minutes.',
+    outcome: 'Un format de présentation C-Level que vous réutilisez chaque trimestre.',
+    steps: [
+      { title: 'La règle des 3 slides', desc: 'Slide 1 : Le chiffre qui compte (NRR, churn évité, ARR protégé). Slide 2 : Ce qu’on a fait (3 actions max). Slide 3 : Ce qu’on demande (budget, ressources, décision).', tip: 'Un C-Level lit un email en 11 secondes. Votre slide doit se lire en 5.' },
+      { title: 'Parler en argent', desc: 'Ne dites pas "le NPS est à 42". Dites "notre NPS de 42 corrèle avec un taux de renouvellement de 94% — soit 2.1M€ d’ARR protégé."', tip: 'Le C-Level ne comprend qu’un seul langage : l’impact financier.' },
+      { title: 'Anticiper les questions', desc: 'Préparez des réponses pour : "Pourquoi ce client a churné ?", "Quel est le coût d’acquisition vs rétention ?", "Quel ROI de l’équipe CS ?"', tip: '' },
+      { title: 'Le suivi immédiat', desc: 'Envoyez un one-pager dans l’heure après la présentation. 3 paragraphes max. Les décisions, les actions, les deadlines.', tip: 'Un CEO ne revient pas chercher votre deck. Votre one-pager est tout ce qui reste.' }
+    ]
+  },
+  {
+    id: 'ex5', category: 'excellence', icon: '📊', duration: '15 min',
+    level: 'expert', plan: 'elite',
+    title: 'KPIs avancés — Les métriques qui comptent vraiment',
+    desc: 'Au-delà du NPS et du churn : les KPIs que les meilleurs Head of CS suivent.',
+    outcome: 'Vous savez calculer et interpréter les KPIs qui pilotent une stratégie CS de classe mondiale.',
+    steps: [
+      { title: 'NRR (Net Revenue Retention)', desc: 'La métrique reine. NRR = (ARR début + expansion - contraction - churn) / ARR début. Au-dessus de 110% = excellence. En dessous de 90% = problème structurel.', tip: 'Un NRR > 120% veut dire que vos clients existants génèrent plus de revenus que ce que vous perdez.' },
+      { title: 'Time to Value (TTV)', desc: 'Combien de temps entre la signature et le premier "aha moment" du client. Les meilleurs CS réduisent le TTV de 60 à 14 jours.', tip: 'Chaque jour entre la signature et la valeur est un jour où le client peut regretter.' },
+      { title: 'Logo Retention vs Revenue Retention', desc: 'Logo = combien de clients vous gardez. Revenue = combien d’argent vous gardez. Les deux sont importants mais racontent des histoires différentes.', tip: 'Perdre 10 petits clients ≠ perdre 1 gros client. Segmentez toujours.' },
+      { title: 'Health Score Predictive', desc: 'Votre Health Score prédit-il vraiment le churn ? Backtestez : parmi les clients qui ont churné les 12 derniers mois, quel était leur Health Score 90 jours avant ?', tip: 'Si votre Health Score ne prédit pas le churn, il ne sert à rien. Recalibrez.' }
+    ]
+  },
+  {
+    id: 'ex6', category: 'excellence', icon: '🧩', duration: '10 min',
+    level: 'expert', plan: 'elite',
+    title: 'Segmentation de portefeuille — Le bon CSM au bon client',
+    desc: 'Comment allouer le temps de votre équipe pour maximiser le ROI de chaque interaction.',
+    outcome: 'Un modèle de segmentation actionnable pour toute équipe CS.',
+    steps: [
+      { title: 'Les 3 niveaux', desc: 'High-touch (vos top 20% en ARR) : 1 CSM dédié, QBR trimestriel, check-in hebdo. Mid-touch (60%) : CSM partagé, check-in mensuel, playbooks. Tech-touch (20%) : automatisé, emails, in-app, self-service.', tip: 'La règle de Pareto s’applique : 20% de vos clients génèrent 80% de votre ARR.' },
+      { title: 'Critères de segmentation', desc: 'ARR seul ne suffit pas. Combinez : ARR + potentiel d’expansion + complexité technique + risque de churn. Un petit client strateg’ique vaut un gros client stable.', tip: '' },
+      { title: 'Le ratio CSM/clients', desc: 'High-touch : 1 CSM pour 10-15 comptes. Mid-touch : 1 CSM pour 30-50 comptes. Tech-touch : 1 CSM pour 200+ comptes (avec automatisation Scalyo).', tip: 'Si vos CSMs gèrent plus de 50 comptes en high-touch, ils ne font du high-touch pour personne.' },
+      { title: 'Réviser tous les trimestres', desc: 'Un client peut changer de segment : expansion → monte en high-touch. Désengagement → descend en tech-touch pour libérer du temps CSM.', tip: 'La segmentation n’est pas un dogme. C’est un outil de priorisation.' }
+    ]
+  },
+  {
+    id: 'ex7', category: 'excellence', icon: '💰', duration: '15 min',
+    level: 'expert', plan: 'elite',
+    title: 'Construire le business case du Customer Success',
+    desc: 'Comment prouver le ROI de votre équipe CS à la direction. Le contenu que les Head of CS cherchent partout.',
+    outcome: 'Un business case chiffré qui justifie chaque euro investi dans votre équipe CS.',
+    steps: [
+      { title: 'Le coût du churn', desc: 'Calculez : nombre de clients perdus × ARR moyen = revenus perdus. Ajoutez le coût d’acquisition d’un nouveau client pour remplacer (généralement 5-7x le coût de rétention).', tip: 'La phrase qui fait mouche : "Il coûte 7x plus cher d’acquérir un client que de le garder."' },
+      { title: 'Le ROI du CS', desc: 'Formule : (Revenus protégés par le CS + Expansion générée par le CS) / Coût total de l’équipe CS. Un ratio > 5x est excellent. > 10x est exceptionnel.', tip: 'Un bon Head of CS prouve que son équipe rapporte 10€ pour chaque 1€ dépensé.' },
+      { title: 'Les métriques de présentation', desc: 'Churn évité (en €), NRR (en %), expansion générée (en €), Time to Value réduit (en jours), NPS amélioré (en points). Toujours en euros ou en pourcentage — jamais en "nombre de tickets résolus".', tip: 'Le CFO ne comprend pas les tickets. Il comprend les euros.' },
+      { title: 'Demander des ressources', desc: 'Structure : "Avec 1 CSM supplémentaire (à X€/an), nous pouvons passer Y comptes de tech-touch à mid-touch, ce qui réduira le churn de Z% et protégera W€ d’ARR."', tip: 'Ne demandez pas un budget. Proposez un investissement avec un retour chiffré.' },
+      { title: 'L’argument ultime', desc: 'Montrez la corrélation entre Health Score et renouvellement sur vos propres données. "Les clients avec un Health Score > 7 renouvellent à 96%. Ceux sous 5 renouvellent à 34%. Chaque point de Health Score vaut X€."', tip: 'C’est l’argument que personne ne peut contester — ce sont VOS données, pas une étude externe.' }
     ]
   }
 ]
