@@ -172,276 +172,277 @@ const processes = [
       { title: 'Vendredi — Review et planning', desc: '30 minutes de review : les 3 priorités ont-elles été faites ? Qu\'est-ce qui a été reporté et pourquoi ? Planning de la semaine suivante.', tips: ['Finir la semaine avec Scalyo à jour = un week-end sans culpabilité'] },
     ]
   },,
-  // ===== ONBOARDING STARTER (visible par tous) =====
+  // ===== ONBOARDING STARTER =====
   {
-    id: 'ob1', category: `onboarding`, icon: '🎉', duration: `5 min`,
-    level: `beginner`, plan: `starter`,
+    id: 'ob1', category: 'onboarding', icon: '🎉', duration: '5 min',
+    level: 'beginner', plan: 'starter',
     title: `Premier pas — Créer votre premier client`,
     desc: `4 champs, 30 secondes. Votre portefeuille démarre ici.`,
     outcome: `Votre premier client est vivant dans Scalyo avec un Health Score initial.`,
     steps: [
       { title: `Ouvrir le Portefeuille`, desc: `Sidebar → Portefeuille → + Nouveau client`, tip: `Commencez par vos 3 clients les plus importants, pas les 50.` },
       { title: `Remplir les infos`, desc: `Nom, contact principal, ARR, date de renouvellement. Le Health Score démarre à 5/10.`, tip: '' },
-      { title: `Enregistrer`, desc: `Cliquez Enregistrer. Votre client apparaît dans le Dashboard.`, tip: `Ajoutez un maximum de 3 clients pour commencer, maîtrisez l\`outil, puis importez le reste.' }
+      { title: `Enregistrer`, desc: `Cliquez Enregistrer. Votre client apparaît dans le Dashboard.`, tip: `Ajoutez 3 clients pour commencer, maîtrisez l'outil, puis importez le reste.` }
     ]
   },
   {
-    id: 'ob2', category: `onboarding`, icon: '📊', duration: `2 min`,
-    level: `beginner`, plan: `starter`,
+    id: 'ob2', category: 'onboarding', icon: '📊', duration: '2 min',
+    level: 'beginner', plan: 'starter',
     title: `Votre Dashboard en 30 secondes`,
     desc: `Les 4 chiffres qui comptent. Chaque matin. Sans Excel.`,
     outcome: `Vous savez lire votre Dashboard et réagir aux signaux.`,
     steps: [
-      { title: `ARR Portfolio`, desc: `Combien vos clients vous rapportent au total.`, tip: 'S\'il baisse, un client est parti.' },
+      { title: `ARR Portfolio`, desc: `Combien vos clients vous rapportent au total.`, tip: `S'il baisse, un client est parti.` },
       { title: `Santé moyenne`, desc: `Score de 0 à 10 de tous vos clients. Sous 7 = attention.`, tip: '' },
       { title: `Comptes critiques`, desc: `Nombre de clients en danger. Au-dessus de 0 = agissez.`, tip: '' },
       { title: `Roadmap 90 jours`, desc: `Les renouvellements qui arrivent. Préparez-vous 30 jours avant.`, tip: `Ouvrez Scalyo chaque matin : 30 secondes pour savoir où vous en êtes.` }
     ]
   },
   {
-    id: 'ob3', category: `onboarding`, icon: '✅', duration: `2 min`,
-    level: `beginner`, plan: `starter`,
+    id: 'ob3', category: 'onboarding', icon: '✅', duration: '2 min',
+    level: 'beginner', plan: 'starter',
     title: `Task Board — Vos premières tâches`,
     desc: `Un CSM organisé est un CSM qui garde ses clients.`,
     outcome: `3 tâches créées, votre organisation CS démarre.`,
     steps: [
       { title: `Créer une tâche`, desc: `Task Board → + Nouvelle tâche. Titre, priorité, échéance, client lié.`, tip: '' },
       { title: `Vue Kanban`, desc: `Glissez-déposez entre les colonnes : A faire → En cours → Terminé.`, tip: '' },
-      { title: `3 tâches pour démarrer`, desc: `Check-in client principal (3j), Préparer renouvellement (30j), Envoyer NPS (fin de mois).`, tip: `Créez-les maintenant. 1 minute. Peut sauver un client demain.` }
+      { title: `3 tâches pour démarrer`, desc: `Check-in client principal (3j), Préparer renouvellement (30j), Envoyer NPS (fin du mois).`, tip: `Créez-les maintenant. 1 minute. Peut sauver un client demain.` }
     ]
   },
   {
-    id: 'ob4', category: `onboarding`, icon: '📧', duration: `2 min`,
-    level: `beginner`, plan: `starter`,
+    id: 'ob4', category: 'onboarding', icon: '📧', duration: '2 min',
+    level: 'beginner', plan: 'starter',
     title: `Email Studio — Templates CS`,
-    desc: `Des templates d\`emails CS prêts à l\'emploi. Copiez. Collez. Envoyez.',
+    desc: `Des templates d'emails CS prêts. Copiez. Collez. Envoyez.`,
     outcome: `Vous savez utiliser les templates email et les personnaliser.`,
     steps: [
       { title: `Choisir un template`, desc: `Email Studio → parcourez : bienvenue, check-in, relance, QBR, renouvellement.`, tip: '' },
       { title: `Personnaliser`, desc: `Changez le nom du client, ajoutez un détail personnel.`, tip: `Un email générique, ça se voit. Un email personnalisé, ça se sent.` },
-      { title: `Copier et envoyer`, desc: `Cliquez Copier → collez dans Gmail/Outlook. L\`envoi direct est réservé au plan Elite.', tip: '' }
+      { title: `Copier et envoyer`, desc: `Cliquez Copier → collez dans Gmail ou Outlook. L'envoi direct est réservé au plan Elite.`, tip: '' }
     ]
   },
-  // ===== ONBOARDING GROWTH (visible Growth + Elite) =====
+  // ===== ONBOARDING GROWTH =====
   {
-    id: 'ob5', category: `onboarding`, icon: '📥', duration: `3 min`,
-    level: `beginner`, plan: `growth`,
+    id: 'ob5', category: 'onboarding', icon: '📥', duration: '3 min',
+    level: 'beginner', plan: 'growth',
     title: `Import CSV/Excel — 200 clients en 2 minutes`,
     desc: `Glissez votre fichier. Scalyo fait le reste.`,
     outcome: `Votre portefeuille complet est importé dans Scalyo.`,
     steps: [
-      { title: `Déposer le fichier`, desc: `Import → glissez votre CSV ou Excel dans la zone.`, tip: `Importez d\`abord 5-10 clients pour tester.' },
+      { title: `Déposer le fichier`, desc: `Import → glissez votre CSV ou Excel dans la zone.`, tip: `Importez d'abord 5-10 clients pour tester.` },
       { title: `Vérifier le mapping`, desc: `Scalyo détecte les colonnes automatiquement : nom, email, ARR, renouvellement.`, tip: `Pas de colonne Health Score ? Tous les clients démarrent à 5/10.` },
-      { title: `Importer`, desc: `Cliquez Importer. C\`est fait.', tip: '' }
+      { title: `Importer`, desc: `Cliquez Importer. Terminé.`, tip: '' }
     ]
   },
   {
-    id: 'ob6', category: `onboarding`, icon: '✨', duration: `2 min`,
-    level: `beginner`, plan: `growth`,
+    id: 'ob6', category: 'onboarding', icon: '✨', duration: '2 min',
+    level: 'beginner', plan: 'growth',
     title: `Email Studio IA — Génération automatisée`,
-    desc: `Dites ce que vous voulez. Scalyo l\`écrit pour vous.',
+    desc: `Dites ce que vous voulez. Scalyo le rédige pour vous.`,
     outcome: `Vous savez générer du contenu email adapté à chaque client.`,
     steps: [
-      { title: `Choisir un template`, desc: `Email Studio → choisissez le type d\`email.', tip: '' },
-      { title: `Génération IA`, desc: `Le contenu est généré et adapté au contexte de votre client.`, tip: `Relisez toujours avant d\`envoyer. L\'IA est un assistant, pas un remplaçant.' },
+      { title: `Choisir un template`, desc: `Email Studio → choisissez le type d'email.`, tip: '' },
+      { title: `Génération IA`, desc: `Le contenu est généré et adapté au contexte de votre client.`, tip: `Relisez toujours avant d'envoyer. L'IA est un assistant, pas un remplaçant.` },
       { title: `Personnaliser et copier`, desc: `Ajoutez votre touche personnelle, puis copiez-collez.`, tip: '' }
     ]
   },
   {
-    id: 'ob7', category: `onboarding`, icon: '📖', duration: `3 min`,
-    level: `intermediate`, plan: `growth`,
+    id: 'ob7', category: 'onboarding', icon: '📖', duration: '3 min',
+    level: 'intermediate', plan: 'growth',
     title: `Playbooks manuels — Vos premières règles`,
-    desc: `Créez des règles de surveillance. Déclenchez-les d\`un clic.',
+    desc: `Créez des règles de surveillance. Déclenchez-les d'un clic.`,
     outcome: `Votre première règle playbook est active.`,
     steps: [
       { title: `Créer une règle`, desc: `Playbooks → + Nouvelle règle. Nom, déclencheur, seuil, action.`, tip: '' },
-      { title: `Les 4 déclencheurs`, desc: `Health < seuil, Renouvellement dans X jours, NPS < seuil, Churn > seuil.`, tip: `Commencez par "Health sous 60" — c\`est le plus utile.' },
-      { title: `Tester manuellement`, desc: `Cliquez "Tester maintenant" pour scanner votre portefeuille. Les tâches sont créées automatiquement.`, tip: `Le mode automatique (24/7) est disponible sur le plan Elite.` }
+      { title: `Les 4 déclencheurs`, desc: `Health < seuil, Renouvellement dans X jours, NPS < seuil, Churn > seuil.`, tip: `Commencez par Health sous 60 — le plus utile.` },
+      { title: `Tester manuellement`, desc: `Cliquez Tester maintenant pour scanner votre portefeuille. Les tâches sont créées automatiquement.`, tip: `Le mode automatique 24/7 est disponible sur le plan Elite.` }
     ]
   },
-  // ===== ONBOARDING ELITE (visible Elite uniquement) =====
+  // ===== ONBOARDING ELITE =====
   {
-    id: 'ob8', category: `onboarding`, icon: '📬', duration: `3 min`,
-    level: `beginner`, plan: `elite`,
+    id: 'ob8', category: 'onboarding', icon: '📬', duration: '3 min',
+    level: 'beginner', plan: 'elite',
     title: `Connecter Resend — 3 étapes, 3 minutes`,
-    desc: `Activez l\`envoi d\'emails réels depuis Scalyo.',
+    desc: `Activez l'envoi d'emails réels depuis Scalyo.`,
     outcome: `Votre compte Resend est connecté. Vous pouvez envoyer.`,
     steps: [
       { title: `Créer un compte Resend`, desc: `Allez sur resend.com/signup. Email + mot de passe. Aucune carte bancaire. 30 secondes.`, tip: `3 000 emails/mois gratuits inclus par Resend.` },
       { title: `Récupérer la clé API`, desc: `resend.com/api-keys → Create API Key → Full access → Copiez la clé (re_...).`, tip: '' },
-      { title: `Coller dans Scalyo`, desc: `Email Studio → Envoyer → le wizard s\`ouvre → collez la clé → Tester la connexion → Validé.', tip: `Besoin d\`aide ? Contactez support@scalyo.app pour un accompagnement en 15 min.' }
+      { title: `Coller dans Scalyo`, desc: `Email Studio → Envoyer → le wizard s'ouvre → collez la clé → Tester la connexion → Validé.`, tip: `Besoin d'aide ? Contactez support@scalyo.app pour un accompagnement en 15 min.` }
     ]
   },
   {
-    id: 'ob9', category: `onboarding`, icon: '🚀', duration: `2 min`,
-    level: `beginner`, plan: `elite`,
+    id: 'ob9', category: 'onboarding', icon: '🚀', duration: '2 min',
+    level: 'beginner', plan: 'elite',
     title: `Premier email réel + tracking`,
     desc: `Envoyez. Trackez. Savez qui ouvre.`,
     outcome: `Votre premier email est envoyé et tracké.`,
     steps: [
-      { title: `Choisir et personnaliser`, desc: `Email Studio → template Check-in → personnalisez.`, tip: `Testez d\`abord sur votre propre adresse email.' },
-      { title: `Envoyer`, desc: `Cliquez Envoyer → adresse destinataire → nom d\`expéditeur → Envoyer.', tip: '' },
-      { title: `Vérifier le tracking`, desc: `Onglet Historique : envoyé ✅ / ouvert 👀 / pas encore ouvert ⏳. Visez > 50% de taux d\`ouverture.', tip: `Le tracking détecte l\`ouverture, pas la lecture. Certains clients email bloquent les pixels.' }
+      { title: `Choisir et personnaliser`, desc: `Email Studio → template Check-in → personnalisez.`, tip: `Testez d'abord sur votre propre adresse email.` },
+      { title: `Envoyer`, desc: `Cliquez Envoyer → adresse destinataire → nom d'expéditeur → Envoyer.`, tip: '' },
+      { title: `Vérifier le tracking`, desc: `Onglet Historique : envoyé / ouvert / pas encore ouvert. Visez plus de 50% de taux d'ouverture.`, tip: `Le tracking détecte l'ouverture, pas la lecture. Certains clients email bloquent les pixels.` }
     ]
   },
   {
-    id: 'ob10', category: `onboarding`, icon: '⚡', duration: `3 min`,
-    level: `intermediate`, plan: `elite`,
+    id: 'ob10', category: 'onboarding', icon: '⚡', duration: '3 min',
+    level: 'intermediate', plan: 'elite',
     title: `Playbooks automatiques — Scalyo surveille pour vous`,
     desc: `Le game changer. Scalyo détecte les risques 24/7 et crée les tâches tout seul.`,
-    outcome: `Vos règles tournent en continu. Vous n\`intervenez que quand c\'est nécessaire.',
+    outcome: `Vos règles tournent en continu. Vous n'intervenez que quand c'est nécessaire.`,
     steps: [
       { title: `Créer vos 3 règles essentielles`, desc: `Health sous 60 (haute, 3j, cooldown 7j), Renouvellement dans 30j (haute, 5j, cooldown 30j), NPS sous 7 (moyenne, 5j, cooldown 14j).`, tip: `Ces 3 règles couvrent 90% des risques.` },
       { title: `Activer le mode automatique`, desc: `Vos règles sont en mode auto : Scalyo scanne votre portefeuille en continu.`, tip: '' },
-      { title: `Vérifier l\`historique', desc: `Playbooks → Historique : chaque déclenchement est loggé avec le client, le trigger, et l\`action.', tip: `Argument investisseur : "Scalyo dit attention, tu vas perdre ce client" = ROI immédiat.` }
+      { title: `Vérifier l'historique`, desc: `Playbooks → Historique : chaque déclenchement est loggé avec le client, le trigger, et l'action.`, tip: `Argument investisseur : Scalyo dit attention, tu vas perdre ce client = ROI immédiat.` }
     ]
   },
-  // ===== INTEGRATIONS (visible par tous) =====
+  // ===== INTÉGRATIONS =====
   {
-    id: 'int1', category: `integrations`, icon: '🔗', duration: `2 min`,
-    level: `beginner`, plan: 'all',
+    id: 'int1', category: 'integrations', icon: '🔗', duration: '2 min',
+    level: 'beginner', plan: 'all',
     title: `Intégrations disponibles`,
     desc: `Connecter Scalyo à vos outils existants.`,
     outcome: `Vous savez quelles intégrations sont disponibles et comment les configurer.`,
     steps: [
-      { title: `Resend (Elite)`, desc: `Service d\`envoi d\'emails. Créez un compte gratuit sur resend.com, récupérez votre clé API, collez dans Settings.', tip: `3 000 emails/mois gratuits. Au-delà : $0,80/1 000 emails facturés par Resend.` },
+      { title: `Resend (Elite)`, desc: `Service d'envoi d'emails. Créez un compte gratuit sur resend.com, récupérez votre clé API, collez dans Settings.`, tip: `3 000 emails/mois gratuits. Au-delà : 0,80 dollars / 1 000 emails facturés par Resend.` },
       { title: `Chat interne`, desc: `Déjà intégré dans Scalyo. 3 channels par défaut : général, cs-team, alertes. Messages en temps réel.`, tip: '' },
       { title: `Prochainement`, desc: `Slack, HubSpot/Salesforce, Intercom/Zendesk, Google Calendar, Zapier/Make. Contactez support@scalyo.app pour prioriser.`, tip: '' }
     ]
   },
   // ===== MANAGEMENT CS — GROWTH+ =====
   {
-    id: 'mg1', category: `management`, icon: '🗣', duration: `8 min`,
-    level: `intermediate`, plan: `growth`,
-    title: `Communication transverse — CS × Sales × Produit`,
-    desc: `Comment collaborer avec les autres équipes sans friction ni perte d’information.`,
+    id: 'mg1', category: 'management', icon: '🗣', duration: '8 min',
+    level: 'intermediate', plan: 'growth',
+    title: `Communication transverse — CS x Sales x Produit`,
+    desc: `Comment collaborer avec les autres équipes sans friction ni perte d'information.`,
     outcome: `Un framework de communication inter-équipes que votre équipe peut appliquer dès demain.`,
     steps: [
-      { title: `Identifier vos interlocuteurs clés`, desc: `Cartographiez qui parle à qui entre CS, Sales, Produit et Support. Chaque équipe a un point de contact principal.`, tip: `Un Slack/channel dédié par sujet (pas un channel fourre-tout) réduit le bruit de 60%.` },
-      { title: `Le rituel hebdo 15 min`, desc: `Un stand-up cross-équipes de 15 min le lundi : CS partage les comptes à risque, Sales partage les deals en cours, Produit partage les releases.`, tip: `15 min max. Pas de PowerPoint. Tour de table debout.` },
-      { title: `Le document partagé de handoff`, desc: `Quand Sales signe un client, un document structuré est transmis au CS : attentes, promesses faites, contacts clés, délais.`, tip: `Le pire ennemi du CS : les promesses de Sales dont personne ne parle.` },
-      { title: `Feedback loop Produit`, desc: `Chaque mois, envoyez au Produit les 3 features les plus demandées par vos clients. Pas 30 — juste 3. Avec des vrais verbatims.`, tip: `Un verbatim client vaut 100 tickets Jira.` }
+      { title: `Identifier vos interlocuteurs clés`, desc: `Cartographiez qui parle à qui entre CS, Sales, Produit et Support.`, tip: `Un channel dédié par sujet réduit le bruit de 60%.` },
+      { title: `Le rituel hebdo 15 min`, desc: `Stand-up cross-équipes le lundi : CS partage les comptes à risque, Sales les deals, Produit les releases.`, tip: `15 min max. Pas de PowerPoint. Tour de table debout.` },
+      { title: `Le handoff Sales → CS`, desc: `Document structuré transmis au CS : attentes, promesses, contacts, délais.`, tip: `Le pire ennemi du CS : les promesses de Sales dont personne ne parle.` },
+      { title: `Feedback loop Produit`, desc: `Chaque mois, envoyez au Produit les 3 features les plus demandées avec des vrais verbatims.`, tip: `Un verbatim client vaut 100 tickets Jira.` }
     ]
   },
   {
-    id: 'mg2', category: `management`, icon: '🌍', duration: `10 min`,
-    level: `intermediate`, plan: `growth`,
+    id: 'mg2', category: 'management', icon: '🌍', duration: '10 min',
+    level: 'intermediate', plan: 'growth',
     title: `Manager une équipe CS à distance`,
-    desc: `Rituels, check-ins et feedback constructif pour une équipe distribuée qui performe.`,
+    desc: `Rituels, check-ins et feedback constructif pour une équipe distribuée.`,
     outcome: `Un système de management à distance structuré et humain.`,
     steps: [
-      { title: `Les 3 rituels non négociables`, desc: `Lundi : stand-up équipe 15 min (objectifs semaine). Mercredi : 1:1 avec chaque CSM 20 min (blocages + moral). Vendredi : célébration équipe 10 min (victoires de la semaine).`, tip: `Ne jamais annuler le 1:1. C’est le moment où les vrais problèmes remontent.` },
-      { title: `Le feedback constructif`, desc: `Utilisez le modèle SBI : Situation (quand), Behavior (ce que tu as fait), Impact (l’effet). Jamais de jugement de personne — toujours des faits.`, tip: `Un bon feedback commence par "J’ai observé que..." jamais par "Tu es..."` },
-      { title: `Détecter la surcharge à distance`, desc: `Les signaux : réponses plus courtes, caméra désactivée, retards répétés. Utilisez le module Bien-être de Scalyo pour tracker.`, tip: `Demandez "Comment tu vas vraiment ?" — pas "Tout va bien ?"` },
-      { title: `Créer de la cohésion`, desc: `Un rituel mensuel informel : café virtuel, quiz, partage de lecture. L’humain d’abord, le travail ensuite.`, tip: '' }
+      { title: `Les 3 rituels non négociables`, desc: `Lundi : stand-up 15 min. Mercredi : 1:1 avec chaque CSM 20 min. Vendredi : célébration 10 min.`, tip: `Ne jamais annuler le 1:1. Les vrais problèmes remontent là.` },
+      { title: `Le feedback constructif`, desc: `Modèle SBI : Situation, Behavior, Impact. Jamais de jugement de personne, toujours des faits.`, tip: `Un bon feedback commence par J'ai observé que... jamais par Tu es...` },
+      { title: `Détecter la surcharge`, desc: `Signaux : réponses courtes, caméra désactivée, retards. Utilisez le module Bien-être de Scalyo.`, tip: `Demandez Comment tu vas vraiment ? pas Tout va bien ?` },
+      { title: `Créer de la cohésion`, desc: `Rituel mensuel informel : café virtuel, quiz, partage de lecture.`, tip: '' }
     ]
   },
   {
-    id: 'mg3', category: `management`, icon: '📊', duration: `12 min`,
-    level: `intermediate`, plan: `growth`,
+    id: 'mg3', category: 'management', icon: '📊', duration: '12 min',
+    level: 'intermediate', plan: 'growth',
     title: `Préparer et animer un QBR parfait`,
-    desc: `Le Quarterly Business Review de A à Z — structure, données, questions, suivi.`,
-    outcome: `Un template QBR prêt à l’emploi + la méthode pour que le client en redemande.`,
+    desc: `Le Quarterly Business Review de A à Z.`,
+    outcome: `Un template QBR prêt et la méthode pour que le client en redemande.`,
     steps: [
-      { title: `J-14 : collecter les données`, desc: `Utilisez Scalyo pour extraire : Health Score, évolution ARR, tickets ouverts, NPS, adoption des features. Pas de données = pas de QBR.`, tip: `Un QBR sans chiffres, c’est une conversation. Un QBR avec chiffres, c’est une décision.` },
-      { title: `J-7 : structurer la présentation`, desc: `4 slides max : Résultats (ce qu’on a fait), Valeur (ce que ça a rapporté), Défis (ce qui bloque), Prochaines étapes (ce qu’on va faire).`, tip: `Le client ne veut pas un rapport — il veut savoir si son investissement est rentable.` },
-      { title: `Jour J : l’animation`, desc: `Règle des 50/50 : vous parlez 50% du temps, le client parle 50%. Posez des questions ouvertes : "Qu’est-ce qui a le plus d’impact pour vous ?"`, tip: `Si le client ne parle pas, votre QBR est un monologue. Changez de méthode.` },
-      { title: `J+1 : le suivi`, desc: `Email récap dans les 24h avec les actions, les propriétaires, les deadlines. Créez les tâches dans Scalyo immédiatement.`, tip: `Un QBR sans suivi est un QBR oublié dans 48h.` }
+      { title: `J-14 : collecter les données`, desc: `Utilisez Scalyo pour extraire : Health Score, ARR, tickets, NPS, adoption.`, tip: `Un QBR sans chiffres = une conversation. Un QBR avec chiffres = une décision.` },
+      { title: `J-7 : structurer`, desc: `4 slides max : Résultats, Valeur, Défis, Prochaines étapes.`, tip: `Le client veut savoir si son investissement est rentable.` },
+      { title: `Jour J : animer`, desc: `Règle des 50/50 : vous parlez 50%, le client parle 50%.`, tip: `Si le client ne parle pas, votre QBR est un monologue.` },
+      { title: `J+1 : le suivi`, desc: `Email récap dans les 24h avec actions, propriétaires, deadlines. Créez les tâches dans Scalyo.`, tip: `Un QBR sans suivi est oublié en 48h.` }
     ]
   },
   // ===== EXCELLENCE — ELITE =====
   {
-    id: 'ex1', category: `excellence`, icon: '🤝', duration: `12 min`,
-    level: `expert`, plan: `elite`,
+    id: 'ex1', category: 'excellence', icon: '🤝', duration: '12 min',
+    level: 'expert', plan: 'elite',
     title: `Négociation de renouvellement`,
-    desc: `Le renouvellement ne se joue pas le jour de la signature. Il se prépare 90 jours avant.`,
-    outcome: `Un framework de préparation qui maximise le taux de renouvellement.`,
+    desc: `Le renouvellement se prépare 90 jours avant, pas le jour de la signature.`,
+    outcome: `Un framework qui maximise le taux de renouvellement.`,
     steps: [
-      { title: `J-90 : audit du compte`, desc: `Analysez l’usage réel, les features utilisées, la satisfaction des utilisateurs clés. Identifiez le ROI concret que le client a obtenu.`, tip: `Si vous ne pouvez pas prouver le ROI, le client ne renouvellera pas.` },
-      { title: `J-60 : multi-thread`, desc: `Ne dépendez jamais d’un seul interlocuteur. Assurez-vous d’avoir une relation avec le sponsor économique, l’utilisateur principal, ET le décideur.`, tip: `Si votre seul contact quitte l’entreprise, votre renouvellement est en danger.` },
-      { title: `J-30 : présenter la valeur`, desc: `Organisez un "Business Review" ciblé renouvellement : résultats obtenus, ROI prouvé, feuille de route pour la période suivante.`, tip: `Chiffrez toujours : "Nous avons réduit votre churn de 12% — soit 180K€ de revenus protégés."` },
-      { title: `Les objections fréquentes`, desc: `"C’est trop cher" → comparez au coût du churn sans solution. "On n’utilise pas tout" → proposez un plan d’adoption des features sous-utilisées. "On veut voir les alternatives" → respectez, proposez un pilot comparatif.`, tip: `Ne bradez jamais votre prix. Négociez de la valeur ajoutée, pas des remises.` }
+      { title: `J-90 : audit du compte`, desc: `Analysez l'usage réel, les features utilisées, le ROI concret obtenu.`, tip: `Si vous ne pouvez pas prouver le ROI, le client ne renouvellera pas.` },
+      { title: `J-60 : multi-thread`, desc: `Ne dépendez jamais d'un seul interlocuteur. Sponsor + utilisateur + décideur.`, tip: `Si votre seul contact quitte l'entreprise, votre renouvellement est en danger.` },
+      { title: `J-30 : présenter la valeur`, desc: `Business Review ciblé : résultats, ROI prouvé, feuille de route.`, tip: `Chiffrez toujours : Nous avons réduit votre churn de 12% soit 180K€ protégés.` },
+      { title: `Les objections`, desc: `Trop cher → comparez au coût du churn. On n'utilise pas tout → plan d'adoption. On veut voir ailleurs → pilot comparatif.`, tip: `Ne bradez jamais votre prix. Négociez de la valeur ajoutée.` }
     ]
   },
   {
-    id: 'ex2', category: `excellence`, icon: '📈', duration: `10 min`,
-    level: `expert`, plan: `elite`,
-    title: `Expansion de compte — Upsell & Cross-sell`,
-    desc: `Comment faire grandir un compte sans devenir un vendeur. L’expansion naturelle.`,
-    outcome: `Vous savez identifier les signaux d’expansion et positionner la valeur.`,
+    id: 'ex2', category: 'excellence', icon: '📈', duration: '10 min',
+    level: 'expert', plan: 'elite',
+    title: `Expansion de compte — Upsell et Cross-sell`,
+    desc: `Faire grandir un compte sans devenir un vendeur.`,
+    outcome: `Vous savez identifier les signaux d'expansion et positionner la valeur.`,
     steps: [
-      { title: `Les 5 signaux d’expansion`, desc: `1) Usage en croissance. 2) Demande de features premium. 3) Ajout d’utilisateurs. 4) Sponsor qui monte en grade. 5) Le client vous recommande.`, tip: `L’expansion se détecte — elle ne se force pas.` },
-      { title: `Le bon timing`, desc: `Après une victoire (un problème résolu, un QBR positif, un NPS élevé). Jamais quand le client est en crise ou insatisfait.`, tip: `La meilleure phrase : "D’autres équipes chez vous pourraient bénéficier de ce qu’on fait ensemble ?"` },
-      { title: `Positionner sans vendre`, desc: `Partagez un cas d’usage d’un client similaire qui a étendu. Montrez l’impact, pas le prix. Laissez le client demander.`, tip: `Le CS qui vend le mieux est celui qui ne vend pas — il recommande.` },
-      { title: `Collaborer avec Sales`, desc: `Préparez un brief pour Sales avec le contexte, les besoins identifiés, les contacts. Vous introduisez, Sales conclut. Rôles clairs.`, tip: `Votre rôle : ouvrir la porte. Le rôle de Sales : signer. Ne mélangez pas.` }
+      { title: `Les 5 signaux`, desc: `Usage en croissance, demande de features premium, ajout d'utilisateurs, sponsor qui monte, recommandation.`, tip: `L'expansion se détecte, elle ne se force pas.` },
+      { title: `Le bon timing`, desc: `Après une victoire. Jamais quand le client est en crise.`, tip: `D'autres équipes chez vous pourraient bénéficier de ce qu'on fait ensemble ?` },
+      { title: `Positionner sans vendre`, desc: `Partagez un cas d'usage similaire. Montrez l'impact, pas le prix.`, tip: `Le CS qui vend le mieux est celui qui ne vend pas — il recommande.` },
+      { title: `Collaborer avec Sales`, desc: `Brief pour Sales avec contexte, besoins, contacts. Vous ouvrez la porte, Sales conclut.`, tip: '' }
     ]
   },
   {
-    id: 'ex3', category: `excellence`, icon: '🚨', duration: `10 min`,
-    level: `expert`, plan: `elite`,
-    title: `Gestion de crise client — Le framework CARE`,
+    id: 'ex3', category: 'excellence', icon: '🚨', duration: '10 min',
+    level: 'expert', plan: 'elite',
+    title: `Gestion de crise — Le framework CARE`,
     desc: `Quand un client est en colère, la vitesse et la méthode font la différence.`,
-    outcome: `Un process d’escalade structuré que toute l’équipe peut suivre sous pression.`,
+    outcome: `Un process d'escalade structuré que toute l'équipe peut suivre.`,
     steps: [
-      { title: `C — Contenir`, desc: `Première réponse en moins de 2h. Accusez réception, montrez que vous prenez au sérieux. Pas de solution encore — de l’empathie.`, tip: `"Je comprends que c’est frustrant. Je prends personnellement en charge votre dossier."` },
-      { title: `A — Analyser`, desc: `Identifiez la cause racine en interne AVANT de répondre. Parlez aux équipes techniques, support, produit. Ne spéculez jamais devant le client.`, tip: `Un client pardonne un problème. Il ne pardonne pas un mensonge.` },
-      { title: `R — Résoudre`, desc: `Proposez une solution concrète avec un calendrier précis. "Nous corrigeons d’ici mercredi" — pas "on va regarder".`, tip: `Sous-promettez, sur-délivrez. Si vous dites mercredi, livrez mardi.` },
-      { title: `E — Évaluer`, desc: `72h après la résolution : appelez le client. "Est-ce que tout fonctionne comme prévu ?" Documentez l’incident pour éviter la répétition.`, tip: `Un client bien géré en crise devient souvent votre meilleur ambassadeur.` }
+      { title: `C — Contenir`, desc: `Réponse en moins de 2h. Accusé réception + empathie. Pas de solution encore.`, tip: `Je comprends que c'est frustrant. Je prends personnellement en charge votre dossier.` },
+      { title: `A — Analyser`, desc: `Cause racine en interne AVANT de répondre. Ne spéculez jamais devant le client.`, tip: `Un client pardonne un problème. Il ne pardonne pas un mensonge.` },
+      { title: `R — Résoudre`, desc: `Solution concrète avec calendrier précis. Nous corrigeons d'ici mercredi — pas on va regarder.`, tip: `Sous-promettez, sur-délivrez.` },
+      { title: `E — Évaluer`, desc: `72h après : appelez le client. Est-ce que tout fonctionne ? Documentez pour éviter la répétition.`, tip: `Un client bien géré en crise devient souvent votre meilleur ambassadeur.` }
     ]
   },
   {
-    id: 'ex4', category: `excellence`, icon: '🎯', duration: `10 min`,
-    level: `expert`, plan: `elite`,
-    title: `Présenter au C-Level — L’art du storytelling CS`,
+    id: 'ex4', category: 'excellence', icon: '🎯', duration: '10 min',
+    level: 'expert', plan: 'elite',
+    title: `Présenter au C-Level — L'art du storytelling CS`,
     desc: `Comment présenter des résultats CS à un comité de direction en 15 minutes.`,
-    outcome: `Un format de présentation C-Level que vous réutilisez chaque trimestre.`,
+    outcome: `Un format de présentation C-Level réutilisable chaque trimestre.`,
     steps: [
-      { title: `La règle des 3 slides`, desc: `Slide 1 : Le chiffre qui compte (NRR, churn évité, ARR protégé). Slide 2 : Ce qu’on a fait (3 actions max). Slide 3 : Ce qu’on demande (budget, ressources, décision).`, tip: `Un C-Level lit un email en 11 secondes. Votre slide doit se lire en 5.` },
-      { title: `Parler en argent`, desc: `Ne dites pas "le NPS est à 42". Dites "notre NPS de 42 corrèle avec un taux de renouvellement de 94% — soit 2.1M€ d’ARR protégé."`, tip: `Le C-Level ne comprend qu’un seul langage : l’impact financier.` },
-      { title: `Anticiper les questions`, desc: `Préparez des réponses pour : "Pourquoi ce client a churné ?", "Quel est le coût d’acquisition vs rétention ?", "Quel ROI de l’équipe CS ?"`, tip: '' },
-      { title: `Le suivi immédiat`, desc: `Envoyez un one-pager dans l’heure après la présentation. 3 paragraphes max. Les décisions, les actions, les deadlines.`, tip: `Un CEO ne revient pas chercher votre deck. Votre one-pager est tout ce qui reste.` }
+      { title: `La règle des 3 slides`, desc: `Slide 1 : le chiffre clé (NRR, churn évité). Slide 2 : ce qu'on a fait (3 actions max). Slide 3 : ce qu'on demande.`, tip: `Un C-Level lit un email en 11 secondes. Votre slide doit se lire en 5.` },
+      { title: `Parler en argent`, desc: `Notre NPS de 42 corrèle avec un renouvellement de 94% soit 2.1M€ d'ARR protégé.`, tip: `Le C-Level ne comprend qu'un seul langage : l'impact financier.` },
+      { title: `Anticiper les questions`, desc: `Pourquoi ce client a churné ? Quel coût acquisition vs rétention ? Quel ROI de l'équipe CS ?`, tip: '' },
+      { title: `Le suivi immédiat`, desc: `One-pager envoyé dans l'heure. 3 paragraphes max. Décisions, actions, deadlines.`, tip: `Un CEO ne revient pas chercher votre deck. Le one-pager est tout ce qui reste.` }
     ]
   },
   {
-    id: 'ex5', category: `excellence`, icon: '📊', duration: `15 min`,
-    level: `expert`, plan: `elite`,
+    id: 'ex5', category: 'excellence', icon: '📊', duration: '15 min',
+    level: 'expert', plan: 'elite',
     title: `KPIs avancés — Les métriques qui comptent vraiment`,
     desc: `Au-delà du NPS et du churn : les KPIs que les meilleurs Head of CS suivent.`,
-    outcome: `Vous savez calculer et interpréter les KPIs qui pilotent une stratégie CS de classe mondiale.`,
+    outcome: `Vous savez calculer et interpréter les KPIs d'une stratégie CS de classe mondiale.`,
     steps: [
-      { title: `NRR (Net Revenue Retention)`, desc: `La métrique reine. NRR = (ARR début + expansion - contraction - churn) / ARR début. Au-dessus de 110% = excellence. En dessous de 90% = problème structurel.`, tip: `Un NRR > 120% veut dire que vos clients existants génèrent plus de revenus que ce que vous perdez.` },
-      { title: `Time to Value (TTV)`, desc: `Combien de temps entre la signature et le premier "aha moment" du client. Les meilleurs CS réduisent le TTV de 60 à 14 jours.`, tip: `Chaque jour entre la signature et la valeur est un jour où le client peut regretter.` },
-      { title: `Logo Retention vs Revenue Retention`, desc: `Logo = combien de clients vous gardez. Revenue = combien d’argent vous gardez. Les deux sont importants mais racontent des histoires différentes.`, tip: `Perdre 10 petits clients ≠ perdre 1 gros client. Segmentez toujours.` },
-      { title: `Health Score Predictive`, desc: `Votre Health Score prédit-il vraiment le churn ? Backtestez : parmi les clients qui ont churné les 12 derniers mois, quel était leur Health Score 90 jours avant ?`, tip: `Si votre Health Score ne prédit pas le churn, il ne sert à rien. Recalibrez.` }
+      { title: `NRR (Net Revenue Retention)`, desc: `La métrique reine. NRR = (ARR début + expansion - contraction - churn) / ARR début. Au-dessus de 110% = excellence.`, tip: `Un NRR supérieur à 120% veut dire que vos clients existants génèrent plus que ce que vous perdez.` },
+      { title: `Time to Value (TTV)`, desc: `Combien de temps entre la signature et le premier moment de valeur du client.`, tip: `Chaque jour entre la signature et la valeur est un jour où le client peut regretter.` },
+      { title: `Logo vs Revenue Retention`, desc: `Logo = combien de clients vous gardez. Revenue = combien d'argent vous gardez. Les deux comptent.`, tip: `Perdre 10 petits clients n'égale pas perdre 1 gros client. Segmentez toujours.` },
+      { title: `Health Score Predictive`, desc: `Votre Health Score prédit-il le churn ? Backtestez sur les 12 derniers mois.`, tip: `Si votre Health Score ne prédit pas le churn, recalibrez.` }
     ]
   },
   {
-    id: 'ex6', category: `excellence`, icon: '🧩', duration: `10 min`,
-    level: `expert`, plan: `elite`,
-    title: `Segmentation de portefeuille — Le bon CSM au bon client`,
-    desc: `Comment allouer le temps de votre équipe pour maximiser le ROI de chaque interaction.`,
+    id: 'ex6', category: 'excellence', icon: '🧩', duration: '10 min',
+    level: 'expert', plan: 'elite',
+    title: `Segmentation de portefeuille`,
+    desc: `Comment allouer le temps de votre équipe pour maximiser le ROI.`,
     outcome: `Un modèle de segmentation actionnable pour toute équipe CS.`,
     steps: [
-      { title: `Les 3 niveaux`, desc: `High-touch (vos top 20% en ARR) : 1 CSM dédié, QBR trimestriel, check-in hebdo. Mid-touch (60%) : CSM partagé, check-in mensuel, playbooks. Tech-touch (20%) : automatisé, emails, in-app, self-service.`, tip: `La règle de Pareto s’applique : 20% de vos clients génèrent 80% de votre ARR.` },
-      { title: `Critères de segmentation`, desc: `ARR seul ne suffit pas. Combinez : ARR + potentiel d’expansion + complexité technique + risque de churn. Un petit client strateg’ique vaut un gros client stable.`, tip: '' },
-      { title: `Le ratio CSM/clients`, desc: `High-touch : 1 CSM pour 10-15 comptes. Mid-touch : 1 CSM pour 30-50 comptes. Tech-touch : 1 CSM pour 200+ comptes (avec automatisation Scalyo).`, tip: `Si vos CSMs gèrent plus de 50 comptes en high-touch, ils ne font du high-touch pour personne.` },
-      { title: `Réviser tous les trimestres`, desc: `Un client peut changer de segment : expansion → monte en high-touch. Désengagement → descend en tech-touch pour libérer du temps CSM.`, tip: `La segmentation n’est pas un dogme. C’est un outil de priorisation.` }
+      { title: `Les 3 niveaux`, desc: `High-touch (top 20% ARR) : CSM dédié, QBR trimestriel. Mid-touch (60%) : CSM partagé, check-in mensuel. Tech-touch (20%) : automatisé.`, tip: `La règle de Pareto : 20% de vos clients génèrent 80% de votre ARR.` },
+      { title: `Critères`, desc: `ARR seul ne suffit pas. Combinez : ARR + potentiel d'expansion + complexité + risque de churn.`, tip: '' },
+      { title: `Ratio CSM/clients`, desc: `High-touch : 1 CSM pour 10-15 comptes. Mid-touch : 1 pour 30-50. Tech-touch : 1 pour 200+ avec Scalyo.`, tip: `Plus de 50 comptes en high-touch = du high-touch pour personne.` },
+      { title: `Réviser chaque trimestre`, desc: `Un client peut changer de segment. Expansion → monte. Désengagement → descend.`, tip: `La segmentation est un outil de priorisation, pas un dogme.` }
     ]
   },
   {
-    id: 'ex7', category: `excellence`, icon: '💰', duration: `15 min`,
-    level: `expert`, plan: `elite`,
+    id: 'ex7', category: 'excellence', icon: '💰', duration: '15 min',
+    level: 'expert', plan: 'elite',
     title: `Construire le business case du Customer Success`,
     desc: `Comment prouver le ROI de votre équipe CS à la direction. Le contenu que les Head of CS cherchent partout.`,
     outcome: `Un business case chiffré qui justifie chaque euro investi dans votre équipe CS.`,
     steps: [
-      { title: `Le coût du churn`, desc: `Calculez : nombre de clients perdus × ARR moyen = revenus perdus. Ajoutez le coût d’acquisition d’un nouveau client pour remplacer (généralement 5-7x le coût de rétention).`, tip: `La phrase qui fait mouche : "Il coûte 7x plus cher d’acquérir un client que de le garder."` },
-      { title: `Le ROI du CS`, desc: `Formule : (Revenus protégés par le CS + Expansion générée par le CS) / Coût total de l’équipe CS. Un ratio > 5x est excellent. > 10x est exceptionnel.`, tip: `Un bon Head of CS prouve que son équipe rapporte 10€ pour chaque 1€ dépensé.` },
-      { title: `Les métriques de présentation`, desc: `Churn évité (en €), NRR (en %), expansion générée (en €), Time to Value réduit (en jours), NPS amélioré (en points). Toujours en euros ou en pourcentage — jamais en "nombre de tickets résolus".`, tip: `Le CFO ne comprend pas les tickets. Il comprend les euros.` },
-      { title: `Demander des ressources`, desc: `Structure : "Avec 1 CSM supplémentaire (à X€/an), nous pouvons passer Y comptes de tech-touch à mid-touch, ce qui réduira le churn de Z% et protégera W€ d’ARR."`, tip: `Ne demandez pas un budget. Proposez un investissement avec un retour chiffré.` },
-      { title: `L’argument ultime`, desc: `Montrez la corrélation entre Health Score et renouvellement sur vos propres données. "Les clients avec un Health Score > 7 renouvellent à 96%. Ceux sous 5 renouvellent à 34%. Chaque point de Health Score vaut X€."`, tip: `C’est l’argument que personne ne peut contester — ce sont VOS données, pas une étude externe.` }
+      { title: `Le coût du churn`, desc: `Clients perdus x ARR moyen = revenus perdus. Ajoutez le coût d'acquisition (5-7x le coût de rétention).`, tip: `Il coûte 7x plus cher d'acquérir un client que de le garder.` },
+      { title: `Le ROI du CS`, desc: `(Revenus protégés + Expansion) / Coût équipe CS. Ratio supérieur à 5x = excellent. 10x = exceptionnel.`, tip: `Un bon Head of CS prouve que son équipe rapporte 10€ pour chaque 1€ dépensé.` },
+      { title: `Les métriques de présentation`, desc: `Churn évité (en euros), NRR (en %), expansion (en euros), TTV (en jours), NPS (en points). Toujours en euros ou en pourcentage.`, tip: `Le CFO ne comprend pas les tickets. Il comprend les euros.` },
+      { title: `Demander des ressources`, desc: `Structure : Avec 1 CSM supplémentaire, nous pouvons passer Y comptes en mid-touch, réduire le churn de Z% et protéger W€ d'ARR.`, tip: `Ne demandez pas un budget. Proposez un investissement avec un retour chiffré.` },
+      { title: `L'argument ultime`, desc: `Montrez la corrélation Health Score vs renouvellement sur VOS données. Chaque point de Health Score vaut X€.`, tip: `Personne ne peut contester VOS propres données.` }
     ]
-  }
+  },
+
 ]
 
 const filteredProcesses = computed(() => {
