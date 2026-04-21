@@ -31,6 +31,7 @@
           <thead>
             <tr>
               <th class="col-fix col-exp"></th>
+                <th class="col-fix col-drag"></th>
               <th class="col-fix col-num">#</th>
               <th class="col-fix col-title">{{ t('sm_col_title') }}</th>
               <th class="col-scroll col-date">{{ t('sm_col_start') }}</th>
@@ -52,9 +53,14 @@
           </thead>
           <tbody>
             <template v-for="(row, ri) in visibleRows" :key="row.id">
-              <tr :class="['row-level-' + (row.level || 0), { 'row-project': row.type === 'project', 'row-done': row.finished }]">
+              <tr :class="['row-level-' + (row.level || 0), { 'row-project': row.type === 'project', 'row-done': row.finished, 'row-drag-over': dragOverRowId === row.id }]"
+                @dragover.prevent="onRowDragOver($event, row)"
+                @drop="onRowDrop($event, row)">
                 <td class="col-fix col-exp">
                   <button v-if="row.hasChildren" class="exp-btn" @click="toggleExpand(row.id)">{{ expanded[row.id] ? '▾' : '▸' }}</button>
+                </td>
+                <td class="col-fix col-drag">
+                  <span class="drag-handle" draggable="true" @dragstart="onRowDragStart($event, row, ri)" @dragend="onRowDragEnd">⠿</span>
                 </td>
                 <td class="col-fix col-num">{{ ri + 1 }}</td>
                 <td class="col-fix col-title" :style="{ paddingLeft: (12 + (row.level || 0) * 24) + 'px' }">
@@ -336,6 +342,54 @@ function doResetAll() {
   resetStep.value = 0
 }
 
+
+const draggedRow = ref(null)
+const draggedRowIndex = ref(null)
+const dragOverRowId = ref(null)
+
+function onRowDragStart(e, row, index) {
+  draggedRow.value = row
+  draggedRowIndex.value = index
+  e.dataTransfer.effectAllowed = 'move'
+  e.dataTransfer.setData('text/plain', row.id)
+}
+
+function onRowDragEnd() {
+  draggedRow.value = null
+  draggedRowIndex.value = null
+  dragOverRowId.value = null
+}
+
+function onRowDragOver(e, targetRow) {
+  e.preventDefault()
+  if (draggedRow.value && draggedRow.value.id !== targetRow.id) {
+    dragOverRowId.value = targetRow.id
+  }
+}
+
+function onRowDrop(e, targetRow) {
+  e.preventDefault()
+  if (!draggedRow.value || draggedRow.value.id === targetRow.id) return
+  
+  const src = draggedRow.value
+  
+  // If dragging a task to a different project
+  if (src.type !== 'project' && targetRow.type === 'project' && src.projectId !== targetRow.id) {
+    taskStore.updateTask(src.id, { projectId: targetRow.id })
+  }
+  
+  // If dragging a task within same project (reorder)
+  if (src.type !== 'project' && targetRow.type !== 'project') {
+    // Swap status if different columns conceptually
+    if (targetRow.projectId && src.projectId !== targetRow.projectId) {
+      taskStore.updateTask(src.id, { projectId: targetRow.projectId })
+    }
+  }
+  
+  dragOverRowId.value = null
+  draggedRow.value = null
+}
+
 function createProject() {
   taskStore.addProject({
     name: newName.value,
@@ -369,9 +423,9 @@ function createProject() {
 .pv-table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.82rem; }
 .pv-table thead th { padding: 10px 8px; font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e5e7eb; white-space: nowrap; text-align: left; background: #f9fafb; position: sticky; top: 0; z-index: 20; }
 .col-fix { position: sticky; z-index: 5; background: #ffffff; }
-.col-exp { left: 0; width: 32px; min-width: 32px; }
-.col-num { left: 32px; width: 36px; min-width: 36px; text-align: center; color: var(--text-muted); }
-.col-title { left: 68px; min-width: 220px; max-width: 300px; border-right: 2px solid #e5e7eb; }
+.col-exp { left: 24px; width: 32px; min-width: 32px; }
+.col-num { left: 56px; width: 36px; min-width: 36px; text-align: center; color: var(--text-muted); }
+.col-title { left: 92px; min-width: 220px; max-width: 300px; border-right: 2px solid #e5e7eb; }
 .pv-table thead th.col-fix { z-index: 30; background: #f9fafb; }
 .pv-table thead th.col-title { border-right: 2px solid #e5e7eb; }
 .col-scroll { white-space: nowrap; position: relative; z-index: 1; }
@@ -447,4 +501,11 @@ tr:hover .btn-delete { opacity: 0.4; }
 .empty-icon { font-size: 3rem; margin-bottom: 16px; }
 .pv-empty h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; }
 @media (max-width: 768px) { .col-title { min-width: 140px; max-width: 180px; } .pv-table { font-size: 0.75rem; } }
+
+.col-drag { left: 0; width: 24px; min-width: 24px; z-index: 5; }
+.drag-handle { cursor: grab; font-size: 0.9rem; color: var(--text-muted); opacity: 0.3; user-select: none; display: flex; align-items: center; justify-content: center; }
+.drag-handle:active { cursor: grabbing; }
+tr:hover .drag-handle { opacity: 0.8; }
+.row-drag-over { background: var(--purple-bg) !important; }
+.row-drag-over .col-fix { background: var(--purple-bg) !important; }
 </style>
