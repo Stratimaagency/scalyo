@@ -272,6 +272,7 @@ const sidebarSections = [
 
 import { onMounted } from 'vue'
 onMounted(async () => {
+    chatStore.init()
   try {
     const { useClientStore } = await import('@/stores/clients')
     const { useTeamStore } = await import('@/stores/team')
