@@ -182,7 +182,7 @@ const processes = [
     steps: [
       { title: 'Ouvrir le Portefeuille', desc: 'Sidebar → Portefeuille → + Nouveau client', tip: 'Commencez par vos 3 clients les plus importants, pas les 50.' },
       { title: 'Remplir les infos', desc: 'Nom, contact principal, ARR, date de renouvellement. Le Health Score démarre à 5/10.', tip: '' },
-      { title: 'Enregistrer', desc: 'Cliquez Enregistrer. Votre client apparaît dans le Dashboard.', tip: 'Ajoutez un maximum de 3 clients pour commencer, maîtrisez l'outil, puis importez le reste.' }
+      { title: 'Enregistrer', desc: 'Cliquez Enregistrer. Votre client apparaît dans le Dashboard.', tip: 'Ajoutez un maximum de 3 clients pour commencer, maîtrisez l\'outil, puis importez le reste.' }
     ]
   },
   {
@@ -214,7 +214,7 @@ const processes = [
     id: 'ob4', category: 'onboarding', icon: '📧', duration: '2 min',
     level: 'beginner', plan: 'starter',
     title: 'Email Studio — Templates CS',
-    desc: 'Des templates d'emails CS prêts à l'emploi. Copiez. Collez. Envoyez.',
+    desc: 'Des templates d\'emails CS prêts à l\'emploi. Copiez. Collez. Envoyez.',
     outcome: 'Vous savez utiliser les templates email et les personnaliser.',
     steps: [
       { title: 'Choisir un template', desc: 'Email Studio → parcourez : bienvenue, check-in, relance, QBR, renouvellement.', tip: '' },
@@ -230,7 +230,7 @@ const processes = [
     desc: 'Glissez votre fichier. Scalyo fait le reste.',
     outcome: 'Votre portefeuille complet est importé dans Scalyo.',
     steps: [
-      { title: 'Déposer le fichier', desc: 'Import → glissez votre CSV ou Excel dans la zone.', tip: 'Importez d'abord 5-10 clients pour tester.' },
+      { title: 'Déposer le fichier', desc: 'Import → glissez votre CSV ou Excel dans la zone.', tip: 'Importez d\'abord 5-10 clients pour tester.' },
       { title: 'Vérifier le mapping', desc: 'Scalyo détecte les colonnes automatiquement : nom, email, ARR, renouvellement.', tip: 'Pas de colonne Health Score ? Tous les clients démarrent à 5/10.' },
       { title: 'Importer', desc: 'Cliquez Importer. C'est fait.', tip: '' }
     ]
@@ -239,11 +239,11 @@ const processes = [
     id: 'ob6', category: 'onboarding', icon: '✨', duration: '2 min',
     level: 'beginner', plan: 'growth',
     title: 'Email Studio IA — Génération automatisée',
-    desc: 'Dites ce que vous voulez. Scalyo l'écrit pour vous.',
+    desc: 'Dites ce que vous voulez. Scalyo l\'écrit pour vous.',
     outcome: 'Vous savez générer du contenu email adapté à chaque client.',
     steps: [
-      { title: 'Choisir un template', desc: 'Email Studio → choisissez le type d'email.', tip: '' },
-      { title: 'Génération IA', desc: 'Le contenu est généré et adapté au contexte de votre client.', tip: 'Relisez toujours avant d'envoyer. L'IA est un assistant, pas un remplaçant.' },
+      { title: 'Choisir un template', desc: 'Email Studio → choisissez le type d\'email.', tip: '' },
+      { title: 'Génération IA', desc: 'Le contenu est généré et adapté au contexte de votre client.', tip: 'Relisez toujours avant d\'envoyer. L'IA est un assistant, pas un remplaçant.' },
       { title: 'Personnaliser et copier', desc: 'Ajoutez votre touche personnelle, puis copiez-collez.', tip: '' }
     ]
   },
@@ -251,11 +251,11 @@ const processes = [
     id: 'ob7', category: 'onboarding', icon: '📖', duration: '3 min',
     level: 'intermediate', plan: 'growth',
     title: 'Playbooks manuels — Vos premières règles',
-    desc: 'Créez des règles de surveillance. Déclenchez-les d'un clic.',
+    desc: 'Créez des règles de surveillance. Déclenchez-les d\'un clic.',
     outcome: 'Votre première règle playbook est active.',
     steps: [
       { title: 'Créer une règle', desc: 'Playbooks → + Nouvelle règle. Nom, déclencheur, seuil, action.', tip: '' },
-      { title: 'Les 4 déclencheurs', desc: 'Health < seuil, Renouvellement dans X jours, NPS < seuil, Churn > seuil.', tip: 'Commencez par "Health sous 60" — c'est le plus utile.' },
+      { title: 'Les 4 déclencheurs', desc: 'Health < seuil, Renouvellement dans X jours, NPS < seuil, Churn > seuil.', tip: 'Commencez par "Health sous 60" — c\'est le plus utile.' },
       { title: 'Tester manuellement', desc: 'Cliquez "Tester maintenant" pour scanner votre portefeuille. Les tâches sont créées automatiquement.', tip: 'Le mode automatique (24/7) est disponible sur le plan Elite.' }
     ]
   },
@@ -264,12 +264,12 @@ const processes = [
     id: 'ob8', category: 'onboarding', icon: '📬', duration: '3 min',
     level: 'beginner', plan: 'elite',
     title: 'Connecter Resend — 3 étapes, 3 minutes',
-    desc: 'Activez l'envoi d'emails réels depuis Scalyo.',
+    desc: 'Activez l\'envoi d\'emails réels depuis Scalyo.',
     outcome: 'Votre compte Resend est connecté. Vous pouvez envoyer.',
     steps: [
       { title: 'Créer un compte Resend', desc: 'Allez sur resend.com/signup. Email + mot de passe. Aucune carte bancaire. 30 secondes.', tip: '3 000 emails/mois gratuits inclus par Resend.' },
       { title: 'Récupérer la clé API', desc: 'resend.com/api-keys → Create API Key → Full access → Copiez la clé (re_...).', tip: '' },
-      { title: 'Coller dans Scalyo', desc: 'Email Studio → Envoyer → le wizard s'ouvre → collez la clé → Tester la connexion → Validé.', tip: 'Besoin d'aide ? Contactez support@scalyo.app pour un accompagnement en 15 min.' }
+      { title: 'Coller dans Scalyo', desc: 'Email Studio → Envoyer → le wizard s\'ouvre → collez la clé → Tester la connexion → Validé.', tip: 'Besoin d\'aide ? Contactez support@scalyo.app pour un accompagnement en 15 min.' }
     ]
   },
   {
@@ -279,9 +279,9 @@ const processes = [
     desc: 'Envoyez. Trackez. Savez qui ouvre.',
     outcome: 'Votre premier email est envoyé et tracké.',
     steps: [
-      { title: 'Choisir et personnaliser', desc: 'Email Studio → template Check-in → personnalisez.', tip: 'Testez d'abord sur votre propre adresse email.' },
-      { title: 'Envoyer', desc: 'Cliquez Envoyer → adresse destinataire → nom d'expéditeur → Envoyer.', tip: '' },
-      { title: 'Vérifier le tracking', desc: 'Onglet Historique : envoyé ✅ / ouvert 👀 / pas encore ouvert ⏳. Visez > 50% de taux d'ouverture.', tip: 'Le tracking détecte l'ouverture, pas la lecture. Certains clients email bloquent les pixels.' }
+      { title: 'Choisir et personnaliser', desc: 'Email Studio → template Check-in → personnalisez.', tip: 'Testez d\'abord sur votre propre adresse email.' },
+      { title: 'Envoyer', desc: 'Cliquez Envoyer → adresse destinataire → nom d\'expéditeur → Envoyer.', tip: '' },
+      { title: 'Vérifier le tracking', desc: 'Onglet Historique : envoyé ✅ / ouvert 👀 / pas encore ouvert ⏳. Visez > 50% de taux d\'ouverture.', tip: 'Le tracking détecte l\'ouverture, pas la lecture. Certains clients email bloquent les pixels.' }
     ]
   },
   {
@@ -289,11 +289,11 @@ const processes = [
     level: 'intermediate', plan: 'elite',
     title: 'Playbooks automatiques — Scalyo surveille pour vous',
     desc: 'Le game changer. Scalyo détecte les risques 24/7 et crée les tâches tout seul.',
-    outcome: 'Vos règles tournent en continu. Vous n'intervenez que quand c'est nécessaire.',
+    outcome: 'Vos règles tournent en continu. Vous n\'intervenez que quand c\'est nécessaire.',
     steps: [
       { title: 'Créer vos 3 règles essentielles', desc: 'Health sous 60 (haute, 3j, cooldown 7j), Renouvellement dans 30j (haute, 5j, cooldown 30j), NPS sous 7 (moyenne, 5j, cooldown 14j).', tip: 'Ces 3 règles couvrent 90% des risques.' },
       { title: 'Activer le mode automatique', desc: 'Vos règles sont en mode auto : Scalyo scanne votre portefeuille en continu.', tip: '' },
-      { title: 'Vérifier l'historique', desc: 'Playbooks → Historique : chaque déclenchement est loggé avec le client, le trigger, et l'action.', tip: 'Argument investisseur : "Scalyo dit attention, tu vas perdre ce client" = ROI immédiat.' }
+      { title: 'Vérifier l\'historique', desc: 'Playbooks → Historique : chaque déclenchement est loggé avec le client, le trigger, et l\'action.', tip: 'Argument investisseur : "Scalyo dit attention, tu vas perdre ce client" = ROI immédiat.' }
     ]
   },
   // ===== INTEGRATIONS (visible par tous) =====
@@ -304,7 +304,7 @@ const processes = [
     desc: 'Connecter Scalyo à vos outils existants.',
     outcome: 'Vous savez quelles intégrations sont disponibles et comment les configurer.',
     steps: [
-      { title: 'Resend (Elite)', desc: 'Service d'envoi d'emails. Créez un compte gratuit sur resend.com, récupérez votre clé API, collez dans Settings.', tip: '3 000 emails/mois gratuits. Au-delà : $0,80/1 000 emails facturés par Resend.' },
+      { title: 'Resend (Elite)', desc: 'Service d\'envoi d\'emails. Créez un compte gratuit sur resend.com, récupérez votre clé API, collez dans Settings.', tip: '3 000 emails/mois gratuits. Au-delà : $0,80/1 000 emails facturés par Resend.' },
       { title: 'Chat interne', desc: 'Déjà intégré dans Scalyo. 3 channels par défaut : général, cs-team, alertes. Messages en temps réel.', tip: '' },
       { title: 'Prochainement', desc: 'Slack, HubSpot/Salesforce, Intercom/Zendesk, Google Calendar, Zapier/Make. Contactez support@scalyo.app pour prioriser.', tip: '' }
     ]
