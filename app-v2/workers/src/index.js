@@ -8,10 +8,14 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url)
     const lang = detectLanguage(request)
+    const allowedOrigins = ['https://scalyo.app', 'https://www.scalyo.app']
+    const origin = request.headers.get('Origin') || ''
+    const corsOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0]
     const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': corsOrigin,
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept-Language',
+      'Vary': 'Origin',
     }
 
     if (request.method === 'OPTIONS') {
@@ -91,6 +95,34 @@ export default {
         return Response.json({ message: t(lang, 'errors.serverError') }, { headers: corsHeaders })
       }
       if (url.pathname === '/api/stripe/webhook' && request.method === 'POST') {
+        // Verify Stripe signature (HMAC)
+        const signature = request.headers.get('stripe-signature')
+        const webhookSecret = env.STRIPE_WEBHOOK_SECRET
+        if (!signature || !webhookSecret) {
+          return Response.json({ error: 'Missing signature' }, { status: 400, headers: corsHeaders })
+        }
+        const body = await request.text()
+        const parts = Object.fromEntries(signature.split(',').map(p => { const [k, v] = p.split('='); return [k, v] }))
+        const timestamp = parts['t']
+        const sig = parts['v1']
+        if (!timestamp || !sig) {
+          return Response.json({ error: 'Invalid signature format' }, { status: 400, headers: corsHeaders })
+        }
+        // Verify timestamp is within 5 minutes
+        const age = Math.floor(Date.now() / 1000) - parseInt(timestamp)
+        if (age > 300) {
+          return Response.json({ error: 'Signature expired' }, { status: 400, headers: corsHeaders })
+        }
+        // Verify HMAC
+        const encoder = new TextEncoder()
+        const key = await crypto.subtle.importKey('raw', encoder.encode(webhookSecret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
+        const signed = await crypto.subtle.sign('HMAC', key, encoder.encode(timestamp + '.' + body))
+        const expected = Array.from(new Uint8Array(signed)).map(b => b.toString(16).padStart(2, '0')).join('')
+        if (expected !== sig) {
+          return Response.json({ error: 'Invalid signature' }, { status: 400, headers: corsHeaders })
+        }
+        // Signature valid — process event
+        // TODO Phase 3: parse event and update Supabase
         return Response.json({ received: true }, { headers: corsHeaders })
       }
       if (url.pathname === '/api/stripe/portal' && request.method === 'POST') {
