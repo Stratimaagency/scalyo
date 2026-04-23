@@ -1,58 +1,75 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-
-const STORAGE_KEY = 'scalyo_notifications'
-
-function loadFromStorage() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') }
-  catch { return [] }
-}
-
-function saveToStorage(notifs) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(notifs)) }
-  catch {}
-}
+import { supabase } from '@/lib/supabase'
 
 export const useNotificationStore = defineStore('notifications', () => {
-  const notifications = ref(loadFromStorage())
+  const notifications = ref([])
 
   const unreadCount = computed(() => notifications.value.filter(n => !n.read).length)
 
-  function markRead(id) {
+  async function loadNotifications() {
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .order('created_at', { ascending: false })
+    if (!error && data) notifications.value = data
+  }
+
+  async function markRead(id) {
     const n = notifications.value.find(n => n.id === id)
     if (!n) return
     n.read = true
-    saveToStorage(notifications.value)
+    await supabase.from('notifications').update({ read: true }).eq('id', id)
   }
 
-  function markAllRead() {
+  async function markAllRead() {
     notifications.value.forEach(n => n.read = true)
-    saveToStorage(notifications.value)
+    const ids = notifications.value.map(n => n.id)
+    if (ids.length) {
+      await supabase.from('notifications').update({ read: true }).in('id', ids)
+    }
   }
 
-  function clearAll() {
+  async function clearAll() {
+    const ids = notifications.value.map(n => n.id)
     notifications.value = []
-    saveToStorage([])
+    if (ids.length) {
+      await supabase.from('notifications').delete().in('id', ids)
+    }
   }
 
-  function generateFromData(clients, tasks, teamMembers) {
-    // Charger l'état actuel depuis localStorage
-    const current = loadFromStorage()
+  async function generateFromData(clients, tasks, teamMembers) {
+    // Load current notifications from Supabase
+    const { data: current } = await supabase
+      .from('notifications')
+      .select('type, target_id')
+    const existing = current || []
 
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const toInsert = []
     const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const todayStr = today.toISOString().slice(0, 10)
 
     function addIfNew(notif) {
-      const exists = current.find(n =>
-        n.type === notif.type && n.targetId === notif.targetId
+      const exists = existing.find(n =>
+        n.type === notif.type && n.target_id === notif.target_id
       )
       if (exists) return
-      current.unshift({
-        id: 'n' + Date.now() + Math.random().toString(36).slice(2, 5),
+      // Also check toInsert to avoid duplicates within the same batch
+      const inBatch = toInsert.find(n =>
+        n.type === notif.type && n.target_id === notif.target_id
+      )
+      if (inBatch) return
+      toInsert.push({
+        user_id: user.id,
+        type: notif.type,
+        icon: notif.icon || '',
+        title: notif.title || '',
+        body: notif.body || '',
+        target_id: notif.target_id || null,
+        route: notif.route || null,
         read: false,
-        createdAt: new Date().toISOString(),
-        ...notif,
       })
     }
 
@@ -60,10 +77,10 @@ export const useNotificationStore = defineStore('notifications', () => {
       if (typeof client.health === 'number' && client.health < 4) {
         addIfNew({
           type: 'churn_risk',
-          icon: '🔴',
-          title: `Risque churn — ${client.name}`,
-          body: `Health score ${client.health}/10. Intervention urgente recommandée.`,
-          targetId: client.id,
+          icon: '\u{1F534}',
+          title: `Risque churn \u2014 ${client.name}`,
+          body: `Health score ${client.health}/10. Intervention urgente recommand\u00E9e.`,
+          target_id: client.id,
           route: '/app/portfolio',
         })
       }
@@ -74,10 +91,10 @@ export const useNotificationStore = defineStore('notifications', () => {
           if (daysLeft >= 0 && daysLeft <= 30) {
             addIfNew({
               type: 'renewal',
-              icon: '📅',
-              title: `Renouvellement dans ${daysLeft}j — ${client.name}`,
+              icon: '\u{1F4C5}',
+              title: `Renouvellement dans ${daysLeft}j \u2014 ${client.name}`,
               body: `Date de renouvellement : ${client.renewalDate}`,
-              targetId: client.id,
+              target_id: client.id,
               route: '/app/portfolio',
             })
           }
@@ -86,52 +103,60 @@ export const useNotificationStore = defineStore('notifications', () => {
       if (typeof client.nps === 'number' && client.nps < 20) {
         addIfNew({
           type: 'nps_drop',
-          icon: '📉',
-          title: `NPS bas — ${client.name}`,
+          icon: '\u{1F4C9}',
+          title: `NPS bas \u2014 ${client.name}`,
           body: `Score NPS : ${client.nps}. En dessous du seuil critique.`,
-          targetId: client.id,
+          target_id: client.id,
           route: '/app/satisfaction',
         })
       }
     }
 
     for (const task of (tasks || [])) {
-      if (task.status !== 'done' && task.dueDate && task.dueDate < todayStr) {
+      if (task.dueDate && task.status !== 'done') {
         const daysLate = Math.round((today.getTime() - new Date(task.dueDate).getTime()) / 86400000)
-        addIfNew({
-          type: 'task_overdue',
-          icon: '⏰',
-          title: `Tâche en retard — ${task.title}`,
-          body: `En retard de ${daysLate} jour${daysLate > 1 ? 's' : ''}. Statut : ${task.status}.`,
-          targetId: task.id,
-          route: '/app/tasks/kanban',
-        })
+        if (daysLate > 0) {
+          addIfNew({
+            type: 'task_overdue',
+            icon: '\u23F0',
+            title: `T\u00E2che en retard \u2014 ${task.title}`,
+            body: `En retard de ${daysLate} jour${daysLate > 1 ? 's' : ''}. Statut : ${task.status}`,
+            target_id: task.id,
+            route: '/app/tasks/kanban',
+          })
+        }
       }
     }
 
     for (const member of (teamMembers || [])) {
       if (member.wellbeingScore < 55 || member.workload > 85) {
         const reasons = []
-        if (member.wellbeingScore < 55) reasons.push(`bien-être ${member.wellbeingScore}/100`)
+        if (member.wellbeingScore < 55) reasons.push(`bien-\u00EAtre ${member.wellbeingScore}/100`)
         if (member.workload > 85) reasons.push(`charge ${member.workload}%`)
         addIfNew({
           type: 'burnout',
-          icon: '⚠️',
-          title: `Alerte burnout — ${member.name}`,
-          body: `${reasons.join(', ')}. Vérification recommandée.`,
-          targetId: member.id,
+          icon: '\u26A0\uFE0F',
+          title: `Alerte burnout \u2014 ${member.name}`,
+          body: `${reasons.join(', ')}. V\u00E9rification recommand\u00E9e.`,
+          target_id: member.id,
           route: '/app/workload',
         })
       }
     }
 
-    // Sauvegarder et mettre à jour le state réactif
-    saveToStorage(current)
-    notifications.value = current
+    // Batch insert new notifications
+    if (toInsert.length > 0) {
+      const { error } = await supabase.from('notifications').insert(toInsert)
+      if (!error) {
+        await loadNotifications()
+      } else {
+        console.error('Failed to insert notifications:', error)
+      }
+    }
   }
 
   return {
     notifications, unreadCount,
-    markRead, markAllRead, clearAll, generateFromData,
+    markRead, markAllRead, clearAll, generateFromData, loadNotifications,
   }
 }, { persist: false })
