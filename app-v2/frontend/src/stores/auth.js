@@ -7,10 +7,12 @@ async function loadAllStores() {
     const { useClientStore } = await import('@/stores/clients')
     const { useTeamStore } = await import('@/stores/team')
     const { useTaskStore } = await import('@/stores/tasks')
+    const { useKpiStore } = await import('@/stores/kpis')
     const clientStore = useClientStore()
     const teamStore = useTeamStore()
     const taskStore = useTaskStore()
-    await Promise.all([clientStore.loadClients(), teamStore.loadMembers(), taskStore.loadTasks()])
+    const kpiStore = useKpiStore()
+    await Promise.all([clientStore.loadClients(), teamStore.loadMembers(), taskStore.loadTasks(), kpiStore.loadCopils()])
   } catch(e) { console.error('loadAllStores error:', e) }
 }
 
