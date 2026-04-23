@@ -432,7 +432,7 @@ async function parseFile(file) {
 
 // ─── DeepSeek : analyse sémantique universelle, toutes langues ─────────────────
 async function analyzeWithDeepSeek(parsed, fileName, forcedModule = null) {
-  const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY
+  // Clé API gérée côté Worker (Phase 3)
 
   let fileContext = `FILE: "${fileName}"\n`
 
@@ -521,9 +521,9 @@ Return EXACTLY this JSON:
   "copilData": <full copil document if module=copil, otherwise null>
 }`
 
-  const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+  const res = await fetch('/api/import', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: 'deepseek-chat',
       messages: [
