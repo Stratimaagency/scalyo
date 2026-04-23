@@ -89,12 +89,6 @@ async function sendMessage(text) {
   scrollBottom()
 
   try {
-    const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
-    if (!apiKey || apiKey === 'REMPLACER_PAR_CLE_ANTHROPIC') {
-      await new Promise(r => setTimeout(r, 1200))
-      const responseKey = mockResponseKeys[messages.value.length % mockResponseKeys.length]
-      messages.value.push({ id: Date.now() + 1, role: 'assistant', content: t(responseKey), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
-    } else {
       const res = await fetch('/api/coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -104,11 +98,14 @@ async function sendMessage(text) {
           history: messages.value.slice(-10).map(m => ({ role: m.role, content: m.content })),
         }),
       })
+      if (!res.ok) throw new Error('coach_unavailable')
       const data = await res.json()
       messages.value.push({ id: Date.now() + 1, role: 'assistant', content: data.response || data.error || t('coach_error'), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
-    }
   } catch {
-    messages.value.push({ id: Date.now() + 1, role: 'assistant', content: t('coach_error'), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
+      // Fallback mock si le Worker IA pas encore configuré
+      await new Promise(r => setTimeout(r, 1200))
+      const responseKey = mockResponseKeys[messages.value.length % mockResponseKeys.length]
+      messages.value.push({ id: Date.now() + 1, role: 'assistant', content: t(responseKey), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
   }
 
   thinking.value = false
