@@ -285,6 +285,7 @@ import { useChatStore } from '@/stores/chat'
 import { useTeamStore } from '@/stores/team'
 import { useClientStore } from '@/stores/clients'
 import { useTaskStore } from '@/stores/tasks'
+import { sanitizeHtml } from '@/utils/sanitize'
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const router = useRouter()
@@ -373,13 +374,14 @@ function formatDate(dateStr) {
   ).format(d)
 }
 
-// Render message (markdown simple)
+// Render message (markdown simple) — sanitized to prevent XSS
 function renderMessage(text) {
-  return text
+  const html = text
     .replace(/\n/g, '<br>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/_(.*?)_/g, '<em>$1</em>')
     .replace(/`(.*?)`/g, '<code>$1</code>')
+  return sanitizeHtml(html)
 }
 
 // Send message

@@ -50,6 +50,7 @@ import { ref, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useClientStore } from '@/stores/clients'
 import { useTeamStore } from '@/stores/team'
+import { sanitizeHtml } from '@/utils/sanitize'
 
 const { t } = useI18n({ useScope: 'global' })
 const clientStore = useClientStore()
@@ -69,7 +70,8 @@ const suggestions = ['coach_sug1', 'coach_sug2', 'coach_sug3', 'coach_sug4', 'co
 const mockResponseKeys = ['coach_mock1', 'coach_mock2', 'coach_mock3']
 
 function formatMsg(text) {
-  return text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+  const html = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+  return sanitizeHtml(html)
 }
 
 function buildContext() {
