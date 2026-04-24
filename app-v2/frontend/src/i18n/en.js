@@ -161,7 +161,7 @@ export default {
   imp_module_playbooks: 'Playbooks',
   imp_module_copil: 'KPIs Dashboard',
   imp_file_too_large: 'File too large (max 10 MB)',
-  imp_api_error: 'AI connection error â check your DeepSeek key',
+  imp_api_error: 'AI connection error â please try again later',
   imp_select_module_title: 'Which module do you want to import into?',
   imp_select_module_hint: 'Selecting the target module before analysis ensures accurate and error-free import',
   imp_module_desc_clients: 'Clients, accounts, ARR, health scores',
