@@ -1,33 +1,59 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { supabase } from '@/lib/supabase'
 
 export const useSnapshotStore = defineStore('snapshots', () => {
-  // Tableau de snapshots journaliers — max 31 entrées
-  // Format : { date: 'YYYY-MM-DD', kpis: { arr: number, health_score: number, ... } }
+  // Tableau de snapshots journaliers — max 31 entr\u00E9es
+  // Format : { id, date: 'YYYY-MM-DD', kpis: { arr: number, health_score: number, ... } }
   const snapshots = ref([])
 
-  // Période de comparaison choisie par l'utilisateur : 'day' | 'week' | 'month'
+  // P\u00E9riode de comparaison choisie par l'utilisateur : 'day' | 'week' | 'month'
   const comparePeriod = ref('week')
 
-  // Sauvegarde un snapshot aujourd'hui si pas déjà fait aujourd'hui
-  function saveSnapshot(kpiValues) {
+  async function loadSnapshots() {
+    const { data, error } = await supabase
+      .from('snapshots')
+      .select('*')
+      .order('date', { ascending: false })
+      .limit(31)
+    if (!error && data) snapshots.value = data
+  }
+
+  // Sauvegarde un snapshot aujourd'hui si pas d\u00E9j\u00E0 fait aujourd'hui
+  async function saveSnapshot(kpiValues) {
     const today = new Date().toISOString().slice(0, 10)
     const existing = snapshots.value.find(s => s.date === today)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
     if (existing) {
-      // Mettre à jour le snapshot du jour avec les valeurs les plus récentes
+      // Mettre \u00E0 jour le snapshot du jour
       existing.kpis = { ...kpiValues }
+      await supabase.from('snapshots').update({ kpis: kpiValues }).eq('id', existing.id)
     } else {
-      snapshots.value.push({ date: today, kpis: { ...kpiValues } })
-      // Garder seulement les 31 derniers jours
-      if (snapshots.value.length > 31) {
-        snapshots.value = snapshots.value
-          .sort((a, b) => b.date.localeCompare(a.date))
-          .slice(0, 31)
+      const { data, error } = await supabase
+        .from('snapshots')
+        .insert([{ user_id: user.id, date: today, kpis: kpiValues }])
+        .select()
+      if (!error && data && data.length) {
+        snapshots.value.unshift(data[0])
+        // Garder seulement les 31 derniers jours
+        if (snapshots.value.length > 31) {
+          const toRemove = snapshots.value
+            .sort((a, b) => b.date.localeCompare(a.date))
+            .slice(31)
+          snapshots.value = snapshots.value.slice(0, 31)
+          // Supprimer les anciens de la DB
+          for (const old of toRemove) {
+            await supabase.from('snapshots').delete().eq('id', old.id)
+          }
+        }
       }
     }
   }
 
-  // Récupère le snapshot le plus proche de N jours en arrière
+  // R\u00E9cup\u00E8re le snapshot le plus proche de N jours en arri\u00E8re
   function getSnapshot(period) {
     if (!snapshots.value.length) return null
     const today = new Date()
@@ -40,14 +66,13 @@ export const useSnapshotStore = defineStore('snapshots', () => {
     targetDate.setDate(targetDate.getDate() - daysBack)
     const targetStr = targetDate.toISOString().slice(0, 10)
 
-    // Chercher le snapshot le plus proche de la date cible (avant ou égal)
+    // Chercher le snapshot le plus proche de la date cible (avant ou \u00E9gal)
     const sorted = [...snapshots.value].sort((a, b) => b.date.localeCompare(a.date))
     const found = sorted.find(s => s.date <= targetStr)
     return found?.kpis || null
   }
 
   // Calcule le changement entre la valeur actuelle et le snapshot
-  // Retourne { value: string, type: 'up'|'down'|'down-good'|'neutral', hasData: boolean }
   function calcChange(kpiId, currentValue, period, lowerIsBetter = false) {
     const past = getSnapshot(period)
     if (!past || past[kpiId] === undefined || past[kpiId] === currentValue) {
@@ -69,5 +94,5 @@ export const useSnapshotStore = defineStore('snapshots', () => {
     }
   }
 
-  return { snapshots, comparePeriod, saveSnapshot, getSnapshot, calcChange }
-}, { persist: true })
+  return { snapshots, comparePeriod, saveSnapshot, getSnapshot, calcChange, loadSnapshots }
+}, { persist: false })
