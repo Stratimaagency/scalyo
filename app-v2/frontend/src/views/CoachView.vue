@@ -2,7 +2,7 @@
   <div class="coach-view">
     <div class="coach-header">
       <div><h1>🤖 {{ t('coach_title') }}</h1></div>
-      <span class="coach-counter">{{ messages.length }}/50 {{ t('coach_counter') }}</span>
+      <span class="coach-counter">{{ messages.length }} {{ t('coach_counter') }}</span>
     </div>
 
     <div class="coach-chat">
@@ -51,6 +51,7 @@ import { useI18n } from 'vue-i18n'
 import { useClientStore } from '@/stores/clients'
 import { useTeamStore } from '@/stores/team'
 import { sanitizeHtml } from '@/utils/sanitize'
+import { supabase } from '@/lib/supabase'
 
 const { t } = useI18n({ useScope: 'global' })
 const clientStore = useClientStore()
@@ -67,7 +68,6 @@ const chatRef = ref(null)
 watch(messages, val => save('scalyo_coach_messages', val), { deep: true })
 
 const suggestions = ['coach_sug1', 'coach_sug2', 'coach_sug3', 'coach_sug4', 'coach_sug5']
-const mockResponseKeys = ['coach_mock1', 'coach_mock2', 'coach_mock3']
 
 function formatMsg(text) {
   const html = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -89,9 +89,14 @@ async function sendMessage(text) {
   scrollBottom()
 
   try {
+      const { data: { session } } = await supabase.auth.getSession()
       const res = await fetch('/api/coach', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + (session?.access_token || ''),
+          'Accept-Language': locale?.value || 'fr',
+        },
         body: JSON.stringify({
           message: text.trim(),
           context: buildContext(),
@@ -102,9 +107,8 @@ async function sendMessage(text) {
       const data = await res.json()
       messages.value.push({ id: Date.now() + 1, role: 'assistant', content: data.response || data.error || t('coach_error'), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
   } catch {
-      // Fallback mock si le Worker IA pas encore configuré
-      await new Promise(r => setTimeout(r, 1200))
-      const responseKey = mockResponseKeys[messages.value.length % mockResponseKeys.length]
+      // mock delay removed
+      
       messages.value.push({ id: Date.now() + 1, role: 'assistant', content: t(responseKey), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
   }
 

@@ -286,6 +286,7 @@ import { useTeamStore } from '@/stores/team'
 import { useClientStore } from '@/stores/clients'
 import { useTaskStore } from '@/stores/tasks'
 import { sanitizeHtml } from '@/utils/sanitize'
+import { supabase } from '@/lib/supabase'
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const router = useRouter()
@@ -400,45 +401,43 @@ async function send() {
 
 // Nova IA
 async function sendNova(text) {
-  novaThinking.value = true
-  await nextTick()
-  scrollBottom()
+    if (!text?.trim()) return
+    const context = buildNovaContext()
+    store.sendMessage('nova', text.trim(), 'User', 'user')
+    store.setTyping('nova', true)
 
-  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
-  const context = buildContext()
-
-  if (apiKey && apiKey !== 'REMPLACER_PAR_CLE_ANTHROPIC') {
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch('/api/ai', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
+          'Authorization': 'Bearer ' + (session?.access_token || ''),
+          'Accept-Language': locale.value || 'fr',
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 600,
-          system: buildNovaSystemPrompt(context),
-          messages: buildNovaHistory(text),
+          module: 'nova',
+          message: text.trim(),
+          context: context,
+          history: store.getMessages('nova')?.slice(-10)?.map(m => ({
+            role: m.sender === 'nova' ? 'assistant' : 'user',
+            content: m.text
+          })) || [],
+          lang: locale.value || 'fr',
         }),
       })
-      const data = await res.json()
-      const reply = data.content?.[0]?.text || mockNovaResponse(text, context)
-      store.sendMessage('nova', reply, 'Nova', 'nova')
+
+      if (res.ok) {
+        const data = await res.json()
+        store.sendMessage('nova', data.response, 'Nova', 'nova')
+      } else {
+        store.sendMessage('nova', t('chat_error') || 'Service IA indisponible', 'Nova', 'nova')
+      }
     } catch {
-      store.sendMessage('nova', mockNovaResponse(text, context), 'Nova', 'nova')
+      store.sendMessage('nova', t('chat_error') || 'Service IA indisponible', 'Nova', 'nova')
     }
-  } else {
-    await new Promise(r => setTimeout(r, 1200))
-    store.sendMessage('nova', mockNovaResponse(text, context), 'Nova', 'nova')
+    store.setTyping('nova', false)
   }
-
-  novaThinking.value = false
-  await nextTick()
-  scrollBottom()
-}
-
 function buildContext() {
   return {
     totalClients: clientsStore.clients?.length || 0,
