@@ -1,6 +1,7 @@
 const ALLOWED_ORIGINS = [
   'https://scalyo.app',
   'https://www.scalyo.app',
+  'https://app.scalyo.app',
 ]
 
 export async function onRequest(context) {
