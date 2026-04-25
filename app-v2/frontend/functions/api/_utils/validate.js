@@ -13,17 +13,26 @@ export function validateAiRequest(body) {
   if (!body.module || !VALID_MODULES.includes(body.module)) {
     return { valid: false, reason: 'module_not_found' }
   }
-  // Message size limit
+
+  // Sanitize message length
   if (body.message && typeof body.message === 'string' && body.message.length > MAX_MESSAGE_LENGTH) {
-    return { valid: false, reason: 'input_too_long' }
+    body.message = body.message.slice(0, MAX_MESSAGE_LENGTH)
   }
-  // History size limit
-  if (body.history && Array.isArray(body.history) && body.history.length > MAX_HISTORY_LENGTH) {
+
+  // Sanitize history length
+  if (Array.isArray(body.history) && body.history.length > MAX_HISTORY_LENGTH) {
     body.history = body.history.slice(-MAX_HISTORY_LENGTH)
   }
-  // Sanitize: strip HTML tags from message
-  if (body.message && typeof body.message === 'string') {
-    body.message = body.message.replace(/<[^>]*>/g, '')
+
+  // Sanitize each history message
+  if (Array.isArray(body.history)) {
+    body.history = body.history
+      .filter(m => m && typeof m === 'object' && typeof m.content === 'string')
+      .map(m => ({
+        role: m.role === 'assistant' ? 'assistant' : 'user',
+        content: m.content.slice(0, MAX_MESSAGE_LENGTH),
+      }))
   }
+
   return { valid: true }
 }

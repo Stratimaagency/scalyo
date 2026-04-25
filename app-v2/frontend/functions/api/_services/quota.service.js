@@ -1,41 +1,39 @@
-// === SCALYO — Quota Service (Supabase ai_usage) ===
 import { getConfig } from '../_config/index.js'
 import { getQuota } from '../_config/plans.js'
 
-// Count today's usage for a user+module from ai_usage table
-async function countTodayUsage(env, userId, moduleName, userJwt) {
+// Check if user has remaining quota for the module today
+export async function checkQuota(env, userId, userJwt, planId, moduleName) {
   const config = getConfig(env)
-  const today = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
-  const url = config.supabaseUrl +
-    '/rest/v1/ai_usage?select=id&user_id=eq.' + userId +
-    '&module=eq.' + moduleName +
-    '&created_at=gte.' + today + 'T00:00:00Z' +
-    '&created_at=lt.' + today + 'T23:59:59Z'
+  const maxQuota = getQuota(planId, moduleName)
+  if (maxQuota <= 0) return { allowed: false, used: 0, limit: 0 }
+
   try {
-    const res = await fetch(url, {
-      headers: {
-        'apikey': config.supabaseAnonKey,
-        'Authorization': 'Bearer ' + userJwt,
-        'Accept': 'application/json',
-        'Prefer': 'count=exact',
-      },
-    })
-    const countHeader = res.headers.get('content-range')
-    if (countHeader) {
-      const match = countHeader.match(/\/(\d+)/)
-      return match ? parseInt(match[1], 10) : 0
+    const today = new Date().toISOString().slice(0, 10)
+    const url = config.supabaseUrl + '/rest/v1/ai_usage'
+      + '?user_id=eq.' + userId
+      + '&module=eq.' + moduleName
+      + '&created_at=gte.' + today + 'T00:00:00Z'
+      + '&created_at=lt.' + today + 'T23:59:59Z'
+      + '&select=id'
+    const headers = {
+      'apikey': config.supabaseAnonKey,
+      'Authorization': 'Bearer ' + userJwt,
     }
+    const res = await fetch(url, { headers })
+    if (!res.ok) return { allowed: true, used: 0, limit: maxQuota } // fail open on error
     const rows = await res.json()
-    return Array.isArray(rows) ? rows.length : 0
-  } catch { return 0 }
+    const used = rows.length
+    return { allowed: used < maxQuota, used, limit: maxQuota }
+  } catch {
+    return { allowed: true, used: 0, limit: maxQuota } // fail open
+  }
 }
 
 // Log a usage entry after successful AI call
-export async function logUsage(env, userId, moduleName, userJwt) {
+export async function logUsage(env, userId, userJwt, moduleName) {
   const config = getConfig(env)
-  const url = config.supabaseUrl + '/rest/v1/ai_usage'
   try {
-    await fetch(url, {
+    await fetch(config.supabaseUrl + '/rest/v1/ai_usage', {
       method: 'POST',
       headers: {
         'apikey': config.supabaseAnonKey,
@@ -46,12 +44,4 @@ export async function logUsage(env, userId, moduleName, userJwt) {
       body: JSON.stringify({ user_id: userId, module: moduleName }),
     })
   } catch { /* non-blocking */ }
-}
-
-// Check if user has quota remaining
-export async function checkQuota(env, userId, moduleName, planId, userJwt) {
-  const maxQuota = getQuota(planId, moduleName)
-  if (maxQuota <= 0) return { allowed: false, used: 0, max: 0 }
-  const used = await countTodayUsage(env, userId, moduleName, userJwt)
-  return { allowed: used < maxQuota, used, max: maxQuota }
 }
