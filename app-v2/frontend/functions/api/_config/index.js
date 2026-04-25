@@ -7,8 +7,8 @@ export function getConfig(env) {
     anthropicApiKey: env.ANTHROPIC_API_KEY || '',
     anthropicVersion: env.ANTHROPIC_VERSION || '2023-06-01',
     deepseekApiKey: env.DEEPSEEK_API_KEY || '',
-    supabaseUrl: env.SUPABASE_URL || '',
-    supabaseServiceKey: env.SUPABASE_SERVICE_KEY || '',
+    supabaseUrl: env.SUPABASE_URL || 'https://hcqninmpmzpqjtedyjyj.supabase.co',
+    supabaseAnonKey: env.SUPABASE_ANON_KEY || 'sb_publishable_ggGyERhPutrfMdrQ7Ig0Ow_2R_vrRJA',
   }
 }
 

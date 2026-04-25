@@ -6,14 +6,13 @@ import { extractAuth } from '../_services/auth.service.js'
 export async function handle(env, body, request) {
   const { token } = extractAuth(request)
   const userId = getUserIdFromJwt(token)
-  const ctx = await buildRichContext(env, userId)
+  const ctx = await buildRichContext(env, userId, token)
   const systemPrompt = getPlaybookPrompt(body.lang, ctx.summary)
 
   const messages = [
     ...(body.history || []).map(m => ({ role: m.role, content: m.content })),
-    { role: 'user', content: body.message || 'Suggere des playbooks adaptes a mon portfolio.' },
+    { role: 'user', content: body.message || 'Suggere des playbooks.' },
   ]
-
   const response = await callAI(env, { systemPrompt, messages })
   return { response }
 }

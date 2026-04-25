@@ -6,13 +6,13 @@ import { extractAuth } from '../_services/auth.service.js'
 export async function handle(env, body, request) {
   const { token } = extractAuth(request)
   const userId = getUserIdFromJwt(token)
-  const ctx = await buildRichContext(env, userId)
+  const ctx = await buildRichContext(env, userId, token)
   const systemPrompt = getDashboardPrompt(body.lang, ctx.summary)
 
   const messages = [
-    { role: 'user', content: body.message || 'Analyse mon portfolio et donne-moi les insights cles.' },
+    ...(body.history || []).map(m => ({ role: m.role, content: m.content })),
+    { role: 'user', content: body.message || 'Analyse mon portfolio.' },
   ]
-
-  const response = await callAI(env, { systemPrompt, messages, maxTokens: 2000 })
+  const response = await callAI(env, { systemPrompt, messages })
   return { response }
 }

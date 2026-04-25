@@ -6,14 +6,13 @@ import { extractAuth } from '../_services/auth.service.js'
 export async function handle(env, body, request) {
   const { token } = extractAuth(request)
   const userId = getUserIdFromJwt(token)
-  const ctx = await buildRichContext(env, userId)
-  const alertData = body.alerts ? JSON.stringify(body.alerts) : body.message || ''
+  const ctx = await buildRichContext(env, userId, token)
   const systemPrompt = getNotifPrompt(body.lang, ctx.summary)
 
   const messages = [
-    { role: 'user', content: 'Enrichis ces alertes : ' + alertData },
+    ...(body.history || []).map(m => ({ role: m.role, content: m.content })),
+    { role: 'user', content: body.message || 'Enrichis mes alertes.' },
   ]
-
   const response = await callAI(env, { systemPrompt, messages })
   return { response }
 }
