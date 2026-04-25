@@ -1,20 +1,19 @@
-import { getConfig } from '../_config/index.js'
+import { getConfig, getApiKey } from '../_config/index.js'
 import { callAnthropic } from '../_providers/anthropic.js'
+import { callDeepSeek } from '../_providers/deepseek.js'
 
-const providers = {
-  anthropic: callAnthropic,
-}
+const providers = { anthropic: callAnthropic, deepseek: callDeepSeek }
 
 export async function callAI(env, { systemPrompt, messages, maxTokens }) {
   const config = getConfig(env)
   const providerFn = providers[config.aiProvider]
+  if (!providerFn) throw new Error('Unknown provider: ' + config.aiProvider)
 
-  if (!providerFn) {
-    throw new Error('Unknown AI provider: ' + config.aiProvider)
-  }
+  const apiKey = getApiKey(config)
+  if (!apiKey) throw new Error('NO_API_KEY')
 
   return providerFn({
-    apiKey: config.anthropicApiKey,
+    apiKey,
     model: config.aiModel,
     version: config.anthropicVersion,
     maxTokens: maxTokens || config.maxTokens,

@@ -1,4 +1,4 @@
-import { getConfig } from './_config/index.js'
+import { getConfig, getApiKey } from './_config/index.js'
 import { validateAiRequest } from './_utils/validate.js'
 import { jsonOk, jsonError } from './_utils/response.js'
 import { extractLang } from './_services/auth.service.js'
@@ -10,7 +10,7 @@ export async function onRequestPost(context) {
 
   try {
     const config = getConfig(env)
-    if (!config.anthropicApiKey) {
+    if (!getApiKey(config)) {
       return jsonError('ai_not_configured', 503, lang)
     }
 
@@ -27,10 +27,11 @@ export async function onRequestPost(context) {
       return jsonError('module_not_found', 400, lang)
     }
 
-    const result = await handler(env, body)
+    const result = await handler(env, body, request)
     return jsonOk(result)
   } catch (e) {
     console.error('AI route error:', e)
+    if (e.message === 'NO_API_KEY') return jsonError('ai_not_configured', 503, lang)
     return jsonError('ai_unavailable', 502, lang)
   }
 }
