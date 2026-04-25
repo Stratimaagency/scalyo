@@ -1,3 +1,5 @@
+// === SCALYO — Auth Service (HMAC-SHA256 verified) ===
+
 export function extractLang(request) {
   const accept = request.headers.get('Accept-Language') || 'fr'
   if (accept.startsWith('ko')) return 'ko'
@@ -11,45 +13,71 @@ export function extractAuth(request) {
   return { token, hasToken: !!token }
 }
 
-function base64urlDecode(str) {
+function base64UrlDecode(str) {
   const padded = str.replace(/-/g, '+').replace(/_/g, '/')
-  const pad = padded.length % 4
-  const base64 = pad ? padded + '='.repeat(4 - pad) : padded
-  const binary = atob(base64)
-  const bytes = new Uint8Array(binary.length)
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
-  return bytes
+  const binary = atob(padded)
+  return Uint8Array.from(binary, c => c.charCodeAt(0))
+}
+
+async function verifyHmacSignature(token, secret) {
+  const parts = token.split('.')
+  if (parts.length !== 3) return false
+  const encoder = new TextEncoder()
+  const key = await crypto.subtle.importKey(
+    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']
+  )
+  const data = encoder.encode(parts[0] + '.' + parts[1])
+  const signature = base64UrlDecode(parts[2])
+  return crypto.subtle.verify('HMAC', key, signature, data)
 }
 
 export async function verifyJwt(token, jwtSecret) {
   if (!token) return { valid: false, reason: 'unauthorized' }
-
   try {
     const parts = token.split('.')
     if (parts.length !== 3) return { valid: false, reason: 'unauthorized' }
 
-    const payload = JSON.parse(new TextDecoder().decode(base64urlDecode(parts[1])))
+    // Decode payload first
+    const payload = JSON.parse(new TextDecoder().decode(base64UrlDecode(parts[1])))
     if (!payload.sub) return { valid: false, reason: 'unauthorized' }
 
+    // Check expiration
     if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
       return { valid: false, reason: 'unauthorized' }
     }
 
-    // Verify HMAC-SHA256 signature when secret is configured
+    // Verify HMAC signature if secret is available
     if (jwtSecret) {
-      const encoder = new TextEncoder()
-      const key = await crypto.subtle.importKey(
-        'raw', encoder.encode(jwtSecret),
-        { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']
-      )
-      const data = encoder.encode(parts[0] + '.' + parts[1])
-      const sig = base64urlDecode(parts[2])
-      const valid = await crypto.subtle.verify('HMAC', key, sig, data)
+      const valid = await verifyHmacSignature(token, jwtSecret)
       if (!valid) return { valid: false, reason: 'unauthorized' }
     }
 
     return { valid: true, userId: payload.sub, role: payload.role, email: payload.email }
   } catch {
     return { valid: false, reason: 'unauthorized' }
+  }
+}
+
+// Resolve plan from profiles table via Supabase REST
+export async function getUserPlan(userId, supabaseUrl, supabaseAnonKey, userJwt) {
+  try {
+    const url = supabaseUrl + '/rest/v1/profiles?select=stripe_subscription_id,plan&id=eq.' + userId
+    const res = await fetch(url, {
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': 'Bearer ' + userJwt,
+        'Accept': 'application/json',
+      },
+    })
+    if (!res.ok) return 'starter'
+    const rows = await res.json()
+    if (!rows || rows.length === 0) return 'starter'
+    const profile = rows[0]
+    const sub = profile.stripe_subscription_id
+    if (!sub || sub === '' || sub === 'none') return 'starter'
+    if (sub.startsWith('stripe_') || sub.startsWith('plan_')) return sub.split('_').pop()
+    return profile.plan || 'starter'
+  } catch {
+    return 'starter'
   }
 }

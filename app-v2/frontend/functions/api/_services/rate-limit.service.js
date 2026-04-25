@@ -1,32 +1,30 @@
-// In-memory rate limiter — resets when Worker isolate recycles
-// For production scale, consider Cloudflare Durable Objects or KV
-const requests = new Map()
+// === SCALYO — Rate Limiter (in-memory, per Worker isolate) ===
+// 10 requests per minute per user. Resets automatically.
+
+const limits = new Map()
 const MAX_REQUESTS = 10
 const WINDOW_MS = 60 * 1000 // 1 minute
 
 export function checkRateLimit(userId) {
   const now = Date.now()
+  let entry = limits.get(userId)
 
-  // Lazy cleanup when map grows large
-  if (requests.size > 500) {
-    for (const [key, timestamps] of requests.entries()) {
-      if (timestamps.every(t => now - t >= WINDOW_MS)) requests.delete(key)
+  // Cleanup: remove stale entries periodically
+  if (limits.size > 10000) {
+    for (const [key, val] of limits) {
+      if (now - val.windowStart > WINDOW_MS * 2) limits.delete(key)
     }
   }
 
-  if (!requests.has(userId)) {
-    requests.set(userId, [now])
+  if (!entry || now - entry.windowStart > WINDOW_MS) {
+    entry = { count: 1, windowStart: now }
+    limits.set(userId, entry)
     return { allowed: true, remaining: MAX_REQUESTS - 1 }
   }
 
-  const timestamps = requests.get(userId).filter(t => now - t < WINDOW_MS)
-
-  if (timestamps.length >= MAX_REQUESTS) {
-    requests.set(userId, timestamps)
+  entry.count++
+  if (entry.count > MAX_REQUESTS) {
     return { allowed: false, remaining: 0 }
   }
-
-  timestamps.push(now)
-  requests.set(userId, timestamps)
-  return { allowed: true, remaining: MAX_REQUESTS - timestamps.length }
+  return { allowed: true, remaining: MAX_REQUESTS - entry.count }
 }

@@ -30,19 +30,14 @@ const messages = {
     ko: '\uc624\ub298\uc758 AI \uba54\uc2dc\uc9c0 \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4.',
   },
   rate_limited: {
-    fr: 'Trop de requ\u00eates. Veuillez patienter une minute.',
-    en: 'Too many requests. Please wait a minute.',
-    ko: '\uc694\uccad\uc774 \ub108\ubb34 \ub9ce\uc2b5\ub2c8\ub2e4. 1\ubd84 \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574 \uc8fc\uc138\uc694.',
+    fr: 'Trop de requ\u00eates. Veuillez patienter quelques secondes.',
+    en: 'Too many requests. Please wait a few seconds.',
+    ko: '\uc694\uccad\uc774 \ub108\ubb34 \ub9ce\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \uae30\ub2e4\ub824 \uc8fc\uc138\uc694.',
   },
   input_too_long: {
     fr: 'Message trop long (max 4000 caract\u00e8res).',
     en: 'Message too long (max 4000 characters).',
     ko: '\uba54\uc2dc\uc9c0\uac00 \ub108\ubb34 \uae41\ub2c8\ub2e4 (\ucd5c\ub300 4000\uc790).',
-  },
-  history_too_long: {
-    fr: "Historique trop long (max 10 messages).",
-    en: 'History too long (max 10 messages).',
-    ko: '\ub300\ud654 \uae30\ub85d\uc774 \ub108\ubb34 \uae41\ub2c8\ub2e4 (\ucd5c\ub300 10\uac1c).',
   },
   server_error: {
     fr: 'Erreur serveur.',
