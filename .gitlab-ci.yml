@@ -2,7 +2,7 @@ stages:
   - build
   - deploy
 
-# ─── PRODUCTION ────────────────────────────────────────────────────
+# --- PRODUCTION ---
 build:
   stage: build
   image: node:20-alpine
@@ -31,35 +31,25 @@ deploy_production:
   script:
     - cd app-v2/frontend
     - npm install -g wrangler
+    # --- Push env vars to Cloudflare Pages via API ---
+    - |
+      if [ -n "$DEEPSEEK_API_KEY" ]; then
+        curl -s -X PATCH \
+          "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/scalyo-app" \
+          -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d "{
+            \"deployment_configs\": {
+              \"production\": {
+                \"env_vars\": {
+                  \"AI_PROVIDER\": { \"value\": \"deepseek\" },
+                  \"AI_MODEL\": { \"value\": \"deepseek-chat\" },
+                  \"DEEPSEEK_API_KEY\": { \"value\": \"$DEEPSEEK_API_KEY\", \"type\": \"secret_text\" }
+                }
+              }
+            }
+          }"
+        echo "Cloudflare env vars configured"
+      fi
+    # --- Deploy ---
     - wrangler pages deploy dist --project-name=scalyo-app --branch=main
-
-# ─── PREPROD ───────────────────────────────────────────────────────
-build_preprod:
-  stage: build
-  image: node:20-alpine
-  only:
-    - preprod-v2
-  cache:
-    key: "app-${CI_COMMIT_REF_SLUG}"
-    paths:
-      - app-v2/frontend/node_modules/
-  script:
-    - cd app-v2/frontend
-    - npm install
-    - npm run build
-  artifacts:
-    paths:
-      - app-v2/frontend/dist/
-    expire_in: 1 hour
-
-deploy_preprod:
-  stage: deploy
-  image: node:20-alpine
-  only:
-    - preprod-v2
-  needs:
-    - build_preprod
-  script:
-    - cd app-v2/frontend
-    - npm install -g wrangler
-    - wrangler pages deploy dist --project-name=scalyo-app --branch=preprod
