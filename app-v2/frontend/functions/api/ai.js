@@ -1,7 +1,10 @@
 import { getConfig, getApiKey } from './_config/index.js'
+import { isModuleAllowed } from './_config/plans.js'
 import { validateAiRequest } from './_utils/validate.js'
 import { jsonOk, jsonError } from './_utils/response.js'
-import { extractLang, extractAuth, verifyJwt } from './_services/auth.service.js'
+import { extractLang, extractAuth, verifyJwt, getUserPlan } from './_services/auth.service.js'
+import { checkRateLimit, maybeCleanup } from './_services/rate-limit.service.js'
+import { checkQuota, logUsage } from './_services/quota.service.js'
 import { getModule } from './_modules/index.js'
 
 export async function onRequestPost(context) {
@@ -9,28 +12,46 @@ export async function onRequestPost(context) {
   const lang = extractLang(request)
 
   try {
-    // 1. Auth check
+    // 1. Auth — JWT signature verification
     const { token } = extractAuth(request)
-    const auth = verifyJwt(token)
+    const config = getConfig(env)
+    const auth = await verifyJwt(token, config.supabaseJwtSecret)
     if (!auth.valid) return jsonError('unauthorized', 401, lang)
 
-    // 2. API key check
-    const config = getConfig(env)
+    // 2. Rate limiting — 10 req/min per user
+    maybeCleanup()
+    const rateCheck = checkRateLimit(auth.userId)
+    if (!rateCheck.allowed) return jsonError('rate_limited', 429, lang)
+
+    // 3. API key check
     if (!getApiKey(config)) return jsonError('ai_not_configured', 503, lang)
 
-    // 3. Parse + validate
+    // 4. Parse + validate + sanitize inputs
     const body = await request.json()
     body.lang = body.lang || lang
 
     const validation = validateAiRequest(body)
     if (!validation.valid) return jsonError(validation.reason, 400, lang)
 
-    // 4. Module check
+    // 5. Plan check — module access
+    const planId = await getUserPlan(config, auth.userId, token)
+    if (!isModuleAllowed(planId, body.module)) {
+      return jsonError('module_not_allowed', 403, lang)
+    }
+
+    // 6. Quota check — daily limit per module
+    const quotaCheck = await checkQuota(config, auth.userId, token, planId, body.module)
+    if (!quotaCheck.allowed) return jsonError('quota_exceeded', 429, lang)
+
+    // 7. Execute module
     const handler = getModule(body.module)
     if (!handler) return jsonError('module_not_found', 400, lang)
 
-    // 5. Execute
     const result = await handler(env, body, request)
+
+    // 8. Log usage (non-blocking)
+    logUsage(config, auth.userId, token, body.module, result.tokens_used || 0)
+
     return jsonOk(result)
   } catch (e) {
     console.error('AI error:', e)

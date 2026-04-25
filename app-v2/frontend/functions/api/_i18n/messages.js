@@ -1,43 +1,48 @@
 const messages = {
   ai_not_configured: {
-    fr: "Le service IA n'est pas configur\u00e9.",
+    fr: "Le service IA n'est pas configuré.",
     en: 'AI service is not configured.',
-    ko: 'AI \uc11c\ube44\uc2a4\uac00 \uad6c\uc131\ub418\uc9c0 \uc54a\uc558\uc2b5\ub2c8\ub2e4.',
+    ko: 'AI 서비스가 구성되지 않았습니다.',
   },
   ai_unavailable: {
     fr: 'Le service IA est temporairement indisponible.',
     en: 'AI service is temporarily unavailable.',
-    ko: 'AI \uc11c\ube44\uc2a4\ub97c \uc77c\uc2dc\uc801\uc73c\ub85c \uc0ac\uc6a9\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.',
+    ko: 'AI 서비스를 일시적으로 사용할 수 없습니다.',
   },
   invalid_request: {
-    fr: 'Requ\u00eate invalide.',
+    fr: 'Requête invalide.',
     en: 'Invalid request.',
-    ko: '\uc798\ubabb\ub41c \uc694\uccad\uc785\ub2c8\ub2e4.',
+    ko: '잘못된 요청입니다.',
   },
   module_not_found: {
     fr: 'Module introuvable.',
     en: 'Module not found.',
-    ko: '\ubaa8\ub4c8\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.',
+    ko: '모듈을 찾을 수 없습니다.',
   },
   module_not_allowed: {
     fr: "Ce module n'est pas disponible dans votre plan.",
     en: 'This module is not available in your plan.',
-    ko: '\uc774 \ubaa8\ub4c8\uc740 \ud604\uc7ac \ud50c\ub79c\uc5d0\uc11c \uc0ac\uc6a9\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.',
+    ko: '이 모듈은 현재 플랜에서 사용할 수 없습니다.',
   },
   quota_exceeded: {
-    fr: "Quota de messages IA d\u00e9pass\u00e9 pour aujourd'hui.",
+    fr: "Quota de messages IA dépassé pour aujourd'hui.",
     en: 'AI message quota exceeded for today.',
-    ko: '\uc624\ub298\uc758 AI \uba54\uc2dc\uc9c0 \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4.',
+    ko: '오늘의 AI 메시지 한도를 초과했습니다.',
+  },
+  rate_limited: {
+    fr: 'Trop de requêtes. Veuillez patienter quelques secondes.',
+    en: 'Too many requests. Please wait a few seconds.',
+    ko: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
   },
   server_error: {
     fr: 'Erreur serveur.',
     en: 'Server error.',
-    ko: '\uc11c\ubc84 \uc624\ub958.',
+    ko: '서버 오류.',
   },
   unauthorized: {
-    fr: 'Non autoris\u00e9.',
+    fr: 'Non autorisé.',
     en: 'Unauthorized.',
-    ko: '\uc778\uc99d\ub418\uc9c0 \uc54a\uc558\uc2b5\ub2c8\ub2e4.',
+    ko: '인증되지 않았습니다.',
   },
 }
 

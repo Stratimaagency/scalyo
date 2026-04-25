@@ -15,6 +15,7 @@ export function getConfig(env) {
     anthropicVersion: env.ANTHROPIC_VERSION || '2023-06-01',
     supabaseUrl: env.SUPABASE_URL || SUPABASE_URL,
     supabaseAnonKey: env.SUPABASE_ANON_KEY || SUPABASE_ANON_KEY,
+    supabaseJwtSecret: env.SUPABASE_JWT_SECRET || '',
   }
 }
 
