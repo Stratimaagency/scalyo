@@ -1,6 +1,3 @@
-// === SCALYO — Auth Service ===
-// JWT verification with HMAC-SHA256 signature check via Web Crypto API
-
 export function extractLang(request) {
   const accept = request.headers.get('Accept-Language') || 'fr'
   if (accept.startsWith('ko')) return 'ko'
@@ -14,15 +11,13 @@ export function extractAuth(request) {
   return { token, hasToken: !!token }
 }
 
-function base64urlToUint8Array(str) {
-  const base64 = str.replace(/-/g, '+').replace(/_/g, '/')
-  const pad = base64.length % 4
-  const padded = pad ? base64 + '='.repeat(4 - pad) : base64
-  const binary = atob(padded)
+function base64urlDecode(str) {
+  const padded = str.replace(/-/g, '+').replace(/_/g, '/')
+  const pad = padded.length % 4
+  const base64 = pad ? padded + '='.repeat(4 - pad) : padded
+  const binary = atob(base64)
   const bytes = new Uint8Array(binary.length)
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i)
-  }
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
   return bytes
 }
 
@@ -33,58 +28,28 @@ export async function verifyJwt(token, jwtSecret) {
     const parts = token.split('.')
     if (parts.length !== 3) return { valid: false, reason: 'unauthorized' }
 
-    // 1. Decode payload first (needed for expiry check)
-    const payload = JSON.parse(
-      new TextDecoder().decode(base64urlToUint8Array(parts[1]))
-    )
-
+    const payload = JSON.parse(new TextDecoder().decode(base64urlDecode(parts[1])))
     if (!payload.sub) return { valid: false, reason: 'unauthorized' }
 
-    // 2. Check expiry
     if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
       return { valid: false, reason: 'unauthorized' }
     }
 
-    // 3. Verify HMAC signature if secret is available
+    // Verify HMAC-SHA256 signature when secret is configured
     if (jwtSecret) {
       const encoder = new TextEncoder()
       const key = await crypto.subtle.importKey(
-        'raw',
-        encoder.encode(jwtSecret),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['verify']
+        'raw', encoder.encode(jwtSecret),
+        { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']
       )
-      const sigBytes = base64urlToUint8Array(parts[2])
-      const dataBytes = encoder.encode(parts[0] + '.' + parts[1])
-      const isValid = await crypto.subtle.verify('HMAC', key, sigBytes, dataBytes)
-      if (!isValid) return { valid: false, reason: 'unauthorized' }
+      const data = encoder.encode(parts[0] + '.' + parts[1])
+      const sig = base64urlDecode(parts[2])
+      const valid = await crypto.subtle.verify('HMAC', key, sig, data)
+      if (!valid) return { valid: false, reason: 'unauthorized' }
     }
 
-    return {
-      valid: true,
-      userId: payload.sub,
-      role: payload.role,
-      email: payload.email,
-    }
+    return { valid: true, userId: payload.sub, role: payload.role, email: payload.email }
   } catch {
     return { valid: false, reason: 'unauthorized' }
-  }
-}
-
-export async function getUserPlan(config, userId, userJwt) {
-  try {
-    const url = `${config.supabaseUrl}/rest/v1/profiles?id=eq.${userId}&select=plan`
-    const res = await fetch(url, {
-      headers: {
-        'apikey': config.supabaseAnonKey,
-        'Authorization': `Bearer ${userJwt}`,
-      },
-    })
-    if (!res.ok) return 'starter'
-    const rows = await res.json()
-    return (rows[0] && rows[0].plan) || 'starter'
-  } catch {
-    return 'starter'
   }
 }

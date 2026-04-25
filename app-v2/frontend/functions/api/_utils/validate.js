@@ -1,6 +1,3 @@
-// === SCALYO — Input Validation ===
-// Validates and sanitizes AI request inputs
-
 const VALID_MODULES = [
   'coach', 'nova', 'import', 'matrice', 'copil',
   'playbook', 'email', 'dashboard', 'notif',
@@ -16,27 +13,18 @@ export function validateAiRequest(body) {
   if (!body.module || !VALID_MODULES.includes(body.module)) {
     return { valid: false, reason: 'module_not_found' }
   }
-
-  // Sanitize message length
-  if (body.message && typeof body.message === 'string') {
-    if (body.message.length > MAX_MESSAGE_LENGTH) {
-      body.message = body.message.slice(0, MAX_MESSAGE_LENGTH)
-    }
+  if (body.message && typeof body.message === 'string' && body.message.length > MAX_MESSAGE_LENGTH) {
+    return { valid: false, reason: 'input_too_long' }
   }
-
-  // Sanitize history length
-  if (Array.isArray(body.history)) {
+  if (body.history && Array.isArray(body.history)) {
     if (body.history.length > MAX_HISTORY_LENGTH) {
-      body.history = body.history.slice(-MAX_HISTORY_LENGTH)
+      return { valid: false, reason: 'history_too_long' }
     }
-    // Truncate each history message too
-    body.history = body.history.map(msg => {
-      if (msg && typeof msg.content === 'string' && msg.content.length > MAX_MESSAGE_LENGTH) {
-        return { ...msg, content: msg.content.slice(0, MAX_MESSAGE_LENGTH) }
+    for (const entry of body.history) {
+      if (entry.content && typeof entry.content === 'string' && entry.content.length > MAX_MESSAGE_LENGTH) {
+        return { valid: false, reason: 'input_too_long' }
       }
-      return msg
-    })
+    }
   }
-
   return { valid: true }
 }

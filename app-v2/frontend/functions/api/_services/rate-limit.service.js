@@ -1,46 +1,32 @@
-// === SCALYO — Rate Limiter ===
-// In-memory sliding window: max 10 requests per minute per user
-// Resets on cold starts (acceptable for Pages Functions)
-
+// In-memory rate limiter — resets when Worker isolate recycles
+// For production scale, consider Cloudflare Durable Objects or KV
+const requests = new Map()
 const MAX_REQUESTS = 10
-const WINDOW_MS = 60 * 1000
-const userTimestamps = new Map()
+const WINDOW_MS = 60 * 1000 // 1 minute
 
 export function checkRateLimit(userId) {
   const now = Date.now()
-  const cutoff = now - WINDOW_MS
 
-  let timestamps = userTimestamps.get(userId)
-  if (!timestamps) {
-    timestamps = []
-    userTimestamps.set(userId, timestamps)
+  // Lazy cleanup when map grows large
+  if (requests.size > 500) {
+    for (const [key, timestamps] of requests.entries()) {
+      if (timestamps.every(t => now - t >= WINDOW_MS)) requests.delete(key)
+    }
   }
 
-  // Remove expired entries
-  timestamps = timestamps.filter(ts => ts > cutoff)
-  userTimestamps.set(userId, timestamps)
+  if (!requests.has(userId)) {
+    requests.set(userId, [now])
+    return { allowed: true, remaining: MAX_REQUESTS - 1 }
+  }
+
+  const timestamps = requests.get(userId).filter(t => now - t < WINDOW_MS)
 
   if (timestamps.length >= MAX_REQUESTS) {
-    return { allowed: false, retryAfterMs: timestamps[0] + WINDOW_MS - now }
+    requests.set(userId, timestamps)
+    return { allowed: false, remaining: 0 }
   }
 
   timestamps.push(now)
-  return { allowed: true }
-}
-
-// Cleanup old entries periodically (every 100 checks)
-let checkCount = 0
-export function maybeCleanup() {
-  checkCount++
-  if (checkCount % 100 !== 0) return
-  const now = Date.now()
-  const cutoff = now - WINDOW_MS * 2
-  for (const [userId, timestamps] of userTimestamps.entries()) {
-    const filtered = timestamps.filter(ts => ts > cutoff)
-    if (filtered.length === 0) {
-      userTimestamps.delete(userId)
-    } else {
-      userTimestamps.set(userId, filtered)
-    }
-  }
+  requests.set(userId, timestamps)
+  return { allowed: true, remaining: MAX_REQUESTS - timestamps.length }
 }
