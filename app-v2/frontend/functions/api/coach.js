@@ -1,6 +1,6 @@
 import { getConfig, getApiKey } from './_config/index.js'
 import { jsonError } from './_utils/response.js'
-import { extractLang } from './_services/auth.service.js'
+import { extractLang, extractAuth, verifyJwt } from './_services/auth.service.js'
 import { handle as coachHandle } from './_modules/coach.module.js'
 
 export async function onRequestPost(context) {
@@ -8,14 +8,15 @@ export async function onRequestPost(context) {
   const lang = extractLang(request)
 
   try {
+    const { token } = extractAuth(request)
+    const auth = verifyJwt(token)
+    if (!auth.valid) return jsonError('unauthorized', 401, lang)
+
     const config = getConfig(env)
-    if (!getApiKey(config)) {
-      return jsonError('ai_not_configured', 503, lang)
-    }
+    if (!getApiKey(config)) return jsonError('ai_not_configured', 503, lang)
 
     const body = await request.json()
     body.lang = body.lang || lang
-
     const result = await coachHandle(env, body, request)
     return Response.json(result)
   } catch (e) {
