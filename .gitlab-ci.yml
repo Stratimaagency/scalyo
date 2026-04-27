@@ -44,7 +44,8 @@ deploy_production:
                 \"env_vars\": {
                   \"AI_PROVIDER\": { \"value\": \"deepseek\" },
                   \"AI_MODEL\": { \"value\": \"deepseek-chat\" },
-                  \"DEEPSEEK_API_KEY\": { \"value\": \"$DEEPSEEK_API_KEY\", \"type\": \"secret_text\" }
+                  \"DEEPSEEK_API_KEY\": { \"value\": \"$DEEPSEEK_API_KEY\", \"type\": \"secret_text\" },
+                  \"SUPABASE_JWT_SECRET\": { \"value\": \"$SUPABASE_JWT_SECRET\", \"type\": \"secret_text\" }
                 }
               }
             }
