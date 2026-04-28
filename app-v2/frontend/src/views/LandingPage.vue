@@ -152,8 +152,6 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 600px) { .lm-box { max-height: 95vh; } .lm-legal-tabs { flex-wrap: wrap; } }
 </style>
 
-</style>
-
 <style scoped>
 .landing { overflow-x: hidden; }
 </style>
