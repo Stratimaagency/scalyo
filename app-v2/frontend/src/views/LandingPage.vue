@@ -1,25 +1,65 @@
 <template>
   <div ref="rootEl" class="landing">
-    <LandingNavbar />
-    <LandingHero />
-    <LandingMockup />
-    <LandingStats />
-    <LandingFeatures />
-    <LandingRoiCalc />
-    <LandingIntegrations />
-    <LandingWhyScalyo />
-    <LandingPricing />
-    <LandingFaq />
-    <LandingCta />
-    <LandingFooter />
+    <LandingNavbar
+      :scrolled="scrolled"
+      :locale="locale"
+      :langs="langs"
+      :app-url="appUrl"
+      :t="t"
+      @locale-change="locale = $event"
+    />
+
+    <LandingHero :app-url="appUrl" :t="t" />
+
+    <LandingMockupFrame
+      :active-demo="activeDemo"
+      :demo-tabs="demoTabs"
+      :t="t"
+      @demo-change="activeDemo = $event"
+    >
+      <template #default="{ activeDemoVal }">
+        <LandingMockupPanels
+          :active-demo="activeDemo"
+          :mock-accounts="mockAccounts"
+          :t="t"
+        />
+      </template>
+    </LandingMockupFrame>
+
+    <LandingStats :stats-data="statsData" />
+
+    <LandingFeatures
+      :modules-data="modulesData"
+      :active-module="activeModule"
+      :app-url="appUrl"
+      :t="t"
+      @module-change="activeModule = $event"
+    />
+
+    <LandingRoiCalc :t="t" />
+
+    <LandingIntegrations :integrations="integrations" :t="t" />
+
+    <LandingWhyScalyo :selling-points="sellingPoints" :t="t" />
+
+    <LandingPricing :t="t" />
+
+    <LandingFaq :faq-items="faqItems" :t="t" />
+
+    <LandingCta :app-url="appUrl" :t="t" />
+
+    <LandingFooter :app-url="appUrl" :locale="locale" :t="t" />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { L } from '@/i18n/landing'
+
 import LandingNavbar from '@/components/landing/LandingNavbar.vue'
 import LandingHero from '@/components/landing/LandingHero.vue'
-import LandingMockup from '@/components/landing/LandingMockup.vue'
+import LandingMockupFrame from '@/components/landing/LandingMockupFrame.vue'
+import LandingMockupPanels from '@/components/landing/LandingMockupPanels.vue'
 import LandingStats from '@/components/landing/LandingStats.vue'
 import LandingFeatures from '@/components/landing/LandingFeatures.vue'
 import LandingRoiCalc from '@/components/landing/LandingRoiCalc.vue'
@@ -30,10 +70,97 @@ import LandingFaq from '@/components/landing/LandingFaq.vue'
 import LandingCta from '@/components/landing/LandingCta.vue'
 import LandingFooter from '@/components/landing/LandingFooter.vue'
 
+const appUrl = ''
+
+const locale = ref('fr')
+const langs = [
+  { code: 'fr', label: 'FR' },
+  { code: 'en', label: 'EN' },
+  { code: 'kr', label: '한국어' },
+]
+function t(key) {
+  return (L[locale.value] || L.fr)[key] || L.fr[key] || key
+}
+
 const rootEl = ref(null)
+const scrolled = ref(false)
+const activeDemo = ref(0)
+const activeModule = ref(0)
+
+const demoTabs = [
+  { key: 'dashboard', icon: '📊', labelKey: 'demo_dashboard' },
+  { key: 'portfolio', icon: '🗂️', labelKey: 'demo_portfolio' },
+  { key: 'coach',     icon: '🤖', labelKey: 'demo_coach' },
+  { key: 'wellbeing', icon: '💚', labelKey: 'demo_wellbeing' },
+  { key: 'email',     icon: '📧', labelKey: 'demo_email_head' },
+  { key: 'planning',  icon: '📅', labelKey: 'fl_c6' },
+  { key: 'tasks',     icon: '✅', labelKey: 'fl_c7' },
+  { key: 'import',    icon: '🤖', labelKey: 'demo_import' },
+  { key: 'resources', icon: '📚', labelKey: 'fl_c8' },
+]
+
+const mockAccounts = [
+  { name: 'TechScale', health: 9.1, color: '#10b981' },
+  { name: 'Acme Corp', health: 6.4, color: '#f59e0b' },
+  { name: 'Biotech Group', health: 8.7, color: '#8b5cf6' },
+  { name: 'Leroy Finance', health: 4.2, color: '#ef4444' },
+]
+
+const statsData = computed(() => [
+  { n: '-34%', l: t('stat1'), s: t('stat1n'), icon: '📉' },
+  { n: '+18%', l: t('stat2'), s: t('stat2n'), icon: '📈' },
+  { n: '6h',   l: t('stat3'), s: t('stat3n'), icon: '⏱️' },
+  { n: '30j',  l: t('stat4'), s: t('stat4n'), icon: '🔮' },
+])
+
+const modulesData = computed(() => [
+  { icon: '🗂️', chip: t('fl_c1'), tag: t('fl_m1tag'), h2: t('fl_m1h2'), body: t('fl_m1body'), points: [t('fl_m1p1'), t('fl_m1p2'), t('fl_m1p3'), t('fl_m1p4'), t('fl_m1p5')], btn: t('fl_m1btn') },
+  { icon: '📊', chip: t('fl_c2'), tag: t('fl_m2tag'), h2: t('fl_m2h2'), body: t('fl_m2body'), points: [t('fl_m2p1'), t('fl_m2p2'), t('fl_m2p3'), t('fl_m2p4'), t('fl_m2p5')], btn: t('fl_m2btn') },
+  { icon: '💚', chip: t('fl_c3'), tag: t('fl_m3tag'), h2: t('fl_m3h2'), body: t('fl_m3body'), points: [t('fl_m3p1'), t('fl_m3p2'), t('fl_m3p3'), t('fl_m3p4'), t('fl_m3p5')], btn: t('fl_m3btn') },
+  { icon: '🤖', chip: t('fl_c4'), tag: t('fl_m4tag'), h2: t('fl_m4h2'), body: t('fl_m4body'), points: [t('fl_m4p1'), t('fl_m4p2'), t('fl_m4p3'), t('fl_m4p4'), t('fl_m4p5')], btn: t('fl_m4btn') },
+  { icon: '📧', chip: t('fl_c5'), tag: t('fl_m5tag'), h2: t('fl_m5h2'), body: t('fl_m5body'), points: [t('fl_m5p1'), t('fl_m5p2'), t('fl_m5p3'), t('fl_m5p4'), t('fl_m5p5')], btn: t('fl_m5btn') },
+  { icon: '📅', chip: t('fl_c6'), tag: t('fl_m6tag'), h2: t('fl_m6h2'), body: t('fl_m6body'), points: [t('fl_m6p1'), t('fl_m6p2'), t('fl_m6p3'), t('fl_m6p4'), t('fl_m6p5')], btn: t('fl_m6btn') },
+  { icon: '✅', chip: t('fl_c7'), tag: t('fl_m7tag'), h2: t('fl_m7h2'), body: t('fl_m7body'), points: [t('fl_m7p1'), t('fl_m7p2'), t('fl_m7p3'), t('fl_m7p4'), t('fl_m7p5')], btn: t('fl_m7btn') },
+  { icon: '📚', chip: t('fl_c8'), tag: t('fl_m8tag'), h2: t('fl_m8h2'), body: t('fl_m8body'), points: [t('fl_m8p1'), t('fl_m8p2'), t('fl_m8p3'), t('fl_m8p4'), t('fl_m8p5')], btn: t('fl_m8btn') },
+])
+
+const integrations = computed(() => [
+  { icon: '☁️', name: 'Salesforce', tag: t('integ_sf_tag') },
+  { icon: '📧', name: 'Gmail', tag: t('integ_gmail_tag') },
+  { icon: '📬', name: 'IMAP', tag: t('integ_imap_tag') },
+  { icon: '💬', name: 'Slack', tag: t('integ_slack_tag') },
+  { icon: '📹', name: 'Zoom', tag: t('integ_zoom_tag') },
+  { icon: '📆', name: 'Calendly', tag: t('integ_calendly_tag') },
+  { icon: '📋', name: 'Asana', tag: t('integ_asana_tag') },
+])
+
+const sellingPoints = computed(() => [
+  { icon: '🔗', label: t('sell_1_label'), desc: t('sell_1_desc') },
+  { icon: '⚡', label: t('sell_2_label'), desc: t('sell_2_desc') },
+  { icon: '🛡️', label: t('sell_3_label'), desc: t('sell_3_desc') },
+  { icon: '🤖', label: t('sell_4_label'), desc: t('sell_4_desc') },
+  { icon: '💚', label: t('sell_5_label'), desc: t('sell_5_desc') },
+  { icon: '💎', label: t('sell_6_label'), desc: t('sell_6_desc') },
+  { icon: '🧩', label: t('sell_7_label'), desc: t('sell_7_desc') },
+  { icon: '🌐', label: t('sell_8_label'), desc: t('sell_8_desc') },
+])
+
+const faqItems = computed(() => [
+  { q: t('faq_q1'), a: t('faq_a1') },
+  { q: t('faq_q2'), a: t('faq_a2') },
+  { q: t('faq_q3'), a: t('faq_a3') },
+  { q: t('faq_q4'), a: t('faq_a4') },
+  { q: t('faq_q5'), a: t('faq_a5') },
+  { q: t('faq_q6'), a: t('faq_a6') },
+])
+
+function onScroll() { scrolled.value = window.scrollY > 30 }
 
 let observer = null
+let demoCycleTimer = null
 onMounted(() => {
+  window.addEventListener('scroll', onScroll, { passive: true })
+
   observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -50,108 +177,17 @@ onMounted(() => {
     }
     observer.observe(el)
   })
+
+  demoCycleTimer = setInterval(() => {
+    activeDemo.value = (activeDemo.value + 1) % demoTabs.length
+  }, 5000)
 })
 
-onUnmounted(() => observer?.disconnect())
+onUnmounted(() => {
+  window.removeEventListener('scroll', onScroll)
+  observer?.disconnect()
+  clearInterval(demoCycleTimer)
+})
 </script>
 
-<style>
-/* ═══ Shared landing styles (non-scoped: apply across child components) ═══ */
-<style scoped>
-/* ═══════════════════ BASE ═══════════════════ */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-.landing { --lp-purple: #7c3aed; --lp-purple-dark: #6d28d9; --lp-purple-light: #a78bfa; --lp-bg: #f8f9fb; --lp-bg2: #f3f4f6; --lp-surface: #ffffff; --lp-border: #e5e7eb; --lp-text: #1a1a2e; --lp-muted: #6b7280; --lp-green: #10b981; --lp-red: #ef4444; --lp-amber: #f59e0b; --lp-blue: #3b82f6; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--lp-text); background: var(--lp-bg); line-height: 1.6; overflow-x: hidden; min-height: 100vh; }
-.container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
-.center { text-align: center; }
-.accent { color: var(--lp-purple-light); }
-a { color: inherit; text-decoration: none; }
-
-/* ═══════════════════ ANIMATIONS ═══════════════════ */
-.anim-section { opacity: 1; transform: translateY(0); }
-.anim-section.anim-hidden { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
-.anim-section.anim-hidden.visible { opacity: 1; transform: translateY(0); }
-.anim-section.anim-hidden[data-anim="fade-up-delay"] { transition-delay: 0.3s; }
-
-@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-@keyframes pulse-glow { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
-@keyframes gradient-shift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-@keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-.emoji-3d { display: inline-block; font-size: 2rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); animation: float 3s ease-in-out infinite; }
-
-/* ═══════════════════ BUTTONS ═══════════════════ */
-.btn-primary { background: linear-gradient(135deg, var(--lp-purple), var(--lp-purple-dark)); color: #fff; border: none; padding: 12px 28px; border-radius: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-block; transition: all 0.3s; }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,58,237,0.4); }
-.btn-primary.lg { padding: 16px 36px; font-size: 1rem; border-radius: 14px; }
-.btn-primary-sm { background: var(--lp-purple); color: #fff; border: none; padding: 8px 20px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: inline-block; transition: all 0.2s; }
-.btn-primary-sm:hover { background: var(--lp-purple-dark); }
-.btn-outline { background: transparent; color: var(--lp-text); border: 1px solid var(--lp-border); padding: 12px 28px; border-radius: 12px; font-size: 0.9rem; font-weight: 500; cursor: pointer; display: inline-block; transition: all 0.3s; }
-.btn-outline:hover { border-color: var(--lp-purple-light); color: var(--lp-purple-light); }
-.btn-outline.lg { padding: 16px 36px; font-size: 1rem; border-radius: 14px; }
-.btn-outline-light { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 12px 28px; border-radius: 12px; font-size: 0.9rem; font-weight: 500; cursor: pointer; display: inline-block; transition: all 0.3s; }
-.btn-outline-light:hover { background: rgba(255,255,255,0.18); }
-.btn-outline-light.lg { padding: 16px 36px; font-size: 1rem; }
-.btn-ghost-sm { color: var(--lp-muted); font-size: 0.85rem; padding: 8px 14px; border-radius: 8px; transition: color 0.2s; }
-.btn-ghost-sm:hover { color: var(--lp-purple-light); }
-.glow-btn { box-shadow: 0 0 30px rgba(124,58,237,0.3), 0 0 60px rgba(124,58,237,0.1); }
-
-/* ═══════════════════ RESPONSIVE ═══════════════════ */
-@media (max-width: 1100px) {
-  .plans-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 900px) {
-  .hide-mobile { display: none !important; }
-  .burger { display: flex; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .module-detail { grid-template-columns: 1fr; }
-  .roi-grid { grid-template-columns: 1fr; }
-  .plans-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
-  .sell-grid { grid-template-columns: repeat(2, 1fr); }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
-  .mock-sidebar { width: auto; flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--lp-border); padding: 8px; }
-  .mock-sidebar-logo { display: none; }
-  .mockup-body { flex-direction: column; }
-  .tab-label { display: none; }
-  .mock-kanban { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 600px) {
-  .stats-grid, .sell-grid { grid-template-columns: 1fr; }
-  .hero { padding: 110px 0 40px; }
-  .hero-title { font-size: 2rem; }
-  .footer-grid { grid-template-columns: 1fr; }
-  .module-chips { gap: 6px; }
-  .module-chip { padding: 6px 12px; font-size: 0.75rem; }
-  .integ-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (min-width: 901px) {
-  .hide-desktop { display: none !important; }
-}
-
-/* Slide transition for mobile menu */
-.slide-down-enter-active, .slide-down-leave-active { transition: all 0.3s ease; }
-.slide-down-enter-from, .slide-down-leave-to { opacity: 0; transform: translateY(-10px); }
-.lm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.lm-box { background: #ffffff; border-radius: 16px; width: 100%; max-width: 680px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.2); color: #1a1a1a; }
-.lm-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; background: #fff; border-radius: 16px 16px 0 0; }
-.lm-legal-tabs { display: flex; gap: 4px; }
-.lm-tab { background: none; border: none; padding: 8px 16px; font-size: 0.88rem; font-weight: 500; cursor: pointer; border-radius: 8px; color: #6b7280; transition: all 0.15s; }
-.lm-tab.active { background: #0f7b6c; color: #fff; font-weight: 600; }
-.lm-tab:hover:not(.active) { background: #f3f4f6; }
-.lm-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #9ca3af; padding: 4px 8px; border-radius: 6px; }
-.lm-close:hover { background: #f3f4f6; }
-.lm-body { overflow-y: auto; padding: 20px 24px; flex: 1; background: #ffffff; color: #1a1a1a; }
-.lm-body h4 { font-size: 1rem; font-weight: 700; margin: 16px 0 6px; }
-.lm-body p { font-size: 0.88rem; line-height: 1.7; color: #374151; margin-bottom: 10px; }
-.lm-body ul { margin: 6px 0 10px 20px; }
-.lm-body li { font-size: 0.88rem; color: #374151; margin-bottom: 4px; }
-.lm-body a { color: #0f7b6c; }
-.modal-fade-enter-active, .modal-fade-leave-active { transition: opacity 0.2s ease; }
-.modal-fade-enter-from, .modal-fade-leave-to { opacity: 0; }
-@media (max-width: 600px) { .lm-box { max-height: 95vh; } .lm-legal-tabs { flex-wrap: wrap; } }
-</style>
-
-<style scoped>
-.landing { overflow-x: hidden; }
-</style>
+<style src="@/assets/landing.css"></style>
