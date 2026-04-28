@@ -1,10 +1,10 @@
 <template>
     <!-- ═══════════════════ HERO ═══════════════════ -->
     <section class="hero">
-      <div class="hero-glow" />
+      <div class="hero-glow"></div>
       <div class="container hero-content anim-section" data-anim="fade-up">
         <div class="hero-badge">
-          <span class="badge-dot" />
+          <span class="badge-dot"></span>
           {{ t('hero_badge') }}
         </div>
 

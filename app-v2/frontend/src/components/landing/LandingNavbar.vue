@@ -22,7 +22,7 @@
         </div>
 
         <button class="burger hide-desktop" @click="mobileMenu = !mobileMenu" aria-label="Menu">
-          <span /><span /><span />
+          <span></span><span></span><span></span>
         </button>
       </div>
 

@@ -117,22 +117,6 @@ function stripeUrl(plan) {
     const email = authStore.user?.email
     return email ? base + '?prefilled_email=' + encodeURIComponent(email) : base
   }
-
-const locale = ref('fr')
-
-const rgpdContent = computed(() => {
-  const lang = locale.value
-  const content = {
-    fr: `<p><strong>Dernière mise à jour : Janvier 2025</strong></p><h4>1. Responsable du traitement</h4><p>Scalyo (Stratimaagency) est responsable du traitement de vos données personnelles. Contact DPO : <a href='mailto:contact@scalyo.app'>contact@scalyo.app</a></p><h4>2. Données collectées</h4><ul><li>Identification : nom, email professionnel</li><li>Utilisation : actions sur la plateforme, logs de connexion</li><li>Données métier : comptes clients, KPIs (saisies par vous)</li><li>Facturation : traitée exclusivement par Stripe</li></ul><h4>3. Base légale (RGPD Art. 6)</h4><p>Exécution du contrat pour les données de service. Consentement pour les emails marketing. Obligation légale pour la facturation.</p><h4>4. Conservation</h4><p>Données conservées pendant la durée de l'abonnement + 3 ans après résiliation. Données de facturation conservées 10 ans.</p><h4>5. Hébergement & sécurité</h4><p>Supabase — région Europe (Irlande, conforme RGPD). Chiffrement AES-256, TLS 1.3. Cloudflare CDN.</p><h4>6. Vos droits</h4><ul><li>✓ Accès à vos données</li><li>✓ Rectification</li><li>✓ Effacement (droit à l'oubli)</li><li>✓ Portabilité (export JSON/CSV)</li><li>✓ Opposition au traitement</li></ul><p>Exercer vos droits : <a href='mailto:contact@scalyo.app'>contact@scalyo.app</a> — Réponse sous 30 jours. Réclamation possible auprès de la CNIL.</p><h4>7. Cookies</h4><p>Cookies fonctionnels uniquement (session, langue). Aucun cookie publicitaire.</p>`,
-    en: `<p><strong>Last updated: January 2025</strong></p><h4>1. Data Controller</h4><p>Scalyo (Stratimaagency) is the controller of your personal data. DPO contact: <a href='mailto:contact@scalyo.app'>contact@scalyo.app</a></p><h4>2. Data Collected</h4><ul><li>Identification: name, professional email</li><li>Usage: platform actions, login logs</li><li>Business data: client accounts, KPIs (entered by you)</li><li>Billing: processed exclusively by Stripe</li></ul><h4>3. Legal Basis (GDPR Art. 6)</h4><p>Contract performance for service data. Consent for marketing emails. Legal obligation for billing.</p><h4>4. Retention</h4><p>Data retained for subscription duration + 3 years after termination. Billing data retained 10 years.</p><h4>5. Hosting & Security</h4><p>Supabase — Europe region (Ireland, GDPR compliant). AES-256 encryption, TLS 1.3. Cloudflare CDN.</p><h4>6. Your Rights</h4><ul><li>✓ Access to your data</li><li>✓ Rectification</li><li>✓ Erasure (right to be forgotten)</li><li>✓ Portability (JSON/CSV export)</li><li>✓ Right to object</li></ul><p>Exercise your rights: <a href='mailto:contact@scalyo.app'>contact@scalyo.app</a> — Response within 30 days.</p><h4>7. Cookies</h4><p>Functional cookies only (session, language). No advertising cookies.</p>`,
-    kr: `<p><strong>최종 업데이트: 2025년 1월</strong></p><h4>1. 데이터 처리 책임자</h4><p>Scalyo(Stratimaagency)는 귀하의 개인정보 처리 책임자입니다. DPO 연락처: <a href='mailto:contact@scalyo.app'>contact@scalyo.app</a></p><h4>2. 수집 데이터</h4><ul><li>식별 정보: 이름, 직장 이메일</li><li>이용 정보: 플랫폼 활동, 로그인 기록</li><li>비즈니스 데이터: 고객사, KPI (사용자 입력)</li><li>결제 정보: Stripe에서 단독 처리</li></ul><h4>3. 법적 근거 (GDPR 제6조)</h4><p>서비스 데이터: 계약 이행. 마케팅 이메일: 동의. 결제 데이터: 법적 의무.</p><h4>4. 보존 기간</h4><p>구독 기간 + 해지 후 3년. 결제 데이터는 10년 보존.</p><h4>5. 호스팅 및 보안</h4><p>Supabase — 유럽 리전 (아일랜드, GDPR 준수). AES-256 암호화, TLS 1.3. Cloudflare CDN.</p><h4>6. 귀하의 권리</h4><ul><li>✓ 개인정보 열람권</li><li>✓ 정정권</li><li>✓ 삭제권 (잊힐 권리)</li><li>✓ 이동권 (JSON/CSV 내보내기)</li><li>✓ 처리 반대권</li></ul><p>권리 행사: <a href='mailto:contact@scalyo.app'>contact@scalyo.app</a> — 30일 이내 답변.</p><h4>7. 쿠키</h4><p>기능적 쿠키만 사용 (세션, 언어). 광고 쿠키 없음.</p>`,
-  }
-  return content[lang] || content.fr
-}
-
-function scrollTo(id) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-}
 </script>
 
 <style scoped>

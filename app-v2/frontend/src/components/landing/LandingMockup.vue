@@ -2,13 +2,13 @@
       <!-- Dashboard Mockup -->
       <div class="container mockup-wrapper anim-section" data-anim="fade-up-delay">
         <div class="browser-chrome">
-          <div class="chrome-dots"><span /><span /><span /></div>
+          <div class="chrome-dots"><span></span><span></span><span></span></div>
           <div class="chrome-url">
             <span class="chrome-lock">🔒</span>
             app.scalyo.app
           </div>
           <div class="chrome-live">
-            <span class="live-dot" />
+            <span class="live-dot"></span>
             {{ t('demo_live') }}
           </div>
         </div>
@@ -65,7 +65,7 @@
                     <div class="acc-avatar" :style="{ background: acc.color }">{{ acc.name[0] }}</div>
                     <div class="acc-info">
                       <strong>{{ acc.name }}</strong>
-                      <div class="health-bar"><div :style="{ width: acc.health * 10 + '%', background: acc.health > 7 ? '#10b981' : acc.health > 4 ? '#f59e0b' : '#ef4444' }" /></div>
+                      <div class="health-bar"><div :style="{ width: acc.health * 10 + '%', background: acc.health > 7 ? '#10b981' : acc.health > 4 ? '#f59e0b' : '#ef4444' }"></div></div>
                     </div>
                     <span class="acc-score" :style="{ color: acc.health > 7 ? '#10b981' : acc.health > 4 ? '#f59e0b' : '#ef4444' }">{{ acc.health.toFixed(1) }}</span>
                     <span class="acc-tag" :class="acc.health > 7 ? 'stable' : acc.health > 4 ? 'watch' : 'critical'">
@@ -148,7 +148,7 @@
                   <div class="cal-grid">
                     <div v-for="d in 28" :key="d" class="cal-day" :class="{ today: d === 12, event: [3,7,12,15,21,25].includes(d) }">
                       {{ d }}
-                      <span v-if="[3,7,12,15,21,25].includes(d)" class="cal-dot" />
+                      <span v-if="[3,7,12,15,21,25].includes(d)" class="cal-dot"></span>
                     </div>
                   </div>
                   <div class="cal-event-preview">

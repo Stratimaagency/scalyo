@@ -1,6 +1,6 @@
 <template>
     <section class="final-cta-section anim-section" data-anim="fade-up">
-      <div class="final-cta-glow" />
+      <div class="final-cta-glow"></div>
       <div class="container center">
         <span class="section-tag light">{{ t('end_section_tag') }}</span>
         <h2 class="final-cta-title" v-html="t('end_h2')"></h2>

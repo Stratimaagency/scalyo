@@ -47,8 +47,8 @@
         <button class="lm-close" @click="showLegal = false">×</button>
       </div>
       <div class="lm-body">
-        <div v-if="legalTab === 'rgpd'" v-html="rgpdContent" />
-        <div v-if="legalTab === 'legal'" v-html="legalContent" />
+        <div v-if="legalTab === 'rgpd'" v-html="rgpdContent"></div>
+        <div v-if="legalTab === 'legal'" v-html="legalContent"></div>
       </div>
     </div>
   </div>
