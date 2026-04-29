@@ -18,6 +18,4 @@ export function fmtCurrency(amount, locale = 'fr', currency) {
   const cur = currency || MARKET_CURRENCY[locale] || 'EUR'
   const loc = locale === 'ko' ? 'ko-KR' : locale === 'en' ? 'en-US' : 'fr-FR'
   return new Intl.NumberFormat(loc, { style: 'currency', currency: cur, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount)
-}).format(amount)
-}).format(amount)
 }
