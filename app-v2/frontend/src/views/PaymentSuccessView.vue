@@ -63,9 +63,9 @@ const auth = useAuthStore()
 
 const planLabel = computed(() => {
   const p = route.query.plan || auth.currentPlan || ''
-  if (p === 'elite') return 'Elite — 159€/utilisateur/mois'
-  if (p === 'growth') return 'Growth — 119€/utilisateur/mois'
-  if (p === 'starter') return 'Starter — 79€/utilisateur/mois'
+  if (p === 'elite') return 'Elite — ' + t('paywall_price_elite') + '/' + t('paywall_per_user_month')
+  if (p === 'growth') return 'Growth — ' + t('paywall_price_growth') + '/' + t('paywall_per_user_month')
+  if (p === 'starter') return 'Starter — ' + t('paywall_price_starter') + '/' + t('paywall_per_user_month')
   return auth.currentPlan ? (auth.currentPlan.charAt(0).toUpperCase() + auth.currentPlan.slice(1)) : ''
 })
 

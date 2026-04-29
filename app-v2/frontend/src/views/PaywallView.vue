@@ -15,7 +15,7 @@
         <div class="pw-plan">
           <div class="pw-plan-icon">⭐</div>
           <div class="pw-plan-name">Starter</div>
-          <div class="pw-plan-price">97€<span>/{{ t('profile_month') }}</span></div>
+          <div class="pw-plan-price">{{ t('paywall_price_starter') }}<span>/{{ t('paywall_per_user_month') }}</span></div>
           <ul>
             <li>✓ {{ t('plan_feat_10clients') }}</li>
             <li>✓ {{ t('plan_feat_import') }}</li>
@@ -29,7 +29,7 @@
           <div class="pw-popular">{{ t('register_most_popular') }}</div>
           <div class="pw-plan-icon">🚀</div>
           <div class="pw-plan-name">Growth</div>
-          <div class="pw-plan-price">297€<span>/{{ t('profile_month') }}</span></div>
+          <div class="pw-plan-price">{{ t('paywall_price_growth') }}<span>/{{ t('paywall_per_user_month') }}</span></div>
           <ul>
             <li>✓ {{ t('plan_feat_50clients') }}</li>
             <li>✓ {{ t('plan_feat_ai') }}</li>
@@ -43,7 +43,7 @@
         <div class="pw-plan">
           <div class="pw-plan-icon">🏆</div>
           <div class="pw-plan-name">Elite</div>
-          <div class="pw-plan-price">697€<span>/{{ t('profile_month') }}</span></div>
+          <div class="pw-plan-price">{{ t('paywall_price_elite') }}<span>/{{ t('paywall_per_user_month') }}</span></div>
           <ul>
             <li>✓ {{ t('plan_feat_unlimited') }}</li>
             <li>✓ {{ t('plan_feat_ai') }}</li>
