@@ -26,7 +26,7 @@
             <span class="pv-plan-label">{{ t('profile_current_plan') }}</span>
             <strong class="pv-plan-name">{{ planDisplay }}</strong>
           </div>
-          <span class="pv-plan-badge" :class="planClass">{{ auth.company?.planLabel || 'Starter' }}</span>
+          <span class="pv-plan-badge" :class="planClass">{{ auth.currentPlanLabel || 'Starter' }}</span>
         </div>
         <div class="pv-plan-price">
           <span class="pv-price">{{ planPrice }}</span>
@@ -63,7 +63,7 @@
           </div>
           <div class="pv-meta-row">
             <span class="pv-meta-label">{{ t('profile_plan') }}</span>
-            <span class="pv-meta-val"><span class="pv-plan-badge" :class="planClass">{{ auth.company?.planLabel || 'Starter' }}</span></span>
+            <span class="pv-meta-val"><span class="pv-plan-badge" :class="planClass">{{ auth.currentPlanLabel || 'Starter' }}</span></span>
           </div>
         </div>
       </div>
@@ -103,33 +103,33 @@ const initials = computed(() => {
 })
 
 const planIcon = computed(() => {
-  const p = auth.company?.plan
+  const p = auth.currentPlan
   if (p === 'elite') return '🏆'
   if (p === 'growth') return '🚀'
   return '⭐'
 })
 
 const planDisplay = computed(() => {
-  const p = auth.company?.plan || 'starter'
+  const p = auth.currentPlan || 'starter'
   return p.charAt(0).toUpperCase() + p.slice(1)
 })
 
 const planPrice = computed(() => {
-  const p = auth.company?.plan
+  const p = auth.currentPlan
   if (p === 'elite') return t('paywall_price_elite')
   if (p === 'growth') return t('paywall_price_growth')
   return t('paywall_price_starter')
 })
 
 const planClass = computed(() => {
-  const p = auth.company?.plan
+  const p = auth.currentPlan
   if (p === 'elite') return 'badge-elite'
   if (p === 'growth') return 'badge-growth'
   return 'badge-starter'
 })
 
 const planFeatures = computed(() => {
-  const p = auth.company?.plan
+  const p = auth.currentPlan
   if (p === 'elite') return ['plan_feat_unlimited', 'plan_feat_ai', 'plan_feat_copil', 'plan_feat_support']
   if (p === 'growth') return ['plan_feat_50clients', 'plan_feat_ai', 'plan_feat_copil']
   return ['plan_feat_10clients', 'plan_feat_basic', 'plan_feat_import']
