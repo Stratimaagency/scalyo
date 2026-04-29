@@ -13,7 +13,8 @@ export function pct(count, total) {
 }
 
 
-export function fmtCurrency(amount, locale = 'fr') {
+export function fmtCurrency(amount, locale = 'fr', currency = 'EUR') {
   const loc = locale === 'ko' ? 'ko-KR' : locale === 'en' ? 'en-US' : 'fr-FR'
-  return new Intl.NumberFormat(loc, { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount)
+  return new Intl.NumberFormat(loc, { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount)
+}).format(amount)
 }
