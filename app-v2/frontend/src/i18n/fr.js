@@ -208,7 +208,7 @@ export default {
   es_tpl8_body: '<p>Bonjour [Prénom],</p><p>Je me permets de vous contacter car [Entreprise] correspond exactement au profil des équipes CS que nous aidons à performer.</p><p>Nos clients réduisent en moyenne leur churn de 34% en 90 jours.</p><p>Seriez-vous disponible pour un échange de 15 minutes cette semaine ?</p><p>[Votre prénom]</p>',
   es_tpl9_name: 'Envoi de proposition',
   es_tpl9_subject: 'Proposition commerciale — Scalyo pour [Entreprise]',
-  es_tpl9_body: '<p>Bonjour [Prénom],</p><p>Suite à notre échange, veuillez trouver ci-joint notre proposition commerciale adaptée à vos besoins.</p><p><strong>Points clés :</strong></p><ul><li>Plan Growth — 297€/mois</li><li>Onboarding dédié inclus</li><li>Support prioritaire</li></ul><p>Je reste disponible pour toute question.</p><p>[Votre prénom]</p>',
+  es_tpl9_body: '<p>Bonjour [Prénom],</p><p>Suite à notre échange, veuillez trouver ci-joint notre proposition commerciale adaptée à vos besoins.</p><p><strong>Points clés :</strong></p><ul><li>Plan Growth — 119€/utilisateur/mois</li><li>Onboarding dédié inclus</li><li>Support prioritaire</li></ul><p>Je reste disponible pour toute question.</p><p>[Votre prénom]</p>',
   es_tpl10_name: 'Relance après démo',
   es_tpl10_subject: 'Suite à notre démo — [Entreprise]',
   es_tpl10_body: "<p>Bonjour [Prénom],</p><p>Merci pour le temps accordé lors de notre démonstration. J'espère que la solution vous a convaincu(e).</p><p>Avez-vous eu l'occasion d'en discuter en interne ? Je suis disponible pour répondre à toute question.</p><p>[Votre prénom]</p>",

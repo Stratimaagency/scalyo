@@ -109,7 +109,7 @@ export default {
   es_tpl8_body: '<p>Hi [First Name],</p><p>I am reaching out because [Company] matches exactly the profile of CS teams we help perform better.</p><p>Our clients reduce churn by an average of 34% in 90 days.</p><p>Would you be available for a 15-minute call this week?</p><p>[Your Name]</p>',
   es_tpl9_name: 'Proposal Submission',
   es_tpl9_subject: 'Commercial proposal â Scalyo for [Company]',
-  es_tpl9_body: '<p>Hi [First Name],</p><p>Following our conversation, please find attached our commercial proposal tailored to your needs.</p><p><strong>Key highlights:</strong></p><ul><li>Growth Plan â â¬297/month</li><li>Dedicated onboarding included</li><li>Priority support</li></ul><p>I am available for any questions.</p><p>[Your Name]</p>',
+  es_tpl9_body: '<p>Hi [First Name],</p><p>Following our conversation, please find attached our commercial proposal tailored to your needs.</p><p><strong>Key highlights:</strong></p><ul><li>Growth Plan â $139/user/month</li><li>Dedicated onboarding included</li><li>Priority support</li></ul><p>I am available for any questions.</p><p>[Your Name]</p>',
   es_tpl10_name: 'Post-Demo Follow-up',
   es_tpl10_subject: 'Following up on our demo â [Company]',
   es_tpl10_body: '<p>Hi [First Name],</p><p>Thank you for your time during our demo. I hope the solution was convincing.</p><p>Have you had a chance to discuss it internally? I am available to answer any questions.</p><p>[Your Name]</p>',

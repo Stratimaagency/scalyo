@@ -116,9 +116,9 @@ const planDisplay = computed(() => {
 
 const planPrice = computed(() => {
   const p = auth.company?.plan
-  if (p === 'elite') return '697€'
-  if (p === 'growth') return '297€'
-  return '97€'
+  if (p === 'elite') return t('paywall_price_elite')
+  if (p === 'growth') return t('paywall_price_growth')
+  return t('paywall_price_starter')
 })
 
 const planClass = computed(() => {
