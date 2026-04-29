@@ -119,6 +119,19 @@ export const useAuthStore = defineStore('auth', () => {
     keys.forEach(k => localStorage.removeItem(k))
   }
 
+
+  // ─── Start Trial ──────────────────────────────────────────────────────────
+  async function startTrial(userId) {
+    const now = new Date().toISOString()
+    const { error: err } = await supabase
+      .from('profiles')
+      .update({ trial_started_at: now, trial_used: false })
+      .eq('id', userId)
+    if (!err) {
+      profile.value = { ...profile.value, trial_started_at: now, trial_used: false }
+    }
+  }
+
   // ─── Init ─────────────────────────────────────────────────────────────────
   async function init() {
     loading.value = true
@@ -166,6 +179,11 @@ export const useAuthStore = defineStore('auth', () => {
     clearAllStores()
     user.value = data.user
     await fetchProfile(data.user.id)
+    // Auto-start trial on first login
+    if (profile.value && !profile.value.trial_started_at && !profile.value.trial_used) {
+      await startTrial(data.user.id)
+    }
+
     await loadAllStores()
     return { success: true }
   }
