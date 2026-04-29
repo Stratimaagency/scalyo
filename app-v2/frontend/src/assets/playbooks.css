@@ -475,3 +475,25 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Plan gating upsell */
+.pb-upsell {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  border: 1px dashed var(--border);
+}
+.pb-upsell .empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.pb-upsell h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.pb-upsell p {
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}

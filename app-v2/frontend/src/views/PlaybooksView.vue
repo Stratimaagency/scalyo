@@ -1,5 +1,12 @@
 <template>
   <div class="playbooks">
+    <div v-if="!canAccessPlaybooks" class="pb-upsell">
+      <div class="empty-icon">🔒</div>
+      <h3>{{ t('pb_plan_required', { plan: 'Growth' }) }}</h3>
+      <p>{{ t('pb_empty_desc') }}</p>
+      <button class="btn-primary" @click="$router.push('/app/settings')">{{ t('pb_upgrade') }}</button>
+    </div>
+    <template v-else>
     <PbHeader
       :playbookCount="store.playbooks.length"
       v-model:search="search"
@@ -38,7 +45,7 @@
 
     <PbTemplateSlide
       :open="slideTemplate"
-      :templates="store.templates"
+      :templates="availableTemplates"
       @close="slideTemplate = false"
       @selectTemplate="selectTemplate"
     />
@@ -51,6 +58,7 @@
       @close="slideActivate = false"
       @activate="doActivate"
     />
+      </template>
   </div>
 </template>
 
@@ -60,6 +68,7 @@ import { useI18n } from 'vue-i18n'
 import { usePlaybookStore } from '@/stores/playbooks'
 import { useClientStore } from '@/stores/clients'
 import { useTeamStore } from '@/stores/team'
+import { useAuthStore } from '@/stores/auth'
 import PbHeader from '@/components/playbooks/PbHeader.vue'
 import PbFilters from '@/components/playbooks/PbFilters.vue'
 import PbKpis from '@/components/playbooks/PbKpis.vue'
@@ -73,6 +82,10 @@ const { t } = useI18n({ useScope: 'global' })
 const store = usePlaybookStore()
 const clients = useClientStore()
 const team = useTeamStore()
+const auth = useAuthStore()
+
+const canAccessPlaybooks = computed(() => !!auth.currentPlan && auth.currentPlan !== 'starter')
+const availableTemplates = computed(() => store.templatesForPlan(auth.currentPlan))
 
 const search = ref('')
 const activeFilter = ref('all')
@@ -114,7 +127,7 @@ function selectTemplate(tpl) {
 }
 
 function doActivate({ templateId, clientId, csmId }) {
-  store.activateTemplate(templateId, clientId, csmId)
+  store.activateTemplate(templateId, clientId, csmId, auth.currentPlan)
   slideActivate.value = false
   activatingTpl.value = null
 }
