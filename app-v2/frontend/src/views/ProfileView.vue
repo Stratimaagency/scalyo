@@ -26,7 +26,7 @@
             <span class="pv-plan-label">{{ t('profile_current_plan') }}</span>
             <strong class="pv-plan-name">{{ planDisplay }}</strong>
           </div>
-          <span class="pv-plan-badge" :class="planClass">{{ auth.currentPlanLabel || 'Starter' }}</span>
+          <span class="pv-plan-badge" :class="planClass">{{ auth.currentPlan ? auth.currentPlan.charAt(0).toUpperCase() + auth.currentPlan.slice(1) : 'Starter' }}</span>
         </div>
         <div class="pv-plan-price">
           <span class="pv-price">{{ planPrice }}</span>
@@ -63,7 +63,7 @@
           </div>
           <div class="pv-meta-row">
             <span class="pv-meta-label">{{ t('profile_plan') }}</span>
-            <span class="pv-meta-val"><span class="pv-plan-badge" :class="planClass">{{ auth.currentPlanLabel || 'Starter' }}</span></span>
+            <span class="pv-meta-val"><span class="pv-plan-badge" :class="planClass">{{ auth.currentPlan ? auth.currentPlan.charAt(0).toUpperCase() + auth.currentPlan.slice(1) : 'Starter' }}</span></span>
           </div>
         </div>
       </div>
