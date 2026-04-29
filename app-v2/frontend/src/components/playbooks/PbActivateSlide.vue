@@ -20,7 +20,7 @@
           class="tsp-step"
         >
           <span class="tsp-num">{{ i + 1 }}</span>
-          <span>{{ s }}</span>
+          <span>{{ t(s) }}</span>
         </div>
       </div>
 

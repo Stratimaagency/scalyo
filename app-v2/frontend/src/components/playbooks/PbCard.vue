@@ -42,7 +42,7 @@
           class="step-check"
           @click.stop="$emit('toggleStep', pb.id, step.id)"
         >{{ step.done ? 'â' : 'â¬' }}</span>
-        <span class="step-title">{{ step.title }}</span>
+        <span class="step-title">{{ t(step.title) }}</span>
       </div>
     </div>
 

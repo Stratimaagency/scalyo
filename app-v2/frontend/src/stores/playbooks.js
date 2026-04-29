@@ -3,17 +3,48 @@ import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 
 const TEMPLATES = [
-  { id: 'tpl_onboard', key: 'onboarding', icon: '\u{1F680}', color: '#3b82f6', steps: ['Kick-off call avec le client', 'Configuration du compte', 'Formation utilisateurs', 'Check-in J+15', 'Revue adoption J+30', 'QBR J+90'], avgDays: 90 },
-  { id: 'tpl_retention', key: 'retention', icon: '\u{1F6E1}\uFE0F', color: '#ef4444', steps: ['Email d\'ouverture de dialogue', 'Analyse utilisation produit', 'Call de 30 minutes', 'Pr\u00E9senter la roadmap produit'], avgDays: 21 },
-  { id: 'tpl_expansion', key: 'expansion', icon: '\u{1F4C8}', color: '#10b981', steps: ['Identifier les signaux d\'expansion', 'Pr\u00E9parer la proposition', 'Pr\u00E9sentation au client', 'N\u00E9gociation & closing'], avgDays: 30 },
-  { id: 'tpl_qbr', key: 'qbr', icon: '\u{1F4CA}', color: '#7c3aed', steps: ['Collecter les KPIs du trimestre', 'Pr\u00E9parer le deck', 'Animer la QBR', 'Envoyer le CR + plan d\'action'], avgDays: 14 },
-  { id: 'tpl_renewal', key: 'renewal', icon: '\u{1F504}', color: '#f59e0b', steps: ['Alerte J-90 renouvellement', 'Bilan valeur d\u00E9livr\u00E9e', 'Proposition commerciale', 'Signature'], avgDays: 90 },
-  { id: 'tpl_nps', key: 'nps', icon: '\u2B50', color: '#ec4899', steps: ['Envoyer l\'enqu\u00EAte NPS', 'Analyser les r\u00E9sultats', 'Traiter les d\u00E9tracteurs', 'Remercier les promoteurs'], avgDays: 14 },
+  {
+    id: 'tpl_onboard', key: 'onboarding', icon: '\u{1F680}', color: '#3b82f6',
+    minPlan: 'growth', auto: false,
+    steps: ['pb_step_onboarding_1','pb_step_onboarding_2','pb_step_onboarding_3','pb_step_onboarding_4','pb_step_onboarding_5','pb_step_onboarding_6'],
+    avgDays: 90
+  },
+  {
+    id: 'tpl_retention', key: 'retention', icon: '\u{1F6E1}\uFE0F', color: '#ef4444',
+    minPlan: 'growth', auto: false,
+    steps: ['pb_step_retention_1','pb_step_retention_2','pb_step_retention_3','pb_step_retention_4'],
+    avgDays: 21
+  },
+  {
+    id: 'tpl_expansion', key: 'expansion', icon: '\u{1F4C8}', color: '#10b981',
+    minPlan: 'growth', auto: false,
+    steps: ['pb_step_expansion_1','pb_step_expansion_2','pb_step_expansion_3','pb_step_expansion_4'],
+    avgDays: 30
+  },
+  {
+    id: 'tpl_qbr', key: 'qbr', icon: '\u{1F4CA}', color: '#7c3aed',
+    minPlan: 'growth', auto: false,
+    steps: ['pb_step_qbr_1','pb_step_qbr_2','pb_step_qbr_3','pb_step_qbr_4'],
+    avgDays: 14
+  },
+  {
+    id: 'tpl_renewal', key: 'renewal', icon: '\u{1F504}', color: '#f59e0b',
+    minPlan: 'growth', auto: false,
+    steps: ['pb_step_renewal_1','pb_step_renewal_2','pb_step_renewal_3','pb_step_renewal_4'],
+    avgDays: 90
+  },
+  {
+    id: 'tpl_nps', key: 'nps', icon: '\u2B50', color: '#ec4899',
+    minPlan: 'growth', auto: false,
+    steps: ['pb_step_nps_1','pb_step_nps_2','pb_step_nps_3','pb_step_nps_4'],
+    avgDays: 14
+  },
 ]
+
+const PLAN_RANK = { starter: 0, growth: 1, elite: 2 }
 
 export const usePlaybookStore = defineStore('playbooks', () => {
   const playbooks = ref([])
-
   const templates = TEMPLATES
 
   const activePlaybooks = computed(() => playbooks.value.filter(p => p.status === 'active'))
@@ -40,6 +71,18 @@ export const usePlaybookStore = defineStore('playbooks', () => {
     return Math.round((donePlaybooks.value.length / total) * 100)
   })
 
+  function templatesForPlan(currentPlan) {
+    const rank = PLAN_RANK[currentPlan] ?? -1
+    return templates.filter(t => rank >= (PLAN_RANK[t.minPlan] ?? 0))
+  }
+
+  function canActivate(currentPlan, templateId) {
+    const tpl = templates.find(t => t.id === templateId)
+    if (!tpl) return false
+    const rank = PLAN_RANK[currentPlan] ?? -1
+    return rank >= (PLAN_RANK[tpl.minPlan] ?? 0)
+  }
+
   async function loadPlaybooks() {
     const { data, error } = await supabase
       .from('playbooks')
@@ -48,12 +91,16 @@ export const usePlaybookStore = defineStore('playbooks', () => {
     if (!error && data) playbooks.value = data
   }
 
-  async function activateTemplate(templateId, clientId, csmId) {
+  async function activateTemplate(templateId, clientId, csmId, currentPlan) {
     const tpl = templates.find(t => t.id === templateId)
-    if (!tpl) return
+    if (!tpl) return { error: 'template_not_found' }
+
+    if (!canActivate(currentPlan, templateId)) {
+      return { error: 'plan_insufficient' }
+    }
 
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    if (!user) return { error: 'not_authenticated' }
 
     const newPb = {
       user_id: user.id,
@@ -64,13 +111,14 @@ export const usePlaybookStore = defineStore('playbooks', () => {
       client_id: clientId || null,
       csm_id: csmId || null,
       status: 'active',
-      steps: tpl.steps.map((s, i) => ({ id: i, title: s, done: false })),
+      steps: tpl.steps.map((key, i) => ({ id: i, title: key, done: false })),
       started_at: new Date().toISOString().slice(0, 10),
       completed_at: null,
     }
 
     const { error } = await supabase.from('playbooks').insert([newPb])
     if (!error) await loadPlaybooks()
+    return error ? { error: error.message } : { success: true }
   }
 
   async function toggleStep(playbookId, stepId) {
@@ -103,8 +151,10 @@ export const usePlaybookStore = defineStore('playbooks', () => {
   }
 
   return {
-    playbooks, templates, activePlaybooks, donePlaybooks,
-    doneThisMonth, avgDuration, successRate,
+    playbooks, templates,
+    activePlaybooks, donePlaybooks, doneThisMonth,
+    avgDuration, successRate,
+    templatesForPlan, canActivate,
     activateTemplate, toggleStep, completePlaybook, deletePlaybook, loadPlaybooks,
   }
 }, { persist: false })
