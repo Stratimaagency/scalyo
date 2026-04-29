@@ -2,20 +2,20 @@
   <div class="arr-row">
     <div class="arr-card">
       <span class="arr-label">{{ t('sat_arr_total') }}</span>
-      <span class="arr-value">€{{ fmtNum(totalArr) }}</span>
+      <span class="arr-value">{{ fmtCurrency(totalArr, locale) }}</span>
     </div>
     <div class="arr-card risk">
       <span class="arr-label">{{ t('sat_arr_at_risk') }}</span>
-      <span class="arr-value red">€{{ fmtNum(arrAtRisk) }}</span>
+      <span class="arr-value red">{{ fmtCurrency(arrAtRisk, locale) }}</span>
     </div>
   </div>
 </template>
 
 <script setup>
 import { useI18n } from 'vue-i18n'
-import { fmtNum } from './satisfactionHelpers'
+import { fmtCurrency } from './satisfactionHelpers'
 
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
 
 defineProps({
   totalArr: { type: Number, default: 0 },

@@ -7,7 +7,7 @@
           <div class="hl-av" :class="c.status">{{ c.name[0] }}</div>
           <div class="hl-info">
             <strong>{{ c.name }}</strong>
-            <span>{{ c.csm }} · €{{ fmtNum(c.arr) }}</span>
+            <span>{{ c.csm }} · {{ fmtCurrency(c.arr, locale) }}</span>
           </div>
         </div>
         <div class="hl-right">
@@ -33,9 +33,9 @@
 
 <script setup>
 import { useI18n } from 'vue-i18n'
-import { fmtNum, scoreColor } from './satisfactionHelpers'
+import { fmtCurrency, scoreColor } from './satisfactionHelpers'
 
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
 
 defineProps({
   sortedClients: { type: Array, default: () => [] }

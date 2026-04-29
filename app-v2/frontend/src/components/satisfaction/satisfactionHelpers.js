@@ -11,3 +11,9 @@ export function scoreColor(score) {
 export function pct(count, total) {
   return total ? (count / total) * 100 : 0
 }
+
+
+export function fmtCurrency(amount, locale = 'fr') {
+  const loc = locale === 'ko' ? 'ko-KR' : locale === 'en' ? 'en-US' : 'fr-FR'
+  return new Intl.NumberFormat(loc, { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount)
+}
