@@ -7,7 +7,7 @@
           <div class="hl-av" :class="c.status">{{ c.name[0] }}</div>
           <div class="hl-info">
             <strong>{{ c.name }}</strong>
-            <span>{{ c.csm }} · {{ fmtCurrency(c.arr, locale, c.currency || 'EUR') }}</span>
+            <span>{{ c.csm }} · {{ fmtCurrency(c.arr, locale) }}</span>
           </div>
         </div>
         <div class="hl-right">
