@@ -75,3 +75,27 @@ const roiRecommendedPlan = computed(() => {
   return props.t('roi_plan_elite')
 })
 </script>
+<style scoped>
+.roi-section { padding: 100px 24px; max-width: 1100px; margin: 0 auto; }
+.roi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+.roi-sliders { display: flex; flex-direction: column; gap: 28px; }
+.roi-field label { display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: 600; color: #1a1a2e; margin-bottom: 8px; }
+.roi-field label span { color: #7c3aed; font-weight: 700; }
+.roi-field input[type="range"] { width: 100%; accent-color: #7c3aed; height: 6px; -webkit-appearance: none; background: #e5e7eb; border-radius: 3px; outline: none; }
+.roi-field input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: #7c3aed; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(124,58,237,0.3); }
+.roi-results { background: #fff; border-radius: 20px; padding: 32px; border: 1px solid #e5e7eb; box-shadow: 0 8px 32px rgba(0,0,0,0.06); display: flex; flex-direction: column; gap: 20px; }
+.roi-card { padding: 20px; border-radius: 14px; text-align: center; }
+.roi-card.green { background: linear-gradient(135deg, #f0fdf4, #dcfce7); }
+.roi-card.blue { background: linear-gradient(135deg, #eff6ff, #dbeafe); }
+.roi-card.purple { background: linear-gradient(135deg, #faf5ff, #ede9fe); }
+.roi-card-value { font-size: 2rem; font-weight: 800; color: #1a1a2e; margin-bottom: 4px; }
+.roi-card.green .roi-card-value { color: #166534; }
+.roi-card.blue .roi-card-value { color: #1e40af; }
+.roi-card.purple .roi-card-value { color: #7c3aed; }
+.roi-card-label { font-size: 0.82rem; color: #6b7280; font-weight: 500; }
+.roi-recommendation { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; border-radius: 14px; padding: 16px 20px; font-size: 0.9rem; text-align: center; }
+.roi-recommendation strong { font-weight: 700; display: block; font-size: 1.05rem; margin-top: 4px; }
+@media (max-width: 768px) {
+  .roi-grid { grid-template-columns: 1fr; gap: 32px; }
+}
+</style>
