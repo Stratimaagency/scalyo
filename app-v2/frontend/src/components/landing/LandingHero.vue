@@ -17,9 +17,9 @@
       </div>
 
       <div class="proof-row">
-        <span class="proof-item">\u2713 {{ t('proof_14d') }}</span>
-        <span class="proof-item">\u2713 {{ t('proof_rgpd') }}</span>
-        <span class="proof-item">\u2713 {{ t('proof_support') }}</span>
+        <span class="proof-item">✓ {{ t('proof_14d') }}</span>
+        <span class="proof-item">✓ {{ t('proof_rgpd') }}</span>
+        <span class="proof-item">✓ {{ t('proof_support') }}</span>
       </div>
     </div>
   </section>

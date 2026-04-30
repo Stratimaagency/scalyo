@@ -3,7 +3,7 @@
     <div class="browser-chrome">
       <div class="chrome-dots"><span /><span /><span /></div>
       <div class="chrome-url">
-        <span class="chrome-lock">\uD83D\uDD12</span>
+        <span class="chrome-lock">🔒</span>
         app.scalyo.app
       </div>
       <div class="chrome-live">
