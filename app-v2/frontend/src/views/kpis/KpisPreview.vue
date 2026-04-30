@@ -52,7 +52,7 @@
 
       <!-- chart_bar -->
       <div v-else-if="block.type === 'chart_bar'" class="kpv-chart">
-        <apexchart type="bar"
+        <apexchart :key="'bar-' + block.id" type="bar"
           :options="barOptions(block.data, copil.color)"
           :series="barSeries(block.data)"
           height="220" />
@@ -60,7 +60,7 @@
 
       <!-- chart_line -->
       <div v-else-if="block.type === 'chart_line'" class="kpv-chart">
-        <apexchart type="line"
+        <apexchart :key="'line-' + block.id" type="line"
           :options="lineOptions(block.data, copil.color)"
           :series="lineSeries(block.data)"
           height="220" />
@@ -68,7 +68,7 @@
 
       <!-- chart_donut -->
       <div v-else-if="block.type === 'chart_donut'" class="kpv-chart">
-        <apexchart type="donut"
+        <apexchart :key="'donut-' + block.id" type="donut"
           :options="donutOptions(block.data)"
           :series="block.data.data"
           height="220" />

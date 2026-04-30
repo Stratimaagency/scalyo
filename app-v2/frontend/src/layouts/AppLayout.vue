@@ -31,6 +31,10 @@
           </template>
         </template>
       </nav>
+      <button class="sidebar-logout" @click="handleLogout" :title="t('sidebar_logout')">
+        <span class="nav-icon">🚪</span>
+        <span v-if="!app.sidebarCollapsed" class="nav-label">{{ t('sidebar_logout') }}</span>
+      </button>
       <button class="sidebar-toggle hide-mobile" @click="app.toggleSidebar()">
         {{ app.sidebarCollapsed ? '→' : '←' }}
       </button>
@@ -47,11 +51,6 @@
           <ScalyoLogo :size="24" class="hide-desktop topbar-logo-mobile" />
         </div>
         <div class="topbar-right">
-          <!-- Lang switch -->
-          <div class="lang-switch">
-            <button v-for="l in langs" :key="l.code" :class="{ active: currentLocale === l.code }" @click="switchLocale(l.code)">{{ l.label }}</button>
-          </div>
-
           <!-- Notifications -->
           <div class="topbar-notif" ref="notifRef">
             <button class="notif-btn" @click="notifOpen = !notifOpen">
@@ -91,7 +90,7 @@
 
           <!-- User -->
           <div class="topbar-user">
-            <div class="user-avatar">{{ auth.user?.firstName?.[0] || 'U' }}</div>
+            <div class="user-avatar" @click="$router.push('/app/profile')" style="cursor:pointer" title="Mon profil">{{ auth.user?.firstName?.[0] || 'U' }}</div>
             <div class="user-info hide-mobile">
               <span class="user-company">{{ auth.company?.name }}</span>
               <span class="user-badges">
@@ -101,6 +100,12 @@
             </div>
           </div>
         </div>
+      
+      <!-- Trial banner -->
+      <div v-if="auth.isOnTrial" class="trial-banner">
+        🕐 {{ t('trial_banner', { days: auth.trialDaysLeft }) }}
+        <a href="/#pricing" class="trial-cta">{{ t('trial_choose_plan') }}</a>
+      </div>
       </header>
 
       <!-- CONTENT -->
@@ -176,18 +181,6 @@ function fmtNotifDate(iso) {
   const diffD = Math.round(diffH / 24)
   if (diffD < 7) return `il y a ${diffD}j`
   return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
-}
-
-// ─── Langue ────────────────────────────────────────────────────────────────────
-const currentLocale = computed(() => locale.value)
-const langs = [
-  { code: 'fr', label: 'FR' },
-  { code: 'en', label: 'EN' },
-  { code: 'ko', label: '한국어' },
-]
-function switchLocale(code) {
-  locale.value = code
-  app.setLocale(code)
 }
 
 // ─── Sidebar ───────────────────────────────────────────────────────────────────
@@ -271,10 +264,28 @@ const sidebarSections = [
   {
     label: '',
     items: [
+      { name: 'profile',  icon: '👤', label: 'sidebar_profile',  to: '/app/profile'  },
       { name: 'settings', icon: '⚙️', label: 'sidebar_settings', to: '/app/settings' },
     ],
   },
 ]
+
+import { onMounted } from 'vue'
+onMounted(async () => {
+    chatStore.init()
+  try {
+    const { useClientStore } = await import('@/stores/clients')
+    const { useTeamStore } = await import('@/stores/team')
+    const { useTaskStore } = await import('@/stores/tasks')
+    const cs = useClientStore(); const ts = useTeamStore(); const tk = useTaskStore()
+    await Promise.all([cs.loadClients(), ts.loadMembers(), tk.loadTasks()])
+  } catch(e) { console.error('AppLayout loadStores:', e) }
+})
+
+async function handleLogout() {
+  await auth.logout()
+  router.push('/login')
+}
 </script>
 
 <style scoped>
@@ -300,6 +311,10 @@ const sidebarSections = [
 .nav-subitem:hover { color: var(--text); background: var(--bg-hover); }
 .nav-subitem.active { color: var(--purple); font-weight: 600; }
 .sidebar-toggle { width: 100%; padding: 12px; border: none; background: none; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border-light); transition: background 0.15s; }
+.sidebar-logout { width: 100%; padding: 12px 16px; border: none; background: none; color: #ef4444; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: background 0.15s; text-align: left; }
+.sidebar-logout:hover { background: #fef2f2; }
+.sidebar-logout .nav-icon { font-size: 1rem; flex-shrink: 0; }
+.sidebar-logout .nav-label { font-weight: 500; white-space: nowrap; }
 .sidebar-toggle:hover { background: var(--bg-hover); }
 .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; }
 
@@ -309,9 +324,7 @@ const sidebarSections = [
 .topbar-burger span { display: block; width: 20px; height: 2px; background: var(--text); border-radius: 1px; }
 .topbar-left { flex: 1; }
 .topbar-right { display: flex; align-items: center; gap: 12px; }
-.lang-switch { display: flex; gap: 2px; background: var(--bg); border-radius: 8px; padding: 2px; }
-.lang-switch button { background: none; border: none; color: var(--text-muted); font-size: 0.72rem; padding: 4px 8px; border-radius: 6px; transition: all 0.15s; font-weight: 500; }
-.lang-switch button.active { background: var(--purple); color: #fff; font-weight: 600; }
+
 
 /* ─── Notifications ────────────────────────────────────────────────────────── */
 .topbar-notif { position: relative; }
@@ -376,4 +389,29 @@ const sidebarSections = [
 }
 @media (min-width: 769px) { .hide-desktop { display: none !important; } }
 @media (min-width: 769px) { .topbar-logo-mobile { display: none; } }
+
+.trial-banner {
+  background: linear-gradient(90deg, #7c3aed, #a78bfa);
+  color: #fff;
+  text-align: center;
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.trial-cta {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+  padding: 3px 12px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.78rem;
+  transition: background 0.2s;
+}
+.trial-cta:hover { background: rgba(255,255,255,0.4); }
+
 </style>

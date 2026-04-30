@@ -173,8 +173,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, watch, onMounted, reactive, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { supabase } from '@/lib/supabase'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -240,15 +241,7 @@ const defaultEvent = () => ({
 const eventForm = reactive(defaultEvent())
 
 // Mock events
-const events = ref([
-  { id: 'ev1', title: 'QBR Acme Corp', start: '2026-04-14T10:00:00', end: '2026-04-14T11:00:00', color: '#3b82f6', extendedProps: { clientId: 'cl2', projectId: 'p3' } },
-  { id: 'ev2', title: 'Check-in TechScale', start: '2026-04-15T14:00:00', end: '2026-04-15T14:30:00', color: '#10b981', extendedProps: { clientId: 'cl1' } },
-  { id: 'ev3', title: 'Call rétention Leroy', start: '2026-04-16T09:00:00', end: '2026-04-16T10:00:00', color: '#ef4444', extendedProps: { clientId: 'cl4' } },
-  { id: 'ev4', title: 'Onboarding Biotech', start: '2026-04-17T11:00:00', end: '2026-04-17T12:00:00', color: '#7c3aed', extendedProps: { clientId: 'cl3' } },
-  { id: 'ev5', title: 'Team standup', start: '2026-04-14T09:00:00', end: '2026-04-14T09:15:00', color: '#f59e0b' },
-  { id: 'ev6', title: 'Planning sprint', start: '2026-04-14T15:00:00', end: '2026-04-14T16:00:00', color: '#8b5cf6' },
-  { id: 'ev7', title: 'NPS Review', start: '2026-04-18T10:00:00', end: '2026-04-18T11:30:00', color: '#ec4899', extendedProps: { clientId: 'cl5' } },
-])
+const events = ref([])
 
 const fcLocale = computed(() => locale.value === 'ko' ? 'ko' : locale.value === 'en' ? 'en' : 'fr')
 const slotHeight = computed(() => planningSettings.density === 'compact' ? 32 : planningSettings.density === 'comfortable' ? 56 : 44)
@@ -336,18 +329,32 @@ function handleEventResize(info) {
   if (ev) { ev.end = info.event.endStr }
 }
 
-function saveEvent() {
+async function saveEvent() {
   if (editingEvent.value) {
     const ev = events.value.find(e => e.id === editingEvent.value)
-    if (ev) { Object.assign(ev, { title: eventForm.title, start: eventForm.start, end: eventForm.end, color: eventForm.color }) }
+    if (ev) {
+      Object.assign(ev, { title: eventForm.title, start: eventForm.start, end: eventForm.end, color: eventForm.color })
+      await supabase.from('planning_events').update({
+        title: eventForm.title, start_at: eventForm.start, end_at: eventForm.end, color: eventForm.color
+      }).eq('id', editingEvent.value)
+    }
   } else {
-    events.value.push({
-      id: 'ev_' + Date.now(), title: eventForm.title, start: eventForm.start, end: eventForm.end || eventForm.start,
-      color: eventForm.color, allDay: eventForm.allDay,
-      extendedProps: { clientId: eventForm.clientId, projectId: eventForm.projectId },
+    const row = {
+      title: eventForm.title, start_at: eventForm.start, end_at: eventForm.end || eventForm.start,
+      color: eventForm.color || '#7c3aed', all_day: eventForm.allDay || false,
+      client_id: eventForm.clientId || '', project_id: eventForm.projectId || '',
+    }
+    const { data } = await supabase.from('planning_events').insert([row]).select().single()
+    if (data) events.value.push({
+      id: data.id, title: data.title, start: data.start_at, end: data.end_at,
+      color: data.color, allDay: data.all_day,
+      extendedProps: { clientId: data.client_id, projectId: data.project_id }
     })
   }
-  eventSlideOpen.value = false
+  eventForm.title = ''; eventForm.start = ''; eventForm.end = '';
+  eventForm.color = '#7c3aed'; eventForm.allDay = false;
+  eventForm.clientId = ''; eventForm.projectId = '';
+  showEventModal.value = false; editingEvent.value = null
 }
 
 function deleteEvent() {
@@ -402,6 +409,26 @@ function taskProg(task) {
 }
 
 onMounted(() => { setTimeout(() => { currentTitle.value = getApi()?.view?.title || '' }, 100) })
+
+// ─── Supabase sync ────────────────────────────────────────────
+async function loadEvents() {
+  const { data } = await supabase.from('planning_events').select('*').order('start_at', { ascending: true })
+  if (data) events.value = data.map(r => ({
+    id: r.id, title: r.title,
+    start: r.start_at, end: r.end_at,
+    color: r.color || '#7c3aed', allDay: r.all_day || false,
+    extendedProps: { clientId: r.client_id, projectId: r.project_id, description: r.description }
+  }))
+}
+
+
+async function removeEvent(id) {
+  await supabase.from('planning_events').delete().eq('id', id)
+  events.value = events.value.filter(e => e.id !== id)
+}
+
+onMounted(() => { loadEvents() })
+
 </script>
 
 <style scoped>

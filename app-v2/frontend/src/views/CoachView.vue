@@ -2,9 +2,8 @@
   <div class="coach-view">
     <div class="coach-header">
       <div><h1>🤖 {{ t('coach_title') }}</h1></div>
-      <span class="coach-counter">{{ messages.length }}/50 {{ t('coach_counter') }}</span>
+      <span class="coach-counter">{{ messages.length }} {{ t('coach_counter') }}</span>
     </div>
-
     <div class="coach-chat">
       <div class="chat-messages" ref="chatRef">
         <div v-if="!messages.length" class="chat-welcome">
@@ -16,7 +15,6 @@
             </ul>
           </div>
         </div>
-
         <div v-for="msg in messages" :key="msg.id" class="chat-msg" :class="msg.role">
           <div class="msg-avatar">{{ msg.role === 'user' ? '👤' : '🤖' }}</div>
           <div class="msg-body">
@@ -24,7 +22,6 @@
             <span class="msg-time">{{ msg.time }}</span>
           </div>
         </div>
-
         <div v-if="thinking" class="chat-msg assistant">
           <div class="msg-avatar">🤖</div>
           <div class="msg-body">
@@ -32,11 +29,9 @@
           </div>
         </div>
       </div>
-
       <div v-if="!messages.length" class="chat-suggestions">
         <button v-for="s in suggestions" :key="s" class="sug-btn" @click="sendMessage(t(s))">{{ t(s) }}</button>
       </div>
-
       <div class="chat-input-area">
         <input v-model="input" :placeholder="t('coach_placeholder')" @keydown.enter="sendMessage(input)" :disabled="thinking" />
         <button class="send-btn" @click="sendMessage(input)" :disabled="!input.trim() || thinking">→</button>
@@ -50,12 +45,16 @@ import { ref, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useClientStore } from '@/stores/clients'
 import { useTeamStore } from '@/stores/team'
+import { sanitizeHtml } from '@/utils/sanitize'
+import { askScalyoAI } from '@/utils/askScalyoAI'
 
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
 const clientStore = useClientStore()
 const teamStore = useTeamStore()
 
-function load(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback } catch { return fallback } }
+function load(key, fallback) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback } catch { return fallback }
+}
 function save(key, value) { localStorage.setItem(key, JSON.stringify(value)) }
 
 const input = ref('')
@@ -66,20 +65,33 @@ const chatRef = ref(null)
 watch(messages, val => save('scalyo_coach_messages', val), { deep: true })
 
 const suggestions = ['coach_sug1', 'coach_sug2', 'coach_sug3', 'coach_sug4', 'coach_sug5']
-const mockResponseKeys = ['coach_mock1', 'coach_mock2', 'coach_mock3']
 
 function formatMsg(text) {
-  return text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+  const html = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+  return sanitizeHtml(html)
 }
 
 function buildContext() {
-  const c = clientStore
-  return `Portfolio: ${c.clients.length} clients, ARR total: ${c.totalArr}€, Health moyen: ${c.avgHealth}/10, Critiques: ${c.criticalCount}, NPS moyen: ${c.avgNps}. Equipe: ${teamStore.members.length} CSMs, Score sante: ${teamStore.teamHealthScore}/100.`
+  return {
+    totalClients: clientStore.clients?.length || 0,
+    totalArr: clientStore.totalArr || 0,
+    avgHealth: clientStore.avgHealth || 0,
+    criticalCount: clientStore.criticalCount || 0,
+    avgNps: clientStore.avgNps || 0,
+    teamSize: teamStore.members?.length || 0,
+    teamHealthScore: teamStore.teamHealthScore || 0,
+  }
 }
 
 async function sendMessage(text) {
   if (!text?.trim() || thinking.value) return
-  const userMsg = { id: Date.now(), role: 'user', content: text.trim(), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+
+  const userMsg = {
+    id: Date.now(),
+    role: 'user',
+    content: text.trim(),
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
   messages.value.push(userMsg)
   input.value = ''
   thinking.value = true
@@ -87,26 +99,27 @@ async function sendMessage(text) {
   scrollBottom()
 
   try {
-    const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
-    if (!apiKey || apiKey === 'REMPLACER_PAR_CLE_ANTHROPIC') {
-      await new Promise(r => setTimeout(r, 1200))
-      const responseKey = mockResponseKeys[messages.value.length % mockResponseKeys.length]
-      messages.value.push({ id: Date.now() + 1, role: 'assistant', content: t(responseKey), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
-    } else {
-      const res = await fetch('/api/coach', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: text.trim(),
-          context: buildContext(),
-          history: messages.value.slice(-10).map(m => ({ role: m.role, content: m.content })),
-        }),
-      })
-      const data = await res.json()
-      messages.value.push({ id: Date.now() + 1, role: 'assistant', content: data.response || data.error || t('coach_error'), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
-    }
+    const result = await askScalyoAI({
+      module: 'coach',
+      message: text.trim(),
+      history: messages.value.slice(-10).map(m => ({ role: m.role, content: m.content })),
+      context: buildContext(),
+      lang: locale.value,
+    })
+
+    messages.value.push({
+      id: Date.now() + 1,
+      role: 'assistant',
+      content: result.response || result.reply || result.content || t('coach_error'),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    })
   } catch {
-    messages.value.push({ id: Date.now() + 1, role: 'assistant', content: t('coach_error'), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
+    messages.value.push({
+      id: Date.now() + 1,
+      role: 'assistant',
+      content: t('coach_error'),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    })
   }
 
   thinking.value = false
@@ -116,6 +129,11 @@ async function sendMessage(text) {
 
 function scrollBottom() {
   if (chatRef.value) chatRef.value.scrollTop = chatRef.value.scrollHeight
+}
+
+function clearHistory() {
+  if (!confirm(t('coach_clear_confirm') || 'Effacer tout l\'historique du chat ?')) return
+  messages.value = []
 }
 </script>
 

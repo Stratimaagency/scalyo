@@ -2,6 +2,14 @@
   <div class="priorities-view">
     <h1>🎯 {{ t('sm_priorities_title') }}</h1>
 
+    <AiInsightPanel
+      module="matrice"
+      :title="t('ai_matrice_title')"
+      :button-label="t('ai_matrice_btn')"
+      :message="t('ai_matrice_prompt')"
+      :context="{ tasks: taskStore.tasks?.map(t => ({ title: t.title, priority: t.priority, status: t.status, dueDate: t.dueDate })) || [] }"
+    />
+
     <!-- Unclassified -->
     <div class="prio-unclassified">
       <h3>{{ t('sm_not_classified') }} <span class="prio-count">{{ unclassified.length }}</span></h3>
@@ -41,6 +49,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTaskStore } from '@/stores/tasks'
 import { useClientStore } from '@/stores/clients'
+import AiInsightPanel from '@/components/ai/AiInsightPanel.vue'
 
 const { t } = useI18n({ useScope: 'global' })
 const tasks = useTaskStore()

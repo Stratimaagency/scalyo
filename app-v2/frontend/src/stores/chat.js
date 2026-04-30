@@ -1,170 +1,188 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { supabase } from '@/lib/supabase'
+import { useAuthStore } from '@/stores/auth'
 
 export const useChatStore = defineStore('chat', () => {
-
-  // Channels — l'utilisateur peut créer/modifier/supprimer
-  const channels = ref([
-    { id: 'general', name: 'général', icon: '#', type: 'channel',
-      description: 'Discussion générale de l\'équipe',
-      createdBy: 'system', canDelete: false },
-    { id: 'cs-team', name: 'cs-team', icon: '#', type: 'channel',
-      description: 'Équipe Customer Success',
-      createdBy: 'system', canDelete: false },
-    { id: 'alerts', name: 'alertes', icon: '🔔', type: 'channel',
-      description: 'Alertes automatiques Scalyo',
-      createdBy: 'system', canDelete: false },
-    { id: 'nova', name: 'Nova — IA', icon: '🤖', type: 'assistant',
-      description: 'Votre assistante IA',
-      createdBy: 'system', canDelete: false },
-  ])
-
-  // Messages par channel
-  const messages = ref({
-    general: [
-      { id: 'm1', author: 'Sophie M.', authorId: 'tm1',
-        content: 'Bonjour l\'équipe ! Quelqu\'un a des nouvelles de Leroy Finance ?',
-        time: '09:14', date: '2026-04-12', reactions: { '👍': ['tm2'] },
-        pinned: false, edited: false, attachments: [] },
-      { id: 'm2', author: 'Thomas R.', authorId: 'tm2',
-        content: 'J\'ai un call avec eux cet après-midi. Health score critique (3.2). Je vous tiens au courant.',
-        time: '09:18', date: '2026-04-12', reactions: {}, pinned: false,
-        edited: false, attachments: [] },
-    ],
-    'cs-team': [
-      { id: 'm4', author: 'Sophie M.', authorId: 'tm1',
-        content: 'Rappel : QBR Acme Corp prévu le 15 avril.',
-        time: '10:30', date: '2026-04-11', reactions: {},
-        pinned: true, edited: false, attachments: [] },
-    ],
-    alerts: [
-      { id: 'm5', author: 'Nova', authorId: 'nova',
-        content: '⚠️ **Leroy Finance** n\'a pas été contacté depuis 14 jours.\nHealth score: 3.2/10 | ARR: 240K€',
-        time: '08:00', date: '2026-04-12', reactions: {}, pinned: false,
-        edited: false, attachments: [],
-        actions: [
-          { label: '👤 Voir le client', type: 'navigate', route: '/app/portfolio' },
-          { label: '📋 Créer une tâche', type: 'create_task',
-            taskData: { title: 'Contacter Leroy Finance', priority: 'high' } },
-          { label: '📧 Envoyer un email', type: 'navigate', route: '/app/email-studio' }
-        ]
-      },
-      { id: 'm6', author: 'Nova', authorId: 'nova',
-        content: '📅 **Renouvellement** Leroy Finance dans **28 jours** (10 mai 2026) — ARR: 240K€',
-        time: '08:01', date: '2026-04-12', reactions: {}, pinned: false,
-        edited: false, attachments: [] },
-    ],
-    nova: [],
-  })
-
-  const activeChannel = ref('general')
-  const unreadCounts = ref({ general: 0, 'cs-team': 1, alerts: 2, nova: 0 })
+  const channels = ref([])
+  const messages = ref({})
+  const activeChannel = ref(null)
   const editingMessage = ref(null)
   const replyingTo = ref(null)
+  const unreadCounts = ref({})
+  let realtimeSub = null
 
-  // Computed
-  const totalUnread = computed(() =>
-    Object.values(unreadCounts.value).reduce((a, b) => a + b, 0)
-  )
-  const activeMessages = computed(() =>
-    messages.value[activeChannel.value] || []
-  )
-  const pinnedMessages = computed(() =>
-    (messages.value[activeChannel.value] || []).filter(m => m.pinned)
-  )
+  const activeMessages = computed(() => activeChannel.value ? (messages.value[activeChannel.value] || []) : [])
+  const pinnedMessages = computed(() => activeMessages.value.filter(m => m.pinned))
+  const totalUnread = computed(() => Object.values(unreadCounts.value).reduce((a, b) => a + b, 0))
 
-  // Actions
-  function uid() { return 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6) }
-
-  function sendMessage(channelId, content, author = 'Lidia C.', authorId = 'u1', attachments = []) {
-    if (!messages.value[channelId]) messages.value[channelId] = []
-    const msg = {
-      id: uid(),
-      author, authorId, content,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      date: new Date().toISOString().slice(0, 10),
-      reactions: {}, pinned: false, edited: false,
-      attachments,
-      replyTo: replyingTo.value ? { ...replyingTo.value } : null,
+  async function init() {
+    await loadChannels()
+    if (channels.value.length > 0 && !activeChannel.value) {
+      activeChannel.value = channels.value[0].id
     }
-    messages.value[channelId].push(msg)
+    if (activeChannel.value) await loadMessages(activeChannel.value)
+    subscribeRealtime()
+  }
+
+  async function loadChannels() {
+    const { data, error } = await supabase.from('chat_channels').select('*').order('created_at')
+    if (!error && data) {
+      channels.value = data.map(c => ({ id: c.id, name: c.name, description: c.description || '', type: c.type || 'channel' }))
+    }
+  }
+
+  async function loadMessages(channelId) {
+    const { data, error } = await supabase
+      .from('chat_messages')
+      .select('*')
+      .eq('channel_id', channelId)
+      .order('created_at', { ascending: true })
+      .limit(100)
+    if (!error && data) {
+      messages.value[channelId] = data.map(mapMsg)
+    }
+  }
+
+  function mapMsg(m) {
+    return {
+      id: m.id, channelId: m.channel_id, author: m.author_name, authorId: m.user_id,
+      content: m.content, timestamp: m.created_at, pinned: m.pinned || false,
+      reactions: m.reactions || [], attachments: m.attachments || [],
+      replyTo: m.reply_to, editedAt: m.edited_at
+    }
+  }
+
+  function subscribeRealtime() {
+    if (realtimeSub) realtimeSub.unsubscribe()
+    realtimeSub = supabase.channel('chat-realtime')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, (payload) => {
+        const msg = mapMsg(payload.new)
+        if (!messages.value[msg.channelId]) messages.value[msg.channelId] = []
+        const exists = messages.value[msg.channelId].some(m => m.id === msg.id)
+        if (!exists) {
+          messages.value[msg.channelId].push(msg)
+          if (msg.channelId !== activeChannel.value) {
+            unreadCounts.value[msg.channelId] = (unreadCounts.value[msg.channelId] || 0) + 1
+          }
+        }
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chat_messages' }, (payload) => {
+        const updated = mapMsg(payload.new)
+        const arr = messages.value[updated.channelId]
+        if (arr) {
+          const idx = arr.findIndex(m => m.id === updated.id)
+          if (idx !== -1) arr[idx] = updated
+        }
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'chat_messages' }, (payload) => {
+        const old = payload.old
+        Object.keys(messages.value).forEach(chId => {
+          messages.value[chId] = messages.value[chId].filter(m => m.id !== old.id)
+        })
+      })
+      .subscribe()
+  }
+
+  async function sendMessage(channelId, content, author, authorId, attachments = []) {
+    const auth = useAuthStore()
+    const userId = authorId || auth.user?.id
+    const name = author || auth.profile?.first_name || 'User'
+    const { error } = await supabase.from('chat_messages').insert({
+      channel_id: channelId, user_id: userId, author_name: name,
+      content, attachments: attachments.length ? attachments : [],
+      reply_to: replyingTo.value || null
+    })
+    if (error) console.error('[chat] sendMessage error', error)
     replyingTo.value = null
-    return msg
   }
 
-  function editMessage(channelId, msgId, newContent) {
-    const msg = messages.value[channelId]?.find(m => m.id === msgId)
-    if (msg && msg.authorId === 'u1') {
-      msg.content = newContent
-      msg.edited = true
-      editingMessage.value = null
-    }
+  async function editMessage(channelId, msgId, newContent) {
+    const { error } = await supabase.from('chat_messages')
+      .update({ content: newContent, edited_at: new Date().toISOString() })
+      .eq('id', msgId)
+    if (error) console.error('[chat] editMessage error', error)
+    editingMessage.value = null
   }
 
-  function deleteMessage(channelId, msgId) {
-    if (messages.value[channelId]) {
-      messages.value[channelId] = messages.value[channelId].filter(m => m.id !== msgId)
-    }
+  async function deleteMessage(channelId, msgId) {
+    const { error } = await supabase.from('chat_messages').delete().eq('id', msgId)
+    if (error) console.error('[chat] deleteMessage error', error)
   }
 
-  function pinMessage(channelId, msgId) {
-    const msg = messages.value[channelId]?.find(m => m.id === msgId)
-    if (msg) msg.pinned = !msg.pinned
-  }
-
-  function addReaction(channelId, msgId, emoji, userId = 'u1') {
-    const msg = messages.value[channelId]?.find(m => m.id === msgId)
+  async function pinMessage(channelId, msgId) {
+    const msg = (messages.value[channelId] || []).find(m => m.id === msgId)
     if (!msg) return
-    if (!msg.reactions[emoji]) msg.reactions[emoji] = []
-    const idx = msg.reactions[emoji].indexOf(userId)
-    if (idx >= 0) msg.reactions[emoji].splice(idx, 1)
-    else msg.reactions[emoji].push(userId)
-    if (!msg.reactions[emoji].length) delete msg.reactions[emoji]
+    const { error } = await supabase.from('chat_messages')
+      .update({ pinned: !msg.pinned })
+      .eq('id', msgId)
+    if (error) console.error('[chat] pinMessage error', error)
+  }
+
+  async function addReaction(channelId, msgId, emoji, userId) {
+    const auth = useAuthStore()
+    const uid = userId || auth.user?.id
+    const msg = (messages.value[channelId] || []).find(m => m.id === msgId)
+    if (!msg) return
+    let reactions = [...(msg.reactions || [])]
+    const idx = reactions.findIndex(r => r.emoji === emoji)
+    if (idx !== -1) {
+      if (reactions[idx].users?.includes(uid)) {
+        reactions[idx].users = reactions[idx].users.filter(u => u !== uid)
+        if (reactions[idx].users.length === 0) reactions.splice(idx, 1)
+      } else {
+        reactions[idx].users = [...(reactions[idx].users || []), uid]
+      }
+    } else {
+      reactions.push({ emoji, users: [uid] })
+    }
+    const { error } = await supabase.from('chat_messages')
+      .update({ reactions })
+      .eq('id', msgId)
+    if (error) console.error('[chat] addReaction error', error)
   }
 
   function setReplyTo(channelId, msgId) {
-    const msg = messages.value[channelId]?.find(m => m.id === msgId)
-    if (msg) replyingTo.value = { msgId, author: msg.author, preview: msg.content.slice(0, 80) }
+    replyingTo.value = msgId || null
   }
 
-  function setActive(id) {
+  async function setActive(id) {
     activeChannel.value = id
-    if (unreadCounts.value[id] !== undefined) unreadCounts.value[id] = 0
-  }
-
-  // Channel management
-  function createChannel(name, description = '') {
-    const id = 'ch_' + Date.now()
-    channels.value.push({
-      id, name: name.toLowerCase().replace(/\s+/g, '-'),
-      icon: '#', type: 'channel',
-      description, createdBy: 'u1', canDelete: true,
-    })
-    messages.value[id] = []
     unreadCounts.value[id] = 0
-    return id
+    if (!messages.value[id]) await loadMessages(id)
   }
 
-  function updateChannel(id, changes) {
-    const ch = channels.value.find(c => c.id === id)
-    if (ch && ch.canDelete) Object.assign(ch, changes)
+  async function createChannel(name, description = '') {
+    const auth = useAuthStore()
+    const { data, error } = await supabase.from('chat_channels').insert({
+      name, description, type: 'channel', created_by: auth.user?.id
+    }).select().single()
+    if (!error && data) {
+      channels.value.push({ id: data.id, name: data.name, description: data.description, type: data.type })
+    }
   }
 
-  function deleteChannel(id) {
-    const ch = channels.value.find(c => c.id === id)
-    if (ch?.canDelete) {
+  async function updateChannel(id, changes) {
+    const { error } = await supabase.from('chat_channels').update(changes).eq('id', id)
+    if (!error) {
+      const ch = channels.value.find(c => c.id === id)
+      if (ch) Object.assign(ch, changes)
+    }
+  }
+
+  async function deleteChannel(id) {
+    const { error } = await supabase.from('chat_channels').delete().eq('id', id)
+    if (!error) {
       channels.value = channels.value.filter(c => c.id !== id)
       delete messages.value[id]
-      delete unreadCounts.value[id]
-      if (activeChannel.value === id) activeChannel.value = 'general'
+      if (activeChannel.value === id) activeChannel.value = channels.value[0]?.id || null
     }
   }
 
   return {
     channels, messages, activeChannel, unreadCounts, totalUnread,
     activeMessages, pinnedMessages, editingMessage, replyingTo,
-    sendMessage, editMessage, deleteMessage, pinMessage,
-    addReaction, setReplyTo, setActive,
-    createChannel, updateChannel, deleteChannel,
+    init, sendMessage, editMessage, deleteMessage, pinMessage,
+    addReaction, setReplyTo, setActive, createChannel, updateChannel, deleteChannel
   }
-}, { persist: true })
+})

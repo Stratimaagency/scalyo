@@ -1,29 +1,50 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-
-function load(key, fallback) {
-  try {
-    const v = localStorage.getItem(key)
-    return v ? JSON.parse(v) : fallback
-  } catch { return fallback }
-}
-
-function save(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
-}
+import { supabase } from '@/lib/supabase'
 
 const TEMPLATES = [
-  { id: 'tpl_onboard', key: 'onboarding', icon: '🚀', color: '#3b82f6', steps: ['Kick-off call avec le client', 'Configuration du compte', 'Formation utilisateurs', 'Check-in J+15', 'Revue adoption J+30', 'QBR J+90'], avgDays: 90 },
-  { id: 'tpl_retention', key: 'retention', icon: '🛡️', color: '#ef4444', steps: ['Email d\'ouverture de dialogue', 'Analyse utilisation produit', 'Call de 30 minutes', 'Présenter la roadmap produit'], avgDays: 21 },
-  { id: 'tpl_expansion', key: 'expansion', icon: '📈', color: '#10b981', steps: ['Identifier les signaux d\'expansion', 'Préparer la proposition', 'Présentation au client', 'Négociation & closing'], avgDays: 45 },
-  { id: 'tpl_qbr', key: 'qbr', icon: '📊', color: '#7c3aed', steps: ['Collecter les KPIs du trimestre', 'Préparer les slides', 'Valider en interne', 'Présenter au client', 'Documenter les action items'], avgDays: 14 },
-  { id: 'tpl_renewal', key: 'renewal', icon: '🔄', color: '#f59e0b', steps: ['Alerte J-90 : préparer le dossier', 'Check-in satisfaction J-60', 'Envoyer la proposition J-30', 'Négociation', 'Closing & signature'], avgDays: 90 },
-  { id: 'tpl_nps', key: 'nps', icon: '⭐', color: '#ec4899', steps: ['Envoyer l\'enquête NPS', 'Analyser les résultats', 'Contacter les détracteurs', 'Remercier les promoteurs', 'Plan d\'action par segment'], avgDays: 30 },
+  {
+    id: 'tpl_onboard', key: 'onboarding', icon: '\u{1F680}', color: '#3b82f6',
+    minPlan: 'growth', auto: false,
+    steps: ['pb_step_onboarding_1','pb_step_onboarding_2','pb_step_onboarding_3','pb_step_onboarding_4','pb_step_onboarding_5','pb_step_onboarding_6'],
+    avgDays: 90
+  },
+  {
+    id: 'tpl_retention', key: 'retention', icon: '\u{1F6E1}\uFE0F', color: '#ef4444',
+    minPlan: 'growth', auto: false,
+    steps: ['pb_step_retention_1','pb_step_retention_2','pb_step_retention_3','pb_step_retention_4'],
+    avgDays: 21
+  },
+  {
+    id: 'tpl_expansion', key: 'expansion', icon: '\u{1F4C8}', color: '#10b981',
+    minPlan: 'growth', auto: false,
+    steps: ['pb_step_expansion_1','pb_step_expansion_2','pb_step_expansion_3','pb_step_expansion_4'],
+    avgDays: 30
+  },
+  {
+    id: 'tpl_qbr', key: 'qbr', icon: '\u{1F4CA}', color: '#7c3aed',
+    minPlan: 'growth', auto: false,
+    steps: ['pb_step_qbr_1','pb_step_qbr_2','pb_step_qbr_3','pb_step_qbr_4'],
+    avgDays: 14
+  },
+  {
+    id: 'tpl_renewal', key: 'renewal', icon: '\u{1F504}', color: '#f59e0b',
+    minPlan: 'growth', auto: false,
+    steps: ['pb_step_renewal_1','pb_step_renewal_2','pb_step_renewal_3','pb_step_renewal_4'],
+    avgDays: 90
+  },
+  {
+    id: 'tpl_nps', key: 'nps', icon: '\u2B50', color: '#ec4899',
+    minPlan: 'growth', auto: false,
+    steps: ['pb_step_nps_1','pb_step_nps_2','pb_step_nps_3','pb_step_nps_4'],
+    avgDays: 14
+  },
 ]
 
-export const usePlaybookStore = defineStore('playbooks', () => {
-  const playbooks = ref(load('scalyo_playbooks', []))
+const PLAN_RANK = { starter: 0, growth: 1, elite: 2 }
 
+export const usePlaybookStore = defineStore('playbooks', () => {
+  const playbooks = ref([])
   const templates = TEMPLATES
 
   const activePlaybooks = computed(() => playbooks.value.filter(p => p.status === 'active'))
@@ -32,16 +53,16 @@ export const usePlaybookStore = defineStore('playbooks', () => {
   const doneThisMonth = computed(() => {
     const now = new Date()
     const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
-    return donePlaybooks.value.filter(p => p.completedAt >= start).length
+    return donePlaybooks.value.filter(p => p.completed_at >= start).length
   })
 
   const avgDuration = computed(() => {
-    const done = donePlaybooks.value.filter(p => p.completedAt && p.startedAt)
+    const done = donePlaybooks.value.filter(p => p.completed_at && p.started_at)
     if (!done.length) return 0
     const total = done.reduce((s, p) => {
-      return s + (new Date(p.completedAt).getTime() - new Date(p.startedAt).getTime()) / 86400000
+      return s + (new Date(p.completed_at).getTime() - new Date(p.started_at).getTime())
     }, 0)
-    return Math.round(total / done.length)
+    return Math.round(total / done.length / 86400000)
   })
 
   const successRate = computed(() => {
@@ -50,53 +71,90 @@ export const usePlaybookStore = defineStore('playbooks', () => {
     return Math.round((donePlaybooks.value.length / total) * 100)
   })
 
-  function activateTemplate(templateId, clientId, csmId) {
-    const tpl = templates.find(t => t.id === templateId)
-    if (!tpl) return
-    playbooks.value.push({
-      id: 'pb_' + Date.now(),
-      templateId,
-      templateKey: tpl.key,
-      icon: tpl.icon,
-      color: tpl.color,
-      clientId,
-      csmId,
-      status: 'active',
-      steps: tpl.steps.map((s, i) => ({ id: i, title: s, done: false })),
-      startedAt: new Date().toISOString().slice(0, 10),
-      completedAt: null,
-    })
-    save('scalyo_playbooks', playbooks.value)
+  function templatesForPlan(currentPlan) {
+    const rank = PLAN_RANK[currentPlan] ?? -1
+    return templates.filter(t => rank >= (PLAN_RANK[t.minPlan] ?? 0))
   }
 
-  function toggleStep(playbookId, stepId) {
+  function canActivate(currentPlan, templateId) {
+    const tpl = templates.find(t => t.id === templateId)
+    if (!tpl) return false
+    const rank = PLAN_RANK[currentPlan] ?? -1
+    return rank >= (PLAN_RANK[tpl.minPlan] ?? 0)
+  }
+
+  async function loadPlaybooks() {
+    const { data, error } = await supabase
+      .from('playbooks')
+      .select('*')
+      .order('created_at', { ascending: false })
+    if (!error && data) playbooks.value = data
+  }
+
+  async function activateTemplate(templateId, clientId, csmId, currentPlan) {
+    const tpl = templates.find(t => t.id === templateId)
+    if (!tpl) return { error: 'template_not_found' }
+
+    if (!canActivate(currentPlan, templateId)) {
+      return { error: 'plan_insufficient' }
+    }
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'not_authenticated' }
+
+    const newPb = {
+      user_id: user.id,
+      template_id: tpl.id,
+      template_key: tpl.key,
+      icon: tpl.icon,
+      color: tpl.color,
+      client_id: clientId || null,
+      csm_id: csmId || null,
+      status: 'active',
+      steps: tpl.steps.map((key, i) => ({ id: i, title: key, done: false })),
+      started_at: new Date().toISOString().slice(0, 10),
+      completed_at: null,
+    }
+
+    const { error } = await supabase.from('playbooks').insert([newPb])
+    if (!error) await loadPlaybooks()
+    return error ? { error: error.message } : { success: true }
+  }
+
+  async function toggleStep(playbookId, stepId) {
     const pb = playbooks.value.find(p => p.id === playbookId)
     if (!pb) return
     const step = pb.steps.find(s => s.id === stepId)
     if (step) {
       step.done = !step.done
-      save('scalyo_playbooks', playbooks.value)
+      await supabase.from('playbooks').update({ steps: pb.steps }).eq('id', playbookId)
     }
   }
 
-  function completePlaybook(playbookId) {
+  async function completePlaybook(playbookId) {
     const pb = playbooks.value.find(p => p.id === playbookId)
     if (pb) {
       pb.status = 'done'
-      pb.completedAt = new Date().toISOString().slice(0, 10)
+      pb.completed_at = new Date().toISOString().slice(0, 10)
       pb.steps.forEach(s => s.done = true)
-      save('scalyo_playbooks', playbooks.value)
+      await supabase.from('playbooks').update({
+        status: 'done',
+        completed_at: pb.completed_at,
+        steps: pb.steps,
+      }).eq('id', playbookId)
     }
   }
 
-  function deletePlaybook(playbookId) {
+  async function deletePlaybook(playbookId) {
     playbooks.value = playbooks.value.filter(p => p.id !== playbookId)
-    save('scalyo_playbooks', playbooks.value)
+    await supabase.from('playbooks').delete().eq('id', playbookId)
   }
 
   return {
-    playbooks, templates, activePlaybooks, donePlaybooks,
-    doneThisMonth, avgDuration, successRate,
-    activateTemplate, toggleStep, completePlaybook, deletePlaybook,
+    playbooks, templates,
+    activePlaybooks, donePlaybooks, doneThisMonth,
+    avgDuration, successRate,
+    templatesForPlan, canActivate,
+    activateTemplate, toggleStep, completePlaybook, deletePlaybook, loadPlaybooks,
   }
 }, { persist: false })

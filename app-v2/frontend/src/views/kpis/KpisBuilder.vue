@@ -69,19 +69,19 @@
               </div>
               <!-- Chart Bar -->
               <div v-else-if="block.type === 'chart_bar'" class="prev-chart">
-                <apexchart type="bar" height="160"
+                <apexchart :key="'bar-' + block.id" type="bar" height="160"
                   :options="{ chart:{toolbar:{show:false},animations:{enabled:false}}, colors:[block.data.datasets[0]?.color||'#7c3aed'], xaxis:{categories:block.data.labels}, dataLabels:{enabled:false}, grid:{borderColor:'#f3f4f6'}, plotOptions:{bar:{borderRadius:3}} }"
                   :series="block.data.datasets.map(d=>({name:d.label,data:d.data}))" />
               </div>
               <!-- Chart Line -->
               <div v-else-if="block.type === 'chart_line'" class="prev-chart">
-                <apexchart type="line" height="160"
+                <apexchart :key="'line-' + block.id" type="line" height="160"
                   :options="{ chart:{toolbar:{show:false},animations:{enabled:false}}, colors:block.data.datasets.map(d=>d.color||'#3b82f6'), xaxis:{categories:block.data.labels}, stroke:{curve:'smooth',width:2}, dataLabels:{enabled:false}, grid:{borderColor:'#f3f4f6'} }"
                   :series="block.data.datasets.map(d=>({name:d.label,data:d.data}))" />
               </div>
               <!-- Chart Donut -->
               <div v-else-if="block.type === 'chart_donut'" class="prev-chart">
-                <apexchart type="donut" height="160"
+                <apexchart :key="'donut-' + block.id" type="donut" height="160"
                   :options="{ labels:block.data.labels, colors:block.data.colors, legend:{position:'bottom',fontSize:'10px'}, dataLabels:{enabled:false}, plotOptions:{pie:{donut:{size:'55%'}}} }"
                   :series="block.data.data" />
               </div>

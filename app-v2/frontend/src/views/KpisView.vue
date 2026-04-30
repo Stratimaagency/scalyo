@@ -5,6 +5,14 @@
       <button class="btn-primary" @click="openCreate">{{ t('kpis_new') }}</button>
     </div>
 
+    <AiInsightPanel
+      module="copil"
+      :title="t('ai_copil_title')"
+      :button-label="t('ai_copil_btn')"
+      :message="t('ai_copil_prompt')"
+      :context="{ copils: store.copils?.length || 0 }"
+    />
+
     <!-- COPIL cards -->
     <div v-if="store.copils.length" class="copil-list">
       <div v-for="c in store.copils" :key="c.id" class="copil-card">
@@ -72,6 +80,7 @@ import { ref, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useKpiStore } from '@/stores/kpis'
 import SlideOver from '@/components/SlideOver.vue'
+import AiInsightPanel from '@/components/ai/AiInsightPanel.vue'
 
 const { t } = useI18n({ useScope: 'global' })
 const store = useKpiStore()

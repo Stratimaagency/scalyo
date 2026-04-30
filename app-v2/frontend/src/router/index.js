@@ -1,7 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const routes = [
-  { path: '/', redirect: '/app/dashboard' },
+  { path: '/', name: 'landing', component: () => import('@/views/LandingPage.vue'), meta: { guest: true } },
+  { path: '/paywall', name: 'paywall', component: () => import('@/views/PaywallView.vue') },
+  { path: '/payment-success', name: 'payment-success', component: () => import('@/views/PaymentSuccessView.vue') },
   { path: '/login', name: 'login', component: () => import('@/views/LoginView.vue'), meta: { guest: true } },
   { path: '/register', name: 'register', component: () => import('@/views/RegisterView.vue'), meta: { guest: true } },
   {
@@ -38,7 +41,7 @@ const routes = [
       { path: 'import', name: 'import', component: () => import('@/views/ImportView.vue') },
       { path: 'integrations', name: 'integrations', component: () => import('@/views/IntegrationsView.vue') },
       { path: 'settings', name: 'settings', component: () => import('@/views/SettingsView.vue') },
-      // Resources
+        { path: 'profile', name: 'profile', component: () => import('@/views/ProfileView.vue'), meta: { requiresAuth: true } },
       { path: 'resources', name: 'resources', redirect: { name: 'resources-library' } },
       { path: 'resources/library', name: 'resources-library', component: () => import('@/views/resources/LibraryView.vue') },
       { path: 'resources/masterclass', name: 'resources-masterclass', component: () => import('@/views/resources/MasterclassView.vue') },
@@ -47,15 +50,79 @@ const routes = [
       { path: 'resources/wellbeing', name: 'resources-wellbeing', component: () => import('@/views/resources/WellbeingResourcesView.vue') },
     ],
   },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: () => import('@/views/auth/ResetPasswordView.vue'),
+    meta: { guest: true }
+  },
+  {
+    path: '/reset-password-confirm',
+    name: 'ResetPasswordConfirm',
+    component: () => import('@/views/auth/ResetPasswordConfirmView.vue')
+  },
+  {
+    path: '/cgu',
+    name: 'CGU',
+    component: () => import('@/views/legal/CguView.vue')
+  },
+  {
+    path: '/privacy',
+    name: 'Privacy',
+    component: () => import('@/views/legal/PrivacyView.vue')
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/NotFoundView.vue')
+  },
 ]
 
 const router = createRouter({ history: createWebHistory(), routes })
 
-// Auth guard — in mock mode, always allow
-router.beforeEach((to) => {
-  // For now mock auth is always true — real guard would check tokens
-  if (to.meta.guest) return true
-  return true
+router.beforeEach(async (to) => {
+  const authStore = useAuthStore()
+  if (!authStore.user && !authStore.loading) {
+    await authStore.init()
+  }
+  // Unauthenticated → login
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    return { name: 'login' }
+  }
+  // Authenticated + guest route → dashboard or paywall
+  if (to.meta.guest && authStore.isAuthenticated) {
+    if (authStore.needsPayment) return { name: 'paywall' }
+    return { name: 'dashboard' }
+  }
+  // Authenticated + requiresAuth + trial expired → paywall (except paywall itself)
+  if (to.meta.requiresAuth && authStore.isAuthenticated && authStore.needsPayment && to.name !== 'paywall') {
+    return { name: 'paywall' }
+  }
+})
+
+// SEO: dynamic title per route
+router.afterEach((to) => {
+  const titles = {
+    'login': 'Connexion — Scalyo',
+    'register': 'Inscription — Scalyo',
+    'dashboard': 'Dashboard — Scalyo',
+    'portfolio': 'Portefeuille clients — Scalyo',
+    'kpis': 'KPIs COPIL — Scalyo',
+    'import': 'Import intelligent — Scalyo',
+    'settings': 'Paramètres — Scalyo',
+    'profile': 'Mon profil — Scalyo',
+    'payment-success': 'Paiement confirmé — Scalyo',
+    'paywall': 'Choisissez votre forfait — Scalyo',
+    'NotFound': 'Page introuvable — Scalyo',
+    'ResetPassword': 'Mot de passe oublié — Scalyo',
+    'ResetPasswordConfirm': 'Nouveau mot de passe — Scalyo',
+    'CGU': 'Conditions d\'utilisation — Scalyo',
+    'Privacy': 'Politique de confidentialité — Scalyo',
+  }
+  document.title = (to.name && titles[to.name]) || to.meta?.title || 'Scalyo — Customer Success Platform'
+  let metaDesc = document.querySelector('meta[name="description"]')
+  if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.setAttribute('name', 'description'); document.head.appendChild(metaDesc) }
+  metaDesc.setAttribute('content', to.meta?.description || 'Scalyo — La plateforme SaaS B2B Customer Success. Gérez vos clients, KPIs et équipes efficacement.')
 })
 
 export default router
