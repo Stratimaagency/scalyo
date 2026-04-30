@@ -130,9 +130,9 @@ const planClass = computed(() => {
 
 const planFeatures = computed(() => {
   const p = auth.currentPlan
-  if (p === 'elite') return ['plan_feat_unlimited', 'plan_feat_ai', 'plan_feat_copil', 'plan_feat_support']
-  if (p === 'growth') return ['plan_feat_50clients', 'plan_feat_ai', 'plan_feat_copil']
-  return ['plan_feat_10clients', 'plan_feat_basic', 'plan_feat_import']
+  if (p === 'elite') return ['plan_feat_24users', 'plan_feat_all_growth', 'plan_feat_playbooks_ia', 'plan_feat_email_studio_resend', 'plan_feat_okr', 'plan_feat_roadmap']
+  if (p === 'growth') return ['plan_feat_7users', 'plan_feat_unlimited_clients', 'plan_feat_all_starter_resources', 'plan_feat_import', 'plan_feat_playbooks_manual', 'plan_feat_dashboard_advanced']
+  return ['plan_feat_3users', 'plan_feat_50clients', 'plan_feat_dashboard_tasks_matrice', 'plan_feat_coach_chat', 'plan_feat_templates_copil', 'plan_feat_wellbeing_private']
 })
 
 const memberSince = computed(() => {

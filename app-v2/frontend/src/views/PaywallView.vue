@@ -17,8 +17,12 @@
           <div class="pw-plan-name">Starter</div>
           <div class="pw-plan-price">{{ t('paywall_price_starter') }}<span>/{{ t('paywall_per_user_month') }}</span></div>
           <ul>
-            <li>✓ {{ t('plan_feat_10clients') }}</li>
-            <li>✓ {{ t('plan_feat_import') }}</li>
+            <li>✓ {{ t('plan_feat_3users') }}</li>
+            <li>✓ {{ t('plan_feat_50clients') }}</li>
+            <li>✓ {{ t('plan_feat_dashboard_tasks_matrice') }}</li>
+            <li>✓ {{ t('plan_feat_coach_chat') }}</li>
+            <li>✓ {{ t('plan_feat_templates_copil') }}</li>
+            <li>✓ {{ t('plan_feat_wellbeing_private') }}</li>
           </ul>
           <a :href="starterUrl" target="_blank" class="btn-plan btn-starter">
             {{ t('paywall_choose') }} →
@@ -31,9 +35,12 @@
           <div class="pw-plan-name">Growth</div>
           <div class="pw-plan-price">{{ t('paywall_price_growth') }}<span>/{{ t('paywall_per_user_month') }}</span></div>
           <ul>
-            <li>✓ {{ t('plan_feat_50clients') }}</li>
-            <li>✓ {{ t('plan_feat_ai') }}</li>
-            <li>✓ {{ t('plan_feat_copil') }}</li>
+            <li>✓ {{ t('plan_feat_7users') }}</li>
+            <li>✓ {{ t('plan_feat_unlimited_clients') }}</li>
+            <li>✓ {{ t('plan_feat_all_starter_resources') }}</li>
+            <li>✓ {{ t('plan_feat_import') }}</li>
+            <li>✓ {{ t('plan_feat_playbooks_manual') }}</li>
+            <li>✓ {{ t('plan_feat_dashboard_advanced') }}</li>
           </ul>
           <a :href="growthUrl" target="_blank" class="btn-plan btn-growth">
             {{ t('paywall_choose') }} →
@@ -45,9 +52,12 @@
           <div class="pw-plan-name">Elite</div>
           <div class="pw-plan-price">{{ t('paywall_price_elite') }}<span>/{{ t('paywall_per_user_month') }}</span></div>
           <ul>
-            <li>✓ {{ t('plan_feat_unlimited') }}</li>
-            <li>✓ {{ t('plan_feat_ai') }}</li>
-            <li>✓ {{ t('plan_feat_support') }}</li>
+            <li>✓ {{ t('plan_feat_24users') }}</li>
+            <li>✓ {{ t('plan_feat_all_growth') }}</li>
+            <li>✓ {{ t('plan_feat_playbooks_ia') }}</li>
+            <li>✓ {{ t('plan_feat_email_studio_resend') }}</li>
+            <li>✓ {{ t('plan_feat_okr') }}</li>
+            <li>✓ {{ t('plan_feat_roadmap') }}</li>
           </ul>
           <a :href="eliteUrl" target="_blank" class="btn-plan btn-elite">
             {{ t('paywall_choose') }} →
