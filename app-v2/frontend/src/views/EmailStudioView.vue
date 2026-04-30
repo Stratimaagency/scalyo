@@ -21,6 +21,15 @@
       </router-link>
     </div>
 
+    <AiInsightPanel
+      module="email"
+      :title="t('ai_email_title')"
+      :button-label="t('ai_email_btn')"
+      :message="t('ai_email_prompt')"
+      :context="{ selectedTemplate: selectedTemplate?.id }"
+      @result="onAiResult"
+    />
+
     <!-- Template browser (non-history tabs) -->
     <div v-if="activeTab !== 'history'" class="es-layout">
       <EmailTemplateList
@@ -85,6 +94,7 @@ import EmailPreview from '@/components/email-studio/EmailPreview.vue'
 import EmailHistory from '@/components/email-studio/EmailHistory.vue'
 import EmailSendModal from '@/components/email-studio/EmailSendModal.vue'
 import ResendSetupWizard from '@/components/modals/ResendSetupWizard.vue'
+import AiInsightPanel from '@/components/ai/AiInsightPanel.vue'
 import '@/assets/emailStudio.css'
 
 const { t } = useI18n({ useScope: 'global' })
@@ -120,5 +130,12 @@ function openSendModal() {
     return
   }
   showSendModal.value = true
+}
+
+function onAiResult(result) {
+  // AI result can be used to pre-fill email content
+  if (result.response) {
+    selectedTemplate.value = { ...selectedTemplate.value, body: result.response }
+  }
 }
 </script>

@@ -62,6 +62,7 @@ import DashKpiSection from '@/components/dashboard/DashKpiSection.vue'
 import DashWatchAccounts from '@/components/dashboard/DashWatchAccounts.vue'
 import DashMyTasks from '@/components/dashboard/DashMyTasks.vue'
 import DashQuickActions from '@/components/dashboard/DashQuickActions.vue'
+import AiInsightPanel from '@/components/ai/AiInsightPanel.vue'
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const auth = useAuthStore()
@@ -187,6 +188,16 @@ const clientsMap = computed(() => {
   clients.clients.forEach(c => { map[c.id] = c.name })
   return map
 })
+
+const aiContext = computed(() => ({
+  totalClients: clients.clients?.length || 0,
+  totalArr: clients.totalArr || 0,
+  avgHealth: clients.avgHealth || 0,
+  criticalCount: clients.criticalCount || 0,
+  avgNps: clients.avgNps || 0,
+  overdueTasks: tasks.overdueTasks?.length || 0,
+  teamSize: auth.company?.teamSize || 0,
+}))
 </script>
 
 <style scoped>
