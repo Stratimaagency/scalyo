@@ -286,7 +286,7 @@ import { useTeamStore } from '@/stores/team'
 import { useClientStore } from '@/stores/clients'
 import { useTaskStore } from '@/stores/tasks'
 import { sanitizeHtml } from '@/utils/sanitize'
-import { supabase } from '@/lib/supabase'
+import { askScalyoAI } from '@/utils/askScalyoAI'
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const router = useRouter()
@@ -402,42 +402,25 @@ async function send() {
 // Nova IA
 async function sendNova(text) {
     if (!text?.trim()) return
-    const context = buildNovaContext()
-    store.sendMessage('nova', text.trim(), 'User', 'user')
     store.setTyping('nova', true)
-
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const res = await fetch('/api/ai', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + (session?.access_token || ''),
-          'Accept-Language': locale.value || 'fr',
-        },
-        body: JSON.stringify({
-          module: 'nova',
-          message: text.trim(),
-          context: context,
-          history: store.getMessages('nova')?.slice(-10)?.map(m => ({
-            role: m.sender === 'nova' ? 'assistant' : 'user',
-            content: m.text
-          })) || [],
-          lang: locale.value || 'fr',
-        }),
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        store.sendMessage('nova', data.response, 'Nova', 'nova')
-      } else {
-        store.sendMessage('nova', t('chat_error') || 'Service IA indisponible', 'Nova', 'nova')
-      }
+        const result = await askScalyoAI({
+            module: 'nova',
+            message: text.trim(),
+            context: buildContext(),
+            history: store.getMessages('nova')?.slice(-10)?.map(m => ({
+                role: m.sender === 'nova' ? 'assistant' : 'user',
+                content: m.text
+            })) || [],
+            lang: locale.value || 'fr',
+        })
+        store.sendMessage('nova', result.response || result.reply || result.content || t('chat_error'), 'Nova', 'nova')
     } catch {
-      store.sendMessage('nova', t('chat_error') || 'Service IA indisponible', 'Nova', 'nova')
+        store.sendMessage('nova', t('chat_error') || 'Service IA indisponible', 'Nova', 'nova')
     }
     store.setTyping('nova', false)
-  }
+}
+
 function buildContext() {
   return {
     totalClients: clientsStore.clients?.length || 0,
@@ -448,59 +431,6 @@ function buildContext() {
     overdueTasks: (tasksStore.overdueTasks || []).slice(0, 5).map(t => t.title),
     lang: locale.value,
   }
-}
-
-function buildNovaSystemPrompt(ctx) {
-  const prompts = {
-    fr: `Tu es Nova, assistante IA de Scalyo. Données temps réel :
-- ${ctx.totalClients} clients, ARR ${(ctx.totalArr / 1000).toFixed(0)}K€
-- Health score moyen : ${ctx.avgHealth}/10
-- ${ctx.criticalCount} comptes critiques
-- ${ctx.overdueTasks.length} tâches en retard
-Réponds en français, concis et actionnable. Max 4 lignes.`,
-    en: `You are Nova, Scalyo's AI assistant. Real-time data:
-- ${ctx.totalClients} clients, ARR ${(ctx.totalArr / 1000).toFixed(0)}K€
-- Avg health: ${ctx.avgHealth}/10, ${ctx.criticalCount} critical
-Respond in English, concisely and actionably.`,
-    ko: `당신은 Scalyo의 AI 어시스턴트 Nova입니다.
-- 고객 ${ctx.totalClients}명, ARR ${(ctx.totalArr / 1000).toFixed(0)}K€
-한국어로 간결하고 실행 가능하게 답변하세요.`,
-  }
-  return prompts[ctx.lang] || prompts.fr
-}
-
-function buildNovaHistory(currentText) {
-  const history = (store.messages['nova'] || []).slice(-10).map(m => ({
-    role: m.authorId === 'nova' ? 'assistant' : 'user',
-    content: m.content,
-  }))
-  if (!history.length || history[history.length - 1].role !== 'user') {
-    history.push({ role: 'user', content: currentText })
-  }
-  return history
-}
-
-function mockNovaResponse(q, ctx) {
-  const ql = q.toLowerCase()
-  if (ql.includes('risque') || ql.includes('risk') || ql.includes('위험')) {
-    if (ctx.criticalClients[0]) {
-      const c = ctx.criticalClients[0]
-      return `**${c.name}** est votre client le plus à risque.\n• Health: **${c.health}/10** 🔴 | ARR: **${(c.arr / 1000).toFixed(0)}K€**\nAction recommandée : appel de rétention cette semaine.`
-    }
-    return '✅ Aucun client en risque critique détecté.'
-  }
-  if (ql.includes('semaine') || ql.includes('résumé') || ql.includes('summarize') || ql.includes('요약')) {
-    return `**Résumé** : ${ctx.totalClients} clients | ARR ${(ctx.totalArr / 1000).toFixed(0)}K€ | Health ${ctx.avgHealth}/10 | ${ctx.criticalCount} critiques | ${ctx.overdueTasks.length} tâches en retard.`
-  }
-  if (ql.includes('tâche') || ql.includes('retard') || ql.includes('task') || ql.includes('overdue')) {
-    return ctx.overdueTasks.length
-      ? `**${ctx.overdueTasks.length} tâches en retard :**\n${ctx.overdueTasks.map((t, i) => `${i + 1}. ${t}`).join('\n')}`
-      : '✅ Aucune tâche en retard.'
-  }
-  if (ql.includes('copil') || ql.includes('rapport') || ql.includes('report') || ql.includes('보고서')) {
-    return `**Rapport COPIL**\n| KPI | Valeur |\n|-----|--------|\n| ARR | ${(ctx.totalArr / 1000).toFixed(0)}K€ |\n| Health | ${ctx.avgHealth}/10 |\n| Critiques | ${ctx.criticalCount} |\n\nCréez un COPIL complet dans → /app/kpis`
-  }
-  return `Je gère **${ctx.totalClients} clients** (ARR ${(ctx.totalArr / 1000).toFixed(0)}K€). Posez-moi une question précise sur vos clients, tâches ou KPIs.`
 }
 
 async function sendNovaSuggestion(key) {

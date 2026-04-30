@@ -4,7 +4,6 @@
       <div><h1>🤖 {{ t('coach_title') }}</h1></div>
       <span class="coach-counter">{{ messages.length }} {{ t('coach_counter') }}</span>
     </div>
-
     <div class="coach-chat">
       <div class="chat-messages" ref="chatRef">
         <div v-if="!messages.length" class="chat-welcome">
@@ -16,7 +15,6 @@
             </ul>
           </div>
         </div>
-
         <div v-for="msg in messages" :key="msg.id" class="chat-msg" :class="msg.role">
           <div class="msg-avatar">{{ msg.role === 'user' ? '👤' : '🤖' }}</div>
           <div class="msg-body">
@@ -24,7 +22,6 @@
             <span class="msg-time">{{ msg.time }}</span>
           </div>
         </div>
-
         <div v-if="thinking" class="chat-msg assistant">
           <div class="msg-avatar">🤖</div>
           <div class="msg-body">
@@ -32,11 +29,9 @@
           </div>
         </div>
       </div>
-
       <div v-if="!messages.length" class="chat-suggestions">
         <button v-for="s in suggestions" :key="s" class="sug-btn" @click="sendMessage(t(s))">{{ t(s) }}</button>
       </div>
-
       <div class="chat-input-area">
         <input v-model="input" :placeholder="t('coach_placeholder')" @keydown.enter="sendMessage(input)" :disabled="thinking" />
         <button class="send-btn" @click="sendMessage(input)" :disabled="!input.trim() || thinking">→</button>
@@ -51,13 +46,15 @@ import { useI18n } from 'vue-i18n'
 import { useClientStore } from '@/stores/clients'
 import { useTeamStore } from '@/stores/team'
 import { sanitizeHtml } from '@/utils/sanitize'
-import { supabase } from '@/lib/supabase'
+import { askScalyoAI } from '@/utils/askScalyoAI'
 
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
 const clientStore = useClientStore()
 const teamStore = useTeamStore()
 
-function load(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback } catch { return fallback } }
+function load(key, fallback) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback } catch { return fallback }
+}
 function save(key, value) { localStorage.setItem(key, JSON.stringify(value)) }
 
 const input = ref('')
@@ -75,13 +72,26 @@ function formatMsg(text) {
 }
 
 function buildContext() {
-  const c = clientStore
-  return `Portfolio: ${c.clients.length} clients, ARR total: ${c.totalArr}€, Health moyen: ${c.avgHealth}/10, Critiques: ${c.criticalCount}, NPS moyen: ${c.avgNps}. Equipe: ${teamStore.members.length} CSMs, Score sante: ${teamStore.teamHealthScore}/100.`
+  return {
+    totalClients: clientStore.clients?.length || 0,
+    totalArr: clientStore.totalArr || 0,
+    avgHealth: clientStore.avgHealth || 0,
+    criticalCount: clientStore.criticalCount || 0,
+    avgNps: clientStore.avgNps || 0,
+    teamSize: teamStore.members?.length || 0,
+    teamHealthScore: teamStore.teamHealthScore || 0,
+  }
 }
 
 async function sendMessage(text) {
   if (!text?.trim() || thinking.value) return
-  const userMsg = { id: Date.now(), role: 'user', content: text.trim(), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+
+  const userMsg = {
+    id: Date.now(),
+    role: 'user',
+    content: text.trim(),
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
   messages.value.push(userMsg)
   input.value = ''
   thinking.value = true
@@ -89,27 +99,27 @@ async function sendMessage(text) {
   scrollBottom()
 
   try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const res = await fetch('/api/coach', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + (session?.access_token || ''),
-          'Accept-Language': locale?.value || 'fr',
-        },
-        body: JSON.stringify({
-          message: text.trim(),
-          context: buildContext(),
-          history: messages.value.slice(-10).map(m => ({ role: m.role, content: m.content })),
-        }),
-      })
-      if (!res.ok) throw new Error('coach_unavailable')
-      const data = await res.json()
-      messages.value.push({ id: Date.now() + 1, role: 'assistant', content: data.response || data.error || t('coach_error'), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
+    const result = await askScalyoAI({
+      module: 'coach',
+      message: text.trim(),
+      history: messages.value.slice(-10).map(m => ({ role: m.role, content: m.content })),
+      context: buildContext(),
+      lang: locale.value,
+    })
+
+    messages.value.push({
+      id: Date.now() + 1,
+      role: 'assistant',
+      content: result.response || result.reply || result.content || t('coach_error'),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    })
   } catch {
-      // mock delay removed
-      
-      messages.value.push({ id: Date.now() + 1, role: 'assistant', content: t(responseKey), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
+    messages.value.push({
+      id: Date.now() + 1,
+      role: 'assistant',
+      content: t('coach_error'),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    })
   }
 
   thinking.value = false
@@ -122,7 +132,7 @@ function scrollBottom() {
 }
 
 function clearHistory() {
-  if (!confirm('Effacer tout l\u0027historique du chat ?')) return
+  if (!confirm(t('coach_clear_confirm') || 'Effacer tout l\'historique du chat ?')) return
   messages.value = []
 }
 </script>
@@ -162,6 +172,4 @@ function clearHistory() {
 .send-btn { background: var(--purple); color: #fff; border: none; border-radius: var(--radius-sm); padding: 10px 18px; font-size: 1.1rem; cursor: pointer; transition: all 0.15s; }
 .send-btn:hover:not(:disabled) { background: var(--purple-dark); }
 .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-clear-chat { background:none;border:1px solid var(--border,#e5e7eb);color:var(--text-muted,#6b7280);padding:5px 10px;border-radius:7px;font-size:0.8rem;cursor:pointer;margin-left:auto;margin-right:8px; }
-.btn-clear-chat:hover { border-color:#ef4444;color:#ef4444; }
 </style>
