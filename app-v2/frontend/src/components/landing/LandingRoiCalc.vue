@@ -29,13 +29,13 @@
 
         <div class="roi-results">
         <div class="roi-main-result">
-          <div class="roi-big">{{ roiSavings }}</div>
+          <div class="roi-big">{{ roiSaved }}</div>
           <div class="roi-desc">{{ t('roi_saved') }}</div>
         </div>
         <div class="roi-details">
           <div class="roi-detail">
             <div class="roi-dl">{{ t('roi_time') }}</div>
-            <div class="roi-dv green">{{ roiHours }}h</div>
+            <div class="roi-dv green">{{ roiTimeSaved }}h</div>
           </div>
           <div class="roi-detail">
             <div class="roi-dl">{{ t('roi_multiplier') }}</div>
