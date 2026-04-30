@@ -1745,4 +1745,14 @@ export default {
   ai_default_prompt_dashboard: '\uD3EC\uD2B8\uD3F4\uB9AC\uC624 \uBD84\uC11D',
   ai_default_prompt_email: '\uC774\uBA54\uC77C \uC791\uC131',
   ai_default_prompt_matrice: '\uC791\uC5C5 \uC6B0\uC120\uC21C\uC704',
+
+  ai_copil_title: 'AI COPIL \uBCF4\uACE0\uC11C',
+  ai_copil_btn: '\uBCF4\uACE0\uC11C \uC0DD\uC131',
+  ai_copil_prompt: '\uC778\uC0AC\uC774\uD2B8, \uD575\uC2EC KPI \uBC0F \uC804\uB7B5\uC801 \uAD8C\uC7A5 \uC0AC\uD56D\uC774 \uD3EC\uD568\uB41C COPIL \uBCF4\uACE0\uC11C\uB97C \uC0DD\uC131\uD558\uC138\uC694.',
+  ai_playbook_title: 'AI \uC81C\uC548',
+  ai_playbook_btn: '\uD50C\uB808\uC774\uBD81 \uC81C\uC548',
+  ai_playbook_prompt: '\uD074\uB77C\uC774\uC5B8\uD2B8 \uD3EC\uD2B8\uD3F4\uB9AC\uC624\uB97C \uBD84\uC11D\uD558\uACE0 \uC790\uB3D9\uD654\uB41C CS \uD50C\uB808\uC774\uBD81\uC744 \uC81C\uC548\uD558\uC138\uC694.',
+  ai_default_prompt_copil: 'COPIL \uBCF4\uACE0\uC11C \uC0DD\uC131',
+  ai_default_prompt_playbook: '\uD50C\uB808\uC774\uBD81 \uC81C\uC548',
+  ai_default_prompt_notif: '\uC54C\uB9BC \uBCF4\uAC15',
 }

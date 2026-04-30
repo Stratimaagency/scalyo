@@ -2,6 +2,14 @@
   <div class="playbooks">
     <div v-if="!canAccessPlaybooks" class="pb-upsell">
       <div class="empty-icon">🔒</div>
+
+    <AiInsightPanel
+      module="playbook"
+      :title="t('ai_playbook_title')"
+      :button-label="t('ai_playbook_btn')"
+      :message="t('ai_playbook_prompt')"
+    />
+
       <h3>{{ t('pb_plan_required', { plan: 'Growth' }) }}</h3>
       <p>{{ t('pb_empty_desc') }}</p>
       <button class="btn-primary" @click="$router.push('/app/settings')">{{ t('pb_upgrade') }}</button>
@@ -76,6 +84,7 @@ import PbCard from '@/components/playbooks/PbCard.vue'
 import PbEmptyState from '@/components/playbooks/PbEmptyState.vue'
 import PbTemplateSlide from '@/components/playbooks/PbTemplateSlide.vue'
 import PbActivateSlide from '@/components/playbooks/PbActivateSlide.vue'
+import AiInsightPanel from '@/components/ai/AiInsightPanel.vue'
 import '@/assets/playbooks.css'
 
 const { t } = useI18n({ useScope: 'global' })

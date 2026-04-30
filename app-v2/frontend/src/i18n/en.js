@@ -1745,4 +1745,14 @@ export default {
   ai_default_prompt_dashboard: 'Analyze my portfolio',
   ai_default_prompt_email: 'Write an email',
   ai_default_prompt_matrice: 'Prioritize my tasks',
+
+  ai_copil_title: 'AI COPIL Report',
+  ai_copil_btn: 'Generate report',
+  ai_copil_prompt: 'Generate a COPIL report with insights, key KPIs and strategic recommendations.',
+  ai_playbook_title: 'AI Suggestions',
+  ai_playbook_btn: 'Suggest playbooks',
+  ai_playbook_prompt: 'Analyze my client portfolio and suggest automated CS playbooks.',
+  ai_default_prompt_copil: 'Generate a COPIL report',
+  ai_default_prompt_playbook: 'Suggest playbooks',
+  ai_default_prompt_notif: 'Enrich my notifications',
 }

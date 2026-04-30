@@ -1801,4 +1801,14 @@ export default {
   ai_default_prompt_dashboard: 'Analyse mon portfolio',
   ai_default_prompt_email: 'R\u00e9dige un email',
   ai_default_prompt_matrice: 'Priorise mes t\u00e2ches',
+
+  ai_copil_title: 'Rapport COPIL IA',
+  ai_copil_btn: 'G\u00e9n\u00e9rer un rapport',
+  ai_copil_prompt: 'G\u00e9n\u00e8re un rapport COPIL avec insights, KPIs cl\u00e9s et recommandations strat\u00e9giques.',
+  ai_playbook_title: 'Suggestions IA',
+  ai_playbook_btn: 'Sugg\u00e9rer des playbooks',
+  ai_playbook_prompt: 'Analyse mon portfolio client et sugg\u00e8re des playbooks CS automatis\u00e9s.',
+  ai_default_prompt_copil: 'G\u00e9n\u00e8re un rapport COPIL',
+  ai_default_prompt_playbook: 'Sugg\u00e8re des playbooks',
+  ai_default_prompt_notif: 'Enrichis mes notifications',
 }
