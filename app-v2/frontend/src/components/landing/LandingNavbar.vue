@@ -18,7 +18,7 @@
           <button v-for="l in langs" :key="l.code" :class="{ active: locale === l.code }" @click="$emit('locale-change', l.code)">{{ l.label }}</button>
         </div>
         <a :href="appUrl + '/login'" class="btn-ghost-sm">{{ t('nav_login') }}</a>
-        <a :href="appUrl + '/login'" class="btn-primary-sm">{{ t('nav_cta') }}</a>
+        <a href="#pricing" class="btn-primary-sm" @click.prevent="scrollTo('pricing')">{{ t('nav_cta') }}</a>
       </div>
 
       <button class="burger hide-desktop" @click="mobileMenu = !mobileMenu" aria-label="Menu">
@@ -36,7 +36,7 @@
         <div class="lang-switch">
           <button v-for="l in langs" :key="l.code" :class="{ active: locale === l.code }" @click="$emit('locale-change', l.code)">{{ l.label }}</button>
         </div>
-        <a :href="appUrl + '/login'" class="btn-primary-sm">{{ t('nav_cta') }}</a>
+        <a href="#pricing" class="btn-primary-sm" @click.prevent="scrollTo('pricing')">{{ t('nav_cta') }}</a>
         <a :href="appUrl + '/login'" class="btn-ghost-sm">{{ t('nav_login') }}</a>
       </div>
     </transition>

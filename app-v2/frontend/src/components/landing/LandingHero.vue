@@ -12,7 +12,7 @@
       <p class="hero-sub">{{ t('hero_sub') }}</p>
 
       <div class="hero-ctas">
-        <a :href="appUrl + '/login'" class="btn-primary lg glow-btn">{{ t('cta_free_14') }}</a>
+        <a href="#pricing" class="btn-primary lg glow-btn" @click.prevent="scrollTo('pricing')">{{ t('cta_free_14') }}</a>
         <a href="#pricing" class="btn-outline lg" @click.prevent="scrollTo('pricing')">{{ t('see_pricing') }}</a>
       </div>
 
