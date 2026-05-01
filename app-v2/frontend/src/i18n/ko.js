@@ -95,11 +95,17 @@ export default {
   support_subtitle: '저희 팀이 도와드리겠습니다.',
   support_pitch: 'Scalyo에서는 모든 고객이 중요합니다. 저희 팀은 Customer Success를 내부에서 이해하며 귀하의 팀 성공을 위해 헌신합니다. 어떤 질문이든 직접 답변드립니다.',
   support_response_title: '응답 시간',
-  support_response_desc: '24 영업시간 이내 응답을 약속합니다. Elite 고객은 우선 처리됩니다.',
+  support_response_desc: '48 영업시간 이내 응답을 약속합니다. Elite 고객은 우선 처리됩니다.',
   support_email_label: '문의하기',
   support_langs_label: '지원 언어',
   support_langs_desc: '프랑스어, 영어, 한국어',
   support_back: 'Scalyo로 돌아가기',
+  support_email_value: 'contact@scalyo.app',
+  support_legal_title: '법적 정보',
+  support_cgu_link: '이용약관',
+  support_privacy_link: '개인정보 처리방침',
+  support_privacy_title: '데이터 기밀성',
+  support_privacy_desc: 'AI 코치 및 Nova와의 대화는 철저히 기밀이 보장됩니다. 웰빙 데이터는 관리자, HR, 경영진에게 절대 공유되지 않습니다. Scalyo는 모든 팀원의 개인정보를 보호합니다.',
 
   es_title: 'ì´ë©ì¼ ì¤íëì¤', es_subtitle: 'ë°ë¡ ì¬ì© ê°ë¥í ì ë¬¸ ííë¦¿', es_tab_all: 'ì ì²´', es_tab_csm: 'CSM', es_tab_commercial: 'ìì', es_tab_kam: 'KAM', es_search: 'ííë¦¿ ê²ì...', es_copy: 'ì´ë©ì¼ ë³µì¬', es_copied: 'ë³µì¬ë¨!', es_subject: 'ì ëª©', es_body: 'ë³¸ë¬¸', es_cat_all: 'ì ì²´',
   es_cat_onboarding: 'ì¨ë³´ë©',

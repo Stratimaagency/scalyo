@@ -143,6 +143,7 @@ const sellingPoints = computed(() => [
   { icon: '💎', label: t('sell_6_label'), desc: t('sell_6_desc') },
   { icon: '🧩', label: t('sell_7_label'), desc: t('sell_7_desc') },
   { icon: '🌐', label: t('sell_8_label'), desc: t('sell_8_desc') },
+  { icon: '🔒', label: t('sell_9_label'), desc: t('sell_9_desc') },
 ])
 
 const faqItems = computed(() => [
