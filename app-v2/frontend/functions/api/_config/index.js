@@ -1,5 +1,5 @@
 // === SCALYO — Configuration centralisee ===
-// Valeurs publiques (Supabase) = constantes. Cles secretes (IA) = env vars Cloudflare.
+// Valeurs publiques (Supabase) = constantes. Cles secretes (IA/Stripe) = env vars Cloudflare.
 
 const SUPABASE_URL = 'https://hcqninmpmzpqjtedyjyj.supabase.co'
 const SUPABASE_ANON_KEY = 'sb_publishable_ggGyERhPutrfMdrQ7Ig0Ow_2R_vrRJA'
@@ -16,6 +16,8 @@ export function getConfig(env) {
     supabaseUrl: env.SUPABASE_URL || SUPABASE_URL,
     supabaseAnonKey: env.SUPABASE_ANON_KEY || SUPABASE_ANON_KEY,
     supabaseJwtSecret: env.SUPABASE_JWT_SECRET || '',
+    stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET || '',
+    supabaseServiceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY || '',
   }
 }
 
