@@ -56,7 +56,8 @@
 import { ref, computed } from 'vue'
 
 const props = defineProps({
-  t: { type: Function, required: true }
+  t: { type: Function, required: true },
+  locale: { type: String, default: 'fr' }
 })
 
 const roiCsms = ref(5)
@@ -66,15 +67,21 @@ const roiChurn = ref(12)
 
 const roiTotalArr = computed(() => roiCsms.value * roiAcc.value * roiArr.value)
 const roiChurnCost = computed(() => Math.round(roiTotalArr.value * roiChurn.value / 100))
-const roiSaved = computed(() => Math.round(roiChurnCost.value * 0.3))
+const roiSavedRaw = computed(() => Math.round(roiChurnCost.value * 0.3))
+const roiSaved = computed(() => {
+  const v = roiSavedRaw.value
+  if (props.locale === 'ko') return '₩' + v.toLocaleString('ko-KR')
+  if (props.locale === 'en') return '€' + v.toLocaleString('en-US')
+  return v.toLocaleString('fr-FR') + ' €'
+})
 const roiTimeSaved = computed(() => roiCsms.value * 6)
 const roiMultiplier = computed(() => {
-  const cost = roiCsms.value <= 3 ? 97 : roiCsms.value <= 10 ? 297 : 697
-  return Math.max(1, Math.round(roiSaved.value / (cost * 12)))
+  const cost = roiCsms.value <= 3 ? 79 : roiCsms.value <= 7 ? 119 : 159
+  return Math.max(1, Math.round(roiSavedRaw.value / (cost * 12)))
 })
 const roiRecommendedPlan = computed(() => {
   if (roiCsms.value <= 3) return props.t('roi_plan_starter')
-  if (roiCsms.value <= 10) return props.t('roi_plan_growth')
+  if (roiCsms.value <= 7) return props.t('roi_plan_growth')
   return props.t('roi_plan_elite')
 })
 </script>
