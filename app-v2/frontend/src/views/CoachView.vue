@@ -41,30 +41,47 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useClientStore } from '@/stores/clients'
 import { useTeamStore } from '@/stores/team'
 import { sanitizeHtml } from '@/utils/sanitize'
 import { askScalyoAI } from '@/utils/askScalyoAI'
+import { supabase } from '@/lib/supabase'
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const clientStore = useClientStore()
 const teamStore = useTeamStore()
 
-function load(key, fallback) {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback } catch { return fallback }
-}
-function save(key, value) { localStorage.setItem(key, JSON.stringify(value)) }
-
 const input = ref('')
-const messages = ref(load('scalyo_coach_messages', []))
+const messages = ref([])
 const thinking = ref(false)
 const chatRef = ref(null)
 
-watch(messages, val => save('scalyo_coach_messages', val), { deep: true })
-
 const suggestions = ['coach_sug1', 'coach_sug2', 'coach_sug3', 'coach_sug4', 'coach_sug5']
+
+// --- Supabase persistence ---
+async function loadMessages() {
+  const { data } = await supabase
+    .from('ai_messages')
+    .select('*')
+    .eq('module', 'coach')
+    .order('created_at', { ascending: true })
+  if (data) {
+    messages.value = data.map(m => ({
+      id: m.id,
+      role: m.role,
+      content: m.content,
+      time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    }))
+  }
+}
+
+async function saveMessage(role, content) {
+  await supabase.from('ai_messages').insert({ module: 'coach', role, content })
+}
+
+onMounted(loadMessages)
 
 function formatMsg(text) {
   const html = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -85,18 +102,14 @@ function buildContext() {
 
 async function sendMessage(text) {
   if (!text?.trim() || thinking.value) return
-
-  const userMsg = {
-    id: Date.now(),
-    role: 'user',
-    content: text.trim(),
-    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  }
+  const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  const userMsg = { id: Date.now(), role: 'user', content: text.trim(), time: now }
   messages.value.push(userMsg)
   input.value = ''
   thinking.value = true
   await nextTick()
   scrollBottom()
+  saveMessage('user', text.trim())
 
   try {
     const result = await askScalyoAI({
@@ -106,22 +119,20 @@ async function sendMessage(text) {
       context: buildContext(),
       lang: locale.value,
     })
-
+    const reply = result.response || result.reply || result.content || t('coach_error')
     messages.value.push({
-      id: Date.now() + 1,
-      role: 'assistant',
-      content: result.response || result.reply || result.content || t('coach_error'),
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      id: Date.now() + 1, role: 'assistant', content: reply,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     })
+    saveMessage('assistant', reply)
   } catch {
+    const errMsg = t('coach_error')
     messages.value.push({
-      id: Date.now() + 1,
-      role: 'assistant',
-      content: t('coach_error'),
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      id: Date.now() + 1, role: 'assistant', content: errMsg,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     })
+    saveMessage('assistant', errMsg)
   }
-
   thinking.value = false
   await nextTick()
   scrollBottom()
@@ -131,8 +142,9 @@ function scrollBottom() {
   if (chatRef.value) chatRef.value.scrollTop = chatRef.value.scrollHeight
 }
 
-function clearHistory() {
-  if (!confirm(t('coach_clear_confirm') || 'Effacer tout l\'historique du chat ?')) return
+async function clearHistory() {
+  if (!confirm(t('coach_clear_confirm') || "Effacer tout l'historique du chat ?")) return
+  await supabase.from('ai_messages').delete().eq('module', 'coach')
   messages.value = []
 }
 </script>
