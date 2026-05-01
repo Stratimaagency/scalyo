@@ -152,6 +152,11 @@ const faqItems = computed(() => [
   { q: t('faq_q4'), a: t('faq_a4') },
   { q: t('faq_q5'), a: t('faq_a5') },
   { q: t('faq_q6'), a: t('faq_a6') },
+  { q: t('faq_q7'), a: t('faq_a7') },
+  { q: t('faq_q8'), a: t('faq_a8') },
+  { q: t('faq_q9'), a: t('faq_a9') },
+  { q: t('faq_q10'), a: t('faq_a10') },
+  { q: t('faq_q11'), a: t('faq_a11') },
 ])
 
 function onScroll() { scrolled.value = window.scrollY > 30 }
