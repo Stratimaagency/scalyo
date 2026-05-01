@@ -89,6 +89,18 @@ export default {
   task_blocked: '차단됨',
   customize: '사용자 지정',
 
+
+  // Support
+  support_title: 'Scalyo 지원',
+  support_subtitle: '저희 팀이 도와드리겠습니다.',
+  support_pitch: 'Scalyo에서는 모든 고객이 중요합니다. 저희 팀은 Customer Success를 내부에서 이해하며 귀하의 팀 성공을 위해 헌신합니다. 어떤 질문이든 직접 답변드립니다.',
+  support_response_title: '응답 시간',
+  support_response_desc: '24 영업시간 이내 응답을 약속합니다. Elite 고객은 우선 처리됩니다.',
+  support_email_label: '문의하기',
+  support_langs_label: '지원 언어',
+  support_langs_desc: '프랑스어, 영어, 한국어',
+  support_back: 'Scalyo로 돌아가기',
+
   es_title: 'ì´ë©ì¼ ì¤íëì¤', es_subtitle: 'ë°ë¡ ì¬ì© ê°ë¥í ì ë¬¸ ííë¦¿', es_tab_all: 'ì ì²´', es_tab_csm: 'CSM', es_tab_commercial: 'ìì', es_tab_kam: 'KAM', es_search: 'ííë¦¿ ê²ì...', es_copy: 'ì´ë©ì¼ ë³µì¬', es_copied: 'ë³µì¬ë¨!', es_subject: 'ì ëª©', es_body: 'ë³¸ë¬¸', es_cat_all: 'ì ì²´',
   es_cat_onboarding: 'ì¨ë³´ë©',
   es_cat_qbr: 'QBR',

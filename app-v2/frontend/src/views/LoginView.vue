@@ -32,7 +32,7 @@
 
       <p class="auth-footer">
         {{ t('login_no_account') }}
-        <router-link to="/register" class="link">{{ t('login_signup') }}</router-link>
+        <a href="/#pricing" class="link">{{ t('login_signup') }}</a>
       </p>
 
       <!-- Legal footer — inside .auth-card -->
