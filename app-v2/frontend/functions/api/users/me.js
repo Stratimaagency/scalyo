@@ -2,9 +2,9 @@
 // DELETE /api/users/me
 // Droit a l'effacement (Art. 17 RGPD) — supprime toutes les donnees utilisateur.
 
-import { getConfig } from './_config/index.js'
-import { extractLang, extractAuth, verifyJwt } from './_services/auth.service.js'
-import { jsonOk, jsonError } from './_utils/response.js'
+import { getConfig } from '../_config/index.js'
+import { extractLang, extractAuth, verifyJwt } from '../_services/auth.service.js'
+import { jsonOk, jsonError } from '../_utils/response.js'
 
 const TABLES_TO_DELETE = [
   'ai_messages',
