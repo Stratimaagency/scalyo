@@ -308,6 +308,8 @@ export default {
   coach_mock2: "**ì¢ì ì ê·¼ìëë¤!** í¨ê³¼ì ì¸ QBR êµ¬ì±:\n\n1. **ì§ë ë¶ê¸° KPI ì¤ë¹**\n2. **ê³ ê°ê³¼ í¨ê» ì¶íí  3ê°ì§ ì±ê³µ ìë³**\n3. **ë¤ì ë¶ê¸° ê³í ì ì**\n4. **ìí¸ ì½ìì¼ë¡ ë§ë¬´ë¦¬**\n\nQBRì ìµë 45ë¶ì ëì§ ìëë¡ íì¸ì.",
   coach_mock3: "**ë²ìì ìë°©**ì CSìì ë§¤ì° ì¤ìí©ëë¤:\n\n1. **ìë¬´ ê· í** â CSM í ëªì´ ì ëµ ê³ì  15ê° ì´ìì ë´ë¹íì§ ìëë¡ íì¸ì.\n2. **ë°ë³µ ìì ìëí**\n3. **ì£¼ê° ì²´í¬ì¸** â 10ë¶ì¼ë¡ í ìí íì\n4. **í´ì ì¥ë ¤** â ë²ììë CSMì ê³ ê°ì ììµëë¤.",
   coach_placeholder: 'CS ì§ë¬¸íê¸°...', coach_thinking: 'ìê° ì¤...',
+  coach_quota_exceeded: '일일 할당량에 도달했습니다. 내일 다시 오거나 상위 플랜으로 업그레이드하세요.',
+  coach_clear_confirm: '모든 채팅 기록을 삭제하시겠습니까?',
 
   sm_stats_title: 'íµê³', sm_total_tasks: 'ì ì²´ ìì', sm_completed: 'ìë£', sm_in_progress: 'ì§í ì¤', sm_overdue: 'ì§ì°', sm_completion_rate: 'ìë£ì¨', sm_by_status: 'ìíë³', sm_by_priority: 'ì°ì ììë³',
   sm_planning_title: 'íëë', sm_view_week: 'ì£¼ê°', sm_view_month: 'ìê°',
@@ -1790,6 +1792,8 @@ export default {
   ai_thinking: 'Scalyo\uAC00 \uB370\uC774\uD130\uB97C \uBD84\uC11D\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4...',
   ai_retry: '\uB2E4\uC2DC \uC2DC\uB3C4',
   ai_error: 'AI \uC11C\uBE44\uC2A4\uB97C \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4',
+  ai_upgrade_required: '업그레이드 필요',
+  ai_upgrade_hint: '이 AI 모듈은 현재 플랜에 포함되어 있지 않습니다. 상위 플랜으로 업그레이드하여 이용하세요.',
   ai_dashboard_title: '\uD3EC\uD2B8\uD3F4\uB9AC\uC624 AI \uBD84\uC11D',
   ai_dashboard_btn: '\uD3EC\uD2B8\uD3F4\uB9AC\uC624 \uBD84\uC11D',
   ai_dashboard_prompt: '\uD074\uB77C\uC774\uC5B8\uD2B8 \uD3EC\uD2B8\uD3F4\uB9AC\uC624\uB97C \uBD84\uC11D\uD558\uACE0 \uC704\uD5D8, \uAE30\uD68C, \uC6B0\uC120 \uC870\uCE58\uB97C \uC2DD\uBCC4\uD574 \uC8FC\uC138\uC694.',

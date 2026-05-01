@@ -546,6 +546,8 @@ export default {
   coach_mock2: "**Bonne approche !** Pour structurer un QBR efficace :\n\n1. **Préparez les KPIs** du trimestre écoulé\n2. **Identifiez 3 succès** à célébrer avec le client\n3. **Proposez un plan** pour le prochain trimestre\n4. **Terminez par des engagements mutuels**\n\nLe QBR doit durer 45 min max.",
   coach_mock3: "**La prévention du burnout** est cruciale en CS :\n\n1. **Répartissez la charge** — Aucun CSM ne devrait gérer plus de 15 comptes stratégiques\n2. **Automatisez** les tâches répétitives\n3. **Check-ins hebdomadaires** — 10 min pour prendre le pouls\n4. **Encouragez les pauses** — Un CSM épuisé perd ses clients.",
   coach_placeholder: 'Posez votre question CS...',
+  coach_quota_exceeded: 'Quota journalier atteint. Revenez demain ou passez au plan supérieur.',
+  coach_clear_confirm: "Effacer tout l'historique du chat ?",
   coach_thinking: 'Réflexion en cours...',
 
   // Smart Matrice
@@ -1846,6 +1848,8 @@ export default {
   ai_thinking: 'Scalyo analyse vos donn\u00e9es...',
   ai_retry: 'R\u00e9essayer',
   ai_error: 'Service IA indisponible',
+  ai_upgrade_required: 'Plan supérieur requis',
+  ai_upgrade_hint: 'Ce module IA n\'est pas inclus dans votre plan actuel. Passez au plan supérieur pour y accéder.',
   ai_dashboard_title: 'Analyse IA du portfolio',
   ai_dashboard_btn: 'Analyser mon portfolio',
   ai_dashboard_prompt: 'Analyse mon portfolio client : identifie les risques, les opportunit\u00e9s et les actions prioritaires.',

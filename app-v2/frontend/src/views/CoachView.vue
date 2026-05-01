@@ -2,7 +2,7 @@
   <div class="coach-view">
     <div class="coach-header">
       <div><h1>🤖 {{ t('coach_title') }}</h1></div>
-      <span class="coach-counter">{{ messages.length }} {{ t('coach_counter') }}</span>
+      <span class="coach-counter">{{ coachUsed }} / {{ coachQuota }} {{ t('coach_counter') }}</span>
     </div>
     <div class="coach-chat">
       <div class="chat-messages" ref="chatRef">
@@ -33,18 +33,20 @@
         <button v-for="s in suggestions" :key="s" class="sug-btn" @click="sendMessage(t(s))">{{ t(s) }}</button>
       </div>
       <div class="chat-input-area">
-        <input v-model="input" :placeholder="t('coach_placeholder')" @keydown.enter="sendMessage(input)" :disabled="thinking" />
-        <button class="send-btn" @click="sendMessage(input)" :disabled="!input.trim() || thinking">→</button>
+        <input v-model="input" :placeholder="t('coach_placeholder')" @keydown.enter="sendMessage(input)" :disabled="thinking || quotaExceeded" />
+        <button class="send-btn" @click="sendMessage(input)" :disabled="!input.trim() || thinking || quotaExceeded">→</button>
       </div>
+      <div v-if="quotaExceeded" class="quota-warning">{{ t('coach_quota_exceeded') }}</div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted } from 'vue'
+import { ref, computed, nextTick, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useClientStore } from '@/stores/clients'
 import { useTeamStore } from '@/stores/team'
+import { useAuthStore } from '@/stores/auth'
 import { sanitizeHtml } from '@/utils/sanitize'
 import { askScalyoAI } from '@/utils/askScalyoAI'
 import { supabase } from '@/lib/supabase'
@@ -52,13 +54,34 @@ import { supabase } from '@/lib/supabase'
 const { t, locale } = useI18n({ useScope: 'global' })
 const clientStore = useClientStore()
 const teamStore = useTeamStore()
+const authStore = useAuthStore()
 
 const input = ref('')
 const messages = ref([])
 const thinking = ref(false)
 const chatRef = ref(null)
+const coachUsed = ref(0)
+const coachQuota = ref(35)
+const quotaExceeded = computed(() => coachUsed.value >= coachQuota.value)
 
 const suggestions = ['coach_sug1', 'coach_sug2', 'coach_sug3', 'coach_sug4', 'coach_sug5']
+
+// --- Quota from backend ---
+async function loadUsage() {
+  try {
+    const session = authStore.session
+    if (!session?.access_token) return
+    const resp = await fetch('/api/usage', {
+      headers: { 'Authorization': 'Bearer ' + session.access_token }
+    })
+    if (!resp.ok) return
+    const data = await resp.json()
+    if (data.modules?.coach) {
+      coachUsed.value = data.modules.coach.used || 0
+      coachQuota.value = data.modules.coach.quota || 35
+    }
+  } catch { /* silent */ }
+}
 
 // --- Supabase persistence ---
 async function loadMessages() {
@@ -69,9 +92,7 @@ async function loadMessages() {
     .order('created_at', { ascending: true })
   if (data) {
     messages.value = data.map(m => ({
-      id: m.id,
-      role: m.role,
-      content: m.content,
+      id: m.id, role: m.role, content: m.content,
       time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     }))
   }
@@ -81,7 +102,7 @@ async function saveMessage(role, content) {
   await supabase.from('ai_messages').insert({ module: 'coach', role, content })
 }
 
-onMounted(loadMessages)
+onMounted(() => { loadMessages(); loadUsage() })
 
 function formatMsg(text) {
   const html = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -101,7 +122,7 @@ function buildContext() {
 }
 
 async function sendMessage(text) {
-  if (!text?.trim() || thinking.value) return
+  if (!text?.trim() || thinking.value || quotaExceeded.value) return
   const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   const userMsg = { id: Date.now(), role: 'user', content: text.trim(), time: now }
   messages.value.push(userMsg)
@@ -110,6 +131,7 @@ async function sendMessage(text) {
   await nextTick()
   scrollBottom()
   saveMessage('user', text.trim())
+  coachUsed.value++
 
   try {
     const result = await askScalyoAI({
@@ -184,4 +206,5 @@ async function clearHistory() {
 .send-btn { background: var(--purple); color: #fff; border: none; border-radius: var(--radius-sm); padding: 10px 18px; font-size: 1.1rem; cursor: pointer; transition: all 0.15s; }
 .send-btn:hover:not(:disabled) { background: var(--purple-dark); }
 .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.quota-warning { text-align: center; padding: 8px; font-size: 0.78rem; color: #dc2626; background: #fef2f2; border-top: 1px solid #fecaca; }
 </style>
