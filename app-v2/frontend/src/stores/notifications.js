@@ -1,9 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
+import { askScalyoAI } from '@/utils/askScalyoAI'
 
 export const useNotificationStore = defineStore('notifications', () => {
   const notifications = ref([])
+  const enrichments = ref({})
+  const enriched = ref(false)
 
   const unreadCount = computed(() => notifications.value.filter(n => !n.read).length)
 
@@ -153,6 +156,23 @@ export const useNotificationStore = defineStore('notifications', () => {
         console.error('Failed to insert notifications:', error)
       }
     }
+  }
+
+  async function enrichWithAI(lang) {
+    if (enriched.value) return
+    const unread = notifications.value.filter(n => !n.read).slice(0, 10)
+    if (!unread.length) return
+    try {
+      const result = await askScalyoAI({
+        module: 'notif',
+        message: 'Enrichis ces alertes avec des recommandations',
+        context: { notifications: unread.map(n => ({ type: n.type, title: n.title, body: n.body })) },
+        lang: lang || 'fr',
+      })
+      const text = result.response || result.reply || result.content || ''
+      unread.forEach((n, i) => { enrichments.value[n.id] = text })
+      enriched.value = true
+    } catch { /* silent — enrichment is optional */ }
   }
 
   return {
