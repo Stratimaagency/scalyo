@@ -135,11 +135,17 @@ export default {
   support_subtitle: 'Notre équipe est là pour vous aider.',
   support_pitch: 'Chez Scalyo, chaque client compte. Notre équipe connaît le Customer Success de l\'intérieur et s\'engage à vous accompagner dans la réussite de vos équipes. Quelle que soit votre question, nous vous répondons personnellement.',
   support_response_title: 'Délai de réponse',
-  support_response_desc: 'Nous nous engageons à répondre sous 24 heures ouvrées. Les clients Elite bénéficient d\'un traitement prioritaire.',
+  support_response_desc: 'Nous nous engageons à répondre sous 48 heures ouvrées. Les clients Elite bénéficient d\'un traitement prioritaire.'un traitement prioritaire.',
   support_email_label: 'Contactez-nous',
   support_langs_label: 'Langues supportées',
   support_langs_desc: 'Français, Anglais, Coréen',
   support_back: 'Retour à Scalyo',
+  support_email_value: 'contact@scalyo.app',
+  support_legal_title: 'Informations légales',
+  support_cgu_link: 'Conditions Générales d\'Utilisation',
+  support_privacy_link: 'Politique de Confidentialité',
+  support_privacy_title: 'Confidentialité des données',
+  support_privacy_desc: 'Les échanges avec le Coach IA et Nova restent strictement confidentiels. Les données de bien-être ne sont jamais transmises au manager, aux RH ou à la direction. Scalyo protège la vie privée de chaque collaborateur.',
 
   // Email Studio
   es_title: 'Email Studio',
