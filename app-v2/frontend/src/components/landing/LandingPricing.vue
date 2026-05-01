@@ -30,7 +30,7 @@
         </div>
 
         <!-- Growth -->
-        <div class="plan-card popular">
+        <div class="plan-card">
           <div class="popular-badge">&#11088; {{ t('badge_popular') }}</div>
           <div class="plan-top">
             <div class="plan-name">GROWTH</div>
@@ -52,7 +52,7 @@
         </div>
 
         <!-- Scale / Elite -->
-        <div class="plan-card">
+        <div class="plan-card elite-featured">
           <div class="plan-top">
             <div class="plan-name">ELITE</div>
             <div class="plan-price-wrap">
@@ -96,7 +96,8 @@
 
       <p class="plan-footnote" v-html="t('plan_footnote')"></p>
     </div>
-  </section>
+    <p class="pricing-privacy-note">🔒 {{ t('pricing_privacy_note') }}</p>
+    </section>
 </template>
 
 <script setup>
@@ -120,3 +121,10 @@ function stripeUrl(plan) {
   return email ? base + '?prefilled_email=' + encodeURIComponent(email) : base
 }
 </script>
+
+<style scoped>
+.elite-featured { position: relative; border: 2px solid var(--primary, #6366f1); transform: scale(1.04); box-shadow: 0 8px 40px rgba(99,102,241,.18), 0 0 0 1px rgba(99,102,241,.08); z-index: 2; }
+.elite-featured::before { content: ''; position: absolute; inset: -2px; border-radius: inherit; background: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa); z-index: -1; padding: 2px; -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.pricing-privacy-note { text-align: center; color: var(--text-secondary, #6b7280); font-size: 0.85rem; margin-top: 1.5rem; padding: 0 1rem; }
+@media (max-width: 768px) { .elite-featured { transform: none; } }
+</style>
