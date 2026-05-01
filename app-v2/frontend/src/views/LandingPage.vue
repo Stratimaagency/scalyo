@@ -36,7 +36,7 @@
       @module-change="activeModule = $event"
     />
 
-    <LandingRoiCalc :t="t" />
+    <LandingRoiCalc :t="t" :locale="locale" />
 
     <LandingIntegrations :integrations="integrations" :t="t" />
 
