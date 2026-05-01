@@ -69,6 +69,25 @@ export default {
   dash_no_history: 'ìì§ ê¸°ë¡ ë°ì´í° ìì',
   dash_my_tasks_empty: 'í ë¹ë ìì ìì',
   dash_tasks_all: 'ì ì²´',
+  kpi_health_score: '건강 점수',
+  kpi_churn_rate: '이탈률',
+  kpi_active_users: '활성 사용자',
+  kpi_csat: 'CSAT',
+  kpi_expansion: '확장',
+  kpi_tickets: '미해결 티켓',
+  kpi_onboarding: '온보딩',
+  dash_customize_kpis: '사용자 지정',
+  dash_clients: '고객',
+  dash_healthy: '양호',
+  dash_watch: '주의',
+  dash_critical: '위험',
+  period_7d: '7일',
+  period_30d: '30일',
+  period_90d: '90일',
+  task_in_progress: '진행 중',
+  task_todo: '할 일',
+  task_blocked: '차단됨',
+  customize: '사용자 지정',
 
   es_title: 'ì´ë©ì¼ ì¤íëì¤', es_subtitle: 'ë°ë¡ ì¬ì© ê°ë¥í ì ë¬¸ ííë¦¿', es_tab_all: 'ì ì²´', es_tab_csm: 'CSM', es_tab_commercial: 'ìì', es_tab_kam: 'KAM', es_search: 'ííë¦¿ ê²ì...', es_copy: 'ì´ë©ì¼ ë³µì¬', es_copied: 'ë³µì¬ë¨!', es_subject: 'ì ëª©', es_body: 'ë³¸ë¬¸', es_cat_all: 'ì ì²´',
   es_cat_onboarding: 'ì¨ë³´ë©',
