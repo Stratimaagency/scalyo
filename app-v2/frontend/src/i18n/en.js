@@ -89,6 +89,18 @@ export default {
   task_blocked: 'Blocked',
   customize: 'Customize',
 
+
+  // Support
+  support_title: 'Scalyo Support',
+  support_subtitle: 'Our team is here to help.',
+  support_pitch: 'At Scalyo, every customer matters. Our team understands Customer Success from the inside and is committed to helping your teams succeed. Whatever your question, we respond personally.',
+  support_response_title: 'Response time',
+  support_response_desc: 'We commit to responding within 24 business hours. Elite customers receive priority handling.',
+  support_email_label: 'Contact us',
+  support_langs_label: 'Supported languages',
+  support_langs_desc: 'French, English, Korean',
+  support_back: 'Back to Scalyo',
+
   es_title: 'Email Studio', es_subtitle: 'Professional templates ready to use', es_tab_all: 'All', es_tab_csm: 'CSM', es_tab_commercial: 'Sales', es_tab_kam: 'KAM', es_search: 'Search a template...', es_copy: 'Copy email', es_copied: 'Copied!', es_subject: 'SUBJECT', es_body: 'EMAIL BODY', es_cat_all: 'All',
   es_cat_onboarding: 'Onboarding',
   es_cat_qbr: 'QBR',
@@ -853,7 +865,7 @@ export default {
   login_email_ph: 'you\\@company.com',
   login_password: 'Password',
   login_submit: 'Sign in',
-  login_no_account: 'No account yet?',
+  login_no_account: 'Ready to start?',
   login_signup: 'Free trial â',
   reg_title: 'Free trial â 14 days',
   reg_subtitle: 'No credit card required',

@@ -72,6 +72,11 @@ const routes = [
     component: () => import('@/views/legal/PrivacyView.vue')
   },
   {
+    path: '/support',
+    name: 'Support',
+    component: () => import('@/views/SupportView.vue')
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/NotFoundView.vue')
@@ -117,6 +122,7 @@ router.afterEach((to) => {
     'ResetPassword': 'Mot de passe oublié — Scalyo',
     'ResetPasswordConfirm': 'Nouveau mot de passe — Scalyo',
     'CGU': 'Conditions d\'utilisation — Scalyo',
+    'Support': 'Support — Scalyo',
     'Privacy': 'Politique de confidentialité — Scalyo',
   }
   document.title = (to.name && titles[to.name]) || to.meta?.title || 'Scalyo — Customer Success Platform'

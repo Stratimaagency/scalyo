@@ -18,6 +18,9 @@
         <section><h2>{{ c.priv_s8_title }}</h2><p>{{ c.priv_s8_intro }}</p><ul><li>{{ c.priv_s8_access }}</li><li>{{ c.priv_s8_rectify }}</li><li>{{ c.priv_s8_erase }}</li><li>{{ c.priv_s8_port }}</li><li>{{ c.priv_s8_object }}</li></ul><p>{{ c.priv_s8_contact }} <a href="mailto:contact@scalyo.app">contact@scalyo.app</a></p></section>
         <section><h2>{{ c.priv_s9_title }}</h2><p>{{ c.priv_s9 }}</p></section>
         <section><h2>{{ c.priv_s10_title }}</h2><p>{{ c.priv_s10 }} <a href="mailto:contact@scalyo.app">contact@scalyo.app</a></p></section>
+        <section><h2>{{ c.priv_s11_title }}</h2><p>{{ c.priv_s11 }}</p></section>
+        <section><h2>{{ c.priv_s12_title }}</h2><p>{{ c.priv_s12 }}</p></section>
+        <section><h2>{{ c.priv_s13_title }}</h2><p>{{ c.priv_s13 }} <a href="mailto:dpo@scalyo.app">dpo@scalyo.app</a></p></section>
       </div>
     </div>
   </div>

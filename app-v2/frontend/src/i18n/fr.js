@@ -129,6 +129,18 @@ export default {
   task_blocked: 'Bloqué',
   customize: 'Personnaliser',
 
+
+  // Support
+  support_title: 'Support Scalyo',
+  support_subtitle: 'Notre équipe est là pour vous aider.',
+  support_pitch: 'Chez Scalyo, chaque client compte. Notre équipe connaît le Customer Success de l\'intérieur et s\'engage à vous accompagner dans la réussite de vos équipes. Quelle que soit votre question, nous vous répondons personnellement.',
+  support_response_title: 'Délai de réponse',
+  support_response_desc: 'Nous nous engageons à répondre sous 24 heures ouvrées. Les clients Elite bénéficient d\'un traitement prioritaire.',
+  support_email_label: 'Contactez-nous',
+  support_langs_label: 'Langues supportées',
+  support_langs_desc: 'Français, Anglais, Coréen',
+  support_back: 'Retour à Scalyo',
+
   // Email Studio
   es_title: 'Email Studio',
   es_subtitle: 'Templates professionnels prêts à l\'emploi',
@@ -1389,8 +1401,8 @@ export default {
   login_email_ph: 'vous\\@entreprise.com',
   login_password: 'Mot de passe',
   login_submit: 'Se connecter',
-  login_no_account: 'Pas encore de compte ?',
-  login_signup: 'Essai gratuit →',
+  login_no_account: 'Prêt à commencer ?',
+  login_signup: 'Voir les forfaits →',
   reg_title: 'Essai gratuit — 14 jours',
   reg_subtitle: 'Aucune carte bancaire requise',
   reg_firstname: 'Prénom',
