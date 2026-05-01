@@ -112,6 +112,13 @@ export const legal = {
     priv_s12: 'Vos données sont hébergées en Union Européenne (Supabase EU). En cas de transfert hors UE, des garanties adéquates sont mises en place conformément au RGPD (clauses contractuelles types, décisions d\'adéquation). Les sous-traitants concernés sont : Cloudflare (CDN, réseau mondial), Stripe (paiements, certifié PCI-DSS).',
     priv_s13_title: '13. Délégué à la protection des données',
     priv_s13: 'Pour exercer vos droits ou pour toute question relative à la protection de vos données, contactez notre DPO à dpo@scalyo.app ou par courrier à Scalyo SAS, France.',
+
+    priv_s14_title: '14. Sous-traitants',
+    priv_s14: 'Scalyo fait appel aux sous-traitants suivants pour le fonctionnement du service : Supabase (hébergement BDD, UE — Francfort), Cloudflare (CDN et déploiement, UE/US), Stripe (paiements, certifié PCI-DSS), Anthropic (fournisseur IA, US — couvert par le EU-US Data Privacy Framework), Resend (envoi d\'emails transactionnels, US). Chaque sous-traitant est lié par des clauses contractuelles conformes au RGPD.',
+    priv_s15_title: '15. Transferts internationaux',
+    priv_s15: 'Les données sont hébergées en Union Européenne (Supabase, Francfort). Les transferts vers les États-Unis (Anthropic, Stripe, Resend, Cloudflare) sont encadrés par le EU-US Data Privacy Framework et/ou des clauses contractuelles types (SCC) approuvées par la Commission européenne.',
+    priv_s16_title: '16. Notification de violation',
+    priv_s16: 'En cas de violation de données personnelles, Scalyo s\'engage à notifier la CNIL dans les 72 heures conformément à l\'article 33 du RGPD, et à informer les utilisateurs concernés dans les meilleurs délais si la violation présente un risque élevé pour leurs droits.',
   },
 
   en: {
@@ -176,6 +183,13 @@ export const legal = {
     priv_s9: 'Scalyo only uses technical cookies necessary for the operation of the service (session, authentication). No advertising or tracking cookies are used.',
     priv_s10_title: '10. Contact',
     priv_s10: 'For any questions regarding your data:',
+
+    priv_s14_title: '14. Sub-processors',
+    priv_s14: 'Scalyo uses the following sub-processors: Supabase (database hosting, EU — Frankfurt), Cloudflare (CDN and deployment, EU/US), Stripe (payments, PCI-DSS certified), Anthropic (AI provider, US — covered by EU-US Data Privacy Framework), Resend (transactional emails, US). Each sub-processor is bound by GDPR-compliant contractual clauses.',
+    priv_s15_title: '15. International transfers',
+    priv_s15: 'Data is hosted in the European Union (Supabase, Frankfurt). Transfers to the United States (Anthropic, Stripe, Resend, Cloudflare) are governed by the EU-US Data Privacy Framework and/or Standard Contractual Clauses (SCCs) approved by the European Commission.',
+    priv_s16_title: '16. Breach notification',
+    priv_s16: 'In the event of a personal data breach, Scalyo commits to notifying the relevant supervisory authority within 72 hours in accordance with Article 33 of the GDPR, and to informing affected users without undue delay if the breach poses a high risk to their rights.',
   },
 
   ko: {
@@ -240,5 +254,11 @@ export const legal = {
     priv_s9: 'Scalyo는 서비스 운영에 필요한 기술적 쿠키(세션, 인증)만 사용합니다. 광고 또는 추적 쿠키는 사용하지 않습니다.',
     priv_s10_title: '10. 개인정보보호책임자',
     priv_s10: '개인정보에 관한 문의사항:',
+    priv_s14_title: '14. 하도급업자',
+    priv_s14: 'Scalyo는 다음 하도급업자를 이용합니다: Supabase(데이터베이스 호스팅, EU — 프랑크푸르트), Cloudflare(CDN 및 배포, EU/US), Stripe(결제, PCI-DSS 인증), Anthropic(AI 제공업체, US — EU-US Data Privacy Framework 적용), Resend(트랜잭션 이메일, US). 각 하도급업자는 GDPR 준수 계약 조항으로 묶여 있습니다.',
+    priv_s15_title: '15. 국제 데이터 전송',
+    priv_s15: '데이터는 유럽연합 내(Supabase, 프랑크푸르트)에 호스팅됩니다. 미국으로의 전송(Anthropic, Stripe, Resend, Cloudflare)은 EU-US Data Privacy Framework 및/또는 유럽위원회 승인 표준계약조항(SCC)에 의해 규율됩니다.',
+    priv_s16_title: '16. 침해 통지',
+    priv_s16: '개인정보 침해 시 Scalyo는 GDPR 제33조에 따라 72시간 이내에 관련 감독기관에 통지하고, 침해가 이용자 권리에 높은 위험을 초래하는 경우 지체 없이 영향을 받는 이용자에게 알립니다.',
   }
 }

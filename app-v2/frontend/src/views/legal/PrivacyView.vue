@@ -21,6 +21,9 @@
         <section><h2>{{ c.priv_s11_title }}</h2><p>{{ c.priv_s11 }}</p></section>
         <section><h2>{{ c.priv_s12_title }}</h2><p>{{ c.priv_s12 }}</p></section>
         <section><h2>{{ c.priv_s13_title }}</h2><p>{{ c.priv_s13 }} <a href="mailto:dpo@scalyo.app">dpo@scalyo.app</a></p></section>
+        <section><h2>{{ c.priv_s14_title }}</h2><p>{{ c.priv_s14 }}</p></section>
+        <section><h2>{{ c.priv_s15_title }}</h2><p>{{ c.priv_s15 }}</p></section>
+        <section><h2>{{ c.priv_s16_title }}</h2><p>{{ c.priv_s16 }}</p></section>
       </div>
     </div>
   </div>
