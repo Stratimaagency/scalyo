@@ -2,55 +2,62 @@
   <div class="support-page">
     <div class="support-container">
       <header class="support-header">
-        <div class="support-logo">S</div>
-        <h1>{{ t('support_title') }}</h1>
-        <p class="support-sub">{{ t('support_subtitle') }}</p>
+        <h1>{{ m.support_title }}</h1>
+        <p class="support-sub">{{ m.support_subtitle }}</p>
       </header>
       <section class="support-card">
-        <p class="support-pitch">{{ t('support_pitch') }}</p>
+        <p class="support-pitch">{{ m.support_pitch }}</p>
       </section>
       <div class="support-grid">
         <section class="support-card">
-          <h2>{{ t('support_email_label') }}</h2>
-          <a href="mailto:contact@scalyo.app" class="support-email">{{ t('support_email_value') }}</a>
+          <h2>{{ m.support_email_label }}</h2>
+          <a href="mailto:contact@scalyo.app" class="support-email">contact@scalyo.app</a>
         </section>
         <section class="support-card">
-          <h2>{{ t('support_response_title') }}</h2>
-          <p>{{ t('support_response_desc') }}</p>
+          <h2>{{ m.support_response_title }}</h2>
+          <p>{{ m.support_response_desc }}</p>
         </section>
         <section class="support-card">
-          <h2>{{ t('support_langs_label') }}</h2>
-          <p>{{ t('support_langs_desc') }}</p>
+          <h2>{{ m.support_langs_label }}</h2>
+          <p>{{ m.support_langs_desc }}</p>
         </section>
       </div>
       <section class="support-card support-privacy">
-        <h2>{{ t('support_privacy_title') }}</h2>
-        <p>{{ t('support_privacy_desc') }}</p>
+        <h2>{{ m.support_privacy_title }}</h2>
+        <p>{{ m.support_privacy_desc }}</p>
       </section>
       <section class="support-card support-legal">
-        <h2>{{ t('support_legal_title') }}</h2>
+        <h2>{{ m.support_legal_title }}</h2>
         <div class="legal-links">
-          <a href="/cgu">{{ t('support_cgu_link') }}</a>
-          <a href="/privacy">{{ t('support_privacy_link') }}</a>
+          <a href="/cgu">{{ m.support_cgu_link }}</a>
+          <a href="/privacy">{{ m.support_privacy_link }}</a>
         </div>
       </section>
       <div class="support-back">
-        <a href="/">{{ t('support_back') }}</a>
+        <a href="/">{{ m.support_back }}</a>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-const { t } = useI18n({ useScope: 'global' })
+import fr from '@/i18n/fr'
+import en from '@/i18n/en'
+import ko from '@/i18n/ko'
+
+const { locale } = useI18n({ useScope: 'global' })
+const msgs = { fr, en, ko }
+const m = computed(() => msgs[locale.value] || msgs.fr)
+onMounted(() => { document.title = m.value.support_title + ' \u2014 Scalyo' })
 </script>
+
 <style scoped>
 .support-page { min-height: 100vh; background: #f8f9fa; display: flex; align-items: center; justify-content: center; padding: 2rem; }
 .support-container { max-width: 640px; width: 100%; }
 .support-header { text-align: center; margin-bottom: 2rem; }
-.support-logo { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #FF6B6B, #FFC300, #6A82FB); color: #fff; font-family: Georgia, serif; font-size: 28px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
-.support-header h1 { font-size: 1.75rem; font-weight: 700; margin: 0.75rem 0 0.25rem; }
+.support-header h1 { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; }
 .support-sub { color: #6b7280; font-size: 0.95rem; }
 .support-card { background: #fff; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; border: 1px solid #e5e7eb; }
 .support-pitch { line-height: 1.7; color: #1f2937; }
