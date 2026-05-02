@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { isModuleAllowed } from '@/utils/planGating'
 
 const routes = [
   { path: '/', name: 'landing', component: () => import('@/views/LandingPage.vue'), meta: { guest: true } },
@@ -17,7 +18,7 @@ const routes = [
       { path: 'manager', name: 'manager', component: () => import('@/views/ManagerView.vue') },
       { path: 'portfolio', name: 'portfolio', component: () => import('@/views/PortfolioView.vue') },
       { path: 'satisfaction', name: 'satisfaction', component: () => import('@/views/SatisfactionView.vue') },
-      { path: 'playbooks', name: 'playbooks', component: () => import('@/views/PlaybooksView.vue') },
+      { path: 'playbooks', name: 'playbooks', component: () => import('@/views/PlaybooksView.vue'), meta: { requiredModule: 'playbook' } },
       { path: 'kpis', name: 'kpis', component: () => import('@/views/kpis/KpisList.vue') },
       { path: 'kpis/new', name: 'kpis-builder-new', component: () => import('@/views/kpis/KpisBuilder.vue') },
       { path: 'kpis/:id', name: 'kpis-builder', component: () => import('@/views/kpis/KpisBuilder.vue'), props: true },
@@ -36,9 +37,9 @@ const routes = [
       { path: 'workload', name: 'workload', component: () => import('@/views/WorkloadView.vue') },
       { path: 'wellbeing', name: 'wellbeing', component: () => import('@/views/WellbeingView.vue') },
       { path: 'coach', name: 'coach', component: () => import('@/views/CoachView.vue') },
-      { path: 'email-studio', name: 'email-studio', component: () => import('@/views/EmailStudioView.vue') },
+      { path: 'email-studio', name: 'email-studio', component: () => import('@/views/EmailStudioView.vue'), meta: { requiredModule: 'email' } },
       { path: 'quotes', name: 'quotes', component: () => import('@/views/QuotesView.vue') },
-      { path: 'import', name: 'import', component: () => import('@/views/ImportView.vue') },
+      { path: 'import', name: 'import', component: () => import('@/views/ImportView.vue'), meta: { requiredModule: 'import' } },
       { path: 'integrations', name: 'integrations', component: () => import('@/views/IntegrationsView.vue') },
       { path: 'settings', name: 'settings', component: () => import('@/views/SettingsView.vue') },
         { path: 'profile', name: 'profile', component: () => import('@/views/ProfileView.vue'), meta: { requiresAuth: true } },
@@ -99,6 +100,14 @@ router.beforeEach(async (to) => {
     if (authStore.needsPayment) return { name: 'paywall' }
     return { name: 'dashboard' }
   }
+  // Plan gating: check module access
+  if (to.meta.requiredModule && authStore.isAuthenticated) {
+    const plan = authStore.currentPlan || 'starter'
+    if (!isModuleAllowed(plan, to.meta.requiredModule)) {
+      return { name: 'paywall' }
+    }
+  }
+
   // Authenticated + requiresAuth + trial expired → paywall (except paywall itself)
   if (to.meta.requiresAuth && authStore.isAuthenticated && authStore.needsPayment && to.name !== 'paywall') {
     return { name: 'paywall' }

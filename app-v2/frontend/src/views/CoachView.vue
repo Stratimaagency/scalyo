@@ -46,7 +46,6 @@ import { ref, computed, nextTick, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useClientStore } from '@/stores/clients'
 import { useTeamStore } from '@/stores/team'
-import { useAuthStore } from '@/stores/auth'
 import { sanitizeHtml } from '@/utils/sanitize'
 import { askScalyoAI } from '@/utils/askScalyoAI'
 import { supabase } from '@/lib/supabase'
@@ -54,7 +53,6 @@ import { supabase } from '@/lib/supabase'
 const { t, locale } = useI18n({ useScope: 'global' })
 const clientStore = useClientStore()
 const teamStore = useTeamStore()
-const authStore = useAuthStore()
 
 const input = ref('')
 const messages = ref([])
@@ -69,10 +67,10 @@ const suggestions = ['coach_sug1', 'coach_sug2', 'coach_sug3', 'coach_sug4', 'co
 // --- Quota from backend ---
 async function loadUsage() {
   try {
-    const session = authStore.session
-    if (!session?.access_token) return
+    const { data: { session: s } } = await supabase.auth.getSession()
+    if (!s?.access_token) return
     const resp = await fetch('/api/usage', {
-      headers: { 'Authorization': 'Bearer ' + session.access_token }
+      headers: { 'Authorization': 'Bearer ' + s.access_token }
     })
     if (!resp.ok) return
     const data = await resp.json()
