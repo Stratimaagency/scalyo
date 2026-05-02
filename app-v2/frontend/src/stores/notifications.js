@@ -15,7 +15,10 @@ export const useNotificationStore = defineStore('notifications', () => {
       .from('notifications')
       .select('*')
       .order('created_at', { ascending: false })
-    if (!error && data) notifications.value = data
+    if (!error && data) {
+      notifications.value = data
+      enrichWithAI()
+    }
   }
 
   async function markRead(id) {
@@ -178,5 +181,8 @@ export const useNotificationStore = defineStore('notifications', () => {
   return {
     notifications, unreadCount,
     markRead, markAllRead, clearAll, generateFromData, loadNotifications,
+    enrichWithAI,
+    enrichments,
+    enriched,
   }
 }, { persist: false })

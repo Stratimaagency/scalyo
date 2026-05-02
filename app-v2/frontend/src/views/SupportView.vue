@@ -41,13 +41,23 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref, computed, onMounted } from 'vue'
 import fr from '@/i18n/fr'
 import en from '@/i18n/en'
 import ko from '@/i18n/ko'
 
-const { locale } = useI18n({ useScope: 'global' })
+function detectLocale() {
+  try {
+    const stored = window.localStorage?.getItem('scalyo_locale')
+    if (stored && ['fr', 'en', 'ko'].includes(stored)) return stored
+  } catch {}
+  const lang = navigator.language?.substring(0, 2)
+  if (lang === 'ko') return 'ko'
+  if (lang === 'en') return 'en'
+  return 'fr'
+}
+
+const locale = ref(detectLocale())
 const msgs = { fr, en, ko }
 const m = computed(() => msgs[locale.value] || msgs.fr)
 onMounted(() => { document.title = m.value.support_title + ' \u2014 Scalyo' })

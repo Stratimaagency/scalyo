@@ -18,6 +18,7 @@ export function getConfig(env) {
     supabaseJwtSecret: env.SUPABASE_JWT_SECRET || '',
     stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET || '',
     supabaseServiceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY || '',
+    resendApiKey: env.RESEND_API_KEY || '',
   }
 }
 
