@@ -76,7 +76,7 @@ async function sendEmail() {
   try {
     const { data: { session } } = await supabase.auth.getSession()
     const resp = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-email`,
+      '/api/email/send',
       {
         method: 'POST',
         headers: {
@@ -88,14 +88,12 @@ async function sendEmail() {
           subject: t(props.selected.subjectKey),
           html: `<div style="font-family:sans-serif;line-height:1.6;max-width:600px;margin:0 auto">${t(props.selected.bodyKey).replace(/\n/g, '<br>')}</div>`,
           from_name: sendFromName.value || auth.fullName || 'Scalyo',
-          reply_to: auth.user?.email,
-          resend_api_key: auth.profile?.resend_api_key || null,
-          template_id: props.selected.id
+          replyTo: auth.user?.email,
         })
       }
     )
     const data = await resp.json()
-    if (resp.ok && data.success) {
+    if (resp.ok && (data.sent || data.success)) {
       sendResult.value = { success: true }
       sendTo.value = ''
       setTimeout(() => { emit('close'); sendResult.value = null }, 2000)

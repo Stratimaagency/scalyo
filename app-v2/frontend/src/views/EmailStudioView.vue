@@ -108,9 +108,7 @@ const showSendModal = ref(false)
 const showResendWizard = ref(false)
 
 const isElite = computed(() => auth.currentPlan === 'elite')
-const hasResendKey = computed(() =>
-  !!(auth.profile?.resend_api_key && auth.profile.resend_api_key.startsWith('re_'))
-)
+const hasResendKey = computed(() => isElite.value)
 
 const selected = computed(() =>
   templates.find(tpl => tpl.id === selectedId.value) || null
@@ -125,10 +123,6 @@ const tabKeys = [
 ]
 
 function openSendModal() {
-  if (auth.currentPlan === 'elite' && !auth.profile?.resend_api_key) {
-    showResendWizard.value = true
-    return
-  }
   showSendModal.value = true
 }
 

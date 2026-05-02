@@ -53,7 +53,7 @@ export async function onRequestPost(context) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'Scalyo <noreply@scalyo.app>',
+      from: body.from_name ? (body.from_name + ' via Scalyo <contact@scalyo.app>') : 'Scalyo <contact@scalyo.app>',
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
