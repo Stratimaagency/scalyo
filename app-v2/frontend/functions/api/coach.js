@@ -9,10 +9,10 @@ export async function onRequestPost(context) {
 
   try {
     const { token } = extractAuth(request)
-    const auth = verifyJwt(token)
+    const config = getConfig(env)
+    const auth = await verifyJwt(token, config)
     if (!auth.valid) return jsonError('unauthorized', 401, lang)
 
-    const config = getConfig(env)
     if (!getApiKey(config)) return jsonError('ai_not_configured', 503, lang)
 
     const body = await request.json()

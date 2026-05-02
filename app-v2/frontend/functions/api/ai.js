@@ -33,7 +33,7 @@ export async function onRequestPost(context) {
     // 1. Auth — verify JWT signature
     const { token } = extractAuth(request)
     const config = getConfig(env)
-    const auth = await verifyJwt(token, config.supabaseJwtSecret)
+    const auth = await verifyJwt(token, config)
     if (!auth.valid) return jsonError('unauthorized', 401, lang)
 
     // 2. Rate limit — 10 req/min/user

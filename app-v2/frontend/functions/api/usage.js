@@ -11,7 +11,7 @@ export async function onRequestGet(context) {
   const config = getConfig(context.env)
   const lang = extractLang(context.request)
   const { token } = extractAuth(context.request)
-  const jwt = await verifyJwt(token, config.supabaseJwtSecret)
+  const jwt = await verifyJwt(token, config)
   if (!jwt.valid) return jsonError('unauthorized', 401, lang)
 
   // Get user plan from profile
