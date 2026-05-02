@@ -45,7 +45,15 @@ export const useTeamStore = defineStore('team', () => {
   // ─── Add ──────────────────────────────────────────────────────
   async function addMember(member) {
     const { data, error } = await supabase.from('team_members').insert([await memberToDb(member)]).select().single()
-    if (!error && data) members.value.push(dbToMember(data))
+    if (error) {
+      if (error.message?.includes('SEAT_LIMIT_REACHED')) {
+        const err = new Error('SEAT_LIMIT_REACHED')
+        err.code = 'SEAT_LIMIT_REACHED'
+        throw err
+      }
+      throw error
+    }
+    if (data) members.value.push(dbToMember(data))
     return data
   }
 
@@ -82,36 +90,26 @@ export const useTeamStore = defineStore('team', () => {
   // ─── Mappers ──────────────────────────────────────────────────
   function dbToMember(r) {
     return {
-      id: r.id,
-      name: r.name,
-      email: r.email || '',
-      role: r.role || '',
-      wellbeingScore: r.wellbeing_score || 75,
-      workload: r.workload || 60,
-      clientCount: r.client_count || 0,
-      arrManaged: r.arr_managed || 0,
+      id: r.id, name: r.name, email: r.email || '', role: r.role || '',
+      wellbeingScore: r.wellbeing_score || 75, workload: r.workload || 60,
+      clientCount: r.client_count || 0, arrManaged: r.arr_managed || 0,
       moodHistory: r.mood_history || [],
     }
   }
 
   async function memberToDb(m) {
     const user_id = await getCurrentUserId()
-    return { user_id,
-      name: m.name,
-      email: m.email || '',
-      role: m.role || '',
-      wellbeing_score: m.wellbeingScore ?? 75,
-      workload: m.workload ?? 60,
-      client_count: m.clientCount ?? 0,
-      arr_managed: m.arrManaged ?? 0,
-      mood_history: m.moodHistory || [],
-      updated_at: new Date().toISOString(),
+    return {
+      user_id, name: m.name, email: m.email || '', role: m.role || '',
+      wellbeing_score: m.wellbeingScore ?? 75, workload: m.workload ?? 60,
+      client_count: m.clientCount ?? 0, arr_managed: m.arrManaged ?? 0,
+      mood_history: m.moodHistory || [], updated_at: new Date().toISOString(),
     }
   }
 
   return {
     members, loading, teamHealthScore, healthyMembers, overloadedMembers,
-    totalArrManaged, enrichedMembers, calcBurnoutRisk,
-    loadMembers, addMember, updateMember, deleteMember, resetAll, recordDailyMood,
+    totalArrManaged, enrichedMembers, calcBurnoutRisk, loadMembers,
+    addMember, updateMember, deleteMember, resetAll, recordDailyMood,
   }
 })

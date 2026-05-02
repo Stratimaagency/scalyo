@@ -1,5 +1,5 @@
 // === SCALYO — AI Usage Endpoint ===
-// GET /api/ai/usage
+// GET /api/usage
 // Returns current quota and usage per module for the authenticated user.
 
 import { getConfig } from './_config/index.js'
@@ -12,7 +12,6 @@ export async function onRequestGet(context) {
   const lang = extractLang(context.request)
   const { token } = extractAuth(context.request)
   const jwt = await verifyJwt(token, config.supabaseJwtSecret)
-
   if (!jwt.valid) return jsonError('unauthorized', 401, lang)
 
   // Get user plan from profile
@@ -24,10 +23,10 @@ export async function onRequestGet(context) {
   const planId = profiles[0]?.plan || 'starter'
   const planConfig = getPlan(planId)
 
-  // Count today's user messages per module (role=user only, each = 1 AI call)
+  // Count today's usage entries (role=usage, server-side tracking)
   const today = new Date().toISOString().split('T')[0]
   const usageResp = await fetch(
-    config.supabaseUrl + '/rest/v1/ai_messages?role=eq.user&created_at=gte.' + today + 'T00:00:00Z&select=module',
+    config.supabaseUrl + '/rest/v1/ai_messages?role=eq.usage&created_at=gte.' + today + 'T00:00:00Z&select=module',
     { headers: { 'apikey': config.supabaseAnonKey, 'Authorization': 'Bearer ' + token } }
   )
   const rawUsage = await usageResp.json()
