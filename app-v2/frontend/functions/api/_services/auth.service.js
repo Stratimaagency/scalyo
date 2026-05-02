@@ -11,45 +11,24 @@ export function extractAuth(request) {
   return { token, hasToken: !!token }
 }
 
-function base64UrlDecode(str) {
-  const padded = str.replace(/-/g, '+').replace(/_/g, '/')
-  const binary = atob(padded)
-  return Uint8Array.from(binary, c => c.charCodeAt(0))
-}
-
-export async function verifyJwt(token, jwtSecret) {
+// Validate JWT via Supabase Auth API (handles HS256 + ES256)
+export async function verifyJwt(token, config) {
   if (!token) return { valid: false, reason: 'unauthorized' }
 
   try {
-    const parts = token.split('.')
-    if (parts.length !== 3) return { valid: false, reason: 'unauthorized' }
+    const res = await fetch(config.supabaseUrl + '/auth/v1/user', {
+      headers: {
+        'apikey': config.supabaseAnonKey,
+        'Authorization': 'Bearer ' + token,
+      }
+    })
 
-    // 1. Verify HMAC-SHA256 signature if secret is available
-    if (jwtSecret) {
-      const encoder = new TextEncoder()
-      const key = await crypto.subtle.importKey(
-        'raw',
-        encoder.encode(jwtSecret),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['verify']
-      )
-      const signatureBytes = base64UrlDecode(parts[2])
-      const dataBytes = encoder.encode(parts[0] + '.' + parts[1])
-      const isValid = await crypto.subtle.verify('HMAC', key, signatureBytes, dataBytes)
-      if (!isValid) return { valid: false, reason: 'unauthorized' }
-    }
+    if (!res.ok) return { valid: false, reason: 'unauthorized' }
 
-    // 2. Decode payload
-    const payload = JSON.parse(new TextDecoder().decode(base64UrlDecode(parts[1])))
-    if (!payload.sub) return { valid: false, reason: 'unauthorized' }
+    const user = await res.json()
+    if (!user.id) return { valid: false, reason: 'unauthorized' }
 
-    // 3. Check expiration
-    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
-      return { valid: false, reason: 'unauthorized' }
-    }
-
-    return { valid: true, userId: payload.sub, role: payload.role, email: payload.email }
+    return { valid: true, userId: user.id, role: user.role, email: user.email }
   } catch {
     return { valid: false, reason: 'unauthorized' }
   }
