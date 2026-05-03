@@ -94,6 +94,7 @@ export const useTeamStore = defineStore('team', () => {
       wellbeingScore: r.wellbeing_score || 75, workload: r.workload || 60,
       clientCount: r.client_count || 0, arrManaged: r.arr_managed || 0,
       moodHistory: r.mood_history || [],
+      canSendEmail: r.can_send_email || false,
     }
   }
 
@@ -103,7 +104,7 @@ export const useTeamStore = defineStore('team', () => {
       user_id, name: m.name, email: m.email || '', role: m.role || '',
       wellbeing_score: m.wellbeingScore ?? 75, workload: m.workload ?? 60,
       client_count: m.clientCount ?? 0, arr_managed: m.arrManaged ?? 0,
-      mood_history: m.moodHistory || [], updated_at: new Date().toISOString(),
+      mood_history: m.moodHistory || [], can_send_email: m.canSendEmail ?? false, updated_at: new Date().toISOString(),
     }
   }
 
