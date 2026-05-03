@@ -1,9 +1,9 @@
-// === SCALYO — Email Send via Resend ===
+// === SCALYO — Email Send via Resend (org-level config) ===
 // POST /api/email/send
-// Elite plan only. Sends transactional email via Resend API.
+// Elite plan only. Key stored per-org in org_email_config (not env var).
 
 import { getConfig } from './_config/index.js'
-import { getPlan, isModuleAllowed } from './_config/plans.js'
+import { isModuleAllowed } from './_config/plans.js'
 import { extractLang, extractAuth, verifyJwt } from './_services/auth.service.js'
 import { jsonOk, jsonError } from './_utils/response.js'
 
@@ -12,13 +12,7 @@ export async function onRequestPost(context) {
   const lang = extractLang(context.request)
   const { token } = extractAuth(context.request)
   const jwt = await verifyJwt(token, config)
-
   if (!jwt.valid) return jsonError('unauthorized', 401, lang)
-
-  const resendKey = config.resendApiKey
-  if (!resendKey) {
-    return jsonError('server_error', 503, lang)
-  }
 
   // Check plan — email module is Elite only
   const profileResp = await fetch(
@@ -27,22 +21,49 @@ export async function onRequestPost(context) {
   )
   const profiles = await profileResp.json()
   const planId = profiles[0]?.plan || 'starter'
-
   if (!isModuleAllowed(planId, 'email')) {
     return jsonError('forbidden', 403, lang)
   }
 
+  // Get Resend key from org_email_config via SECURITY DEFINER RPC
+  const rpcResp = await fetch(
+    config.supabaseUrl + '/rest/v1/rpc/get_org_email_config',
+    {
+      method: 'POST',
+      headers: {
+        'apikey': config.supabaseAnonKey,
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ p_owner_id: jwt.userId }),
+    }
+  )
+  const emailConfig = await rpcResp.json()
+  const resendKey = Array.isArray(emailConfig) ? emailConfig[0]?.resend_api_key : null
+
+  if (!resendKey) {
+    return jsonError('email_not_configured', 400, lang)
+  }
+
   // Parse request body
   let body
-  try {
-    body = await context.request.json()
-  } catch {
-    return jsonError('invalid_input', 400, lang)
-  }
+  try { body = await context.request.json() }
+  catch { return jsonError('invalid_input', 400, lang) }
 
   const { to, subject, html, replyTo } = body
   if (!to || !subject || !html) {
     return jsonError('invalid_input', 400, lang)
+  }
+
+  // Build sender
+  const senderName = emailConfig[0]?.sender_name || ''
+  const senderDomain = emailConfig[0]?.sender_domain || ''
+  let fromAddress = 'Scalyo <contact@scalyo.app>'
+  if (senderDomain) {
+    const localName = senderName || 'CS Team'
+    fromAddress = localName + ' <noreply@' + senderDomain + '>'
+  } else if (body.from_name) {
+    fromAddress = body.from_name + ' via Scalyo <contact@scalyo.app>'
   }
 
   // Send via Resend
@@ -53,7 +74,7 @@ export async function onRequestPost(context) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: body.from_name ? (body.from_name + ' via Scalyo <contact@scalyo.app>') : 'Scalyo <contact@scalyo.app>',
+      from: fromAddress,
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
@@ -69,10 +90,9 @@ export async function onRequestPost(context) {
 
   const resendData = await resendResp.json()
 
-  // Log in sent_emails table
-  await fetch(
-    config.supabaseUrl + '/rest/v1/sent_emails',
-    {
+  // Log in sent_emails (audit trail per user)
+  context.waitUntil(
+    fetch(config.supabaseUrl + '/rest/v1/sent_emails', {
       method: 'POST',
       headers: {
         'apikey': config.supabaseAnonKey,
@@ -86,7 +106,7 @@ export async function onRequestPost(context) {
         subject,
         resend_id: resendData.id || null,
       }),
-    }
+    })
   )
 
   return jsonOk({ sent: true, id: resendData.id })

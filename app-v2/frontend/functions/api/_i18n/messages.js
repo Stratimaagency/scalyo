@@ -24,6 +24,11 @@ const messages = {
     en: 'This module is not available in your plan.',
     ko: '이 모듈은 현재 플랜에서 사용할 수 없습니다.',
   },
+  email_not_configured: {
+    fr: 'Configurez votre service d\'envoi dans les paramètres Email Studio.',
+    en: 'Configure your sending service in Email Studio settings.',
+    ko: '이메일 스튜디오 설정에서 발송 서비스를 구성하세요.',
+  },
   quota_exceeded: {
     fr: "Quota de messages IA dépassé pour aujourd'hui.",
     en: 'AI message quota exceeded for today.',
