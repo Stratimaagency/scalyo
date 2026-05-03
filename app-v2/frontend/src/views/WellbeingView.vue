@@ -51,12 +51,22 @@
 
         <div class="wb-card nova-card">
           <h3>🤖 {{ t('wb_nova') }}</h3>
-          <div class="nova-suggestions">
-            <button v-for="s in novaSuggestions" :key="s" class="nova-sug" @click="novaInput = t(s)">{{ t(s) }}</button>
+          <div v-if="novaMessages.length" class="nova-msgs">
+            <div v-for="msg in novaMessages" :key="msg.id" class="nova-msg" :class="msg.role">
+              <div class="nova-msg-av">{{ msg.role === 'user' ? '👤' : '🤖' }}</div>
+              <div class="nova-msg-body" v-html="formatMsg(msg.content)" />
+            </div>
+            <div v-if="novaThinking" class="nova-msg assistant">
+              <div class="nova-msg-av">🤖</div>
+              <div class="nova-msg-body"><div class="nova-thinking"><span /><span /><span /></div></div>
+            </div>
+          </div>
+          <div v-if="!novaMessages.length" class="nova-suggestions">
+            <button v-for="s in novaSuggestions" :key="s" class="nova-sug" @click="sendNova(t(s))">{{ t(s) }}</button>
           </div>
           <div class="nova-input">
-            <input v-model="novaInput" :placeholder="t('wb_nova_placeholder')" />
-            <button class="nova-send">→</button>
+            <input v-model="novaInput" :placeholder="t('wb_nova_placeholder')" @keydown.enter="sendNova(novaInput)" :disabled="novaThinking" />
+            <button class="nova-send" @click="sendNova(novaInput)" :disabled="!novaInput.trim() || novaThinking">→</button>
           </div>
         </div>
       </div>
@@ -79,8 +89,10 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { askScalyoAI } from '@/utils/askScalyoAI'
+import { sanitizeHtml } from '@/utils/sanitize'
 
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
 
 function load(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback } catch { return fallback } }
 function save(key, value) { localStorage.setItem(key, JSON.stringify(value)) }
@@ -91,6 +103,8 @@ const selectedMood = ref(load('scalyo_wb_mood', 'normal'))
 const tipIndex = ref(load('scalyo_wb_tip', 0))
 const weekMoods = ref(load('scalyo_wb_week', ['😊', '😊', '😄', '🙂', '—']))
 const novaInput = ref('')
+const novaMessages = ref([])
+const novaThinking = ref(false)
 
 watch(score, val => save('scalyo_wb_score', val))
 watch(charge, val => save('scalyo_wb_charge', val))
@@ -120,6 +134,32 @@ const tipKeys = ['wb_tip1', 'wb_tip2', 'wb_tip3', 'wb_tip4', 'wb_tip5']
 
 function selectMood(key) { selectedMood.value = key }
 function refreshTip() { tipIndex.value = (tipIndex.value + 1) % tipKeys.length }
+
+function formatMsg(text) {
+  const html = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+  return sanitizeHtml(html)
+}
+
+async function sendNova(text) {
+  if (!text?.trim() || novaThinking.value) return
+  const userText = text.trim()
+  novaMessages.value.push({ id: Date.now(), role: 'user', content: userText })
+  novaInput.value = ''
+  novaThinking.value = true
+  try {
+    const result = await askScalyoAI({
+      module: 'nova',
+      message: userText,
+      context: { mood: selectedMood.value, score: score.value, charge: charge.value },
+      history: novaMessages.value.slice(-10).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content })),
+      lang: locale.value || 'fr',
+    })
+    novaMessages.value.push({ id: Date.now() + 1, role: 'assistant', content: result.response || result.reply || result.content || 'Service indisponible.' })
+  } catch {
+    novaMessages.value.push({ id: Date.now() + 1, role: 'assistant', content: 'Service indisponible.' })
+  }
+  novaThinking.value = false
+}
 </script>
 
 <style scoped>
@@ -188,4 +228,19 @@ function refreshTip() { tipIndex.value = (tipIndex.value + 1) % tipKeys.length }
   .motiv-grid { grid-template-columns: 1fr; }
   .emergency-grid { grid-template-columns: 1fr; }
 }
+
+.nova-msgs { max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; padding: 8px 0; }
+.nova-msg { display: flex; gap: 8px; }
+.nova-msg.user { flex-direction: row-reverse; }
+.nova-msg-av { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+.nova-msg-body { padding: 10px 14px; border-radius: 14px; font-size: 0.85rem; line-height: 1.55; max-width: 80%; word-break: break-word; }
+.nova-msg.user .nova-msg-body { background: var(--purple); color: #fff; border-bottom-right-radius: 4px; }
+.nova-msg.assistant .nova-msg-body { background: var(--bg); color: var(--text); border-bottom-left-radius: 4px; }
+.nova-msg-body :deep(strong) { font-weight: 700; }
+.nova-thinking { display: flex; gap: 4px; padding: 4px 0; }
+.nova-thinking span { width: 6px; height: 6px; background: var(--purple); border-radius: 50%; animation: nova-bounce 1.4s infinite; }
+.nova-thinking span:nth-child(2) { animation-delay: 0.2s; }
+.nova-thinking span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes nova-bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+.nova-send:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>
