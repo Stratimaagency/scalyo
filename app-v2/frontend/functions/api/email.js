@@ -12,21 +12,23 @@ export async function onRequestPost(context) {
   const lang = extractLang(context.request)
 
   try {
-    let _step = 'start'
     const { token } = extractAuth(context.request)
     const jwt = await verifyJwt(token, config)
-    _step = 'after_auth'
     if (!jwt.valid) return jsonError('unauthorized', 401, lang)
 
     // Check plan
     const profileResp = await fetch(
       config.supabaseUrl + '/rest/v1/profiles?id=eq.' + jwt.userId + '&select=plan',
-      { headers: { 'apikey': config.supabaseAnonKey, 'Authorization': 'Bearer ' + token } }
+      {
+        headers: {
+          'apikey': config.supabaseAnonKey,
+          'Authorization': 'Bearer ' + token
+        }
+      }
     )
     const profiles = await profileResp.json()
     const planId = profiles[0]?.plan || 'starter'
 
-    _step = 'plan=' + planId
     if (!isModuleAllowed(planId, 'email')) {
       return jsonError('module_not_allowed', 403, lang)
     }
@@ -45,9 +47,8 @@ export async function onRequestPost(context) {
       }
     )
 
-    _step = 'rpc_status=' + rpcResp.status
     if (!rpcResp.ok) {
-      console.error('RPC error:', rpcResp.status, await rpcResp.text())
+      console.error('RPC error:', rpcResp.status)
       return jsonError('email_not_configured', 400, lang)
     }
 
@@ -55,14 +56,17 @@ export async function onRequestPost(context) {
     const configRow = Array.isArray(emailConfig) ? emailConfig[0] : emailConfig
     const resendKey = configRow?.resend_api_key || null
 
-    _step = 'config_parsed'
     if (!resendKey) {
       return jsonError('email_not_configured', 400, lang)
     }
 
     // Parse request body
     let body
-    try { body = await context.request.json() } catch { return jsonError('invalid_request', 400, lang) }
+    try {
+      body = await context.request.json()
+    } catch {
+      return jsonError('invalid_request', 400, lang)
+    }
 
     const { to, subject, html, replyTo } = body
     if (!to || !subject || !html) {
@@ -73,7 +77,6 @@ export async function onRequestPost(context) {
     const senderName = configRow?.sender_name || ''
     const senderDomain = configRow?.sender_domain || ''
     let fromAddress = 'Scalyo <contact@scalyo.app>'
-
     if (senderDomain) {
       const localName = senderName || 'CS Team'
       fromAddress = localName + ' <noreply@' + senderDomain + '>'
@@ -99,8 +102,8 @@ export async function onRequestPost(context) {
 
     if (!resendResp.ok) {
       const err = await resendResp.text()
-      console.error('Resend error:', err)
-      return new Response(JSON.stringify({ diag: true, step: _step, error: (err?.message || String(err)).substring(0, 300) }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+      console.error('Resend error:', resendResp.status, err)
+      return jsonError('email_send_failed', 502, lang)
     }
 
     const resendData = await resendResp.json()
