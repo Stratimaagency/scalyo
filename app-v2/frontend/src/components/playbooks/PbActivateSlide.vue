@@ -27,7 +27,7 @@
       <div class="fg">
         <label>{{ t('pb_select_client') }} *</label>
         <select v-model="form.clientId" required class="fi">
-          <option value="" disabled>â</option>
+          <option value="" disabled>—</option>
           <option
             v-for="c in clients"
             :key="c.id"

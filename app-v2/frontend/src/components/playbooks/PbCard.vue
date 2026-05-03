@@ -41,7 +41,7 @@
         <span
           class="step-check"
           @click.stop="$emit('toggleStep', pb.id, step.id)"
-        >{{ step.done ? 'â' : 'â¬' }}</span>
+        >{{ step.done ? '✅' : '⬜' }}</span>
         <span class="step-title">{{ t(step.title) }}</span>
       </div>
     </div>
@@ -86,7 +86,7 @@ const progressPct = computed(() => {
 })
 
 const formattedDate = computed(() => {
-  if (!props.pb.startedAt) return 'â'
+  if (!props.pb.startedAt) return '—'
   const loc = locale.value === 'ko' ? 'ko-KR'
     : locale.value === 'en' ? 'en-US' : 'fr-FR'
   return new Date(props.pb.startedAt).toLocaleDateString(loc, {
