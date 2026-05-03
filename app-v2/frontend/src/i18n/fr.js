@@ -986,6 +986,7 @@ export default {
 
   // Playbooks
   pb_title: 'Playbooks',
+    pb_label: 'playbooks',
   pb_count: '{n} Playbooks',
   pb_add: '+ Nouveau playbook',
   pb_filter_all: 'Tous',

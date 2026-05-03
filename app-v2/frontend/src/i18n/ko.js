@@ -517,6 +517,7 @@ export default {
   copil_hide: 'ë¸ë¡ ì¨ê¸°ê¸°', copil_show: 'ë¸ë¡ íì',
 
   pb_title: 'íë ì´ë¶',
+    pb_label: '플레이북',
   pb_count: '{n} íë ì´ë¶',
   pb_add: '+ ì íë ì´ë¶',
   pb_filter_all: 'ì ì²´',
