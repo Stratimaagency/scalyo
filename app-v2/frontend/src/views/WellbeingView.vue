@@ -75,12 +75,10 @@
     <div class="wb-emergency">
       <h3>🚨 {{ t('wb_emergency') }} — {{ t('wb_emergency_desc') }}</h3>
       <div class="emergency-grid">
-        <div class="em-item">🇫🇷 France — <strong>3114</strong> (24/7)</div>
-        <div class="em-item">🇧🇪 Belgique — <strong>0800 32 123</strong></div>
-        <div class="em-item">🇨🇭 Suisse — <strong>143</strong></div>
-        <div class="em-item">🇨🇦 Canada — <strong>1-866-APPELLE</strong></div>
-        <div class="em-item">🇺🇸 USA — <strong>988</strong></div>
-        <div class="em-item">🇰🇷 한국 — <strong>1393</strong></div>
+        <div v-for="e in emergencyLines" :key="e.key" class="em-item">
+          {{ e.flag }} {{ t(e.key) }} — <strong>{{ e.number }}</strong>
+          <span v-if="e.note"> ({{ e.note }})</span>
+        </div>
       </div>
     </div>
   </div>
@@ -132,6 +130,15 @@ const motivCards = [
 const novaSuggestions = ['wb_nova_sug1', 'wb_nova_sug2', 'wb_nova_sug3', 'wb_nova_sug4', 'wb_nova_sug5']
 const tipKeys = ['wb_tip1', 'wb_tip2', 'wb_tip3', 'wb_tip4', 'wb_tip5']
 
+const emergencyLines = [
+  { key: 'wb_em_fr', flag: '🇫🇷', number: '3114', note: '24/7' },
+  { key: 'wb_em_be', flag: '🇧🇪', number: '0800 32 123', note: '' },
+  { key: 'wb_em_ch', flag: '🇨🇭', number: '143', note: '' },
+  { key: 'wb_em_ca', flag: '🇨🇦', number: '1-866-APPELLE', note: '' },
+  { key: 'wb_em_us', flag: '🇺🇸', number: '988', note: '' },
+  { key: 'wb_em_kr', flag: '🇰🇷', number: '1393', note: '' },
+]
+
 function selectMood(key) { selectedMood.value = key }
 function refreshTip() { tipIndex.value = (tipIndex.value + 1) % tipKeys.length }
 
@@ -154,9 +161,9 @@ async function sendNova(text) {
       history: novaMessages.value.slice(-10).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content })),
       lang: locale.value || 'fr',
     })
-    novaMessages.value.push({ id: Date.now() + 1, role: 'assistant', content: result.response || result.reply || result.content || 'Service indisponible.' })
+    novaMessages.value.push({ id: Date.now() + 1, role: 'assistant', content: result.response || result.reply || result.content || t('wb_nova_error') })
   } catch {
-    novaMessages.value.push({ id: Date.now() + 1, role: 'assistant', content: 'Service indisponible.' })
+    novaMessages.value.push({ id: Date.now() + 1, role: 'assistant', content: t('wb_nova_error') })
   }
   novaThinking.value = false
 }

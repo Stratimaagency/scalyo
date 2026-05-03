@@ -523,6 +523,13 @@ export default {
   wb_tip3: 'Célébrez vos petites victoires — elles comptent autant que les grandes.',
   wb_tip4: 'Faites une promenade de 10 minutes après le déjeuner.',
   wb_tip5: "Parlez à un collègue de quelque chose qui n'est pas le travail.",
+    wb_em_fr: 'France',
+    wb_em_be: 'Belgique',
+    wb_em_ch: 'Suisse',
+    wb_em_ca: 'Canada',
+    wb_em_us: 'États-Unis',
+    wb_em_kr: 'Corée du Sud',
+    wb_nova_error: 'Service indisponible. Réessayez dans quelques instants.',
   wb_emergency: 'Parler à quelqu\'un',
   wb_emergency_desc: 'Numéros d\'urgence',
 
