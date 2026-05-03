@@ -1,31 +1,31 @@
 <template>
   <div class="pb-kpis">
     <div class="pkpi">
-      <span class="pkpi-icon">â¶ï¸</span>
+      <span class="pkpi-icon">▶️</span>
       <div>
         <span class="pkpi-val">{{ activeCount }}</span>
         <span class="pkpi-lbl">{{ t('pb_kpi_active') }}</span>
       </div>
     </div>
     <div class="pkpi">
-      <span class="pkpi-icon">â</span>
+      <span class="pkpi-icon">✅</span>
       <div>
         <span class="pkpi-val">{{ doneMonth }}</span>
         <span class="pkpi-lbl">{{ t('pb_kpi_done_month') }}</span>
       </div>
     </div>
     <div class="pkpi">
-      <span class="pkpi-icon">â±ï¸</span>
+      <span class="pkpi-icon">⏱️</span>
       <div>
         <span class="pkpi-val">
-          {{ avgDuration || 'â' }}
+          {{ avgDuration || '—' }}
           <small v-if="avgDuration">{{ t('pb_days') }}</small>
         </span>
         <span class="pkpi-lbl">{{ t('pb_kpi_avg_duration') }}</span>
       </div>
     </div>
     <div class="pkpi">
-      <span class="pkpi-icon">ð¯</span>
+      <span class="pkpi-icon">🎯</span>
       <div>
         <span class="pkpi-val">{{ successRate }}%</span>
         <span class="pkpi-lbl">{{ t('pb_kpi_success') }}</span>
@@ -36,7 +36,6 @@
 
 <script setup>
 import { useI18n } from 'vue-i18n'
-
 const { t } = useI18n({ useScope: 'global' })
 
 defineProps({

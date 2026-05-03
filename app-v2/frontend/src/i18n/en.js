@@ -517,6 +517,7 @@ export default {
   copil_hide: 'Hide block', copil_show: 'Show block',
 
   pb_title: 'Playbooks',
+    pb_label: 'playbooks',
   pb_count: '{n} Playbooks',
   pb_add: '+ New playbook',
   pb_filter_all: 'All',
