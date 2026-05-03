@@ -1,9 +1,17 @@
 import { getConfig } from '../_config/index.js'
 import { getQuota } from '../_config/plans.js'
 
-// Check if user has remaining quota for the module today
-// Counts 'usage' role entries in ai_messages (server-side tracking)
+// Only chat modules have quota limits
+// All other AI modules (dashboard, matrice, copil, playbook, email, import, notif)
+// are unlimited — AI is the core of the product experience
+const QUOTA_MODULES = ['coach', 'nova']
+
 export async function checkQuota(env, userId, userJwt, planId, moduleName) {
+  // Non-chat modules: always allowed, no quota
+  if (!QUOTA_MODULES.includes(moduleName)) {
+    return { allowed: true, used: 0, limit: -1 }
+  }
+
   const config = getConfig(env)
   const maxQuota = getQuota(planId, moduleName)
 
@@ -19,12 +27,12 @@ export async function checkQuota(env, userId, userJwt, planId, moduleName) {
       + '&created_at=lt.' + today + 'T23:59:59Z'
       + '&select=id'
 
-    const headers = {
-      'apikey': config.supabaseAnonKey,
-      'Authorization': 'Bearer ' + userJwt,
-    }
-
-    const res = await fetch(url, { headers })
+    const res = await fetch(url, {
+      headers: {
+        'apikey': config.supabaseAnonKey,
+        'Authorization': 'Bearer ' + userJwt,
+      }
+    })
     if (!res.ok) return { allowed: false, used: 0, limit: maxQuota }
     const rows = await res.json()
     const used = Array.isArray(rows) ? rows.length : 0
@@ -34,8 +42,10 @@ export async function checkQuota(env, userId, userJwt, planId, moduleName) {
   }
 }
 
-// Log a usage entry after successful AI call
 export async function logUsage(env, userId, userJwt, moduleName) {
+  // Only log usage for quota-limited modules
+  if (!QUOTA_MODULES.includes(moduleName)) return
+
   const config = getConfig(env)
   try {
     await fetch(config.supabaseUrl + '/rest/v1/ai_messages', {
