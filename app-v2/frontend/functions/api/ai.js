@@ -67,7 +67,7 @@ export async function onRequestPost(context) {
     const result = await handler(env, body, request)
 
     // 9. Log usage (non-blocking)
-    logUsage(env, auth.userId, token, body.module)
+    context.waitUntil(logUsage(env, auth.userId, token, body.module))
 
     return jsonOk(result)
   } catch (e) {
