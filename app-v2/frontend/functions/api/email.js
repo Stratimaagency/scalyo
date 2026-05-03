@@ -12,8 +12,10 @@ export async function onRequestPost(context) {
   const lang = extractLang(context.request)
 
   try {
+    let _step = 'start'
     const { token } = extractAuth(context.request)
     const jwt = await verifyJwt(token, config)
+    _step = 'after_auth'
     if (!jwt.valid) return jsonError('unauthorized', 401, lang)
 
     // Check plan
@@ -24,6 +26,7 @@ export async function onRequestPost(context) {
     const profiles = await profileResp.json()
     const planId = profiles[0]?.plan || 'starter'
 
+    _step = 'plan=' + planId
     if (!isModuleAllowed(planId, 'email')) {
       return jsonError('module_not_allowed', 403, lang)
     }
@@ -42,6 +45,7 @@ export async function onRequestPost(context) {
       }
     )
 
+    _step = 'rpc_status=' + rpcResp.status
     if (!rpcResp.ok) {
       console.error('RPC error:', rpcResp.status, await rpcResp.text())
       return jsonError('email_not_configured', 400, lang)
@@ -51,6 +55,7 @@ export async function onRequestPost(context) {
     const configRow = Array.isArray(emailConfig) ? emailConfig[0] : emailConfig
     const resendKey = configRow?.resend_api_key || null
 
+    _step = 'config_parsed'
     if (!resendKey) {
       return jsonError('email_not_configured', 400, lang)
     }
@@ -95,7 +100,7 @@ export async function onRequestPost(context) {
     if (!resendResp.ok) {
       const err = await resendResp.text()
       console.error('Resend error:', err)
-      return jsonError('server_error', 500, lang)
+      return new Response(JSON.stringify({ diag: true, step: _step, error: (err?.message || String(err)).substring(0, 300) }), { status: 500, headers: { 'Content-Type': 'application/json' } })
     }
 
     const resendData = await resendResp.json()
