@@ -16,6 +16,13 @@
       @period-change="snapStore.comparePeriod = $event"
     />
 
+    <AiInsightPanel
+      module="dashboard"
+      :title="t('ai_dashboard_title')"
+      :button-label="t('ai_dashboard_btn')"
+      :message="t('ai_dashboard_prompt')"
+    />
+
     <div class="dash-columns">
       <DashWatchAccounts
         :watch-accounts="watchAccounts"
