@@ -12,3 +12,5 @@ import { handle as notif } from './notif.module.js'
 const modules = { coach, nova, wellbeing, import: importMod, matrice, copil, playbook, email, dashboard, notif }
 
 export function getModule(name) { return modules[name] || null }
+
+// deploy: 1777874472428
