@@ -1,24 +1,31 @@
-# Securite des cles API — Scalyo
+# Scalyo — Configuration de securite
 
-## Fichier de reference : _config/index.js
+## Provider IA
 
-### Cles PUBLIQUES (dans le code)
-- SUPABASE_URL : URL projet Supabase
-- SUPABASE_ANON_KEY : cle publique, securisee par RLS
+Mistral (Paris, EU) — RGPD conforme.
+Aucun autre provider n'est configure. Les donnees ne quittent jamais l'UE.
 
-### Cles SECRETES (Cloudflare env vars uniquement)
-- DEEPSEEK_API_KEY : cle API DeepSeek (OBLIGATOIRE)
-- ANTHROPIC_API_KEY : cle API Anthropic (optionnel)
+### Env vars requises (Cloudflare Dashboard)
 
-## Ou configurer
-Cloudflare Dashboard > Workers & Pages > scalyo-app > Settings > Environment Variables
+| Variable | Source | Usage |
+|---|---|---|
+| MISTRAL_API_KEY | console.mistral.ai | Provider IA |
+| AI_MODEL | (optionnel) | Override le modele (defaut: mistral-medium-latest) |
+| SUPABASE_JWT_SECRET | Supabase Dashboard | Verification auth |
+| STRIPE_WEBHOOK_SECRET | Stripe Dashboard | Verification webhooks |
+| SUPABASE_SERVICE_ROLE_KEY | Supabase Dashboard | Operations admin |
 
-## Couches de securite
-1. JWT verifie sur chaque requete
-2. CORS restreint (scalyo.app, app.scalyo.app)
-3. Cles secretes jamais dans le code
-4. RLS Supabase sur toutes les tables
-5. Dossiers _ non exposes comme routes
-6. Aucun nom de provider expose au frontend
-7. Validation des inputs sur chaque requete
-8. Messages erreur i18n generiques
+### Cles PUBLIQUES (constantes dans le code)
+
+- SUPABASE_URL : URL publique du projet Supabase
+- SUPABASE_ANON_KEY : cle publique Supabase (acces limite par RLS)
+
+## Regles
+
+1. Jamais de cle secrete dans le code source
+2. Jamais de cle secrete dans les logs ou messages d'erreur
+3. RLS actif sur toutes les tables utilisateur
+4. Auth ES256 (jamais HMAC)
+5. Consentement IA obligatoire avant traitement des donnees
+6. HTTPS force via Cloudflare
+7. Donnees IA hebergees exclusivement en UE (Mistral, Paris)

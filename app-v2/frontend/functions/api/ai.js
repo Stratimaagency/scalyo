@@ -5,6 +5,7 @@ import { jsonOk, jsonError } from './_utils/response.js'
 import { extractLang, extractAuth, verifyJwt } from './_services/auth.service.js'
 import { checkRateLimit } from './_services/rate-limit.service.js'
 import { checkQuota, logUsage } from './_services/quota.service.js'
+import { callAI } from './_services/ai.service.js'
 import { getModule } from './_modules/index.js'
 
 async function getUserPlan(env, userId, userJwt) {
@@ -61,7 +62,19 @@ export async function onRequestPost(context) {
 
     // 7. Module handler
     const handler = getModule(body.module)
-    if (!handler) return jsonError('module_not_found', 400, lang)
+    if (!handler && body.module === 'wellbeing') {
+    // Inline fallback — Cloudflare Pages caches module graph
+    const wbPrompt = 'Tu es Nova Sante, expert en sante mentale et physique dedie aux professionnels du Customer Success. Ton : Chaleureux, rassurant, professionnel. Domaines : stress, anxiete, burnout, sommeil, nutrition, equilibre vie pro/perso. REFUS ABSOLU sur business/client/sales/CS : redirige vers Coach IA. LIMITES : pas medecin, pas psychotherapeute. FORMAT : validation emotionnelle, 2-3 techniques concretes, question douce. CONFIDENTIALITE ABSOLUE.'
+    const wbMsgs = [...(body.history || []).map(m => ({ role: m.role, content: m.content })), { role: 'user', content: body.message }]
+    try {
+      const wbResult = await callAI(env, { systemPrompt: wbPrompt + ' ' + (body.lang === 'en' ? 'Reply in English.' : body.lang === 'ko' ? '한국어로 답변하세요.' : 'Reponds en francais.'), messages: wbMsgs })
+      return jsonOk({ response: wbResult })
+    } catch (e) {
+      console.error('wellbeing error:', e)
+      return jsonError('ai_unavailable', 503, lang)
+    }
+  }
+  if (!handler) return jsonError('module_not_found', 400, lang)
 
     // 8. Execute
     const result = await handler(env, body, request)

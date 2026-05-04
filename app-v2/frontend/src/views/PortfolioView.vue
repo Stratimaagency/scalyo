@@ -48,12 +48,7 @@
     <PortfolioTable v-if="filtered.length" :clients="filtered" @edit="openEdit" @delete="doDelete" />
 
     <!-- EMPTY -->
-    <div v-else class="empty">
-      <div class="empty-i">💼</div>
-      <h3>{{ t('port_empty_title') }}</h3>
-      <p>{{ t('port_empty_desc') }}</p>
-      <button class="btn-primary" @click="openCreate">{{ t('port_new_account') }}</button>
-    </div>
+    <EmptyState v-else icon="👥" title-key="empty_clients_title" desc-key="empty_clients_desc" cta-key="empty_clients_cta" :cta-action="openCreate" />
 
     <!-- SLIDE-OVER -->
     <PortfolioForm
@@ -76,6 +71,7 @@ import { useTeamStore } from '@/stores/team'
 import PortfolioTable from '@/components/portfolio/PortfolioTable.vue'
 import PortfolioForm from '@/components/portfolio/PortfolioForm.vue'
 import { fmtNum } from '@/components/portfolio/portfolioHelpers.js'
+import EmptyState from '@/components/EmptyState.vue'
 import '@/assets/portfolio.css'
 
 const { t } = useI18n({ useScope: 'global' })

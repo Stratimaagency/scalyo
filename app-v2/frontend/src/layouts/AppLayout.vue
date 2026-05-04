@@ -118,6 +118,12 @@
       </main>
     </div>
 
+    <!-- ONBOARDING -->
+    <OnboardingWizard />
+
+    <!-- AI AGENT -->
+    <AiAssistant v-if="isEliteOrAbove" />
+
     <!-- CHAT FAB -->
     <button class="chat-fab" @click="app.toggleChat()" :class="{ active: app.chatOpen }">
       💬
@@ -138,10 +144,13 @@ import { useI18n } from 'vue-i18n'
 import { onClickOutside } from '@vueuse/core'
 import ScalyoLogo from '@/components/ScalyoLogo.vue'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
+import AiAssistant from '@/components/ai/AiAssistant.vue'
+import OnboardingWizard from '@/components/onboarding/OnboardingWizard.vue'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notifications'
 import { useChatStore } from '@/stores/chat'
+import { useProfileStore } from '@/stores/profile'
 import { useClientStore } from '@/stores/clients'
 import { useTaskStore } from '@/stores/tasks'
 import { useTeamStore } from '@/stores/team'
@@ -151,8 +160,10 @@ const router = useRouter()
 const { t, locale } = useI18n({ useScope: 'global' })
 const app = useAppStore()
 const auth = useAuthStore()
+const isEliteOrAbove = computed(() => ['elite', 'enterprise'].includes(auth.currentPlan))
 const notifications = useNotificationStore()
 const chatStore = useChatStore()
+const profileStore = useProfileStore()
 const clientStore = useClientStore()
 const taskStore = useTaskStore()
 const teamStore = useTeamStore()
@@ -273,6 +284,7 @@ const sidebarSections = [
 import { onMounted } from 'vue'
 onMounted(async () => {
     chatStore.init()
+    profileStore.load()
   try {
     const { useClientStore } = await import('@/stores/clients')
     const { useTeamStore } = await import('@/stores/team')

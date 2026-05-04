@@ -51,12 +51,22 @@
 
         <div class="wb-card nova-card">
           <h3>🤖 {{ t('wb_nova') }}</h3>
-          <div class="nova-suggestions">
-            <button v-for="s in novaSuggestions" :key="s" class="nova-sug" @click="novaInput = t(s)">{{ t(s) }}</button>
+          <div v-if="novaMessages.length" class="nova-msgs">
+            <div v-for="msg in novaMessages" :key="msg.id" class="nova-msg" :class="msg.role">
+              <div class="nova-msg-av">{{ msg.role === 'user' ? '👤' : '🤖' }}</div>
+              <div class="nova-msg-body" v-html="formatMsg(msg.content)" />
+            </div>
+            <div v-if="novaThinking" class="nova-msg assistant">
+              <div class="nova-msg-av">🤖</div>
+              <div class="nova-msg-body"><div class="nova-thinking"><span /><span /><span /></div></div>
+            </div>
+          </div>
+          <div v-if="!novaMessages.length" class="nova-suggestions">
+            <button v-for="s in novaSuggestions" :key="s" class="nova-sug" @click="sendNova(t(s))">{{ t(s) }}</button>
           </div>
           <div class="nova-input">
-            <input v-model="novaInput" :placeholder="t('wb_nova_placeholder')" />
-            <button class="nova-send">→</button>
+            <input v-model="novaInput" :placeholder="t('wb_nova_placeholder')" @keydown.enter="sendNova(novaInput)" :disabled="novaThinking" />
+            <button class="nova-send" @click="sendNova(novaInput)" :disabled="!novaInput.trim() || novaThinking">→</button>
           </div>
         </div>
       </div>
@@ -65,38 +75,85 @@
     <div class="wb-emergency">
       <h3>🚨 {{ t('wb_emergency') }} — {{ t('wb_emergency_desc') }}</h3>
       <div class="emergency-grid">
-        <div class="em-item">🇫🇷 France — <strong>3114</strong> (24/7)</div>
-        <div class="em-item">🇧🇪 Belgique — <strong>0800 32 123</strong></div>
-        <div class="em-item">🇨🇭 Suisse — <strong>143</strong></div>
-        <div class="em-item">🇨🇦 Canada — <strong>1-866-APPELLE</strong></div>
-        <div class="em-item">🇺🇸 USA — <strong>988</strong></div>
-        <div class="em-item">🇰🇷 한국 — <strong>1393</strong></div>
+        <div v-for="e in emergencyLines" :key="e.key" class="em-item">
+          {{ e.flag }} {{ t(e.key) }} — <strong>{{ e.number }}</strong>
+          <span v-if="e.note"> ({{ e.note }})</span>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { supabase } from '@/lib/supabase'
+import { useAuthStore } from '@/stores/auth'
+import { askScalyoAI } from '@/utils/askScalyoAI'
+import { sanitizeHtml } from '@/utils/sanitize'
 
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
+const authStore = useAuthStore()
 
-function load(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback } catch { return fallback } }
-function save(key, value) { localStorage.setItem(key, JSON.stringify(value)) }
+// --- Supabase persistence (RGPD-compliant, per-user) ---
+let _saveTimer = null
+const loaded = ref(false)
 
-const score = ref(load('scalyo_wb_score', 70))
-const charge = ref(load('scalyo_wb_charge', 70))
-const selectedMood = ref(load('scalyo_wb_mood', 'normal'))
-const tipIndex = ref(load('scalyo_wb_tip', 0))
-const weekMoods = ref(load('scalyo_wb_week', ['😊', '😊', '😄', '🙂', '—']))
+async function loadWellbeing() {
+  const userId = authStore.user?.id
+  if (!userId) return
+  try {
+    const { data } = await supabase
+      .from('user_wellbeing')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle()
+    if (data) {
+      score.value = data.score ?? 70
+      charge.value = data.charge ?? 70
+      selectedMood.value = data.mood ?? 'normal'
+      tipIndex.value = data.tip_index ?? 0
+      if (Array.isArray(data.week_moods)) weekMoods.value = data.week_moods
+    }
+  } catch (e) { console.error('loadWellbeing', e) }
+  loaded.value = true
+}
+
+async function saveWellbeing() {
+  const userId = authStore.user?.id
+  if (!userId || !loaded.value) return
+  try {
+    await supabase.from('user_wellbeing').upsert({
+      user_id: userId,
+      score: score.value,
+      charge: charge.value,
+      mood: selectedMood.value,
+      tip_index: tipIndex.value,
+      week_moods: weekMoods.value,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id' })
+  } catch (e) { console.error('saveWellbeing', e) }
+}
+
+function debouncedSave() {
+  clearTimeout(_saveTimer)
+  _saveTimer = setTimeout(saveWellbeing, 500)
+}
+
+const score = ref(70)
+const charge = ref(70)
+const selectedMood = ref('normal')
+const tipIndex = ref(0)
+const weekMoods = ref(['😊', '😊', '😄', '🙂', '—'])
 const novaInput = ref('')
+const novaMessages = ref([])
+const novaThinking = ref(false)
 
-watch(score, val => save('scalyo_wb_score', val))
-watch(charge, val => save('scalyo_wb_charge', val))
-watch(selectedMood, val => save('scalyo_wb_mood', val))
-watch(tipIndex, val => save('scalyo_wb_tip', val))
-watch(weekMoods, val => save('scalyo_wb_week', val), { deep: true })
+watch(score, debouncedSave)
+watch(charge, debouncedSave)
+watch(selectedMood, debouncedSave)
+watch(tipIndex, debouncedSave)
+watch(weekMoods, debouncedSave, { deep: true })
 
 const gaugeArc = computed(() => ((score.value / 100) * 314.16).toFixed(1))
 
@@ -118,8 +175,45 @@ const motivCards = [
 const novaSuggestions = ['wb_nova_sug1', 'wb_nova_sug2', 'wb_nova_sug3', 'wb_nova_sug4', 'wb_nova_sug5']
 const tipKeys = ['wb_tip1', 'wb_tip2', 'wb_tip3', 'wb_tip4', 'wb_tip5']
 
+const emergencyLines = [
+  { key: 'wb_em_fr', flag: '🇫🇷', number: '3114', note: '24/7' },
+  { key: 'wb_em_be', flag: '🇧🇪', number: '0800 32 123', note: '' },
+  { key: 'wb_em_ch', flag: '🇨🇭', number: '143', note: '' },
+  { key: 'wb_em_ca', flag: '🇨🇦', number: '1-866-APPELLE', note: '' },
+  { key: 'wb_em_us', flag: '🇺🇸', number: '988', note: '' },
+  { key: 'wb_em_kr', flag: '🇰🇷', number: '1393', note: '' },
+]
+
 function selectMood(key) { selectedMood.value = key }
 function refreshTip() { tipIndex.value = (tipIndex.value + 1) % tipKeys.length }
+
+function formatMsg(text) {
+  const html = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+  return sanitizeHtml(html)
+}
+
+async function sendNova(text) {
+  if (!text?.trim() || novaThinking.value) return
+  const userText = text.trim()
+  novaMessages.value.push({ id: Date.now(), role: 'user', content: userText })
+  novaInput.value = ''
+  novaThinking.value = true
+  try {
+    const result = await askScalyoAI({
+      module: 'wellbeing',
+      message: userText,
+      context: { mood: selectedMood.value, score: score.value, charge: charge.value },
+      history: novaMessages.value.slice(-10).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content })),
+      lang: locale.value || 'fr',
+    })
+    novaMessages.value.push({ id: Date.now() + 1, role: 'assistant', content: result.response || result.reply || result.content || t('wb_nova_error') })
+  } catch {
+    novaMessages.value.push({ id: Date.now() + 1, role: 'assistant', content: t('wb_nova_error') })
+  }
+  novaThinking.value = false
+}
+
+onMounted(loadWellbeing)
 </script>
 
 <style scoped>
@@ -188,4 +282,19 @@ function refreshTip() { tipIndex.value = (tipIndex.value + 1) % tipKeys.length }
   .motiv-grid { grid-template-columns: 1fr; }
   .emergency-grid { grid-template-columns: 1fr; }
 }
+
+.nova-msgs { max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; padding: 8px 0; }
+.nova-msg { display: flex; gap: 8px; }
+.nova-msg.user { flex-direction: row-reverse; }
+.nova-msg-av { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+.nova-msg-body { padding: 10px 14px; border-radius: 14px; font-size: 0.85rem; line-height: 1.55; max-width: 80%; word-break: break-word; }
+.nova-msg.user .nova-msg-body { background: var(--purple); color: #fff; border-bottom-right-radius: 4px; }
+.nova-msg.assistant .nova-msg-body { background: var(--bg); color: var(--text); border-bottom-left-radius: 4px; }
+.nova-msg-body :deep(strong) { font-weight: 700; }
+.nova-thinking { display: flex; gap: 4px; padding: 4px 0; }
+.nova-thinking span { width: 6px; height: 6px; background: var(--purple); border-radius: 50%; animation: nova-bounce 1.4s infinite; }
+.nova-thinking span:nth-child(2) { animation-delay: 0.2s; }
+.nova-thinking span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes nova-bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+.nova-send:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>

@@ -8,12 +8,23 @@
       :formatted-date="formattedDate"
     />
 
+    <EmptyState v-if="clients.clients.length === 0" icon="📊" title-key="empty_dashboard_title" desc-key="empty_dashboard_desc" cta-key="empty_dashboard_cta" :cta-action="() => $router.push('/app/portfolio')" />
+
+    <template v-else>
+
     <DashKpiSection
       :visible-kpis="visibleKpis"
       :periods="periods"
       :compare-period="snapStore.comparePeriod"
       @customize="customizerOpen = true"
       @period-change="snapStore.comparePeriod = $event"
+    />
+
+    <AiInsightPanel
+      module="dashboard"
+      :title="t('ai_dashboard_title')"
+      :button-label="t('ai_dashboard_btn')"
+      :message="t('ai_dashboard_prompt')"
     />
 
     <div class="dash-columns">
@@ -46,6 +57,7 @@
       @close="customizerOpen = false"
       @update:selected="selectedKpis = $event"
     />
+    </template>
   </div>
 </template>
 
@@ -63,6 +75,7 @@ import DashWatchAccounts from '@/components/dashboard/DashWatchAccounts.vue'
 import DashMyTasks from '@/components/dashboard/DashMyTasks.vue'
 import DashQuickActions from '@/components/dashboard/DashQuickActions.vue'
 import AiInsightPanel from '@/components/ai/AiInsightPanel.vue'
+import EmptyState from '@/components/EmptyState.vue'
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const auth = useAuthStore()
