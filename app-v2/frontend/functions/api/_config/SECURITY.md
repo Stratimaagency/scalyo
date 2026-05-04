@@ -1,26 +1,21 @@
 # Scalyo — Configuration de securite
 
-## Architecture Providers IA
+## Provider IA
 
-Le provider IA est configure dans Cloudflare Dashboard > Pages > scalyo-app > Settings > Environment variables.
-Le code default sur Mistral (Paris, EU) si AI_PROVIDER n'est pas set.
+Mistral (Paris, EU) — RGPD conforme.
+Aucun autre provider n'est configure. Les donnees ne quittent jamais l'UE.
 
-| Provider | Env var | Hebergement | RGPD |
-|---|---|---|---|
-| Mistral (defaut) | AI_PROVIDER=mistral + MISTRAL_API_KEY | Paris, EU | Conforme |
-| Anthropic | AI_PROVIDER=anthropic + ANTHROPIC_API_KEY | US + DPA | Acceptable |
-| DeepSeek | AI_PROVIDER=deepseek + DEEPSEEK_API_KEY | Chine | Risque |
-
-## Cles SECRETES (Cloudflare env vars uniquement)
+### Env vars requises (Cloudflare Dashboard)
 
 | Variable | Source | Usage |
 |---|---|---|
-| MISTRAL_API_KEY | console.mistral.ai | Provider IA principal |
+| MISTRAL_API_KEY | console.mistral.ai | Provider IA |
+| AI_MODEL | (optionnel) | Override le modele (defaut: mistral-medium-latest) |
 | SUPABASE_JWT_SECRET | Supabase Dashboard | Verification auth |
 | STRIPE_WEBHOOK_SECRET | Stripe Dashboard | Verification webhooks |
 | SUPABASE_SERVICE_ROLE_KEY | Supabase Dashboard | Operations admin |
 
-## Cles PUBLIQUES (constantes dans le code)
+### Cles PUBLIQUES (constantes dans le code)
 
 - SUPABASE_URL : URL publique du projet Supabase
 - SUPABASE_ANON_KEY : cle publique Supabase (acces limite par RLS)
@@ -31,6 +26,6 @@ Le code default sur Mistral (Paris, EU) si AI_PROVIDER n'est pas set.
 2. Jamais de cle secrete dans les logs ou messages d'erreur
 3. RLS actif sur toutes les tables utilisateur
 4. Auth ES256 (jamais HMAC)
-5. Provider IA change UNIQUEMENT via Cloudflare Dashboard (pas le CI)
-6. Consentement IA obligatoire avant traitement des donnees
-7. HTTPS force via Cloudflare
+5. Consentement IA obligatoire avant traitement des donnees
+6. HTTPS force via Cloudflare
+7. Donnees IA hebergees exclusivement en UE (Mistral, Paris)
