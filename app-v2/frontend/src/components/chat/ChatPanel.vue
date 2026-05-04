@@ -33,6 +33,14 @@
         </button>
       </div>
 
+      <!-- Nova IA -->
+      <div class="cp-section">
+        <button class="cp-ch nova" :class="{ active: store.activeChannel === 'nova' }" @click="store.setActive('nova')">
+          <span class="cp-ch-hash">🤖</span>
+          <span class="cp-ch-name">Nova — IA</span>
+        </button>
+      </div>
+
       <!-- User info bottom -->
       <div class="cp-user-bottom">
         <div class="cp-user-av">L</div>
@@ -81,11 +89,23 @@
       <!-- Messages -->
       <div class="cp-messages" ref="msgRef">
 
+        <!-- Nova welcome -->
+        <div v-if="store.activeChannel === 'nova' && !store.activeMessages.length" class="cp-nova-welcome">
+          <div class="nova-av">🤖</div>
+          <div class="nova-bubble">
+            <strong>Nova — Assistante Scalyo</strong>
+            <p>{{ t('chat_nova_greeting') }}</p>
+            <div class="nova-chips">
+              <button v-for="s in novaSugs" :key="s" class="nova-chip" @click="sendNovaSuggestion(s)">{{ t(s) }}</button>
+            </div>
+          </div>
+        </div>
+
         <!-- Messages groupés par date -->
         <template v-for="(group, date) in groupedMessages" :key="date">
           <div class="cp-date-divider"><span>{{ formatDate(date) }}</span></div>
-          <div v-for="msg in filterMessages(group)" :key="msg.id" class="cp-msg" :class="{ own: msg.authorId === 'u1', pinned: msg.pinned, editing: store.editingMessage?.msgId === msg.id }">
-            <div class="cp-msg-av" :style="{ background: getAvatarColor(msg.authorId) }">{{ msg.author[0] }}</div>
+          <div v-for="msg in filterMessages(group)" :key="msg.id" class="cp-msg" :class="{ own: msg.authorId === 'u1', nova: msg.authorId === 'nova', pinned: msg.pinned, editing: store.editingMessage?.msgId === msg.id }">
+            <div class="cp-msg-av" :style="{ background: getAvatarColor(msg.authorId) }">{{ msg.authorId === 'nova' ? '🤖' : msg.author[0] }}</div>
             <div class="cp-msg-content">
               <!-- Reply preview -->
               <div v-if="msg.replyTo" class="cp-reply-preview">
@@ -133,6 +153,12 @@
             </div>
           </div>
         </template>
+
+        <!-- Nova thinking -->
+        <div v-if="novaThinking" class="cp-msg nova">
+          <div class="cp-msg-av">🤖</div>
+          <div class="cp-msg-content"><div class="cp-thinking"><span /><span /><span /></div></div>
+        </div>
       </div>
 
       <!-- Reply banner -->
@@ -260,6 +286,7 @@ import { useTeamStore } from '@/stores/team'
 import { useClientStore } from '@/stores/clients'
 import { useTaskStore } from '@/stores/tasks'
 import { sanitizeHtml } from '@/utils/sanitize'
+import { askScalyoAI } from '@/utils/askScalyoAI'
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const router = useRouter()
@@ -284,6 +311,7 @@ const shareType = ref(null)
 const showSharePicker = ref(false)
 const sharePickerItems = ref([])
 const emojiOpen = ref(false)
+const novaThinking = ref(false)
 const showCreateChannel = ref(false)
 const showCreateTask = ref(false)
 const newChannelName = ref('')
@@ -293,6 +321,7 @@ const channelMenu = ref({ visible: false, x: 0, y: 0, channel: null })
 const renamingChannel = ref(null)
 
 const quickEmojis = ['👍', '❤️', '😂', '🎉', '🙏', '🔥', '✅', '⚠️', '📊', '🚀']
+const novaSugs = ['chat_nova_sug1', 'chat_nova_sug2', 'chat_nova_sug3', 'chat_nova_sug4']
 
 // Team members
 const teamMembers = computed(() => {
@@ -302,7 +331,7 @@ const teamMembers = computed(() => {
 })
 
 function getAvatarColor(authorId) {
-  const colors = { tm1: '#10b981', tm2: '#3b82f6', tm3: '#f59e0b', u1: '#7c3aed' }
+  const colors = { tm1: '#10b981', tm2: '#3b82f6', tm3: '#f59e0b', u1: '#7c3aed', nova: 'transparent' }
   return colors[authorId] || '#6b7280'
 }
 
@@ -367,7 +396,50 @@ async function send() {
   store.sendMessage(store.activeChannel, text)
   await nextTick()
   scrollBottom()
-}}
+  if (store.activeChannel === 'nova') await sendNova(text)
+}
+
+// Nova IA
+async function sendNova(text) {
+    if (!text?.trim()) return
+    store.setTyping('nova', true)
+    try {
+        const result = await askScalyoAI({
+            module: 'nova',
+            message: text.trim(),
+            context: buildContext(),
+            history: store.getMessages('nova')?.slice(-10)?.map(m => ({
+                role: m.sender === 'nova' ? 'assistant' : 'user',
+                content: m.text
+            })) || [],
+            lang: locale.value || 'fr',
+        })
+        store.sendMessage('nova', result.response || result.reply || result.content || t('chat_error'), 'Nova', 'nova')
+    } catch {
+        store.sendMessage('nova', t('chat_error') || 'Service IA indisponible', 'Nova', 'nova')
+    }
+    store.setTyping('nova', false)
+}
+
+function buildContext() {
+  return {
+    totalClients: clientsStore.clients?.length || 0,
+    totalArr: clientsStore.totalArr || 0,
+    avgHealth: clientsStore.avgHealth || 0,
+    criticalCount: clientsStore.criticalCount || 0,
+    criticalClients: (clientsStore.clients || []).filter(c => c.status === 'critical').slice(0, 3).map(c => ({ name: c.name, health: c.health, arr: c.arr })),
+    overdueTasks: (tasksStore.overdueTasks || []).slice(0, 5).map(t => t.title),
+    lang: locale.value,
+  }
+}
+
+async function sendNovaSuggestion(key) {
+  const text = t(key)
+  store.setActive('nova')
+  store.sendMessage('nova', text)
+  await nextTick()
+  scrollBottom()
+  await sendNova(text)
 }
 
 // File upload
@@ -446,7 +518,7 @@ function handleAction(action) {
 function confirmCreateTask() {
   if (!newTask.value.title.trim()) return
   tasksStore.addTask({ ...newTask.value, status: 'todo' })
-  store.sendMessage(store.activeChannel, `✅ Tâche créée : **${newTask.value.title}** | Priorité: ${newTask.value.priority}`)
+  store.sendMessage(store.activeChannel, `✅ Tâche créée : **${newTask.value.title}** | Priorité: ${newTask.value.priority}`, 'Nova', 'nova')
   showCreateTask.value = false
   newTask.value = { title: '', priority: 'medium', dueDate: '' }
   nextTick(scrollBottom)
@@ -554,6 +626,7 @@ watch(() => store.activeChannel, () => nextTick(scrollBottom))
 .cp-ch, .cp-dm { display: flex; align-items: center; gap: 8px; padding: 5px 16px; width: 100%; background: none; border: none; color: #c9d1d9; cursor: pointer; font-size: 0.82rem; text-align: left; transition: background 0.12s; }
 .cp-ch:hover, .cp-dm:hover { background: rgba(255,255,255,0.06); }
 .cp-ch.active, .cp-dm.active { background: rgba(124,58,237,0.3); color: #fff; }
+.cp-ch.nova { color: #a78bfa; }
 .cp-ch-hash { width: 16px; font-size: 0.8rem; opacity: 0.7; }
 .cp-ch-name { flex: 1; }
 .cp-badge { background: #ef4444; color: #fff; font-size: 0.6rem; font-weight: 700; padding: 1px 5px; border-radius: 8px; }
@@ -593,11 +666,20 @@ watch(() => store.activeChannel, () => nextTick(scrollBottom))
 .cp-date-divider { display: flex; align-items: center; gap: 10px; margin: 12px 0; color: var(--text-muted); font-size: 0.7rem; font-weight: 600; }
 .cp-date-divider::before, .cp-date-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-light); }
 
+.cp-nova-welcome { display: flex; gap: 14px; padding: 20px; margin: 12px 0; background: linear-gradient(135deg, #f5f3ff, #ede9fe); border-radius: 12px; }
+.nova-av { font-size: 2.5rem; }
+.nova-bubble strong { font-size: 0.95rem; display: block; margin-bottom: 6px; }
+.nova-bubble p { font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px; }
+.nova-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.nova-chip { background: #fff; border: 1px solid #c4b5fd; color: var(--purple); padding: 5px 12px; border-radius: 999px; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; }
+.nova-chip:hover { background: var(--purple); color: #fff; }
+
 .cp-msg { display: flex; gap: 10px; padding: 4px 8px; border-radius: 8px; position: relative; transition: background 0.12s; }
 .cp-msg:hover { background: var(--bg); }
 .cp-msg.own { flex-direction: row-reverse; }
 .cp-msg.pinned { background: rgba(251,191,36,0.08); }
 .cp-msg-av { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.78rem; color: #fff; flex-shrink: 0; align-self: flex-start; margin-top: 2px; }
+.cp-msg.nova .cp-msg-av { background: transparent !important; font-size: 1.6rem; }
 .cp-msg-content { max-width: 75%; min-width: 0; }
 
 .cp-reply-preview { font-size: 0.72rem; color: var(--text-muted); border-left: 3px solid var(--purple); padding: 2px 8px; margin-bottom: 4px; background: var(--bg); border-radius: 0 4px 4px 0; display: flex; flex-direction: column; gap: 1px; }
@@ -609,6 +691,7 @@ watch(() => store.activeChannel, () => nextTick(scrollBottom))
 
 .cp-msg-text { font-size: 0.85rem; line-height: 1.55; padding: 8px 12px; word-break: break-word; background: var(--bg); border-radius: 12px; border-top-left-radius: 4px; }
 .cp-msg.own .cp-msg-text { background: var(--purple); color: #fff; border-top-left-radius: 12px; border-top-right-radius: 4px; }
+.cp-msg.nova .cp-msg-text { background: #f5f3ff; border-top-left-radius: 4px; }
 .cp-msg-text :deep(strong) { font-weight: 700; }
 .cp-msg-text :deep(code) { background: rgba(0,0,0,0.08); padding: 1px 5px; border-radius: 3px; font-size: 0.82rem; }
 
@@ -638,6 +721,10 @@ watch(() => store.activeChannel, () => nextTick(scrollBottom))
 .cp-edit-input button { background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; }
 
 /* Thinking */
+.cp-thinking { display: flex; gap: 4px; padding: 10px 14px; background: #f5f3ff; border-radius: 12px; border-top-left-radius: 4px; }
+.cp-thinking span { width: 7px; height: 7px; background: var(--purple); border-radius: 50%; animation: think 1.4s infinite; }
+.cp-thinking span:nth-child(2) { animation-delay: 0.2s; }
+.cp-thinking span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes think { 0%, 60%, 100% { transform: translateY(0); opacity: 0.7; } 30% { transform: translateY(-5px); opacity: 1; } }
 
 /* Reply banner */
