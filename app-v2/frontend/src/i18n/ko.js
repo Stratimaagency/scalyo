@@ -1928,4 +1928,27 @@ export default {
   ai_default_prompt_copil: 'COPIL \uBCF4\uACE0\uC11C \uC0DD\uC131',
   ai_default_prompt_playbook: '\uD50C\uB808\uC774\uBD81 \uC81C\uC548',
   ai_default_prompt_notif: '\uC54C\uB9BC \uBCF4\uAC15',
+
+  // AI Agent history
+  ai_new_conv: '새 대화',
+  ai_delete_conv: '대화 삭제',
+  ai_history: '대화 기록',
+
+  // Empty states
+  empty_dashboard_title: '아직 데이터가 없습니다',
+  empty_dashboard_desc: '고객을 추가하면 대시보드가 활성화됩니다.',
+  empty_dashboard_cta: '첫 번째 고객 추가',
+  empty_clients_title: '고객이 없습니다',
+  empty_clients_desc: '고객 포트폴리오를 구축하세요.',
+  empty_clients_cta: '고객 추가',
+  empty_tasks_title: '작업이 없습니다',
+  empty_tasks_desc: '팀의 작업을 생성하고 관리하세요.',
+  empty_tasks_cta: '작업 만들기',
+  empty_playbooks_title: '플레이북이 없습니다',
+  empty_playbooks_desc: 'CS 프로세스를 자동화하세요.',
+  empty_playbooks_cta: '플레이북 만들기',
+
+  // Integrations
+  integ_not_found: '통합을 찾을 수 없습니다',
+  integ_loading: '로딩 중...',
 }

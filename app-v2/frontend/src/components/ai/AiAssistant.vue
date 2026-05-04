@@ -15,6 +15,7 @@
               <span class="ai-ctx-badge">{{ ctxLabel }}</span>
             </div>
           </div>
+          <button class="ai-new-conv" @click="newConversation" :title="t('ai_new_conv')">+</button>
           <button class="ai-close" @click="open = false">✕</button>
         </div>
 
@@ -50,18 +51,47 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { askScalyoAI } from '@/utils/askScalyoAI'
 import { sanitizeHtml } from '@/utils/sanitize'
 import { useProfileStore } from '@/stores/profile'
+import { useAiHistoryStore } from '@/stores/aiHistory'
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const route = useRoute()
 const profileStore = useProfileStore()
+const historyStore = useAiHistoryStore()
+const currentConvId = ref(null)
 
 const open = ref(false)
+
+// --- AI History ---
+onMounted(async () => {
+  const mod = route.name || 'dashboard'
+  await historyStore.loadConversations(mod)
+  const convs = historyStore.conversations
+  if (convs.length > 0) {
+    currentConvId.value = convs[0].id
+    messages.value = convs[0].messages || []
+  }
+})
+
+async function newConversation() {
+  const mod = route.name || 'dashboard'
+  const conv = await historyStore.createConversation(mod)
+  if (conv) {
+    currentConvId.value = conv.id
+    messages.value = []
+  }
+}
+
+async function saveCurrentConversation() {
+  if (currentConvId.value) {
+    await historyStore.saveConversation(currentConvId.value, messages.value)
+  }
+}
 const input = ref('')
 const messages = ref([])
 const thinking = ref(false)
@@ -144,6 +174,12 @@ async function send(text) {
 .ai-header-icon { font-size: 1.4rem; }
 .ai-header-left strong { font-size: 0.9rem; display: block; }
 .ai-ctx-badge { font-size: 0.7rem; color: var(--purple); font-weight: 600; }
+.ai-new-conv {
+  background: none; border: 1px solid var(--border-color, #e0e0e0); color: var(--text-secondary, #888);
+  width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 18px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.ai-new-conv:hover { background: var(--bg-hover, #f0f0f0); color: var(--text-primary, #333); }
 .ai-close { background: none; border: none; font-size: 1rem; color: var(--text-muted); cursor: pointer; padding: 4px 8px; }
 
 .ai-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }

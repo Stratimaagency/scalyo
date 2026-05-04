@@ -41,6 +41,7 @@ const routes = [
       { path: 'quotes', name: 'quotes', component: () => import('@/views/QuotesView.vue') },
       { path: 'import', name: 'import', component: () => import('@/views/ImportView.vue'), meta: { requiredModule: 'import' } },
       { path: 'integrations', name: 'integrations', component: () => import('@/views/IntegrationsView.vue') },
+      { path: 'integrations/:service', name: 'integration-embed', component: () => import('@/components/IntegrationEmbed.vue'), props: true },
       { path: 'settings', name: 'settings', component: () => import('@/views/SettingsView.vue') },
         { path: 'profile', name: 'profile', component: () => import('@/views/ProfileView.vue'), meta: { requiresAuth: true } },
       { path: 'resources', name: 'resources', redirect: { name: 'resources-library' } },

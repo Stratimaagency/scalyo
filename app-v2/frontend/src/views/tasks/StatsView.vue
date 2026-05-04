@@ -2,6 +2,10 @@
   <div class="stats-view">
     <h1>📊 {{ t('sm_stats_title') }}</h1>
 
+    <EmptyState v-if="store.tasks.length === 0" icon="✅" title-key="empty_tasks_title" desc-key="empty_tasks_desc" cta-key="empty_tasks_cta" :cta-action="() => $router.push('/app/tasks/kanban')" />
+
+    <template v-else>
+
     <!-- AI Prediction Panel -->
     <div class="ai-panel" :class="'ai-' + pred.riskLabel">
       <div class="ai-header">
@@ -87,6 +91,7 @@
         <div v-else class="stt-empty">No tasks with hours yet</div>
       </div>
     </div>
+      </template>
   </div>
 </template>
 
@@ -94,6 +99,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTaskStore } from '@/stores/tasks'
+import EmptyState from '@/components/EmptyState.vue'
 
 const { t } = useI18n({ useScope: 'global' })
 const store = useTaskStore()

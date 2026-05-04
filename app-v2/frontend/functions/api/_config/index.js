@@ -7,7 +7,7 @@ const SUPABASE_ANON_KEY = 'sb_publishable_ggGyERhPutrfMdrQ7Ig0Ow_2R_vrRJA'
 
 export function getConfig(env) {
   return {
-    aiModel: env.AI_MODEL || 'mistral-medium-latest',
+    aiModel: env.AI_MODEL || 'mistral-small-latest',
     maxTokens: parseInt(env.AI_MAX_TOKENS || '2048', 10),
     mistralApiKey: env.MISTRAL_API_KEY || '',
     supabaseUrl: env.SUPABASE_URL || SUPABASE_URL,

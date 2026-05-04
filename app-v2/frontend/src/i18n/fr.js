@@ -1984,4 +1984,27 @@ export default {
   ai_default_prompt_copil: 'G\u00e9n\u00e8re un rapport COPIL',
   ai_default_prompt_playbook: 'Sugg\u00e8re des playbooks',
   ai_default_prompt_notif: 'Enrichis mes notifications',
+
+  // Agent IA historique
+  ai_new_conv: 'Nouvelle conversation',
+  ai_delete_conv: 'Supprimer la conversation',
+  ai_history: 'Historique',
+
+  // Empty states
+  empty_dashboard_title: 'Aucune donnée disponible',
+  empty_dashboard_desc: 'Ajoutez vos premiers clients pour activer le tableau de bord.',
+  empty_dashboard_cta: 'Ajouter un client',
+  empty_clients_title: 'Aucun client',
+  empty_clients_desc: 'Commencez à construire votre portefeuille clients.',
+  empty_clients_cta: 'Ajouter un client',
+  empty_tasks_title: 'Aucune tâche',
+  empty_tasks_desc: 'Créez et suivez les tâches de votre équipe.',
+  empty_tasks_cta: 'Créer une tâche',
+  empty_playbooks_title: 'Aucun playbook',
+  empty_playbooks_desc: 'Automatisez vos processus Customer Success.',
+  empty_playbooks_cta: 'Créer un playbook',
+
+  // Integrations
+  integ_not_found: 'Intégration non trouvée',
+  integ_loading: 'Chargement...',
 }

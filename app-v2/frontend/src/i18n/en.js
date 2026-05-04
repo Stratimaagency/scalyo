@@ -1928,4 +1928,27 @@ export default {
   ai_default_prompt_copil: 'Generate a COPIL report',
   ai_default_prompt_playbook: 'Suggest playbooks',
   ai_default_prompt_notif: 'Enrich my notifications',
+
+  // AI Agent history
+  ai_new_conv: 'New conversation',
+  ai_delete_conv: 'Delete conversation',
+  ai_history: 'History',
+
+  // Empty states
+  empty_dashboard_title: 'No data yet',
+  empty_dashboard_desc: 'Add your first clients to activate the dashboard.',
+  empty_dashboard_cta: 'Add a client',
+  empty_clients_title: 'No clients',
+  empty_clients_desc: 'Start building your client portfolio.',
+  empty_clients_cta: 'Add a client',
+  empty_tasks_title: 'No tasks',
+  empty_tasks_desc: 'Create and manage your team tasks.',
+  empty_tasks_cta: 'Create a task',
+  empty_playbooks_title: 'No playbooks',
+  empty_playbooks_desc: 'Automate your Customer Success processes.',
+  empty_playbooks_cta: 'Create a playbook',
+
+  // Integrations
+  integ_not_found: 'Integration not found',
+  integ_loading: 'Loading...',
 }
