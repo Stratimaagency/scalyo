@@ -85,30 +85,75 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { supabase } from '@/lib/supabase'
+import { useAuthStore } from '@/stores/auth'
 import { askScalyoAI } from '@/utils/askScalyoAI'
 import { sanitizeHtml } from '@/utils/sanitize'
 
 const { t, locale } = useI18n({ useScope: 'global' })
+const authStore = useAuthStore()
 
-function load(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback } catch { return fallback } }
-function save(key, value) { localStorage.setItem(key, JSON.stringify(value)) }
+// --- Supabase persistence (RGPD-compliant, per-user) ---
+let _saveTimer = null
+const loaded = ref(false)
 
-const score = ref(load('scalyo_wb_score', 70))
-const charge = ref(load('scalyo_wb_charge', 70))
-const selectedMood = ref(load('scalyo_wb_mood', 'normal'))
-const tipIndex = ref(load('scalyo_wb_tip', 0))
-const weekMoods = ref(load('scalyo_wb_week', ['😊', '😊', '😄', '🙂', '—']))
+async function loadWellbeing() {
+  const userId = authStore.user?.id
+  if (!userId) return
+  try {
+    const { data } = await supabase
+      .from('user_wellbeing')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle()
+    if (data) {
+      score.value = data.score ?? 70
+      charge.value = data.charge ?? 70
+      selectedMood.value = data.mood ?? 'normal'
+      tipIndex.value = data.tip_index ?? 0
+      if (Array.isArray(data.week_moods)) weekMoods.value = data.week_moods
+    }
+  } catch (e) { console.error('loadWellbeing', e) }
+  loaded.value = true
+}
+
+async function saveWellbeing() {
+  const userId = authStore.user?.id
+  if (!userId || !loaded.value) return
+  try {
+    await supabase.from('user_wellbeing').upsert({
+      user_id: userId,
+      score: score.value,
+      charge: charge.value,
+      mood: selectedMood.value,
+      tip_index: tipIndex.value,
+      week_moods: weekMoods.value,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id' })
+  } catch (e) { console.error('saveWellbeing', e) }
+}
+
+function debouncedSave() {
+  clearTimeout(_saveTimer)
+  _saveTimer = setTimeout(saveWellbeing, 500)
+}
+
+const score = ref(70)
+const charge = ref(70)
+const selectedMood = ref('normal')
+const tipIndex = ref(0)
+const weekMoods = ref(['😊', '😊', '😄', '🙂', '—'])
 const novaInput = ref('')
 const novaMessages = ref([])
 const novaThinking = ref(false)
 
-watch(score, val => save('scalyo_wb_score', val))
-watch(charge, val => save('scalyo_wb_charge', val))
-watch(selectedMood, val => save('scalyo_wb_mood', val))
-watch(tipIndex, val => save('scalyo_wb_tip', val))
-watch(weekMoods, val => save('scalyo_wb_week', val), { deep: true })
+watch(score, debouncedSave)
+watch(charge, debouncedSave)
+watch(selectedMood, debouncedSave)
+watch(tipIndex, debouncedSave)
+watch(weekMoods, debouncedSave, { deep: true })
 
 const gaugeArc = computed(() => ((score.value / 100) * 314.16).toFixed(1))
 
@@ -167,6 +212,8 @@ async function sendNova(text) {
   }
   novaThinking.value = false
 }
+
+onMounted(loadWellbeing)
 </script>
 
 <style scoped>
