@@ -146,6 +146,7 @@ import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notifications'
 import { useChatStore } from '@/stores/chat'
+import { useProfileStore } from '@/stores/profile'
 import { useClientStore } from '@/stores/clients'
 import { useTaskStore } from '@/stores/tasks'
 import { useTeamStore } from '@/stores/team'
@@ -157,6 +158,7 @@ const app = useAppStore()
 const auth = useAuthStore()
 const notifications = useNotificationStore()
 const chatStore = useChatStore()
+const profileStore = useProfileStore()
 const clientStore = useClientStore()
 const taskStore = useTaskStore()
 const teamStore = useTeamStore()
@@ -277,6 +279,7 @@ const sidebarSections = [
 import { onMounted } from 'vue'
 onMounted(async () => {
     chatStore.init()
+    profileStore.load()
   try {
     const { useClientStore } = await import('@/stores/clients')
     const { useTeamStore } = await import('@/stores/team')

@@ -55,9 +55,11 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { askScalyoAI } from '@/utils/askScalyoAI'
 import { sanitizeHtml } from '@/utils/sanitize'
+import { useProfileStore } from '@/stores/profile'
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const route = useRoute()
+const profileStore = useProfileStore()
 
 const open = ref(false)
 const input = ref('')
@@ -117,6 +119,7 @@ async function send(text) {
     const result = await askScalyoAI({
       module: currentCtx.value.module,
       message: userText,
+      context: { userProfile: profileStore.toAIContext() },
       history: messages.value.slice(-10).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content })),
       lang: locale.value || 'fr',
     })
