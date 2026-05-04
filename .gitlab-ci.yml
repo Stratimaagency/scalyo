@@ -32,6 +32,7 @@ deploy_production:
   script:
     - cd app-v2/frontend
     - npm install -g wrangler
+    - apk add --no-cache curl
     # --- Push env vars to Cloudflare Pages via API ---
     # Provider config is set in Cloudflare Dashboard (not CI) to avoid accidental overrides.
     # Only secrets are pushed here. Provider switch = Cloudflare Dashboard only.
