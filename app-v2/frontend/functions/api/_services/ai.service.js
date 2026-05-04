@@ -1,8 +1,9 @@
 import { getConfig, getApiKey } from '../_config/index.js'
 import { callAnthropic } from '../_providers/anthropic.js'
 import { callDeepSeek } from '../_providers/deepseek.js'
+import { callMistral } from '../_providers/mistral.js'
 
-const providers = { anthropic: callAnthropic, deepseek: callDeepSeek }
+const providers = { anthropic: callAnthropic, deepseek: callDeepSeek, mistral: callMistral }
 
 export async function callAI(env, { systemPrompt, messages, maxTokens }) {
   const config = getConfig(env)

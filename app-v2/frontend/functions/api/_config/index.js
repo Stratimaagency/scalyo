@@ -8,9 +8,10 @@ export function getConfig(env) {
   const provider = env.AI_PROVIDER || 'deepseek'
   return {
     aiProvider: provider,
-    aiModel: env.AI_MODEL || (provider === 'deepseek' ? 'deepseek-chat' : 'claude-sonnet-4-20250514'),
+    aiModel: env.AI_MODEL || ({ deepseek: 'deepseek-chat', anthropic: 'claude-sonnet-4-20250514', mistral: 'mistral-large-latest' }[provider] || 'deepseek-chat'),
     maxTokens: parseInt(env.AI_MAX_TOKENS || '2048', 10),
     deepseekApiKey: env.DEEPSEEK_API_KEY || '',
+    mistralApiKey: env.MISTRAL_API_KEY || '',
     anthropicApiKey: env.ANTHROPIC_API_KEY || '',
     anthropicVersion: env.ANTHROPIC_VERSION || '2023-06-01',
     supabaseUrl: env.SUPABASE_URL || SUPABASE_URL,
@@ -23,6 +24,6 @@ export function getConfig(env) {
 }
 
 export function getApiKey(config) {
-  const keys = { anthropic: config.anthropicApiKey, deepseek: config.deepseekApiKey }
+  const keys = { anthropic: config.anthropicApiKey, deepseek: config.deepseekApiKey, mistral: config.mistralApiKey }
   return keys[config.aiProvider] || ''
 }

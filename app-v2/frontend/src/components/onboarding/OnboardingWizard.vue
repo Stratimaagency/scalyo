@@ -95,7 +95,34 @@
           </div>
         </div>
 
+        
         <div class="ob-step" v-if="step === 5">
+          <div class="ob-emoji">🔒</div>
+          <h3>{{ t('ob_consent_title') }}</h3>
+          <div class="ob-consent-items">
+            <label class="ob-consent-item">
+              <input type="checkbox" v-model="form.ai_consent" />
+              <div>
+                <strong>{{ t('ob_consent_ai_label') }}</strong>
+                <p>{{ t('ob_consent_ai_desc') }}</p>
+              </div>
+            </label>
+            <label class="ob-consent-item">
+              <input type="checkbox" v-model="form.analytics_consent" />
+              <div>
+                <strong>{{ t('ob_consent_analytics_label') }}</strong>
+                <p>{{ t('ob_consent_analytics_desc') }}</p>
+              </div>
+            </label>
+          </div>
+          <p class="ob-consent-legal">{{ t('ob_consent_legal') }}</p>
+          <div class="ob-nav">
+            <button class="ob-btn-ghost" @click="step--">←</button>
+            <button class="ob-btn-primary" @click="step++" :disabled="!form.ai_consent">{{ t('ob_next') }}</button>
+          </div>
+        </div>
+
+        <div class="ob-step" v-if="step === 6">
           <h3>{{ t('ob_goals_title') }}</h3>
           <p class="ob-hint">{{ t('ob_goals_hint') }}</p>
           <div class="ob-options">
@@ -126,7 +153,7 @@ const { t } = useI18n({ useScope: 'global' })
 const profileStore = useProfileStore()
 
 const show = computed(() => profileStore.profile && !profileStore.isComplete)
-const progress = computed(() => Math.round((step.value / 5) * 100))
+const progress = computed(() => Math.round((step.value / 6) * 100))
 const step = ref(0)
 const saving = ref(false)
 
@@ -139,6 +166,9 @@ const form = ref({
   company_size: 'smb',
   portfolio_size: 0,
   goals: [],
+  ai_consent: false,
+  analytics_consent: false,
+  consent_date: null,
 })
 
 const goalOptions = [
@@ -160,7 +190,7 @@ function toggleGoal(val) {
 
 async function submit() {
   saving.value = true
-  await profileStore.save({ ...form.value, onboarding_completed: true })
+  await profileStore.save({ ...form.value, consent_date: new Date().toISOString(), onboarding_completed: true })
   saving.value = false
 }
 </script>
@@ -190,5 +220,12 @@ async function submit() {
 .ob-btn-ghost { padding: 12px 20px; border-radius: 24px; background: none; border: 1px solid var(--border); color: var(--text-secondary); font-size: 0.88rem; cursor: pointer; }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+.ob-consent-items { display: flex; flex-direction: column; gap: 14px; text-align: left; margin-bottom: 16px; }
+.ob-consent-item { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border: 1px solid var(--border); border-radius: 12px; cursor: pointer; transition: border-color 0.15s; }
+.ob-consent-item:hover { border-color: var(--purple); }
+.ob-consent-item input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; flex-shrink: 0; accent-color: var(--purple); }
+.ob-consent-item strong { font-size: 0.88rem; display: block; margin-bottom: 4px; }
+.ob-consent-item p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; margin: 0; }
+.ob-consent-legal { font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; text-align: left; margin-top: 8px; }
 @media (max-width: 500px) { .ob-step { padding: 24px 20px; } .ob-modal { border-radius: 16px; } }
 </style>
