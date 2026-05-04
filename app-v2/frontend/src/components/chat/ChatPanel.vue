@@ -133,7 +133,6 @@
             </div>
           </div>
         </template>
-        </div>
       </div>
 
       <!-- Reply banner -->
@@ -368,6 +367,7 @@ async function send() {
   store.sendMessage(store.activeChannel, text)
   await nextTick()
   scrollBottom()
+}}
 }
 
 // File upload
@@ -638,10 +638,6 @@ watch(() => store.activeChannel, () => nextTick(scrollBottom))
 .cp-edit-input button { background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; }
 
 /* Thinking */
-.cp-thinking { display: flex; gap: 4px; padding: 10px 14px; background: #f5f3ff; border-radius: 12px; border-top-left-radius: 4px; }
-.cp-thinking span { width: 7px; height: 7px; background: var(--purple); border-radius: 50%; animation: think 1.4s infinite; }
-.cp-thinking span:nth-child(2) { animation-delay: 0.2s; }
-.cp-thinking span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes think { 0%, 60%, 100% { transform: translateY(0); opacity: 0.7; } 30% { transform: translateY(-5px); opacity: 1; } }
 
 /* Reply banner */
