@@ -3,6 +3,7 @@ stages:
   - deploy
 
 # --- PRODUCTION ---
+
 build:
   stage: build
   image: node:20-alpine
@@ -32,30 +33,30 @@ deploy_production:
     - cd app-v2/frontend
     - npm install -g wrangler
     # --- Push env vars to Cloudflare Pages via API ---
+    # Provider config is set in Cloudflare Dashboard (not CI) to avoid accidental overrides.
+    # Only secrets are pushed here. Provider switch = Cloudflare Dashboard only.
     - |
-      if [ -n "$DEEPSEEK_API_KEY" ]; then
-        curl -s -X PATCH \
-          "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/scalyo-app" \
-          -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-          -H "Content-Type: application/json" \
-          -d "{
-            \"deployment_configs\": {
-              \"production\": {
-                \"env_vars\": {
-                  \"AI_PROVIDER\": { \"value\": \"deepseek\" },
-                  \"AI_MODEL\": { \"value\": \"deepseek-chat\" },
-                  \"DEEPSEEK_API_KEY\": { \"value\": \"$DEEPSEEK_API_KEY\", \"type\": \"secret_text\" },
-                  \"SUPABASE_JWT_SECRET\": { \"value\": \"$SUPABASE_JWT_SECRET\", \"type\": \"secret_text\" }
-                }
+      curl -s -X PATCH \
+        "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/scalyo-app" \
+        -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d "{
+          \"deployment_configs\": {
+            \"production\": {
+              \"env_vars\": {
+                \"SUPABASE_JWT_SECRET\": { \"value\": \"$SUPABASE_JWT_SECRET\", \"type\": \"secret_text\" },
+                \"STRIPE_WEBHOOK_SECRET\": { \"value\": \"$STRIPE_WEBHOOK_SECRET\", \"type\": \"secret_text\" },
+                \"SUPABASE_SERVICE_ROLE_KEY\": { \"value\": \"$SUPABASE_SERVICE_ROLE_KEY\", \"type\": \"secret_text\" }
               }
             }
-          }"
-        echo "Cloudflare env vars configured"
-      fi
+          }
+        }"
+      echo "Cloudflare secrets synced (provider config managed via Dashboard)"
     # --- Deploy ---
     - wrangler pages deploy dist --project-name=scalyo-app --branch=main
 
-# ─── PREPROD ───────────────────────────────────────────────────────
+# --- PREPROD ---
+
 build_preprod:
   stage: build
   image: node:20-alpine

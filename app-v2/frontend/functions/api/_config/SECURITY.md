@@ -1,24 +1,36 @@
-# Securite des cles API — Scalyo
+# Scalyo — Configuration de securite
 
-## Fichier de reference : _config/index.js
+## Architecture Providers IA
 
-### Cles PUBLIQUES (dans le code)
-- SUPABASE_URL : URL projet Supabase
-- SUPABASE_ANON_KEY : cle publique, securisee par RLS
+Le provider IA est configure dans Cloudflare Dashboard > Pages > scalyo-app > Settings > Environment variables.
+Le code default sur Mistral (Paris, EU) si AI_PROVIDER n'est pas set.
 
-### Cles SECRETES (Cloudflare env vars uniquement)
-- DEEPSEEK_API_KEY : cle API DeepSeek (OBLIGATOIRE)
-- ANTHROPIC_API_KEY : cle API Anthropic (optionnel)
+| Provider | Env var | Hebergement | RGPD |
+|---|---|---|---|
+| Mistral (defaut) | AI_PROVIDER=mistral + MISTRAL_API_KEY | Paris, EU | Conforme |
+| Anthropic | AI_PROVIDER=anthropic + ANTHROPIC_API_KEY | US + DPA | Acceptable |
+| DeepSeek | AI_PROVIDER=deepseek + DEEPSEEK_API_KEY | Chine | Risque |
 
-## Ou configurer
-Cloudflare Dashboard > Workers & Pages > scalyo-app > Settings > Environment Variables
+## Cles SECRETES (Cloudflare env vars uniquement)
 
-## Couches de securite
-1. JWT verifie sur chaque requete
-2. CORS restreint (scalyo.app, app.scalyo.app)
-3. Cles secretes jamais dans le code
-4. RLS Supabase sur toutes les tables
-5. Dossiers _ non exposes comme routes
-6. Aucun nom de provider expose au frontend
-7. Validation des inputs sur chaque requete
-8. Messages erreur i18n generiques
+| Variable | Source | Usage |
+|---|---|---|
+| MISTRAL_API_KEY | console.mistral.ai | Provider IA principal |
+| SUPABASE_JWT_SECRET | Supabase Dashboard | Verification auth |
+| STRIPE_WEBHOOK_SECRET | Stripe Dashboard | Verification webhooks |
+| SUPABASE_SERVICE_ROLE_KEY | Supabase Dashboard | Operations admin |
+
+## Cles PUBLIQUES (constantes dans le code)
+
+- SUPABASE_URL : URL publique du projet Supabase
+- SUPABASE_ANON_KEY : cle publique Supabase (acces limite par RLS)
+
+## Regles
+
+1. Jamais de cle secrete dans le code source
+2. Jamais de cle secrete dans les logs ou messages d'erreur
+3. RLS actif sur toutes les tables utilisateur
+4. Auth ES256 (jamais HMAC)
+5. Provider IA change UNIQUEMENT via Cloudflare Dashboard (pas le CI)
+6. Consentement IA obligatoire avant traitement des donnees
+7. HTTPS force via Cloudflare
