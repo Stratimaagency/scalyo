@@ -5,10 +5,10 @@ const SUPABASE_URL = 'https://hcqninmpmzpqjtedyjyj.supabase.co'
 const SUPABASE_ANON_KEY = 'sb_publishable_ggGyERhPutrfMdrQ7Ig0Ow_2R_vrRJA'
 
 export function getConfig(env) {
-  const provider = env.AI_PROVIDER || 'deepseek'
+  const provider = env.AI_PROVIDER || 'mistral'
   return {
     aiProvider: provider,
-    aiModel: env.AI_MODEL || ({ deepseek: 'deepseek-chat', anthropic: 'claude-sonnet-4-20250514', mistral: 'mistral-large-latest' }[provider] || 'deepseek-chat'),
+    aiModel: env.AI_MODEL || ({ deepseek: 'deepseek-chat', anthropic: 'claude-sonnet-4-20250514', mistral: 'mistral-medium-latest' }[provider] || 'deepseek-chat'),
     maxTokens: parseInt(env.AI_MAX_TOKENS || '2048', 10),
     deepseekApiKey: env.DEEPSEEK_API_KEY || '',
     mistralApiKey: env.MISTRAL_API_KEY || '',
