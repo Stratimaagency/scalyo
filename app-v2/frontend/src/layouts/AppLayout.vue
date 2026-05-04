@@ -122,7 +122,7 @@
     <OnboardingWizard />
 
     <!-- AI AGENT -->
-    <AiAssistant />
+    <AiAssistant v-if="isEliteOrAbove" />
 
     <!-- CHAT FAB -->
     <button class="chat-fab" @click="app.toggleChat()" :class="{ active: app.chatOpen }">
@@ -160,6 +160,7 @@ const router = useRouter()
 const { t, locale } = useI18n({ useScope: 'global' })
 const app = useAppStore()
 const auth = useAuthStore()
+const isEliteOrAbove = computed(() => ['elite', 'enterprise'].includes(auth.currentPlan))
 const notifications = useNotificationStore()
 const chatStore = useChatStore()
 const profileStore = useProfileStore()
