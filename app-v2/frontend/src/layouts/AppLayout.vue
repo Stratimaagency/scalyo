@@ -118,6 +118,9 @@
       </main>
     </div>
 
+    <!-- ONBOARDING -->
+    <OnboardingWizard />
+
     <!-- AI AGENT -->
     <AiAssistant />
 
@@ -142,6 +145,7 @@ import { onClickOutside } from '@vueuse/core'
 import ScalyoLogo from '@/components/ScalyoLogo.vue'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
 import AiAssistant from '@/components/ai/AiAssistant.vue'
+import OnboardingWizard from '@/components/onboarding/OnboardingWizard.vue'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notifications'
