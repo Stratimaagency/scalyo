@@ -118,6 +118,9 @@
       </main>
     </div>
 
+    <!-- AI AGENT -->
+    <AiAssistant />
+
     <!-- CHAT FAB -->
     <button class="chat-fab" @click="app.toggleChat()" :class="{ active: app.chatOpen }">
       💬
@@ -138,6 +141,7 @@ import { useI18n } from 'vue-i18n'
 import { onClickOutside } from '@vueuse/core'
 import ScalyoLogo from '@/components/ScalyoLogo.vue'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
+import AiAssistant from '@/components/ai/AiAssistant.vue'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notifications'
