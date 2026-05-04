@@ -3,6 +3,7 @@
 
 import { supabase } from '@/lib/supabase'
 
+const ENDPOINTS = { wellbeing: '/api/wellbeing' }
 const AI_ENDPOINT = '/api/ai'
 
 /**
@@ -32,7 +33,9 @@ export async function askScalyoAI({ module, message, history = [], context = {},
   }
   if (lang) body.lang = lang
 
-  const response = await fetch(AI_ENDPOINT, {
+  const endpoint = ENDPOINTS[module] || AI_ENDPOINT
+
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
