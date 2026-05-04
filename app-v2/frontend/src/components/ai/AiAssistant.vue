@@ -1,5 +1,5 @@
 <template>
-  <div class="ai-agent">
+  <div v-if="showAgent" class="ai-agent">
     <button class="ai-fab" @click="open = !open" :title="t('ai_agent_title')">
       <span class="ai-fab-icon">🧠</span>
       <span v-if="ctxLabel" class="ai-fab-ctx">{{ ctxLabel }}</span>
@@ -66,6 +66,9 @@ const thinking = ref(false)
 const msgsRef = ref(null)
 
 // ── Route-to-module mapping (single source of truth) ──
+const HIDDEN_ROUTES = ['coach', 'wellbeing']
+const showAgent = computed(() => !HIDDEN_ROUTES.includes(route.name))
+
 const ROUTE_MAP = {
   dashboard:         { module: 'dashboard', ctx: 'ai_ctx_dashboard',   sugs: ['ai_sug_dash1', 'ai_sug_dash2'] },
   portfolio:         { module: 'nova',      ctx: 'ai_ctx_portfolio',   sugs: ['ai_sug_port1', 'ai_sug_port2'] },
