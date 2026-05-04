@@ -155,7 +155,7 @@ async function sendNova(text) {
   novaThinking.value = true
   try {
     const result = await askScalyoAI({
-      module: 'nova',
+      module: 'wellbeing',
       message: userText,
       context: { mood: selectedMood.value, score: score.value, charge: charge.value },
       history: novaMessages.value.slice(-10).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content })),
