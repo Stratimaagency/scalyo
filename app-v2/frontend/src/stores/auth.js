@@ -111,6 +111,9 @@ export const useAuthStore = defineStore('auth', () => {
   // ─── Locale ───────────────────────────────────────────────────────────────
   const userLocale = computed(() => profile.value?.locale || 'fr')
 
+  // ─── Seats ────────────────────────────────────────────────────────────────
+  const seatsPaid = computed(() => profile.value?.seats_paid || 1)
+
   // ─── Store cleanup ────────────────────────────────────────────────────────
   function clearAllStores() {
     const keys = ['scalyo_clients','scalyo_tasks','scalyo_team','scalyo_projects',
@@ -250,6 +253,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated, fullName, greeting,
     hasActiveSubscription, isOnTrial, trialExpired, trialDaysLeft, trialUsed, needsPayment,
     userLocale, currentPlan,
+    seatsPaid,
     init, login, register, logout, clearAllStores, saveLocale, fetchProfile,
     resetPassword
   }
