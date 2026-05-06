@@ -12,28 +12,39 @@ import * as XLSX from 'xlsx'
  * - Détecte automatiquement le délimiteur (; , \t |)
  */
 function cleanCSVText(raw) {
-  let lines = raw.split(/\r?\n/)
-  lines = lines.filter(line => {
-    const t = line.trim()
-    if (!t) return false
-    if (t.startsWith('#')) return false
-    if (t.startsWith('```')) return false
-    if (t.startsWith('*(') && t.endsWith(')*')) return false
-    if (t.startsWith('//')) return false
-    if (t.startsWith('<!--')) return false
-    return true
-  })
-  if (lines.length === 0) return { cleanedText: raw, delimiter: ',' }
-  const first = lines[0]
+  const allLines = raw.split(/\r?\n/)
   const delimiters = [';', ',', '\t', '|']
   let bestDel = ','
-  let maxCount = 0
+  let maxAvg = 0
   for (const d of delimiters) {
-    const re = d === '|' ? /\|/g : new RegExp(d === '\t' ? '\\t' : d, 'g')
-    const count = (first.match(re) || []).length
-    if (count > maxCount) { maxCount = count; bestDel = d }
+    const counts = allLines.map(l => {
+      let cnt = 0
+      for (let i = 0; i < l.length; i++) { if (l[i] === d) cnt++ }
+      return cnt
+    }).filter(c => c > 0)
+    if (counts.length === 0) continue
+    const avg = counts.reduce((a, b) => a + b, 0) / counts.length
+    if (avg > maxAvg) { maxAvg = avg; bestDel = d }
   }
-  return { cleanedText: lines.join('\n'), delimiter: bestDel }
+  const lineCounts = allLines.map(l => {
+    let cnt = 0
+    for (let i = 0; i < l.length; i++) { if (l[i] === bestDel) cnt++ }
+    return cnt
+  })
+  const freq = {}
+  lineCounts.forEach(c => { if (c > 0) freq[c] = (freq[c] || 0) + 1 })
+  const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1])
+  const expectedDels = sorted.length > 0 ? parseInt(sorted[0][0]) : 0
+  const dataLines = []
+  for (let i = 0; i < allLines.length; i++) {
+    const cnt = lineCounts[i]
+    if (cnt >= expectedDels - 2 && cnt <= expectedDels + 2 && cnt > 0) {
+      let line = allLines[i]
+      while (line.endsWith(bestDel)) line = line.slice(0, -1)
+      dataLines.push(line)
+    }
+  }
+  return { cleanedText: dataLines.join('\n'), delimiter: bestDel }
 }
 
 export async function parseImportFile(file) {
