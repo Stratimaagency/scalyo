@@ -2007,4 +2007,12 @@ export default {
   // Integrations
   integ_not_found: 'Intégration non trouvée',
   integ_loading: 'Chargement...',
+
+  // Sieges
+  mgr_seats: 'Si\u00e8ges',
+  mgr_add_seat: 'Ajouter un si\u00e8ge',
+  mgr_seats_full: 'Tous les si\u00e8ges utilis\u00e9s',
+  mgr_seat_added: 'Si\u00e8ge ajout\u00e9 avec succ\u00e8s',
+  mgr_seat_error: 'Erreur lors de l\'ajout du si\u00e8ge',
+  mgr_upgrade_seats: 'Passez au plan sup\u00e9rieur pour plus de si\u00e8ges',
 }

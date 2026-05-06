@@ -29,6 +29,14 @@
           <span class="mkpi-value">{{ clients.clients.length }}</span>
           <span class="mkpi-label">{{ t('mgr_total_clients') }}</span>
         </div>
+        <div class="mkpi">
+          <span class="mkpi-value" :class="{ 'text-orange': team.seatsUsed >= auth.seatsPaid }">{{ team.seatsUsed }}/{{ auth.seatsPaid }}</span>
+          <span class="mkpi-label">{{ t('mgr_seats') }}</span>
+        </div>
+      </div>
+      <div v-if="team.seatsUsed >= auth.seatsPaid" class="seats-banner">
+        <span>{{ t('mgr_seats_full') }}</span>
+        <button class="btn-add-seat" @click="addSeat">+ {{ t('mgr_add_seat') }}</button>
       </div>
     </div>
 
@@ -72,6 +80,7 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTeamStore } from '@/stores/team'
+import { useAuthStore } from '@/stores/auth'
 import { useClientStore } from '@/stores/clients'
 import { useTaskStore } from '@/stores/tasks'
 import KpiCustomizer from '@/components/KpiCustomizer.vue'
@@ -82,6 +91,7 @@ import '@/assets/manager.css'
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const team = useTeamStore()
+const auth = useAuthStore()
 const clients = useClientStore()
 const tasks = useTaskStore()
 
@@ -129,5 +139,32 @@ function resetAllData() {
     'scalyo_roadmap', 'scalyo_quotes', 'scalyo_dashboard_kpis',
     'scalyo_coach_messages'
   ].forEach(k => localStorage.removeItem(k))
+}
+
+async function addSeat() {
+  try {
+    const { data: { session } } = await (await import('@/lib/supabase')).supabase.auth.getSession()
+    if (!session) return
+    const newQty = team.seatsUsed + 1
+    const res = await fetch('/api/seats', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + session.access_token,
+      },
+      body: JSON.stringify({ quantity: newQty }),
+    })
+    const data = await res.json()
+    if (res.ok && data.success) {
+      await auth.fetchProfile(auth.user.id)
+      alert(t('mgr_seat_added'))
+    } else if (data.error === 'max_seats_exceeded') {
+      alert(t('mgr_upgrade_seats'))
+    } else {
+      alert(t('mgr_seat_error'))
+    }
+  } catch {
+    alert(t('mgr_seat_error'))
+  }
 }
 </script>

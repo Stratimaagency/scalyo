@@ -188,3 +188,32 @@
   .wellbeing-grid { grid-template-columns: 1fr; }
   .perf-header, .perf-row { grid-template-columns: 1.5fr 0.8fr 0.8fr 0.8fr; font-size: 0.75rem; }
 }
+
+/* --- Seats billing --- */
+.seats-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--bg-warning, #FFF7ED);
+  border: 1px solid var(--border-warning, #FDBA74);
+  border-radius: 0.75rem;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #64748B);
+}
+.btn-add-seat {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--primary, #7C3AED);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+.btn-add-seat:hover { opacity: 0.85; }
+.text-orange { color: var(--text-warning, #EA580C); }

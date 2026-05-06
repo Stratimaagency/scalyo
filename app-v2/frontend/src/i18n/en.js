@@ -1951,4 +1951,12 @@ export default {
   // Integrations
   integ_not_found: 'Integration not found',
   integ_loading: 'Loading...',
+
+  // Seats
+  mgr_seats: 'Seats',
+  mgr_add_seat: 'Add seat',
+  mgr_seats_full: 'All seats in use',
+  mgr_seat_added: 'Seat added successfully',
+  mgr_seat_error: 'Error adding seat',
+  mgr_upgrade_seats: 'Upgrade your plan for more seats',
 }

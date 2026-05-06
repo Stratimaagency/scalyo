@@ -1951,4 +1951,12 @@ export default {
   // Integrations
   integ_not_found: '통합을 찾을 수 없습니다',
   integ_loading: '로딩 중...',
+
+  // \uc88c\uc11d
+  mgr_seats: '\uc88c\uc11d',
+  mgr_add_seat: '\uc88c\uc11d \ucd94\uac00',
+  mgr_seats_full: '\ubaa8\ub4e0 \uc88c\uc11d \uc0ac\uc6a9 \uc911',
+  mgr_seat_added: '\uc88c\uc11d\uc774 \ucd94\uac00\ub418\uc5c8\uc2b5\ub2c8\ub2e4',
+  mgr_seat_error: '\uc88c\uc11d \ucd94\uac00 \uc911 \uc624\ub958 \ubc1c\uc0dd',
+  mgr_upgrade_seats: '\uc88c\uc11d\uc744 \ucd94\uac00\ud558\ub824\uba74 \ud50c\ub79c\uc744 \uc5c5\uadf8\ub808\uc774\ub4dc\ud558\uc138\uc694',
 }
