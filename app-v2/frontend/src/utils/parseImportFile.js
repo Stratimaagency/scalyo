@@ -5,18 +5,54 @@ import * as XLSX from 'xlsx'
  * Parse fichier importé : CSV, XLSX/XLS, JSON, texte brut
  * Retourne un objet { type, sheets, data, sheetNames? }
  */
+
+/**
+ * Nettoie le texte brut avant parsing CSV :
+ * - Supprime les lignes markdown, code blocks, commentaires
+ * - Détecte automatiquement le délimiteur (; , \t |)
+ */
+function cleanCSVText(raw) {
+  let lines = raw.split(/\r?\n/)
+  lines = lines.filter(line => {
+    const t = line.trim()
+    if (!t) return false
+    if (t.startsWith('#')) return false
+    if (t.startsWith('```')) return false
+    if (t.startsWith('*(') && t.endsWith(')*')) return false
+    if (t.startsWith('//')) return false
+    if (t.startsWith('<!--')) return false
+    return true
+  })
+  if (lines.length === 0) return { cleanedText: raw, delimiter: ',' }
+  const first = lines[0]
+  const delimiters = [';', ',', '\t', '|']
+  let bestDel = ','
+  let maxCount = 0
+  for (const d of delimiters) {
+    const re = d === '|' ? /\|/g : new RegExp(d === '\t' ? '\\t' : d, 'g')
+    const count = (first.match(re) || []).length
+    if (count > maxCount) { maxCount = count; bestDel = d }
+  }
+  return { cleanedText: lines.join('\n'), delimiter: bestDel }
+}
+
 export async function parseImportFile(file) {
   const ext = file.name.split('.').pop().toLowerCase()
 
-  if (ext === 'csv') {
+  if (['csv', 'tsv', 'txt'].includes(ext)) {
+    const rawText = await file.text()
+    const { cleanedText, delimiter } = cleanCSVText(rawText)
     return new Promise((resolve, reject) => {
-      Papa.parse(file, {
-        header: true, skipEmptyLines: true, dynamicTyping: true,
-        complete: r => resolve({
-          type: 'tabular',
-          sheets: { Sheet1: { headers: r.meta.fields || [], rowCount: r.data.length, sample: r.data.slice(0, 10) } },
-          data: r.data.slice(0, 500)
-        }),
+      Papa.parse(cleanedText, {
+        header: true, skipEmptyLines: true, dynamicTyping: true, delimiter,
+        complete: r => {
+          const rows = r.data.filter(row => Object.values(row).some(v => v !== null && v !== ''))
+          resolve({
+            type: 'tabular',
+            sheets: { Sheet1: { headers: r.meta.fields || [], rowCount: rows.length, sample: rows.slice(0, 10) } },
+            data: rows.slice(0, 500)
+          })
+        },
         error: reject,
       })
     })
