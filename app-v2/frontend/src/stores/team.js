@@ -19,7 +19,7 @@ export const useTeamStore = defineStore('team', () => {
   const healthyMembers = computed(() => members.value.filter(m => (m.workload || 0) < 80))
   const overloadedMembers = computed(() => members.value.filter(m => (m.workload || 0) >= 80))
   const totalArrManaged = computed(() => members.value.reduce((s, m) => s + (m.arrManaged || 0), 0))
-  const seatsUsed = computed(() => members.value.length)
+  const seatsUsed = computed(() => members.value.length + 1) // +1 = manager
 
   function calcBurnoutRisk(member) {
     const wl = member.workload || 0
