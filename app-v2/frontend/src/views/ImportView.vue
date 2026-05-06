@@ -126,43 +126,52 @@ function cancelModulePicker() {
   pendingFile.value = null
   errorMsg.value = ''
 }
-// --- IA : analyse sémantique via useAI ---
-async function analyzeWithAI(parsed, fileName, forcedModule = null) {
-  let fileContext = `FILE: "${fileName}"\n`
-  if (parsed.type === 'text') {
-    fileContext += `FORMAT: plain text\nCONTENT:\n${parsed.raw}`
-  } else {
-    const sheetCount = Object.keys(parsed.sheets || {}).length
-    fileContext += `FORMAT: tabular${sheetCount > 1 ? ` (${sheetCount} sheets)` : ''}\n\n`
-    for (const [name, info] of Object.entries(parsed.sheets || {})) {
-      fileContext += `--- SHEET: "${name}" (${info.rowCount} rows) ---\nHeaders: ${info.headers.join(' | ')}\n`
-      info.sample.slice(0, 5).forEach((row, i) => {
-        const line = Object.entries(row).filter(([k, v]) => !k.startsWith('_') && v !== null && v !== '').slice(0, 15).map(([k, v]) => `${k}:${v}`).join(' | ')
-        fileContext += `  ${i + 1}. ${line}\n`
-      })
-      fileContext += '\n'
+  // --- IA : analyse structure + mapping client-side ---
+  async function analyzeWithAI(parsed, fileName, forcedModule = null) {
+    let fileContext = "FILE: " + fileName + "\n"
+    if (parsed.type === "text") {
+      fileContext += "FORMAT: text\nCONTENT (truncated):\n" + parsed.raw.substring(0, 2000)
+    } else {
+      for (const [name, info] of Object.entries(parsed.sheets || {})) {
+        fileContext += "SHEET: " + name + " (" + info.rowCount + " rows)\nHeaders: " + info.headers.join(" | ") + "\n"
+        info.sample.slice(0, 5).forEach((row, i) => {
+          const line = Object.entries(row).filter(([k, v]) => !k.startsWith("_") && v !== null && v !== "").slice(0, 15).map(([k, v]) => k + ":" + v).join(" | ")
+          fileContext += "  " + (i + 1) + ". " + line + "\n"
+        })
+        fileContext += "TOTAL ROWS: " + info.rowCount + "\n\n"
+      }
     }
-    fileContext += `TOTAL ROWS: ${parsed.data?.length || 0}\n`
+    const forcedPart = forcedModule ? "\nCRITICAL: User chose " + forcedModule + ". Set module to " + forcedModule + "." : ""
+    const message = "Analyze this file structure for Scalyo import. Return ONLY the column mapping, NOT the data rows.\n" + fileContext + forcedPart + "\n\nReturn JSON: { \"module\": \"clients|tasks|team|copil\", \"confidence\": 0-100, \"reason\": \"<French>\", \"columnMapping\": { \"sourceCol\": \"scalyoField\" } }"
+    const response = await ai.send(message, { type: "import_analysis", fileName })
+    let text = typeof response === "string" ? response : (response?.response || JSON.stringify(response))
+    text = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
+    const match = text.match(/\{[\s\S]*\}/)
+    if (!match) throw new Error("No valid JSON from AI")
+    const aiResult = JSON.parse(match[0])
+    const mapped = applyColumnMapping(parsed.data || [], aiResult.columnMapping || {}, aiResult.module)
+    aiResult.validRows = mapped.valid
+    aiResult.rejectedRows = mapped.rejected
+    return aiResult
   }
 
-  const forcedInstruction = forcedModule
-    ? `\n\n\u26a0\ufe0f CRITICAL OVERRIDE: The user has EXPLICITLY chosen the "${forcedModule}" module. You MUST set "module": "${forcedModule}".`
-    : ''
-
-  const message = `Analyze this file and transform ALL data into Scalyo format.\n${fileContext}${forcedInstruction}\n\nReturn EXACTLY JSON: { "module": "clients|tasks|team|copil", "confidence": 0-100, "reason": "<French>", "columnMapping": {}, "validRows": [], "rejectedRows": [], "copilData": null }`
-
-  const response = await ai.send(message, {
-    type: 'import_analysis',
-    fileName,
-    expectJSON: true
-  })
-
-  let text = typeof response === 'string' ? response : (response?.response || JSON.stringify(response))
-  text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-  const match = text.match(/\{[\s\S]*\}/)
-  if (!match) throw new Error('No valid JSON from AI')
-  return JSON.parse(match[0])
-}
+  function applyColumnMapping(rows, mapping, mod) {
+    const valid = [], rejected = []
+    const rMap = {}
+    for (const [src, dst] of Object.entries(mapping)) rMap[src.toLowerCase()] = dst
+    for (const row of rows) {
+      const m = {}
+      let hasData = false
+      for (const [key, value] of Object.entries(row)) {
+        if (key.startsWith("_")) continue
+        const target = rMap[key.toLowerCase()]
+        if (target && value !== null && value !== "") { m[target] = value; hasData = true }
+      }
+      if (hasData && (m.name || m.title || m.email || mod === "copil")) valid.push(m)
+      else if (hasData) rejected.push({ ...m, _reason: "Missing required field" })
+    }
+    return { valid, rejected }
+  }
 
 // --- Orchestrateur principal ---
 async function processFile(file, forcedModule = null) {

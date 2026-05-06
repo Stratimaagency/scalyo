@@ -14,7 +14,13 @@ export async function callMistral({ apiKey, model, maxTokens, systemPrompt, mess
     ],
   }
 
-  const response = await fetch(MISTRAL_API_URL, {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 25000)
+
+  let response
+  try {
+  response = await fetch(MISTRAL_API_URL, {
+    signal: controller.signal,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -22,6 +28,12 @@ export async function callMistral({ apiKey, model, maxTokens, systemPrompt, mess
     },
     body: JSON.stringify(body),
   })
+  } catch (e) {
+    clearTimeout(timeout)
+    if (e.name === 'AbortError') throw new Error('MISTRAL_TIMEOUT')
+    throw e
+  }
+  clearTimeout(timeout)
 
   if (!response.ok) {
     const err = await response.text()
