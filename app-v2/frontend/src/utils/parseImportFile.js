@@ -12,6 +12,7 @@ import * as XLSX from 'xlsx'
  * - Détecte automatiquement le délimiteur (; , \t |)
  */
 function cleanCSVText(raw) {
+  console.log('[Scalyo CSV Clean v3] Input lines:', raw.split(/\r?\n/).length)
   const allLines = raw.split(/\r?\n/)
   // Step 1: detect best delimiter
   const delimiters = [';', ',', '\t', '|']

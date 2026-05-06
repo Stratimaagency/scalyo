@@ -181,6 +181,7 @@ async function processFile(file, forcedModule = null) {
   currentStep.value = 1
   try {
     const parsed = await parseImportFile(file)
+      console.log('[Scalyo Import Debug] parsed:', JSON.stringify({ type: parsed.type, sheets: Object.keys(parsed.sheets || {}), dataRows: (parsed.data || []).length, firstRow: (parsed.data || [])[0] }))
     const result = await analyzeWithAI(parsed, file.name, forcedModule)
     analysisResult.value = result
     allMappedRows.value = result.validRows || []
