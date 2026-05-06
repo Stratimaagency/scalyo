@@ -149,7 +149,8 @@ function cancelModulePicker() {
     const match = text.match(/\{[\s\S]*\}/)
     if (!match) throw new Error("No valid JSON from AI")
     const aiResult = JSON.parse(match[0])
-    const mapped = applyColumnMapping(parsed.data || [], aiResult.columnMapping || {}, aiResult.module)
+    const allRows = parsed.data || (parsed.sheets ? Object.values(parsed.sheets)[0]?.rows || Object.values(parsed.sheets)[0]?.data || [] : [])
+    const mapped = applyColumnMapping(allRows, aiResult.columnMapping || {}, aiResult.module)
     aiResult.validRows = mapped.valid
     aiResult.rejectedRows = mapped.rejected
     return aiResult
@@ -158,17 +159,17 @@ function cancelModulePicker() {
   function applyColumnMapping(rows, mapping, mod) {
     const valid = [], rejected = []
     const rMap = {}
-    for (const [src, dst] of Object.entries(mapping)) rMap[src.toLowerCase()] = dst
+    for (const [src, dst] of Object.entries(mapping)) rMap[src.toLowerCase().trim()] = dst
     for (const row of rows) {
       const m = {}
       let hasData = false
       for (const [key, value] of Object.entries(row)) {
         if (key.startsWith("_")) continue
-        const target = rMap[key.toLowerCase()]
+        const target = rMap[key.toLowerCase().trim()]
         if (target && value !== null && value !== "") { m[target] = value; hasData = true }
       }
-      if (hasData && (m.name || m.title || m.email || mod === "copil")) valid.push(m)
-      else if (hasData) rejected.push({ ...m, _reason: "Missing required field" })
+      if (hasData) valid.push(m)
+
     }
     return { valid, rejected }
   }
