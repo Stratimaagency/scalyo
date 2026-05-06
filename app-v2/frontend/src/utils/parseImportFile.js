@@ -13,37 +13,40 @@ import * as XLSX from 'xlsx'
  */
 function cleanCSVText(raw) {
   const allLines = raw.split(/\r?\n/)
+  // Step 1: detect best delimiter
   const delimiters = [';', ',', '\t', '|']
   let bestDel = ','
-  let maxAvg = 0
+  let maxScore = 0
   for (const d of delimiters) {
-    const counts = allLines.map(l => {
-      let cnt = 0
-      for (let i = 0; i < l.length; i++) { if (l[i] === d) cnt++ }
-      return cnt
-    }).filter(c => c > 0)
-    if (counts.length === 0) continue
-    const avg = counts.reduce((a, b) => a + b, 0) / counts.length
-    if (avg > maxAvg) { maxAvg = avg; bestDel = d }
-  }
-  const lineCounts = allLines.map(l => {
-    let cnt = 0
-    for (let i = 0; i < l.length; i++) { if (l[i] === bestDel) cnt++ }
-    return cnt
-  })
-  const freq = {}
-  lineCounts.forEach(c => { if (c > 0) freq[c] = (freq[c] || 0) + 1 })
-  const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1])
-  const expectedDels = sorted.length > 0 ? parseInt(sorted[0][0]) : 0
-  const dataLines = []
-  for (let i = 0; i < allLines.length; i++) {
-    const cnt = lineCounts[i]
-    if (cnt >= expectedDels - 2 && cnt <= expectedDels + 2 && cnt > 0) {
-      let line = allLines[i]
-      while (line.endsWith(bestDel)) line = line.slice(0, -1)
-      dataLines.push(line)
+    let totalNonEmpty = 0
+    let linesWith = 0
+    for (const line of allLines) {
+      const cells = line.split(d)
+      const nonEmpty = cells.filter(c => c.trim().length > 0).length
+      if (cells.length > 1 && nonEmpty > 1) {
+        totalNonEmpty += nonEmpty
+        linesWith++
+      }
     }
+    const score = linesWith > 0 ? totalNonEmpty / allLines.length : 0
+    if (score > maxScore) { maxScore = score; bestDel = d }
   }
+  // Step 2: split all lines and count non-empty cells
+  const analyzed = allLines.map(line => {
+    const cells = line.split(bestDel)
+    const nonEmpty = cells.filter(c => c.trim().length > 0).length
+    return { line, cells, nonEmpty, total: cells.length }
+  })
+  // Step 3: find the typical non-empty count (mode of lines with 2+ non-empty cells)
+  const freq = {}
+  analyzed.forEach(a => { if (a.nonEmpty >= 2) freq[a.nonEmpty] = (freq[a.nonEmpty] || 0) + 1 })
+  const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1])
+  const typicalNonEmpty = sorted.length > 0 ? parseInt(sorted[0][0]) : 0
+  const threshold = Math.max(2, Math.floor(typicalNonEmpty * 0.4))
+  // Step 4: keep only lines with enough non-empty cells
+  const dataLines = analyzed
+    .filter(a => a.nonEmpty >= threshold)
+    .map(a => a.cells.map(c => c.trim()).join(bestDel))
   return { cleanedText: dataLines.join('\n'), delimiter: bestDel }
 }
 
