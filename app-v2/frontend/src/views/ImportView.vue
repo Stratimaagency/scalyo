@@ -128,73 +128,45 @@ function cancelModulePicker() {
 }
   // --- IA : analyse structure + mapping client-side ---
   async function analyzeWithAI(parsed, fileName, forcedModule = null) {
-    let fileContext = "FILE: " + fileName + "\n"
-    if (parsed.type === "text") {
-      fileContext += "FORMAT: text\nCONTENT (truncated):\n" + parsed.raw.substring(0, 2000)
-    } else {
-      for (const [name, info] of Object.entries(parsed.sheets || {})) {
-        fileContext += "SHEET: " + name + " (" + info.rowCount + " rows)\nHeaders: " + info.headers.join(" | ") + "\n"
-        info.sample.slice(0, 5).forEach((row, i) => {
-          const line = Object.entries(row).filter(([k, v]) => !k.startsWith("_") && v !== null && v !== "").slice(0, 15).map(([k, v]) => k + ":" + v).join(" | ")
-          fileContext += "  " + (i + 1) + ". " + line + "\n"
-        })
-        fileContext += "TOTAL ROWS: " + info.rowCount + "\n\n"
-      }
+    // Envoyer le contenu brut a l'IA — elle fait TOUT le travail
+    let content = parsed.raw || ''
+    if (content.length > 8000) content = content.substring(0, 8000)
+    
+    const prompt = 'FILE: ' + fileName + '\nCONTENT:\n' + content
+    const aiReply = await ai.ask(prompt)
+    
+    // Parser la reponse JSON de l'IA
+    let result
+    try {
+      const jsonStr = aiReply.replace(/```json?/g, '').replace(/```/g, '').trim()
+      result = JSON.parse(jsonStr)
+    } catch (e) {
+      console.error('[Import] AI response not valid JSON:', aiReply)
+      result = { module: 'clients', confidence: 0, explanation: aiReply, rows: [], mapping: {}, sourceColumns: [] }
     }
-    const forcedPart = forcedModule ? "\nCRITICAL: User chose " + forcedModule + ". Set module to " + forcedModule + "." : ""
-    const message = "Analyze this file structure for Scalyo import. Return ONLY the column mapping, NOT the data rows.\n" + fileContext + forcedPart + "\n\nReturn JSON: { \"module\": \"clients|tasks|team|copil\", \"confidence\": 0-100, \"reason\": \"<French>\", \"columnMapping\": { \"sourceCol\": \"scalyoField\" } }"
-    const response = await ai.send(message, { type: "import_analysis", fileName })
-    let text = typeof response === "string" ? response : (response?.response || JSON.stringify(response))
-    text = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
-    const match = text.match(/\{[\s\S]*\}/)
-    if (!match) throw new Error("No valid JSON from AI")
-    const aiResult = JSON.parse(match[0])
-    const allRows = parsed.data || (parsed.sheets ? Object.values(parsed.sheets)[0]?.rows || Object.values(parsed.sheets)[0]?.data || [] : [])
-    const mapped = applyColumnMapping(allRows, aiResult.columnMapping || {}, aiResult.module)
-    aiResult.validRows = mapped.valid
-    aiResult.rejectedRows = mapped.rejected
-    return aiResult
+    
+    if (forcedModule) result.module = forcedModule
+    
+    const validRows = (result.rows || []).map((row, i) => ({ _index: i, ...row }))
+    
+    return {
+      module: result.module || 'clients',
+      confidence: result.confidence || 0,
+      explanation: result.explanation || '',
+      mapping: result.mapping || {},
+      sourceColumns: result.sourceColumns || [],
+      validRows,
+      rejectedRows: [],
+      rawAiResponse: result
+    }
   }
 
   function applyColumnMapping(rows, mapping, mod) {
-    const valid = [], rejected = []
-    const rMap = {}
-    for (const [src, dst] of Object.entries(mapping)) rMap[src.toLowerCase().trim()] = dst
-    for (const row of rows) {
-      const m = {}
-      let hasData = false
-      for (const [key, value] of Object.entries(row)) {
-        if (key.startsWith("_")) continue
-        const target = rMap[key.toLowerCase().trim()]
-        if (target && value !== null && value !== "") { m[target] = value; hasData = true }
-      }
-      if (hasData) valid.push(m)
-
-    }
-    return { valid, rejected }
+    // Legacy — l'IA fait le mapping directement maintenant
+    return rows || []
   }
 
-// --- Orchestrateur principal ---
-async function processFile(file, forcedModule = null) {
-  errorMsg.value = ''
-  selectedFile.value = file
-  currentStep.value = 1
-  try {
-    const parsed = await parseImportFile(file)
-      console.log('[Scalyo Import Debug] parsed:', JSON.stringify({ type: parsed.type, sheets: Object.keys(parsed.sheets || {}), dataRows: (parsed.data || []).length, firstRow: (parsed.data || [])[0] }))
-    const result = await analyzeWithAI(parsed, file.name, forcedModule)
-    analysisResult.value = result
-    allMappedRows.value = result.validRows || []
-    rejectedRows.value = result.rejectedRows || []
-    currentStep.value = 2
-  } catch (err) {
-    console.error('[ImportView]', err)
-    errorMsg.value = t('imp_api_error')
-    currentStep.value = 0
-    selectedFile.value = null
-  }
-}
-// --- Import : insertion dans les stores ---
+  // --- Import : insertion dans les stores ---
 async function importData() {
   importing.value = true
   let count = 0
