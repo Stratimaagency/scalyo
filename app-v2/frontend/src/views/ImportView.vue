@@ -225,6 +225,7 @@ var importData = async function () {
   try {
     var mod = analysisResult.value ? analysisResult.value.module : null
     var rows = allMappedRows.value
+    var defaults = (analysisResult.value && analysisResult.value.defaults) || {}
     if (mod === 'clients') {
       for (var i = 0; i < rows.length; i++) {
         var r = rows[i]
@@ -240,7 +241,7 @@ var importData = async function () {
       }
       for (var i2 = 0; i2 < rows.length; i2++) {
         var r2 = rows[i2]
-        taskStore.addTask({ title: r2.title || t('imp_default_task'), status: r2.status || 'todo', priority: r2.priority || 'important', dueDate: r2.dueDate || '', description: r2.description || '', assignee: r2.assignee || null, projectId: projectId, clientId: null })
+        taskStore.addTask({ title: r2.title || t('imp_default_task'), description: r2.description || '', status: r2.status || defaults.status || 'todo', priority: r2.priority || defaults.priority || 'medium', urgency: Number(r2.urgency) || defaults.urgency || 3, importance: Number(r2.importance) || defaults.importance || 3, difficulty: Number(r2.difficulty) || defaults.difficulty || 3, dueDate: r2.dueDate || '', startDate: r2.startDate || '', endDate: r2.endDate || '', assignee: r2.assignee || null, expectedHours: Number(r2.expectedHours) || 0, tags: r2.tags || '', taskType: r2.taskType || '', projectId: projectId, clientId: null })
         count++
       }
     } else if (mod === 'team') {
