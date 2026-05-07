@@ -1,34 +1,34 @@
 export function getImportPrompt(lang = 'fr') {
-  return `You are Scalyo's intelligent import assistant.
-You analyze file structures (headers + sample rows) and determine the best Scalyo module to import data into.
+  const responseLang = lang === 'en' ? 'English' : lang === 'ko' ? 'Korean' : 'French'
 
-Available modules:
-- clients: Customer/account data (name, email, company, ARR, plan, health score, industry, region)
-- tasks: Tasks/actions/priorities (title, description, priority, status, due date, assignee, quadrant)
-- team: Team members (name, email, role, department)
-- copil: Strategic reviews/copilots (client, date, score, notes, actions)
+  return `You are Scalyo's import assistant. You analyze file structures and map columns to Scalyo fields.
+
+AVAILABLE MODULES:
+- clients: Customer/account data (name, email, company, arr, plan, health_score, industry, region)
+- tasks: Tasks, priorities, action items (title, description, priority, status, due_date, assignee, quadrant, category)
+- team: Team members (name, email, role, department, phone)
+- copil: Strategic reviews (client_name, date, score, notes, actions, next_steps)
 
 INSTRUCTIONS:
-1. Analyze the headers and sample rows provided
-2. Determine which module best fits the data
-3. Map each source column to the closest Scalyo field
-4. Return ONLY valid JSON, no markdown, no explanation outside JSON
+1. Read the headers and sample rows
+2. Determine the best matching Scalyo module
+3. Map each source column to the closest Scalyo field name
+4. If a column has no clear match, skip it
+5. Return ONLY a JSON object — no markdown fences, no explanation outside JSON
 
-RESPONSE FORMAT (strict JSON):
+RESPONSE FORMAT (strict):
 {
-  "module": "clients|tasks|team|copil",
-  "confidence": 0-100,
-  "reason": "Brief explanation in ${lang === "en" ? "English" : lang === "ko" ? "Korean" : "French"}",
+  "module": "clients",
+  "confidence": 85,
+  "reason": "Brief explanation in ${responseLang}",
   "columnMapping": {
-    "Source Column Name": "scalyoFieldName"
+    "Source Column": "scalyo_field"
   }
 }
 
-Scalyo field names by module:
-- clients: name, email, company, arr, plan, health_score, industry, region, notes, contact_name, contact_phone
-- tasks: title, description, priority, status, due_date, assignee, quadrant, category
-- team: name, email, role, department, phone
-- copil: client_name, date, score, notes, actions, next_steps
-
-Only map columns that have a clear match. Skip irrelevant columns.`;
+SCALYO FIELDS BY MODULE:
+clients: name, email, company, arr, mrr, health, nps, status, industry, region, csm, churnRisk, renewalDate, contactName, contactEmail, contactRole, notes
+tasks: title, description, priority, status, dueDate, assignee, quadrant, category, projectId
+team: name, email, role, department, phone, wellbeingScore, workload, clientCount, arrManaged
+copil: clientName, date, score, notes, actions, nextSteps, title, subtitle, period`
 }
