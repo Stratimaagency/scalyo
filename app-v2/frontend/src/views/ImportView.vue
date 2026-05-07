@@ -58,6 +58,32 @@
     />
 
     <ImportMappingPanel
+
+  // --- Traitement du fichier : parse + IA + mapping ---
+  async function processFile(file, module) {
+    selectedFile.value = file
+    currentStep.value = 1
+    errorMsg.value = ""
+    try {
+      const parsed = await parseImportFile(file)
+      if (!parsed || (parsed.rowCount === 0 && !parsed.raw)) {
+        errorMsg.value = t("imp_empty_file")
+        currentStep.value = 0
+        return
+      }
+      const result = await analyzeWithAI(parsed, file.name, module)
+      analysisResult.value = result
+      allMappedRows.value = result.validRows || []
+      rejectedRows.value = result.rejectedRows || []
+      currentStep.value = 2
+    } catch (err) {
+      console.error("[ImportView] processFile:", err)
+      errorMsg.value = err.message?.includes("TIMEOUT") ? t("imp_timeout") : t("imp_api_error")
+      currentStep.value = 0
+      selectedFile.value = null
+    }
+  }
+
       :show="showMapping"
       :column-mapping="analysisResult?.columnMapping || {}"
       @close="showMapping = false"
