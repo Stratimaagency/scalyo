@@ -173,6 +173,7 @@ var buildMapped = function () {
 }
 
 var castValue = function (val, type) {
+  if (type === 'integer') { var n = Math.round(Number(val)); return isNaN(n) ? 0 : n }
   if (type === 'number') { var n = Number(val); return isNaN(n) ? 0 : n }
   if (type === 'date') return String(val).slice(0, 10) || ''
   if (type === 'tags') {
