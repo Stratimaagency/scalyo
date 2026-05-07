@@ -253,7 +253,6 @@ const sidebarSections = [
     items: [
       { name: 'email-studio', icon: '📧', label: 'sidebar_email_studio', to: '/app/email-studio' },
       { name: 'quotes', icon: '📄', label: 'sidebar_quotes', to: '/app/quotes' },
-      { name: 'import', icon: '📥', label: 'sidebar_import', to: '/app/import' },
       { name: 'integrations', icon: '🔌', label: 'sidebar_integrations', to: '/app/integrations' },
     ],
   },

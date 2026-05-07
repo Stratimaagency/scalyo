@@ -39,7 +39,8 @@ const routes = [
       { path: 'coach', name: 'coach', component: () => import('@/views/CoachView.vue') },
       { path: 'email-studio', name: 'email-studio', component: () => import('@/views/EmailStudioView.vue'), meta: { requiredModule: 'email' } },
       { path: 'quotes', name: 'quotes', component: () => import('@/views/QuotesView.vue') },
-      { path: 'import', name: 'import', component: () => import('@/views/ImportView.vue'), meta: { requiredModule: 'import' } },
+      // Import IA masqué — import standard désormais dans chaque module
+      { path: 'import', redirect: { name: 'dashboard' } },
       { path: 'integrations', name: 'integrations', component: () => import('@/views/IntegrationsView.vue') },
       { path: 'integrations/:service', name: 'integration-embed', component: () => import('@/components/IntegrationEmbed.vue'), props: true },
       { path: 'settings', name: 'settings', component: () => import('@/views/SettingsView.vue') },
