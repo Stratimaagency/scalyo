@@ -157,7 +157,41 @@ var cancelModulePicker = function () {
   errorMsg.value = ''
 }
 
+var matchColumnsLocally = function (headers, mod) {
+  var maps = {
+    clients: { nom:'name', name:'name', entreprise:'company', company:'company', email:'email', mail:'email', arr:'arr', mrr:'mrr', sante:'health', health:'health', nps:'nps', statut:'status', status:'status', industrie:'industry', industry:'industry', region:'region', csm:'csm', risque:'churnRisk', churn:'churnRisk', renouvellement:'renewalDate', renewal:'renewalDate' },
+    tasks: { titre:'title', title:'title', tache:'title', task:'title', description:'description', desc:'description', statut:'status', status:'status', priorite:'priority', priority:'priority', urgence:'urgency', urgency:'urgency', importance:'importance', difficulte:'difficulty', difficulty:'difficulty', debut:'startDate', start:'startDate', fin:'endDate', end:'endDate', echeance:'dueDate', due:'dueDate', deadline:'dueDate', assignee:'assignee', assigne:'assignee', heures:'expectedHours', hours:'expectedHours', tags:'tags', type:'taskType' },
+    team: { nom:'name', name:'name', email:'email', role:'role', poste:'role', departement:'department', department:'department', telephone:'phone', phone:'phone', bienetre:'wellbeingScore', wellbeing:'wellbeingScore', charge:'workload', workload:'workload', clients:'clientCount', arr:'arrManaged' },
+    copil: { client:'clientName', date:'date', score:'score', notes:'notes', actions:'actions', prochaines:'nextSteps', next:'nextSteps', titre:'title', title:'title', periode:'period', period:'period' }
+  }
+  var lookup = maps[mod] || maps.tasks
+  var mapping = {}
+  headers.forEach(function (h) {
+    var key = h.toLowerCase().trim().replace(/[_\-\s]+/g, '')
+    Object.keys(lookup).forEach(function (pattern) {
+      if (key.indexOf(pattern) >= 0 || pattern.indexOf(key) >= 0) mapping[h] = lookup[pattern]
+    })
+  })
+  return mapping
+}
+
 var analyzeWithAI = async function (parsed, fileName, forcedModule) {
+  // Try AI with 15s timeout, fallback to local matching
+  try {
+    var timeoutPromise = new Promise(function (_, reject) {
+      setTimeout(function () { reject(new Error('AI_TIMEOUT')) }, 15000)
+    })
+    var aiPromise = callAIForMapping(parsed, fileName, forcedModule)
+    return await Promise.race([aiPromise, timeoutPromise])
+  } catch (err) {
+    console.warn('[Import] AI failed/timeout, using local matching:', err.message)
+    var localMapping = matchColumnsLocally(parsed.headers, forcedModule)
+    var mapped = applyColumnMapping(parsed.rows, localMapping)
+    return { module: forcedModule, confidence: 60, reason: 'Mapping automatique (IA indisponible)', columnMapping: localMapping, validRows: mapped.valid, rejectedRows: mapped.rejected, defaults: { urgency: 3, importance: 3, difficulty: 3 } }
+  }
+}
+
+var callAIForMapping = async function (parsed, fileName, forcedModule) {
   var ctx = 'FILE: ' + fileName + ' (' + parsed.rowCount + ' rows)\n'
   if (parsed.headers && parsed.headers.length > 0) {
     ctx += 'HEADERS: ' + parsed.headers.join(' | ') + '\n\nSAMPLE ROWS:\n'
