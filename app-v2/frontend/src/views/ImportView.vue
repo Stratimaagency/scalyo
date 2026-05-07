@@ -128,43 +128,51 @@ function cancelModulePicker() {
 }
   // --- IA : analyse structure + mapping client-side ---
   async function analyzeWithAI(parsed, fileName, forcedModule = null) {
-    // Envoyer le contenu brut a l'IA — elle fait TOUT le travail
-    let content = parsed.raw || ''
-    if (content.length > 8000) content = content.substring(0, 8000)
-    
-    const prompt = 'FILE: ' + fileName + '\nCONTENT:\n' + content
-    const aiResult = await ai.send(prompt, { keepHistory: false })
-    const aiReply = aiResult?.response || aiResult?.reply || aiResult?.content || JSON.stringify(aiResult || {})
-    
-    // Parser la reponse JSON de l'IA
-    let result
-    try {
-      const jsonStr = aiReply.replace(/```json?/g, '').replace(/```/g, '').trim()
-      result = JSON.parse(jsonStr)
-    } catch (e) {
-      console.error('[Import] AI response not valid JSON:', aiReply)
-      result = { module: 'clients', confidence: 0, explanation: aiReply, rows: [], mapping: {}, sourceColumns: [] }
+    let fileContext = "FILE: " + fileName + " (" + parsed.rowCount + " rows)\n"
+    if (parsed.type === "spreadsheet" && parsed.headers.length > 0) {
+      fileContext += "HEADERS: " + parsed.headers.join(" | ") + "\nSAMPLE:\n"
+      parsed.sample.forEach((row, i) => {
+        const cells = parsed.headers.map(h => h + ": " + (row[h] != null && row[h] !== "" ? row[h] : "-")).join(" | ")
+        fileContext += (i + 1) + ". " + cells + "\n"
+      })
+    } else if (parsed.raw) {
+      fileContext += "TEXT:\n" + parsed.raw.substring(0, 2000)
     }
-    
-    if (forcedModule) result.module = forcedModule
-    
-    const validRows = (result.rows || []).map((row, i) => ({ _index: i, ...row }))
-    
-    return {
-      module: result.module || 'clients',
-      confidence: result.confidence || 0,
-      explanation: result.explanation || '',
-      mapping: result.mapping || {},
-      sourceColumns: result.sourceColumns || [],
-      validRows,
-      rejectedRows: [],
-      rawAiResponse: result
+    if (forcedModule) fileContext += "\nUser selected module: " + forcedModule
+    const response = await ai.send(fileContext, { type: "import_analysis", fileName })
+    let text = typeof response === "string" ? response : (response?.response || JSON.stringify(response))
+    text = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
+    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) throw new Error("AI did not return valid JSON")
+    const aiResult = JSON.parse(jsonMatch[0])
+    if (parsed.rows && parsed.rows.length > 0 && aiResult.columnMapping) {
+      const mapped = applyColumnMapping(parsed.rows, aiResult.columnMapping)
+      aiResult.validRows = mapped.valid
+      aiResult.rejectedRows = mapped.rejected
+    } else {
+      aiResult.validRows = []
+      aiResult.rejectedRows = []
     }
+    return aiResult
   }
 
-  function applyColumnMapping(rows, mapping, mod) {
-    // Legacy — l'IA fait le mapping directement maintenant
-    return rows || []
+  function applyColumnMapping(rows, mapping) {
+    const valid = []
+    const rMap = {}
+    for (const [src, dst] of Object.entries(mapping)) rMap[src.toLowerCase().trim()] = dst
+    for (const row of rows) {
+      const mapped = {}
+      let count = 0
+      for (const [key, value] of Object.entries(row)) {
+        const target = rMap[key.toLowerCase().trim()]
+        if (target && value != null && String(value).trim() !== "") {
+          mapped[target] = value
+          count++
+        }
+      }
+      if (count > 0) valid.push(mapped)
+    }
+    return { valid, rejected: [] }
   }
 
   // --- Import : insertion dans les stores ---
