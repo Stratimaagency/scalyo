@@ -160,14 +160,14 @@ var cancelModulePicker = function () {
 var matchColumnsLocally = function (headers, mod) {
   var maps = {
     clients: { nom:'name', name:'name', entreprise:'company', company:'company', email:'email', mail:'email', arr:'arr', mrr:'mrr', sante:'health', health:'health', nps:'nps', statut:'status', status:'status', industrie:'industry', industry:'industry', region:'region', csm:'csm', risque:'churnRisk', churn:'churnRisk', renouvellement:'renewalDate', renewal:'renewalDate' },
-    tasks: { titre:'title', title:'title', tache:'title', task:'title', description:'description', desc:'description', statut:'status', status:'status', priorite:'priority', priority:'priority', urgence:'urgency', urgency:'urgency', importance:'importance', difficulte:'difficulty', difficulty:'difficulty', debut:'startDate', start:'startDate', fin:'endDate', end:'endDate', echeance:'dueDate', due:'dueDate', deadline:'dueDate', assignee:'assignee', assigne:'assignee', heures:'expectedHours', hours:'expectedHours', tags:'tags', type:'taskType' },
+    tasks: { titre:'title', title:'title', tache:'title', task:'title', nom:'title', name:'title', description:'description', desc:'description', detail:'description', statut:'status', status:'status', etat:'status', state:'status', priorite:'priority', priority:'priority', urgence:'urgency', urgency:'urgency', urgent:'urgency', importance:'importance', important:'importance', difficulte:'difficulty', difficulty:'difficulty', debut:'startDate', start:'startDate', datedebut:'startDate', startdate:'startDate', fin:'endDate', end:'endDate', datefin:'endDate', enddate:'endDate', echeance:'dueDate', due:'dueDate', deadline:'dueDate', datelimite:'dueDate', assignee:'assignee', assigne:'assignee', responsable:'assignee', owner:'assignee', heures:'expectedHours', hours:'expectedHours', heuresestimees:'expectedHours', estimatedhours:'expectedHours', estimation:'expectedHours', tags:'tags', labels:'tags', etiquettes:'tags', type:'taskType', categorie:'taskType', category:'taskType' },
     team: { nom:'name', name:'name', email:'email', role:'role', poste:'role', departement:'department', department:'department', telephone:'phone', phone:'phone', bienetre:'wellbeingScore', wellbeing:'wellbeingScore', charge:'workload', workload:'workload', clients:'clientCount', arr:'arrManaged' },
     copil: { client:'clientName', date:'date', score:'score', notes:'notes', actions:'actions', prochaines:'nextSteps', next:'nextSteps', titre:'title', title:'title', periode:'period', period:'period' }
   }
   var lookup = maps[mod] || maps.tasks
   var mapping = {}
   headers.forEach(function (h) {
-    var key = h.toLowerCase().trim().replace(/[_\-\s]+/g, '')
+    var key = h.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[_\-\s]+/g, '')
     Object.keys(lookup).forEach(function (pattern) {
       if (key.indexOf(pattern) >= 0 || pattern.indexOf(key) >= 0) mapping[h] = lookup[pattern]
     })
