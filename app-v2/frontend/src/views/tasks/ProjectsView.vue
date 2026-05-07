@@ -232,12 +232,18 @@ const colors = ['#7c3aed', '#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#ec4899'
 var handleBulkImport = async function (rows) {
   var pid = importProjectId.value || (taskStore.projects[0]?.id || '')
   var count = 0
+  var errors = 0
   for (var i = 0; i < rows.length; i++) {
-    rows[i].projectId = pid
-    await taskStore.addTask(rows[i])
-    count++
+    try {
+      rows[i].projectId = pid
+      var result = await taskStore.addTask(rows[i])
+      if (result) count++
+      else errors++
+    } catch (e) {
+      errors++
+    }
   }
-  showImport.value = false
+  if (count > 0) showImport.value = false
   return count
 }
 

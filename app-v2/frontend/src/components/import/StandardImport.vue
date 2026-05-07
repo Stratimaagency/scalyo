@@ -186,13 +186,21 @@ var previewRows = computed(function () { return mapped.value.slice(0, 5) })
 
 var doImport = async function () {
   importing.value = true
+  mappingError.value = ''
   try {
     var count = await props.onImport(mapped.value)
-    importedCount.value = count ?? mapped.value.length
-    step.value = 'done'
+    if (count === null || count === undefined) count = mapped.value.length
+    importedCount.value = count
+    if (count > 0) {
+      step.value = 'done'
+    } else {
+      mappingError.value = t('import_error')
+      step.value = 'preview'
+    }
   } catch (err) {
+    console.error('[StandardImport] doImport error:', err)
     mappingError.value = t('import_error')
-    step.value = 'mapping'
+    step.value = 'preview'
   }
   importing.value = false
 }

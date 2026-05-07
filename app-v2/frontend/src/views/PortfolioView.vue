@@ -92,11 +92,17 @@ const showImport = ref(false)
 
 var handleBulkImport = async function (rows) {
   var count = 0
+  var errors = 0
   for (var i = 0; i < rows.length; i++) {
-    await clients.addClient(rows[i])
-    count++
+    try {
+      var result = await clients.addClient(rows[i])
+      if (result) count++
+      else errors++
+    } catch (e) {
+      errors++
+    }
   }
-  showImport.value = false
+  if (count > 0) showImport.value = false
   return count
 }
 
