@@ -1,12 +1,10 @@
 <template>
   <div class="import-view">
-    <!-- Header -->
     <div class="imp-header">
       <h1>🤖 {{ t('imp_title') }}</h1>
       <p class="imp-sub">{{ t('imp_subtitle') }}</p>
     </div>
 
-    <!-- Steps -->
     <div class="imp-steps">
       <template v-for="(stepKey, i) in ['imp_step1','imp_step2','imp_step3','imp_step4']" :key="i">
         <div class="imp-step" :class="{ active: currentStep === i, done: currentStep > i }">
@@ -23,7 +21,7 @@
     <ImportDropZone
       :current-step="currentStep"
       :error-msg="errorMsg"
-      :file-name="selectedFile?.name || ''"
+      :file-name="selectedFile ? selectedFile.name : ''"
       @file-selected="onFileSelected"
     />
 
@@ -44,7 +42,7 @@
     <ImportSuccess
       :current-step="currentStep"
       :imported-count="importedCount"
-      :module-name="analysisResult?.module"
+      :module-name="analysisResult ? analysisResult.module : null"
       :rejected-rows="rejectedRows"
       @reset="reset"
       @go-to-module="goToModule"
@@ -52,17 +50,14 @@
 
     <ImportModulePicker
       :show="showModulePicker"
-      :file-name="pendingFile?.name || ''"
+      :file-name="pendingFile ? pendingFile.name : ''"
       @confirm="confirmModule"
       @cancel="cancelModulePicker"
     />
 
     <ImportMappingPanel
-
-  // --- Traitement du fichier : parse + IA + mapping ---
-
       :show="showMapping"
-      :column-mapping="analysisResult?.columnMapping || {}"
+      :column-mapping="analysisResult ? analysisResult.columnMapping || {} : {}"
       @close="showMapping = false"
     />
   </div>
@@ -93,7 +88,6 @@ var teamStore = useTeamStore()
 var kpiStore = useKpiStore()
 var ai = useAI('import')
 
-// --- State ---
 var currentStep = ref(0)
 var selectedFile = ref(null)
 var analysisResult = ref(null)
@@ -108,36 +102,42 @@ var pendingFile = ref(null)
 var showModulePicker = ref(false)
 var manualModule = ref(null)
 
+var ALLOWED_EXT = ['csv', 'tsv', 'txt', 'xlsx', 'xls', 'xlsm', 'json']
+var MAX_SIZE = 10 * 1024 * 1024
 
-  var processFile = async function(file, module) {
-    selectedFile.value = file
-    currentStep.value = 1
-    errorMsg.value = ""
-    try {
-      var parsed = await parseImportFile(file)
-      if (!parsed || (parsed.rowCount === 0 && !parsed.raw)) {
-        errorMsg.value = t("imp_empty_file")
-        currentStep.value = 0
-        return
-      }
-      var result = await analyzeWithAI(parsed, file.name, module)
-      analysisResult.value = result
-      allMappedRows.value = result.validRows || []
-      rejectedRows.value = result.rejectedRows || []
-      currentStep.value = 2
-    } catch (err) {
-      console.error("[ImportView] processFile:", err)
-      errorMsg.value = err.message?.includes("TIMEOUT") ? t("imp_timeout") : t("imp_api_error")
+var processFile = async function (file, mod) {
+  selectedFile.value = file
+  currentStep.value = 1
+  errorMsg.value = ''
+  try {
+    var parsed = await parseImportFile(file)
+    if (parsed.rowCount === 0) {
+      errorMsg.value = t('imp_empty_file')
       currentStep.value = 0
       selectedFile.value = null
+      return
     }
+    var result = await analyzeWithAI(parsed, file.name, mod)
+    analysisResult.value = result
+    allMappedRows.value = result.validRows || []
+    rejectedRows.value = result.rejectedRows || []
+    currentStep.value = 2
+  } catch (err) {
+    console.error('[ImportView] processFile:', err)
+    errorMsg.value = t('imp_api_error')
+    currentStep.value = 0
+    selectedFile.value = null
   }
+}
 
-
-// --- File selection ---
 var onFileSelected = function (file) {
   errorMsg.value = ''
-  if (file.size > 10 * 1024 * 1024) {
+  var ext = file.name.split('.').pop().toLowerCase()
+  if (ALLOWED_EXT.indexOf(ext) === -1) {
+    errorMsg.value = t('imp_unsupported_format')
+    return
+  }
+  if (file.size > MAX_SIZE) {
     errorMsg.value = t('imp_file_too_large')
     return
   }
@@ -145,10 +145,10 @@ var onFileSelected = function (file) {
   showModulePicker.value = true
 }
 
-var confirmModule = function (module) {
-  manualModule.value = module
+var confirmModule = function (mod) {
+  manualModule.value = mod
   showModulePicker.value = false
-  processFile(pendingFile.value, module)
+  processFile(pendingFile.value, mod)
 }
 
 var cancelModulePicker = function () {
@@ -156,132 +156,116 @@ var cancelModulePicker = function () {
   pendingFile.value = null
   errorMsg.value = ''
 }
-  // --- IA : analyse structure + mapping client-side ---
-  var analyzeWithAI = async function(parsed, fileName, forcedModule = null) {
-    let fileContext = "FILE: " + fileName + " (" + parsed.rowCount + " rows)\n"
-    if (parsed.type === "spreadsheet" && parsed.headers.length > 0) {
-      fileContext += "HEADERS: " + parsed.headers.join(" | ") + "\nSAMPLE:\n"
-      parsed.sample.forEach((row, i) => {
-        var cells = parsed.headers.map(h => h + ": " + (row[h] != null && row[h] !== "" ? row[h] : "-")).join(" | ")
-        fileContext += (i + 1) + ". " + cells + "\n"
-      })
-    } else if (parsed.raw) {
-      fileContext += "TEXT:\n" + parsed.raw.substring(0, 2000)
-    }
-    if (forcedModule) fileContext += "\nUser selected module: " + forcedModule
-    var response = await ai.send(fileContext, { type: "import_analysis", fileName })
-    let text = typeof response === "string" ? response : (response?.response || JSON.stringify(response))
-    text = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
-    var jsonMatch = text.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) throw new Error("AI did not return valid JSON")
-    var aiResult = JSON.parse(jsonMatch[0])
-    if (parsed.rows && parsed.rows.length > 0 && aiResult.columnMapping) {
-      var mapped = applyColumnMapping(parsed.rows, aiResult.columnMapping)
-      aiResult.validRows = mapped.valid
-      aiResult.rejectedRows = mapped.rejected
-    } else {
-      aiResult.validRows = []
-      aiResult.rejectedRows = []
-    }
-    return aiResult
-  }
 
-  var applyColumnMapping = function (rows, mapping) {
-    var valid = []
-    var rMap = {}
-    for (var [src, dst] of Object.entries(mapping)) rMap[src.toLowerCase().trim()] = dst
-    for (var row of rows) {
-      var mapped = {}
-      let count = 0
-      for (var [key, value] of Object.entries(row)) {
-        var target = rMap[key.toLowerCase().trim()]
-        if (target && value != null && String(value).trim() !== "") {
-          mapped[target] = value
-          count++
-        }
+var analyzeWithAI = async function (parsed, fileName, forcedModule) {
+  var ctx = 'FILE: ' + fileName + ' (' + parsed.rowCount + ' rows)\n'
+  if (parsed.headers && parsed.headers.length > 0) {
+    ctx += 'HEADERS: ' + parsed.headers.join(' | ') + '\n\nSAMPLE ROWS:\n'
+    var sample = parsed.sample || []
+    for (var i = 0; i < sample.length; i++) {
+      var row = sample[i]
+      var cells = []
+      for (var j = 0; j < parsed.headers.length; j++) {
+        var h = parsed.headers[j]
+        var v = row[h]
+        cells.push(h + ': ' + (v != null && v !== '' ? v : '-'))
       }
-      if (count > 0) valid.push(mapped)
+      ctx += (i + 1) + '. ' + cells.join(' | ') + '\n'
     }
-    return { valid, rejected: [] }
   }
+  if (forcedModule) {
+    ctx += '\nUser selected module: ' + forcedModule + '. Use this module.'
+  }
+  var response = await ai.send(ctx, { type: 'import_analysis', fileName: fileName })
+  var text = typeof response === 'string' ? response : (response && response.response ? response.response : JSON.stringify(response))
+  text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim()
+  var jsonMatch = text.match(/\{[\s\S]*\}/)
+  if (!jsonMatch) throw new Error('AI_NO_JSON')
+  var aiResult = JSON.parse(jsonMatch[0])
+  if (parsed.rows && parsed.rows.length > 0 && aiResult.columnMapping) {
+    var mapped = applyColumnMapping(parsed.rows, aiResult.columnMapping)
+    aiResult.validRows = mapped.valid
+    aiResult.rejectedRows = mapped.rejected
+  } else {
+    aiResult.validRows = []
+    aiResult.rejectedRows = []
+  }
+  return aiResult
+}
 
-  // --- Import : insertion dans les stores ---
-var importData = async function() {
-  importing.value = true
-  let count = 0
-  try {
-    var module = analysisResult.value?.module
-    var rows = allMappedRows.value
-
-    if (module === 'clients') {
-      rows.forEach(row => {
-        clientStore.addClient({
-          name: row.name || 'Client importé', industry: row.industry || 'Autre',
-          arr: Number(row.arr) || 0, mrr: Number(row.mrr) || Math.round((Number(row.arr) || 0) / 12),
-          health: Math.min(10, Math.max(0, Number(row.health) || 7)),
-          nps: Math.min(100, Math.max(-100, Number(row.nps) || 0)),
-          status: row.status || 'watch', csm: row.csm || '', csmId: null,
-          logo: row.status === 'healthy' ? '🟢' : row.status === 'critical' ? '🔴' : '🟡',
-          churnRisk: Math.min(1, Math.max(0, Number(row.churnRisk) || 0.1)),
-          renewalDate: row.renewalDate || '',
-          contacts: row.contactName ? [{ name: row.contactName, email: row.contactEmail || '', role: row.contactRole || '' }] : [],
-        })
+var applyColumnMapping = function (rows, mapping) {
+  var valid = []
+  var rejected = []
+  var lookup = {}
+  var keys = Object.keys(mapping)
+  for (var k = 0; k < keys.length; k++) {
+    lookup[keys[k].toLowerCase().trim()] = mapping[keys[k]]
+  }
+  for (var i = 0; i < rows.length; i++) {
+    var row = rows[i]
+    var mapped = {}
+    var count = 0
+    var rk = Object.keys(row)
+    for (var j = 0; j < rk.length; j++) {
+      var target = lookup[rk[j].toLowerCase().trim()]
+      var val = row[rk[j]]
+      if (target && val != null && String(val).trim() !== '') {
+        mapped[target] = val
         count++
-      })
-    } else if (module === 'tasks') {
-      let projectId = selectedProjectId.value === '' ? null : selectedProjectId.value
+      }
+    }
+    if (count > 0) valid.push(mapped)
+  }
+  return { valid: valid, rejected: rejected }
+}
+
+var importData = async function () {
+  importing.value = true
+  var count = 0
+  try {
+    var mod = analysisResult.value ? analysisResult.value.module : null
+    var rows = allMappedRows.value
+    if (mod === 'clients') {
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i]
+        clientStore.addClient({ name: r.name || t('imp_default_client'), industry: r.industry || '', arr: Number(r.arr) || 0, mrr: Number(r.mrr) || Math.round((Number(r.arr) || 0) / 12), health: Math.min(10, Math.max(0, Number(r.health) || 7)), nps: Math.min(100, Math.max(-100, Number(r.nps) || 0)), status: r.status || 'watch', csm: r.csm || '', csmId: null, logo: '🟡', churnRisk: Math.min(1, Math.max(0, Number(r.churnRisk) || 0.1)), renewalDate: r.renewalDate || '', contacts: r.contactName ? [{ name: r.contactName, email: r.contactEmail || '', role: r.contactRole || '' }] : [] })
+        count++
+      }
+    } else if (mod === 'tasks') {
+      var projectId = selectedProjectId.value === '' ? null : selectedProjectId.value
       if (selectedProjectId.value === 'new') {
         var newId = 'p' + Date.now()
-        taskStore.addProject({ id: newId, name: t('imp_import_project_name', { date: new Date().toLocaleDateString('fr-FR') }), color: '#7c3aed', status: 'active' })
+        taskStore.addProject({ id: newId, name: t('imp_import_project_name', { date: new Date().toLocaleDateString() }), color: '#7c3aed', status: 'active' })
         projectId = newId
       }
-      rows.forEach(row => {
-        taskStore.addTask({
-          title: row.title || t('imp_default_task'), status: row.status || 'todo',
-          priority: row.priority || 'important', dueDate: row.dueDate || '',
-          description: row.description || '', assignee: row.assignee || null,
-          projectId, clientId: null,
-        })
+      for (var i2 = 0; i2 < rows.length; i2++) {
+        var r2 = rows[i2]
+        taskStore.addTask({ title: r2.title || t('imp_default_task'), status: r2.status || 'todo', priority: r2.priority || 'important', dueDate: r2.dueDate || '', description: r2.description || '', assignee: r2.assignee || null, projectId: projectId, clientId: null })
         count++
-      })
-    } else if (module === 'team') {
-      rows.forEach(row => {
-        teamStore.addMember({
-          name: row.name || '', email: row.email || '', role: row.role || 'Member',
-          wellbeingScore: Math.min(100, Math.max(0, Number(row.wellbeingScore) || 70)),
-          workload: Math.min(100, Math.max(0, Number(row.workload) || 50)),
-          clientCount: Number(row.clientCount) || 0, arrManaged: Number(row.arrManaged) || 0,
-        })
-        count++
-      })
-    } else if (module === 'copil') {
-      var d = analysisResult.value.copilData
-      if (d) {
-        var copilId = kpiStore.createCopil({ title: d.title || 'COPIL importé', subtitle: d.subtitle || '', period: d.period || '', clientName: d.clientName || '', color: d.color || '#7c3aed' })
-        var copil = kpiStore.getCopil(copilId)
-        if (copil && d.blocks?.length) {
-          d.blocks.forEach(block => {
-            copil.blocks.push({ id: 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), type: block.type || 'text', title: block.title || '', data: block.data || {}, visible: true, width: 'full' })
-          })
-          kpiStore.updateCopil(copilId, {})
-        }
-        count = 1
       }
+    } else if (mod === 'team') {
+      for (var i3 = 0; i3 < rows.length; i3++) {
+        var r3 = rows[i3]
+        teamStore.addMember({ name: r3.name || '', email: r3.email || '', role: r3.role || 'Member', wellbeingScore: Math.min(100, Math.max(0, Number(r3.wellbeingScore) || 70)), workload: Math.min(100, Math.max(0, Number(r3.workload) || 50)), clientCount: Number(r3.clientCount) || 0, arrManaged: Number(r3.arrManaged) || 0 })
+        count++
+      }
+    } else if (mod === 'copil') {
+      var d = analysisResult.value ? analysisResult.value.copilData : null
+      if (d) { kpiStore.createCopil({ title: d.title || t('imp_default_copil'), subtitle: d.subtitle || '', period: d.period || '', clientName: d.clientName || '', color: d.color || '#7c3aed' }); count = 1 }
     }
     importedCount.value = count
     currentStep.value = 3
   } catch (err) {
-    console.error('[ImportView] importData', err)
+    console.error('[ImportView] importData:', err)
     errorMsg.value = t('imp_api_error')
   } finally {
     importing.value = false
   }
 }
 
-// --- Navigation + Reset ---
 var goToModule = function () {
   var routes = { clients: '/app/portfolio', tasks: '/app/tasks/kanban', team: '/app/workload', copil: '/app/kpis' }
-  var route = routes[analysisResult.value?.module]
+  var route = routes[analysisResult.value ? analysisResult.value.module : '']
   if (route) router.push(route)
 }
 
