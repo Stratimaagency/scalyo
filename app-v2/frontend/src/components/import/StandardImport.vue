@@ -184,6 +184,19 @@ var normalizeStatus = {
   'healthy': 'healthy', 'watch': 'watch', 'critical': 'critical',
 }
 
+
+var normalizePriority = {
+  'urgent important': 'urgent_important', 'urgent + important': 'urgent_important',
+  'do now': 'urgent_important', 'do first': 'urgent_important', 'critical': 'urgent_important',
+  'important non urgent': 'important', 'important non-urgent': 'important', 'important not urgent': 'important',
+  'schedule': 'important', 'planifier': 'important',
+  'urgent non important': 'urgent', 'urgent non-important': 'urgent', 'urgent not important': 'urgent',
+  'delegate': 'urgent', 'deleguer': 'urgent',
+  'ni urgent ni important': 'not_urgent', 'not urgent': 'not_urgent', 'eliminate': 'not_urgent',
+  'eliminer': 'not_urgent', 'low': 'not_urgent',
+  'urgent_important': 'urgent_important', 'important': 'important', 'urgent': 'urgent', 'not_urgent': 'not_urgent',
+}
+
 var cleanText = function (s) {
   return String(s).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FEFF}]/gu, '').trim()
 }
@@ -204,6 +217,10 @@ var castValue = function (val, type) {
   if (type === 'status') {
     var key = cleanText(val).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
     return normalizeStatus[key] || 'todo'
+  }
+  if (type === 'priority') {
+    var key = cleanText(val).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
+    return normalizePriority[key] || 'important'
   }
   if (type === 'date') return parseDate(val)
   if (type === 'tags') {

@@ -22,7 +22,7 @@ export var taskFields = [
   { key: 'title', label: 'imp_field_title', type: 'string', required: true, aliases: ['titre', 'nom', 'tache', 'task', 'sujet', 'subject'] },
   { key: 'description', label: 'imp_field_description', type: 'string', aliases: ['desc', 'detail', 'details'] },
   { key: 'status', label: 'imp_field_status', type: 'status', aliases: ['statut', 'etat', 'state'] },
-  { key: 'priority', label: 'imp_field_priority', type: 'string', aliases: ['priorite', 'prio'] },
+  { key: 'priority', label: 'imp_field_priority', type: 'priority', aliases: ['priorite', 'prio', 'quadrant', 'eisenhower', 'matrice'] },
   { key: 'assignee', label: 'imp_field_assignee', type: 'string', aliases: ['assigne', 'responsable', 'owner', 'proprietaire'] },
   { key: 'dueDate', label: 'imp_field_due_date', type: 'date', aliases: ['echeance', 'deadline', 'date limite', 'due date'] },
   { key: 'startDate', label: 'imp_field_start_date', type: 'date', aliases: ['date debut', 'start date', 'debut'] },
