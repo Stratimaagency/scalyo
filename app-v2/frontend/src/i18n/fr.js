@@ -326,7 +326,9 @@ export default {
   imp_module_playbooks: 'Playbooks',
   imp_module_copil: 'KPIs COPIL',
   imp_file_too_large: 'Fichier trop volumineux (max 10 MB)',
-  imp_api_error: "Erreur de connexion au service IA",
+  imp_api_error:
+  imp_fallback_reason: 'Mapping automatique (IA temporairement indisponible)',
+   "Erreur de connexion au service IA",
   imp_select_module_title: 'Dans quel module souhaitez-vous importer ?',
   imp_select_module_hint: 'Choisir le module cible avant l\'analyse garantit une importation précise et sans erreur',
   imp_module_desc_clients: 'Clients, comptes, ARR, scores de santé',

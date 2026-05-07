@@ -199,6 +199,7 @@ export default {
   imp_module_copil: 'KPI ëìë³´ë',
   imp_file_too_large: 'íì¼ì´ ëë¬´ í½ëë¤ (ìµë 10 MB)',
   imp_api_error: 'AI ì°ê²° ì¤ë¥ â AI 서비스 연결 오류',
+  imp_fallback_reason: '자동 매핑 (AI 일시적으로 사용 불가)',
   imp_select_module_title: 'ì´ë¤ ëª¨ëì ê°ì ¸ì¬ê¹ì?',
   imp_select_module_hint: 'ë¶ì ì ì ëì ëª¨ëì ì ííë©´ ì ííê³  ì¤ë¥ ìë ê°ì ¸ì¤ê¸°ê° ë³´ì¥ë©ëë¤',
   imp_module_desc_clients: 'ê³ ê°, ê³ì , ARR, ê±´ê° ì ì',

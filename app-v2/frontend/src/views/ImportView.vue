@@ -187,7 +187,7 @@ var analyzeWithAI = async function (parsed, fileName, forcedModule) {
     console.warn('[Import] AI failed/timeout, using local matching:', err.message)
     var localMapping = matchColumnsLocally(parsed.headers, forcedModule)
     var mapped = applyColumnMapping(parsed.rows, localMapping)
-    return { module: forcedModule, confidence: 60, reason: 'Mapping automatique (IA indisponible)', columnMapping: localMapping, validRows: mapped.valid, rejectedRows: mapped.rejected, defaults: { urgency: 3, importance: 3, difficulty: 3 } }
+    return { module: forcedModule, confidence: 60, reason: t('imp_fallback_reason'), columnMapping: localMapping, validRows: mapped.valid, rejectedRows: mapped.rejected, defaults: { urgency: 3, importance: 3, difficulty: 3 } }
   }
 }
 
