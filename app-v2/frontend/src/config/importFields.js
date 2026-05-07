@@ -11,7 +11,7 @@ export var clientFields = [
   { key: 'mrr', label: 'imp_field_mrr', type: 'number', aliases: ['revenu mensuel', 'monthly revenue'] },
   { key: 'health', label: 'imp_field_health', type: 'integer', aliases: ['sante', 'health score', 'score sante'] },
   { key: 'nps', label: 'imp_field_nps', type: 'integer', aliases: ['net promoter', 'score nps'] },
-  { key: 'status', label: 'imp_field_status', type: 'string', aliases: ['statut', 'etat', 'state'] },
+  { key: 'status', label: 'imp_field_status', type: 'status', aliases: ['statut', 'etat', 'state'] },
   { key: 'csm', label: 'imp_field_csm', type: 'string', aliases: ['customer success manager', 'responsable', 'manager'] },
   { key: 'churnRisk', label: 'imp_field_churn_risk', type: 'number', aliases: ['risque churn', 'churn risk', 'risque', 'attrition'] },
   { key: 'renewalDate', label: 'imp_field_renewal_date', type: 'date', aliases: ['date renouvellement', 'renewal date', 'echeance', 'renouvellement'] },
@@ -21,7 +21,7 @@ export var clientFields = [
 export var taskFields = [
   { key: 'title', label: 'imp_field_title', type: 'string', required: true, aliases: ['titre', 'nom', 'tache', 'task', 'sujet', 'subject'] },
   { key: 'description', label: 'imp_field_description', type: 'string', aliases: ['desc', 'detail', 'details'] },
-  { key: 'status', label: 'imp_field_status', type: 'string', aliases: ['statut', 'etat', 'state'] },
+  { key: 'status', label: 'imp_field_status', type: 'status', aliases: ['statut', 'etat', 'state'] },
   { key: 'priority', label: 'imp_field_priority', type: 'string', aliases: ['priorite', 'prio'] },
   { key: 'assignee', label: 'imp_field_assignee', type: 'string', aliases: ['assigne', 'responsable', 'owner', 'proprietaire'] },
   { key: 'dueDate', label: 'imp_field_due_date', type: 'date', aliases: ['echeance', 'deadline', 'date limite', 'due date'] },

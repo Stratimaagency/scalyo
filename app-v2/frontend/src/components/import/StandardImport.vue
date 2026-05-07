@@ -172,15 +172,45 @@ var buildMapped = function () {
   })
 }
 
+var normalizeStatus = {
+  'non commence': 'todo', 'not started': 'todo', 'a faire': 'todo', 'todo': 'todo',
+  'backlog': 'todo', 'nouveau': 'todo', 'new': 'todo', 'open': 'todo',
+  'en cours': 'in_progress', 'in progress': 'in_progress', 'doing': 'in_progress',
+  'started': 'in_progress', 'wip': 'in_progress',
+  'termine': 'done', 'done': 'done', 'finished': 'done', 'complete': 'done',
+  'fini': 'done', 'clos': 'done', 'closed': 'done',
+  'bloque': 'blocked', 'blocked': 'blocked', 'en attente': 'blocked',
+  'on hold': 'blocked', 'pending': 'blocked',
+  'healthy': 'healthy', 'watch': 'watch', 'critical': 'critical',
+}
+
+var cleanText = function (s) {
+  return String(s).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FEFF}]/gu, '').trim()
+}
+
+var parseDate = function (val) {
+  var s = cleanText(val)
+  var rel = s.match(/^[jJdD]\+(\d+)$/)
+  if (rel) { var d = new Date(); d.setDate(d.getDate() + Number(rel[1])); return d.toISOString().slice(0, 10) }
+  var parts = s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/)
+  if (parts) { return parts[3] + '-' + parts[2].padStart(2, '0') + '-' + parts[1].padStart(2, '0') }
+  var d = new Date(s)
+  return !isNaN(d.getTime()) ? d.toISOString().slice(0, 10) : ''
+}
+
 var castValue = function (val, type) {
   if (type === 'integer') { var n = Math.round(Number(val)); return isNaN(n) ? 0 : n }
   if (type === 'number') { var n = Number(val); return isNaN(n) ? 0 : n }
-  if (type === 'date') return String(val).slice(0, 10) || ''
+  if (type === 'status') {
+    var key = cleanText(val).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
+    return normalizeStatus[key] || 'todo'
+  }
+  if (type === 'date') return parseDate(val)
   if (type === 'tags') {
     if (Array.isArray(val)) return val
     return String(val).split(/[,;|]/).map(function (s) { return s.trim() }).filter(Boolean)
   }
-  return String(val)
+  return String(val).trim()
 }
 
 var previewRows = computed(function () { return mapped.value.slice(0, 5) })
