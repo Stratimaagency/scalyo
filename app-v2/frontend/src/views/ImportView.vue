@@ -134,7 +134,7 @@ function cancelModulePicker() {
     
     const prompt = 'FILE: ' + fileName + '\nCONTENT:\n' + content
     const aiResult = await ai.send(prompt, { keepHistory: false })
-    const aiReply = aiResult?.reply || aiResult?.content || JSON.stringify(aiResult || {})
+    const aiReply = aiResult?.response || aiResult?.reply || aiResult?.content || JSON.stringify(aiResult || {})
     
     // Parser la reponse JSON de l'IA
     let result
