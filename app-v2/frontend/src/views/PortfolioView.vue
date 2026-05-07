@@ -1,10 +1,13 @@
 <template>
   <div class="portfolio">
+    <!-- IMPORT PANEL -->
+    <StandardImport v-if="showImport" :fields="clientFields" :on-import="handleBulkImport" />
+
     <!-- HEADER -->
     <div class="port-header">
       <h1>💼 {{ t('port_title') }}</h1>
       <div class="port-actions">
-        <button class="btn-outline" @click="$router.push('/app/import')">{{ t('port_import') }}</button>
+        <button class="btn-outline" @click="showImport = !showImport">{{ t('import_btn_clients') }}</button>
         <button class="btn-outline" @click="exportCsv">{{ t('port_export') }}</button>
         <div v-if="resetStep === 0">
           <button class="btn-danger-outline" @click="resetStep = 1">{{ t('port_reset_all') }}</button>
@@ -72,6 +75,8 @@ import PortfolioTable from '@/components/portfolio/PortfolioTable.vue'
 import PortfolioForm from '@/components/portfolio/PortfolioForm.vue'
 import { fmtNum } from '@/components/portfolio/portfolioHelpers.js'
 import EmptyState from '@/components/EmptyState.vue'
+import StandardImport from '@/components/import/StandardImport.vue'
+import { clientFields } from '@/config/importFields.js'
 import '@/assets/portfolio.css'
 
 const { t } = useI18n({ useScope: 'global' })
@@ -83,6 +88,17 @@ const activeFilter = ref('all')
 const slideOpen = ref(false)
 const editId = ref(null)
 const resetStep = ref(0)
+const showImport = ref(false)
+
+var handleBulkImport = async function (rows) {
+  var count = 0
+  for (var i = 0; i < rows.length; i++) {
+    await clients.addClient(rows[i])
+    count++
+  }
+  showImport.value = false
+  return count
+}
 
 function doResetAll() { clients.resetAll(); resetStep.value = 0 }
 

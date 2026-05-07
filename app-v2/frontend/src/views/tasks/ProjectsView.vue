@@ -1,8 +1,21 @@
 <template>
   <div class="pv">
+    <!-- IMPORT -->
+    <div v-if="showImport" class="import-section">
+      <div class="import-project-select">
+        <label>{{ t('imp_select_project') }}</label>
+        <select v-model="importProjectId" class="mapping-select">
+          <option v-for="p in taskStore.projects" :key="p.id" :value="p.id">{{ p.name }}</option>
+        </select>
+        <p class="import-hint">{{ t('imp_select_project_hint') }}</p>
+      </div>
+      <StandardImport :fields="taskFields" :on-import="handleBulkImport" />
+    </div>
+
     <div class="pv-header">
       <h1>📁 {{ t('sm_projects_title') }}</h1>
       <div class="pv-actions">
+        <button class="btn-outline" @click="showImport = !showImport">{{ t('import_btn_tasks') }}</button>
         <span class="scroll-hint">{{ t('sm_scroll_hint') }}</span>
 
         <!-- Reset global -->
@@ -198,6 +211,8 @@ import { ref, reactive, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTaskStore } from '@/stores/tasks'
 import SlideOver from '@/components/SlideOver.vue'
+import StandardImport from '@/components/import/StandardImport.vue'
+import { taskFields } from '@/config/importFields.js'
 
 const { t } = useI18n({ useScope: 'global' })
 const taskStore = useTaskStore()
@@ -210,7 +225,21 @@ const expanded = reactive({})
 const resetStep = ref(0)
 const deleteConfirmId = ref(null)
 const deleteConfirm2Id = ref(null)
+const showImport = ref(false)
+const importProjectId = ref('')
 const colors = ['#7c3aed', '#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4']
+
+var handleBulkImport = async function (rows) {
+  var pid = importProjectId.value || (taskStore.projects[0]?.id || '')
+  var count = 0
+  for (var i = 0; i < rows.length; i++) {
+    rows[i].projectId = pid
+    await taskStore.addTask(rows[i])
+    count++
+  }
+  showImport.value = false
+  return count
+}
 
 // Build flat rows from store — projects + their tasks
 const rows = computed(() => {

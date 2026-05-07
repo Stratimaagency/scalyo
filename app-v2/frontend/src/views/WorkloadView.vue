@@ -4,11 +4,15 @@
       <div>
         <h1>💚 {{ t('wl_title') }}</h1>
       </div>
+      <button class="btn-outline" @click="showImport = !showImport">{{ t('import_btn_team') }}</button>
       <div class="wl-score-badge" :class="scoreClass">
         <span class="wlsb-label">{{ t('wl_team_score') }}</span>
         <span class="wlsb-val">{{ team.teamHealthScore }}</span>
       </div>
     </div>
+
+    <!-- IMPORT -->
+    <StandardImport v-if="showImport" :fields="teamFields" :on-import="handleBulkImport" />
 
     <div class="wl-kpis">
       <div class="wlk"><span class="wlk-icon">👥</span><span class="wlk-val">{{ team.members.length }}</span><span class="wlk-label">{{ t('kpi_members') }}</span></div>
@@ -59,6 +63,8 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTeamStore } from '@/stores/team'
 import { useClientStore } from '@/stores/clients'
+import StandardImport from '@/components/import/StandardImport.vue'
+import { teamFields } from '@/config/importFields.js'
 
 const { t } = useI18n({ useScope: 'global' })
 const team = useTeamStore()
@@ -66,6 +72,7 @@ const clients = useClientStore()
 
 const activeFilter = ref('all')
 const search = ref('')
+const showImport = ref(false)
 
 const filters = [
   { key: 'all', label: 'wl_filter_all' },
@@ -73,6 +80,16 @@ const filters = [
   { key: 'healthy', label: 'wl_filter_healthy' },
   { key: 'risk', label: 'wl_filter_risk' },
 ]
+
+var handleBulkImport = async function (rows) {
+  var count = 0
+  for (var i = 0; i < rows.length; i++) {
+    await team.addMember(rows[i])
+    count++
+  }
+  showImport.value = false
+  return count
+}
 
 const scoreClass = computed(() => team.teamHealthScore >= 70 ? 'green' : team.teamHealthScore >= 50 ? 'amber' : 'red')
 
