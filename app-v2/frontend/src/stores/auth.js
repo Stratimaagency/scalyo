@@ -146,7 +146,12 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-      const { data, error: sessionError } = await supabase.auth.getSession()
+      // Timeout guard: getSession can hang on expired token refresh
+      const sessionResult = await Promise.race([
+        supabase.auth.getSession(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Session retrieval timeout (10s)')), 10000))
+      ])
+      const { data, error: sessionError } = sessionResult
       if (sessionError) {
         console.error('Auth init — session retrieval failed:', sessionError.message)
         error.value = sessionError.message
@@ -161,6 +166,8 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (e) {
       console.error('Auth init — unexpected failure:', e.message || e)
       error.value = typeof e === 'object' && e.message ? e.message : String(e)
+      // Clear stale session to prevent repeated hang on next load
+      try { await supabase.auth.signOut({ scope: 'local' }) } catch (_) {}
     } finally {
       loading.value = false
     }
