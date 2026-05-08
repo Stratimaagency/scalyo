@@ -167,7 +167,11 @@ export const useAuthStore = defineStore('auth', () => {
       console.error('Auth init — unexpected failure:', e.message || e)
       error.value = typeof e === 'object' && e.message ? e.message : String(e)
       // Clear stale session to prevent repeated hang on next load
-      try { await supabase.auth.signOut({ scope: 'local' }) } catch (_) {}
+      // Direct localStorage cleanup — signOut() also hangs when client is stuck
+      try {
+        const keys = Object.keys(localStorage).filter(k => k.startsWith('sb-'))
+        keys.forEach(k => localStorage.removeItem(k))
+      } catch (_) {}
     } finally {
       loading.value = false
     }
