@@ -125,50 +125,82 @@ export const useAuthStore = defineStore('auth', () => {
 
   // ─── Start Trial ──────────────────────────────────────────────────────────
   async function startTrial(userId) {
-    const now = new Date().toISOString()
-    const { error: err } = await supabase
-      .from('profiles')
-      .update({ trial_started_at: now, trial_used: false })
-      .eq('id', userId)
-    if (!err) {
+    try {
+      const now = new Date().toISOString()
+      const { error: err } = await supabase
+        .from('profiles')
+        .update({ trial_started_at: now, trial_used: false })
+        .eq('id', userId)
+      if (err) {
+        console.error('startTrial — update failed:', err.message)
+        return
+      }
       profile.value = { ...profile.value, trial_started_at: now, trial_used: false }
+    } catch (e) {
+      console.error('startTrial — unexpected failure:', e.message || e)
     }
   }
 
   // ─── Init ─────────────────────────────────────────────────────────────────
   async function init() {
     loading.value = true
-    const { data: { session } } = await supabase.auth.getSession()
-    if (session && session.user) {
-      user.value = session.user
-      await fetchProfile(session.user.id)
-    }
-    loading.value = false
-    supabase.auth.onAuthStateChange(async (_event, session) => {
+    error.value = null
+    try {
+      const { data, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError) {
+        console.error('Auth init — session retrieval failed:', sessionError.message)
+        error.value = sessionError.message
+        return
+      }
+      const session = data?.session
       if (session && session.user) {
         user.value = session.user
         await fetchProfile(session.user.id)
-      } else {
-        user.value = null
-        profile.value = null
+        await loadAllStores()
+      }
+    } catch (e) {
+      console.error('Auth init — unexpected failure:', e.message || e)
+      error.value = typeof e === 'object' && e.message ? e.message : String(e)
+    } finally {
+      loading.value = false
+    }
+    supabase.auth.onAuthStateChange(async (_event, session) => {
+      try {
+        if (session && session.user) {
+          user.value = session.user
+          await fetchProfile(session.user.id)
+        } else {
+          user.value = null
+          profile.value = null
+        }
+      } catch (e) {
+        console.error('Auth state change — unexpected failure:', e.message || e)
       }
     })
   }
 
   // ─── Fetch profile ────────────────────────────────────────────────────────
   async function fetchProfile(userId) {
-    const { data, error: err } = await supabase
-      .from('profiles').select('*').eq('id', userId).single()
-    if (!err && data) {
-      profile.value = data
-      // Auto-mark trial as used when it expires
-      if (data.trial_started_at && !data.trial_used) {
-        const elapsed = (Date.now() - new Date(data.trial_started_at).getTime()) / (1000 * 60 * 60 * 24)
-        if (elapsed >= TRIAL_DAYS) {
-          await supabase.from('profiles').update({ trial_used: true }).eq('id', userId)
-          profile.value = { ...profile.value, trial_used: true }
+    try {
+      const { data, error: err } = await supabase
+        .from('profiles').select('*').eq('id', userId).single()
+      if (err) {
+        console.error('fetchProfile — query failed:', err.message)
+        return
+      }
+      if (data) {
+        profile.value = data
+        // Auto-mark trial as used when it expires
+        if (data.trial_started_at && !data.trial_used) {
+          const elapsed = (Date.now() - new Date(data.trial_started_at).getTime()) / (1000 * 60 * 60 * 24)
+          if (elapsed >= TRIAL_DAYS) {
+            await supabase.from('profiles').update({ trial_used: true }).eq('id', userId)
+            profile.value = { ...profile.value, trial_used: true }
+          }
         }
       }
+    } catch (e) {
+      console.error('fetchProfile — unexpected failure:', e.message || e)
     }
   }
 
@@ -176,58 +208,92 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(email, password) {
     loading.value = true
     error.value = null
-    const { data, error: err } = await supabase.auth.signInWithPassword({ email, password })
-    loading.value = false
-    if (err) { error.value = err.message; return { success: false, error: err.message } }
-    clearAllStores()
-    user.value = data.user
-    await fetchProfile(data.user.id)
-    // Auto-start trial on first login
-    if (profile.value && !profile.value.trial_started_at && !profile.value.trial_used) {
-      await startTrial(data.user.id)
+    try {
+      const { data, error: err } = await supabase.auth.signInWithPassword({ email, password })
+      if (err) {
+        error.value = err.message
+        return { success: false, error: err.message }
+      }
+      clearAllStores()
+      user.value = data.user
+      await fetchProfile(data.user.id)
+      // Auto-start trial on first login
+      if (profile.value && !profile.value.trial_started_at && !profile.value.trial_used) {
+        await startTrial(data.user.id)
+      }
+      await loadAllStores()
+      return { success: true }
+    } catch (e) {
+      console.error('login — unexpected failure:', e.message || e)
+      error.value = typeof e === 'object' && e.message ? e.message : String(e)
+      return { success: false, error: error.value }
+    } finally {
+      loading.value = false
     }
-
-    await loadAllStores()
-    return { success: true }
   }
 
   // ─── Register ─────────────────────────────────────────────────────────────
   async function register(email, password, firstName, lastName, locale = 'fr') {
     loading.value = true
     error.value = null
-    const { data, error: err } = await supabase.auth.signUp({
-      email, password,
-      options: {
-        data: { first_name: firstName, last_name: lastName, locale },
-        emailRedirectTo: `${window.location.origin}/login?verified=true`
-      },
-    })
-    loading.value = false
-    if (err) { error.value = err.message; return { success: false, error: err.message } }
-    if (data.user) {
-      fetch(SUPABASE_URL + '/functions/v1/send-welcome-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY },
-        body: JSON.stringify({ email, firstName, lastName })
-      }).catch(() => {})
+    try {
+      const { data, error: err } = await supabase.auth.signUp({
+        email, password,
+        options: {
+          data: { first_name: firstName, last_name: lastName, locale },
+          emailRedirectTo: `${window.location.origin}/login?verified=true`
+        },
+      })
+      if (err) {
+        error.value = err.message
+        return { success: false, error: err.message }
+      }
+      if (data.user) {
+        fetch(SUPABASE_URL + '/functions/v1/send-welcome-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY },
+          body: JSON.stringify({ email, firstName, lastName })
+        }).catch(() => {})
+      }
+      return { success: true, needsConfirmation: !data.session }
+    } catch (e) {
+      console.error('register — unexpected failure:', e.message || e)
+      error.value = typeof e === 'object' && e.message ? e.message : String(e)
+      return { success: false, error: error.value }
+    } finally {
+      loading.value = false
     }
-    return { success: true, needsConfirmation: !data.session }
   }
 
   // ─── Save locale ──────────────────────────────────────────────────────────
   async function saveLocale(locale) {
     if (!user.value) return
-    await supabase.from('profiles').update({ locale }).eq('id', user.value.id)
-    if (profile.value) profile.value = { ...profile.value, locale }
+    try {
+      const { error: err } = await supabase.from('profiles').update({ locale }).eq('id', user.value.id)
+      if (err) {
+        console.error('saveLocale — update failed:', err.message)
+        return
+      }
+      if (profile.value) profile.value = { ...profile.value, locale }
+    } catch (e) {
+      console.error('saveLocale — unexpected failure:', e.message || e)
+    }
   }
 
   // ─── Logout ───────────────────────────────────────────────────────────────
   async function logout() {
-    clearAllStores()
-    await clearAllStoreData()
-    await supabase.auth.signOut()
-    user.value = null
-    profile.value = null
+    try {
+      clearAllStores()
+      await clearAllStoreData()
+      await supabase.auth.signOut()
+    } catch (e) {
+      console.error('logout — unexpected failure:', e.message || e)
+    } finally {
+      user.value = null
+      profile.value = null
+      loading.value = false
+      error.value = null
+    }
   }
 
   // ─── Reset Password ──────────────────────────────────────────────────────

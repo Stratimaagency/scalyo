@@ -90,8 +90,12 @@ const router = createRouter({ history: createWebHistory(), routes })
 
 router.beforeEach(async (to) => {
   const authStore = useAuthStore()
-  if (!authStore.user && !authStore.loading) {
-    await authStore.init()
+  try {
+    if (!authStore.user && !authStore.loading) {
+      await authStore.init()
+    }
+  } catch (e) {
+    console.error('Router guard — auth init failed:', e.message || e)
   }
   // Unauthenticated → login
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
