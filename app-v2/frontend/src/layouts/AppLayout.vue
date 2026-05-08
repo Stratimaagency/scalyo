@@ -246,6 +246,7 @@ const sidebarSections = [
       { name: 'workload', icon: '💚', label: 'sidebar_health_tracker', to: '/app/workload' },
       { name: 'wellbeing', icon: '🧘', label: 'sidebar_wellbeing', to: '/app/wellbeing' },
       { name: 'coach', icon: '🤖', label: 'sidebar_coach', to: '/app/coach' },
+      { name: 'chat', icon: '💬', label: 'sidebar_chat', to: '/app/chat' },
     ],
   },
   {

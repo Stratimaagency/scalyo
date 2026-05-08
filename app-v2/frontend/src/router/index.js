@@ -37,6 +37,7 @@ const routes = [
       { path: 'workload', name: 'workload', component: () => import('@/views/WorkloadView.vue') },
       { path: 'wellbeing', name: 'wellbeing', component: () => import('@/views/WellbeingView.vue') },
       { path: 'coach', name: 'coach', component: () => import('@/views/CoachView.vue') },
+      { path: 'chat', name: 'chat', meta: { requiresAuth: true }, component: () => import('@/views/ChatView.vue') },
       { path: 'email-studio', name: 'email-studio', component: () => import('@/views/EmailStudioView.vue'), meta: { requiredModule: 'email' } },
       { path: 'quotes', name: 'quotes', component: () => import('@/views/QuotesView.vue') },
       // Import IA masqué — import standard désormais dans chaque module
