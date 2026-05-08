@@ -356,12 +356,35 @@ export const useChatStore = defineStore('chat', () => {
 
   function clearError() { lastError.value = null }
 
+  // ─── RGPD Art. 17 — Droit à l'effacement ─────────────────────────────────
+  async function deleteUserChatData(userId) {
+    if (!userId) return
+    try {
+      // 1. Anonymiser le nom d'auteur sur tous les messages de l'utilisateur
+      const { error: anonErr } = await supabase.from('chat_messages')
+        .update({ author_name: '[supprimé]', content: '[Message supprimé — demande RGPD]', attachments: [], reactions: [] })
+        .eq('user_id', userId)
+      if (anonErr) {
+        console.error('RGPD deleteUserChatData — anonymisation failed:', anonErr.message)
+        lastError.value = anonErr.message
+        return false
+      }
+      // 2. Recharger les messages des channels actifs
+      if (activeChannel.value) await loadMessages(activeChannel.value)
+      return true
+    } catch (e) {
+      console.error('RGPD deleteUserChatData — unexpected failure:', e.message || e)
+      lastError.value = e.message || String(e)
+      return false
+    }
+  }
+
   return {
     channels, messages, activeChannel, unreadCounts, totalUnread,
     activeMessages, pinnedMessages, editingMessage, replyingTo,
     channelsLoading, messagesLoading, sending, lastError,
     init, sendMessage, editMessage, deleteMessage, pinMessage,
     addReaction, setReplyTo, setActive, loadOlderMessages,
-    createChannel, updateChannel, deleteChannel, clearError
+    createChannel, updateChannel, deleteChannel, clearError, deleteUserChatData
   }
 })

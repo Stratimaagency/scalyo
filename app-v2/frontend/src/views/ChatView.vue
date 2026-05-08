@@ -1,4 +1,5 @@
 <template>
+  <ErrorBoundary>
   <div class="chat-layout">
     <!-- Sidebar: channel list -->
     <aside class="chat-sidebar">
@@ -97,6 +98,7 @@
       </template>
     </main>
   </div>
+  </ErrorBoundary>
 </template>
 
 <script setup>
@@ -104,6 +106,7 @@ import { ref, computed, nextTick, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useChatStore } from '@/stores/chat'
 import { useAuthStore } from '@/stores/auth'
+import ErrorBoundary from '@/components/ErrorBoundary.vue'
 
 const { t } = useI18n()
 const chatStore = useChatStore()
