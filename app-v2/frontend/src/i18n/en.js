@@ -1638,6 +1638,8 @@ export default {
   chat_no_messages: 'No messages yet',
   chat_reply: 'Reply',
   chat_replying: 'Replying...',
+  chat_loading: 'Loading...',
+  chat_load_more: 'Load older messages',
   chat_attach: 'Attach a file',
   chat_emoji: 'Emoji',
   chat_autocorrect: 'Auto-correction',

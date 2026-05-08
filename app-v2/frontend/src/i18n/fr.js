@@ -1475,6 +1475,8 @@ export default {
   chat_no_messages: 'Aucun message pour le moment',
   chat_reply: 'Réponse',
   chat_replying: 'En réponse...',
+  chat_loading: 'Chargement...',
+  chat_load_more: 'Charger les messages précédents',
   chat_attach: 'Joindre un fichier',
   chat_emoji: 'Emoji',
   chat_share: 'Partager depuis Scalyo',

@@ -3,6 +3,11 @@ import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
 
+const MAX_MESSAGE_LENGTH = 5000
+const MESSAGES_PER_PAGE = 100
+const SEND_COOLDOWN_MS = 1000
+const REALTIME_RECONNECT_DELAYS = [1000, 2000, 5000, 10000, 30000]
+
 export const useChatStore = defineStore('chat', () => {
   const channels = ref([])
   const messages = ref({})
@@ -10,38 +15,91 @@ export const useChatStore = defineStore('chat', () => {
   const editingMessage = ref(null)
   const replyingTo = ref(null)
   const unreadCounts = ref({})
+
+  const channelsLoading = ref(false)
+  const messagesLoading = ref(false)
+  const sending = ref(false)
+  const lastError = ref(null)
+
   let realtimeSub = null
+  let realtimeRetryCount = 0
+  let realtimeRetryTimer = null
+  let lastSendTime = 0
 
   const activeMessages = computed(() => activeChannel.value ? (messages.value[activeChannel.value] || []) : [])
   const pinnedMessages = computed(() => activeMessages.value.filter(m => m.pinned))
   const totalUnread = computed(() => Object.values(unreadCounts.value).reduce((a, b) => a + b, 0))
 
+  // ─── Init ──────────────────────────────────────────────────────────────────
   async function init() {
-    await loadChannels()
-    if (channels.value.length > 0 && !activeChannel.value) {
-      activeChannel.value = channels.value[0].id
+    try {
+      await loadChannels()
+      if (channels.value.length > 0 && !activeChannel.value) {
+        activeChannel.value = channels.value[0].id
+      }
+      if (activeChannel.value) await loadMessages(activeChannel.value)
+      subscribeRealtime()
+    } catch (e) {
+      console.error('Chat init failed:', e.message || e)
+      lastError.value = e.message || String(e)
     }
-    if (activeChannel.value) await loadMessages(activeChannel.value)
-    subscribeRealtime()
   }
 
   async function loadChannels() {
-    const { data, error } = await supabase.from('chat_channels').select('*').order('created_at')
-    if (!error && data) {
-      channels.value = data.map(c => ({ id: c.id, name: c.name, description: c.description || '', type: c.type || 'channel' }))
+    channelsLoading.value = true
+    try {
+      const { data, error } = await supabase.from('chat_channels').select('*').order('created_at')
+      if (error) {
+        console.error('loadChannels — query failed:', error.message)
+        lastError.value = error.message
+        return
+      }
+      if (data) channels.value = data
+    } catch (e) {
+      console.error('loadChannels — unexpected failure:', e.message || e)
+      lastError.value = e.message || String(e)
+    } finally {
+      channelsLoading.value = false
     }
   }
 
-  async function loadMessages(channelId) {
-    const { data, error } = await supabase
-      .from('chat_messages')
-      .select('*')
-      .eq('channel_id', channelId)
-      .order('created_at', { ascending: true })
-      .limit(100)
-    if (!error && data) {
-      messages.value[channelId] = data.map(mapMsg)
+  async function loadMessages(channelId, before = null) {
+    messagesLoading.value = true
+    try {
+      let query = supabase
+        .from('chat_messages')
+        .select('*')
+        .eq('channel_id', channelId)
+        .order('created_at', { ascending: true })
+        .limit(MESSAGES_PER_PAGE)
+      if (before) query = query.lt('created_at', before)
+      const { data, error } = await query
+      if (error) {
+        console.error('loadMessages — query failed:', error.message)
+        lastError.value = error.message
+        return
+      }
+      if (data) {
+        const mapped = data.map(mapMsg)
+        if (before && messages.value[channelId]) {
+          messages.value[channelId] = [...mapped, ...messages.value[channelId]]
+        } else {
+          messages.value[channelId] = mapped
+        }
+      }
+    } catch (e) {
+      console.error('loadMessages — unexpected failure:', e.message || e)
+      lastError.value = e.message || String(e)
+    } finally {
+      messagesLoading.value = false
     }
+  }
+
+  async function loadOlderMessages(channelId) {
+    const existing = messages.value[channelId]
+    if (!existing || existing.length === 0) return
+    const oldest = existing[0].timestamp
+    await loadMessages(channelId, oldest)
   }
 
   function mapMsg(m) {
@@ -53,93 +111,179 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
+  // ─── Realtime with auto-reconnect ──────────────────────────────────────────
   function subscribeRealtime() {
-    if (realtimeSub) realtimeSub.unsubscribe()
-    realtimeSub = supabase.channel('chat-realtime')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, (payload) => {
-        const msg = mapMsg(payload.new)
-        if (!messages.value[msg.channelId]) messages.value[msg.channelId] = []
-        const exists = messages.value[msg.channelId].some(m => m.id === msg.id)
-        if (!exists) {
-          messages.value[msg.channelId].push(msg)
-          if (msg.channelId !== activeChannel.value) {
-            unreadCounts.value[msg.channelId] = (unreadCounts.value[msg.channelId] || 0) + 1
-          }
-        }
-      })
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chat_messages' }, (payload) => {
-        const updated = mapMsg(payload.new)
-        const arr = messages.value[updated.channelId]
-        if (arr) {
-          const idx = arr.findIndex(m => m.id === updated.id)
-          if (idx !== -1) arr[idx] = updated
-        }
-      })
-      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'chat_messages' }, (payload) => {
-        const old = payload.old
-        Object.keys(messages.value).forEach(chId => {
-          messages.value[chId] = messages.value[chId].filter(m => m.id !== old.id)
+    if (realtimeSub) { try { realtimeSub.unsubscribe() } catch (_) {} }
+    if (realtimeRetryTimer) { clearTimeout(realtimeRetryTimer); realtimeRetryTimer = null }
+    try {
+      realtimeSub = supabase.channel('chat-realtime')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, (payload) => {
+          try {
+            const msg = mapMsg(payload.new)
+            if (!messages.value[msg.channelId]) messages.value[msg.channelId] = []
+            const exists = messages.value[msg.channelId].some(m => m.id === msg.id)
+            if (!exists) {
+              messages.value[msg.channelId].push(msg)
+              if (msg.channelId !== activeChannel.value) {
+                unreadCounts.value[msg.channelId] = (unreadCounts.value[msg.channelId] || 0) + 1
+              }
+            }
+          } catch (e) { console.error('Realtime INSERT handler failed:', e.message || e) }
         })
-      })
-      .subscribe()
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chat_messages' }, (payload) => {
+          try {
+            const updated = mapMsg(payload.new)
+            const arr = messages.value[updated.channelId]
+            if (arr) {
+              const idx = arr.findIndex(m => m.id === updated.id)
+              if (idx !== -1) arr[idx] = updated
+            }
+          } catch (e) { console.error('Realtime UPDATE handler failed:', e.message || e) }
+        })
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'chat_messages' }, (payload) => {
+          try {
+            const old = payload.old
+            Object.keys(messages.value).forEach(chId => {
+              messages.value[chId] = messages.value[chId].filter(m => m.id !== old.id)
+            })
+          } catch (e) { console.error('Realtime DELETE handler failed:', e.message || e) }
+        })
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            realtimeRetryCount = 0
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+            scheduleRealtimeReconnect()
+          }
+        })
+    } catch (e) {
+      console.error('Realtime subscription failed:', e.message || e)
+      scheduleRealtimeReconnect()
+    }
   }
 
+  function scheduleRealtimeReconnect() {
+    if (realtimeRetryTimer) return
+    const delay = REALTIME_RECONNECT_DELAYS[Math.min(realtimeRetryCount, REALTIME_RECONNECT_DELAYS.length - 1)]
+    realtimeRetryCount++
+    console.warn('Chat realtime — reconnecting in ' + delay + 'ms (attempt ' + realtimeRetryCount + ')')
+    realtimeRetryTimer = setTimeout(() => {
+      realtimeRetryTimer = null
+      subscribeRealtime()
+    }, delay)
+  }
+
+  // ─── Send with validation ─────────────────────────────────────────────────
   async function sendMessage(channelId, content, author, authorId, attachments = []) {
-    const auth = useAuthStore()
-    const userId = authorId || auth.user?.id
-    const name = author || auth.profile?.first_name || 'User'
-    const { error } = await supabase.from('chat_messages').insert({
-      channel_id: channelId, user_id: userId, author_name: name,
-      content, attachments: attachments.length ? attachments : [],
-      reply_to: replyingTo.value || null
-    })
-    if (error) console.error('[chat] sendMessage error', error)
-    replyingTo.value = null
+    const trimmed = (content || '').trim()
+    if (!trimmed) return
+    if (trimmed.length > MAX_MESSAGE_LENGTH) {
+      lastError.value = 'Message trop long (max ' + MAX_MESSAGE_LENGTH + ' caractères)'
+      return
+    }
+    const now = Date.now()
+    if (now - lastSendTime < SEND_COOLDOWN_MS) return
+    lastSendTime = now
+    sending.value = true
+    try {
+      const auth = useAuthStore()
+      const userId = authorId || auth.user?.id
+      const name = author || auth.profile?.first_name || 'User'
+      const { error } = await supabase.from('chat_messages').insert({
+        channel_id: channelId, user_id: userId, author_name: name,
+        content: trimmed, attachments: attachments.length ? attachments : [],
+        reply_to: replyingTo.value || null
+      })
+      if (error) {
+        console.error('sendMessage — insert failed:', error.message)
+        lastError.value = error.message
+        return
+      }
+      replyingTo.value = null
+    } catch (e) {
+      console.error('sendMessage — unexpected failure:', e.message || e)
+      lastError.value = e.message || String(e)
+    } finally {
+      sending.value = false
+    }
   }
 
   async function editMessage(channelId, msgId, newContent) {
-    const { error } = await supabase.from('chat_messages')
-      .update({ content: newContent, edited_at: new Date().toISOString() })
-      .eq('id', msgId)
-    if (error) console.error('[chat] editMessage error', error)
-    editingMessage.value = null
+    const trimmed = (newContent || '').trim()
+    if (!trimmed || trimmed.length > MAX_MESSAGE_LENGTH) return
+    try {
+      const { error } = await supabase.from('chat_messages')
+        .update({ content: trimmed, edited_at: new Date().toISOString() })
+        .eq('id', msgId)
+      if (error) {
+        console.error('editMessage — update failed:', error.message)
+        lastError.value = error.message
+      }
+      editingMessage.value = null
+    } catch (e) {
+      console.error('editMessage — unexpected failure:', e.message || e)
+      lastError.value = e.message || String(e)
+    }
   }
 
   async function deleteMessage(channelId, msgId) {
-    const { error } = await supabase.from('chat_messages').delete().eq('id', msgId)
-    if (error) console.error('[chat] deleteMessage error', error)
+    try {
+      const { error } = await supabase.from('chat_messages').delete().eq('id', msgId)
+      if (error) {
+        console.error('deleteMessage — delete failed:', error.message)
+        lastError.value = error.message
+      }
+    } catch (e) {
+      console.error('deleteMessage — unexpected failure:', e.message || e)
+      lastError.value = e.message || String(e)
+    }
   }
 
   async function pinMessage(channelId, msgId) {
-    const msg = (messages.value[channelId] || []).find(m => m.id === msgId)
-    if (!msg) return
-    const { error } = await supabase.from('chat_messages')
-      .update({ pinned: !msg.pinned })
-      .eq('id', msgId)
-    if (error) console.error('[chat] pinMessage error', error)
+    try {
+      const msg = (messages.value[channelId] || []).find(m => m.id === msgId)
+      if (!msg) return
+      const { error } = await supabase.from('chat_messages')
+        .update({ pinned: !msg.pinned })
+        .eq('id', msgId)
+      if (error) {
+        console.error('pinMessage — update failed:', error.message)
+        lastError.value = error.message
+      }
+    } catch (e) {
+      console.error('pinMessage — unexpected failure:', e.message || e)
+      lastError.value = e.message || String(e)
+    }
   }
 
   async function addReaction(channelId, msgId, emoji, userId) {
-    const auth = useAuthStore()
-    const uid = userId || auth.user?.id
-    const msg = (messages.value[channelId] || []).find(m => m.id === msgId)
-    if (!msg) return
-    let reactions = [...(msg.reactions || [])]
-    const idx = reactions.findIndex(r => r.emoji === emoji)
-    if (idx !== -1) {
-      if (reactions[idx].users?.includes(uid)) {
-        reactions[idx].users = reactions[idx].users.filter(u => u !== uid)
-        if (reactions[idx].users.length === 0) reactions.splice(idx, 1)
+    try {
+      const auth = useAuthStore()
+      const uid = userId || auth.user?.id
+      const msg = (messages.value[channelId] || []).find(m => m.id === msgId)
+      if (!msg) return
+      let reactions = [...(msg.reactions || [])]
+      const idx = reactions.findIndex(r => r.emoji === emoji)
+      if (idx !== -1) {
+        if (reactions[idx].users?.includes(uid)) {
+          reactions[idx].users = reactions[idx].users.filter(u => u !== uid)
+          if (reactions[idx].users.length === 0) reactions.splice(idx, 1)
+        } else {
+          reactions[idx].users = [...(reactions[idx].users || []), uid]
+        }
       } else {
-        reactions[idx].users = [...(reactions[idx].users || []), uid]
+        reactions.push({ emoji, users: [uid] })
       }
-    } else {
-      reactions.push({ emoji, users: [uid] })
+      const { error } = await supabase.from('chat_messages')
+        .update({ reactions })
+        .eq('id', msgId)
+      if (error) {
+        console.error('addReaction — update failed:', error.message)
+        lastError.value = error.message
+      }
+    } catch (e) {
+      console.error('addReaction — unexpected failure:', e.message || e)
+      lastError.value = e.message || String(e)
     }
-    const { error } = await supabase.from('chat_messages')
-      .update({ reactions })
-      .eq('id', msgId)
-    if (error) console.error('[chat] addReaction error', error)
   }
 
   function setReplyTo(channelId, msgId) {
@@ -149,40 +293,75 @@ export const useChatStore = defineStore('chat', () => {
   async function setActive(id) {
     activeChannel.value = id
     unreadCounts.value[id] = 0
-    if (!messages.value[id]) await loadMessages(id)
+    if (!messages.value[id]) {
+      try {
+        await loadMessages(id)
+      } catch (e) {
+        console.error('setActive — loadMessages failed:', e.message || e)
+      }
+    }
   }
 
   async function createChannel(name, description = '') {
-    const auth = useAuthStore()
-    const { data, error } = await supabase.from('chat_channels').insert({
-      name, description, type: 'channel', created_by: auth.user?.id
-    }).select().single()
-    if (!error && data) {
-      channels.value.push({ id: data.id, name: data.name, description: data.description, type: data.type })
+    const trimmed = (name || '').trim()
+    if (!trimmed) return
+    try {
+      const auth = useAuthStore()
+      const { error } = await supabase.from('chat_channels').insert({
+        name: trimmed, description: description.trim(), type: 'channel',
+        created_by: auth.user?.id
+      })
+      if (error) {
+        console.error('createChannel — insert failed:', error.message)
+        lastError.value = error.message
+        return
+      }
+      await loadChannels()
+    } catch (e) {
+      console.error('createChannel — unexpected failure:', e.message || e)
+      lastError.value = e.message || String(e)
     }
   }
 
   async function updateChannel(id, changes) {
-    const { error } = await supabase.from('chat_channels').update(changes).eq('id', id)
-    if (!error) {
-      const ch = channels.value.find(c => c.id === id)
-      if (ch) Object.assign(ch, changes)
+    try {
+      const { error } = await supabase.from('chat_channels').update(changes).eq('id', id)
+      if (error) {
+        console.error('updateChannel — update failed:', error.message)
+        lastError.value = error.message
+        return
+      }
+      await loadChannels()
+    } catch (e) {
+      console.error('updateChannel — unexpected failure:', e.message || e)
+      lastError.value = e.message || String(e)
     }
   }
 
   async function deleteChannel(id) {
-    const { error } = await supabase.from('chat_channels').delete().eq('id', id)
-    if (!error) {
-      channels.value = channels.value.filter(c => c.id !== id)
-      delete messages.value[id]
-      if (activeChannel.value === id) activeChannel.value = channels.value[0]?.id || null
+    try {
+      const { error } = await supabase.from('chat_channels').delete().eq('id', id)
+      if (error) {
+        console.error('deleteChannel — delete failed:', error.message)
+        lastError.value = error.message
+        return
+      }
+      if (activeChannel.value === id) activeChannel.value = null
+      await loadChannels()
+    } catch (e) {
+      console.error('deleteChannel — unexpected failure:', e.message || e)
+      lastError.value = e.message || String(e)
     }
   }
+
+  function clearError() { lastError.value = null }
 
   return {
     channels, messages, activeChannel, unreadCounts, totalUnread,
     activeMessages, pinnedMessages, editingMessage, replyingTo,
+    channelsLoading, messagesLoading, sending, lastError,
     init, sendMessage, editMessage, deleteMessage, pinMessage,
-    addReaction, setReplyTo, setActive, createChannel, updateChannel, deleteChannel
+    addReaction, setReplyTo, setActive, loadOlderMessages,
+    createChannel, updateChannel, deleteChannel, clearError
   }
 })

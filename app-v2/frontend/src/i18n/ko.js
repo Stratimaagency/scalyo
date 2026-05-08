@@ -1638,6 +1638,8 @@ export default {
   chat_no_messages: '아직 메시지가 없습니다',
   chat_reply: '답장',
   chat_replying: '답장 중...',
+  chat_loading: '로딩 중...',
+  chat_load_more: '이전 메시지 불러오기',
   chat_attach: 'íì¼ ì²¨ë¶',
   chat_emoji: 'ì´ëª¨ì§',
   chat_autocorrect: 'ìë ìì ',

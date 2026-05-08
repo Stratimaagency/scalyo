@@ -12,6 +12,7 @@
         <button class="btn-sm" @click="handleCreateChannel" :disabled="!newChannelName.trim()">{{ t('chat_create') }}</button>
       </div>
 
+      <div v-if="chatStore.channelsLoading" class="channel-loading">{{ t('chat_loading') }}</div>
       <div class="channel-list">
         <div
           v-for="ch in chatStore.channels"
@@ -27,7 +28,11 @@
     </aside>
 
     <!-- Main: messages -->
-    <main class="chat-main">
+    <div v-if="chatStore.lastError" class="chat-error-toast">
+        <span>{{ chatStore.lastError }}</span>
+        <button @click="chatStore.clearError()" class="btn-ghost">✕</button>
+      </div>
+      <main class="chat-main">
       <div v-if="!chatStore.activeChannel" class="chat-empty">
         <p>{{ t('chat_select_channel') }}</p>
       </div>
@@ -39,7 +44,9 @@
         </div>
 
         <div class="chat-messages" ref="messagesContainer">
-          <div v-if="chatStore.activeMessages.length === 0" class="chat-no-messages">
+          <div v-if="chatStore.messagesLoading" class="chat-messages-loading">{{ t('chat_loading') }}</div>
+          <button v-if="chatStore.activeMessages.length >= 100" class="btn-load-more" @click="handleLoadMore">{{ t('chat_load_more') }}</button>
+          <div v-if="chatStore.activeMessages.length === 0 && !chatStore.messagesLoading" class="chat-no-messages">
             <p>{{ t('chat_no_messages') }}</p>
           </div>
           <div
@@ -81,9 +88,9 @@
             :placeholder="t('chat_placeholder')"
             class="fi chat-input"
             @keyup.enter="handleSend"
-            :disabled="sending"
+            :disabled="chatStore.sending"
           />
-          <button class="btn-primary" @click="handleSend" :disabled="!newMessage.trim() || sending">
+          <button class="btn-primary" @click="handleSend" :disabled="!newMessage.trim() || chatStore.sending">
             {{ t('chat_send') }}
           </button>
         </div>
@@ -105,7 +112,7 @@ const authStore = useAuthStore()
 const newMessage = ref('')
 const newChannelName = ref('')
 const showNewChannel = ref(false)
-const sending = ref(false)
+// sending state from chatStore.sending
 const messagesContainer = ref(null)
 
 const currentUserId = computed(() => authStore.user?.id)
@@ -139,7 +146,6 @@ async function handleSend() {
   } catch (e) {
     console.error('Chat send failed:', e.message || e)
   } finally {
-    sending.value = false
   }
 }
 
@@ -187,6 +193,10 @@ async function handleReaction(msgId, emoji) {
   } catch (e) {
     console.error('Reaction failed:', e.message || e)
   }
+}
+
+async function handleLoadMore() {
+  try { await chatStore.loadOlderMessages(chatStore.activeChannel) } catch (e) { console.error('Load more failed:', e.message || e) }
 }
 
 function scrollToBottom() {
@@ -256,4 +266,8 @@ onMounted(async () => {
 .reply-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 20px; background: var(--bg-active, #eff6ff); font-size: 12px; color: var(--accent, #2563eb); border-top: 1px solid var(--border, #e5e7eb); }
 .chat-input-bar { display: flex; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--border, #e5e7eb); }
 .chat-input { flex: 1; }
+.channel-loading, .chat-messages-loading { padding: 16px; text-align: center; color: var(--text-muted, #9ca3af); font-size: 13px; }
+.chat-error-toast { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; background: #fef2f2; border-bottom: 1px solid #fecaca; color: #dc2626; font-size: 13px; }
+.btn-load-more { display: block; margin: 0 auto 12px; padding: 6px 16px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border, #e5e7eb); background: var(--bg-primary, #fff); cursor: pointer; }
+.btn-load-more:hover { background: var(--bg-hover, #f3f4f6); }
 </style>
