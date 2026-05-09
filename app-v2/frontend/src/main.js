@@ -22,8 +22,31 @@ import VueApexCharts from 'vue3-apexcharts'
 import App from './App.vue'
 import * as Sentry from '@sentry/vue'
 import './assets/main.css'
+import * as Sentry from '@sentry/vue'
 
 const app = createApp(App)
+
+const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN
+if (SENTRY_DSN) {
+  Sentry.init({
+    app,
+    dsn: SENTRY_DSN,
+    environment: import.meta.env.MODE || 'production',
+    integrations: [Sentry.browserTracingIntegration({ router })],
+    tracesSampleRate: 0.2,
+    replaysSessionSampleRate: 0,
+    replaysOnErrorSampleRate: 0.5,
+    beforeSend(event) {
+      if (event.breadcrumbs) {
+        event.breadcrumbs = event.breadcrumbs.map(b => {
+          if (b.data && b.data.url) b.data.url = b.data.url.split('?')[0]
+          return b
+        })
+      }
+      return event
+    }
+  })
+}
 app.use(createPinia())
 app.use(i18n)
 app.use(router)
