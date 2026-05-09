@@ -20,7 +20,6 @@ import { i18n } from './i18n'
 import router from './router'
 import VueApexCharts from 'vue3-apexcharts'
 import App from './App.vue'
-import * as Sentry from '@sentry/vue'
 import './assets/main.css'
 import * as Sentry from '@sentry/vue'
 
@@ -52,23 +51,6 @@ app.use(i18n)
 app.use(router)
 app.use(VueApexCharts)
 
-// ─── Sentry — monitoring production ────────────────────────────────────────
-const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN
-if (SENTRY_DSN) {
-  Sentry.init({
-    app,
-    dsn: SENTRY_DSN,
-    environment: import.meta.env.MODE || 'production',
-    integrations: [Sentry.browserTracingIntegration({ router })],
-    tracesSampleRate: 0.1,
-    beforeSend(event) {
-      const msg = event.exception?.values?.[0]?.value || ''
-      if (msg.includes('ResizeObserver') || msg.includes('MutationObserver') || msg.includes('ApexCharts')) return null
-      return event
-    }
-  })
-}
-
 // Global error handler — catches all Vue + JS errors
 app.config.errorHandler = (err, instance, info) => {
   console.error('[Scalyo Error]', { error: err?.message || err, component: instance?.$options?.name || 'unknown', info })
@@ -82,7 +64,7 @@ window.addEventListener('unhandledrejection', (event) => {
 
 window.onerror = (msg, source, line, col, error) => {
   console.error('[Scalyo Global Error]', { msg, source, line, col })
-  if (SENTRY_DSN && error) Sentry.captureException(error)
+  if (SENTRY_DSN) Sentry.captureException(error)
   return false
 }
 
