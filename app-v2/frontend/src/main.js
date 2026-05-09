@@ -25,7 +25,7 @@ import * as Sentry from '@sentry/vue'
 
 const app = createApp(App)
 
-const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN
+const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN || 'https://cbc2ca6d4e0d653ff5d1f14e2fd9b700@o4511362600271873.ingest.de.sentry.io/4511362605056080'
 if (SENTRY_DSN) {
   Sentry.init({
     app,
