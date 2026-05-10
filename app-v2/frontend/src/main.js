@@ -22,6 +22,7 @@ import VueApexCharts from 'vue3-apexcharts'
 import App from './App.vue'
 import './assets/main.css'
 import * as Sentry from '@sentry/vue'
+window.Sentry = Sentry
 
 const app = createApp(App)
 
