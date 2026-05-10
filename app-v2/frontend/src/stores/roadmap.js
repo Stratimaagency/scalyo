@@ -84,105 +84,137 @@ export const useRoadmapStore = defineStore('roadmap', () => {
   })
 
   async function loadRoadmaps() {
-    const { data, error } = await supabase
-      .from('roadmaps')
-      .select('*')
-      .order('created_at', { ascending: false })
-    if (!error && data) roadmaps.value = data
+    try {
+      const { data, error } = await supabase
+        .from('roadmaps')
+        .select('*')
+        .order('created_at', { ascending: false })
+      if (!error && data) roadmaps.value = data
+    } catch (e) {
+      console.error('roadmap.loadRoadmaps failed:', e.message || e)
+    }
   }
 
   async function createFromTemplate(templateId, customName, startDate) {
-    const tpl = TEMPLATES.find(tpl => tpl.id === templateId)
-    if (!tpl) return
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
-    let currentDate = new Date(startDate || new Date())
-    const milestones = tpl.milestones.map((m, i) => {
-      const start = currentDate.toISOString().slice(0, 10)
-      currentDate = new Date(currentDate.getTime() + m.duration * 86400000)
-      const end = currentDate.toISOString().slice(0, 10)
-      return {
-        id: 'm_' + Date.now() + '_' + i,
-        titleKey: m.titleKey,
-        startDate: start,
-        endDate: end,
-        done: false,
-        status: 'todo',
-        notes: '',
+    try {
+      const tpl = TEMPLATES.find(tpl => tpl.id === templateId)
+      if (!tpl) return
+  
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+  
+      let currentDate = new Date(startDate || new Date())
+      const milestones = tpl.milestones.map((m, i) => {
+        const start = currentDate.toISOString().slice(0, 10)
+        currentDate = new Date(currentDate.getTime() + m.duration * 86400000)
+        const end = currentDate.toISOString().slice(0, 10)
+        return {
+          id: 'm_' + Date.now() + '_' + i,
+          titleKey: m.titleKey,
+          startDate: start,
+          endDate: end,
+          done: false,
+          status: 'todo',
+          notes: '',
+        }
+      })
+  
+      const newRm = {
+        user_id: user.id,
+        name: customName || tpl.key,
+        template_id: tpl.id,
+        icon: tpl.icon,
+        color: tpl.color,
+        status: 'active',
+        milestones,
       }
-    })
-
-    const newRm = {
-      user_id: user.id,
-      name: customName || tpl.key,
-      template_id: tpl.id,
-      icon: tpl.icon,
-      color: tpl.color,
-      status: 'active',
-      milestones,
+  
+      const { error } = await supabase.from('roadmaps').insert([newRm])
+      if (!error) await loadRoadmaps()
+    } catch (e) {
+      console.error('roadmap.createFromTemplate failed:', e.message || e)
     }
-
-    const { error } = await supabase.from('roadmaps').insert([newRm])
-    if (!error) await loadRoadmaps()
   }
 
   async function createBlank(name, icon, color) {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
-    const newRm = {
-      user_id: user.id,
-      name,
-      template_id: null,
-      icon: icon || '\u{1F4CC}',
-      color: color || '#7c3aed',
-      status: 'active',
-      milestones: [],
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+  
+      const newRm = {
+        user_id: user.id,
+        name,
+        template_id: null,
+        icon: icon || '\u{1F4CC}',
+        color: color || '#7c3aed',
+        status: 'active',
+        milestones: [],
+      }
+  
+      const { error } = await supabase.from('roadmaps').insert([newRm])
+      if (!error) await loadRoadmaps()
+    } catch (e) {
+      console.error('roadmap.createBlank failed:', e.message || e)
     }
-
-    const { error } = await supabase.from('roadmaps').insert([newRm])
-    if (!error) await loadRoadmaps()
   }
 
   async function addMilestone(roadmapId, milestone) {
-    const rm = roadmaps.value.find(r => r.id === roadmapId)
-    if (rm) {
-      rm.milestones.push({ id: 'm_' + Date.now(), done: false, status: 'todo', notes: '', ...milestone })
-      await supabase.from('roadmaps').update({ milestones: rm.milestones }).eq('id', roadmapId)
+    try {
+      const rm = roadmaps.value.find(r => r.id === roadmapId)
+      if (rm) {
+        rm.milestones.push({ id: 'm_' + Date.now(), done: false, status: 'todo', notes: '', ...milestone })
+        await supabase.from('roadmaps').update({ milestones: rm.milestones }).eq('id', roadmapId)
+      }
+    } catch (e) {
+      console.error('roadmap.addMilestone failed:', e.message || e)
     }
   }
 
   async function updateMilestone(roadmapId, milestoneId, data) {
-    const rm = roadmaps.value.find(r => r.id === roadmapId)
-    if (!rm) return
-    const mi = rm.milestones.findIndex(m => m.id === milestoneId)
-    if (mi !== -1) {
-      Object.assign(rm.milestones[mi], data)
-      await supabase.from('roadmaps').update({ milestones: rm.milestones }).eq('id', roadmapId)
+    try {
+      const rm = roadmaps.value.find(r => r.id === roadmapId)
+      if (!rm) return
+      const mi = rm.milestones.findIndex(m => m.id === milestoneId)
+      if (mi !== -1) {
+        Object.assign(rm.milestones[mi], data)
+        await supabase.from('roadmaps').update({ milestones: rm.milestones }).eq('id', roadmapId)
+      }
+    } catch (e) {
+      console.error('roadmap.updateMilestone failed:', e.message || e)
     }
   }
 
   async function deleteMilestone(roadmapId, milestoneId) {
-    const rm = roadmaps.value.find(r => r.id === roadmapId)
-    if (rm) {
-      rm.milestones = rm.milestones.filter(m => m.id !== milestoneId)
-      await supabase.from('roadmaps').update({ milestones: rm.milestones }).eq('id', roadmapId)
+    try {
+      const rm = roadmaps.value.find(r => r.id === roadmapId)
+      if (rm) {
+        rm.milestones = rm.milestones.filter(m => m.id !== milestoneId)
+        await supabase.from('roadmaps').update({ milestones: rm.milestones }).eq('id', roadmapId)
+      }
+    } catch (e) {
+      console.error('roadmap.deleteMilestone failed:', e.message || e)
     }
   }
 
   async function updateRoadmap(id, data) {
-    const i = roadmaps.value.findIndex(r => r.id === id)
-    if (i !== -1) {
-      Object.assign(roadmaps.value[i], data)
-      await supabase.from('roadmaps').update(data).eq('id', id)
+    try {
+      const i = roadmaps.value.findIndex(r => r.id === id)
+      if (i !== -1) {
+        Object.assign(roadmaps.value[i], data)
+        await supabase.from('roadmaps').update(data).eq('id', id)
+      }
+    } catch (e) {
+      console.error('roadmap.updateRoadmap failed:', e.message || e)
     }
   }
 
   async function deleteRoadmap(id) {
-    roadmaps.value = roadmaps.value.filter(r => r.id !== id)
-    await supabase.from('roadmaps').delete().eq('id', id)
+    try {
+      roadmaps.value = roadmaps.value.filter(r => r.id !== id)
+      await supabase.from('roadmaps').delete().eq('id', id)
+    } catch (e) {
+      console.error('roadmap.deleteRoadmap failed:', e.message || e)
+    }
   }
 
   function roadmapProgress(rm) {

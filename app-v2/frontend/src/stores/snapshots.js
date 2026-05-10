@@ -11,45 +11,53 @@ export const useSnapshotStore = defineStore('snapshots', () => {
   const comparePeriod = ref('week')
 
   async function loadSnapshots() {
-    const { data, error } = await supabase
-      .from('snapshots')
-      .select('*')
-      .order('date', { ascending: false })
-      .limit(31)
-    if (!error && data) snapshots.value = data
+    try {
+      const { data, error } = await supabase
+        .from('snapshots')
+        .select('*')
+        .order('date', { ascending: false })
+        .limit(31)
+      if (!error && data) snapshots.value = data
+    } catch (e) {
+      console.error('snapshots.loadSnapshots failed:', e.message || e)
+    }
   }
 
   // Sauvegarde un snapshot aujourd'hui si pas d\u00E9j\u00E0 fait aujourd'hui
   async function saveSnapshot(kpiValues) {
-    const today = new Date().toISOString().slice(0, 10)
-    const existing = snapshots.value.find(s => s.date === today)
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
-    if (existing) {
-      // Mettre \u00E0 jour le snapshot du jour
-      existing.kpis = { ...kpiValues }
-      await supabase.from('snapshots').update({ kpis: kpiValues }).eq('id', existing.id)
-    } else {
-      const { data, error } = await supabase
-        .from('snapshots')
-        .insert([{ user_id: user.id, date: today, kpis: kpiValues }])
-        .select()
-      if (!error && data && data.length) {
-        snapshots.value.unshift(data[0])
-        // Garder seulement les 31 derniers jours
-        if (snapshots.value.length > 31) {
-          const toRemove = snapshots.value
-            .sort((a, b) => b.date.localeCompare(a.date))
-            .slice(31)
-          snapshots.value = snapshots.value.slice(0, 31)
-          // Supprimer les anciens de la DB
-          for (const old of toRemove) {
-            await supabase.from('snapshots').delete().eq('id', old.id)
+    try {
+      const today = new Date().toISOString().slice(0, 10)
+      const existing = snapshots.value.find(s => s.date === today)
+  
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+  
+      if (existing) {
+        // Mettre \u00E0 jour le snapshot du jour
+        existing.kpis = { ...kpiValues }
+        await supabase.from('snapshots').update({ kpis: kpiValues }).eq('id', existing.id)
+      } else {
+        const { data, error } = await supabase
+          .from('snapshots')
+          .insert([{ user_id: user.id, date: today, kpis: kpiValues }])
+          .select()
+        if (!error && data && data.length) {
+          snapshots.value.unshift(data[0])
+          // Garder seulement les 31 derniers jours
+          if (snapshots.value.length > 31) {
+            const toRemove = snapshots.value
+              .sort((a, b) => b.date.localeCompare(a.date))
+              .slice(31)
+            snapshots.value = snapshots.value.slice(0, 31)
+            // Supprimer les anciens de la DB
+            for (const old of toRemove) {
+              await supabase.from('snapshots').delete().eq('id', old.id)
+            }
           }
         }
       }
+    } catch (e) {
+      console.error('snapshots.saveSnapshot failed:', e.message || e)
     }
   }
 
