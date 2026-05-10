@@ -133,7 +133,14 @@ var autoMap = function () {
   props.fields.forEach(function (field) {
     var targets = [normalize(field.key), ...(field.aliases || []).map(normalize)]
     var match = nh.find(function (h) {
-      return targets.some(function (t) { return h.norm === t || h.norm.includes(t) || t.includes(h.norm) })
+      return targets.some(function (t) {
+        if (h.norm === t) return true
+        // Only use includes matching if target is 4+ chars and covers 60%+ of the longer string
+        var minLen = Math.min(t.length, h.norm.length)
+        var maxLen = Math.max(t.length, h.norm.length)
+        if (minLen < 4 || minLen / maxLen < 0.6) return false
+        return h.norm.includes(t) || t.includes(h.norm)
+      })
     })
     m[field.key] = match ? match.raw : ''
   })
