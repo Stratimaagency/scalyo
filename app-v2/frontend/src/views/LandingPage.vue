@@ -170,7 +170,8 @@ onMounted(() => {
   observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
-        e.target.classList.add('visible')
+        e.target.classList.remove('anim-hidden')
+          e.target.classList.add('anim-visible')
         observer.unobserve(e.target)
       }
     })
