@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "gray-matter": "^4.0.3",
+    "marked": "^15.0.0",
+    "vite",
+    "build": "vite build && node scripts/build-blog.js",
     "preview": "vite preview"
   },
   "type": "module",
