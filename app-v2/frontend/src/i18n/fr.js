@@ -162,6 +162,7 @@ export default {
   es_copy: 'Copier l\'email',
   es_copied: 'Copié !',
   es_reset: 'Réinitialiser',
+  es_save_template: 'Sauvegarder comme mod\u00e8le',
   es_subject_placeholder: 'Objet de l\'email...',
   es_body_placeholder: 'Rédigez votre email ou utilisez l\'IA pour générer le contenu...',
   es_send: 'Envoyer',

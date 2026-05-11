@@ -2,13 +2,16 @@
 <div class="es-right">
   <div v-if="selected" class="es-preview">
     <div class="esp-header">
-      <h2>{{ t(selected.nameKey) }}</h2>
+      <h2>{{ selected.source === 'custom' ? selected.name : t(selected.nameKey) }}</h2>
       <div class="esp-actions">
-        <span class="esp-cat" :class="catClass(selected.categoryKey)">
-          {{ t('es_cat_' + selected.categoryKey) }}
+        <span class="esp-cat" :class="catClass(selected.categoryKey || selected.category)">
+          {{ t('es_cat_' + (selected.categoryKey || selected.category)) }}
         </span>
-        <button class="btn-secondary" @click="resetToTemplate">
+        <button class="btn-outline" @click="resetToTemplate" :title="t('es_reset')">
           {{ t('es_reset') }}
+        </button>
+        <button class="btn-outline" @click="$emit('save-template')" :title="t('es_save_template')">
+          {{ t('es_save_template') }}
         </button>
         <button class="btn-primary" @click="copyEmail">
           {{ copied ? t('es_copied') : t('es_copy') }}
@@ -71,7 +74,7 @@ const props = defineProps({
   editBody: { type: String, default: '' },
 })
 
-const emit = defineEmits(['open-send', 'update:editSubject', 'update:editBody'])
+const emit = defineEmits(['open-send', 'update:editSubject', 'update:editBody', 'save-template'])
 
 const copied = ref(false)
 
@@ -84,7 +87,12 @@ function copyEmail() {
 
 function resetToTemplate() {
   if (!props.selected) return
-  emit('update:editSubject', t(props.selected.subjectKey))
-  emit('update:editBody', t(props.selected.bodyKey).replace(/<[^>]*>/g, ''))
+  if (props.selected.source === 'custom') {
+    emit('update:editSubject', props.selected.subject || '')
+    emit('update:editBody', props.selected.body || '')
+  } else {
+    emit('update:editSubject', t(props.selected.subjectKey))
+    emit('update:editBody', t(props.selected.bodyKey).replace(/<[^>]*>/g, ''))
+  }
 }
 </script>

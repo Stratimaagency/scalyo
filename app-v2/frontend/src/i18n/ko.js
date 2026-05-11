@@ -113,6 +113,7 @@ export default {
 
   es_title: 'ì´ë©ì¼ ì¤íëì¤', es_subtitle: 'ë°ë¡ ì¬ì© ê°ë¥í ì ë¬¸ ííë¦¿', es_tab_all: 'ì ì²´', es_tab_csm: 'CSM', es_tab_commercial: 'ìì', es_tab_kam: 'KAM', es_search: 'ííë¦¿ ê²ì...', es_copy: 'ì´ë©ì¼ ë³µì¬', es_copied: 'ë³µì¬ë¨!',
   es_reset: '초기화',
+  es_save_template: '\ud15c\ud50c\ub9bf\uc73c\ub85c \uc800\uc7a5',
   es_subject_placeholder: '이메일 제목...',
   es_body_placeholder: '이메일을 작성하거나 AI를 사용하여 콘텐츠를 생성하세요...', es_subject: 'ì ëª©', es_body: 'ë³¸ë¬¸', es_cat_all: 'ì ì²´',
   es_cat_onboarding: 'ì¨ë³´ë©',
