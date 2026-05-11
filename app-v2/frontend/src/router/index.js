@@ -74,6 +74,11 @@ const routes = [
     path: '/privacy',
     name: 'Privacy',
     component: () => import('@/views/legal/PrivacyView.vue')
+    },
+    {
+      path: '/blog',
+      name: 'Blog',
+      component: () => import('@/views/blog/BlogIndex.vue')
   },
   {
     path: '/support',
@@ -139,7 +144,8 @@ router.afterEach((to) => {
     'ResetPasswordConfirm': 'Nouveau mot de passe — Scalyo',
     'CGU': 'Conditions d\'utilisation — Scalyo',
     'Support': 'Support — Scalyo',
-    'Privacy': 'Politique de confidentialité — Scalyo',
+    'Blog': 'Blog — Scalyo',
+      'Privacy': 'Politique de confidentialité — Scalyo',
   }
   document.title = (to.name && titles[to.name]) || to.meta?.title || 'Scalyo — Customer Success Platform'
   let metaDesc = document.querySelector('meta[name="description"]')

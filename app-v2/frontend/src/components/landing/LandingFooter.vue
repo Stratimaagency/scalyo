@@ -17,14 +17,12 @@
         </div>
         <div class="footer-col">
           <h4>{{ t('footer_col_resources') }}</h4>
-          <a href="#">{{ t('footer_blog') }}</a>
-          <a href="#">{{ t('footer_help') }}</a>
-          <a href="#">{{ t('footer_api_docs') }}</a>
+          <router-link to="/blog">{{ t('footer_blog') }}</router-link>
         </div>
         <div class="footer-col">
           <h4>{{ t('footer_col_contact') }}</h4>
           <a href="mailto:contact@scalyo.app">contact@scalyo.app</a>
-          <a href="#">{{ t('footer_support') }}</a>
+          <a href="mailto:support@scalyo.app">{{ t('footer_support') }}</a>
         </div>
       </div>
       <div class="footer-legal">
