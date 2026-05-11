@@ -5,7 +5,6 @@
     <p class="es-sub">{{ t('es_subtitle') }}</p>
   </div>
 
-  <!-- Resend banner -->
   <div :class="['es-email-banner', hasResendKey ? 'connected' : 'setup-needed']">
     <span class="es-banner-icon">{{ hasResendKey ? '\u2705' : '\u26a0\ufe0f' }}</span>
     <div class="es-banner-text">
@@ -26,7 +25,6 @@
     @result="onAiResult"
   />
 
-  <!-- Template browser -->
   <div v-if="activeTab !== 'history'" class="es-layout">
     <EmailTemplateList
       :active-tab="activeTab"
@@ -50,7 +48,6 @@
     />
   </div>
 
-  <!-- History tab -->
   <div v-else>
     <div class="es-tabs" style="max-width: 340px; margin-bottom: 16px;">
       <button v-for="tab in tabKeys" :key="tab.key" class="es-tab" :class="{ active: activeTab === tab.key }" @click="activeTab = tab.key">
@@ -60,18 +57,23 @@
     <EmailHistory :is-elite="isElite" />
   </div>
 
-  <!-- Send Modal -->
-  <EmailSendModal v-if="showSendModal" :selected="selected" :edit-subject="editSubject" :edit-body="editBody" @close="showSendModal = false" />
+  <EmailSendModal
+    v-if="showSendModal"
+    :selected="selected"
+    :edit-subject="editSubject"
+    :edit-body="editBody"
+    @close="showSendModal = false"
+  />
 
-  <!-- Resend Wizard -->
-  <ResendSetupWizard v-if="showResendWizard" @close="showResendWizard = false" @connected="showResendWizard = false" />
+  <ResendSetupWizard v-if="showResendWizard" @close="showResendWizard = false" @connected="loadEmailConfig" />
 </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+import { supabase } from '@/lib/supabase'
 import { templates } from '@/components/email-studio/emailTemplates.js'
 import EmailTemplateList from '@/components/email-studio/EmailTemplateList.vue'
 import EmailPreview from '@/components/email-studio/EmailPreview.vue'
@@ -90,16 +92,12 @@ const search = ref('')
 const selectedId = ref(null)
 const showSendModal = ref(false)
 const showResendWizard = ref(false)
-
-// Editable email content
 const editSubject = ref('')
 const editBody = ref('')
+const emailConfigured = ref(false)
 
 const isElite = computed(() => auth.currentPlan === 'elite')
-const hasResendKey = computed(() => {
-  const profile = auth.profile
-  return !!(profile?.org_resend_key || profile?.resend_api_key)
-})
+const hasResendKey = computed(() => emailConfigured.value)
 
 const selected = computed(() =>
   templates.find(tpl => tpl.id === selectedId.value) || null
@@ -113,7 +111,18 @@ const tabKeys = [
   { key: 'history', label: 'es_tab_history' }
 ]
 
-// When a template is selected, populate editable fields
+async function loadEmailConfig() {
+  try {
+    const { data } = await supabase.rpc('get_org_email_config', { p_owner_id: auth.user?.id })
+    const row = Array.isArray(data) ? data[0] : data
+    emailConfigured.value = !!row?.resend_api_key
+  } catch {
+    emailConfigured.value = false
+  }
+}
+
+onMounted(() => { loadEmailConfig() })
+
 function onSelectTemplate(id) {
   selectedId.value = id
   const tpl = templates.find(t2 => t2.id === id)
@@ -123,14 +132,9 @@ function onSelectTemplate(id) {
   }
 }
 
-function openSendModal() {
-  showSendModal.value = true
-}
+function openSendModal() { showSendModal.value = true }
 
-// AI result populates the editable body
 function onAiResult(result) {
-  if (result?.response) {
-    editBody.value = result.response
-  }
+  if (result?.response) { editBody.value = result.response }
 }
 </script>
