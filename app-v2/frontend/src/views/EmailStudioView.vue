@@ -1,91 +1,75 @@
 <template>
-  <div class="email-studio">
-    <div class="es-header">
-      <h1>📧 {{ t('es_title') }}</h1>
-      <p class="es-sub">{{ t('es_subtitle') }}</p>
-    </div>
+<div class="email-studio">
+  <div class="es-header">
+    <h1>{{ t('es_title') }}</h1>
+    <p class="es-sub">{{ t('es_subtitle') }}</p>
+  </div>
 
-    <!-- Resend banner -->
-    <div :class="['es-email-banner', hasResendKey ? 'connected' : 'setup-needed']">
-      <span class="es-banner-icon">{{ hasResendKey ? '✅' : '⚠️' }}</span>
-      <div class="es-banner-text">
-        <strong>{{ hasResendKey ? t('es_resend_connected') : t('es_resend_setup_title') }}</strong>
-        <span>{{ hasResendKey ? t('es_resend_connected_desc') : t('es_resend_setup_desc') }}</span>
-      </div>
-      <router-link
-        v-if="!hasResendKey"
-        to="/app/settings?tab=integrations"
-        class="es-banner-link"
-      >
-        {{ t('es_resend_setup_link') }}
-      </router-link>
+  <!-- Resend banner -->
+  <div :class="['es-email-banner', hasResendKey ? 'connected' : 'setup-needed']">
+    <span class="es-banner-icon">{{ hasResendKey ? '\u2705' : '\u26a0\ufe0f' }}</span>
+    <div class="es-banner-text">
+      <strong>{{ hasResendKey ? t('es_resend_connected') : t('es_resend_setup_title') }}</strong>
+      <span>{{ hasResendKey ? t('es_resend_connected_desc') : t('es_resend_setup_desc') }}</span>
     </div>
+    <router-link v-if="!hasResendKey" to="/app/settings?tab=integrations" class="es-banner-link">
+      {{ t('es_resend_setup_link') }}
+    </router-link>
+  </div>
 
-    <AiInsightPanel
-      module="email"
-      :title="t('ai_email_title')"
-      :button-label="t('ai_email_btn')"
-      :message="t('ai_email_prompt')"
-      :context="{ selectedTemplate: selectedTemplate?.id }"
-      @result="onAiResult"
+  <AiInsightPanel
+    module="email"
+    :title="t('ai_email_title')"
+    :button-label="t('ai_email_btn')"
+    :message="t('ai_email_prompt')"
+    :context="{ selectedTemplate: selected?.id, currentSubject: editSubject, currentBody: editBody }"
+    @result="onAiResult"
+  />
+
+  <!-- Template browser -->
+  <div v-if="activeTab !== 'history'" class="es-layout">
+    <EmailTemplateList
+      :active-tab="activeTab"
+      :active-cat="activeCat"
+      :selected-id="selectedId"
+      :search="search"
+      @update:activeTab="activeTab = $event"
+      @update:activeCat="activeCat = $event"
+      @update:selectedId="onSelectTemplate"
+      @update:search="search = $event"
     />
-
-    <!-- Template browser (non-history tabs) -->
-    <div v-if="activeTab !== 'history'" class="es-layout">
-      <EmailTemplateList
-        :active-tab="activeTab"
-        :active-cat="activeCat"
-        :selected-id="selectedId"
-        :search="search"
-        @update:activeTab="activeTab = $event"
-        @update:activeCat="activeCat = $event"
-        @update:selectedId="selectedId = $event"
-        @update:search="search = $event"
-      />
-
-      <EmailPreview
-        :selected="selected"
-        :is-elite="isElite"
-        :has-resend-key="hasResendKey"
-        @open-send="openSendModal"
-      />
-    </div>
-
-    <!-- History tab -->
-    <div v-else>
-      <!-- Tab row (only history tab button visible here for nav) -->
-      <div class="es-tabs" style="max-width: 340px; margin-bottom: 16px;">
-        <button
-          v-for="tab in tabKeys"
-          :key="tab.key"
-          class="es-tab"
-          :class="{ active: activeTab === tab.key }"
-          @click="activeTab = tab.key"
-        >
-          {{ t(tab.label) }}
-        </button>
-      </div>
-      <EmailHistory :is-elite="isElite" />
-    </div>
-
-    <!-- Send Modal -->
-    <EmailSendModal
-      v-if="showSendModal"
+    <EmailPreview
       :selected="selected"
-      @close="showSendModal = false"
-    />
-
-    <!-- Resend Wizard (Elite gate) -->
-    <ResendSetupWizard
-      v-if="showResendWizard"
-      @close="showResendWizard = false"
-      @connected="showResendWizard = false"
+      :is-elite="isElite"
+      :has-resend-key="hasResendKey"
+      :edit-subject="editSubject"
+      :edit-body="editBody"
+      @update:editSubject="editSubject = $event"
+      @update:editBody="editBody = $event"
+      @open-send="openSendModal"
     />
   </div>
+
+  <!-- History tab -->
+  <div v-else>
+    <div class="es-tabs" style="max-width: 340px; margin-bottom: 16px;">
+      <button v-for="tab in tabKeys" :key="tab.key" class="es-tab" :class="{ active: activeTab === tab.key }" @click="activeTab = tab.key">
+        {{ t(tab.label) }}
+      </button>
+    </div>
+    <EmailHistory :is-elite="isElite" />
+  </div>
+
+  <!-- Send Modal -->
+  <EmailSendModal v-if="showSendModal" :selected="selected" :edit-subject="editSubject" :edit-body="editBody" @close="showSendModal = false" />
+
+  <!-- Resend Wizard -->
+  <ResendSetupWizard v-if="showResendWizard" @close="showResendWizard = false" @connected="showResendWizard = false" />
+</div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { templates } from '@/components/email-studio/emailTemplates.js'
@@ -107,8 +91,15 @@ const selectedId = ref(null)
 const showSendModal = ref(false)
 const showResendWizard = ref(false)
 
+// Editable email content
+const editSubject = ref('')
+const editBody = ref('')
+
 const isElite = computed(() => auth.currentPlan === 'elite')
-const hasResendKey = computed(() => isElite.value)
+const hasResendKey = computed(() => {
+  const profile = auth.profile
+  return !!(profile?.org_resend_key || profile?.resend_api_key)
+})
 
 const selected = computed(() =>
   templates.find(tpl => tpl.id === selectedId.value) || null
@@ -122,14 +113,24 @@ const tabKeys = [
   { key: 'history', label: 'es_tab_history' }
 ]
 
+// When a template is selected, populate editable fields
+function onSelectTemplate(id) {
+  selectedId.value = id
+  const tpl = templates.find(t2 => t2.id === id)
+  if (tpl) {
+    editSubject.value = t(tpl.subjectKey)
+    editBody.value = t(tpl.bodyKey).replace(/<[^>]*>/g, '')
+  }
+}
+
 function openSendModal() {
   showSendModal.value = true
 }
 
+// AI result populates the editable body
 function onAiResult(result) {
-  // AI result can be used to pre-fill email content
-  if (result.response) {
-    selectedTemplate.value = { ...selectedTemplate.value, body: result.response }
+  if (result?.response) {
+    editBody.value = result.response
   }
 }
 </script>

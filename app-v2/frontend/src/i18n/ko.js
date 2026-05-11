@@ -111,7 +111,10 @@ export default {
   support_privacy_title: '데이터 기밀성',
   support_privacy_desc: 'AI 코치 및 Nova와의 대화는 철저히 기밀이 보장됩니다. 웰빙 데이터는 관리자, HR, 경영진에게 절대 공유되지 않습니다. Scalyo는 모든 팀원의 개인정보를 보호합니다.',
 
-  es_title: 'ì´ë©ì¼ ì¤íëì¤', es_subtitle: 'ë°ë¡ ì¬ì© ê°ë¥í ì ë¬¸ ííë¦¿', es_tab_all: 'ì ì²´', es_tab_csm: 'CSM', es_tab_commercial: 'ìì', es_tab_kam: 'KAM', es_search: 'ííë¦¿ ê²ì...', es_copy: 'ì´ë©ì¼ ë³µì¬', es_copied: 'ë³µì¬ë¨!', es_subject: 'ì ëª©', es_body: 'ë³¸ë¬¸', es_cat_all: 'ì ì²´',
+  es_title: 'ì´ë©ì¼ ì¤íëì¤', es_subtitle: 'ë°ë¡ ì¬ì© ê°ë¥í ì ë¬¸ ííë¦¿', es_tab_all: 'ì ì²´', es_tab_csm: 'CSM', es_tab_commercial: 'ìì', es_tab_kam: 'KAM', es_search: 'ííë¦¿ ê²ì...', es_copy: 'ì´ë©ì¼ ë³µì¬', es_copied: 'ë³µì¬ë¨!',
+  es_reset: '초기화',
+  es_subject_placeholder: '이메일 제목...',
+  es_body_placeholder: '이메일을 작성하거나 AI를 사용하여 콘텐츠를 생성하세요...', es_subject: 'ì ëª©', es_body: 'ë³¸ë¬¸', es_cat_all: 'ì ì²´',
   es_cat_onboarding: 'ì¨ë³´ë©',
   es_cat_qbr: 'QBR',
   es_cat_suivi: 'íë¡ì',

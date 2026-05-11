@@ -111,7 +111,10 @@ export default {
   support_privacy_title: 'Data confidentiality',
   support_privacy_desc: 'Conversations with the AI Coach and Nova remain strictly confidential. Wellbeing data is never shared with managers, HR, or leadership. Scalyo protects every team member\'s privacy.',
 
-  es_title: 'Email Studio', es_subtitle: 'Professional templates ready to use', es_tab_all: 'All', es_tab_csm: 'CSM', es_tab_commercial: 'Sales', es_tab_kam: 'KAM', es_search: 'Search a template...', es_copy: 'Copy email', es_copied: 'Copied!', es_subject: 'SUBJECT', es_body: 'EMAIL BODY', es_cat_all: 'All',
+  es_title: 'Email Studio', es_subtitle: 'Professional templates ready to use', es_tab_all: 'All', es_tab_csm: 'CSM', es_tab_commercial: 'Sales', es_tab_kam: 'KAM', es_search: 'Search a template...', es_copy: 'Copy email', es_copied: 'Copied!',
+  es_reset: 'Reset',
+  es_subject_placeholder: 'Email subject...',
+  es_body_placeholder: 'Write your email or use AI to generate content...', es_subject: 'SUBJECT', es_body: 'EMAIL BODY', es_cat_all: 'All',
   es_cat_onboarding: 'Onboarding',
   es_cat_qbr: 'QBR',
   es_cat_suivi: 'Follow-up',
