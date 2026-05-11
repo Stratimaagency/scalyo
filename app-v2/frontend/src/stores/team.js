@@ -3,13 +3,19 @@ import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 
 async function getCurrentUserId() {
-  const { data: { user } } = await supabase.auth.getUser()
-  return user?.id
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    return user?.id
+  } catch (err) {
+    if (window.Sentry) window.Sentry.captureException(err)
+    return null
+  }
 }
 
 export const useTeamStore = defineStore('team', () => {
   const members = ref([])
   const loading = ref(false)
+  const lastError = ref(null)
 
   // ─── Computed ─────────────────────────────────────────────────
   const teamHealthScore = computed(() => {
@@ -38,54 +44,97 @@ export const useTeamStore = defineStore('team', () => {
   // ─── Load ─────────────────────────────────────────────────────
   async function loadMembers() {
     loading.value = true
-    const { data, error } = await supabase.from('team_members').select('*').order('created_at', { ascending: true })
-    if (!error && data) members.value = data.map(dbToMember)
-    loading.value = false
+    lastError.value = null
+    try {
+      const { data, error } = await supabase.from('team_members').select('*').order('created_at', { ascending: true })
+      if (error) throw error
+      if (data) members.value = data.map(dbToMember)
+    } catch (err) {
+      lastError.value = err.message || 'Failed to load team members'
+      if (window.Sentry) window.Sentry.captureException(err)
+    } finally {
+      loading.value = false
+    }
   }
 
   // ─── Add ──────────────────────────────────────────────────────
   async function addMember(member) {
-    const { data, error } = await supabase.from('team_members').insert([await memberToDb(member)]).select().single()
-    if (error) {
-      if (error.message?.includes('SEAT_LIMIT_REACHED')) {
-        const err = new Error('SEAT_LIMIT_REACHED')
-        err.code = 'SEAT_LIMIT_REACHED'
-        throw err
+    lastError.value = null
+    try {
+      const { data, error } = await supabase.from('team_members').insert([await memberToDb(member)]).select().single()
+      if (error) {
+        if (error.message?.includes('SEAT_LIMIT_REACHED')) {
+          const err = new Error('SEAT_LIMIT_REACHED')
+          err.code = 'SEAT_LIMIT_REACHED'
+          throw err
+        }
+        throw error
       }
-      throw error
+      if (data) members.value.push(dbToMember(data))
+      return data
+    } catch (err) {
+      lastError.value = err.message || 'Failed to add member'
+      if (err.code !== 'SEAT_LIMIT_REACHED' && window.Sentry) {
+        window.Sentry.captureException(err)
+      }
+      throw err
     }
-    if (data) members.value.push(dbToMember(data))
-    return data
   }
 
   // ─── Update ───────────────────────────────────────────────────
   async function updateMember(member) {
-    const { error } = await supabase.from('team_members').update(await memberToDb(member)).eq('id', member.id)
-    if (!error) {
+    lastError.value = null
+    try {
+      const { error } = await supabase.from('team_members').update(await memberToDb(member)).eq('id', member.id)
+      if (error) throw error
       const idx = members.value.findIndex(m => m.id === member.id)
       if (idx > -1) members.value[idx] = { ...members.value[idx], ...member }
+    } catch (err) {
+      lastError.value = err.message || 'Failed to update member'
+      if (window.Sentry) window.Sentry.captureException(err)
     }
   }
 
   // ─── Delete ───────────────────────────────────────────────────
   async function deleteMember(id) {
-    const { error } = await supabase.from('team_members').delete().eq('id', id)
-    if (!error) members.value = members.value.filter(m => m.id !== id)
+    lastError.value = null
+    try {
+      const { error } = await supabase.from('team_members').delete().eq('id', id)
+      if (error) throw error
+      members.value = members.value.filter(m => m.id !== id)
+    } catch (err) {
+      lastError.value = err.message || 'Failed to delete member'
+      if (window.Sentry) window.Sentry.captureException(err)
+    }
   }
 
   // ─── Reset ────────────────────────────────────────────────────
   async function resetAll() {
-    await supabase.from('team_members').delete().neq('id', '00000000-0000-0000-0000-000000000000')
-    members.value = []
+    lastError.value = null
+    try {
+      const { error } = await supabase.from('team_members').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+      if (error) throw error
+      members.value = []
+    } catch (err) {
+      lastError.value = err.message || 'Failed to reset team'
+      if (window.Sentry) window.Sentry.captureException(err)
+    }
   }
 
   // ─── Record mood ──────────────────────────────────────────────
   async function recordDailyMood(memberId, mood) {
-    const member = members.value.find(m => m.id === memberId)
-    if (!member) return
-    const history = [...(member.moodHistory || []), { date: new Date().toISOString().slice(0, 10), mood }]
-    await supabase.from('team_members').update({ mood_history: history, updated_at: new Date().toISOString() }).eq('id', memberId)
-    member.moodHistory = history
+    lastError.value = null
+    try {
+      const member = members.value.find(m => m.id === memberId)
+      if (!member) return
+      const history = [...(member.moodHistory || []), { date: new Date().toISOString().slice(0, 10), mood }]
+      const { error } = await supabase.from('team_members').update({ mood_history: history, updated_at: new Date().toISOString() }).eq('id', memberId)
+      if (error) throw error
+      member.moodHistory = history
+    } catch (err) {
+      lastError.value = err.message || 'Failed to record mood'
+      if (window.Sentry) window.Sentry.captureException(err)
+    }
   }
 
   // ─── Mappers ──────────────────────────────────────────────────
@@ -101,6 +150,7 @@ export const useTeamStore = defineStore('team', () => {
 
   async function memberToDb(m) {
     const user_id = await getCurrentUserId()
+    if (!user_id) throw new Error('User not authenticated')
     return {
       user_id, name: m.name, email: m.email || '', role: m.role || '',
       wellbeing_score: m.wellbeingScore ?? 75, workload: m.workload ?? 60,
@@ -110,7 +160,7 @@ export const useTeamStore = defineStore('team', () => {
   }
 
   return {
-    members, loading, teamHealthScore, healthyMembers, overloadedMembers,
+    members, loading, lastError, teamHealthScore, healthyMembers, overloadedMembers,
     totalArrManaged, enrichedMembers,
     seatsUsed, calcBurnoutRisk, loadMembers,
     addMember, updateMember, deleteMember, resetAll, recordDailyMood,
