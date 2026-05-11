@@ -165,7 +165,7 @@ export const L = {
     footer_help:"Centre d'aide", footer_api_docs:"Documentation API",
     footer_playbooks:"Playbooks gratuits", footer_docs:"Documentation",
     footer_col_contact:"Contact",
-    footer_support:"Support", footer_rgpd:"RGPD", footer_legal:"Mentions légales",
+    footer_support:"Support", footer_cgu:"CGU", footer_rgpd:"Confidentialité", footer_legal:"Mentions légales",
     footer_copy:"© 2026 Scalyo · Tous droits réservés",
     footer_markets:"🇫🇷 France · 🇧🇪 Belgique · 🇨🇭 Suisse · 🇨🇦 Québec",
     // Clés additionnelles
@@ -570,7 +570,7 @@ export const L = {
     footer_help:"Help Center", footer_api_docs:"API Documentation",
     footer_playbooks:"Free Playbooks", footer_docs:"Documentation",
     footer_col_contact:"Contact",
-    footer_support:"Support", footer_rgpd:"GDPR", footer_legal:"Legal notice",
+    footer_support:"Support", footer_cgu:"Terms", footer_rgpd:"Privacy", footer_legal:"Legal notice",
     footer_copy:"© 2026 Scalyo · All rights reserved",
     footer_markets:"🇫🇷 France · 🇧🇪 Belgium · 🇨🇭 Switzerland · 🇨🇦 Quebec",
     roi_lbl1_suffix: "", roi_lbl2_suffix: "",
@@ -977,7 +977,7 @@ export const L = {
     footer_help:"도움말", footer_api_docs:"API 문서",
     footer_playbooks:"무료 플레이북", footer_docs:"문서",
     footer_col_contact:"문의",
-    footer_support:"지원", footer_rgpd:"개인정보처리방침", footer_legal:"법적 고지",
+    footer_support:"지원", footer_cgu:"이용약관", footer_rgpd:"개인정보처리방침", footer_legal:"법적 고지",
     footer_copy:"© 2026 Scalyo · 모든 권리 보유",
     footer_markets:"🇰🇷 한국 · 🇫🇷 프랑스 · 🇧🇪 벨기에 · 🇨🇦 캐나다",
   
