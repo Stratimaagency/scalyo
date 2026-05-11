@@ -7,7 +7,7 @@
         <div class="bp-current">
           <span class="bp-badge">{{ auth.currentPlanLabel }}</span>
           <span class="bp-price">
-            {{ planPrice }}€/{{ t('stg_per_month') }}
+            {{ planPrice }}{{ t('stg_currency') }}/{{ t('stg_per_month') }}
           </span>
         </div>
         <div class="plan-status-row">
@@ -24,34 +24,37 @@
             }}
           </span>
         </div>
+        <button
+          v-if="auth.hasActiveSubscription"
+          class="sv-portal-btn"
+          :disabled="portalLoading"
+          @click="openPortal"
+        >
+          {{ portalLoading ? t('stg_portal_loading') : t('stg_manage_sub') }}
+        </button>
+        <p v-if="portalError" class="sv-field-error">{{ t('stg_portal_error') }}</p>
       </div>
     </div>
 
     <!-- Plans Grid -->
     <div class="sv-section">
-      <h3>{{ t('stg_change_plan') }}</h3>
-      <div class="plans-grid">
+      <h3>{{ t('stg_plan_title') }}</h3>
+      <p class="sv-desc">{{ t('stg_plan_desc') }}</p>
+      <div class="plan-grid">
         <div
           v-for="plan in plans"
           :key="plan.key"
           class="plan-card"
-          :class="{ active: auth.currentPlan === plan.key, featured: plan.featured }"
+          :class="{ featured: plan.featured, current: auth.currentPlan === plan.key }"
         >
-          <div v-if="plan.featured" class="plan-badge-popular">
-            {{ t('stg_plan_popular') }}
-          </div>
-          <div class="plan-header">
-            <span class="plan-name">{{ plan.name }}</span>
-            <span class="plan-price">
-              {{ plan.price }}€<span class="plan-period">/{{ t('stg_per_month') }}</span>
-            </span>
-          </div>
-          <ul class="plan-features">
-            <li v-for="(feat, idx) in plan.features" :key="idx">{{ t(feat) }}</li>
+          <span v-if="plan.featured" class="plan-pop">{{ t('stg_plan_popular') }}</span>
+          <h4>{{ plan.name }}</h4>
+          <p class="plan-price">{{ plan.price }}{{ t('stg_currency') }}<span>/{{ t('stg_per_seat') }}</span></p>
+          <ul>
+            <li v-for="f in plan.features" :key="f">{{ t(f) }}</li>
           </ul>
           <button
-            class="btn-plan"
-            :class="{ current: auth.currentPlan === plan.key }"
+            class="plan-btn"
             :disabled="auth.currentPlan === plan.key"
             @click="handlePlanChange(plan.url, plan.key)"
           >
@@ -59,23 +62,26 @@
           </button>
         </div>
       </div>
-      <p class="bp-note">{{ t('stg_stripe_soon') }}</p>
+      <p class="bp-note">{{ t('stg_stripe_note') }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+import { supabase } from '@/lib/supabase'
 
 const { t } = useI18n({ useScope: 'global' })
 const auth = useAuthStore()
 
 const email = computed(() => auth.user?.email || '')
+const portalLoading = ref(false)
+const portalError = ref(false)
 
 const planPrice = computed(() => {
-  const prices = { elite: '697', growth: '297', starter: '97' }
+  const prices = { elite: '159', growth: '119', starter: '79' }
   return prices[auth.currentPlan] || '0'
 })
 
@@ -97,7 +103,7 @@ const plans = computed(() => [
   {
     key: 'starter',
     name: 'Starter',
-    price: '97',
+    price: '79',
     featured: false,
     url: starterUrl.value,
     features: ['stg_plan_starter_f1', 'stg_plan_starter_f2', 'stg_plan_starter_f3']
@@ -105,7 +111,7 @@ const plans = computed(() => [
   {
     key: 'growth',
     name: 'Growth',
-    price: '297',
+    price: '119',
     featured: true,
     url: growthUrl.value,
     features: ['stg_plan_growth_f1', 'stg_plan_growth_f2', 'stg_plan_growth_f3']
@@ -113,7 +119,7 @@ const plans = computed(() => [
   {
     key: 'elite',
     name: 'Elite',
-    price: '697',
+    price: '159',
     featured: false,
     url: eliteUrl.value,
     features: ['stg_plan_elite_f1', 'stg_plan_elite_f2', 'stg_plan_elite_f3']
@@ -130,5 +136,32 @@ function getPlanButtonLabel(planKey) {
 
 function handlePlanChange(url, plan) {
   if (auth.currentPlan !== plan) window.open(url, '_blank')
+}
+
+async function openPortal() {
+  portalLoading.value = true
+  portalError.value = false
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.access_token) return
+
+    const res = await fetch('/api/stripe/portal', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + session.access_token,
+      },
+    })
+    const data = await res.json()
+    if (res.ok && data.url) {
+      window.open(data.url, '_blank')
+    } else {
+      portalError.value = true
+    }
+  } catch {
+    portalError.value = true
+  } finally {
+    portalLoading.value = false
+  }
 }
 </script>
