@@ -3,13 +3,19 @@ import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 
 async function getCurrentUserId() {
-  const { data: { user } } = await supabase.auth.getUser()
-  return user?.id
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    return user?.id
+  } catch (err) {
+    if (window.Sentry) window.Sentry.captureException(err)
+    return null
+  }
 }
 
 export const useClientStore = defineStore('clients', () => {
   const clients = ref([])
   const loading = ref(false)
+  const lastError = ref(null)
 
   // ─── Computed ─────────────────────────────────────────────────
   const totalArr = computed(() => clients.value.reduce((s, c) => s + (c.arr || 0), 0))
@@ -37,37 +43,72 @@ export const useClientStore = defineStore('clients', () => {
   // ─── Load from Supabase ───────────────────────────────────────
   async function loadClients() {
     loading.value = true
-    const { data, error } = await supabase.from('clients').select('*').order('created_at', { ascending: false })
-    if (!error && data) clients.value = data.map(dbToClient)
-    loading.value = false
+    lastError.value = null
+    try {
+      const { data, error } = await supabase.from('clients').select('*').order('created_at', { ascending: false })
+      if (error) throw error
+      if (data) clients.value = data.map(dbToClient)
+    } catch (err) {
+      lastError.value = err.message || 'Failed to load clients'
+      if (window.Sentry) window.Sentry.captureException(err)
+    } finally {
+      loading.value = false
+    }
   }
 
   // ─── Add ──────────────────────────────────────────────────────
   async function addClient(client) {
-    const { data, error } = await supabase.from('clients').insert([await clientToDb(client)]).select().single()
-    if (!error && data) clients.value.unshift(dbToClient(data))
-    return data
+    lastError.value = null
+    try {
+      const { data, error } = await supabase.from('clients').insert([await clientToDb(client)]).select().single()
+      if (error) throw error
+      if (data) clients.value.unshift(dbToClient(data))
+      return data
+    } catch (err) {
+      lastError.value = err.message || 'Failed to add client'
+      if (window.Sentry) window.Sentry.captureException(err)
+      return null
+    }
   }
 
   // ─── Update ───────────────────────────────────────────────────
   async function updateClient(client) {
-    const { error } = await supabase.from('clients').update(await clientToDb(client)).eq('id', client.id)
-    if (!error) {
+    lastError.value = null
+    try {
+      const { error } = await supabase.from('clients').update(await clientToDb(client)).eq('id', client.id)
+      if (error) throw error
       const idx = clients.value.findIndex(c => c.id === client.id)
       if (idx > -1) clients.value[idx] = { ...clients.value[idx], ...client }
+    } catch (err) {
+      lastError.value = err.message || 'Failed to update client'
+      if (window.Sentry) window.Sentry.captureException(err)
     }
   }
 
   // ─── Delete ───────────────────────────────────────────────────
   async function deleteClient(id) {
-    const { error } = await supabase.from('clients').delete().eq('id', id)
-    if (!error) clients.value = clients.value.filter(c => c.id !== id)
+    lastError.value = null
+    try {
+      const { error } = await supabase.from('clients').delete().eq('id', id)
+      if (error) throw error
+      clients.value = clients.value.filter(c => c.id !== id)
+    } catch (err) {
+      lastError.value = err.message || 'Failed to delete client'
+      if (window.Sentry) window.Sentry.captureException(err)
+    }
   }
 
   // ─── Reset ────────────────────────────────────────────────────
   async function resetAll() {
-    await supabase.from('clients').delete().neq('id', '00000000-0000-0000-0000-000000000000')
-    clients.value = []
+    lastError.value = null
+    try {
+      const { error } = await supabase.from('clients').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+      if (error) throw error
+      clients.value = []
+    } catch (err) {
+      lastError.value = err.message || 'Failed to reset clients'
+      if (window.Sentry) window.Sentry.captureException(err)
+    }
   }
 
   // ─── Mappers DB ↔ Store ───────────────────────────────────────
@@ -93,6 +134,7 @@ export const useClientStore = defineStore('clients', () => {
 
   async function clientToDb(c) {
     const user_id = await getCurrentUserId()
+    if (!user_id) throw new Error('User not authenticated')
     return { user_id,
       name: c.name,
       industry: c.industry || '',
@@ -112,7 +154,7 @@ export const useClientStore = defineStore('clients', () => {
   }
 
   return {
-    clients, loading, totalArr, avgHealth, avgNps, churnRate, nrr,
+    clients, loading, lastError, totalArr, avgHealth, avgNps, churnRate, nrr,
     criticalCount, watchCount, healthyCount, arrAtRisk,
     loadClients, addClient, updateClient, deleteClient, resetAll,
   }
