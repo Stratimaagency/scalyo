@@ -236,7 +236,8 @@ async function saveConfig() {
   error.value = ''
   success.value = ''
   try {
-    if (form.value.key && !form.value.key.startsWith('re_')) {
+    form.value.key = form.value.key.trim()
+      if (form.value.key && !form.value.key.startsWith('re_')) {
       error.value = L('invalid_key')
       return
     }
