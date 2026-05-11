@@ -22,6 +22,8 @@ hreflang_ko: customer-success-guide-ko
 og_image: https://scalyo.app/og-guide-cs.png
 ---
 
+![Équipe Customer Success analysant un dashboard de performance client](https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=80&auto=format)
+
 Le Customer Success n'est plus un département support. C'est le moteur de croissance des SaaS B2B les plus performants. Ce guide couvre tout ce qu'un Head of CS ou VP CS doit maîtriser pour construire et scaler une opération Customer Success qui retient les clients et augmente le revenu.
 
 ## Qu'est-ce que le Customer Success ?
@@ -29,6 +31,8 @@ Le Customer Success n'est plus un département support. C'est le moteur de crois
 Le Customer Success est une discipline proactive qui vise à s'assurer que chaque client atteint les résultats qu'il attendait en achetant votre produit. Contrairement au support client (réactif, ticket par ticket), le CS anticipe les problèmes, identifie les opportunités d'expansion et construit des relations durables.
 
 La différence fondamentale : le support répond aux problèmes, le CS les prévient.
+
+![Dashboard analytics avec indicateurs de performance](https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80&auto=format)
 
 ## Les KPIs qui comptent vraiment
 
@@ -49,6 +53,8 @@ Un bon health score n'est pas un chiffre unique — c'est un système de poids c
 ### Taux de churn
 
 Le churn se mesure en deux dimensions : le logo churn (nombre de clients perdus) et le revenue churn (MRR perdu). Le revenue churn est plus parlant car perdre un client à 50K€ ARR n'a pas le même impact que perdre un client à 5K€ ARR.
+
+![Réunion d'équipe Customer Success autour d'une table de travail](https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80&auto=format)
 
 ## Structurer son équipe CS
 

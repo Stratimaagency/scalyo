@@ -22,6 +22,8 @@ hreflang_ko: saas-churn-reduction
 og_image: https://scalyo.app/og-churn.png
 ---
 
+![Analyse de données et métriques de rétention client sur écran](https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80&auto=format)
+
 Perdre un client coûte entre 5 et 25 fois plus cher que d'en retenir un. Dans un SaaS B2B où chaque contrat représente des milliers d'euros d'ARR, le churn n'est pas qu'un indicateur — c'est une hémorragie silencieuse qui peut tuer votre croissance. Ce guide détaille 7 leviers concrets pour identifier les signaux faibles, agir avant la résiliation et construire une machine de rétention durable.
 
 ## Comprendre le churn avant de le combattre
@@ -39,6 +41,8 @@ Le signal le plus prédictif du churn n'est pas le NPS ni la satisfaction décla
 Les signaux à monitorer en priorité sont la baisse de fréquence de connexion (comparer la moyenne des 30 derniers jours vs les 30 jours précédents), la non-adoption des fonctionnalités à forte valeur ajoutée, l'absence de réponse aux 2 derniers emails ou appels du CSM, le retard de paiement de plus de 15 jours, et la perte du champion interne (changement de poste, départ de l'entreprise).
 
 L'erreur classique est de surveiller ces signaux manuellement. Un CSM qui gère 50 comptes ne peut pas vérifier chaque jour le comportement de chaque utilisateur. La solution est l'automatisation : un système qui calcule un health score en temps réel et déclenche une alerte quand un compte passe sous un seuil critique.
+
+![Tableaux de bord de suivi avec graphiques et indicateurs clés](https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80&auto=format)
 
 ## Levier 2 : Structurer un health score prédictif
 
@@ -65,6 +69,8 @@ Détecter le risque ne suffit pas. Il faut un protocole de réaction clair, avec
 Un système d'escalade efficace fonctionne en trois niveaux. Le niveau 1 est l'alerte automatique : le health score passe sous 6/10. Le CSM reçoit une notification et doit contacter le client sous 48h. Le niveau 2 est l'escalade managériale : le health score reste sous 4/10 après 2 semaines malgré l'intervention du CSM. Le manager CS intervient avec un plan de remédiation formel. Le niveau 3 est l'escalade exécutive : le client menace explicitement de résilier ou ne répond plus. Le VP CS ou le CEO appelle directement le décideur côté client.
 
 Chaque niveau a un objectif clair et un délai. Pas de "on verra la semaine prochaine". Le temps joue contre vous quand un client est en risque.
+
+![Présentation stratégique lors d'une réunion business](https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1200&q=80&auto=format)
 
 ## Levier 5 : Transformer la QBR en outil de rétention
 
