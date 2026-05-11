@@ -169,25 +169,12 @@ onMounted(() => {
 
 
   // Defer observer to ensure DOM layout is stable after Vue render
+  // Reveal all sections — scroll animation disabled pending proper implementation
   setTimeout(() => {
-    observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.remove('anim-hidden')
-          e.target.classList.add('anim-visible')
-          observer.unobserve(e.target)
-        }
-      })
-    }, { threshold: 0.05, rootMargin: '50px' })
-
     rootEl.value?.querySelectorAll('.anim-section').forEach(el => {
-      const rect = el.getBoundingClientRect()
-      if (rect.top > window.innerHeight) {
-        el.classList.add('anim-hidden')
-      }
-      observer.observe(el)
+      el.classList.add('anim-visible')
     })
-  }, 300)
+  }, 100)
 
   demoCycleTimer = setInterval(() => {
     activeDemo.value = (activeDemo.value + 1) % demoTabs.length
