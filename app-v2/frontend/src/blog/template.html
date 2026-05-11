@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="{{lang}}">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}} — Scalyo Blog</title>
+    <meta name="description" content="{{description}}" />
+    <meta name="keywords" content="{{keywords}}" />
+    <meta name="author" content="{{author}}" />
+    <link rel="canonical" href="{{url}}" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="{{title}}" />
+    <meta property="og:description" content="{{description}}" />
+    <meta property="og:url" content="{{url}}" />
+    <meta property="og:image" content="{{og_image}}" />
+    <meta property="og:site_name" content="Scalyo" />
+    <meta property="article:published_time" content="{{date_iso}}" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{title}}" />
+    <meta name="twitter:description" content="{{description}}" />
+    <meta name="twitter:image" content="{{og_image}}" />
+
+    <!-- Hreflang -->
+    {{hreflang_tags}}
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">{{json_ld}}</script>
+    <script type="application/ld+json">{{breadcrumb_ld}}</script>
+
+    <!-- Plausible Analytics -->
+    <script defer data-domain="scalyo.app" src="https://plausible.io/js/script.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1a1a2e; background: #f8f9fb; line-height: 1.7; }
+
+        .blog-nav { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 16px 24px; position: sticky; top: 0; z-index: 10; }
+        .blog-nav-inner { max-width: 720px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .blog-nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #1a1a2e; font-weight: 800; font-size: 1.15rem; }
+        .blog-nav-links { display: flex; gap: 20px; }
+        .blog-nav-links a { font-size: .85rem; color: #64748b; text-decoration: none; }
+        .blog-nav-links a:hover { color: #7c3aed; }
+        .blog-nav-cta { background: #7c3aed; color: #fff; padding: 8px 18px; border-radius: 8px; text-decoration: none; font-size: .85rem; font-weight: 600; }
+        .blog-nav-cta:hover { background: #6d28d9; }
+
+        .blog-article { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
+        .blog-breadcrumb { font-size: .8rem; color: #94a3b8; margin-bottom: 24px; }
+        .blog-breadcrumb a { color: #7c3aed; text-decoration: none; }
+        .blog-meta { display: flex; gap: 16px; align-items: center; margin-bottom: 32px; font-size: .85rem; color: #64748b; }
+        .blog-category { background: #f0ecfc; color: #7c3aed; padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; }
+
+        .blog-article h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.25; margin-bottom: 16px; color: #1a1a2e; }
+        .blog-article h2 { font-size: 1.5rem; font-weight: 700; margin-top: 48px; margin-bottom: 16px; color: #1a1a2e; }
+        .blog-article h3 { font-size: 1.15rem; font-weight: 600; margin-top: 32px; margin-bottom: 12px; color: #1a1a2e; }
+        .blog-article p { margin-bottom: 20px; color: #334155; }
+        .blog-article ul, .blog-article ol { margin-bottom: 20px; padding-left: 24px; color: #334155; }
+        .blog-article li { margin-bottom: 8px; }
+        .blog-article blockquote { border-left: 3px solid #7c3aed; padding: 16px 24px; background: #f0ecfc; border-radius: 0 8px 8px 0; margin: 24px 0; font-style: italic; color: #475569; }
+        .blog-article code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: .9em; }
+        .blog-article pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 10px; overflow-x: auto; margin: 24px 0; }
+        .blog-article pre code { background: none; padding: 0; color: inherit; }
+        .blog-article img { max-width: 100%; border-radius: 10px; margin: 24px 0; }
+        .blog-article a { color: #7c3aed; text-decoration: underline; }
+        .blog-article a:hover { color: #6d28d9; }
+
+        .blog-cta { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border-radius: 16px; padding: 40px; margin: 48px 0; text-align: center; color: #fff; }
+        .blog-cta h3 { color: #fff; margin-top: 0; margin-bottom: 12px; font-size: 1.3rem; }
+        .blog-cta p { color: rgba(255,255,255,.85); margin-bottom: 20px; }
+        .blog-cta a { display: inline-block; background: #fff; color: #7c3aed; padding: 12px 28px; border-radius: 10px; font-weight: 700; text-decoration: none; }
+        .blog-cta a:hover { background: #f0ecfc; }
+
+        .blog-footer { border-top: 1px solid #e2e8f0; padding: 24px; text-align: center; font-size: .8rem; color: #94a3b8; }
+        .blog-footer a { color: #7c3aed; text-decoration: none; }
+
+        @media (max-width: 480px) {
+            .blog-article h1 { font-size: 1.6rem; }
+            .blog-article h2 { font-size: 1.25rem; }
+            .blog-cta { padding: 28px 20px; }
+            .blog-nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="blog-nav">
+    <div class="blog-nav-inner">
+        <a href="/" class="blog-nav-logo">
+            <svg width="24" height="24" viewBox="0 0 300 300"><circle cx="150" cy="150" r="140" fill="#7c3aed"/><text x="150" y="190" text-anchor="middle" fill="#fff" font-size="160" font-weight="800">S</text></svg>
+            Scalyo
+        </a>
+        <div class="blog-nav-links">
+            <a href="/blog">{{nav_blog}}</a>
+            <a href="/#features">{{nav_features}}</a>
+            <a href="/#pricing">{{nav_pricing}}</a>
+        </div>
+        <a href="/register" class="blog-nav-cta">{{nav_cta}}</a>
+    </div>
+</nav>
+
+<article class="blog-article">
+    <div class="blog-breadcrumb">
+        <a href="/">Scalyo</a> › <a href="/blog">Blog</a> › {{category}}
+    </div>
+
+    <h1>{{title}}</h1>
+
+    <div class="blog-meta">
+        <span class="blog-category">{{category}}</span>
+        <time datetime="{{date_iso}}">{{date}}</time>
+        <span>{{author}}</span>
+    </div>
+
+    {{content}}
+
+    <div class="blog-cta">
+        <h3>{{cta_title}}</h3>
+        <p>{{cta_body}}</p>
+        <a href="/register">{{cta_btn}}</a>
+    </div>
+</article>
+
+<footer class="blog-footer">
+    <p>© 2026 <a href="/">Scalyo</a> · <a href="/blog">Blog</a> · <a href="/cgu">CGU</a> · <a href="/privacy">Confidentialité</a></p>
+</footer>
+
+</body>
+</html>
