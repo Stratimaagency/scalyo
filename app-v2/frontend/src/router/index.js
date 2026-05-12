@@ -14,6 +14,7 @@ const routes = [
     meta: { requiresAuth: true },
     children: [
       { path: '', redirect: { name: 'dashboard' } },
+      { path: 'onboarding', name: 'onboarding', component: () => import('@/views/OnboardingView.vue') },
       { path: 'dashboard', name: 'dashboard', component: () => import('@/views/DashboardView.vue') },
       { path: 'manager', name: 'manager', component: () => import('@/views/ManagerView.vue') },
       { path: 'portfolio', name: 'portfolio', component: () => import('@/views/PortfolioView.vue') },
@@ -112,6 +113,11 @@ router.beforeEach(async (to) => {
     if (authStore.needsPayment) return { name: 'paywall' }
     return { name: 'dashboard' }
   }
+  // Onboarding guard
+  if (to.meta.requiresAuth && to.name !== 'onboarding' && authStore.profile && !authStore.onboardingCompleted) {
+    return { name: 'onboarding' }
+  }
+
   // Plan gating: check module access
   if (to.meta.requiredModule && authStore.isAuthenticated) {
     const plan = authStore.currentPlan || 'starter'

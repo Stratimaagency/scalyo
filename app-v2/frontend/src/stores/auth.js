@@ -323,14 +323,16 @@ export const useAuthStore = defineStore('auth', () => {
       return { error }
     }
   }
+  // ─── Onboarding ──────────────────────────────────────────────────────
+  const onboardingCompleted = computed(() => profile.value?.onboarding_completed === true)
 
-  
   return {
     user, profile, loading, error,
     isAuthenticated, fullName, greeting,
     hasActiveSubscription, isOnTrial, trialExpired, trialDaysLeft, trialUsed, needsPayment,
     userLocale, currentPlan,
     seatsPaid,
+    onboardingCompleted,
     init, login, register, logout, clearAllStores, saveLocale, fetchProfile,
     resetPassword
   }
