@@ -36,7 +36,7 @@
         <input v-model="coachMessage" :placeholder="t('onb_s4_placeholder')" class="onb-input" @keyup.enter="sendCoachMessage" :disabled="coachLoading" />
         <button class="btn-send" @click="sendCoachMessage" :disabled="!coachMessage.trim() || coachLoading">{{ t('onb_s4_send') }}</button>
       </div>
-      <div v-if="coachResponse" class="coach-response" v-html="sanitize(coachResponse)"></div>
+      <div v-if="coachResponse" class="coach-response" v-html="sanitizeHtml(coachResponse)"></div>
       <p class="skip-hint">{{ t('onb_s4_skip_hint') }}</p>
     </div>
     <div v-if="step === 5" class="onboarding-step onboarding-done">
@@ -59,17 +59,17 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { useClientsStore } from '@/stores/clients'
-import { useTasksStore } from '@/stores/tasks'
+import { useClientStore } from '@/stores/clients'
+import { useTaskStore } from '@/stores/tasks'
 import { askScalyoAI } from '@/utils/askScalyoAI'
-import { sanitize } from '@/utils/sanitize'
+import { sanitizeHtml } from '@/utils/sanitize'
 import { supabase } from '@/lib/supabase'
 
 const { t } = useI18n({ useScope: 'global' })
 const router = useRouter()
 const authStore = useAuthStore()
-const clientsStore = useClientsStore()
-const tasksStore = useTasksStore()
+const clientStore = useClientStore()
+const taskStore = useTaskStore()
 
 const step = ref(1)
 const saving = ref(false)
@@ -92,10 +92,10 @@ async function nextStep() {
     if (step.value === 1 && companyName.value.trim()) {
       await supabase.from('profiles').update({ company_name: companyName.value.trim() }).eq('id', authStore.user.id)
     } else if (step.value === 2 && clientName.value.trim()) {
-      const result = await clientsStore.addClient({ name: clientName.value.trim(), health: clientHealth.value })
+      const result = await clientStore.addClient({ name: clientName.value.trim(), health: clientHealth.value })
       if (result && result.id) createdClientId.value = result.id
     } else if (step.value === 3 && taskTitle.value.trim()) {
-      await tasksStore.addTask({ title: taskTitle.value.trim(), client_id: createdClientId.value || null, status: 'todo', priority: 'medium' })
+      await taskStore.addTask({ title: taskTitle.value.trim(), client_id: createdClientId.value || null, status: 'todo', priority: 'medium' })
     }
     step.value++
   } catch (err) {
