@@ -90,7 +90,8 @@ async function nextStep() {
   saving.value = true
   try {
     if (step.value === 1 && companyName.value.trim()) {
-      await supabase.from('profiles').update({ company_name: companyName.value.trim() }).eq('id', authStore.user.id)
+      const { error: companyErr } = await supabase.from('profiles').update({ company_name: companyName.value.trim() }).eq('id', authStore.user.id)
+        if (companyErr) throw companyErr
     } else if (step.value === 2 && clientName.value.trim()) {
       const result = await clientStore.addClient({ name: clientName.value.trim(), health: clientHealth.value })
       if (result && result.id) createdClientId.value = result.id
@@ -127,7 +128,8 @@ async function finishOnboarding() {
   saving.value = true
   errorMsg.value = ''
   try {
-    await supabase.from('profiles').update({ onboarding_completed: true }).eq('id', authStore.user.id)
+    const { error: onbErr } = await supabase.from('profiles').update({ onboarding_completed: true }).eq('id', authStore.user.id)
+      if (onbErr) throw onbErr
     await authStore.fetchProfile()
     router.push({ name: 'dashboard' })
   } catch (err) {
