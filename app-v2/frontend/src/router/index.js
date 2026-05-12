@@ -73,6 +73,7 @@ const routes = [
   },
   {
     path: '/privacy',
+  { path: '/dpa', name: 'dpa', component: () => import('@/views/DpaView.vue'), meta: { guest: true } },
     name: 'Privacy',
     component: () => import('@/views/legal/PrivacyView.vue')
     },
