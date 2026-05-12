@@ -1775,6 +1775,9 @@ export default {
   es_resend_wizard_err_format: '키 형식 오류 (re_로 시작)',
   es_resend_wizard_err_invalid: 'Resend가 키를 거부했습니다.',
   es_resend_wizard_err_generic: '오류. 다시 시도하세요.',
+  es_send_client: '고객',
+  es_send_client_placeholder: '고객을 선택하세요...',
+  es_send_via: '발신',
   common_back: '뒤로',
 
   // ── GUIDES VIEW i18n ──

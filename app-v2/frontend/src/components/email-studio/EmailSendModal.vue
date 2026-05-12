@@ -13,6 +13,13 @@
         \u274c {{ sendResult.error }}
       </div>
       <template v-else>
+      <div class="sm-field">
+        <label>{{ t('es_send_client') }}</label>
+        <select v-model="selectedClientId" class="sm-input" @change="onClientSelect">
+          <option value="">{{ t('es_send_client_placeholder') }}</option>
+          <option v-for="c in clients" :key="c.id" :value="c.id">{{ c.name }}</option>
+        </select>
+      </div>
         <div class="sm-field">
           <label>{{ t('es_send_to') }}</label>
           <input v-model="sendTo" type="email" :placeholder="t('es_send_to_placeholder')" class="sm-input" />
@@ -21,7 +28,11 @@
           <label>{{ t('es_send_from_name') }}</label>
           <input v-model="sendFromName" type="text" :placeholder="auth.fullName || t('es_send_from_placeholder')" class="sm-input" />
         </div>
-        <div class="sm-preview">
+        
+      <div class="sm-sender-info">
+        <span>{{ t('es_send_via') }} contact@scalyo.app</span>
+      </div>
+<div class="sm-preview">
           <strong>{{ t('es_subject') }} :</strong> {{ editSubject }}
         </div>
         <div class="sm-preview sm-preview-body">
@@ -38,13 +49,25 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+import { useClientStore } from '@/stores/clients'
 import { supabase } from '@/lib/supabase'
 
 const { t } = useI18n({ useScope: 'global' })
 const auth = useAuthStore()
+const clientStore = useClientStore()
+const clients = computed(() => clientStore.clients || [])
+const selectedClientId = ref('')
+
+function onClientSelect() {
+  const client = clients.value.find(c => c.id === selectedClientId.value)
+  if (client) {
+    const contact = Array.isArray(client.contacts) && client.contacts[0]
+    if (contact && contact.email) sendTo.value = contact.email
+  }
+}
 
 const props = defineProps({
   selected: { type: Object, default: null },
@@ -107,3 +130,49 @@ async function sendEmail() {
   }
 }
 </script>
+
+<style scoped>
+.sm-sender-info {
+  padding: 8px 0;
+  font-size: 13px;
+  color: #888;
+  font-style: italic;
+}
+.sm-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+  appearance: none;
+}
+.sm-input:focus {
+  outline: none;
+  border-color: #7c5cfc;
+}
+@media (max-width: 640px) {
+  .send-modal {
+    width: 95vw !important;
+    max-height: 90vh;
+    margin: 5vh auto;
+    border-radius: 12px;
+  }
+  .sm-body {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  .sm-field input,
+  .sm-field select,
+  .sm-field textarea {
+    font-size: 16px;
+  }
+  .sm-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sm-actions button {
+    width: 100%;
+  }
+}
+</style>

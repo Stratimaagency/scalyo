@@ -1775,6 +1775,9 @@ export default {
   es_resend_wizard_err_format: 'Invalid format (must start with re_)',
   es_resend_wizard_err_invalid: 'Key rejected by Resend.',
   es_resend_wizard_err_generic: 'Error. Please retry.',
+  es_send_client: 'Client',
+  es_send_client_placeholder: 'Choose a client...',
+  es_send_via: 'Sent via',
   common_back: 'Back',
 
   // ── GUIDES VIEW i18n ──

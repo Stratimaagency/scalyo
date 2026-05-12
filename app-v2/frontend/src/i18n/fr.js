@@ -1831,6 +1831,9 @@ export default {
   es_resend_wizard_err_format: 'Format invalide (doit commencer par re_)',
   es_resend_wizard_err_invalid: 'Cl� refus�e par Resend.',
   es_resend_wizard_err_generic: 'Erreur. R�essayez.',
+  es_send_client: 'Client',
+  es_send_client_placeholder: 'Choisir un client...',
+  es_send_via: 'Envoyé via',
   common_back: 'Retour',
 
   //    GUIDES VIEW i18n   
