@@ -2069,4 +2069,17 @@ export default {
   onb_s5_cta: 'Go to dashboard',
   onb_error: 'An error occurred. Please try again.',
   onb_saving: 'Saving...',
+  integ_title: 'Integrations',
+  integ_subtitle: 'Connect your tools to centralize client data',
+  integ_connected: 'Connected',
+  integ_coming: 'Coming soon',
+  integ_connect: 'Connect',
+  integ_configure: 'Configure',
+  integ_disconnect: 'Disconnect',
+  integ_disconnect_confirm: 'Disconnect this integration?',
+  integ_save: 'Save',
+  integ_upgrade: 'Upgrade plan',
+  integ_error: 'Connection error',
+  integ_success: 'Integration connected',
+
 }

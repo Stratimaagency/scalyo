@@ -2069,4 +2069,17 @@ export default {
   onb_s5_cta: '대시보드로 이동',
   onb_error: '오류가 발생했습니다. 다시 시도해 주세요.',
   onb_saving: '저장 중...',
+  integ_title: '\uD1B5\uD569',
+  integ_subtitle: '\uD074\uB77C\uC774\uC5B8\uD2B8 \uB370\uC774\uD130\uB97C \uC911\uC559\uD654\uD558\uAE30 \uC704\uD574 \uB3C4\uAD6C\uB97C \uC5F0\uACB0\uD558\uC138\uC694',
+  integ_connected: '\uC5F0\uACB0\uB428',
+  integ_coming: '\uACE7 \uCD9C\uC2DC',
+  integ_connect: '\uC5F0\uACB0',
+  integ_configure: '\uC124\uC815',
+  integ_disconnect: '\uC5F0\uACB0 \uD574\uC81C',
+  integ_disconnect_confirm: '\uC774 \uD1B5\uD569\uC744 \uC5F0\uACB0 \uD574\uC81C\uD558\uC2DC\uACA0\uC2B5\uB2C8\uAE4C?',
+  integ_save: '\uC800\uC7A5',
+  integ_upgrade: '\uD50C\uB79C \uC5C5\uADF8\uB808\uC774\uB4DC',
+  integ_error: '\uC5F0\uACB0 \uC624\uB958',
+  integ_success: '\uD1B5\uD569 \uC5F0\uACB0\uB428',
+
 }

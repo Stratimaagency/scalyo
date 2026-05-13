@@ -44,7 +44,7 @@ const routes = [
       // Import IA masqué — import standard désormais dans chaque module
       { path: 'import', redirect: { name: 'dashboard' } },
       { path: 'integrations', name: 'integrations', component: () => import('@/views/IntegrationsView.vue') },
-      { path: 'integrations/:service', name: 'integration-embed', component: () => import('@/components/IntegrationEmbed.vue'), props: true },
+      { path: 'integrations', name: 'integrations', component: () => import('@/views/IntegrationsView.vue') },
       { path: 'settings', name: 'settings', component: () => import('@/views/SettingsView.vue') },
         { path: 'profile', name: 'profile', component: () => import('@/views/ProfileView.vue'), meta: { requiresAuth: true } },
       { path: 'resources', name: 'resources', redirect: { name: 'resources-library' } },

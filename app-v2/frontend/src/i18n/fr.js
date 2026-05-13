@@ -2125,4 +2125,17 @@ export default {
   onb_s5_cta: 'Accéder au dashboard',
   onb_error: 'Une erreur est survenue. Réessayez.',
   onb_saving: 'Enregistrement...',
+  integ_title: 'Integrations',
+  integ_subtitle: 'Connectez vos outils pour centraliser vos donnees client',
+  integ_connected: 'Connecte',
+  integ_coming: 'Bientot',
+  integ_connect: 'Connecter',
+  integ_configure: 'Configurer',
+  integ_disconnect: 'Deconnecter',
+  integ_disconnect_confirm: 'Deconnecter cette integration ?',
+  integ_save: 'Enregistrer',
+  integ_upgrade: 'Mettre a niveau',
+  integ_error: 'Erreur de connexion',
+  integ_success: 'Integration connectee',
+
 }
