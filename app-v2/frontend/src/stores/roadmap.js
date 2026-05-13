@@ -163,7 +163,9 @@ export const useRoadmapStore = defineStore('roadmap', () => {
       const rm = roadmaps.value.find(r => r.id === roadmapId)
       if (rm) {
         rm.milestones.push({ id: 'm_' + Date.now(), done: false, status: 'todo', notes: '', ...milestone })
-        await supabase.from('roadmaps').update({ milestones: rm.milestones }).eq('id', roadmapId)
+        const { error: msErr1 } = await supabase.from('roadmaps').update({ milestones: rm.milestones }).eq('id', roadmapId)
+
+        if (msErr1) throw msErr1
       }
     } catch (e) {
       console.error('roadmap.addMilestone failed:', e.message || e)
@@ -177,7 +179,9 @@ export const useRoadmapStore = defineStore('roadmap', () => {
       const mi = rm.milestones.findIndex(m => m.id === milestoneId)
       if (mi !== -1) {
         Object.assign(rm.milestones[mi], data)
-        await supabase.from('roadmaps').update({ milestones: rm.milestones }).eq('id', roadmapId)
+        const { error: msErr2 } = await supabase.from('roadmaps').update({ milestones: rm.milestones }).eq('id', roadmapId)
+
+        if (msErr2) throw msErr2
       }
     } catch (e) {
       console.error('roadmap.updateMilestone failed:', e.message || e)
@@ -189,7 +193,9 @@ export const useRoadmapStore = defineStore('roadmap', () => {
       const rm = roadmaps.value.find(r => r.id === roadmapId)
       if (rm) {
         rm.milestones = rm.milestones.filter(m => m.id !== milestoneId)
-        await supabase.from('roadmaps').update({ milestones: rm.milestones }).eq('id', roadmapId)
+        const { error: msErr3 } = await supabase.from('roadmaps').update({ milestones: rm.milestones }).eq('id', roadmapId)
+
+        if (msErr3) throw msErr3
       }
     } catch (e) {
       console.error('roadmap.deleteMilestone failed:', e.message || e)
@@ -201,7 +207,9 @@ export const useRoadmapStore = defineStore('roadmap', () => {
       const i = roadmaps.value.findIndex(r => r.id === id)
       if (i !== -1) {
         Object.assign(roadmaps.value[i], data)
-        await supabase.from('roadmaps').update(data).eq('id', id)
+        const { error: updErr } = await supabase.from('roadmaps').update(data).eq('id', id)
+
+        if (updErr) throw updErr
       }
     } catch (e) {
       console.error('roadmap.updateRoadmap failed:', e.message || e)
@@ -211,7 +219,9 @@ export const useRoadmapStore = defineStore('roadmap', () => {
   async function deleteRoadmap(id) {
     try {
       roadmaps.value = roadmaps.value.filter(r => r.id !== id)
-      await supabase.from('roadmaps').delete().eq('id', id)
+      const { error: delErr } = await supabase.from('roadmaps').delete().eq('id', id)
+
+      if (delErr) throw delErr
     } catch (e) {
       console.error('roadmap.deleteRoadmap failed:', e.message || e)
     }

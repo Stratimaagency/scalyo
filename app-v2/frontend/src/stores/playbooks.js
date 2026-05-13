@@ -136,7 +136,8 @@ export const usePlaybookStore = defineStore('playbooks', () => {
       const step = pb.steps.find(s => s.id === stepId)
       if (step) {
         step.done = !step.done
-        await supabase.from('playbooks').update({ steps: pb.steps }).eq('id', playbookId)
+        const { error: stepErr } = await supabase.from('playbooks').update({ steps: pb.steps }).eq('id', playbookId)
+      if (stepErr) throw stepErr
       }
     } catch (e) {
       console.error('playbooks.toggleStep failed:', e.message || e)
@@ -150,7 +151,7 @@ export const usePlaybookStore = defineStore('playbooks', () => {
         pb.status = 'done'
         pb.completed_at = new Date().toISOString().slice(0, 10)
         pb.steps.forEach(s => s.done = true)
-        await supabase.from('playbooks').update({
+        const { error: updErr } = await supabase.from('playbooks').update({
           status: 'done',
           completed_at: pb.completed_at,
           steps: pb.steps,
@@ -164,7 +165,8 @@ export const usePlaybookStore = defineStore('playbooks', () => {
   async function deletePlaybook(playbookId) {
     try {
       playbooks.value = playbooks.value.filter(p => p.id !== playbookId)
-      await supabase.from('playbooks').delete().eq('id', playbookId)
+      const { error: delErr } = await supabase.from('playbooks').delete().eq('id', playbookId)
+      if (delErr) throw delErr
     } catch (e) {
       console.error('playbooks.deletePlaybook failed:', e.message || e)
     }

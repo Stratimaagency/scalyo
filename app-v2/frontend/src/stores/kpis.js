@@ -167,7 +167,9 @@ export const useKpiStore = defineStore('kpis', () => {
       width: 'full',
     })
     c.updatedAt = new Date().toISOString()
-    await supabase.from('copils').update({ blocks: c.blocks, updated_at: c.updatedAt }).eq('id', copilId)
+    const { error: blkErr1 } = await supabase.from('copils').update({ blocks: c.blocks, updated_at: c.updatedAt }).eq('id', copilId)
+
+    if (blkErr1) throw blkErr1
   }
 
   async function updateBlock(copilId, blockId, changes) {
@@ -177,7 +179,9 @@ export const useKpiStore = defineStore('kpis', () => {
     if (b) {
       Object.assign(b, changes)
       c.updatedAt = new Date().toISOString()
-      await supabase.from('copils').update({ blocks: c.blocks, updated_at: c.updatedAt }).eq('id', copilId)
+      const { error: blkErr2 } = await supabase.from('copils').update({ blocks: c.blocks, updated_at: c.updatedAt }).eq('id', copilId)
+
+      if (blkErr2) throw blkErr2
     }
   }
 
@@ -186,7 +190,9 @@ export const useKpiStore = defineStore('kpis', () => {
     if (!c) return
     c.blocks = c.blocks.filter(b => b.id !== blockId)
     c.updatedAt = new Date().toISOString()
-    await supabase.from('copils').update({ blocks: c.blocks, updated_at: c.updatedAt }).eq('id', copilId)
+    const { error: blkErr3 } = await supabase.from('copils').update({ blocks: c.blocks, updated_at: c.updatedAt }).eq('id', copilId)
+
+    if (blkErr3) throw blkErr3
   }
 
   async function reorderBlocks(copilId, newOrder) {
@@ -195,7 +201,9 @@ export const useKpiStore = defineStore('kpis', () => {
     const map = Object.fromEntries(c.blocks.map(b => [b.id, b]))
     c.blocks = newOrder.map(id => map[id]).filter(Boolean)
     c.updatedAt = new Date().toISOString()
-    await supabase.from('copils').update({ blocks: c.blocks, updated_at: c.updatedAt }).eq('id', copilId)
+    const { error: blkErr4 } = await supabase.from('copils').update({ blocks: c.blocks, updated_at: c.updatedAt }).eq('id', copilId)
+
+    if (blkErr4) throw blkErr4
   }
 
   return {
