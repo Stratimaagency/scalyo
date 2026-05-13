@@ -163,7 +163,7 @@ function scrollBottom() {
 }
 
 async function clearHistory() {
-  if (!confirm(t('coach_clear_confirm') || "Effacer tout l'historique du chat ?")) return
+  if (!confirm(t('coach_clear_confirm'))) return
   await supabase.from('ai_messages').delete().eq('module', 'coach')
   messages.value = []
 }
@@ -204,5 +204,5 @@ async function clearHistory() {
 .send-btn { background: var(--purple); color: #fff; border: none; border-radius: var(--radius-sm); padding: 10px 18px; font-size: 1.1rem; cursor: pointer; transition: all 0.15s; }
 .send-btn:hover:not(:disabled) { background: var(--purple-dark); }
 .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.quota-warning { text-align: center; padding: 8px; font-size: 0.78rem; color: #dc2626; background: #fef2f2; border-top: 1px solid #fecaca; }
+.quota-warning { text-align: center; padding: 8px; font-size: 0.78rem; color: var(--danger, #dc2626); background: var(--danger-bg, #fef2f2); border-top: 1px solid var(--danger-border, #fecaca); }
 </style>

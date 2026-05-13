@@ -100,7 +100,7 @@ const periods = [
 
 const formattedDate = computed(() => {
   const d = new Date()
-  const loc = locale.value === 'ko' ? 'ko-KR' : locale.value === 'en' ? 'en-US' : 'fr-FR'
+  const loc = LOCALE_MAP[locale.value] || 'fr-FR'
   return d.toLocaleDateString(loc, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 })
 
@@ -143,7 +143,7 @@ const visibleKpis = computed(() => {
     const change = snapStore.calcChange(id, currentValue, snapStore.comparePeriod, config.lowerIsBetter)
     return {
       id, icon: config.icon, display,
-      warn: config.lowerIsBetter ? currentValue > 5 : currentValue < 3,
+      warn: config.lowerIsBetter ? currentValue > WARN_THRESHOLD_HIGH : currentValue < WARN_THRESHOLD_LOW,
       change: change?.value ?? null,
       changeLabel: change?.label ?? '',
       changeClass: change?.class ?? 'neutral'
@@ -151,11 +151,19 @@ const visibleKpis = computed(() => {
   }).filter(Boolean)
 })
 
+const LOCALE_MAP = { ko: 'ko-KR', en: 'en-US', fr: 'fr-FR' }
+const WARN_THRESHOLD_LOW = 3
+const WARN_THRESHOLD_HIGH = 5
+
 function formatKpiValue(v, format) {
-  if (v == null) return String.fromCharCode(8212)
-  if (format === 'currency') return String.fromCharCode(8364) + Number(v).toLocaleString()
-  if (format === 'percent') return Number(v).toFixed(1) + '%'
-  if (format === 'decimal') return Number(v).toFixed(1)
+  if (v == null) return '\u2014'
+  const loc = LOCALE_MAP[locale.value] || 'fr-FR'
+  if (format === 'currency') {
+    const cur = locale.value === 'ko' ? 'KRW' : 'EUR'
+    return new Intl.NumberFormat(loc, { style: 'currency', currency: cur, maximumFractionDigits: 0 }).format(v)
+  }
+  if (format === 'percent') return new Intl.NumberFormat(loc, { maximumFractionDigits: 1 }).format(v) + '%'
+  if (format === 'decimal') return new Intl.NumberFormat(loc, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(v)
   return String(v)
 }
 
@@ -202,15 +210,6 @@ const clientsMap = computed(() => {
   return map
 })
 
-const aiContext = computed(() => ({
-  totalClients: clients.clients?.length || 0,
-  totalArr: clients.totalArr || 0,
-  avgHealth: clients.avgHealth || 0,
-  criticalCount: clients.criticalCount || 0,
-  avgNps: clients.avgNps || 0,
-  overdueTasks: tasks.overdueTasks?.length || 0,
-  teamSize: auth.company?.teamSize || 0,
-}))
 </script>
 
 <style scoped>
