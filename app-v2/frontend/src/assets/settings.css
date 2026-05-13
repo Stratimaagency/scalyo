@@ -209,3 +209,54 @@
   .plans-grid { grid-template-columns: 1fr; }
   .sv-tabs { overflow-x: auto; flex-wrap: nowrap; }
 }
+
+
+/* --- Data & Account Deletion --- */
+.sv-btn-secondary {
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.sv-btn-secondary:hover { background: var(--bg-muted); }
+.sv-btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+.sv-btn-ghost {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.sv-btn-ghost:hover { color: var(--text); }
+.sv-input {
+  width: 100%;
+  max-width: 360px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+.sv-input:focus { outline: none; border-color: var(--primary); }
+.sv-field-error { color: #dc2626; font-size: 0.8rem; margin-top: 8px; }
+.sv-field-success { color: #16a34a; font-size: 0.8rem; margin-top: 8px; }
+.sv-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; }
+.delete-confirm { margin-top: 12px; }
+.delete-confirm-msg { font-size: 0.85rem; font-weight: 500; margin-bottom: 4px; }
+.delete-confirm-actions { display: flex; gap: 12px; margin-top: 12px; align-items: center; }
+.sv-portal-btn {
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.sv-portal-btn:hover { background: var(--bg-muted); }
+.sv-portal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
