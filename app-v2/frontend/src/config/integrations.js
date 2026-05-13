@@ -27,7 +27,7 @@ export const CAPABILITY_TYPES = {
 }
 
 export const INTEGRATIONS = {
-  slack: { id: 'slack', name: 'Slack', icon: 'ti-brand-slack', category: 'communication', color: '#4A154B', plan: 'growth', status: 'coming_soon',
+  slack: { id: 'slack', name: 'Slack', icon: 'ti-brand-slack', category: 'communication', color: '#4A154B', plan: 'growth', status: 'available',
     label: { fr: 'Alertes CS dans vos canaux Slack', en: 'CS alerts in your Slack channels', ko: 'Slack \uCC44\uB110\uC5D0\uC11C CS \uC54C\uB9BC' },
     description: { fr: 'Notifications churn, renouvellements et alertes sante directement dans Slack.', en: 'Churn notifications, renewals and health alerts directly in Slack.', ko: 'Slack\uC5D0\uC11C \uC9C1\uC811 \uC774\uD0C8 \uC54C\uB9BC\uACFC \uAC31\uC2E0\uC744 \uBC1B\uC73C\uC138\uC694.' },
     capabilities: ['send_notification', 'webhook_receive'],
@@ -39,7 +39,7 @@ export const INTEGRATIONS = {
       { key: 'notify_health', type: 'toggle', label: { fr: 'Changement sante', en: 'Health changes', ko: '\uAC74\uAC15 \uBCC0\uACBD' }, default: true }
     ]
   },
-  hubspot: { id: 'hubspot', name: 'HubSpot', icon: 'ti-hexagon-letter-h', category: 'crm', color: '#FF7A59', plan: 'growth', status: 'coming_soon',
+  hubspot: { id: 'hubspot', name: 'HubSpot', icon: 'ti-hexagon-letter-h', category: 'crm', color: '#FF7A59', plan: 'growth', status: 'available',
     label: { fr: 'Synchronisez contacts et deals HubSpot', en: 'Sync HubSpot contacts and deals', ko: 'HubSpot \uC5F0\uB77D\uCC98\uC640 \uAC70\uB798 \uB3D9\uAE30\uD654' },
     description: { fr: 'Import auto contacts et opportunites. Enrichissement health score et COPIL.', en: 'Auto-import contacts and opportunities. Enriches health score and COPIL.', ko: '\uC5F0\uB77D\uCC98\uC640 \uAE30\uD68C\uB97C \uC790\uB3D9 \uAC00\uC838\uC635\uB2C8\uB2E4.' },
     capabilities: ['sync_contacts', 'import_deals', 'webhook_receive'],
@@ -49,7 +49,7 @@ export const INTEGRATIONS = {
       { key: 'auto_create', type: 'toggle', label: { fr: 'Creer clients auto', en: 'Auto-create clients', ko: '\uC790\uB3D9 \uD074\uB77C\uC774\uC5B8\uD2B8 \uC0DD\uC131' }, default: false }
     ]
   },
-  intercom: { id: 'intercom', name: 'Intercom', icon: 'ti-message-dots', category: 'support', color: '#286EFA', plan: 'growth', status: 'coming_soon',
+  intercom: { id: 'intercom', name: 'Intercom', icon: 'ti-message-dots', category: 'support', color: '#286EFA', plan: 'growth', status: 'available',
     label: { fr: 'Conversations et tickets Intercom', en: 'Intercom conversations and tickets', ko: 'Intercom \uB300\uD654\uC640 \uD2F0\uCF13' },
     description: { fr: 'Tickets ouverts dans notifications et health score.', en: 'Open tickets surface in notifications and health score.', ko: '\uC5F4\uB9B0 \uD2F0\uCF13\uC774 \uC54C\uB9BC\uACFC \uAC74\uAC15 \uC810\uC218\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4.' },
     capabilities: ['import_tickets', 'sync_contacts', 'webhook_receive'],
@@ -59,7 +59,7 @@ export const INTEGRATIONS = {
       { key: 'health_impact', type: 'toggle', label: { fr: 'Impact health score', en: 'Health score impact', ko: '\uAC74\uAC15 \uC810\uC218 \uC601\uD5A5' }, default: true }
     ]
   },
-  zendesk: { id: 'zendesk', name: 'Zendesk', icon: 'ti-headset', category: 'support', color: '#03363D', plan: 'growth', status: 'coming_soon',
+  zendesk: { id: 'zendesk', name: 'Zendesk', icon: 'ti-headset', category: 'support', color: '#03363D', plan: 'growth', status: 'available',
     label: { fr: 'Support Zendesk centralise', en: 'Centralized Zendesk support', ko: 'Zendesk \uC9C0\uC6D0 \uD1B5\uD569' },
     description: { fr: 'Importez tickets et enrichissez le suivi client avec les donnees support.', en: 'Import tickets and enrich client tracking with support data.', ko: '\uD2F0\uCF13\uC744 \uAC00\uC838\uC624\uACE0 \uACE0\uAC1D \uCD94\uC801\uC744 \uD5A5\uC0C1\uC2DC\uD0B5\uB2C8\uB2E4.' },
     capabilities: ['import_tickets', 'sync_contacts', 'webhook_receive'],
@@ -70,7 +70,7 @@ export const INTEGRATIONS = {
       { key: 'health_impact', type: 'toggle', label: { fr: 'Impact health score', en: 'Health score impact', ko: '\uAC74\uAC15 \uC810\uC218 \uC601\uD5A5' }, default: true }
     ]
   },
-  salesforce: { id: 'salesforce', name: 'Salesforce', icon: 'ti-cloud', category: 'crm', color: '#00A1E0', plan: 'elite', status: 'coming_soon',
+  salesforce: { id: 'salesforce', name: 'Salesforce', icon: 'ti-cloud', category: 'crm', color: '#00A1E0', plan: 'elite', status: 'available',
     label: { fr: 'Synchronisez Salesforce avec Scalyo', en: 'Sync Salesforce with Scalyo', ko: 'Salesforce\uB97C Scalyo\uC640 \uB3D9\uAE30\uD654' },
     description: { fr: 'Comptes, contacts et opportunites CRM synchronises automatiquement.', en: 'Accounts, contacts and CRM opportunities auto-synced.', ko: '\uACC4\uC815, \uC5F0\uB77D\uCC98 \uBC0F CRM \uAE30\uD68C \uC790\uB3D9 \uB3D9\uAE30\uD654.' },
     capabilities: ['sync_contacts', 'import_deals', 'webhook_receive'],
@@ -81,7 +81,7 @@ export const INTEGRATIONS = {
       { key: 'auto_create', type: 'toggle', label: { fr: 'Creer clients auto', en: 'Auto-create clients', ko: '\uC790\uB3D9 \uD074\uB77C\uC774\uC5B8\uD2B8 \uC0DD\uC131' }, default: false }
     ]
   },
-  jira: { id: 'jira', name: 'Jira', icon: 'ti-layout-kanban', category: 'project', color: '#0052CC', plan: 'growth', status: 'coming_soon',
+  jira: { id: 'jira', name: 'Jira', icon: 'ti-layout-kanban', category: 'project', color: '#0052CC', plan: 'growth', status: 'available',
     label: { fr: 'Suivez les tickets produit lies a vos clients', en: 'Track product issues linked to your clients', ko: '\uACE0\uAC1D\uACFC \uC5F0\uACB0\uB41C \uC81C\uD488 \uC774\uC288 \uCD94\uC801' },
     description: { fr: 'Importez les tickets Jira pour voir les demandes produit par client. Les issues ouvertes impactent le health score.', en: 'Import Jira issues to see product requests per client. Open issues impact health score.', ko: 'Jira \uC774\uC288\uB97C \uAC00\uC838\uC640 \uACE0\uAC1D\uBCC4 \uC81C\uD488 \uC694\uCCAD\uC744 \uD655\uC778\uD558\uC138\uC694.' },
     capabilities: ['import_issues', 'sync_contacts', 'webhook_receive'],
@@ -93,7 +93,7 @@ export const INTEGRATIONS = {
       { key: 'health_impact', type: 'toggle', label: { fr: 'Impact health score', en: 'Health score impact', ko: '\uAC74\uAC15 \uC810\uC218 \uC601\uD5A5' }, default: true }
     ]
   },
-  mixpanel: { id: 'mixpanel', name: 'Mixpanel', icon: 'ti-chart-dots', category: 'analytics', color: '#7856FF', plan: 'elite', status: 'coming_soon',
+  mixpanel: { id: 'mixpanel', name: 'Mixpanel', icon: 'ti-chart-dots', category: 'analytics', color: '#7856FF', plan: 'elite', status: 'available',
     label: { fr: 'Donnees usage produit dans le health score', en: 'Product usage data in health score', ko: '\uAC74\uAC15 \uC810\uC218\uC5D0 \uC81C\uD488 \uC0AC\uC6A9 \uB370\uC774\uD130' },
     description: { fr: 'Health score enrichi avec activite utilisateurs. Detectez le desengagement avant le churn.', en: 'Health score enriched with user activity. Detect disengagement before churn.', ko: '\uC0AC\uC6A9\uC790 \uD65C\uB3D9\uC73C\uB85C \uAC74\uAC15 \uC810\uC218 \uD5A5\uC0C1. \uC774\uD0C8 \uC804 \uC774\uD0C8 \uAC10\uC9C0.' },
     capabilities: ['import_usage', 'webhook_receive'],
@@ -104,7 +104,7 @@ export const INTEGRATIONS = {
       { key: 'auto_health', type: 'toggle', label: { fr: 'Mise a jour auto health', en: 'Auto health update', ko: '\uC790\uB3D9 \uAC74\uAC15 \uC5C5\uB370\uC774\uD2B8' }, default: true }
     ]
   },
-  zapier: { id: 'zapier', name: 'Zapier', icon: 'ti-bolt', category: 'automation', color: '#FF4A00', plan: 'growth', status: 'coming_soon',
+  zapier: { id: 'zapier', name: 'Zapier', icon: 'ti-bolt', category: 'automation', color: '#FF4A00', plan: 'growth', status: 'available',
     label: { fr: 'Connectez 5000+ outils via Zapier', en: 'Connect 5000+ tools via Zapier', ko: 'Zapier\uB85C 5000\uAC1C \uC774\uC0C1 \uB3C4\uAD6C \uC5F0\uACB0' },
     description: { fr: 'Declenchez des actions dans vos outils quand un evenement Scalyo se produit.', en: 'Trigger actions in your tools when a Scalyo event happens.', ko: 'Scalyo \uC774\uBCA4\uD2B8 \uBC1C\uC0DD \uC2DC \uB3C4\uAD6C\uC5D0\uC11C \uC791\uC5C5\uC744 \uD2B8\uB9AC\uAC70\uD569\uB2C8\uB2E4.' },
     capabilities: ['webhook_receive', 'send_notification'], webhookBased: true,
@@ -114,7 +114,7 @@ export const INTEGRATIONS = {
       { key: 'trigger_new_client', type: 'toggle', label: { fr: 'Sur nouveau client', en: 'On new client', ko: '\uC0C8 \uACE0\uAC1D \uC2DC' }, default: true }
     ]
   },
-  google_calendar: { id: 'google_calendar', name: 'Google Calendar', icon: 'ti-calendar', category: 'calendar', color: '#4285F4', plan: 'growth', status: 'coming_soon',
+  google_calendar: { id: 'google_calendar', name: 'Google Calendar', icon: 'ti-calendar', category: 'calendar', color: '#4285F4', plan: 'growth', status: 'available',
     label: { fr: 'Rendez-vous clients dans Scalyo', en: 'Client meetings in Scalyo', ko: 'Scalyo\uC5D0\uC11C \uACE0\uAC1D \uBBF8\uD305' },
     description: { fr: 'QBR et onboarding calls dans le timeline client. Ne manquez aucun rendez-vous.', en: 'QBRs and onboarding calls in client timeline. Never miss a meeting.', ko: 'QBR\uACFC \uC628\uBCF4\uB529 \uCF5C\uC774 \uACE0\uAC1D \uD0C0\uC784\uB77C\uC778\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4.' },
     capabilities: ['calendar_sync', 'webhook_receive'],
