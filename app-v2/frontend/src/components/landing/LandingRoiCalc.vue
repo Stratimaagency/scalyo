@@ -67,7 +67,7 @@ const roiChurn = ref(12)
 
 const roiTotalArr = computed(() => roiCsms.value * roiAcc.value * roiArr.value)
 const roiChurnCost = computed(() => Math.round(roiTotalArr.value * roiChurn.value / 100))
-const roiSavedRaw = computed(() => Math.round(roiChurnCost.value * 0.3))
+const roiSavedRaw = computed(() => Math.round(roiChurnCost.value * 0.15))
 const roiSaved = computed(() => {
   const v = roiSavedRaw.value
   if (props.locale === 'ko') return '₩' + v.toLocaleString('ko-KR')
@@ -77,7 +77,7 @@ const roiSaved = computed(() => {
 const roiTimeSaved = computed(() => roiCsms.value * 6)
 const roiMultiplier = computed(() => {
   const cost = roiCsms.value <= 3 ? 79 : roiCsms.value <= 7 ? 119 : 159
-  return Math.max(1, Math.round(roiSavedRaw.value / (cost * 12)))
+  return Math.max(1, Math.round(roiSavedRaw.value / (cost * roiCsms.value * 12)))
 })
 const roiRecommendedPlan = computed(() => {
   if (roiCsms.value <= 3) return props.t('roi_plan_starter')
