@@ -115,6 +115,14 @@ router.beforeEach(async (to) => {
     return { name: 'dashboard' }
   }
   // Onboarding guard
+  // Redirect to paywall if no active plan
+
+  if (authStore.user && !authStore.currentPlan && to.path.startsWith('/app') && to.name !== 'paywall' && to.name !== 'onboarding') {
+
+    return next({ name: 'paywall' })
+
+  }
+
   if (to.meta.requiresAuth && to.name !== 'onboarding' && authStore.profile && !authStore.onboardingCompleted) {
     return { name: 'onboarding' }
   }
