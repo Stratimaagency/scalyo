@@ -19,7 +19,7 @@ keywords:
 hreflang_fr: reduire-churn-saas
 hreflang_en: reduce-saas-churn
 hreflang_ko: saas-churn-reduction
-og_image: https://scalyo.app/og-churn.png
+og_image: https://scalyo.app/og-reduire-churn-saas.png
 ---
 
 ![Analyse de données et métriques de rétention client sur écran](https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80&auto=format)

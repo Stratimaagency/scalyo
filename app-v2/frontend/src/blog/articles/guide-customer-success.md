@@ -19,7 +19,7 @@ keywords:
 hreflang_fr: guide-customer-success
 hreflang_en: customer-success-guide
 hreflang_ko: customer-success-guide-ko
-og_image: https://scalyo.app/og-guide-cs.png
+og_image: https://scalyo.app/og-guide-customer-success.png
 ---
 
 ![Équipe Customer Success analysant un dashboard de performance client](https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=80&auto=format)
