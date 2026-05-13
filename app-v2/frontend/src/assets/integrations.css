@@ -170,3 +170,28 @@
   font-size: 0.88rem; font-weight: 600;
 }
 .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+
+/* --- Setup Modal --- */
+.integ-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.integ-modal { background: #fff; border-radius: 12px; width: 90%; max-width: 520px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+.integ-modal-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+.integ-modal-title { display: flex; align-items: center; gap: 12px; }
+.integ-modal-title h3 { font-size: 1.1rem; font-weight: 700; margin: 0; }
+.integ-modal-head button { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.2rem; }
+.integ-icon-sm { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+.integ-modal-body { padding: 24px; }
+.integ-setup-steps { background: var(--bg-muted, #f8f9fa); border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+.integ-steps-label { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin: 0 0 8px; }
+.integ-steps-text { font-size: 0.85rem; line-height: 1.7; white-space: pre-line; margin: 0; font-family: inherit; color: var(--text); }
+.integ-help-link { display: inline-flex; align-items: center; gap: 4px; font-size: 0.8rem; color: var(--primary, #6366f1); margin-top: 8px; text-decoration: none; }
+.integ-help-link:hover { text-decoration: underline; }
+.integ-field { margin-bottom: 16px; }
+.integ-field label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+.integ-input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; }
+.integ-input:focus { outline: none; border-color: var(--primary, #6366f1); box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+.integ-error { color: #dc2626; font-size: 0.8rem; margin: 8px 0; }
+.integ-success { color: #16a34a; font-size: 0.8rem; margin: 8px 0; }
+.integ-modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+.btn-ghost { padding: 10px 20px; border: none; background: none; color: var(--text-muted); font-size: 0.85rem; cursor: pointer; border-radius: 8px; }
+.btn-ghost:hover { background: var(--bg-muted, #f8f9fa); }

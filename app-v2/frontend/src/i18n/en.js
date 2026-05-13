@@ -300,6 +300,14 @@ export default {
   integ_test_btn: 'Test connection', integ_testing: 'Testing...', integ_test_ok: 'â Connection successful! {n} items found', integ_test_fail: 'â Error: check your credentials',
   integ_launch_sync: 'Launch first synchronization', integ_connected: 'â Connected', integ_last_sync: 'Last sync: {time} ago',
   integ_sync_now: 'Sync now', integ_configure: 'Configure', integ_disconnect: 'Disconnect', integ_disconnect_confirm: 'Disconnect {name}? Imported data will not be deleted.',
+  integ_setup_steps: 'How to get your credentials',
+  integ_help_link: 'Documentation',
+  integ_save_error: 'Save failed. Check your credentials.',
+  integ_save_success: 'Integration connected.',
+  integ_saving: 'Connecting...',
+  integ_update: 'Update',
+  integ_cancel: 'Cancel',
+  integ_disconnect_confirm: 'Are you sure you want to disconnect this integration?',
   integ_summary: 'Connection summary', integ_items_found: '{n} items found', integ_next: 'Next', integ_prev: 'Back',
   stg_title: 'Settings', stg_subtitle: 'Manage your account, team and subscription', stg_tab_profile: 'Profile', stg_tab_team: 'Team', stg_tab_billing: 'Billing', stg_tab_notif: 'Notifications', stg_tab_appearance: 'Appearance', stg_tab_delete: 'â ï¸ Delete my account', stg_account_info: 'Account information', stg_display_name: 'Display name', stg_email: 'Email', stg_company_name: 'Company name', stg_change_pwd: 'Change password', stg_current_pwd: 'Current password', stg_new_pwd: 'New password', stg_confirm_pwd: 'Confirm', stg_pwd_hint: 'Min. 8 characters', stg_change_btn: 'Change password',
 
