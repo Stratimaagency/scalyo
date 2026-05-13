@@ -1034,6 +1034,7 @@ export default {
   stg_manage_sub: 'Manage subscription',
   stg_portal_loading: 'Loading...',
   stg_portal_error: 'Could not open billing portal. Please try again.',
+  stg_sub_ends: 'Subscription active until',
   stg_per_seat: 'seat/mo',
   stg_currency: '\u20ac',
   stg_per_month: 'month',

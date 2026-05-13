@@ -1034,6 +1034,7 @@ export default {
   stg_manage_sub: '\uad6c\ub3c5 \uad00\ub9ac',
   stg_portal_loading: '\ub85c\ub529 \uc911...',
   stg_portal_error: '\uacb0\uc81c \ud3ec\ud138\uc744 \uc5f4 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. \ub2e4\uc2dc \uc2dc\ub3c4\ud574 \uc8fc\uc138\uc694.',
+  stg_sub_ends: '\uad6c\ub3c5 \ud65c\uc131 \uae30\uac04',
   stg_per_seat: '\uc2dc\ud2b8/\uc6d4',
   stg_currency: '\u20ac',
   stg_per_month: 'ì',

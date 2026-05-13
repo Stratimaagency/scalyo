@@ -110,6 +110,7 @@ async function handleSubscriptionUpdated(subscription, config) {
   if (subscription.status === 'canceled' || subscription.status === 'unpaid') {
     return await updateProfile(config, userId, {
       plan: null, seats_paid: 0, stripe_subscription_id: null,
+      subscription_end_date: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null,
     })
   }
   const items = subscription.items?.data || []
@@ -119,6 +120,7 @@ async function handleSubscriptionUpdated(subscription, config) {
   if (!plan) return false
   return await updateProfile(config, userId, {
     plan, seats_paid: item.quantity || 1, stripe_subscription_id: subscription.id,
+      subscription_end_date: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null,
   })
 }
 
@@ -128,6 +130,7 @@ async function handleSubscriptionDeleted(subscription, config) {
   if (!userId) return false
   return await updateProfile(config, userId, {
     plan: null, seats_paid: 0, stripe_subscription_id: null,
+      subscription_end_date: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null,
   })
 }
 

@@ -260,3 +260,5 @@
 }
 .sv-portal-btn:hover { background: var(--bg-muted); }
 .sv-portal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.bp-end-date { font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; }

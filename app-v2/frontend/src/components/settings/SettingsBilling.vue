@@ -24,6 +24,10 @@
             }}
           </span>
         </div>
+        <p v-if="auth.profile?.subscription_end_date" class="bp-end-date">
+          {{ t('stg_sub_ends') }}
+          {{ new Date(auth.profile.subscription_end_date).toLocaleDateString(locale || 'fr', { year: 'numeric', month: 'long', day: 'numeric' }) }}
+        </p>
         <button
           v-if="auth.hasActiveSubscription"
           class="sv-portal-btn"
@@ -73,7 +77,7 @@ import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { supabase } from '@/lib/supabase'
 
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
 const auth = useAuthStore()
 
 const email = computed(() => auth.user?.email || '')

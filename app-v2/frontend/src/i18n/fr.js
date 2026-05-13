@@ -1581,6 +1581,7 @@ export default {
   stg_manage_sub: 'Gérer mon abonnement',
   stg_portal_loading: 'Chargement...',
   stg_portal_error: 'Impossible d\'ouvrir le portail. Réessayez.',
+  stg_sub_ends: 'Abonnement actif jusqu\'au',
   stg_per_seat: 'siège/mois',
   stg_currency: '€',
   stg_per_month: 'mois',
