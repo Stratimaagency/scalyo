@@ -23,20 +23,23 @@ const i18n = {
   fr: {
     nav_blog: 'Blog', nav_features: 'Fonctionnalités', nav_pricing: 'Tarifs', nav_cta: 'Essai gratuit',
     cta_title: 'Prêt à transformer votre Customer Success ?',
-    cta_body: 'Essayez Scalyo gratuitement pendant 14 jours. Aucune carte bancaire requise.',
-    cta_btn: 'Commencer l\'essai gratuit →',
+    cta_body: 'Scalyo aide les équipes CS à réduire le churn et augmenter la rétention nette.',
+    cta_btn: 'Commencer →',
+    sub_title: 'Recevez nos meilleurs contenus CS', sub_desc: 'Stratégies, frameworks et retours d\'expérience pour les leaders Customer Success. Un email par semaine, zéro spam.', sub_placeholder: 'votre@email.com', sub_btn: 'S\'inscrire', sub_privacy: 'Vos données restent privées. Désinscription en un clic.', sub_success: 'Bienvenue ! Vous recevrez notre prochain article.', sub_already: 'Vous êtes déjà inscrit(e).', sub_error: 'Une erreur est survenue, réessayez.',
   },
   en: {
     nav_blog: 'Blog', nav_features: 'Features', nav_pricing: 'Pricing', nav_cta: 'Free Trial',
     cta_title: 'Ready to transform your Customer Success?',
-    cta_body: 'Try Scalyo free for 14 days. No credit card required.',
-    cta_btn: 'Start free trial →',
+    cta_body: 'Scalyo helps CS teams reduce churn and boost net retention.',
+    cta_btn: 'Get started →',
+    sub_title: 'Get our best CS content', sub_desc: 'Strategies, frameworks and insights for Customer Success leaders. One email per week, zero spam.', sub_placeholder: 'your@email.com', sub_btn: 'Subscribe', sub_privacy: 'Your data stays private. Unsubscribe in one click.', sub_success: 'Welcome! You\'ll receive our next article.', sub_already: 'You\'re already subscribed.', sub_error: 'Something went wrong, please try again.',
   },
   ko: {
     nav_blog: '블로그', nav_features: '기능', nav_pricing: '요금', nav_cta: '무료 체험',
     cta_title: 'Customer Success를 혁신할 준비가 되셨나요?',
-    cta_body: '14일 무료 체험. 신용카드 불필요.',
-    cta_btn: '무료 체험 시작 →',
+    cta_body: 'Scalyo는 CS 팀의 이탈률 감소와 순유지율 향상을 지원합니다.',
+    cta_btn: '시작하기 →',
+    sub_title: '최고의 CS 콘텐츠를 받아보세요', sub_desc: 'Customer Success 리더를 위한 전략, 프레임워크, 인사이트. 주 1회 이메일, 스팸 없음.', sub_placeholder: 'your@email.com', sub_btn: '구독하기', sub_privacy: '개인정보는 안전하게 보호됩니다. 원클릭 구독 해지.', sub_success: '환영합니다! 다음 기사를 보내드리겠습니다.', sub_already: '이미 구독 중입니다.', sub_error: '오류가 발생했습니다. 다시 시도해주세요.',
   },
 }
 
@@ -116,6 +119,10 @@ for (const article of articles) {
     .replace(/{{nav_pricing}}/g, t.nav_pricing).replace(/{{nav_cta}}/g, t.nav_cta)
     .replace(/{{cta_title}}/g, t.cta_title).replace(/{{cta_body}}/g, t.cta_body)
     .replace(/{{cta_btn}}/g, t.cta_btn)
+    .replace(/{{sub_title}}/g, t.sub_title).replace(/{{sub_desc}}/g, t.sub_desc)
+    .replace(/{{sub_placeholder}}/g, t.sub_placeholder).replace(/{{sub_btn}}/g, t.sub_btn)
+    .replace(/{{sub_privacy}}/g, t.sub_privacy).replace(/{{sub_success}}/g, t.sub_success)
+    .replace(/{{sub_already}}/g, t.sub_already).replace(/{{sub_error}}/g, t.sub_error)
 
   const outDir = join(DIST_DIR, 'blog', slug)
   mkdirSync(outDir, { recursive: true })

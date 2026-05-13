@@ -86,6 +86,35 @@
             .blog-cta { padding: 28px 20px; }
             .blog-nav-links { display: none; }
         }
+    
+    .blog-newsletter {
+        max-width: 680px; margin: 3rem auto; padding: 2.5rem;
+        background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+        border-radius: 16px; text-align: center;
+    }
+    .blog-newsletter h3 { font-size: 1.35rem; color: #1e1b4b; margin: 0 0 .5rem; }
+    .blog-newsletter p { color: #4c4565; font-size: 0.95rem; margin: 0 0 1.25rem; }
+    .blog-newsletter form { display: flex; gap: .5rem; max-width: 440px; margin: 0 auto; }
+    .blog-newsletter input[type=email] {
+        flex: 1; padding: .75rem 1rem; border: 1px solid #c4b5fd; border-radius: 8px;
+        font-size: .95rem; outline: none; transition: border-color .2s;
+    }
+    .blog-newsletter input[type=email]:focus { border-color: #7c3aed; }
+    .blog-newsletter button {
+        padding: .75rem 1.5rem; background: #7c3aed; color: #fff; border: none;
+        border-radius: 8px; font-weight: 600; font-size: .95rem; cursor: pointer;
+        transition: background .2s; white-space: nowrap;
+    }
+    .blog-newsletter button:hover { background: #6d28d9; }
+    .blog-newsletter button:disabled { background: #a78bfa; cursor: default; }
+    .blog-newsletter-privacy { font-size: .78rem; color: #6b7280; margin-top: .75rem; }
+    .blog-newsletter-msg { font-size: .9rem; margin-top: .75rem; }
+    .blog-newsletter-msg.ok { color: #059669; }
+    .blog-newsletter-msg.err { color: #dc2626; }
+    @media (max-width: 600px) {
+        .blog-newsletter form { flex-direction: column; }
+        .blog-newsletter { padding: 1.5rem; }
+    }
     </style>
 </head>
 <body>
@@ -127,9 +156,35 @@
     </div>
 </article>
 
+<section class="blog-newsletter" id="newsletter">
+    <h3>{{sub_title}}</h3>
+    <p>{{sub_desc}}</p>
+    <div id="blog-sub-form" style="display:flex;gap:.5rem;max-width:440px;margin:0 auto">
+        <input type="email" id="sub-email" placeholder="{{sub_placeholder}}" required>
+        <button type="button" id="sub-btn" onclick="blogSubscribe()">{{sub_btn}}</button>
+    </div>
+    <p class="blog-newsletter-privacy">{{sub_privacy}}</p>
+    <p class="blog-newsletter-msg" id="sub-msg" style="display:none"></p>
+</section>
+
 <footer class="blog-footer">
     <p>© 2026 <a href="/">Scalyo</a> · <a href="/blog">Blog</a> · <a href="/cgu">CGU</a> · <a href="/privacy">Confidentialité</a></p>
 </footer>
 
+
+<script>
+function blogSubscribe(){
+  var btn=document.getElementById('sub-btn'),em=document.getElementById('sub-email'),msg=document.getElementById('sub-msg');
+  if(!em.value||!em.checkValidity()){em.focus();return}
+  btn.disabled=true;msg.style.display='none';
+  fetch('/api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em.value,locale:document.documentElement.lang||'fr',source:location.pathname})})
+  .then(function(r){return r.json()}).then(function(d){
+    msg.style.display='block';
+    if(d.ok){msg.className='blog-newsletter-msg ok';msg.textContent=d.already?'{{sub_already}}':'{{sub_success}}';em.value=''}
+    else{msg.className='blog-newsletter-msg err';msg.textContent='{{sub_error}}'}
+    btn.disabled=false
+  }).catch(function(){msg.style.display='block';msg.className='blog-newsletter-msg err';msg.textContent='{{sub_error}}';btn.disabled=false})
+}
+</script>
 </body>
 </html>
