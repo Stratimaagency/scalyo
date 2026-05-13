@@ -3,7 +3,7 @@
  * Each user connects their own account via API key / webhook URL
  */
 
-const CATEGORIES = {
+export const CATEGORIES = {
   crm: { id: 'crm', icon: 'ti-address-book', label: { fr: 'CRM', en: 'CRM', ko: 'CRM' } },
   communication: { id: 'communication', icon: 'ti-message', label: { fr: 'Communication', en: 'Communication', ko: '커뮤니케이션' } },
   support: { id: 'support', icon: 'ti-headset', label: { fr: 'Support', en: 'Support', ko: '지원' } },
@@ -13,7 +13,7 @@ const CATEGORIES = {
   project: { id: 'project', icon: 'ti-layout-kanban', label: { fr: 'Gestion de projet', en: 'Project management', ko: '프로젝트 관리' } }
 }
 
-const CAPABILITIES = {
+export const CAPABILITY_TYPES = {
   sync_contacts: { icon: 'ti-users', label: { fr: 'Sync contacts', en: 'Sync contacts', ko: '연락처 동기화' } },
   send_notification: { icon: 'ti-bell', label: { fr: 'Notifications', en: 'Notifications', ko: '알림' } },
   import_tickets: { icon: 'ti-ticket', label: { fr: 'Import tickets', en: 'Import tickets', ko: '티켓 가져오기' } },
@@ -124,6 +124,8 @@ export const INTEGRATIONS = {
   }
 }
 
+export function getIntegration(id) { return INTEGRATIONS[id] || null }
+
 export function getIntegrationsByCategory(locale = 'fr') {
   const cats = {}
   for (const integ of Object.values(INTEGRATIONS)) {
@@ -136,8 +138,14 @@ export function getIntegrationsByCategory(locale = 'fr') {
   return Object.values(cats)
 }
 
+export function getAvailableForPlan(plan) {
+  const order = { starter: 0, growth: 1, elite: 2, enterprise: 3 }
+  const level = order[plan] ?? -1
+  return Object.values(INTEGRATIONS).filter(i => (order[i.plan] ?? 0) <= level)
+}
+
 export function getCapabilityInfo(capId, locale = 'fr') {
-  const cap = CAPABILITIES[capId]
+  const cap = CAPABILITY_TYPES[capId]
   if (!cap) return { icon: 'ti-plug', label: capId }
   return { icon: cap.icon, label: cap.label[locale] || cap.label.fr }
 }
