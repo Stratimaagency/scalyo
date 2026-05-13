@@ -4,16 +4,17 @@ export async function onRequestGet(context) {
   const { request, env } = context
   const url = new URL(request.url)
   const provider = url.searchParams.get('provider')
-  if (!provider || !INTEGRATIONS[provider]) return Response.json({ error: 'invalid_provider' }, { status: 400 })
+  const appUrl = url.origin + '/app/integrations'
+  if (!provider || !INTEGRATIONS[provider]) return Response.redirect(appUrl + '?integration_error=invalid_provider', 302)
   const integration = INTEGRATIONS[provider]
-  if (!integration.oauth?.authUrl) return Response.json({ error: 'oauth_not_configured' }, { status: 400 })
+  if (!integration.oauth?.authUrl) return Response.redirect(appUrl + '?integration_error=oauth_not_configured', 302)
   const clientId = env[integration.oauth.envKey]
-  if (!clientId) return Response.json({ error: 'provider_not_configured' }, { status: 503 })
+  if (!clientId) return Response.redirect(appUrl + '?integration_error=not_configured', 302)
   const authHeader = request.headers.get('Authorization')
-  if (!authHeader) return Response.json({ error: 'unauthorized' }, { status: 401 })
+  if (!authHeader) return Response.redirect(appUrl + '?integration_error=unauthorized', 302)
   const supabaseUrl = env.SUPABASE_URL || 'https://hcqninmpmzpqjtedyjyj.supabase.co'
   const userRes = await fetch(supabaseUrl + '/auth/v1/user', { headers: { 'Authorization': authHeader, 'apikey': env.SUPABASE_SERVICE_ROLE_KEY } })
-  if (!userRes.ok) return Response.json({ error: 'unauthorized' }, { status: 401 })
+  if (!userRes.ok) return Response.redirect(appUrl + '?integration_error=unauthorized', 302)
   const user = await userRes.json()
   const state = btoa(JSON.stringify({ uid: user.id, provider, ts: Date.now() }))
   const redirectUri = url.origin + '/api/integrations/callback'
