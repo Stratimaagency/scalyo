@@ -2103,4 +2103,20 @@ export default {
   integ_error: 'Connection error',
   integ_success: 'Integration connected',
 
+  // Alpha
+  alpha_code_label: 'Invitation code',
+  alpha_code_placeholder: 'Enter your code',
+  alpha_code_verify: 'Verify',
+  alpha_code_invalid: 'Invalid invitation code.',
+  alpha_code_error: 'Verification error. Please retry.',
+  alpha_access_granted: 'Alpha access verified',
+  // Feedback
+  feedback_title: 'Feedback',
+  feedback_placeholder: 'Describe the issue or your suggestion...',
+  feedback_send: 'Send',
+  feedback_thanks: 'Thank you for your feedback!',
+  feedback_cat_bug: 'Bug',
+  feedback_cat_ux: 'UX',
+  feedback_cat_feature: 'Idea',
+  feedback_cat_other: 'Other',
 }

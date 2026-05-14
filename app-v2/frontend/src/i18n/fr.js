@@ -2159,4 +2159,20 @@ export default {
   integ_error: 'Erreur de connexion',
   integ_success: 'Integration connectee',
 
+  // Alpha
+  alpha_code_label: "Code d'invitation",
+  alpha_code_placeholder: 'Entrez votre code',
+  alpha_code_verify: 'Vérifier',
+  alpha_code_invalid: "Code d'invitation invalide.",
+  alpha_code_error: 'Erreur de vérification. Réessayez.',
+  alpha_access_granted: 'Accès alpha vérifié',
+  // Feedback
+  feedback_title: 'Feedback',
+  feedback_placeholder: 'Décrivez le problème ou votre suggestion...',
+  feedback_send: 'Envoyer',
+  feedback_thanks: 'Merci pour votre retour !',
+  feedback_cat_bug: 'Bug',
+  feedback_cat_ux: 'UX',
+  feedback_cat_feature: 'Idée',
+  feedback_cat_other: 'Autre',
 }

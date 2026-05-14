@@ -2103,4 +2103,20 @@ export default {
   integ_error: '\uC5F0\uACB0 \uC624\uB958',
   integ_success: '\uD1B5\uD569 \uC5F0\uACB0\uB428',
 
+  // Alpha
+  alpha_code_label: '초대 코드',
+  alpha_code_placeholder: '코드를 입력하세요',
+  alpha_code_verify: '확인',
+  alpha_code_invalid: '유효하지 않은 초대 코드입니다.',
+  alpha_code_error: '확인 오류. 다시 시도하세요.',
+  alpha_access_granted: '알파 액세스 확인됨',
+  // Feedback
+  feedback_title: '피드백',
+  feedback_placeholder: '문제 또는 제안 사항을 설명해 주세요...',
+  feedback_send: '보내기',
+  feedback_thanks: '피드백 감사합니다!',
+  feedback_cat_bug: '버그',
+  feedback_cat_ux: 'UX',
+  feedback_cat_feature: '아이디어',
+  feedback_cat_other: '기타',
 }
