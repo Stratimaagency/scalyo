@@ -1,6 +1,5 @@
-// POST /api/alpha/verify — Validate alpha invite code
-// Compares submitted code against ALPHA_INVITE_CODE env var
-// Returns 200 { valid: true } or 403 { valid: false }
+// POST /api/alpha/verify — Validate promo/alpha code against promo_codes table
+// Returns 200 { valid: true, plan, maxSeats, validDays } or 403
 
 import { jsonResponse, errorResponse } from '../_utils/response.js'
 import { t } from '../_i18n/messages.js'
@@ -8,13 +7,13 @@ import { t } from '../_i18n/messages.js'
 export async function onRequestPost(context) {
   const { request, env } = context
 
-  // Validate env var exists
-  const validCode = env.ALPHA_INVITE_CODE
-  if (!validCode) {
+  const supabaseUrl = env.SUPABASE_URL
+  const supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !supabaseKey) {
     return errorResponse(503, t('alpha_not_configured', 'en'))
   }
 
-  // Parse body
   let body
   try {
     body = await request.json()
@@ -24,29 +23,42 @@ export async function onRequestPost(context) {
 
   const { code, lang = 'fr' } = body
 
-  // Validate input
   if (!code || typeof code !== 'string' || code.trim().length === 0) {
     return errorResponse(400, t('alpha_code_required', lang))
   }
 
-  // Constant-time comparison
-  const submitted = code.trim().toUpperCase()
-  const expected = validCode.trim().toUpperCase()
+  const normalizedCode = code.trim().toUpperCase()
 
-  if (submitted.length !== expected.length) {
-    return errorResponse(403, t('alpha_code_invalid', lang))
-  }
+  try {
+    const url = `${supabaseUrl}/rest/v1/promo_codes?code=eq.${encodeURIComponent(normalizedCode)}&status=eq.active&select=id,code,plan,max_seats,valid_days,status`
 
-  let match = true
-  for (let i = 0; i < expected.length; i++) {
-    if (submitted.charCodeAt(i) !== expected.charCodeAt(i)) {
-      match = false
+    const resp = await fetch(url, {
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Accept': 'application/json',
+      },
+    })
+
+    if (!resp.ok) {
+      return errorResponse(500, t('server_error', lang))
     }
-  }
 
-  if (!match) {
-    return errorResponse(403, t('alpha_code_invalid', lang))
-  }
+    const rows = await resp.json()
 
-  return jsonResponse({ valid: true })
+    if (!rows || rows.length === 0) {
+      return errorResponse(403, t('alpha_code_invalid', lang))
+    }
+
+    const promo = rows[0]
+
+    return jsonResponse({
+      valid: true,
+      plan: promo.plan,
+      maxSeats: promo.max_seats,
+      validDays: promo.valid_days,
+    })
+  } catch {
+    return errorResponse(500, t('server_error', lang))
+  }
 }
