@@ -121,6 +121,9 @@
     <!-- ONBOARDING -->
     <OnboardingWizard />
 
+    <!-- ALPHA FEEDBACK -->
+    <FeedbackWidget />
+
     <!-- AI AGENT -->
     <AiAssistant v-if="isEliteOrAbove" />
 
@@ -146,6 +149,7 @@ import ScalyoLogo from '@/components/ScalyoLogo.vue'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
 import AiAssistant from '@/components/ai/AiAssistant.vue'
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard.vue'
+import FeedbackWidget from '@/components/FeedbackWidget.vue'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notifications'
