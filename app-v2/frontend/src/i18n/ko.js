@@ -2153,4 +2153,6 @@ export default {
   join_submit: '참여',
   join_success_title: '환영합니다!',
   join_success_subtitle: '조직에 참여했습니다.',
+  // Navigation
+  nav_team: '팀',
 }

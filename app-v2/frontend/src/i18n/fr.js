@@ -2209,4 +2209,6 @@ export default {
   join_submit: 'Rejoindre',
   join_success_title: 'Bienvenue !',
   join_success_subtitle: 'Vous avez rejoint l\'organisation.',
+  // Navigation
+  nav_team: 'Équipe',
 }
