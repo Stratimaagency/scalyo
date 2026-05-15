@@ -46,6 +46,7 @@ const routes = [
       { path: 'integrations', name: 'integrations', component: () => import('@/views/IntegrationsView.vue') },
       { path: 'integrations', name: 'integrations', component: () => import('@/views/IntegrationsView.vue') },
       { path: 'settings', name: 'settings', component: () => import('@/views/SettingsView.vue') },
+      { path: 'team', name: 'team', component: () => import('@/views/TeamManagementView.vue') },
         { path: 'profile', name: 'profile', component: () => import('@/views/ProfileView.vue'), meta: { requiresAuth: true } },
       { path: 'resources', name: 'resources', redirect: { name: 'resources-library' } },
       { path: 'resources/library', name: 'resources-library', component: () => import('@/views/resources/LibraryView.vue') },
