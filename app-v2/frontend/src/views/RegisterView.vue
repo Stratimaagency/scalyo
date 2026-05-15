@@ -162,6 +162,7 @@ async function verifyCode() {
 
     if (resp.ok && data.valid) {
       codeVerified.value = true
+      localStorage.setItem('scalyo_promo_code', JSON.stringify({ code: inviteCode.value.trim(), plan: data.plan, maxSeats: data.maxSeats, validDays: data.validDays }))
     } else {
       codeError.value = data.error || t('alpha_code_invalid')
     }
@@ -202,6 +203,26 @@ async function handleRegister() {
   loading.value = false
 
   if (result.success) {
+    // Activate promo code — create org + owner
+    try {
+      const promoData = JSON.parse(localStorage.getItem('scalyo_promo_code') || '{}')
+      if (promoData.code && result.user?.id) {
+        await fetch('/api/alpha/activate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            code: promoData.code,
+            userId: result.user.id,
+            email: email.value,
+            companyName: '',
+            lang: currentLocale.value
+          })
+        })
+        localStorage.removeItem('scalyo_promo_code')
+      }
+    } catch (e) {
+      console.error('Promo activation error:', e)
+    }
     success.value = true
   } else {
     errorMsg.value = result.error
