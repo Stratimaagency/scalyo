@@ -50,8 +50,34 @@ export async function onRequestPost(context) {
       role: role,
     })
 
-    // TODO: Send email via Resend with link scalyo.app/join?token=invitation.token
-    // Will be added when Resend integration is wired
+    // Send invitation email via Resend
+    if (env.RESEND_API_KEY) {
+      try {
+        const joinUrl = 'https://scalyo.app/join?token=' + invitation.token
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + env.RESEND_API_KEY,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'Scalyo <noreply@scalyo.app>',
+            to: [normalizedEmail],
+            subject: org.name + ' vous invite sur Scalyo',
+            html: [
+              '<div style="font-family:system-ui,-apple-system,sans-serif;max-width:480px;margin:0 auto;padding:40px 20px">',
+              '<h2 style="color:#111827;margin-bottom:8px">Rejoignez ' + org.name + ' sur Scalyo</h2>',
+              '<p style="color:#6b7280;font-size:15px;line-height:1.6">Vous avez \u00e9t\u00e9 invit\u00e9(e) \u00e0 rejoindre l\u2019\u00e9quipe en tant que <strong>' + role + '</strong>.</p>',
+              '<a href="' + joinUrl + '" style="display:inline-block;background:#7c3aed;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;margin:20px 0">Accepter l\u2019invitation</a>',
+              '<p style="color:#9ca3af;font-size:13px">Ce lien expire dans 7 jours. Si vous n\u2019avez pas demand\u00e9 cette invitation, ignorez cet email.</p>',
+              '</div>'
+            ].join('')
+          })
+        })
+      } catch (emailErr) {
+        console.error('Invitation email error:', emailErr.message)
+      }
+    }
 
     return jsonResponse({ invitation: { id: invitation.id, email: invitation.email, role: invitation.role, token: invitation.token, status: invitation.status, expires_at: invitation.expires_at } })
   } catch (err) {
