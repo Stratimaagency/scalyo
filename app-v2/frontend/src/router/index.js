@@ -89,6 +89,12 @@ const routes = [
     component: () => import('@/views/SupportView.vue')
   },
   {
+    path: '/join',
+    name: 'join',
+    component: () => import('@/views/JoinView.vue'),
+    meta: { guest: true }
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/NotFoundView.vue')
