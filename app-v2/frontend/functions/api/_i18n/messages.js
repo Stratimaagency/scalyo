@@ -70,14 +70,13 @@ const messages = {
     en: 'Invalid invitation code.',
     ko: '유효하지 않은 초대 코드입니다.',
   },
-}
   // Invite email
   invite_email_subject: {
     fr: 'Vous êtes invité(e) sur Scalyo',
     en: 'You are invited to Scalyo',
     ko: 'Scalyo에 초대되었습니다',
   },
-
+}
 
 export function t(key, lang = 'fr') {
   const msg = messages[key]
