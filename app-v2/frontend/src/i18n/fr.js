@@ -39,6 +39,7 @@ export default {
   sidebar_import: 'Import intelligent',
   sidebar_integrations: 'Intégrations',
   sidebar_settings: 'Paramètres',
+  nav_team: 'Mon équipe',
 
   // Topbar
   topbar_search: 'Rechercher...',

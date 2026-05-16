@@ -37,6 +37,7 @@ export default {
   sidebar_import: 'Smart Import',
   sidebar_integrations: 'Integrations',
   sidebar_settings: 'Settings',
+  nav_team: 'My Team',
 
   topbar_search: 'Search...',
   topbar_notifications: 'Notifications',
