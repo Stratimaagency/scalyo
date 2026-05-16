@@ -280,7 +280,7 @@ const sidebarSections = [
     label: '',
     items: [
       { name: 'profile',  icon: '👤', label: 'sidebar_profile',  to: '/app/profile'  },
-      { name: 'team', icon: 'users', label: 'nav_team' },
+      { name: 'team', icon: '👥', label: 'nav_team', to: '/app/team' },
       { name: 'settings', icon: '⚙️', label: 'sidebar_settings', to: '/app/settings' },
     ],
   },
