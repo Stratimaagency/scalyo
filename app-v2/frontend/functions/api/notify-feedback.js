@@ -52,7 +52,7 @@ export async function onRequestPost(context) {
       body: JSON.stringify({
         from: 'Scalyo Alerts <contact@scalyo.app>',
         to: ['contact@scalyo.app'],
-        subject: '[Alpha] ' + escapeHtml(record.category) + ' — ' + escapeHtml(record.page_route),
+        subject: '[Alpha] ' + escapeHtml(record.category) + ' \u2014 ' + escapeHtml(record.page_route),
         html: [
           '<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:600px;margin:0 auto;">',
           '<h2 style="color:#1a1a1a;margin-bottom:24px;">Nouveau feedback alpha</h2>',
