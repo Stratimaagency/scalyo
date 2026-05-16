@@ -1,7 +1,7 @@
 // PATCH /api/members/seats — Update seat quantity (Stripe sync)
-import { jsonResponse, errorResponse } from '../../_utils/response.js'
-import { createSupabaseClient, getAuthUser, getUserMembership } from '../../_utils/supabase.js'
-import { canPerform } from '../../_config/plans.config.js'
+import { jsonResponse, errorResponse } from '../_utils/response.js'
+import { createSupabaseClient, getAuthUser, getUserMembership } from '../_utils/supabase.js'
+import { canPerform } from '../_config/plans.config.js'
 
 export async function onRequestPatch(context) {
   const { request, env } = context

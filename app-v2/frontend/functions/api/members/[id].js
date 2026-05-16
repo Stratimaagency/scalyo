@@ -1,7 +1,7 @@
 // DELETE /api/members/[id] — Remove a member from the org
-import { jsonResponse, errorResponse } from '../../_utils/response.js'
-import { createSupabaseClient, getAuthUser, getUserMembership } from '../../_utils/supabase.js'
-import { canPerform, isRoleAbove } from '../../_config/plans.config.js'
+import { jsonResponse, errorResponse } from '../_utils/response.js'
+import { createSupabaseClient, getAuthUser, getUserMembership } from '../_utils/supabase.js'
+import { canPerform, isRoleAbove } from '../_config/plans.config.js'
 
 export async function onRequestDelete(context) {
   const { request, env, params } = context

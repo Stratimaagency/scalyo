@@ -1,8 +1,8 @@
 // POST /api/invite — Send team invitation
-import { jsonResponse, errorResponse } from '../_utils/response.js'
-import { createSupabaseClient, getAuthUser, getUserMembership } from '../_utils/supabase.js'
-import { canPerform, canAddSeat, canAddViewer, getAvailableRolesForInvite, ORG_SETTINGS } from '../_config/plans.config.js'
-import { t } from '../_i18n/messages.js'
+import { jsonResponse, errorResponse } from './_utils/response.js'
+import { createSupabaseClient, getAuthUser, getUserMembership } from './_utils/supabase.js'
+import { canPerform, canAddSeat, canAddViewer, getAvailableRolesForInvite, ORG_SETTINGS } from './_config/plans.config.js'
+import { t } from './_i18n/messages.js'
 
 export async function onRequestPost(context) {
   const { request, env } = context

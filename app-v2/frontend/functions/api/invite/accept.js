@@ -1,6 +1,6 @@
 // POST /api/invite/accept — Accept invitation and join org
-import { jsonResponse, errorResponse } from '../../_utils/response.js'
-import { createSupabaseClient, getAuthUser } from '../../_utils/supabase.js'
+import { jsonResponse, errorResponse } from '../_utils/response.js'
+import { createSupabaseClient, getAuthUser } from '../_utils/supabase.js'
 
 export async function onRequestPost(context) {
   const { request, env } = context

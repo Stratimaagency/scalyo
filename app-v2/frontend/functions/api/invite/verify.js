@@ -1,6 +1,6 @@
 // GET /api/invite/verify?token=xxx — Public: verify invitation token
-import { jsonResponse, errorResponse } from '../../_utils/response.js'
-import { createSupabaseClient } from '../../_utils/supabase.js'
+import { jsonResponse, errorResponse } from '../_utils/response.js'
+import { createSupabaseClient } from '../_utils/supabase.js'
 
 export async function onRequestGet(context) {
   const { request, env } = context

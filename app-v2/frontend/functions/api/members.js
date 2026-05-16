@@ -1,7 +1,7 @@
 // GET /api/members — List org members + pending invitations
-import { jsonResponse, errorResponse } from '../_utils/response.js'
-import { createSupabaseClient, getAuthUser, getUserMembership } from '../_utils/supabase.js'
-import { t } from '../_i18n/messages.js'
+import { jsonResponse, errorResponse } from './_utils/response.js'
+import { createSupabaseClient, getAuthUser, getUserMembership } from './_utils/supabase.js'
+import { t } from './_i18n/messages.js'
 
 export async function onRequestGet(context) {
   const { request, env } = context
