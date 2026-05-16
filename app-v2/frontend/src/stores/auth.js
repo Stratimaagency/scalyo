@@ -266,7 +266,7 @@ export const useAuthStore = defineStore('auth', () => {
           body: JSON.stringify({ email, firstName, lastName })
         }).catch(() => {})
       }
-      return { success: true, needsConfirmation: !data.session }
+      return { success: true, needsConfirmation: !data.session, user: data.user }
     } catch (e) {
       console.error('register — unexpected failure:', e.message || e)
       error.value = typeof e === 'object' && e.message ? e.message : String(e)
