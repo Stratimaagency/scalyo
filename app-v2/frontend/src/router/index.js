@@ -107,6 +107,10 @@ router.beforeEach(async (to) => {
   const authStore = useAuthStore()
   try {
     if (!authStore.user && !authStore.loading) {
+      const hasToken = Object.keys(localStorage).some(k => k.startsWith('sb-'))
+      if (!hasToken && to.meta.requiresAuth) {
+        return { name: 'login' }
+      }
       await authStore.init()
     }
   } catch (e) {
