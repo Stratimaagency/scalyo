@@ -188,7 +188,9 @@ var normalizeStatus = {
   'fini': 'done', 'clos': 'done', 'closed': 'done',
   'bloque': 'blocked', 'blocked': 'blocked', 'en attente': 'blocked',
   'on hold': 'blocked', 'pending': 'blocked',
-  'healthy': 'healthy', 'watch': 'watch', 'critical': 'critical',
+  'healthy': 'healthy', 'sain': 'healthy', 'en forme': 'healthy', 'ok': 'healthy', 'green': 'healthy', 'vert': 'healthy',
+  'watch': 'watch', 'at_risk': 'watch', 'at risk': 'watch', 'at-risk': 'watch', 'a risque': 'watch', 'vigilance': 'watch', 'a surveiller': 'watch', 'surveiller': 'watch',
+  'critical': 'critical', 'critique': 'critical', 'alerte': 'critical', 'danger': 'critical', 'red': 'critical', 'rouge': 'critical',
 }
 
 
