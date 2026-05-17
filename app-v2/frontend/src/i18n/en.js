@@ -662,6 +662,7 @@ export default {
   pb_activate: 'Activate a template',
   pb_templates_title: 'Playbook templates',
   pb_template_onboarding: 'Client Onboarding',
+  pb_template_undefined: 'Custom Playbook',
   pb_template_onboarding_desc: 'Structured guide for the first 90 days of a new client. Ensures rapid adoption.',
   pb_template_retention: 'At-Risk Retention',
   pb_template_retention_desc: '4-step action plan to recover an account at risk of churning.',

@@ -1131,6 +1131,7 @@ export default {
   pb_activate: 'Activer un modèle',
   pb_templates_title: 'Modèles de playbooks',
   pb_template_onboarding: 'Onboarding Client',
+  pb_template_undefined: 'Playbook personnalis\u00e9',
   pb_template_onboarding_desc: 'Guide structuré pour les 90 premiers jours d\'un nouveau client. Assure une adoption rapide.',
   pb_template_retention: 'Rétention Compte à Risque',
   pb_template_retention_desc: 'Plan d\'action en 4 étapes pour récupérer un compte en danger de churn.',
