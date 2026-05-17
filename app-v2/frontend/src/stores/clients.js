@@ -35,10 +35,16 @@ export const useClientStore = defineStore('clients', () => {
     const expanded = clients.value.filter(c => c.status === 'healthy').reduce((s, c) => s + (c.arr || 0), 0)
     return totalArr.value > 0 ? ((expanded / totalArr.value) * 100).toFixed(1) : 100
   })
-  const criticalCount = computed(() => clients.value.filter(c => c.status === 'critical' || c.health <= 3).length)
-  const watchCount = computed(() => clients.value.filter(c => c.status === 'watch' || (c.health > 3 && c.health <= 6)).length)
-  const healthyCount = computed(() => clients.value.filter(c => c.status === 'healthy' && c.health > 6).length)
-  const arrAtRisk = computed(() => clients.value.filter(c => c.churn_risk > 0.3).reduce((s, c) => s + (c.arr || 0), 0))
+  // Effective status: single source of truth, mutually exclusive
+  function getEffectiveStatus(c) {
+    if (c.status === 'critical' || c.health <= 3) return 'critical'
+    if (c.status === 'watch' || c.status === 'todo' || (c.health > 3 && c.health <= 6)) return 'watch'
+    return 'healthy'
+  }
+  const criticalCount = computed(() => clients.value.filter(c => getEffectiveStatus(c) === 'critical').length)
+  const watchCount = computed(() => clients.value.filter(c => getEffectiveStatus(c) === 'watch').length)
+  const healthyCount = computed(() => clients.value.filter(c => getEffectiveStatus(c) === 'healthy').length)
+  const arrAtRisk = computed(() => clients.value.filter(c => getEffectiveStatus(c) === 'critical').reduce((s, c) => s + (c.arr || 0), 0))
 
   // ─── Load from Supabase ───────────────────────────────────────
   async function loadClients() {
