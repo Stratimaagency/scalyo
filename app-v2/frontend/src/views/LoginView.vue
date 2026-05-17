@@ -67,12 +67,23 @@ const loading = ref(false)
 async function handleLogin() {
   errorMsg.value = ''
   loading.value = true
-  const result = await authStore.login(email.value, password.value)
-  loading.value = false
-  if (result.success) {
-    router.push('/app/dashboard')
-  } else {
-    errorMsg.value = result.error
+  try {
+    const loginPromise = authStore.login(email.value, password.value)
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), 15000)
+    )
+    const result = await Promise.race([loginPromise, timeoutPromise])
+    if (result.success) {
+      router.push('/app/dashboard')
+    } else {
+      errorMsg.value = result.error || t('login_error_default')
+    }
+  } catch (err) {
+    errorMsg.value = err.message === 'timeout'
+      ? t('login_error_timeout')
+      : (err.message || t('login_error_default'))
+  } finally {
+    loading.value = false
   }
 }
 </script>

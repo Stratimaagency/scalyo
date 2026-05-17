@@ -1003,6 +1003,8 @@ export default {
   login_email_ph: 'you\\@company.com',
   login_password: 'Password',
   login_submit: 'Sign in',
+  login_error_timeout: 'Connection timed out. Please check your internet and try again.',
+  login_error_default: 'An error occurred. Please try again.',
   login_no_account: 'Ready to start?',
   login_signup: 'Free trial â',
   reg_title: 'Free trial â 14 days',

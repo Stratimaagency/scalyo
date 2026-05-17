@@ -1548,6 +1548,8 @@ export default {
   login_email_ph: 'vous\\@entreprise.com',
   login_password: 'Mot de passe',
   login_submit: 'Se connecter',
+  login_error_timeout: 'La connexion a pris trop de temps. V\u00e9rifiez votre connexion internet et r\u00e9essayez.',
+  login_error_default: 'Une erreur est survenue. Veuillez r\u00e9essayer.',
   login_no_account: 'Prêt à commencer ?',
   login_signup: 'Voir les forfaits →',
   reg_title: 'Essai gratuit — 14 jours',
