@@ -23,7 +23,7 @@
     <!-- Theme -->
     <div class="sv-section">
       <h3>🌙 {{ t('stg_dark_title') }}</h3>
-      <p class="sv-note">{{ t('stg_appearance_note') }}</p>
+      <p class="sv-note">{{ t('stg_dark_desc') }}</p>
       <div class="theme-cards">
         <button
           class="theme-card"
@@ -32,13 +32,19 @@
         >
           ☀️ {{ t('stg_theme_light') }}
         </button>
-        <button class="theme-card disabled" disabled>
+        <button
+          class="theme-card"
+          :class="{ active: theme === 'dark' }"
+          @click="setTheme('dark')"
+        >
           🌙 {{ t('stg_theme_dark') }}
-          <span class="coming-soon">Bientôt</span>
         </button>
-        <button class="theme-card disabled" disabled>
+        <button
+          class="theme-card"
+          :class="{ active: theme === 'auto' }"
+          @click="setTheme('auto')"
+        >
           🖥️ {{ t('stg_theme_auto') }}
-          <span class="coming-soon">Bientôt</span>
         </button>
       </div>
     </div>
@@ -75,7 +81,6 @@ async function changeLang(code) {
 const theme = ref(localStorage.getItem('scalyo_theme') || 'auto')
 
 function setTheme(value) {
-  if (value !== 'light') return // Dark mode not ready for alpha
   theme.value = value
   localStorage.setItem('scalyo_theme', value)
   applyTheme(value)
@@ -92,22 +97,5 @@ function applyTheme(value) {
   }
 }
 
-// Force light mode for alpha — dark mode CSS not implemented yet
-theme.value = 'light'
-localStorage.setItem('scalyo_theme', 'light')
-applyTheme('light')
+applyTheme(theme.value)
 </script>
-
-<style scoped>
-.theme-card.disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  position: relative;
-}
-.coming-soon {
-  display: block;
-  font-size: 0.7rem;
-  color: #9ca3af;
-  margin-top: 2px;
-}
-</style>
