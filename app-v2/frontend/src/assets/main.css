@@ -253,3 +253,31 @@ img { max-width: 100%; display: block; }
 
 /* AI analysis bar */
 [data-theme="dark"] [class*="ai-bar"],[data-theme="dark"] [class*="analysis"]{background:#1e293b!important;border-color:#334155!important}
+
+/* ═══ DARK MODE — UNIVERSAL MODULE COVERAGE ═══ */
+/* Cards, panels, sections from ALL 10 CSS modules */
+[data-theme="dark"] .mgr-section,[data-theme="dark"] .mkpi,[data-theme="dark"] .pkpi,[data-theme="dark"] .sat-card,[data-theme="dark"] .arr-card,[data-theme="dark"] .sv-section,[data-theme="dark"] .ig-card,[data-theme="dark"] .ig-modal,[data-theme="dark"] .imp-modal,[data-theme="dark"] .imp-mapping-panel,[data-theme="dark"] .imp-rejected,[data-theme="dark"] .es-left,[data-theme="dark"] .es-right,[data-theme="dark"] .send-modal,[data-theme="dark"] .es-kpi,[data-theme="dark"] .es-history-head,[data-theme="dark"] .es-history-row,[data-theme="dark"] .pb-card,[data-theme="dark"] .pb-empty,[data-theme="dark"] .rm-card,[data-theme="dark"] .rm-empty,[data-theme="dark"] .rmk,[data-theme="dark"] .rmt-node,[data-theme="dark"] .qt-card,[data-theme="dark"] .qt-empty,[data-theme="dark"] .qtk,[data-theme="dark"] .tpl-card,[data-theme="dark"] .modal-box,[data-theme="dark"] .modal-head,[data-theme="dark"] .so-panel,[data-theme="dark"] .table-wrap,[data-theme="dark"] .search-box{background:#1e293b!important;border-color:#334155!important;color:#f1f5f9!important;box-shadow:0 1px 8px rgba(0,0,0,0.2)!important}
+
+/* Buttons from all modules */
+[data-theme="dark"] .btn-customize,[data-theme="dark"] .btn-outline,[data-theme="dark"] .btn-plan,[data-theme="dark"] .btn-danger-outline,[data-theme="dark"] .sv-btn-secondary,[data-theme="dark"] .sv-portal-btn,[data-theme="dark"] .ig-btn-secondary,[data-theme="dark"] .ig-btn-danger,[data-theme="dark"] .imp-module-btn,[data-theme="dark"] .filter-select,[data-theme="dark"] .rmt-add{background:transparent!important;border-color:#475569!important;color:#cbd5e1!important}
+[data-theme="dark"] .btn-customize:hover,[data-theme="dark"] .btn-outline:hover,[data-theme="dark"] .btn-plan:hover,[data-theme="dark"] .btn-danger-outline:hover,[data-theme="dark"] .sv-btn-secondary:hover,[data-theme="dark"] .sv-portal-btn:hover,[data-theme="dark"] .ig-btn-secondary:hover,[data-theme="dark"] .ig-btn-danger:hover,[data-theme="dark"] .imp-module-btn:hover,[data-theme="dark"] .filter-select:hover,[data-theme="dark"] .rmt-add:hover{background:#334155!important;color:#f1f5f9!important}
+
+/* Table headers + rows across all modules */
+[data-theme="dark"] .es-history-head th,[data-theme="dark"] .table-wrap th{background:#1a2332!important;color:#94a3b8!important;border-color:#334155!important}
+[data-theme="dark"] .es-history-row td,[data-theme="dark"] .table-wrap td{color:#cbd5e1!important;border-color:#334155!important}
+
+/* Filter selects (Manager, Portfolio) */
+[data-theme="dark"] .filter-select,[data-theme="dark"] .filter-select select{background:#1e293b!important;color:#cbd5e1!important;border-color:#475569!important}
+
+/* Search inputs */
+[data-theme="dark"] .search-box,[data-theme="dark"] .search-box input{background:#0f1923!important;color:#f1f5f9!important;border-color:#475569!important}
+
+/* Empty states */
+[data-theme="dark"] .pb-empty,[data-theme="dark"] .rm-empty,[data-theme="dark"] .qt-empty,[data-theme="dark"] .empty-state{background:#1e293b!important;color:#64748b!important}
+
+/* Roadmap nodes */
+[data-theme="dark"] .rmt-node{background:#1e293b!important;border-color:#334155!important;color:#f1f5f9!important}
+
+/* Modal overlay + content */  
+[data-theme="dark"] .modal-box,[data-theme="dark"] .modal-head,[data-theme="dark"] .ig-modal,[data-theme="dark"] .imp-modal,[data-theme="dark"] .send-modal{background:#1e293b!important;border-color:#334155!important;color:#f1f5f9!important}
+[data-theme="dark"] .modal-head{border-bottom-color:#334155!important}
