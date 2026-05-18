@@ -102,7 +102,11 @@ export const useAuthStore = defineStore('auth', () => {
   // ─── Current Plan ─────────────────────────────────────────────────────────
   const currentPlan = computed(() => {
     const sub = profile.value?.stripe_subscription_id
-    if (!sub || sub === '' || sub === 'none') return null
+    if (!sub || sub === '' || sub === 'none') {
+      // No Stripe subscription — return plan if user is on active trial
+      if (isOnTrial.value && profile.value?.plan) return profile.value.plan
+      return null
+    }
     // Formats: 'stripe_starter', 'plan_growth', or raw Stripe ID
     if (sub.startsWith('stripe_') || sub.startsWith('plan_')) return sub.split('_').pop()
     return profile.value?.plan || 'active'
