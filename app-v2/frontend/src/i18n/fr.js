@@ -2215,4 +2215,5 @@ export default {
   join_success_subtitle: 'Vous avez rejoint l\'organisation.',
   // Navigation
   nav_team: 'Équipe',
+
 }
