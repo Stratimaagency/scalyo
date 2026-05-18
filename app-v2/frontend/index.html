@@ -13,66 +13,80 @@
   <script defer data-domain="scalyo.app" src="https://plausible.io/js/script.js"></script>
 
   <script>
-    // Dark mode — theme init + universal enforcer
     (function() {
       var t = localStorage.getItem('scalyo_theme') || 'light';
       if (t === 'auto') t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
 
-      // Universal dark mode enforcer — catches ALL white elements including Vue scoped CSS
       function enforceDark() {
         if (document.documentElement.getAttribute('data-theme') !== 'dark') return;
         var app = document.getElementById('app');
         if (!app) return;
-        var els = app.querySelectorAll('div, section, article, aside, main, header, footer, form, details, fieldset, figure, li, tr, td, th, nav, ul, ol');
-        for (var i = 0; i < els.length; i++) {
-          var el = els[i];
+
+        // Only target BLOCK elements larger than 40x40px (skip badges, tags, icons)
+        var blocks = app.querySelectorAll('div, section, article, aside, main, header, footer, form, fieldset, figure, details, dialog, ul, ol, nav, table, thead, tbody, tr');
+        for (var i = 0; i < blocks.length; i++) {
+          var el = blocks[i];
+          var rect = el.getBoundingClientRect();
+          // Skip tiny elements (badges, tags, chips)
+          if (rect.width < 50 || rect.height < 30) continue;
+          // Skip elements with explicit colored backgrounds (green, red, blue, purple accents)
           var bg = getComputedStyle(el).backgroundColor;
           if (!bg || bg === 'transparent' || bg === 'rgba(0, 0, 0, 0)') continue;
           var m = bg.match(/\d+/g);
           if (!m) continue;
           var r = parseInt(m[0]), g = parseInt(m[1]), b = parseInt(m[2]);
-          // If background is light (all channels > 200 or luminance > 0.7)
+          // Skip if it's an intentional color (not white/gray) — check if channels are very different
+          var maxC = Math.max(r, g, b), minC = Math.min(r, g, b);
+          if (maxC - minC > 40 && maxC < 200) continue; // Colored element, skip
+          // Only darken if luminance > 0.65 (white/light gray)
           var lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-          if (lum > 0.7) {
+          if (lum > 0.65) {
             el.style.setProperty('background-color', '#1e293b', 'important');
             el.style.setProperty('border-color', '#334155', 'important');
-            el.style.setProperty('color', '#f1f5f9', 'important');
           }
         }
-        // Also fix text elements on light backgrounds
-        var texts = app.querySelectorAll('p, span, label, h1, h2, h3, h4, h5, h6, a, strong, em, small');
-        for (var j = 0; j < texts.length; j++) {
-          var tel = texts[j];
+
+        // Fix text contrast: dark text on dark parents
+        var allText = app.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, label, a, strong, em, small, li, td, th, dt, dd, figcaption, blockquote, cite, time, abbr');
+        for (var j = 0; j < allText.length; j++) {
+          var tel = allText[j];
           var tc = getComputedStyle(tel).color;
           var tm = tc.match(/\d+/g);
           if (!tm) continue;
-          var tl = (0.299*parseInt(tm[0]) + 0.587*parseInt(tm[1]) + 0.114*parseInt(tm[2])) / 255;
-          // If text is dark (luminance < 0.3) on a dark page, make it light
-          if (tl < 0.3) {
-            // Check parent bg
-            var pbg = getComputedStyle(tel.parentElement).backgroundColor;
-            var pm = pbg.match(/\d+/g);
-            if (pm) {
-              var pl = (0.299*parseInt(pm[0]) + 0.587*parseInt(pm[1]) + 0.114*parseInt(pm[2])) / 255;
-              if (pl < 0.4) {
-                tel.style.setProperty('color', '#cbd5e1', 'important');
-              }
+          var tr = parseInt(tm[0]), tg = parseInt(tm[1]), tb = parseInt(tm[2]);
+          var textLum = (0.299 * tr + 0.587 * tg + 0.114 * tb) / 255;
+          // Only fix if text is dark (< 0.35)
+          if (textLum >= 0.35) continue;
+          // Check parent background
+          var parent = tel.closest('div, section, article, main, aside, form');
+          if (!parent) continue;
+          var pbg = getComputedStyle(parent).backgroundColor;
+          var pm = pbg.match(/\d+/g);
+          if (!pm) continue;
+          var pLum = (0.299 * parseInt(pm[0]) + 0.587 * parseInt(pm[1]) + 0.114 * parseInt(pm[2])) / 255;
+          // If parent is dark and text is dark = invisible
+          if (pLum < 0.4 && textLum < 0.35) {
+            // Make headers white, other text slate-300
+            if (tel.tagName.match(/^H[1-6]$/) || tel.tagName === 'STRONG') {
+              tel.style.setProperty('color', '#f1f5f9', 'important');
+            } else {
+              tel.style.setProperty('color', '#cbd5e1', 'important');
             }
           }
         }
       }
 
-      // Run after initial render and on route changes
       if (t === 'dark') {
-        var observer = new MutationObserver(function(mutations) {
-          // Debounce: only run every 300ms max
-          clearTimeout(window._darkTimer);
-          window._darkTimer = setTimeout(enforceDark, 150);
+        var timer;
+        var observer = new MutationObserver(function() {
+          clearTimeout(timer);
+          timer = setTimeout(enforceDark, 200);
         });
         document.addEventListener('DOMContentLoaded', function() {
-          setTimeout(enforceDark, 500);
+          setTimeout(enforceDark, 600);
           setTimeout(enforceDark, 1500);
+          setTimeout(enforceDark, 3000);
           var app = document.getElementById('app');
           if (app) observer.observe(app, { childList: true, subtree: true });
         });
