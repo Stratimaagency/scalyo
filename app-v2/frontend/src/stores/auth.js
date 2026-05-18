@@ -171,11 +171,21 @@ export const useAuthStore = defineStore('auth', () => {
       console.error('Auth init — unexpected failure:', e.message || e)
       error.value = typeof e === 'object' && e.message ? e.message : String(e)
       // Clear stale session to prevent repeated hang on next load
-      // Direct localStorage cleanup — signOut() also hangs when client is stuck
+      // Clear stale session — direct cleanup because signOut() also hangs when client is stuck
       try {
         const keys = Object.keys(localStorage).filter(k => k.startsWith('sb-'))
         keys.forEach(k => localStorage.removeItem(k))
       } catch (_) {}
+      // Force ONE page reload to reset GoTrueClient internal state
+      // The Supabase client keeps a zombie refresh promise after Promise.race timeout
+      // that blocks all subsequent auth calls (signIn, signOut)
+      if (!sessionStorage.getItem('scalyo_auth_reset')) {
+        sessionStorage.setItem('scalyo_auth_reset', '1')
+        window.location.reload()
+        return
+      }
+      // Second attempt already failed — clear flag, let user retry manually
+      sessionStorage.removeItem('scalyo_auth_reset')
     } finally {
       loading.value = false
     }
@@ -224,7 +234,12 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-      const { data, error: err } = await supabase.auth.signInWithPassword({ email, password })
+      // Timeout guard: signInWithPassword can hang if GoTrueClient has a zombie refresh
+      const signInResult = await Promise.race([
+        supabase.auth.signInWithPassword({ email, password }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('login_timeout')), 15000))
+      ])
+      const { data, error: err } = signInResult
       if (err) {
         error.value = err.message
         return { success: false, error: err.message }
@@ -240,6 +255,16 @@ export const useAuthStore = defineStore('auth', () => {
       return { success: true }
     } catch (e) {
       console.error('login — unexpected failure:', e.message || e)
+      // If login timed out, the Supabase client is stuck — clear and reload
+      if (e.message === 'login_timeout') {
+        try {
+          const keys = Object.keys(localStorage).filter(k => k.startsWith('sb-'))
+          keys.forEach(k => localStorage.removeItem(k))
+        } catch (_) {}
+        error.value = 'login_timeout'
+        window.location.reload()
+        return { success: false, error: 'login_timeout' }
+      }
       error.value = typeof e === 'object' && e.message ? e.message : String(e)
       return { success: false, error: error.value }
     } finally {
