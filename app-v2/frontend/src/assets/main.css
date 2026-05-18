@@ -201,3 +201,55 @@ img { max-width: 100%; display: block; }
 [data-theme="dark"] ::-webkit-scrollbar-track{background:#0f172a}
 [data-theme="dark"] ::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
 [data-theme="dark"] [class*="counter"],[data-theme="dark"] [class*="quota"]{background:#334155!important;color:#94a3b8!important;border-color:#475569!important}
+
+/* ═══ DARK MODE — CONTRAST BOOST ═══ */
+/* KPI values, metrics, big numbers = WHITE */
+[data-theme="dark"] .kpi-value,[data-theme="dark"] .metric-value,[data-theme="dark"] .stat-value,
+[data-theme="dark"] [class*="kpi"] [class*="value"],[data-theme="dark"] [class*="metric"],
+[data-theme="dark"] [class*="stat"] [class*="number"],[data-theme="dark"] .big-number,
+[data-theme="dark"] .dashboard-card h2,[data-theme="dark"] .dashboard-card h3,
+[data-theme="dark"] .kpi-card h2,[data-theme="dark"] .kpi-card h3{color:#ffffff!important;font-weight:600!important}
+
+/* KPI labels = brighter */
+[data-theme="dark"] .kpi-label,[data-theme="dark"] [class*="kpi"] [class*="label"],
+[data-theme="dark"] .stat-label,[data-theme="dark"] .metric-label,
+[data-theme="dark"] .kpi-card span,[data-theme="dark"] .dashboard-card span{color:#94a3b8!important}
+
+/* Filter/compare buttons = visible borders + text */
+[data-theme="dark"] .filter-btn,[data-theme="dark"] [class*="filter"] button,
+[data-theme="dark"] [class*="compare"] button,[data-theme="dark"] [class*="period"] button,
+[data-theme="dark"] .time-filter button,[data-theme="dark"] .date-filter button{background:transparent!important;border:1px solid #475569!important;color:#cbd5e1!important}
+[data-theme="dark"] .filter-btn:hover,[data-theme="dark"] .filter-btn.active,
+[data-theme="dark"] [class*="filter"] button:hover,[data-theme="dark"] [class*="filter"] button.active,
+[data-theme="dark"] [class*="compare"] button.active,[data-theme="dark"] [class*="period"] button.active{background:#334155!important;color:#f1f5f9!important;border-color:#8b5cf6!important}
+
+/* Card borders more visible + subtle glow */
+[data-theme="dark"] .kpi-card,[data-theme="dark"] .dashboard-card,[data-theme="dark"] .stat-card{border:1px solid #3b4a5c!important;background:#1a2332!important}
+
+/* Section titles in main content */
+[data-theme="dark"] .section-title,[data-theme="dark"] [class*="section"] h2,
+[data-theme="dark"] [class*="section"] h3{color:#f1f5f9!important}
+
+/* Accounts to Watch / My tasks headings */
+[data-theme="dark"] .widget-title,[data-theme="dark"] [class*="widget"] h3,
+[data-theme="dark"] [class*="widget"] h2{color:#f1f5f9!important}
+
+/* View all link */
+[data-theme="dark"] [class*="view-all"],[data-theme="dark"] a[class*="more"]{color:#8b5cf6!important}
+
+/* Task status badges */
+[data-theme="dark"] [class*="task"] [class*="status"],[data-theme="dark"] [class*="task"] [class*="badge"]{color:#cbd5e1!important}
+
+/* Customize button */
+[data-theme="dark"] [class*="customize"] button,[data-theme="dark"] button[class*="customize"]{background:transparent!important;border:1px solid #475569!important;color:#cbd5e1!important}
+[data-theme="dark"] [class*="customize"] button:hover{background:#334155!important;color:#f1f5f9!important}
+
+/* Greeting text */
+[data-theme="dark"] [class*="greeting"],[data-theme="dark"] [class*="welcome"]{color:#f1f5f9!important}
+[data-theme="dark"] [class*="date"],[data-theme="dark"] [class*="greeting"] + p{color:#94a3b8!important}
+
+/* Chart/graph areas */
+[data-theme="dark"] [class*="chart"],[data-theme="dark"] canvas{filter:brightness(0.9)!important}
+
+/* AI analysis bar */
+[data-theme="dark"] [class*="ai-bar"],[data-theme="dark"] [class*="analysis"]{background:#1e293b!important;border-color:#334155!important}
