@@ -21,7 +21,7 @@
   gap: 12px;
 }
 .btn-customize {
-  background: #fff;
+  background-color: var(--bg-card);
   border: 1px solid var(--border);
   padding: 6px 14px;
   border-radius: var(--radius-sm);
@@ -35,7 +35,7 @@
   color: var(--purple);
 }
 .btn-outline {
-  background: #fff;
+  background-color: var(--bg-card);
   color: var(--text-secondary);
   border: 1px solid var(--border);
   padding: 8px 16px;
@@ -50,7 +50,7 @@
   color: var(--purple);
 }
 .sat-score-badge {
-  background: #fff;
+  background-color: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 8px 18px;
@@ -106,7 +106,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   font-size: 0.82rem;
-  background: #fff;
+  background-color: var(--bg-card);
   outline: none;
   cursor: pointer;
 }
@@ -117,7 +117,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #fff;
+  background-color: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 0 10px;
@@ -145,7 +145,7 @@
   gap: 16px;
 }
 .sat-card {
-  background: #fff;
+  background-color: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 20px;
@@ -227,7 +227,7 @@
   gap: 12px;
 }
 .arr-card {
-  background: #fff;
+  background-color: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 16px;

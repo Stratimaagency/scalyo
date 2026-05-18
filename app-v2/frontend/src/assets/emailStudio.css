@@ -14,7 +14,7 @@
 
 /* Left Panel */
 .es-left {
-  background: #fff; border: 1px solid var(--border);
+  background-color: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-md); display: flex;
   flex-direction: column; overflow: hidden;
 }
@@ -61,7 +61,7 @@
 .cat-orange { background: #ffedd5; color: #ea580c; }
 .cat-slate { background: #f1f5f9; color: #475569; }
 .cat-dark { background: #1e293b; color: #f1f5f9; }
-.cat-gray { background: #f3f4f6; color: #6b7280; }
+.cat-gray { background: var(--bg-hover); color: var(--text-secondary); }
 
 /* Template list */
 .es-list { flex: 1; overflow-y: auto; }
@@ -81,7 +81,7 @@
 
 /* Right Panel */
 .es-right {
-  background: #fff; border: 1px solid var(--border);
+  background-color: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-md); overflow: hidden;
 }
 .es-preview { padding: 24px; }
@@ -149,7 +149,7 @@
   display: flex; align-items: center; justify-content: center; z-index: 1000;
 }
 .send-modal {
-  background: #fff; border-radius: 16px; padding: 28px;
+  background-color: var(--bg-card); border-radius: 16px; padding: 28px;
   width: 100%; max-width: 440px; box-shadow: 0 20px 60px rgba(0,0,0,0.15);
 }
 .sm-header {
@@ -157,9 +157,9 @@
   align-items: center; margin-bottom: 20px;
 }
 .sm-header h3 { font-size: 1.1rem; font-weight: 700; color: #111827; margin: 0; }
-.sm-close { background: none; border: none; cursor: pointer; font-size: 1.1rem; color: #6b7280; }
+.sm-close { background: none; border: none; cursor: pointer; font-size: 1.1rem; color: var(--text-secondary); }
 .sm-field { margin-bottom: 16px; }
-.sm-field label { display: block; font-size: 0.8rem; font-weight: 600; color: #374151; margin-bottom: 6px; }
+.sm-field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
 .sm-input {
   width: 100%; padding: 10px 14px; border: 1.5px solid #e5e7eb;
   border-radius: 8px; font-size: 0.9rem; outline: none; box-sizing: border-box;
@@ -167,7 +167,7 @@
 .sm-input:focus { border-color: #7c3aed; }
 .sm-preview {
   background: #f9fafb; border-radius: 8px; padding: 10px 14px;
-  font-size: 0.82rem; color: #6b7280; margin-bottom: 16px;
+  font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 16px;
 }
 .sm-send-btn { width: 100%; padding: 12px; font-size: 0.95rem; }
 .sm-success { color: #10b981; font-weight: 600; text-align: center; padding: 20px 0; font-size: 1rem; }
@@ -200,7 +200,7 @@
   font-size: 0.7rem; font-weight: 700; color: #7c3aed;
   background: #f3e8ff; padding: 2px 8px; border-radius: 20px;
 }
-.es-elite-lock { font-size: 0.75rem; color: #9ca3af; font-weight: 500; }
+.es-elite-lock { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
 
 /* History Tab */
 .es-history { padding: 0 0 24px; }
@@ -208,16 +208,16 @@
 .es-history-kpis { display: flex; gap: 16px; margin-bottom: 20px; }
 .es-kpi { flex: 1; background: #f9fafb; border-radius: 12px; padding: 16px; text-align: center; }
 .es-kpi-value { display: block; font-size: 1.6rem; font-weight: 800; color: #7c3aed; }
-.es-kpi-label { font-size: 0.75rem; color: #6b7280; margin-top: 4px; display: block; }
+.es-kpi-label { font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px; display: block; }
 .es-history-loading,
 .es-history-empty,
-.es-history-error { text-align: center; padding: 32px; color: #9ca3af; font-size: 0.85rem; }
+.es-history-error { text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.85rem; }
 .es-history-error { color: #ef4444; }
 .es-history-table { border: 1px solid #f3f4f6; border-radius: 12px; overflow: hidden; }
 .es-history-head {
   display: grid; grid-template-columns: 1.5fr 2fr 1.2fr 1fr 0.5fr;
   background: #f9fafb; padding: 10px 16px; font-size: 0.72rem;
-  font-weight: 700; color: #6b7280; text-transform: uppercase; gap: 12px;
+  font-weight: 700; color: var(--text-secondary); text-transform: uppercase; gap: 12px;
 }
 .es-history-row {
   display: grid; grid-template-columns: 1.5fr 2fr 1.2fr 1fr 0.5fr;
@@ -227,12 +227,12 @@
 .es-history-row:hover { background: #fafafa; }
 .es-history-to,
 .es-history-subject {
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #374151;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary);
 }
-.es-history-date { color: #6b7280; font-size: 0.75rem; }
+.es-history-date { color: var(--text-secondary); font-size: 0.75rem; }
 .es-history-status { font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
 .es-history-status.opened { color: #10b981; }
-.es-history-status.pending { color: #9ca3af; }
+.es-history-status.pending { color: var(--text-muted); }
 .es-history-opens { color: #7c3aed; font-weight: 600; text-align: center; }
 
 /* Responsive */

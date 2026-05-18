@@ -22,7 +22,7 @@
 
 /* Panel & Section */
 .sv-section {
-  background: #fff; border: 1px solid var(--border);
+  background-color: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-md); padding: 24px; margin-bottom: 16px;
 }
 .sv-section h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 16px; }
@@ -35,7 +35,7 @@
 .fi {
   padding: 9px 12px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); font-size: 0.85rem;
-  outline: none; background: #fff; width: 100%;
+  outline: none; background-color: var(--bg-card); width: 100%;
 }
 .fi:focus { border-color: var(--purple); }
 .fi:disabled { background: var(--bg); color: var(--text-muted); }
@@ -131,7 +131,7 @@
 .btn-plan {
   width: 100%; padding: 8px; border-radius: var(--radius-sm);
   font-size: 0.82rem; font-weight: 600; cursor: pointer;
-  border: 1px solid var(--purple); color: var(--purple); background: #fff;
+  border: 1px solid var(--purple); color: var(--purple); background-color: var(--bg-card);
   transition: all 0.15s;
 }
 .btn-plan:hover:not(:disabled) { background: var(--purple); color: #fff; }
@@ -157,7 +157,7 @@
 .lang-card {
   display: flex; align-items: center; gap: 8px; padding: 12px 18px;
   border: 2px solid var(--border); border-radius: var(--radius-sm);
-  background: #fff; cursor: pointer; font-size: 0.9rem; transition: all 0.18s;
+  background-color: var(--bg-card); cursor: pointer; font-size: 0.9rem; transition: all 0.18s;
 }
 .lang-card:hover { border-color: var(--purple); color: var(--purple); }
 .lang-card.active {
@@ -182,7 +182,7 @@
 }
 
 /* Integrations / Resend */
-.stg-resend-desc { font-size: 0.85rem; color: #6b7280; margin-bottom: 16px; line-height: 1.6; }
+.stg-resend-desc { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6; }
 .stg-resend-box {
   border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 16px;
 }
@@ -191,10 +191,10 @@
 .stg-resend-badge {
   display: inline-block; margin-left: 8px; font-size: 0.72rem;
   font-weight: 600; padding: 2px 8px; border-radius: 20px;
-  background: #f3f4f6; color: #6b7280;
+  background: var(--bg-hover); color: var(--text-secondary);
 }
 .stg-resend-badge.active { background: #dcfce7; color: #15803d; }
-.stg-resend-help { font-size: 0.78rem; color: #9ca3af; margin: 8px 0 12px; }
+.stg-resend-help { font-size: 0.78rem; color: var(--text-muted); margin: 8px 0 12px; }
 .stg-resend-help a { color: #7c3aed; }
 .stg-resend-error { color: #ef4444; font-size: 0.8rem; margin-bottom: 8px; }
 .stg-resend-success { color: #10b981; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; }
@@ -216,7 +216,7 @@
   padding: 10px 20px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: #fff;
+  background-color: var(--bg-card);
   font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
@@ -253,7 +253,7 @@
   padding: 10px 20px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: #fff;
+  background-color: var(--bg-card);
   font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;

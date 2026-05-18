@@ -8,7 +8,7 @@
 }
 .mgr-header-actions { display: flex; align-items: center; }
 .btn-customize {
-  background: #fff; border: 1px solid var(--border); padding: 6px 14px;
+  background-color: var(--bg-card); border: 1px solid var(--border); padding: 6px 14px;
   border-radius: var(--radius-sm); font-size: 0.78rem;
   color: var(--text-muted); cursor: pointer; transition: all 0.15s;
 }
@@ -34,7 +34,7 @@
 .mgr-kpis-top { display: flex; gap: 20px; }
 .mkpi {
   display: flex; flex-direction: column; align-items: center;
-  background: #fff; border: 1px solid var(--border);
+  background-color: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-md); padding: 14px 24px; min-width: 120px;
 }
 .mkpi-value { font-size: 1.6rem; font-weight: 800; }
@@ -48,13 +48,13 @@
 .filter-select {
   padding: 8px 14px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); font-size: 0.82rem;
-  color: var(--text); background: #fff; outline: none; cursor: pointer;
+  color: var(--text); background-color: var(--bg-card); outline: none; cursor: pointer;
 }
 .filter-select:focus { border-color: var(--purple); }
 
 /* Sections */
 .mgr-section {
-  background: #fff; border: 1px solid var(--border);
+  background-color: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-md); padding: 20px; margin-bottom: 20px;
 }
 .mgr-section h2 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }

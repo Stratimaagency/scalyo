@@ -16,7 +16,7 @@
 }
 .btn-primary:hover { background: var(--purple-dark); transform: translateY(-1px); }
 .btn-outline {
-  background: #fff; color: var(--text-secondary); border: 1px solid var(--border);
+  background-color: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border);
   padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem;
   font-weight: 500; transition: all 0.2s;
 }
@@ -37,7 +37,7 @@
 /* KPIs */
 .port-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
 .pkpi {
-  background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md);
+  background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md);
   padding: 16px; display: flex; align-items: center; gap: 12px; transition: all 0.2s;
 }
 .pkpi:hover { box-shadow: var(--shadow-sm); transform: translateY(-1px); }
@@ -51,7 +51,7 @@
   display: flex; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
 }
 .search-box {
-  display: flex; align-items: center; gap: 8px; background: #fff;
+  display: flex; align-items: center; gap: 8px; background-color: var(--bg-card);
   border: 1px solid var(--border); border-radius: var(--radius-sm);
   padding: 0 12px; flex: 1; min-width: 200px; max-width: 320px;
 }
@@ -75,7 +75,7 @@
 
 /* Table */
 .table-wrap {
-  background: #fff; border: 1px solid var(--border);
+  background-color: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-md); overflow-x: auto;
 }
 .th {
@@ -131,7 +131,7 @@
 
 /* Empty */
 .empty {
-  text-align: center; padding: 60px 20px; background: #fff;
+  text-align: center; padding: 60px 20px; background-color: var(--bg-card);
   border: 1px solid var(--border); border-radius: var(--radius-md);
 }
 .empty-i { font-size: 3rem; margin-bottom: 16px; }
@@ -145,7 +145,7 @@
 .fi {
   padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
   font-size: 0.85rem; outline: none; transition: border-color 0.15s;
-  background: #fff; width: 100%;
+  background-color: var(--bg-card); width: 100%;
 }
 .fi:focus { border-color: var(--purple); }
 .fr { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }

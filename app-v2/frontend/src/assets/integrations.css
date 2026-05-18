@@ -21,7 +21,7 @@
 
 /* Card */
 .ig-card {
-  background: #fff;
+  background-color: var(--bg-card);
   border: 1px solid var(--border, #e2e8f0);
   border-radius: 12px;
   padding: 20px;
@@ -73,7 +73,7 @@
 .ig-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .ig-btn-primary { background: var(--primary, #6366f1); color: #fff; }
 .ig-btn-primary:hover:not(:disabled) { background: #4f46e5; }
-.ig-btn-secondary { background: #fff; border-color: var(--border, #e2e8f0); color: var(--text, #1a1a2e); }
+.ig-btn-secondary { background-color: var(--bg-card); border-color: var(--border, #e2e8f0); color: var(--text, #1a1a2e); }
 .ig-btn-secondary:hover { background: var(--bg-muted, #f8fafc); }
 .ig-btn-danger { background: none; border: none; color: #dc2626; padding: 8px 12px; }
 .ig-btn-danger:hover { background: #fef2f2; }
@@ -84,7 +84,7 @@
 
 /* Modal */
 .ig-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.45); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.ig-modal { background: #fff; border-radius: 16px; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.15); }
+.ig-modal { background-color: var(--bg-card); border-radius: 16px; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.15); }
 .ig-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border, #e2e8f0); }
 .ig-modal-title { display: flex; align-items: center; gap: 12px; }
 .ig-modal-title h3 { font-size: 1.05rem; font-weight: 700; margin: 0; }
@@ -111,7 +111,7 @@
   font-size: 0.85rem;
   font-family: inherit;
   color: var(--text, #1a1a2e);
-  background: #fff;
+  background-color: var(--bg-card);
   box-sizing: border-box;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
