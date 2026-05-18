@@ -1214,7 +1214,7 @@ export default {
   stg_tab_billing: 'Billing',
   stg_tab_notif: 'Notifications',
   stg_tab_appearance: 'Appearance',
-  stg_tab_delete: 'â ï¸ Delete my account',
+  stg_tab_delete: '⚠️ Delete my account',
   stg_account_info: 'Account information',
   stg_display_name: 'Display name',
   stg_email: 'Email',
