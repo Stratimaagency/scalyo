@@ -130,7 +130,7 @@ router.beforeEach(async (to) => {
 
   if (authStore.user && !authStore.currentPlan && to.path.startsWith('/app') && to.name !== 'paywall' && to.name !== 'onboarding') {
 
-    return next({ name: 'paywall' })
+    return { name: 'paywall' }
 
   }
 
