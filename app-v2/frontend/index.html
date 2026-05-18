@@ -12,6 +12,17 @@
   <!-- Plausible Analytics (privacy-first, RGPD-compliant) -->
   <script defer data-domain="scalyo.app" src="https://plausible.io/js/script.js"></script>
 
+
+  <script>
+    // Apply theme immediately to prevent FOUC
+    (function() {
+      var t = localStorage.getItem('scalyo_theme') || 'light';
+      if (t === 'auto') {
+        t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    })();
+  </script>
 </head>
 <body>
   <div id="app"></div>
