@@ -97,14 +97,14 @@ img { max-width: 100%; display: block; }
 /* ═══ DARK MODE ═══ */
 [data-theme="dark"] {
   --bg-page: #0f172a;
-  --bg-card: #1e293b;
+  --bg-card: #1a2332;
   --bg-sidebar: #0f172a;
-  --bg-input: #1e293b;
+  --bg-input: #0f1923;
   --bg-hover: #334155;
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
-  --border-color: #334155;
+  --border-color: #3b4a5c;
   --input-border: #475569;
   --shadow-sm: rgba(0,0,0,0.2);
   --shadow-md: rgba(0,0,0,0.3);
@@ -131,7 +131,7 @@ img { max-width: 100%; display: block; }
 [data-theme="dark"] .panel,
 [data-theme="dark"] .modal,
 [data-theme="dark"] .topbar,
-[data-theme="dark"] .dropdown-menu { background: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+[data-theme="dark"] .dropdown-menu { background: #1a2332 !important; border-color: #3b4a5c !important; color: #f1f5f9 !important; box-shadow: 0 4px 24px rgba(0,0,0,0.3) !important; }
 
 [data-theme="dark"] .sidebar { background: #0f172a !important; border-color: #334155 !important; }
 [data-theme="dark"] .sidebar a,
@@ -144,7 +144,7 @@ img { max-width: 100%; display: block; }
 /* Dark inputs */
 [data-theme="dark"] input,
 [data-theme="dark"] select,
-[data-theme="dark"] textarea { background: #1e293b !important; color: #f1f5f9 !important; border-color: #475569 !important; }
+[data-theme="dark"] textarea { background: #0f1923 !important; color: #f1f5f9 !important; border-color: #3b4a5c !important; }
 [data-theme="dark"] input::placeholder,
 [data-theme="dark"] textarea::placeholder { color: #64748b !important; }
 
@@ -164,7 +164,7 @@ img { max-width: 100%; display: block; }
 /* Dark buttons & cards */
 [data-theme="dark"] .btn-outline,
 [data-theme="dark"] .theme-card,
-[data-theme="dark"] .lang-card { background: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+[data-theme="dark"] .lang-card { background: #1a2332 !important; border-color: #3b4a5c !important; color: #f1f5f9 !important; box-shadow: 0 4px 24px rgba(0,0,0,0.3) !important; }
 [data-theme="dark"] .btn-outline:hover,
 [data-theme="dark"] .theme-card:hover,
 [data-theme="dark"] .lang-card:hover { background: #334155 !important; }
