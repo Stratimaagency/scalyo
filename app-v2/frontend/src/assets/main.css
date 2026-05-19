@@ -30,6 +30,8 @@ img { max-width: 100%; display: block; }
 
   --bg: #f8f9fb;
   --bg-white: #ffffff;
+  --input-bg: #ffffff;
+  --input-border: #d1d5db;
   --bg-hover: #f3f4f6;
   --border: #e5e7eb;
   --border-light: #f3f4f6;
@@ -141,6 +143,8 @@ img { max-width: 100%; display: block; }
   --border-color: #334155;
   --input-border: #475569;
   color-scheme: dark;
+  --input-bg: #131d2b;
+  --input-border: #475569;
 }
 
 /* --- Base --- */
