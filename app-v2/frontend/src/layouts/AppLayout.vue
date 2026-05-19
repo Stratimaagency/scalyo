@@ -312,7 +312,7 @@ async function handleLogout() {
 .app-layout.collapsed .main-wrapper { margin-left: var(--sidebar-collapsed); }
 
 /* ═══ SIDEBAR ═══ */
-.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-width); background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; transition: width var(--transition-slow); overflow-y: auto; overflow-x: hidden; }
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-width); background-color: var(--bg-card); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; transition: width var(--transition-slow); overflow-y: auto; overflow-x: hidden; }
 .app-layout.collapsed .sidebar { width: var(--sidebar-collapsed); }
 .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--border-light); flex-shrink: 0; }
 .logo-text { font-weight: 800; font-size: 1.15rem; background: linear-gradient(135deg, var(--purple), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -336,7 +336,7 @@ async function handleLogout() {
 .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; }
 
 /* ═══ TOPBAR ═══ */
-.topbar { height: var(--topbar-height); background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 12px; position: sticky; top: 0; z-index: 50; }
+.topbar { height: var(--topbar-height); background-color: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 12px; position: sticky; top: 0; z-index: 50; }
 .topbar-burger { display: none; flex-direction: column; gap: 4px; background: none; border: none; padding: 6px; }
 .topbar-burger span { display: block; width: 20px; height: 2px; background: var(--text); border-radius: 1px; }
 .topbar-left { flex: 1; }
@@ -347,7 +347,7 @@ async function handleLogout() {
 .topbar-notif { position: relative; }
 .notif-btn { background: none; border: none; font-size: 1.2rem; padding: 4px; position: relative; cursor: pointer; }
 .notif-badge { position: absolute; top: -2px; right: -4px; background: var(--red); color: #fff; font-size: 0.6rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.notif-dropdown { position: absolute; top: 100%; right: 0; margin-top: 8px; width: 360px; background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--border); z-index: 200; }
+.notif-dropdown { position: absolute; top: 100%; right: 0; margin-top: 8px; width: 360px; background-color: var(--bg-card); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--border); z-index: 200; }
 .notif-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--border-light); }
 .notif-header strong { font-size: 0.9rem; }
 .notif-header-actions { display: flex; align-items: center; gap: 8px; }
@@ -384,7 +384,7 @@ async function handleLogout() {
 .chat-fab:hover { transform: scale(1.08); box-shadow: 0 8px 30px rgba(124,58,237,0.3); }
 .chat-fab.active { background: var(--text); }
 .chat-fab-badge { position: absolute; top: -4px; right: -4px; background: var(--red); color: #fff; font-size: 0.6rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.chat-panel-wrapper { position: fixed; bottom: 88px; right: 24px; width: 680px; height: 520px; background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); z-index: 399; border: 1px solid var(--border); overflow: hidden; }
+.chat-panel-wrapper { position: fixed; bottom: 88px; right: 24px; width: 680px; height: 520px; background-color: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); z-index: 399; border: 1px solid var(--border); overflow: hidden; }
 
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 1024px) {

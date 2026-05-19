@@ -98,7 +98,7 @@ if (props.autoRun && isAllowed.value) analyze()
 
 <style scoped>
 .ai-insight-panel { background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 1px solid #e9d5ff; border-radius: 12px; padding: 16px 20px; transition: all 0.3s ease; }
-.ai-insight-panel.locked { opacity: 0.7; background: linear-gradient(135deg, #f9fafb, #f3f4f6); border-color: #e5e7eb; }
+.ai-insight-panel.locked { opacity: 0.7; background: linear-gradient(135deg, #f9fafb, #f3f4f6); border-color: var(--border-color); }
 .aip-header { display: flex; align-items: center; gap: 10px; }
 .aip-icon { color: #7c3aed; font-size: 1rem; }
 .ai-insight-panel.locked .aip-icon { color: #9ca3af; }
@@ -118,6 +118,6 @@ if (props.autoRun && isAllowed.value) analyze()
 .aip-loading-text { font-size: 0.78rem; color: #6d28d9; font-style: italic; }
 .aip-error { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding: 10px 14px; background: #fef2f2; border-radius: 8px; font-size: 0.82rem; color: #dc2626; }
 .aip-retry { background: none; border: 1px solid #dc2626; color: #dc2626; padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; }
-.aip-content { margin-top: 14px; padding: 14px 16px; background: #fff; border-radius: 10px; font-size: 0.85rem; line-height: 1.65; color: #1e1b4b; }
+.aip-content { margin-top: 14px; padding: 14px 16px; background-color: var(--bg-card); border-radius: 10px; font-size: 0.85rem; line-height: 1.65; color: #1e1b4b; }
 .aip-content :deep(strong) { color: #4c1d95; }
 </style>

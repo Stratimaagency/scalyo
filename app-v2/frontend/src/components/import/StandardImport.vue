@@ -287,13 +287,13 @@ var reset = function () {
 .mapping-row { display: flex; align-items: center; gap: 12px; }
 .mapping-label { width: 160px; font-size: 0.85rem; font-weight: 500; flex-shrink: 0; }
 .mapping-req { color: var(--red); }
-.mapping-select { flex: 1; padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; background: #fff; }
+.mapping-select { flex: 1; padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; background-color: var(--bg-card); }
 .mapping-error { color: var(--red); font-size: 0.82rem; margin-top: 12px; }
 .mapping-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
 .btn-primary { padding: 8px 20px; border: none; border-radius: var(--radius-sm); background: var(--purple); color: #fff; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: opacity 0.15s; }
 .btn-primary:hover { opacity: 0.9; }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-secondary { padding: 8px 20px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; color: var(--text); font-weight: 500; font-size: 0.85rem; cursor: pointer; transition: background 0.15s; }
+.btn-secondary { padding: 8px 20px; border: 1px solid var(--border); border-radius: var(--radius-sm); background-color: var(--bg-card); color: var(--text); font-weight: 500; font-size: 0.85rem; cursor: pointer; transition: background 0.15s; }
 .btn-secondary:hover { background: var(--bg-hover); }
 .preview-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
 .preview-header h3 { font-size: 1rem; font-weight: 700; margin: 0; }

@@ -232,7 +232,7 @@ async function handleRegister() {
 
 <style scoped>
 .auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #f8f9fb, #ede9fe); padding: 20px; }
-.auth-card { background: #fff; border-radius: 20px; padding: 48px 40px; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
+.auth-card { background-color: var(--bg-card); border-radius: 20px; padding: 48px 40px; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
 .auth-logo { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 32px; }
 .auth-brand { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #7c3aed, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .auth-card h1 { font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 6px; }
@@ -244,7 +244,7 @@ async function handleRegister() {
 /* Invite code */
 .invite-row { display: flex; gap: 8px; align-items: center; }
 .invite-row .fi { flex: 1; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
-.btn-verify { background: #f3f4f6; border: 1px solid #e5e7eb; color: #374151; padding: 11px 16px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.btn-verify { background: #f3f4f6; border: 1px solid var(--border-color); color: var(--text-primary); padding: 11px 16px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
 .btn-verify:hover:not(:disabled) { background: #e5e7eb; }
 .btn-verify:disabled { opacity: 0.4; cursor: not-allowed; }
 .check-icon { color: #059669; font-size: 1.2rem; font-weight: 700; flex-shrink: 0; width: 28px; text-align: center; }
@@ -267,7 +267,7 @@ async function handleRegister() {
 .fg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .fg { display: flex; flex-direction: column; gap: 4px; }
 .fg label { font-size: 0.78rem; font-weight: 600; color: #6b7280; }
-.fi { padding: 11px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.9rem; outline: none; transition: border-color 0.15s; }
+.fi { padding: 11px 14px; border: 1px solid var(--border-color); border-radius: 10px; font-size: 0.9rem; outline: none; transition: border-color 0.15s; }
 .fi:focus { border-color: #7c3aed; }
 
 /* Password strength */

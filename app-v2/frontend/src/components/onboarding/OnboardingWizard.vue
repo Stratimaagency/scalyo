@@ -197,7 +197,7 @@ async function submit() {
 
 <style scoped>
 .ob-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-.ob-modal { background: #fff; border-radius: 20px; width: 480px; max-width: 92vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.2); }
+.ob-modal { background-color: var(--bg-card); border-radius: 20px; width: 480px; max-width: 92vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.2); }
 .ob-progress { height: 4px; background: var(--border-light); border-radius: 20px 20px 0 0; overflow: hidden; }
 .ob-bar { height: 100%; background: linear-gradient(90deg, #7c3aed, #a78bfa); transition: width 0.3s ease; }
 .ob-step { padding: 32px 36px; text-align: center; }
@@ -207,7 +207,7 @@ async function submit() {
 .ob-step p { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; }
 .ob-hint { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 12px; }
 .ob-options { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 20px; }
-.ob-opt { padding: 10px 18px; border-radius: 24px; border: 1px solid var(--border); background: #fff; font-size: 0.84rem; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+.ob-opt { padding: 10px 18px; border-radius: 24px; border: 1px solid var(--border); background-color: var(--bg-card); font-size: 0.84rem; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
 .ob-opt:hover { border-color: var(--purple); color: var(--purple); }
 .ob-opt.selected { background: var(--purple); color: #fff; border-color: var(--purple); }
 .ob-label { display: block; text-align: left; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; margin-top: 12px; }

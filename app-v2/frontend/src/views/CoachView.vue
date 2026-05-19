@@ -174,7 +174,7 @@ async function clearHistory() {
 .coach-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-shrink: 0; }
 .coach-header h1 { font-size: 1.5rem; font-weight: 800; }
 .coach-counter { font-size: 0.82rem; color: var(--text-muted); background: var(--bg); padding: 6px 14px; border-radius: 8px; }
-.coach-chat { flex: 1; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.coach-chat { flex: 1; display: flex; flex-direction: column; background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
 .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
 .chat-welcome { display: flex; gap: 14px; padding: 20px; background: var(--purple-bg); border-radius: var(--radius-md); }
 .cw-avatar { font-size: 2rem; flex-shrink: 0; }

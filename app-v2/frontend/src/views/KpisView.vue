@@ -156,11 +156,11 @@ function deltaText(actual, target, suffix) {
 .kpis-sub { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
 .btn-primary { background: var(--purple); color: #fff; border: none; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
 .btn-primary:hover { background: var(--purple-dark); }
-.btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.btn-outline { background-color: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
 .btn-outline:hover { border-color: var(--purple); color: var(--purple); }
 
 .copil-list { display: flex; flex-direction: column; gap: 20px; }
-.copil-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; }
+.copil-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; }
 .cc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .cc-header strong { font-size: 1.1rem; }
 .cc-period { font-size: 0.78rem; color: var(--purple); background: var(--purple-bg); padding: 2px 10px; border-radius: 6px; margin-left: 10px; }
@@ -186,7 +186,7 @@ function deltaText(actual, target, suffix) {
 
 .cc-notes { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-light); font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; }
 
-.kpis-empty { text-align: center; padding: 60px 20px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); }
+.kpis-empty { text-align: center; padding: 60px 20px; background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); }
 .empty-icon { font-size: 3rem; margin-bottom: 16px; }
 .kpis-empty h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
 .kpis-empty p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; }
@@ -194,7 +194,7 @@ function deltaText(actual, target, suffix) {
 .sf { display: flex; flex-direction: column; gap: 16px; }
 .fg { display: flex; flex-direction: column; gap: 4px; }
 .fg label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
-.fi { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; background: #fff; width: 100%; }
+.fi { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; background-color: var(--bg-card); width: 100%; }
 .fi:focus { border-color: var(--purple); }
 .ta { resize: vertical; min-height: 60px; }
 .fa { display: flex; gap: 10px; justify-content: flex-end; padding-top: 8px; border-top: 1px solid var(--border-light); }

@@ -153,7 +153,7 @@ function confirmDeleteMember(member) {
 .workload-view { max-width: 900px; }
 .wl-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
 .wl-header h1 { font-size: 1.5rem; font-weight: 800; }
-.wl-score-badge { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 20px; display: flex; align-items: center; gap: 10px; }
+.wl-score-badge { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 20px; display: flex; align-items: center; gap: 10px; }
 .wlsb-label { font-size: 0.78rem; color: var(--text-secondary); }
 .wlsb-val { font-size: 1.8rem; font-weight: 800; }
 .wl-score-badge.green .wlsb-val { color: var(--green); }
@@ -161,7 +161,7 @@ function confirmDeleteMember(member) {
 .wl-score-badge.red .wlsb-val { color: var(--red); }
 
 .wl-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
-.wlk { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s; }
+.wlk { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s; }
 .wlk:hover { box-shadow: var(--shadow-sm); transform: translateY(-1px); }
 .wlk-icon { font-size: 1.3rem; }
 .wlk-val { font-size: 1.5rem; font-weight: 800; }
@@ -171,11 +171,11 @@ function confirmDeleteMember(member) {
 .wl-filters { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
 .ftab { background: var(--bg); border: none; padding: 7px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
 .ftab.active { background: var(--purple-bg); color: var(--purple); font-weight: 600; }
-.search-box { display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 10px; margin-left: auto; }
+.search-box { display: flex; align-items: center; gap: 6px; background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 10px; margin-left: auto; }
 .search-box input { border: none; outline: none; padding: 7px 0; font-size: 0.82rem; width: 140px; background: transparent; }
 
 .wl-list { display: flex; flex-direction: column; gap: 14px; }
-.wl-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; transition: all 0.2s; }
+.wl-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; transition: all 0.2s; }
 .wl-card:hover { box-shadow: var(--shadow-sm); }
 .wlc-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .wlc-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 1rem; flex-shrink: 0; }
@@ -202,7 +202,7 @@ function confirmDeleteMember(member) {
 .burnout-tag.medium { background: var(--amber-bg); color: var(--amber); }
 .burnout-tag.high { background: var(--red-bg); color: var(--red); }
 
-.wl-empty { text-align: center; padding: 60px 20px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); }
+.wl-empty { text-align: center; padding: 60px 20px; background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); }
 .empty-icon { font-size: 3rem; margin-bottom: 16px; }
 .wl-empty h3 { font-size: 1.2rem; font-weight: 700; color: var(--text-secondary); }
 

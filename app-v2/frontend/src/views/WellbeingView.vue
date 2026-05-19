@@ -226,14 +226,14 @@ onMounted(loadWellbeing)
 .wb-section { margin-bottom: 24px; }
 .wb-section h2 { font-size: 1rem; font-weight: 700; margin-bottom: 14px; }
 .mood-grid { display: flex; gap: 10px; flex-wrap: wrap; }
-.mood-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 18px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s; flex: 1; min-width: 100px; }
+.mood-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 18px; background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s; flex: 1; min-width: 100px; }
 .mood-btn:hover { border-color: var(--purple); transform: translateY(-2px); }
 .mood-btn.active { border-color: var(--purple); background: var(--purple-bg); box-shadow: 0 0 0 2px rgba(124,58,237,0.15); }
 .mood-emoji { font-size: 2rem; }
 .mood-label { font-size: 0.72rem; color: var(--text-secondary); text-align: center; }
 .wb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
 .wb-left, .wb-right { display: flex; flex-direction: column; gap: 14px; }
-.wb-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; }
+.wb-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; }
 .wb-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; }
 .wb-metric { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .wb-metric:last-child { margin-bottom: 0; }
@@ -262,7 +262,7 @@ onMounted(loadWellbeing)
 .mc-0 { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
 .mc-1 { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
 .mc-2 { background: linear-gradient(135deg, #10b981, #34d399); }
-.mc-3 { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #1a1a2e; }
+.mc-3 { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: var(--text-primary); }
 .nova-suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .nova-sug { background: var(--purple-bg); border: 1px solid var(--purple-border); color: var(--purple); padding: 6px 12px; border-radius: 999px; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; }
 .nova-sug:hover { background: var(--purple); color: #fff; }
@@ -270,7 +270,7 @@ onMounted(loadWellbeing)
 .nova-input input { flex: 1; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; }
 .nova-input input:focus { border-color: var(--purple); }
 .nova-send { background: var(--purple); color: #fff; border: none; border-radius: var(--radius-sm); padding: 9px 16px; font-size: 1rem; cursor: pointer; }
-.wb-emergency { background: #fff; border: 1px solid var(--red-border); border-radius: var(--radius-md); padding: 20px; }
+.wb-emergency { background-color: var(--bg-card); border: 1px solid var(--red-border); border-radius: var(--radius-md); padding: 20px; }
 .wb-emergency h3 { font-size: 0.9rem; font-weight: 700; color: var(--red); margin-bottom: 14px; }
 .emergency-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .em-item { font-size: 0.82rem; padding: 10px; background: var(--red-bg); border-radius: var(--radius-sm); }

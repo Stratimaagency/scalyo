@@ -147,15 +147,15 @@ function formatDate(d) { return d ? new Date(d).toLocaleDateString() : '' }
 .team-view { max-width: 800px; margin: 0 auto; padding: 32px 20px; }
 .team-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
 .team-header h2 { font-size: 1.3rem; font-weight: 800; }
-.seat-badge { background: #f3f4f6; padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; color: #374151; }
+.seat-badge { background: #f3f4f6; padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
 .team-loading { text-align: center; padding: 60px 0; }
 .section { margin-bottom: 32px; }
-.section h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: #374151; }
+.section h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--text-primary); }
 .invite-section { background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 20px; margin-bottom: 28px; }
 .invite-section h3 { margin-bottom: 12px; }
 .invite-form { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .invite-form .fi { flex: 1; min-width: 180px; }
-.fi { padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.88rem; outline: none; }
+.fi { padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.88rem; outline: none; }
 .fi:focus { border-color: #7c3aed; }
 .fi-select { max-width: 140px; }
 .invite-msg { font-size: 0.82rem; margin-top: 8px; padding: 8px 12px; border-radius: 6px; }
@@ -163,12 +163,12 @@ function formatDate(d) { return d ? new Date(d).toLocaleDateString() : '' }
 .invite-msg.error { background: #fef2f2; color: #dc2626; }
 .table-wrap { overflow-x: auto; }
 .team-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-.team-table th { text-align: left; padding: 10px 12px; border-bottom: 2px solid #e5e7eb; color: #6b7280; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.team-table th { text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--border-color); color: #6b7280; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
 .team-table td { padding: 12px; border-bottom: 1px solid #f3f4f6; }
 .role-tag { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
 .role-owner { background: #7c3aed; color: #fff; }
 .role-admin { background: #dbeafe; color: #1d4ed8; }
-.role-member { background: #f3f4f6; color: #374151; }
+.role-member { background: #f3f4f6; color: var(--text-primary); }
 .role-viewer { background: #fef3c7; color: #92400e; }
 .btn-primary { background: #7c3aed; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .btn-primary:hover:not(:disabled) { background: #6d28d9; }

@@ -178,7 +178,7 @@ function confirmDelete(id) { okrs.value = okrs.value.filter(o => o.id !== id); p
 .okr-actions { display: flex; gap: 8px; }
 .btn-primary { background: var(--purple); color: #fff; border: none; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
 .btn-primary:hover { background: var(--purple-dark); }
-.btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; }
+.btn-outline { background-color: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; }
 .btn-outline:hover { border-color: var(--purple); color: var(--purple); }
 .og-label { font-size: 0.78rem; color: var(--text-secondary); margin-right: 10px; }
 .okr-global { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
@@ -186,9 +186,9 @@ function confirmDelete(id) { okrs.value = okrs.value.filter(o => o.id !== id); p
 .og-fill { height: 100%; background: var(--purple); border-radius: 3px; transition: width 0.5s; }
 .og-pct { font-size: 0.85rem; font-weight: 700; color: var(--purple); }
 .okr-filters { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
-.fsel { padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.82rem; background: #fff; outline: none; cursor: pointer; }
+.fsel { padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.82rem; background-color: var(--bg-card); outline: none; cursor: pointer; }
 .okr-list { display: flex; flex-direction: column; gap: 14px; }
-.okr-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; }
+.okr-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; }
 .oc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 12px; }
 .oc-left strong { font-size: 1rem; display: block; margin-bottom: 4px; }
 .oc-meta { display: flex; gap: 8px; }
@@ -206,7 +206,7 @@ function confirmDelete(id) { okrs.value = okrs.value.filter(o => o.id !== id); p
 .rb.del:hover { background: var(--red-bg); }
 .delete-confirm { display: flex; align-items: center; gap: 10px; background: var(--red-bg); border: 1px solid var(--red); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 12px; font-size: 0.82rem; color: var(--red); font-weight: 500; }
 .delete-confirm span { flex: 1; }
-.btn-sm-cancel { background: #fff; border: 1px solid var(--border); color: var(--text-secondary); padding: 4px 12px; border-radius: var(--radius-sm); font-size: 0.78rem; cursor: pointer; }
+.btn-sm-cancel { background-color: var(--bg-card); border: 1px solid var(--border); color: var(--text-secondary); padding: 4px 12px; border-radius: var(--radius-sm); font-size: 0.78rem; cursor: pointer; }
 .btn-sm-delete { background: var(--red); border: none; color: #fff; padding: 4px 12px; border-radius: var(--radius-sm); font-size: 0.78rem; font-weight: 600; cursor: pointer; }
 .oc-progress { margin-bottom: 14px; }
 .oc-bar { height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden; }
@@ -222,14 +222,14 @@ function confirmDelete(id) { okrs.value = okrs.value.filter(o => o.id !== id); p
 .kr-vals { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
 .kr-bar { height: 4px; background: var(--border-light); border-radius: 2px; overflow: hidden; }
 .kr-fill { height: 100%; background: var(--purple); border-radius: 2px; transition: width 0.4s; }
-.okr-empty { text-align: center; padding: 60px 20px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); }
+.okr-empty { text-align: center; padding: 60px 20px; background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); }
 .empty-icon { font-size: 3rem; margin-bottom: 16px; }
 .okr-empty h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
 .okr-empty p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; }
 .sf { display: flex; flex-direction: column; gap: 14px; }
 .fg { display: flex; flex-direction: column; gap: 4px; }
 .fg label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
-.fi { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; background: #fff; width: 100%; }
+.fi { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; background-color: var(--bg-card); width: 100%; }
 .fi:focus { border-color: var(--purple); }
 .fr { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .fa { display: flex; gap: 10px; justify-content: flex-end; padding-top: 8px; border-top: 1px solid var(--border-light); }

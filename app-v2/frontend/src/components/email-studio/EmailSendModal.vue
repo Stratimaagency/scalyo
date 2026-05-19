@@ -144,7 +144,7 @@ async function sendEmail() {
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 14px;
-  background: #fff;
+  background-color: var(--bg-card);
   appearance: none;
 }
 .sm-input:focus {
