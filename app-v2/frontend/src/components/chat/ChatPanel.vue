@@ -585,7 +585,7 @@ watch(() => store.activeChannel, () => nextTick(scrollBottom))
 .cp-searchbar input { flex: 1; border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font-size: 0.82rem; outline: none; }
 .cp-searchbar button { background: none; border: none; cursor: pointer; color: var(--text-muted); }
 
-.cp-pinned-panel { background: #fffbeb; border-bottom: 1px solid #fef3c7; padding: 10px 18px; }
+.cp-pinned-panel { background: var(--amber-bg); border-bottom: 1px solid var(--amber-border); padding: 10px 18px; }
 .cp-pinned-header { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 6px; }
 .cp-pinned-header button { background: none; border: none; cursor: pointer; color: var(--text-muted); }
 .cp-pinned-item { font-size: 0.75rem; color: var(--text-secondary); padding: 2px 0; border-bottom: 1px solid #fef3c7; }
@@ -689,7 +689,7 @@ watch(() => store.activeChannel, () => nextTick(scrollBottom))
 .cp-ctx-menu button { display: block; width: 100%; padding: 8px 14px; background: none; border: none; text-align: left; font-size: 0.82rem; cursor: pointer; border-radius: 5px; }
 .cp-ctx-menu button:hover { background: var(--bg-hover); }
 .cp-ctx-menu button.danger { color: var(--red); }
-.cp-ctx-menu button.danger:hover { background: #fee2e2; }
+.cp-ctx-menu button.danger:hover { background: var(--red-bg); }
 
 /* Mobile */
 .cp-picker { border-top: 1px solid var(--border-light); background-color: var(--bg-card); max-height: 200px; overflow-y: auto; }
