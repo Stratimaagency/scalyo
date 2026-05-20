@@ -113,6 +113,7 @@ export const useWellbeingStore = defineStore('wellbeing', () => {
   }
 
   async function completeMicroAction(actionKey) {
+    if (!userId.value) return
     if (!todayEntry.value) await saveEntry()
     try {
       const { error } = await supabase
@@ -124,7 +125,7 @@ export const useWellbeingStore = defineStore('wellbeing', () => {
   }
 
   async function saveDeltaMood(deltaMood) {
-    if (!todayEntry.value) return
+    if (!userId.value || !todayEntry.value) return
     try {
       const { error } = await supabase
         .from('wellbeing_entries')
@@ -205,6 +206,7 @@ export const useWellbeingStore = defineStore('wellbeing', () => {
   }
 
   async function clearNovaHistory() {
+    if (!userId.value) return
     try {
       const { error } = await supabase
         .from('ai_messages')

@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useWellbeingStore } from '@/stores/wellbeing'
 
@@ -78,4 +78,5 @@ function selectDelta(key) {
   selectedDelta.value = key
   store.saveDeltaMood(key)
 }
+onBeforeUnmount(() => { if (timer) clearTimeout(timer) })
 </script>
