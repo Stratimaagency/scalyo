@@ -88,17 +88,14 @@
             </transition>
           </div>
 
-          <!-- User -->
-          <div class="topbar-user">
-            <div class="user-avatar" @click="$router.push('/app/profile')" style="cursor:pointer" title="Mon profil">{{ auth.user?.firstName?.[0] || 'U' }}</div>
-            <div class="user-info hide-mobile">
-              <span class="user-company">{{ auth.company?.name }}</span>
-              <span class="user-badges">
-                <span class="badge plan">{{ auth.company?.planLabel }}</span>
-                <span class="badge role">{{ auth.user?.roleLabel }}</span>
-              </span>
-            </div>
-          </div>
+          <!-- Agent IA + Feedback -->
+          <button class="topbar-icon-btn" @click="app.toggleChat()" :title="t('topbar_ai')">
+            💬
+          </button>
+          <button class="topbar-icon-btn" @click="document.querySelector('.feedback-trigger')?.click()" :title="t('topbar_feedback')">
+            📝
+          </button>
+            
         </div>
       
       <!-- Trial banner -->
@@ -128,10 +125,7 @@
     <AiAssistant v-if="isEliteOrAbove" />
 
     <!-- CHAT FAB -->
-    <button class="chat-fab" @click="app.toggleChat()" :class="{ active: app.chatOpen }">
-      💬
-      <span v-if="chatStore.totalUnread" class="chat-fab-badge">{{ chatStore.totalUnread }}</span>
-    </button>
+    <!-- Chat FAB moved to topbar -->
     <transition name="slide-right">
       <div v-if="app.chatOpen" class="chat-panel-wrapper">
         <ChatPanel @close="app.toggleChat()" />
@@ -431,4 +425,7 @@ async function handleLogout() {
 }
 .trial-cta:hover { background: rgba(255,255,255,0.4); }
 
+
+.topbar-icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 6px 8px; border-radius: var(--radius-md); transition: background 0.15s; }
+.topbar-icon-btn:hover { background: var(--bg-hover); }
 </style>
