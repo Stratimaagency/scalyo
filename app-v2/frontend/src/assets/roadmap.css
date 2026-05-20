@@ -93,7 +93,7 @@
   background: none; border: none; font-size: 0.9rem; cursor: pointer;
   padding: 4px 8px; border-radius: 4px; opacity: 0.4; transition: all 0.15s;
 }
-.btn-del:hover { opacity: 1; background: #fee2e2; }
+.btn-del:hover { opacity: 1; background: var(--red-bg); }
 .del-msg { font-size: 0.78rem; color: var(--text-secondary); }
 .del-msg.warn { color: #ef4444; font-weight: 600; }
 
@@ -175,8 +175,8 @@
   border: 1.5px solid var(--border); border-radius: var(--radius-sm);
   cursor: pointer; transition: all 0.15s;
 }
-.tpl-card:hover { border-color: var(--purple); background: #faf9ff; }
-.tpl-card.selected { background: #f5f3ff; }
+.tpl-card:hover { border-color: var(--purple); background: var(--purple-bg); }
+.tpl-card.selected { background: var(--purple-bg); }
 .tpl-icon { font-size: 1.4rem; flex-shrink: 0; }
 .tpl-card strong { font-size: 0.85rem; display: block; margin-bottom: 2px; }
 .tpl-card p { font-size: 0.75rem; color: var(--text-muted); margin: 0; line-height: 1.4; }

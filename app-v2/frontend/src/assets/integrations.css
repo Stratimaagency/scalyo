@@ -31,7 +31,7 @@
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .ig-card:hover { border-color: var(--primary, #6366f1); box-shadow: 0 2px 12px rgba(99,102,241,0.08); }
-.ig-card-on { border-color: #22c55e40; background: #f0fdf4; }
+.ig-card-on { border-color: #22c55e40; background: var(--green-bg); }
 .ig-card-on:hover { border-color: #22c55e; }
 
 /* Card top row */
@@ -76,7 +76,7 @@
 .ig-btn-secondary { background-color: var(--bg-card); border-color: var(--border, #e2e8f0); color: var(--text, #1a1a2e); }
 .ig-btn-secondary:hover { background: var(--bg-muted, #f8fafc); }
 .ig-btn-danger { background: none; border: none; color: #dc2626; padding: 8px 12px; }
-.ig-btn-danger:hover { background: #fef2f2; }
+.ig-btn-danger:hover { background: var(--red-bg); }
 .ig-btn-upgrade { background: var(--bg-muted, #f1f5f9); color: var(--text-muted, #64748b); }
 .ig-btn-upgrade:hover { background: #e2e8f0; }
 .ig-btn-ghost { background: none; border: 1px solid var(--border, #e2e8f0); color: var(--text-muted, #64748b); }
