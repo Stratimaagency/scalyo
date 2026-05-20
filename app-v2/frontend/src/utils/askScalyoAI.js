@@ -3,7 +3,7 @@
 
 import { supabase } from '@/lib/supabase'
 
-const ENDPOINTS = { wellbeing: '/api/wellbeing' }
+const ENDPOINTS = {}
 const AI_ENDPOINT = '/api/ai'
 
 /**
