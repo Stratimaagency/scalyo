@@ -260,7 +260,7 @@ function donutOptions(data) {
 }
 
 .kpv-block {
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 28px;

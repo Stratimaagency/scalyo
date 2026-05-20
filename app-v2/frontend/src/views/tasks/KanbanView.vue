@@ -189,7 +189,7 @@ function deleteTask() {
 .kb-header h1 { font-size: 1.5rem; font-weight: 800; }
 .btn-primary { background: var(--purple); color: #fff; border: none; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
 .btn-primary:hover { background: var(--purple-dark); }
-.btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; }
+.btn-outline { background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; }
 .btn-danger { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; font-weight: 600; }
 
 .kb-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; }
@@ -208,7 +208,7 @@ function deleteTask() {
 .kbc-count { font-size: 0.68rem; background: rgba(0,0,0,0.06); padding: 1px 6px; border-radius: 4px; color: var(--text-muted); }
 .kbc-body { padding: 0 10px 14px; }
 
-.kb-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 8px; cursor: grab; transition: all 0.15s; }
+.kb-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 8px; cursor: grab; transition: all 0.15s; }
 .kb-card:hover { box-shadow: var(--shadow-sm); transform: translateY(-1px); }
 .kb-card:active { cursor: grabbing; }
 /* Card priority border */
@@ -247,7 +247,7 @@ function deleteTask() {
 .sf { display: flex; flex-direction: column; gap: 14px; }
 .fg { display: flex; flex-direction: column; gap: 4px; }
 .fg label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
-.fi { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; background: #fff; width: 100%; }
+.fi { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; background: var(--bg-card); width: 100%; }
 .fi:focus { border-color: var(--purple); }
 .ta { resize: vertical; }
 .fr { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }

@@ -165,7 +165,7 @@ const projectHoursYear = computed(() => {
 .stg-toast { position: fixed; top: 80px; right: 24px; background: var(--green); color: #fff; padding: 12px 20px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 500; z-index: 1000; box-shadow: var(--shadow-lg); animation: slideIn 0.3s ease; }
 @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-.stg-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; margin-bottom: 20px; }
+.stg-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; margin-bottom: 20px; }
 .stg-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 16px; }
 .stg-card.auto { background: var(--purple-bg); border-color: var(--purple-border); }
 .stg-card.legal { border-left: 3px solid var(--purple); }
@@ -173,7 +173,7 @@ const projectHoursYear = computed(() => {
 .stg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .fg { display: flex; flex-direction: column; gap: 4px; }
 .fg label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
-.fi { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; background: #fff; width: 100%; }
+.fi { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; background: var(--bg-card); width: 100%; }
 .fi:focus { border-color: var(--purple); }
 
 .legal-hint { font-size: 0.68rem; color: var(--purple); margin-top: 2px; }

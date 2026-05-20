@@ -439,24 +439,24 @@ onMounted(() => { loadEvents() })
 .pl-toolbar-left { display: flex; align-items: center; gap: 16px; }
 .pl-toolbar-left h1 { font-size: 1.3rem; font-weight: 800; white-space: nowrap; }
 .pl-nav-btns { display: flex; align-items: center; gap: 4px; }
-.nav-btn { background: #fff; border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: all 0.15s; color: var(--text); }
+.nav-btn { background: var(--bg-card); border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: all 0.15s; color: var(--text); }
 .nav-btn:hover { border-color: var(--purple); color: var(--purple); }
 .today-btn { font-weight: 600; }
 .pl-current-date { font-size: 1rem; font-weight: 700; margin-left: 8px; text-transform: capitalize; }
 .pl-toolbar-right { display: flex; align-items: center; gap: 8px; }
 .pl-views { display: flex; gap: 1px; background: var(--border-light); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
-.pl-views button { background: #fff; border: none; padding: 6px 12px; font-size: 0.75rem; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: all 0.15s; }
+.pl-views button { background: var(--bg-card); border: none; padding: 6px 12px; font-size: 0.75rem; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: all 0.15s; }
 .pl-views button.active { background: var(--purple); color: #fff; font-weight: 600; }
 .pl-views button:hover:not(.active) { background: var(--bg-hover); }
 .pl-actions { display: flex; gap: 6px; }
-.sync-btn { background: #fff; border: 1px solid var(--border); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; }
+.sync-btn { background: var(--bg-card); border: 1px solid var(--border); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; }
 .sync-btn:hover { border-color: var(--purple); }
 .create-btn { background: var(--purple); color: #fff; border: none; padding: 6px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
 .create-btn:hover { background: var(--purple-dark); }
-.settings-btn { background: #fff; border: 1px solid var(--border); padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+.settings-btn { background: var(--bg-card); border: 1px solid var(--border); padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
 
 /* FullCalendar overrides */
-.fc-wrapper { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.fc-wrapper { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
 .fc-wrapper :deep(.fc) { font-family: 'Inter', -apple-system, sans-serif; }
 .fc-wrapper :deep(.fc-timegrid-now-indicator-line) { border-color: #ef4444; border-width: 2px; }
 .fc-wrapper :deep(.fc-timegrid-now-indicator-arrow) { border-color: #ef4444; }
@@ -473,15 +473,15 @@ onMounted(() => { loadEvents() })
 .fc-wrapper :deep(.fc-business-container) { background: rgba(124, 58, 237, 0.02); }
 
 /* Gantt (reused from before with improvements) */
-.gantt-view { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.gantt-view { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
 .gantt-toolbar-sub { display: flex; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--border-light); background: var(--bg); flex-wrap: wrap; gap: 8px; }
 .gz-group { display: flex; align-items: center; gap: 6px; }
 .gz-label { font-size: 0.75rem; color: var(--text-muted); }
-.gz-btn { background: #fff; border: 1px solid var(--border); padding: 4px 12px; border-radius: 6px; font-size: 0.72rem; cursor: pointer; color: var(--text-muted); }
+.gz-btn { background: var(--bg-card); border: 1px solid var(--border); padding: 4px 12px; border-radius: 6px; font-size: 0.72rem; cursor: pointer; color: var(--text-muted); }
 .gz-btn.active { background: var(--purple); color: #fff; border-color: var(--purple); }
-.gz-select { padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.72rem; background: #fff; }
+.gz-select { padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.72rem; background: var(--bg-card); }
 .gantt-container { overflow-x: auto; position: relative; }
-.g-header { display: flex; position: sticky; top: 0; z-index: 2; border-bottom: 1px solid var(--border); background: #fff; }
+.g-header { display: flex; position: sticky; top: 0; z-index: 2; border-bottom: 1px solid var(--border); background: var(--bg-card); }
 .g-labels-h { width: 180px; min-width: 180px; padding: 8px 12px; font-size: 0.72rem; font-weight: 600; color: var(--text-muted); border-right: 1px solid var(--border-light); }
 .g-dates-h { display: flex; }
 .g-date-col { width: 36px; min-width: 36px; text-align: center; padding: 4px 0; border-right: 1px solid var(--border-light); }
@@ -523,7 +523,7 @@ onMounted(() => { loadEvents() })
 .sf { display: flex; flex-direction: column; gap: 14px; }
 .fg { display: flex; flex-direction: column; gap: 4px; }
 .fg label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
-.fi { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; background: #fff; width: 100%; }
+.fi { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; background: var(--bg-card); width: 100%; }
 .fi:focus { border-color: var(--purple); }
 .ta { resize: vertical; }
 .fr { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -534,7 +534,7 @@ onMounted(() => { loadEvents() })
 .cpick { width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
 .cpick.active { border-color: var(--text); transform: scale(1.15); }
 .btn-primary { background: var(--purple); color: #fff; border: none; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
-.btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; }
+.btn-outline { background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; }
 .btn-danger { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; font-weight: 600; }
 
 @media (max-width: 900px) {

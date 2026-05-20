@@ -43,7 +43,7 @@ function isOverdue(task) { return task.status !== 'done' && task.dueDate < new D
 .team-view { max-width: 900px; }
 .team-view h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 24px; }
 .tm-list { display: flex; flex-direction: column; gap: 16px; }
-.tm-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; }
+.tm-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; }
 .tmc-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .tmc-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 1rem; flex-shrink: 0; }
 .tmc-avatar.healthy { background: var(--green); }

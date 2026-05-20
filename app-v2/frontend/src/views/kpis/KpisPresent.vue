@@ -214,7 +214,7 @@ onUnmounted(() => {
 
 <style scoped>
 .kp { position: fixed; inset: 0; z-index: 9999; background: #0a0a0f; color: #fff; overflow: hidden; outline: none; display: flex; flex-direction: column; }
-.kp:not(.dark) { background: #fff; color: #1a1a2e; }
+.kp:not(.dark) { background: var(--bg-card); color: var(--text); }
 
 /* Slides */
 .kp-slide { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 40px; }
@@ -248,7 +248,7 @@ onUnmounted(() => {
 .kp:not(.dark) .slide-kpis h2 { color: #6b7280; }
 .sk-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 900px; width: 100%; }
 .sk-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 28px; text-align: center; animation: cardPop 0.5s ease both; }
-.kp:not(.dark) .sk-card { background: #fff; border-color: #e5e7eb; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+.kp:not(.dark) .sk-card { background: var(--bg-card); border-color: #e5e7eb; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
 @keyframes cardPop { from { opacity: 0; transform: translateY(20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .sk-name { font-size: 0.72rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px; }
 .kp:not(.dark) .sk-name { color: #9ca3af; }
@@ -300,7 +300,7 @@ onUnmounted(() => {
 .kp:not(.dark) .kp-controls { background: rgba(255,255,255,0.9); border-top: 1px solid #e5e7eb; }
 .kp-controls.hidden { opacity: 0; transform: translateY(100%); }
 .kp-controls button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 6px 16px; border-radius: 6px; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
-.kp:not(.dark) .kp-controls button { background: #fff; border-color: #e5e7eb; color: #374151; }
+.kp:not(.dark) .kp-controls button { background: var(--bg-card); border-color: #e5e7eb; color: #374151; }
 .kp-controls button:hover { background: rgba(255,255,255,0.2); }
 .kp-controls button:disabled { opacity: 0.3; cursor: not-allowed; }
 .kp-slide-num { font-size: 0.78rem; color: rgba(255,255,255,0.5); min-width: 80px; text-align: center; }

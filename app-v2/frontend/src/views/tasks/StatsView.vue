@@ -186,7 +186,7 @@ function hoursDelta(task) {
 .stats-view h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 24px; }
 
 /* AI Panel */
-.ai-panel { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; margin-bottom: 24px; border-left: 4px solid #10b981; }
+.ai-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; margin-bottom: 24px; border-left: 4px solid #10b981; }
 .ai-panel.ai-warning { border-left-color: #f59e0b; }
 .ai-panel.ai-critical { border-left-color: #ef4444; }
 .ai-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
@@ -198,7 +198,7 @@ function hoursDelta(task) {
 .risk-critical { background: #fee2e2; color: #991b1b; }
 .ai-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 12px; }
 .ai-metric { text-align: center; }
-.aim-val { font-size: 1.4rem; font-weight: 800; display: block; color: #111827; }
+.aim-val { font-size: 1.4rem; font-weight: 800; display: block; color: var(--text); }
 .aim-lbl { font-size: 0.68rem; color: var(--text-muted); }
 .ai-recs { display: flex; flex-direction: column; gap: 6px; }
 .ai-rec { font-size: 0.78rem; padding: 8px 12px; border-radius: 6px; background: var(--bg); }
@@ -209,7 +209,7 @@ function hoursDelta(task) {
 
 /* KPI cards */
 .st-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
-.stk { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; text-align: center; transition: all 0.2s; }
+.stk { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; text-align: center; transition: all 0.2s; }
 .stk:hover { box-shadow: var(--shadow-sm); transform: translateY(-2px); }
 .stk.warn { border-left: 3px solid #ef4444; }
 .stk-icon { font-size: 1.3rem; display: block; margin-bottom: 6px; }
@@ -221,7 +221,7 @@ function hoursDelta(task) {
 
 /* Charts */
 .st-charts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; margin-bottom: 24px; }
-.st-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; }
+.st-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; }
 .st-card h3 { font-size: 0.88rem; font-weight: 700; margin-bottom: 12px; }
 
 /* Tables */

@@ -82,7 +82,7 @@ function onDrop(e, priority) {
 .priorities-view { max-width: 1000px; }
 .priorities-view h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; }
 
-.prio-unclassified { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px; }
+.prio-unclassified { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px; }
 .prio-unclassified h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; }
 .prio-count { font-size: 0.72rem; color: var(--text-muted); background: var(--bg); padding: 2px 8px; border-radius: 4px; margin-left: 6px; }
 .prio-cards-row { display: flex; gap: 8px; flex-wrap: wrap; min-height: 40px; padding: 4px; border: 2px dashed transparent; border-radius: var(--radius-sm); transition: all 0.2s; }
@@ -93,7 +93,7 @@ function onDrop(e, priority) {
 .prio-empty-hint { font-size: 0.78rem; color: var(--text-muted); padding: 8px; }
 
 .matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.matrix-quad { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; min-height: 200px; transition: all 0.2s; }
+.matrix-quad { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; min-height: 200px; transition: all 0.2s; }
 .matrix-quad:hover { border-color: var(--border); }
 .matrix-quad.urgent_important { border-top: 3px solid var(--red); }
 .matrix-quad.important { border-top: 3px solid var(--blue); }
