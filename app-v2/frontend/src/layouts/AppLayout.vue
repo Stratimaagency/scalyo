@@ -88,12 +88,16 @@
             </transition>
           </div>
 
-          <!-- Agent IA + Feedback -->
-          <button class="topbar-icon-btn" @click="app.toggleChat()" :title="t('topbar_ai')">
-            💬
+          <!-- Agent IA + Feedback (moved from floating) -->
+          <button class="topbar-icon-btn" @click="openAiAgent" :title="t('topbar_ai')">
+            🤖
           </button>
-          <button class="topbar-icon-btn" @click="document.querySelector('.feedback-trigger')?.click()" :title="t('topbar_feedback')">
+          <button class="topbar-icon-btn" @click="openFeedback" :title="t('topbar_feedback')">
             📝
+          </button>
+          <button class="topbar-icon-btn" @click="app.toggleChat()" :title="t('topbar_chat')">
+            💬
+            <span v-if="chatStore.totalUnread" class="notif-badge" style="font-size:0.6rem;">{{ chatStore.totalUnread }}</span>
           </button>
             
         </div>
@@ -297,6 +301,9 @@ async function handleLogout() {
   await auth.logout()
   router.push('/login')
 }
+
+function openAiAgent() { const el = document.querySelector('.ai-fab'); if (el) { el.style.pointerEvents = 'auto'; el.click(); el.style.pointerEvents = 'none'; } }
+function openFeedback() { const el = document.querySelector('.feedback-trigger'); if (el) { el.style.pointerEvents = 'auto'; el.click(); el.style.pointerEvents = 'none'; } }
 </script>
 
 <style scoped>
@@ -428,4 +435,7 @@ async function handleLogout() {
 
 .topbar-icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 6px 8px; border-radius: var(--radius-md); transition: background 0.15s; }
 .topbar-icon-btn:hover { background: var(--bg-hover); }
+
+.ai-fab { position: fixed !important; left: -9999px !important; opacity: 0 !important; pointer-events: none !important; }
+.feedback-trigger { position: fixed !important; left: -9999px !important; opacity: 0 !important; pointer-events: none !important; }
 </style>
