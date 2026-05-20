@@ -566,7 +566,7 @@ watch(() => store.activeChannel, () => nextTick(scrollBottom))
 .cp-status-dot.overloaded { background: #ef4444; }
 
 .cp-user-bottom { margin-top: auto; display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.08); }
-.cp-user-av { width: 28px; height: 28px; border-radius: 50%; background: #7c3aed; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; }
+.cp-user-av { width: 28px; height: 28px; border-radius: 50%; background: var(--purple); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; }
 .cp-user-name { font-size: 0.78rem; font-weight: 600; color: #fff; display: block; }
 .cp-user-status { font-size: 0.65rem; color: #10b981; }
 

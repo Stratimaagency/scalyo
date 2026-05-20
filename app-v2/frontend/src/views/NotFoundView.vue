@@ -60,7 +60,7 @@ function goBack() {
   padding: 24px;
 }
 .nf-card {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 24px;
   padding: 48px 40px;
   max-width: 440px;
@@ -82,10 +82,10 @@ function goBack() {
 }
 .nf-illustration { margin-bottom: 24px; display: flex; justify-content: center; }
 .nf-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; }
-.nf-desc { font-size: 0.88rem; color: #6b7280; margin-bottom: 28px; line-height: 1.6; }
+.nf-desc { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 28px; line-height: 1.6; }
 .nf-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 .btn-primary {
-  background: #7c3aed; color: #fff; border: none;
+  background: var(--purple); color: #fff; border: none;
   padding: 11px 24px; border-radius: 10px; font-size: 0.88rem; font-weight: 600;
   cursor: pointer; transition: all 0.2s;
 }

@@ -101,12 +101,12 @@ async function handleJoin() {
 
 <style scoped>
 .auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #f8f9fb, #ede9fe); padding: 20px; }
-.auth-card { background: #fff; border-radius: 20px; padding: 48px 40px; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
+.auth-card { background: var(--bg-card); border-radius: 20px; padding: 48px 40px; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
 .auth-logo { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 32px; }
 .auth-brand { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #7c3aed, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .auth-card h1 { font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 6px; }
-.auth-sub { font-size: 0.88rem; color: #6b7280; text-align: center; margin-bottom: 28px; }
-.join-loading { text-align: center; padding: 40px 0; color: #6b7280; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.auth-sub { font-size: 0.88rem; color: var(--text-secondary); text-align: center; margin-bottom: 28px; }
+.join-loading { text-align: center; padding: 40px 0; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; gap: 10px; }
 .join-info { text-align: center; margin-bottom: 20px; }
 .join-org { font-size: 1.1rem; font-weight: 700; color: #111827; }
 .join-role { font-size: 0.82rem; color: #7c3aed; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
@@ -115,13 +115,13 @@ async function handleJoin() {
 .auth-form { display: flex; flex-direction: column; gap: 16px; }
 .fg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .fg { display: flex; flex-direction: column; gap: 4px; }
-.fg label { font-size: 0.78rem; font-weight: 600; color: #6b7280; }
-.fi { padding: 11px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.9rem; outline: none; transition: border-color 0.15s; }
+.fg label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
+.fi { padding: 11px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.9rem; outline: none; transition: border-color 0.15s; }
 .fi:focus { border-color: #7c3aed; }
 .cgu-check { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; margin-top: 4px; }
 .cgu-input { margin-top: 3px; accent-color: #7c3aed; width: 16px; height: 16px; flex-shrink: 0; }
-.cgu-text { font-size: 0.78rem; color: #6b7280; line-height: 1.5; }
-.btn-primary { background: #7c3aed; color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; min-height: 44px; }
+.cgu-text { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; }
+.btn-primary { background: var(--purple); color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; min-height: 44px; }
 .btn-primary:hover:not(:disabled) { background: #6d28d9; }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primary.full { width: 100%; }

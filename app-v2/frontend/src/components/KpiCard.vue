@@ -83,7 +83,7 @@ const statusClass = computed(() => {
 </script>
 
 <style scoped>
-.kpi-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; transition: all 0.2s; }
+.kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; transition: all 0.2s; }
 .kpi-card:hover { box-shadow: var(--shadow-sm); transform: translateY(-2px); }
 .kpi-card.st-excellent { border-left: 3px solid var(--green); }
 .kpi-card.st-good { border-left: 3px solid var(--blue); }

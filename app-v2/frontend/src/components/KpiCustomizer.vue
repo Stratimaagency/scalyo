@@ -172,9 +172,9 @@ KPI_CATEGORIES.slice(0, 3).forEach(c => { catOpen[c.id] = true })
 .kc-cat-title { display: flex; align-items: center; gap: 6px; padding: 8px 12px; font-size: 0.82rem; font-weight: 700; cursor: pointer; margin: 0; }
 .kc-cat-title:hover { background: var(--bg-hover); }
 .kc-cat-title span:first-child { font-size: 0.65rem; color: var(--text-muted); width: 12px; }
-.kc-cat-count { font-size: 0.62rem; color: var(--text-muted); background: #fff; padding: 1px 6px; border-radius: 4px; margin-left: auto; }
+.kc-cat-count { font-size: 0.62rem; color: var(--text-muted); background: var(--bg-card); padding: 1px 6px; border-radius: 4px; margin-left: auto; }
 .kc-cat-items { padding: 0 6px 6px; display: flex; flex-direction: column; gap: 2px; }
-.kc-kpi-item { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; cursor: pointer; background: #fff; }
+.kc-kpi-item { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; cursor: pointer; background: var(--bg-card); }
 .kc-kpi-item:hover { background: var(--purple-bg); }
 .kc-kpi-item.selected { background: var(--purple-bg); border: 1px solid var(--purple-border); }
 .kc-kpi-item.disabled { opacity: 0.4; cursor: not-allowed; }
@@ -186,6 +186,6 @@ KPI_CATEGORIES.slice(0, 3).forEach(c => { catOpen[c.id] = true })
 .kc-max-warn { font-size: 0.75rem; color: var(--amber); text-align: center; padding: 6px; background: var(--amber-bg); border-radius: 6px; }
 
 .kc-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 10px; border-top: 1px solid var(--border-light); flex-shrink: 0; }
-.btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 0.82rem; cursor: pointer; }
+.btn-outline { background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 0.82rem; cursor: pointer; }
 .btn-primary { background: var(--purple); color: #fff; border: none; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 600; cursor: pointer; }
 </style>
