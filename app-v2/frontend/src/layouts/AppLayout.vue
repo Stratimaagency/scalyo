@@ -88,16 +88,14 @@
             </transition>
           </div>
 
-          <!-- User -->
-          <div class="topbar-user">
-            <div class="user-avatar" @click="$router.push('/app/profile')" style="cursor:pointer" title="Mon profil">{{ auth.user?.firstName?.[0] || 'U' }}</div>
-            <div class="user-info hide-mobile">
-              <span class="user-company">{{ auth.company?.name }}</span>
-              <span class="user-badges">
-                <span class="badge plan">{{ auth.company?.planLabel }}</span>
-                <span class="badge role">{{ auth.user?.roleLabel }}</span>
-              </span>
-            </div>
+          <!-- Agent IA + Feedback + Chat -->
+          <div class="topbar-actions">
+            <AiAssistant v-if="isEliteOrAbove" />
+            <FeedbackWidget />
+            <button class="topbar-chat-btn" @click="app.toggleChat()" :class="{ active: app.chatOpen }">
+              💬
+              <span v-if="chatStore.totalUnread" class="topbar-badge">{{ chatStore.totalUnread }}</span>
+            </button>
           </div>
         </div>
       
@@ -121,18 +119,9 @@
     <!-- ONBOARDING -->
     <OnboardingWizard />
 
-    <!-- ALPHA FEEDBACK -->
-    <FeedbackWidget />
-
-    <!-- AI AGENT -->
-    <AiAssistant v-if="isEliteOrAbove" />
-
-    <!-- CHAT FAB -->
-    <button class="chat-fab" @click="app.toggleChat()" :class="{ active: app.chatOpen }">
-      💬
-      <span v-if="chatStore.totalUnread" class="chat-fab-badge">{{ chatStore.totalUnread }}</span>
-    </button>
-    <transition name="slide-right">
+    
+    
+        <transition name="slide-right">
       <div v-if="app.chatOpen" class="chat-panel-wrapper">
         <ChatPanel @close="app.toggleChat()" />
       </div>
@@ -431,4 +420,15 @@ async function handleLogout() {
 }
 .trial-cta:hover { background: rgba(255,255,255,0.4); }
 
+
+/* Topbar actions — composants déplacés du flottant */
+.topbar-actions { display: flex; align-items: center; gap: 2px; }
+.topbar-actions :deep(.feedback-widget) { position: static; z-index: auto; }
+.topbar-actions :deep(.feedback-trigger) { position: static; width: auto; height: auto; box-shadow: none; }
+.topbar-actions :deep(.ai-agent) { position: static; z-index: auto; }
+.topbar-actions :deep(.ai-fab) { position: static; box-shadow: none; }
+.topbar-actions :deep(.ai-panel) { position: fixed; top: 56px; right: 16px; bottom: auto; max-height: calc(100vh - 72px); }
+.topbar-chat-btn { background: none; border: none; font-size: 1.15rem; cursor: pointer; padding: 6px 10px; border-radius: var(--radius-md); transition: background 0.15s; position: relative; line-height: 1; }
+.topbar-chat-btn:hover { background: var(--bg-hover); }
+.topbar-badge { position: absolute; top: 2px; right: 2px; background: var(--red); color: white; font-size: 0.55rem; width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
 </style>
