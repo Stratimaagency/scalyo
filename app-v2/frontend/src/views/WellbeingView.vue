@@ -1,8 +1,8 @@
 <template>
   <div class="wb-view">
-    <h1>\u{1F49A} {{ t('wb_title') }}</h1>
+    <h1>💚 {{ t('wb_title') }}</h1>
     <div class="wb-privacy">
-      <span>\u{1F512}</span>
+      <span>🔒</span>
       <span>{{ t('wb_confidential') }}</span>
     </div>
 

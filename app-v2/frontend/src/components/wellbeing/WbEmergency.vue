@@ -1,6 +1,6 @@
 <template>
   <div class="wb-emergency">
-    <h3>\u{1F6A8} {{ t('wb_emergency') }}</h3>
+    <h3>🚨 {{ t('wb_emergency') }}</h3>
     <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:8px;">{{ t('wb_emergency_desc') }}</p>
     <div style="display:flex;flex-wrap:wrap;gap:12px;">
       <a v-for="line in lines" :key="line.key" :href="'tel:' + line.number" style="display:flex;align-items:center;gap:6px;font-size:0.82rem;">

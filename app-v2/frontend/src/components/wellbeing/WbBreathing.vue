@@ -10,7 +10,7 @@
       <p style="font-size:0.78rem;color:var(--text-muted);">{{ currentStep }}/{{ totalSteps }}</p>
     </div>
     <div v-else>
-      <p style="font-size:1.2rem;margin-bottom:10px;">\u{2705}</p>
+      <p style="font-size:1.2rem;margin-bottom:10px;">✅</p>
       <p style="font-size:0.85rem;color:var(--text);font-weight:600;margin-bottom:12px;">{{ t('wb_micro_done') }}</p>
       <h3 style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:8px;">{{ t('wb_micro_delta') }}</h3>
       <div class="mood-grid" style="justify-content:center;">
