@@ -644,6 +644,8 @@ export default {
   wb_trends_title: 'Mes tendances — 30 derniers jours',
   wb_trend_improving: 'Tendance positive — continue comme ça.',
   wb_trend_declining: 'Tendance en baisse — prends soin de toi. Nova est là si tu veux en parler.',
+  wb_trends_empty: 'Ton historique apparaîtra ici au fil des jours.',
+  wb_trends_empty_hint: 'Reviens demain pour voir ta première tendance.',
   wb_crisis_fr: 'France — Numéro national de prévention du suicide',
   wb_crisis_en: 'UK — Samaritans',
   wb_crisis_ko: 'Corée — Ligne de crise',

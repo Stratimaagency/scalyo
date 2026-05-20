@@ -1284,6 +1284,8 @@ export default {
   wb_trends_title: 'My trends — last 30 days',
   wb_trend_improving: 'Positive trend — keep it up.',
   wb_trend_declining: 'Declining trend — take care of yourself. Nova is here if you want to talk.',
+  wb_trends_empty: 'Your history will appear here over the coming days.',
+  wb_trends_empty_hint: 'Come back tomorrow to see your first trend.',
   wb_crisis_fr: 'France — National suicide prevention hotline',
   wb_crisis_en: 'UK — Samaritans',
   wb_crisis_ko: 'Korea — Crisis line',

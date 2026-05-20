@@ -1285,6 +1285,8 @@ export default {
   wb_trends_title: '내 추이 — 최근 30일',
   wb_trend_improving: '긍정적인 추세입니다. 계속 이렇게 하세요.',
   wb_trend_declining: '하락 추세입니다. 자기 자신을 돌보세요. Nova가 여기 있어요.',
+  wb_trends_empty: '기록이 여기에 나타납니다.',
+  wb_trends_empty_hint: '내일 다시 와서 첫 번째 추이를 확인하세요.',
   wb_crisis_fr: '프랑스 — 자살예방 상담전화',
   wb_crisis_en: '영국 — Samaritans',
   wb_crisis_ko: '한국 — 자살예방 상담전화',
