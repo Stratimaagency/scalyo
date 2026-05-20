@@ -88,17 +88,15 @@
             </transition>
           </div>
 
-          <!-- Agent IA + Feedback (moved from floating) -->
-          <button class="topbar-icon-btn" @click="openAiAgent" :title="t('topbar_ai')">
-            🤖
-          </button>
-          <button class="topbar-icon-btn" @click="openFeedback" :title="t('topbar_feedback')">
-            📝
-          </button>
-          <button class="topbar-icon-btn" @click="app.toggleChat()" :title="t('topbar_chat')">
-            💬
-            <span v-if="chatStore.totalUnread" class="notif-badge" style="font-size:0.6rem;">{{ chatStore.totalUnread }}</span>
-          </button>
+          <!-- Agent IA + Feedback + Chat — composants déplacés du bas -->
+          <div class="topbar-actions">
+            <AiAssistant v-if="isEliteOrAbove" />
+            <FeedbackWidget />
+            <button class="topbar-chat-btn" @click="app.toggleChat()">
+              💬
+              <span v-if="chatStore.totalUnread" class="notif-badge">{{ chatStore.totalUnread }}</span>
+            </button>
+          </div>
             
         </div>
       
@@ -122,14 +120,12 @@
     <!-- ONBOARDING -->
     <OnboardingWizard />
 
-    <!-- ALPHA FEEDBACK -->
-    <FeedbackWidget />
+    
 
-    <!-- AI AGENT -->
-    <AiAssistant v-if="isEliteOrAbove" />
+    
 
     <!-- CHAT FAB -->
-    <!-- Chat FAB moved to topbar -->
+    
     <transition name="slide-right">
       <div v-if="app.chatOpen" class="chat-panel-wrapper">
         <ChatPanel @close="app.toggleChat()" />
@@ -302,8 +298,8 @@ async function handleLogout() {
   router.push('/login')
 }
 
-function openAiAgent() { const el = document.querySelector('.ai-fab'); if (el) { el.style.pointerEvents = 'auto'; el.click(); el.style.pointerEvents = 'none'; } }
-function openFeedback() { const el = document.querySelector('.feedback-trigger'); if (el) { el.style.pointerEvents = 'auto'; el.click(); el.style.pointerEvents = 'none'; } }
+
+
 </script>
 
 <style scoped>
@@ -433,9 +429,19 @@ function openFeedback() { const el = document.querySelector('.feedback-trigger')
 .trial-cta:hover { background: rgba(255,255,255,0.4); }
 
 
-.topbar-icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 6px 8px; border-radius: var(--radius-md); transition: background 0.15s; }
 .topbar-icon-btn:hover { background: var(--bg-hover); }
 
-.ai-fab { position: fixed !important; left: -9999px !important; opacity: 0 !important; pointer-events: none !important; }
-.feedback-trigger { position: fixed !important; left: -9999px !important; opacity: 0 !important; pointer-events: none !important; }
+
+
+
+/* Topbar actions — override floating positioning */
+.topbar-actions { display: flex; align-items: center; gap: 4px; }
+.topbar-actions .ai-agent { position: static; z-index: auto; }
+.topbar-actions .ai-agent .ai-fab { position: static; padding: 6px 12px; border-radius: var(--radius-md); font-size: 0.82rem; }
+.topbar-actions .ai-agent .ai-panel { position: fixed; top: 56px; right: 16px; bottom: auto; }
+.topbar-actions .feedback-widget { position: static; z-index: auto; }
+.topbar-actions .feedback-widget .feedback-trigger { position: static; padding: 6px 12px; border-radius: var(--radius-md); font-size: 0.82rem; }
+.topbar-actions .feedback-widget .fb-form { position: fixed; top: 56px; right: 16px; bottom: auto; }
+.topbar-chat-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; padding: 6px 8px; border-radius: var(--radius-md); transition: background 0.15s; position: relative; }
+.topbar-chat-btn:hover { background: var(--bg-hover); }
 </style>
