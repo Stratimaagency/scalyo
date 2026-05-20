@@ -42,9 +42,6 @@ export default {
 
   topbar_search: '검색...',
   topbar_notifications: '알림',
-  topbar_ai: 'AI 에이전트',
-  topbar_feedback: '피드백',
-  topbar_chat: '채팅',
   topbar_mark_all_read: '모두 읽음 표시',
   topbar_no_notifications: '알림 없음',
 

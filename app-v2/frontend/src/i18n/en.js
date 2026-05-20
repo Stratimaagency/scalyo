@@ -41,9 +41,6 @@ export default {
 
   topbar_search: 'Search...',
   topbar_notifications: 'Notifications',
-  topbar_ai: 'AI Agent',
-  topbar_feedback: 'Feedback',
-  topbar_chat: 'Chat',
   topbar_mark_all_read: 'Mark all as read',
   topbar_no_notifications: 'No notifications',
 

@@ -44,9 +44,6 @@ export default {
   // Topbar
   topbar_search: 'Rechercher...',
   topbar_notifications: 'Notifications',
-  topbar_ai: 'Agent IA',
-  topbar_feedback: 'Feedback',
-  topbar_chat: 'Chat',
   topbar_mark_all_read: 'Tout marquer comme lu',
   topbar_no_notifications: 'Aucune notification',
 
