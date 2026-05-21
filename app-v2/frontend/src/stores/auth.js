@@ -101,7 +101,6 @@ async function fetchOrgRole() {
       orgRole.value = profile.value?.org_role || 'member'
     } catch (e) { console.error('fetchOrgRole:', e) }
   }
-}
 async function fetchProfile(userId) {
 try {
 const { data, error: err } = await supabase.from('profiles').select('*').eq('id', userId).single()
