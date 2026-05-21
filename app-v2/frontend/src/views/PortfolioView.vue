@@ -111,7 +111,7 @@ function doResetAll() { clients.resetAll(); resetStep.value = 0 }
 const initForm = () => ({
   name: '', industry: 'SaaS', arr: 0, mrr: 0, health: 7, nps: 50,
   status: 'healthy', csmId: team.members[0]?.id || '', renewalDate: '',
-  cName: '', cEmail: '', cRole: '', churnRisk: 0.05
+  cName: '', cEmail: '', cRole: '', churnRisk: 5
 })
 
 const form = reactive(initForm())
@@ -126,7 +126,7 @@ const filterList = computed(() => [
 
 const filtered = computed(() => {
   let list = clients.clients
-  if (activeFilter.value !== 'all') list = list.filter(c => c.status === activeFilter.value)
+  if (activeFilter.value !== 'all') list = list.filter(c => clients.getEffectiveStatus(c) === activeFilter.value)
   if (search.value) {
     const q = search.value.toLowerCase()
     list = list.filter(c => c.name.toLowerCase().includes(q) || c.industry.toLowerCase().includes(q) || c.csm.toLowerCase().includes(q))
