@@ -88,16 +88,15 @@
             </transition>
           </div>
 
-          <!-- User -->
-          <div class="topbar-user">
-            <div class="user-avatar" @click="$router.push('/app/profile')" style="cursor:pointer" title="Mon profil">{{ auth.user?.firstName?.[0] || 'U' }}</div>
-            <div class="user-info hide-mobile">
-              <span class="user-company">{{ auth.company?.name }}</span>
-              <span class="user-badges">
-                <span class="badge plan">{{ auth.company?.planLabel }}</span>
-                <span class="badge role">{{ auth.user?.roleLabel }}</span>
-              </span>
-            </div>
+
+          <!-- Topbar actions -->
+          <div class="topbar-actions">
+            <FeedbackWidget />
+            <AiAssistant v-if="isEliteOrAbove" />
+            <button class="chat-fab topbar-chat" @click="app.toggleChat()" :class="{ active: app.chatOpen }">
+              💬
+              <span v-if="chatStore.totalUnread" class="chat-fab-badge">{{ chatStore.totalUnread }}</span>
+            </button>
           </div>
         </div>
       
@@ -120,18 +119,6 @@
 
     <!-- ONBOARDING -->
     <OnboardingWizard />
-
-    <!-- ALPHA FEEDBACK -->
-    <FeedbackWidget />
-
-    <!-- AI AGENT -->
-    <AiAssistant v-if="isEliteOrAbove" />
-
-    <!-- CHAT FAB -->
-    <button class="chat-fab" @click="app.toggleChat()" :class="{ active: app.chatOpen }">
-      💬
-      <span v-if="chatStore.totalUnread" class="chat-fab-badge">{{ chatStore.totalUnread }}</span>
-    </button>
     <transition name="slide-right">
       <div v-if="app.chatOpen" class="chat-panel-wrapper">
         <ChatPanel @close="app.toggleChat()" />
@@ -366,26 +353,23 @@ async function handleLogout() {
 .notif-unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--purple); flex-shrink: 0; margin-top: 6px; }
 .notif-empty { padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
 
-/* ─── User ─────────────────────────────────────────────────────────────────── */
-.topbar-user { display: flex; align-items: center; gap: 8px; }
-.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), var(--purple-dark)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
-.user-info { display: flex; flex-direction: column; }
-.user-company { font-size: 0.8rem; font-weight: 600; color: var(--text); line-height: 1.2; }
-.user-badges { display: flex; gap: 4px; margin-top: 2px; }
-.badge { font-size: 0.6rem; font-weight: 600; padding: 1px 6px; border-radius: 4px; }
-.badge.plan { background: var(--purple-bg); color: var(--purple); }
-.badge.role { background: var(--green-bg); color: var(--green); }
-
 /* ═══ MAIN CONTENT ═══ */
 .main-content { flex: 1; padding: 24px; max-width: 100%; }
 
 /* ═══ CHAT FAB ═══ */
-.chat-fab { position: fixed; bottom: 24px; right: 24px; width: 52px; height: 52px; border-radius: 50%; background: var(--purple); color: #fff; border: none; font-size: 1.4rem; box-shadow: var(--shadow-lg); z-index: 400; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
-.chat-fab:hover { transform: scale(1.08); box-shadow: 0 8px 30px rgba(124,58,237,0.3); }
+.chat-fab { width: 36px; height: 36px; border-radius: 50%; background: var(--purple); color: #fff; border: none; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; position: relative; transition: all 0.2s; }
+.chat-fab:hover { transform: scale(1.08); box-shadow: 0 4px 12px rgba(124,58,237,0.3); }
 .chat-fab.active { background: var(--text); }
-.chat-fab-badge { position: absolute; top: -4px; right: -4px; background: var(--red); color: #fff; font-size: 0.6rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.chat-panel-wrapper { position: fixed; bottom: 88px; right: 24px; width: 680px; height: 520px; background-color: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); z-index: 399; border: 1px solid var(--border); overflow: hidden; }
+.chat-fab-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: #fff; font-size: 0.6rem; font-weight: 700; min-width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.chat-panel-wrapper { position: fixed; bottom: 0; right: 24px; width: 380px; max-height: 70vh; z-index: 1000; }
 
+/* ═══ TOPBAR ACTIONS ═══ */
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+.topbar-actions :deep(.feedback-widget) { position: relative; bottom: auto; right: auto; z-index: 100; }
+.topbar-actions :deep(.feedback-trigger) { width: 36px; height: 36px; font-size: 0.9rem; }
+.topbar-actions :deep(.feedback-panel) { position: absolute; top: 100%; right: 0; z-index: 1000; }
+.topbar-actions :deep(.ai-agent) { position: relative; bottom: auto; right: auto; z-index: 100; }
+.topbar-actions :deep(.ai-panel) { bottom: auto; top: 100%; }
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 1024px) {
   .sidebar { width: var(--sidebar-collapsed); }
