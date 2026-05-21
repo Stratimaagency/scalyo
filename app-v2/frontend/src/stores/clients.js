@@ -17,11 +17,16 @@ export const useClientStore = defineStore('clients', () => {
   const loading = ref(false)
   const lastError = ref(null)
 
-  // ─── Computed ─────────────────────────────────────────────────
+  function getEffectiveStatus(c) {
+    if (c.status === 'critical' || c.health <= 3) return 'critical'
+    if (c.status === 'watch' || c.status === 'todo' || (c.health > 3 && c.health <= 6)) return 'watch'
+    return 'healthy'
+  }
+
   const totalArr = computed(() => clients.value.reduce((s, c) => s + (c.arr || 0), 0))
   const avgHealth = computed(() => {
     if (!clients.value.length) return 0
-    return (clients.value.reduce((s, c) => s + (c.health || 0), 0) / clients.value.length).toFixed(1)
+    return parseFloat((clients.value.reduce((s, c) => s + (c.health || 0), 0) / clients.value.length).toFixed(1))
   })
   const avgNps = computed(() => {
     if (!clients.value.length) return 0
@@ -29,24 +34,20 @@ export const useClientStore = defineStore('clients', () => {
   })
   const churnRate = computed(() => {
     if (!clients.value.length) return 0
-    return ((clients.value.filter(c => c.churn_risk > 0.3).length / clients.value.length) * 100).toFixed(1)
+    return parseFloat(((clients.value.filter(c => c.churn_risk > 30).length / clients.value.length) * 100).toFixed(1))
   })
   const nrr = computed(() => {
-    const expanded = clients.value.filter(c => c.status === 'healthy').reduce((s, c) => s + (c.arr || 0), 0)
-    return totalArr.value > 0 ? ((expanded / totalArr.value) * 100).toFixed(1) : 100
+    if (totalArr.value <= 0) return 100
+    const lostArr = clients.value.filter(c => getEffectiveStatus(c) === 'critical').reduce((s, c) => s + (c.arr || 0), 0)
+    return parseFloat((((totalArr.value - lostArr) / totalArr.value) * 100).toFixed(1))
   })
-  // Effective status: single source of truth, mutually exclusive
-  function getEffectiveStatus(c) {
-    if (c.status === 'critical' || c.health <= 3) return 'critical'
-    if (c.status === 'watch' || c.status === 'todo' || (c.health > 3 && c.health <= 6)) return 'watch'
-    return 'healthy'
-  }
+
   const criticalCount = computed(() => clients.value.filter(c => getEffectiveStatus(c) === 'critical').length)
   const watchCount = computed(() => clients.value.filter(c => getEffectiveStatus(c) === 'watch').length)
   const healthyCount = computed(() => clients.value.filter(c => getEffectiveStatus(c) === 'healthy').length)
   const arrAtRisk = computed(() => clients.value.filter(c => getEffectiveStatus(c) === 'critical').reduce((s, c) => s + (c.arr || 0), 0))
+  const activeCount = computed(() => clients.value.filter(c => getEffectiveStatus(c) !== 'critical').length)
 
-  // ─── Load from Supabase ───────────────────────────────────────
   async function loadClients() {
     loading.value = true
     lastError.value = null
@@ -62,7 +63,6 @@ export const useClientStore = defineStore('clients', () => {
     }
   }
 
-  // ─── Add ──────────────────────────────────────────────────────
   async function addClient(client) {
     lastError.value = null
     try {
@@ -77,7 +77,6 @@ export const useClientStore = defineStore('clients', () => {
     }
   }
 
-  // ─── Update ───────────────────────────────────────────────────
   async function updateClient(client) {
     lastError.value = null
     try {
@@ -91,7 +90,6 @@ export const useClientStore = defineStore('clients', () => {
     }
   }
 
-  // ─── Delete ───────────────────────────────────────────────────
   async function deleteClient(id) {
     lastError.value = null
     try {
@@ -104,7 +102,6 @@ export const useClientStore = defineStore('clients', () => {
     }
   }
 
-  // ─── Reset ────────────────────────────────────────────────────
   async function resetAll() {
     lastError.value = null
     try {
@@ -117,7 +114,6 @@ export const useClientStore = defineStore('clients', () => {
     }
   }
 
-  // ─── Mappers DB ↔ Store ───────────────────────────────────────
   function dbToClient(r) {
     return {
       id: r.id,
@@ -129,7 +125,6 @@ export const useClientStore = defineStore('clients', () => {
       nps: r.nps || 0,
       status: r.status || 'healthy',
       csm: r.csm || '',
-      churnRisk: r.churn_risk || 0,
       churn_risk: r.churn_risk || 0,
       renewalDate: r.renewal_date || '',
       contacts: r.contacts || [],
@@ -150,7 +145,7 @@ export const useClientStore = defineStore('clients', () => {
       nps: c.nps || 0,
       status: c.status || 'healthy',
       csm: c.csm || '',
-      churn_risk: c.churnRisk ?? c.churn_risk ?? 0,
+      churn_risk: c.churn_risk ?? c.churnRisk ?? 0,
       renewal_date: c.renewalDate || null,
       contacts: c.contacts || [],
       logo: c.logo || '',
@@ -161,7 +156,8 @@ export const useClientStore = defineStore('clients', () => {
 
   return {
     clients, loading, lastError, totalArr, avgHealth, avgNps, churnRate, nrr,
-    criticalCount, watchCount, healthyCount, arrAtRisk,
+    criticalCount, watchCount, healthyCount, arrAtRisk, activeCount,
+    getEffectiveStatus,
     loadClients, addClient, updateClient, deleteClient, resetAll,
   }
 })

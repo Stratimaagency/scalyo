@@ -1,64 +1,64 @@
 <template>
-  <div class="dashboard">
-    <DashHeader
-      :greeting="auth.greeting"
-      :first-name="auth.user?.firstName"
-      :plan-label="auth.company?.planLabel"
-      :role-label="auth.user?.roleLabel"
-      :formatted-date="formattedDate"
-    />
+<div class="dashboard">
+<DashHeader
+:greeting="auth.greeting"
+:first-name="auth.user?.firstName"
+:plan-label="auth.company?.planLabel"
+:role-label="auth.user?.roleLabel"
+:formatted-date="formattedDate"
+/>
 
-    <EmptyState v-if="clients.clients.length === 0" icon="📊" title-key="empty_dashboard_title" desc-key="empty_dashboard_desc" cta-key="empty_dashboard_cta" :cta-action="() => $router.push('/app/portfolio')" />
+<EmptyState v-if="clients.clients.length === 0" icon="📊" title-key="empty_dashboard_title" desc-key="empty_dashboard_desc" cta-key="empty_dashboard_cta" :cta-action="() => $router.push('/app/portfolio')" />
 
-    <template v-else>
+<template v-else>
 
-    <DashKpiSection
-      :visible-kpis="visibleKpis"
-      :periods="periods"
-      :compare-period="snapStore.comparePeriod"
-      @customize="customizerOpen = true"
-      @period-change="snapStore.comparePeriod = $event"
-    />
+<DashKpiSection
+:visible-kpis="visibleKpis"
+:periods="periods"
+:compare-period="snapStore.comparePeriod"
+@customize="customizerOpen = true"
+@period-change="snapStore.comparePeriod = $event"
+/>
 
-    <AiInsightPanel
-      module="dashboard"
-      :title="t('ai_dashboard_title')"
-      :button-label="t('ai_dashboard_btn')"
-      :message="t('ai_dashboard_prompt')"
-    />
+<AiInsightPanel
+module="dashboard"
+:title="t('ai_dashboard_title')"
+:button-label="t('ai_dashboard_btn')"
+:message="t('ai_dashboard_prompt')"
+/>
 
-    <div class="dash-columns">
-      <DashWatchAccounts
-        :watch-accounts="watchAccounts"
-        :healthy-arc="healthyArc"
-        :watch-arc="watchArc"
-        :critical-arc="criticalArc"
-        :circumference="circumference"
-        :total-clients="clients.clients.length"
-        :healthy-count="clients.healthyCount"
-        :watch-count="clients.watchCount"
-        :critical-count="clients.criticalCount"
-      />
+<div class="dash-columns">
+<DashWatchAccounts
+:watch-accounts="watchAccounts"
+:healthy-arc="healthyArc"
+:watch-arc="watchArc"
+:critical-arc="criticalArc"
+:circumference="circumference"
+:total-clients="clients.clients.length"
+:healthy-count="clients.healthyCount"
+:watch-count="clients.watchCount"
+:critical-count="clients.criticalCount"
+/>
 
-      <DashMyTasks
-        :filtered-tasks="filteredTasks"
-        :task-tabs="taskTabs"
-        :active-tab="activeTaskTab"
-        :clients-map="clientsMap"
-        @tab-change="activeTaskTab = $event"
-      />
-    </div>
+<DashMyTasks
+:filtered-tasks="filteredTasks"
+:task-tabs="taskTabs"
+:active-tab="activeTaskTab"
+:clients-map="clientsMap"
+@tab-change="activeTaskTab = $event"
+/>
+</div>
 
-    <DashQuickActions />
+<DashQuickActions />
 
-    <KpiCustomizer
-      :open="customizerOpen"
-      :selected="selectedKpis"
-      @close="customizerOpen = false"
-      @update:selected="selectedKpis = $event"
-    />
-    </template>
-  </div>
+<KpiCustomizer
+:open="customizerOpen"
+:selected="selectedKpis"
+@close="customizerOpen = false"
+@update:selected="selectedKpis = $event"
+/>
+</template>
+</div>
 </template>
 
 <script setup>
@@ -86,85 +86,80 @@ const snapStore = useSnapshotStore()
 const customizerOpen = ref(false)
 const defaultKpis = ['arr', 'health_score', 'churn_rate', 'nps', 'nrr', 'active_users']
 const selectedKpis = ref(
-  JSON.parse(localStorage.getItem('scalyo_dashboard_kpis') || 'null') || [...defaultKpis]
+JSON.parse(localStorage.getItem('scalyo_dashboard_kpis') || 'null') || [...defaultKpis]
 )
 watch(selectedKpis, (val) => {
-  localStorage.setItem('scalyo_dashboard_kpis', JSON.stringify(val))
+localStorage.setItem('scalyo_dashboard_kpis', JSON.stringify(val))
 })
 
 const periods = [
-  { key: '7d',  label: 'period_7d' },
-  { key: '30d', label: 'period_30d' },
-  { key: '90d', label: 'period_90d' }
+{ key: '7d', label: 'period_7d' },
+{ key: '30d', label: 'period_30d' },
+{ key: '90d', label: 'period_90d' }
 ]
 
+const LOCALE_MAP = { ko: 'ko-KR', en: 'en-US', fr: 'fr-FR' }
+
 const formattedDate = computed(() => {
-  const d = new Date()
-  const loc = LOCALE_MAP[locale.value] || 'fr-FR'
-  return d.toLocaleDateString(loc, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+const d = new Date()
+const loc = LOCALE_MAP[locale.value] || 'fr-FR'
+return d.toLocaleDateString(loc, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 })
 
 const todayStr = new Date().toISOString().slice(0, 10)
 
 const currentKpiValues = computed(() => ({
-  arr:          clients.totalARR,
-  health_score: clients.avgHealth,
-  churn_rate:   clients.churnRate,
-  nps:          clients.avgNPS,
-  nrr:          clients.nrr,
-  active_users: clients.activeCount,
-  csat:         clients.avgCSAT,
-  expansion:    clients.expansionRate,
-  tickets:      clients.openTickets,
-  onboarding:   clients.onboardingCount
+arr: clients.totalArr,
+health_score: clients.avgHealth,
+churn_rate: clients.churnRate,
+nps: clients.avgNps,
+nrr: clients.nrr,
+active_users: clients.activeCount
 }))
 
-snapStore.saveSnapshot?.(todayStr, currentKpiValues.value)
+// Save snapshot once after clients are loaded — not at setup time
+watch(() => clients.clients.length, (len) => {
+if (len > 0) snapStore.saveSnapshot?.(todayStr, currentKpiValues.value)
+}, { once: true })
 
 const KPI_CONFIG = {
-  arr:          { icon: '💰', format: 'currency', lowerIsBetter: false },
-  health_score: { icon: '💚', format: 'decimal',  lowerIsBetter: false },
-  churn_rate:   { icon: '📉', format: 'percent',  lowerIsBetter: true },
-  nps:          { icon: '⭐', format: 'integer',  lowerIsBetter: false },
-  nrr:          { icon: '🔄', format: 'percent',  lowerIsBetter: false },
-  active_users: { icon: '👥', format: 'integer',  lowerIsBetter: false },
-  csat:         { icon: '😊', format: 'decimal',  lowerIsBetter: false },
-  expansion:    { icon: '📈', format: 'percent',  lowerIsBetter: false },
-  tickets:      { icon: '🎫', format: 'integer',  lowerIsBetter: true },
-  onboarding:   { icon: '🚀', format: 'integer',  lowerIsBetter: false }
+arr: { icon: '💰', format: 'currency', lowerIsBetter: false, warnBelow: null, warnAbove: null },
+health_score: { icon: '💚', format: 'decimal', lowerIsBetter: false, warnBelow: 5, warnAbove: null },
+churn_rate: { icon: '📉', format: 'percent', lowerIsBetter: true, warnBelow: null, warnAbove: 10 },
+nps: { icon: '⭐', format: 'integer', lowerIsBetter: false, warnBelow: 30, warnAbove: null },
+nrr: { icon: '🔄', format: 'percent', lowerIsBetter: false, warnBelow: 85, warnAbove: null },
+active_users: { icon: '👥', format: 'integer', lowerIsBetter: false, warnBelow: null, warnAbove: null }
 }
 
 const visibleKpis = computed(() => {
-  return selectedKpis.value.map(id => {
-    const config = KPI_CONFIG[id]
-    if (!config) return null
-    const currentValue = currentKpiValues.value[id]
-    const display = formatKpiValue(currentValue, config.format)
-    const change = snapStore.calcChange(id, currentValue, snapStore.comparePeriod, config.lowerIsBetter)
-    return {
-      id, icon: config.icon, display,
-      warn: config.lowerIsBetter ? currentValue > WARN_THRESHOLD_HIGH : currentValue < WARN_THRESHOLD_LOW,
-      change: change?.value ?? null,
-      changeLabel: change?.label ?? '',
-      changeClass: change?.class ?? 'neutral'
-    }
-  }).filter(Boolean)
+return selectedKpis.value.map(id => {
+const config = KPI_CONFIG[id]
+if (!config) return null
+const currentValue = currentKpiValues.value[id]
+const display = formatKpiValue(currentValue, config.format)
+const change = snapStore.calcChange(id, currentValue, snapStore.comparePeriod, config.lowerIsBetter)
+const warn = config.warnAbove != null ? currentValue > config.warnAbove
+           : config.warnBelow != null ? currentValue < config.warnBelow
+           : false
+return {
+id, icon: config.icon, display, warn,
+change: change?.value ?? null,
+changeLabel: change?.label ?? '',
+changeClass: change?.class ?? 'neutral'
+}
+}).filter(Boolean)
 })
 
-const LOCALE_MAP = { ko: 'ko-KR', en: 'en-US', fr: 'fr-FR' }
-const WARN_THRESHOLD_LOW = 3
-const WARN_THRESHOLD_HIGH = 5
-
 function formatKpiValue(v, format) {
-  if (v == null) return '\u2014'
-  const loc = LOCALE_MAP[locale.value] || 'fr-FR'
-  if (format === 'currency') {
-    const cur = locale.value === 'ko' ? 'KRW' : 'EUR'
-    return new Intl.NumberFormat(loc, { style: 'currency', currency: cur, maximumFractionDigits: 0 }).format(v)
-  }
-  if (format === 'percent') return new Intl.NumberFormat(loc, { maximumFractionDigits: 1 }).format(v) + '%'
-  if (format === 'decimal') return new Intl.NumberFormat(loc, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(v)
-  return String(v)
+if (v == null) return '\u2014'
+const loc = LOCALE_MAP[locale.value] || 'fr-FR'
+if (format === 'currency') {
+const cur = locale.value === 'ko' ? 'KRW' : 'EUR'
+return new Intl.NumberFormat(loc, { style: 'currency', currency: cur, maximumFractionDigits: 0 }).format(v)
+}
+if (format === 'percent') return new Intl.NumberFormat(loc, { maximumFractionDigits: 1 }).format(v) + '%'
+if (format === 'decimal') return new Intl.NumberFormat(loc, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(v)
+return String(v)
 }
 
 const circumference = (2 * Math.PI * 52).toFixed(1)
@@ -174,40 +169,40 @@ const watchArc = computed(() => ((clients.watchCount / total.value) * circumfere
 const criticalArc = computed(() => ((clients.criticalCount / total.value) * circumference).toFixed(1))
 
 const watchAccounts = computed(() =>
-  clients.clients
-    .filter(c => c.status !== 'healthy')
-    .sort((a, b) => (a.health || 0) - (b.health || 0))
-    .slice(0, 5)
+clients.clients
+.filter(c => clients.getEffectiveStatus(c) !== 'healthy')
+.sort((a, b) => (a.health || 0) - (b.health || 0))
+.slice(0, 5)
 )
 
 const myTasks = computed(() => {
-  const u = auth.user
-  if (!u) return []
-  return tasks.tasks.filter(task => {
-    const a = String(task.assignee).toLowerCase()
-    return a === u.id || a === u.firstName?.toLowerCase() || a === u.displayName?.toLowerCase() || a === u.email?.toLowerCase()
-  })
+const u = auth.user
+if (!u) return []
+return tasks.tasks.filter(task => {
+const a = String(task.assignee).toLowerCase()
+return a === u.id || a === u.firstName?.toLowerCase() || a === u.displayName?.toLowerCase() || a === u.email?.toLowerCase()
+})
 })
 
 const activeTaskTab = ref('all')
 const taskTabs = computed(() => [
-  { key: 'all',         label: 'task_all',         count: myTasks.value.length },
-  { key: 'in_progress', label: 'task_in_progress', count: myTasks.value.filter(t => t.status === 'in_progress').length },
-  { key: 'todo',        label: 'task_todo',        count: myTasks.value.filter(t => t.status === 'todo').length },
-  { key: 'blocked',     label: 'task_blocked',     count: myTasks.value.filter(t => t.status === 'blocked').length }
+{ key: 'all', label: 'task_all', count: myTasks.value.length },
+{ key: 'in_progress', label: 'task_in_progress', count: myTasks.value.filter(t => t.status === 'in_progress').length },
+{ key: 'todo', label: 'task_todo', count: myTasks.value.filter(t => t.status === 'todo').length },
+{ key: 'blocked', label: 'task_blocked', count: myTasks.value.filter(t => t.status === 'blocked').length }
 ])
 
 const filteredTasks = computed(() => {
-  const list = activeTaskTab.value === 'all'
-    ? myTasks.value
-    : myTasks.value.filter(t => t.status === activeTaskTab.value)
-  return list.slice(0, 8)
+const list = activeTaskTab.value === 'all'
+? myTasks.value
+: myTasks.value.filter(t => t.status === activeTaskTab.value)
+return list.slice(0, 8)
 })
 
 const clientsMap = computed(() => {
-  const map = {}
-  clients.clients.forEach(c => { map[c.id] = c.name })
-  return map
+const map = {}
+clients.clients.forEach(c => { map[c.id] = c.name })
+return map
 })
 
 </script>
