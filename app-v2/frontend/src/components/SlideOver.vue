@@ -30,8 +30,6 @@ const emit = defineEmits(['close'])
 
 watch(() => props.open, (val) => {
   document.body.style.overflow = val ? 'hidden' : ''
-  document.body.classList.toggle('has-slide-over', val)
-  if (val) document.documentElement.style.setProperty('--slide-over-w', props.width + 'px')
 })
 
 const handleKey = (e) => {
@@ -42,7 +40,6 @@ onMounted(() => { document.addEventListener('keydown', handleKey) })
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKey)
   document.body.style.overflow = ''
-  document.body.classList.remove('has-slide-over')
 })
 </script>
 
@@ -67,12 +64,4 @@ onUnmounted(() => {
 .slide-over-leave-to .slide-over-panel { transform: translateX(100%); }
 
 @media (max-width: 600px) { .slide-over-panel { width: 100vw !important; } }
-</style>
-
-
-<style>
-body.has-slide-over .main-wrapper {
-  margin-right: calc(var(--slide-over-w, 480px) + 24px);
-  transition: margin-right 0.3s ease;
-}
 </style>
