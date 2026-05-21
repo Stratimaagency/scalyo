@@ -313,7 +313,7 @@ function getAvatarColor(authorId) {
 const activeChannelMeta = computed(() => {
   const ch = store.channels.find(c => c.id === store.activeChannel)
   if (ch) return ch
-  if (store.activeChannel.startsWith('dm_')) {
+  if (store.activeChannel?.startsWith('dm_')) {
     const m = (teamStore.members || []).find(m => m.id === store.activeChannel.replace('dm_', ''))
     return m ? { name: m.name, icon: '💬', description: t('chat_direct') } : null
   }
