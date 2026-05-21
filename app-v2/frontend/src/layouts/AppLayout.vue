@@ -296,7 +296,7 @@ async function handleLogout() {
 <style scoped>
 /* ═══ LAYOUT ═══ */
 .app-layout { display: flex; min-height: 100vh; }
-.main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; margin-left: var(--sidebar-width); transition: margin-left var(--transition-slow); transition: margin-right 0.3s ease; }
+.main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; margin-left: var(--sidebar-width); transition: margin-left var(--transition-slow); }
 .app-layout.collapsed .main-wrapper { margin-left: var(--sidebar-collapsed); }
 
 /* ═══ SIDEBAR ═══ */
