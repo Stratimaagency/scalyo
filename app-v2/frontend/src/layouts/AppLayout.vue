@@ -361,7 +361,7 @@ async function handleLogout() {
 .chat-fab:hover { transform: scale(1.08); box-shadow: 0 4px 12px rgba(124,58,237,0.3); }
 .chat-fab.active { background: var(--text); }
 .chat-fab-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: #fff; font-size: 0.6rem; font-weight: 700; min-width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.chat-panel-wrapper { position: fixed; bottom: 0; right: 24px; width: 380px; max-height: 70vh; z-index: 1000; }
+.chat-panel-wrapper { position: fixed; bottom: 24px; right: 24px; width: 680px; height: 520px; background-color: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); z-index: 999; border: 1px solid var(--border); overflow: hidden; }
 
 /* ═══ TOPBAR ACTIONS ═══ */
 .topbar-actions { display: flex; align-items: center; gap: 8px; }
