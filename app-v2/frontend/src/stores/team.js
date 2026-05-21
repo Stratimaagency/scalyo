@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
+import { useAuthStore } from './auth'
 
 async function getCurrentUserId() {
   try {
@@ -46,9 +47,32 @@ export const useTeamStore = defineStore('team', () => {
     loading.value = true
     lastError.value = null
     try {
-      const { data, error } = await supabase.from('team_members').select('*').order('created_at', { ascending: true })
+      const authStore = useAuthStore()
+      const orgId = authStore.profile?.organization_id
+      if (!orgId) { members.value = []; return }
+      const { data: omData, error } = await supabase
+        .from('organization_members')
+        .select('user_id, role, created_at')
+        .eq('organization_id', orgId)
+        .neq('user_id', authStore.user?.id)
+        .order('created_at', { ascending: true })
       if (error) throw error
-      if (data) members.value = data.map(dbToMember)
+      if (!omData?.length) { members.value = []; return }
+      const userIds = omData.map(m => m.user_id)
+      const { data: profs } = await supabase.from('profiles').select('id, first_name, last_name').in('id', userIds)
+      const pMap = {}
+      profs?.forEach(p => { pMap[p.id] = p })
+      members.value = omData.map(m => {
+        const p = pMap[m.user_id] || {}
+        return {
+          id: m.user_id,
+          name: [p.first_name, p.last_name].filter(Boolean).join(' ') || '',
+          email: '', role: m.role || 'member',
+          wellbeingScore: 75, workload: 60,
+          clientCount: 0, arrManaged: 0,
+          moodHistory: [], canSendEmail: false,
+        }
+      })
     } catch (err) {
       lastError.value = err.message || 'Failed to load team members'
       if (window.Sentry) window.Sentry.captureException(err)
@@ -61,7 +85,7 @@ export const useTeamStore = defineStore('team', () => {
   async function addMember(member) {
     lastError.value = null
     try {
-      const { data, error } = await supabase.from('team_members').insert([await memberToDb(member)]).select().single()
+      const { data, error } = await supabase.from('organization_members').insert([await memberToDb(member)]).select().single()
       if (error) {
         if (error.message?.includes('SEAT_LIMIT_REACHED')) {
           const err = new Error('SEAT_LIMIT_REACHED')
@@ -85,7 +109,7 @@ export const useTeamStore = defineStore('team', () => {
   async function updateMember(member) {
     lastError.value = null
     try {
-      const { error } = await supabase.from('team_members').update(await memberToDb(member)).eq('id', member.id)
+      const { error } = await supabase.from('organization_members').update(await memberToDb(member)).eq('id', member.id)
       if (error) throw error
       const idx = members.value.findIndex(m => m.id === member.id)
       if (idx > -1) members.value[idx] = { ...members.value[idx], ...member }
@@ -99,7 +123,7 @@ export const useTeamStore = defineStore('team', () => {
   async function deleteMember(id) {
     lastError.value = null
     try {
-      const { error } = await supabase.from('team_members').delete().eq('id', id)
+      const { error } = await supabase.from('organization_members').delete().eq('id', id)
       if (error) throw error
       members.value = members.value.filter(m => m.id !== id)
     } catch (err) {
@@ -112,7 +136,7 @@ export const useTeamStore = defineStore('team', () => {
   async function resetAll() {
     lastError.value = null
     try {
-      const { error } = await supabase.from('team_members').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+      const { error } = await supabase.from('organization_members').delete().neq('id', '00000000-0000-0000-0000-000000000000')
       if (error) throw error
       members.value = []
     } catch (err) {
@@ -128,7 +152,7 @@ export const useTeamStore = defineStore('team', () => {
       const member = members.value.find(m => m.id === memberId)
       if (!member) return
       const history = [...(member.moodHistory || []), { date: new Date().toISOString().slice(0, 10), mood }]
-      const { error } = await supabase.from('team_members').update({ mood_history: history, updated_at: new Date().toISOString() }).eq('id', memberId)
+      const { error } = await supabase.from('organization_members').update({ mood_history: history, updated_at: new Date().toISOString() }).eq('id', memberId)
       if (error) throw error
       member.moodHistory = history
     } catch (err) {

@@ -96,13 +96,11 @@ else { user.value = null; profile.value = null }
 } catch (e) { console.error('Auth state change error:', e.message || e) }
 })
 }
-async function fetchOrgRole(userId) {
-  try {
-    const orgId = profile.value?.organization_id
-    if (!orgId) { orgRole.value = null; return }
-    const { data } = await supabase.from('organizations').select('owner_id').eq('id', orgId).maybeSingle()
-    orgRole.value = data?.owner_id === userId ? 'owner' : 'member'
-  } catch (e) { console.error('fetchOrgRole:', e) }
+async function fetchOrgRole() {
+    try {
+      orgRole.value = profile.value?.org_role || 'member'
+    } catch (e) { console.error('fetchOrgRole:', e) }
+  }
 }
 async function fetchProfile(userId) {
 try {
@@ -110,6 +108,7 @@ const { data, error: err } = await supabase.from('profiles').select('*').eq('id'
 if (err) { console.error('fetchProfile failed:', err.message); return }
 if (data) {
 profile.value = data
+      orgRole.value = data?.org_role || 'member'
 if (data.trial_started_at && !data.trial_used) {
 const elapsed = (Date.now() - new Date(data.trial_started_at).getTime()) / (1000 * 60 * 60 * 24)
 if (elapsed >= TRIAL_DAYS) {
