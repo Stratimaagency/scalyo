@@ -35,6 +35,7 @@ const TRIAL_DAYS = 14
 export const useAuthStore = defineStore('auth', () => {
 const user = ref(null)
 const profile = ref(null)
+const orgRole = ref(null)
 const loading = ref(false)
 const error = ref(null)
 const isAuthenticated = computed(() => !!user.value)
@@ -51,6 +52,7 @@ const currentPlan = computed(() => { const sub = profile.value?.stripe_subscript
 const userLocale = computed(() => profile.value?.locale || 'fr')
 const seatsPaid = computed(() => profile.value?.seats_paid || 1)
 const onboardingCompleted = computed(() => profile.value?.onboarding_completed === true)
+const isOrgOwner = computed(() => orgRole.value === 'owner')
 function clearAllStores() {
 const keys = ['scalyo_clients','scalyo_tasks','scalyo_team','scalyo_projects','scalyo_kpis','scalyo_playbooks','scalyo_snapshots','scalyo_okr','scalyo_roadmap','scalyo_quotes','scalyo_dashboard_kpis']
 keys.forEach(k => localStorage.removeItem(k))
@@ -93,6 +95,12 @@ if (session && session.user) { user.value = session.user; await fetchProfile(ses
 else { user.value = null; profile.value = null }
 } catch (e) { console.error('Auth state change error:', e.message || e) }
 })
+}
+async function fetchOrgRole(userId) {
+  try {
+    const { data } = await supabase.from('organization_members').select('role').eq('user_id', userId).maybeSingle()
+    orgRole.value = data?.role || null
+  } catch (e) { console.error('fetchOrgRole:', e) }
 }
 async function fetchProfile(userId) {
 try {
@@ -161,7 +169,7 @@ return {
 user, profile, loading, error,
 isAuthenticated, fullName, greeting,
 hasActiveSubscription, isOnTrial, trialExpired, trialDaysLeft, trialUsed, needsPayment,
-userLocale, currentPlan, seatsPaid, onboardingCompleted,
+userLocale, currentPlan, seatsPaid, onboardingCompleted, orgRole, isOrgOwner,
 init, login, register, logout, clearAllStores, saveLocale, fetchProfile, resetPassword
 }
 })

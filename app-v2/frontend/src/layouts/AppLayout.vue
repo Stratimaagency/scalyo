@@ -12,7 +12,7 @@
       <nav class="sidebar-nav">
         <template v-for="section in sidebarSections" :key="section.label">
           <div v-if="!app.sidebarCollapsed && section.label" class="nav-section-label">{{ t(section.label) }}</div>
-          <template v-for="item in section.items" :key="item.name">
+          <template v-for="item in section.items.filter(i => !i.ownerOnly || auth.isOrgOwner)" :key="item.name">
             <div v-if="item.children" class="nav-group">
               <router-link :to="item.to" class="nav-item" :class="{ active: isActiveGroup(item) }" @click="app.closeMobileSidebar()">
                 <span class="nav-icon">{{ item.icon }}</span>
@@ -196,7 +196,7 @@ const sidebarSections = [
     label: 'sidebar_dashboard_section',
     items: [
       { name: 'dashboard', icon: '📊', label: 'sidebar_dashboard', to: '/app/dashboard' },
-      { name: 'manager', icon: '👥', label: 'sidebar_manager', to: '/app/manager' },
+      { name: 'manager', icon: '👥', label: 'sidebar_manager', to: '/app/manager', ownerOnly: true },
     ],
   },
   {
