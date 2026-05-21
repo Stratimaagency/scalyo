@@ -91,7 +91,7 @@ function doDelete(id) {
 .btn-primary { background: var(--purple); color: #fff; border: none; padding: 10px 20px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
 .btn-primary:hover { background: var(--purple-dark); }
 .kl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-.kl-card { background: #fff; border: 1px solid var(--border); border-top: 3px solid var(--purple); border-radius: var(--radius-md); overflow: hidden; transition: all 0.2s; }
+.kl-card { background: var(--bg-card); border: 1px solid var(--border); border-top: 3px solid var(--purple); border-radius: var(--radius-md); overflow: hidden; transition: all 0.2s; }
 .kl-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
 .klc-body { padding: 18px 18px 12px; }
 .klc-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
@@ -100,16 +100,16 @@ function doDelete(id) {
 .klc-actions { display: flex; gap: 6px; padding: 10px 18px 14px; align-items: center; }
 .btn-sm { padding: 5px 14px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; text-decoration: none; border: none; background: var(--purple); color: #fff; }
 .btn-sm:hover { background: var(--purple-dark); }
-.btn-sm.outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); }
+.btn-sm.outline { background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border); }
 .btn-sm.outline:hover { border-color: var(--purple); color: var(--purple); }
 .klc-menu { position: relative; margin-left: auto; }
-.klc-dropdown { position: absolute; top: 100%; right: 0; margin-top: 4px; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow-lg); z-index: 10; min-width: 130px; overflow: hidden; }
+.klc-dropdown { position: absolute; top: 100%; right: 0; margin-top: 4px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow-lg); z-index: 10; min-width: 130px; overflow: hidden; }
 .klc-dropdown button { display: block; width: 100%; padding: 8px 14px; background: none; border: none; font-size: 0.8rem; text-align: left; cursor: pointer; }
 .klc-dropdown button:hover { background: var(--bg-hover); }
 .klc-dropdown button.danger { color: var(--red); }
 .klc-dropdown button.danger:hover { background: var(--red-bg); }
 .klc-dropdown button.danger.confirm { background: var(--red-bg); font-weight: 700; }
-.kl-empty { text-align: center; padding: 80px 20px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); }
+.kl-empty { text-align: center; padding: 80px 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); }
 .kl-illu { margin-bottom: 20px; }
 .kl-empty h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; }
 .kl-empty p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 24px; max-width: 380px; margin-left: auto; margin-right: auto; line-height: 1.6; }

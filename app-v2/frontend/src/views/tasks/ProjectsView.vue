@@ -1,8 +1,21 @@
 <template>
   <div class="pv">
+    <!-- IMPORT -->
+    <div v-if="showImport" class="import-section">
+      <div class="import-project-select">
+        <label>{{ t('imp_select_project') }}</label>
+        <select v-model="importProjectId" class="mapping-select">
+          <option v-for="p in taskStore.projects" :key="p.id" :value="p.id">{{ p.name }}</option>
+        </select>
+        <p class="import-hint">{{ t('imp_select_project_hint') }}</p>
+      </div>
+      <StandardImport :fields="taskFields" :on-import="handleBulkImport" />
+    </div>
+
     <div class="pv-header">
       <h1>📁 {{ t('sm_projects_title') }}</h1>
       <div class="pv-actions">
+        <button class="btn-outline" @click="showImport = !showImport">{{ t('import_btn_tasks') }}</button>
         <span class="scroll-hint">{{ t('sm_scroll_hint') }}</span>
 
         <!-- Reset global -->
@@ -198,6 +211,8 @@ import { ref, reactive, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTaskStore } from '@/stores/tasks'
 import SlideOver from '@/components/SlideOver.vue'
+import StandardImport from '@/components/import/StandardImport.vue'
+import { taskFields } from '@/config/importFields.js'
 
 const { t } = useI18n({ useScope: 'global' })
 const taskStore = useTaskStore()
@@ -210,7 +225,27 @@ const expanded = reactive({})
 const resetStep = ref(0)
 const deleteConfirmId = ref(null)
 const deleteConfirm2Id = ref(null)
+const showImport = ref(false)
+const importProjectId = ref('')
 const colors = ['#7c3aed', '#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4']
+
+var handleBulkImport = async function (rows) {
+  var pid = importProjectId.value || (taskStore.projects[0]?.id || '')
+  var count = 0
+  var errors = 0
+  for (var i = 0; i < rows.length; i++) {
+    try {
+      rows[i].projectId = pid
+      var result = await taskStore.addTask(rows[i])
+      if (result) count++
+      else errors++
+    } catch (e) {
+      errors++
+    }
+  }
+  if (count > 0) showImport.value = false
+  return count
+}
 
 // Build flat rows from store — projects + their tasks
 const rows = computed(() => {
@@ -409,7 +444,7 @@ function createProject() {
 .scroll-hint { font-size: 0.72rem; color: var(--text-muted); }
 .btn-primary { background: var(--purple); color: #fff; border: none; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
 .btn-primary:hover { background: var(--purple-dark); }
-.btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; }
+.btn-outline { background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border); padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; }
 .btn-danger { background: #ef4444; color: #fff; border: none; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
 .btn-danger:hover { background: #dc2626; }
 .btn-danger-outline { background: none; color: #ef4444; border: 1px solid #ef4444; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
@@ -418,16 +453,16 @@ function createProject() {
 .reset-msg { font-size: 0.78rem; color: var(--text-secondary); }
 .reset-msg.warn { color: #ef4444; font-weight: 600; }
 
-.table-outer { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.table-outer { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
 .table-scroll { overflow: auto; max-height: calc(100vh - 200px); }
 .pv-table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.82rem; }
-.pv-table thead th { padding: 10px 8px; font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e5e7eb; white-space: nowrap; text-align: left; background: #f9fafb; position: sticky; top: 0; z-index: 20; }
-.col-fix { position: sticky; z-index: 5; background: #ffffff; }
+.pv-table thead th { padding: 10px 8px; font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid var(--border); white-space: nowrap; text-align: left; background: #f9fafb; position: sticky; top: 0; z-index: 20; }
+.col-fix { position: sticky; z-index: 5; background: var(--bg-card); }
 .col-exp { left: 24px; width: 32px; min-width: 32px; }
 .col-num { left: 56px; width: 36px; min-width: 36px; text-align: center; color: var(--text-muted); }
-.col-title { left: 92px; min-width: 220px; max-width: 300px; border-right: 2px solid #e5e7eb; }
+.col-title { left: 92px; min-width: 220px; max-width: 300px; border-right: 2px solid var(--border); }
 .pv-table thead th.col-fix { z-index: 30; background: #f9fafb; }
-.pv-table thead th.col-title { border-right: 2px solid #e5e7eb; }
+.pv-table thead th.col-title { border-right: 2px solid var(--border); }
 .col-scroll { white-space: nowrap; position: relative; z-index: 1; }
 .col-date { width: 110px; min-width: 110px; }
 .col-badge { width: 70px; min-width: 70px; text-align: center; }
@@ -446,9 +481,9 @@ function createProject() {
 .row-level-2 { background: #fafafa; }
 .row-level-2 .col-fix { background: #fafafa; }
 .row-done { opacity: 0.55; }
-tr:hover .col-fix { background: #f3f4f6; }
+tr:hover .col-fix { background: var(--bg-hover); }
 .row-totals { background: var(--bg); font-weight: 600; border-top: 2px solid var(--border); }
-.row-totals .col-fix { background: #f3f4f6; }
+.row-totals .col-fix { background: var(--bg-hover); }
 .row-totals td { padding: 10px 8px; font-size: 0.78rem; }
 .exp-btn { background: none; border: none; cursor: pointer; font-size: 0.75rem; color: var(--text-muted); padding: 2px 4px; border-radius: 4px; width: 100%; }
 .exp-btn:hover { background: var(--bg-hover); color: var(--text); }
@@ -472,18 +507,18 @@ tr:hover .btn-delete { opacity: 0.4; }
 .btn-del-ok { background: #ef4444; color: #fff; border: none; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: 600; }
 .btn-del-ok:hover { background: #dc2626; }
 .btn-del-cancel { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
-.cell-input { width: 100%; padding: 4px 6px; border: 1.5px solid var(--purple); border-radius: 4px; font-size: 0.82rem; outline: none; background: #fff; }
+.cell-input { width: 100%; padding: 4px 6px; border: 1.5px solid var(--purple); border-radius: 4px; font-size: 0.82rem; outline: none; background: var(--bg-card); }
 .cell-input.num { text-align: right; width: 60px; }
 .cell-input.title-input { width: 100%; }
 .badge-num { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.15s; user-select: none; }
 .badge-num:hover { transform: scale(1.1); }
-.b-1 { background: #f3f4f6; color: #9ca3af; }
+.b-1 { background: var(--bg-hover); color: var(--text-muted); }
 .b-2 { background: #dbeafe; color: #2563eb; }
 .b-3 { background: #fef3c7; color: #d97706; }
 .b-4 { background: #ffedd5; color: #ea580c; }
 .b-5 { background: #fee2e2; color: #dc2626; }
-.cell-select { padding: 3px 6px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.72rem; font-weight: 600; cursor: pointer; outline: none; background: #fff; }
-.st-todo { color: #9ca3af; }
+.cell-select { padding: 3px 6px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.72rem; font-weight: 600; cursor: pointer; outline: none; background: var(--bg-card); }
+.st-todo { color: var(--text-muted); }
 .st-in_progress { color: #2563eb; background: #eff6ff; }
 .st-blocked { color: #dc2626; background: #fef2f2; }
 .st-done { color: #059669; background: #f0fdf4; }
@@ -491,13 +526,13 @@ tr:hover .btn-delete { opacity: 0.4; }
 .sf { display: flex; flex-direction: column; gap: 16px; }
 .fg { display: flex; flex-direction: column; gap: 4px; }
 .fg label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
-.fi { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; background: #fff; width: 100%; }
+.fi { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; background: var(--bg-card); width: 100%; }
 .fi:focus { border-color: var(--purple); }
 .fa { display: flex; gap: 10px; justify-content: flex-end; padding-top: 8px; border-top: 1px solid var(--border-light); }
 .color-picks { display: flex; gap: 8px; }
 .cpick { width: 28px; height: 28px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.15s; }
 .cpick.active { border-color: var(--text); transform: scale(1.15); }
-.pv-empty { text-align: center; padding: 60px 20px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); }
+.pv-empty { text-align: center; padding: 60px 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); }
 .empty-icon { font-size: 3rem; margin-bottom: 16px; }
 .pv-empty h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; }
 @media (max-width: 768px) { .col-title { min-width: 140px; max-width: 180px; } .pv-table { font-size: 0.75rem; } }

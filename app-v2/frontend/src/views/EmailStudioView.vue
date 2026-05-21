@@ -1,94 +1,75 @@
 <template>
-  <div class="email-studio">
-    <div class="es-header">
-      <h1>📧 {{ t('es_title') }}</h1>
-      <p class="es-sub">{{ t('es_subtitle') }}</p>
-    </div>
+<div class="email-studio">
+  <div class="es-header">
+    <h1>{{ t('es_title') }}</h1>
+    <p class="es-sub">{{ t('es_subtitle') }}</p>
+  </div>
 
-    <!-- Resend banner -->
-    <div :class="['es-email-banner', hasResendKey ? 'connected' : 'setup-needed']">
-      <span class="es-banner-icon">{{ hasResendKey ? '✅' : '⚠️' }}</span>
-      <div class="es-banner-text">
-        <strong>{{ hasResendKey ? t('es_resend_connected') : t('es_resend_setup_title') }}</strong>
-        <span>{{ hasResendKey ? t('es_resend_connected_desc') : t('es_resend_setup_desc') }}</span>
-      </div>
-      <router-link
-        v-if="!hasResendKey"
-        to="/app/settings?tab=integrations"
-        class="es-banner-link"
-      >
-        {{ t('es_resend_setup_link') }}
-      </router-link>
+  <div :class="['es-email-banner', store.emailConfigured ? 'connected' : 'setup-needed']">
+    <span class="es-banner-icon">{{ store.emailConfigured ? '\u2705' : '\u26a0\ufe0f' }}</span>
+    <div class="es-banner-text">
+      <strong>{{ store.emailConfigured ? t('es_resend_connected') : t('es_resend_setup_title') }}</strong>
+      <span>{{ store.emailConfigured ? t('es_resend_connected_desc') : t('es_resend_setup_desc') }}</span>
     </div>
+    <router-link v-if="!store.emailConfigured" to="/app/settings?tab=integrations" class="es-banner-link">
+      {{ t('es_resend_setup_link') }}
+    </router-link>
+  </div>
 
-    <AiInsightPanel
-      module="email"
-      :title="t('ai_email_title')"
-      :button-label="t('ai_email_btn')"
-      :message="t('ai_email_prompt')"
-      :context="{ selectedTemplate: selectedTemplate?.id }"
-      @result="onAiResult"
+  <AiInsightPanel
+    module="email"
+    :title="t('ai_email_title')"
+    :button-label="t('ai_email_btn')"
+    :message="t('ai_email_prompt')"
+    :context="{ selectedTemplate: selected?.id, currentSubject: editSubject, currentBody: editBody }"
+    @result="onAiResult"
+  />
+
+  <div v-if="activeTab !== 'history'" class="es-layout">
+    <EmailTemplateList
+      :active-tab="activeTab"
+      :active-cat="activeCat"
+      :selected-id="selectedId"
+      :search="search"
+      :custom-templates="store.customTemplates"
+      @update:activeTab="activeTab = $event"
+      @update:activeCat="activeCat = $event"
+      @update:selectedId="onSelectTemplate"
+      @update:search="search = $event"
     />
-
-    <!-- Template browser (non-history tabs) -->
-    <div v-if="activeTab !== 'history'" class="es-layout">
-      <EmailTemplateList
-        :active-tab="activeTab"
-        :active-cat="activeCat"
-        :selected-id="selectedId"
-        :search="search"
-        @update:activeTab="activeTab = $event"
-        @update:activeCat="activeCat = $event"
-        @update:selectedId="selectedId = $event"
-        @update:search="search = $event"
-      />
-
-      <EmailPreview
-        :selected="selected"
-        :is-elite="isElite"
-        :has-resend-key="hasResendKey"
-        @open-send="openSendModal"
-      />
-    </div>
-
-    <!-- History tab -->
-    <div v-else>
-      <!-- Tab row (only history tab button visible here for nav) -->
-      <div class="es-tabs" style="max-width: 340px; margin-bottom: 16px;">
-        <button
-          v-for="tab in tabKeys"
-          :key="tab.key"
-          class="es-tab"
-          :class="{ active: activeTab === tab.key }"
-          @click="activeTab = tab.key"
-        >
-          {{ t(tab.label) }}
-        </button>
-      </div>
-      <EmailHistory :is-elite="isElite" />
-    </div>
-
-    <!-- Send Modal -->
-    <EmailSendModal
-      v-if="showSendModal"
+    <EmailPreview
       :selected="selected"
-      @close="showSendModal = false"
-    />
-
-    <!-- Resend Wizard (Elite gate) -->
-    <ResendSetupWizard
-      v-if="showResendWizard"
-      @close="showResendWizard = false"
-      @connected="showResendWizard = false"
+      :is-elite="isElite"
+      :has-resend-key="store.emailConfigured"
+      :edit-subject="editSubject"
+      :edit-body="editBody"
+      @update:editSubject="editSubject = $event"
+      @update:editBody="editBody = $event"
+      @open-send="openSendModal"
+      @save-template="onSaveTemplate"
     />
   </div>
+
+  <div v-else>
+    <div class="es-tabs" style="max-width: 340px; margin-bottom: 16px;">
+      <button v-for="tab in tabKeys" :key="tab.key" class="es-tab" :class="{ active: activeTab === tab.key }" @click="activeTab = tab.key">
+        {{ t(tab.label) }}
+      </button>
+    </div>
+    <EmailHistory :is-elite="isElite" :sent-emails="store.sentEmails" />
+  </div>
+
+  <EmailSendModal v-if="showSendModal" :selected="selected" :edit-subject="editSubject" :edit-body="editBody" @close="showSendModal = false" @sent="store.loadSentEmails()" />
+  <ResendSetupWizard v-if="showResendWizard" @close="showResendWizard = false" @connected="store.loadEmailConfig()" />
+</div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
-import { templates } from '@/components/email-studio/emailTemplates.js'
+import { useEmailStudioStore } from '@/stores/emailStudio'
+import { templates as defaultTemplates } from '@/components/email-studio/emailTemplates.js'
 import EmailTemplateList from '@/components/email-studio/EmailTemplateList.vue'
 import EmailPreview from '@/components/email-studio/EmailPreview.vue'
 import EmailHistory from '@/components/email-studio/EmailHistory.vue'
@@ -99,6 +80,7 @@ import '@/assets/emailStudio.css'
 
 const { t } = useI18n({ useScope: 'global' })
 const auth = useAuthStore()
+const store = useEmailStudioStore()
 
 const activeTab = ref('all')
 const activeCat = ref('all')
@@ -106,13 +88,21 @@ const search = ref('')
 const selectedId = ref(null)
 const showSendModal = ref(false)
 const showResendWizard = ref(false)
+const editSubject = ref('')
+const editBody = ref('')
 
 const isElite = computed(() => auth.currentPlan === 'elite')
-const hasResendKey = computed(() => isElite.value)
 
-const selected = computed(() =>
-  templates.find(tpl => tpl.id === selectedId.value) || null
-)
+const selected = computed(() => {
+  if (!selectedId.value) return null
+  // Check default templates first
+  const def = defaultTemplates.find(tpl => tpl.id === selectedId.value)
+  if (def) return { ...def, source: 'default' }
+  // Check custom templates
+  const custom = store.customTemplates.find(tpl => tpl.id === selectedId.value)
+  if (custom) return { ...custom, source: 'custom' }
+  return null
+})
 
 const tabKeys = [
   { key: 'all', label: 'es_tab_all' },
@@ -122,14 +112,37 @@ const tabKeys = [
   { key: 'history', label: 'es_tab_history' }
 ]
 
-function openSendModal() {
-  showSendModal.value = true
+onMounted(() => { store.init() })
+
+function onSelectTemplate(id) {
+  selectedId.value = id
+  const tpl = selected.value
+  if (!tpl) return
+
+  if (tpl.source === 'default') {
+    editSubject.value = t(tpl.subjectKey)
+    editBody.value = t(tpl.bodyKey).replace(/<[^>]*>/g, '')
+  } else {
+    editSubject.value = tpl.subject || ''
+    editBody.value = tpl.body || ''
+  }
 }
 
+function openSendModal() { showSendModal.value = true }
+
 function onAiResult(result) {
-  // AI result can be used to pre-fill email content
-  if (result.response) {
-    selectedTemplate.value = { ...selectedTemplate.value, body: result.response }
-  }
+  if (result?.response) { editBody.value = result.response }
+}
+
+async function onSaveTemplate() {
+  if (!editSubject.value || !editBody.value) return
+  const saved = await store.saveTemplate({
+    name: editSubject.value.substring(0, 60),
+    subject: editSubject.value,
+    body: editBody.value,
+    category: selected.value?.categoryKey || 'custom',
+    lang: auth.profile?.locale || 'fr',
+  })
+  if (saved) { selectedId.value = saved.id }
 }
 </script>

@@ -14,6 +14,7 @@ const routes = [
     meta: { requiresAuth: true },
     children: [
       { path: '', redirect: { name: 'dashboard' } },
+      { path: 'onboarding', name: 'onboarding', component: () => import('@/views/OnboardingView.vue') },
       { path: 'dashboard', name: 'dashboard', component: () => import('@/views/DashboardView.vue') },
       { path: 'manager', name: 'manager', component: () => import('@/views/ManagerView.vue') },
       { path: 'portfolio', name: 'portfolio', component: () => import('@/views/PortfolioView.vue') },
@@ -37,12 +38,15 @@ const routes = [
       { path: 'workload', name: 'workload', component: () => import('@/views/WorkloadView.vue') },
       { path: 'wellbeing', name: 'wellbeing', component: () => import('@/views/WellbeingView.vue') },
       { path: 'coach', name: 'coach', component: () => import('@/views/CoachView.vue') },
+      { path: 'chat', name: 'chat', meta: { requiresAuth: true }, component: () => import('@/views/ChatView.vue') },
       { path: 'email-studio', name: 'email-studio', component: () => import('@/views/EmailStudioView.vue'), meta: { requiredModule: 'email' } },
       { path: 'quotes', name: 'quotes', component: () => import('@/views/QuotesView.vue') },
-      { path: 'import', name: 'import', component: () => import('@/views/ImportView.vue'), meta: { requiredModule: 'import' } },
+      // Import IA masqué — import standard désormais dans chaque module
+      { path: 'import', redirect: { name: 'dashboard' } },
       { path: 'integrations', name: 'integrations', component: () => import('@/views/IntegrationsView.vue') },
-      { path: 'integrations/:service', name: 'integration-embed', component: () => import('@/components/IntegrationEmbed.vue'), props: true },
+      { path: 'integrations', name: 'integrations', component: () => import('@/views/IntegrationsView.vue') },
       { path: 'settings', name: 'settings', component: () => import('@/views/SettingsView.vue') },
+      { path: 'team', name: 'team', component: () => import('@/views/TeamManagementView.vue') },
         { path: 'profile', name: 'profile', component: () => import('@/views/ProfileView.vue'), meta: { requiresAuth: true } },
       { path: 'resources', name: 'resources', redirect: { name: 'resources-library' } },
       { path: 'resources/library', name: 'resources-library', component: () => import('@/views/resources/LibraryView.vue') },
@@ -72,11 +76,23 @@ const routes = [
     path: '/privacy',
     name: 'Privacy',
     component: () => import('@/views/legal/PrivacyView.vue')
+    },
+  { path: '/dpa', name: 'dpa', component: () => import('@/views/DpaView.vue'), meta: { guest: true } },
+    {
+      path: '/blog',
+      name: 'Blog',
+      component: () => import('@/views/blog/BlogIndex.vue')
   },
   {
     path: '/support',
     name: 'Support',
     component: () => import('@/views/SupportView.vue')
+  },
+  {
+    path: '/join',
+    name: 'join',
+    component: () => import('@/views/JoinView.vue'),
+    meta: { guest: true }
   },
   {
     path: '/:pathMatch(.*)*',
@@ -89,8 +105,16 @@ const router = createRouter({ history: createWebHistory(), routes })
 
 router.beforeEach(async (to) => {
   const authStore = useAuthStore()
-  if (!authStore.user && !authStore.loading) {
-    await authStore.init()
+  try {
+    if (!authStore.user && !authStore.loading) {
+      const hasToken = Object.keys(localStorage).some(k => k.startsWith('sb-'))
+      if (!hasToken && to.meta.requiresAuth) {
+        return { name: 'login' }
+      }
+      await authStore.init()
+    }
+  } catch (e) {
+    console.error('Router guard — auth init failed:', e.message || e)
   }
   // Unauthenticated → login
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
@@ -101,6 +125,12 @@ router.beforeEach(async (to) => {
     if (authStore.needsPayment) return { name: 'paywall' }
     return { name: 'dashboard' }
   }
+  // Paywall check is handled below via needsPayment (covers trial + stripe)
+
+  if (to.meta.requiresAuth && to.name !== 'onboarding' && authStore.profile && !authStore.onboardingCompleted) {
+    return { name: 'onboarding' }
+  }
+
   // Plan gating: check module access
   if (to.meta.requiredModule && authStore.isAuthenticated) {
     const plan = authStore.currentPlan || 'starter'
@@ -133,7 +163,8 @@ router.afterEach((to) => {
     'ResetPasswordConfirm': 'Nouveau mot de passe — Scalyo',
     'CGU': 'Conditions d\'utilisation — Scalyo',
     'Support': 'Support — Scalyo',
-    'Privacy': 'Politique de confidentialité — Scalyo',
+    'Blog': 'Blog — Scalyo',
+      'Privacy': 'Politique de confidentialité — Scalyo',
   }
   document.title = (to.name && titles[to.name]) || to.meta?.title || 'Scalyo — Customer Success Platform'
   let metaDesc = document.querySelector('meta[name="description"]')

@@ -25,14 +25,16 @@ export const useNotificationStore = defineStore('notifications', () => {
     const n = notifications.value.find(n => n.id === id)
     if (!n) return
     n.read = true
-    await supabase.from('notifications').update({ read: true }).eq('id', id)
+    const { error: readErr } = await supabase.from('notifications').update({ read: true }).eq('id', id)
+      if (readErr) throw readErr
   }
 
   async function markAllRead() {
     notifications.value.forEach(n => n.read = true)
     const ids = notifications.value.map(n => n.id)
     if (ids.length) {
-      await supabase.from('notifications').update({ read: true }).in('id', ids)
+      const { error: bulkErr } = await supabase.from('notifications').update({ read: true }).in('id', ids)
+      if (bulkErr) throw bulkErr
     }
   }
 
@@ -40,7 +42,8 @@ export const useNotificationStore = defineStore('notifications', () => {
     const ids = notifications.value.map(n => n.id)
     notifications.value = []
     if (ids.length) {
-      await supabase.from('notifications').delete().in('id', ids)
+      const { error: delErr } = await supabase.from('notifications').delete().in('id', ids)
+      if (delErr) throw delErr
     }
   }
 

@@ -137,7 +137,7 @@
   font-size: 0.82rem;
   margin-top: 8px;
   padding: 8px 16px;
-  background: #fef2f2;
+  background: var(--red-bg);
   border-radius: var(--radius-sm);
 }
 
@@ -216,18 +216,18 @@
 
 /* --- Module picker modal --- */
 .imp-modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; z-index: 100; }
-.imp-modal { background: #fff; border-radius: var(--radius-md); padding: 28px; max-width: 440px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); }
+.imp-modal { background-color: var(--bg-card); border-radius: var(--radius-md); padding: 28px; max-width: 440px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); }
 .imp-modal h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; }
 .imp-module-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-.imp-module-btn { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; cursor: pointer; font-size: 0.88rem; transition: all 0.15s; }
+.imp-module-btn { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); background-color: var(--bg-card); cursor: pointer; font-size: 0.88rem; transition: all 0.15s; }
 .imp-module-btn:hover { border-color: var(--purple); background: rgba(124, 58, 237, 0.04); }
 
 /* --- Mapping panel --- */
 .imp-mapping-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.3); z-index: 100; }
-.imp-mapping-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 400px; max-width: 90vw; background: #fff; box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1); padding: 24px; overflow-y: auto; z-index: 101; }
+.imp-mapping-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 400px; max-width: 90vw; background-color: var(--bg-card); box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1); padding: 24px; overflow-y: auto; z-index: 101; }
 
 /* --- Rejected rows --- */
-.imp-rejected { margin-top: 16px; padding: 12px 16px; background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-sm); }
+.imp-rejected { margin-top: 16px; padding: 12px 16px; background: var(--red-bg); border: 1px solid #fecaca; border-radius: var(--radius-sm); }
 .imp-rejected summary { font-size: 0.82rem; font-weight: 600; color: #dc2626; cursor: pointer; }
 
 /* --- Actions bar --- */

@@ -67,12 +67,54 @@
       </div>
     </div>
 
-    <!-- Delete Account -->
+    <!-- Data & Account Deletion -->
     <div v-else-if="activeTab === 'delete'" class="sv-panel">
+      <!-- Export Data (RGPD Art. 20) -->
+      <div class="sv-section">
+        <h3>{{ t('stg_export_title') }}</h3>
+        <p class="sv-desc">{{ t('stg_export_desc') }}</p>
+        <button
+          class="sv-btn-secondary"
+          :disabled="exportLoading"
+          @click="handleExport"
+        >
+          {{ exportLoading ? t('stg_export_loading') : t('stg_export_btn') }}
+        </button>
+        <p v-if="exportError" class="sv-field-error">{{ t('stg_export_error') }}</p>
+        <p v-if="exportSuccess" class="sv-field-success">{{ t('stg_export_success') }}</p>
+      </div>
+
+      <!-- Delete Account (RGPD Art. 17) -->
       <div class="sv-section danger-section">
-        <h3>{{ t('stg_tab_delete') }}</h3>
+        <h3>{{ t('stg_delete_title') }}</h3>
         <p>{{ t('stg_delete_warning') }}</p>
-        <button class="btn-danger">{{ t('stg_delete_btn') }}</button>
+        <div v-if="!deleteConfirmStep" class="delete-action">
+          <button class="btn-danger" @click="deleteConfirmStep = true">
+            {{ t('stg_delete_btn') }}
+          </button>
+        </div>
+        <div v-else class="delete-confirm">
+          <p class="delete-confirm-msg">{{ t('stg_delete_confirm_msg') }}</p>
+          <input
+            v-model="deleteEmail"
+            type="email"
+            :placeholder="auth.user?.email"
+            class="sv-input"
+          />
+          <div class="delete-confirm-actions">
+            <button
+              class="btn-danger"
+              :disabled="deleteEmail !== auth.user?.email || deleteLoading"
+              @click="handleDelete"
+            >
+              {{ deleteLoading ? t('stg_delete_loading') : t('stg_delete_confirm_btn') }}
+            </button>
+            <button class="sv-btn-ghost" @click="cancelDelete">
+              {{ t('stg_delete_cancel') }}
+            </button>
+          </div>
+          <p v-if="deleteError" class="sv-field-error">{{ t('stg_delete_error') }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -81,7 +123,9 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { supabase } from '@/lib/supabase'
 import SettingsProfile from '@/components/settings/SettingsProfile.vue'
 import SettingsTeam from '@/components/settings/SettingsTeam.vue'
 import SettingsBilling from '@/components/settings/SettingsBilling.vue'
@@ -90,6 +134,7 @@ import SettingsPreferences from '@/components/settings/SettingsPreferences.vue'
 import '@/assets/settings.css'
 
 const { t } = useI18n({ useScope: 'global' })
+const router = useRouter()
 const auth = useAuthStore()
 
 const activeTab = ref('profile')
@@ -119,6 +164,69 @@ const notif = reactive({
   late_tasks: true,
   nps: false
 })
+
+// --- Export data (RGPD Art. 20) ---
+const exportLoading = ref(false)
+const exportError = ref(false)
+const exportSuccess = ref(false)
+
+async function handleExport() {
+  exportLoading.value = true
+  exportError.value = false
+  exportSuccess.value = false
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) throw new Error('No session')
+    const resp = await fetch('/api/export', {
+      headers: { 'Authorization': `Bearer ${session.access_token}` }
+    })
+    if (!resp.ok) throw new Error('Export failed')
+    const blob = await resp.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `scalyo-export-${new Date().toISOString().slice(0, 10)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    exportSuccess.value = true
+  } catch (e) {
+    exportError.value = true
+  } finally {
+    exportLoading.value = false
+  }
+}
+
+// --- Delete account (RGPD Art. 17) ---
+const deleteConfirmStep = ref(false)
+const deleteEmail = ref('')
+const deleteLoading = ref(false)
+const deleteError = ref(false)
+
+async function handleDelete() {
+  if (deleteEmail.value !== auth.user?.email) return
+  deleteLoading.value = true
+  deleteError.value = false
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) throw new Error('No session')
+    const resp = await fetch('/api/users/me', {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${session.access_token}` }
+    })
+    if (!resp.ok) throw new Error('Delete failed')
+    await auth.logout?.()
+    router.push('/login')
+  } catch (e) {
+    deleteError.value = true
+    deleteLoading.value = false
+  }
+}
+
+function cancelDelete() {
+  deleteConfirmStep.value = false
+  deleteEmail.value = ''
+  deleteError.value = false
+}
 
 function saveProfile() {
   // TODO: Implement Supabase profile save

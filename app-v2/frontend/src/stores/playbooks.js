@@ -84,70 +84,92 @@ export const usePlaybookStore = defineStore('playbooks', () => {
   }
 
   async function loadPlaybooks() {
-    const { data, error } = await supabase
-      .from('playbooks')
-      .select('*')
-      .order('created_at', { ascending: false })
-    if (!error && data) playbooks.value = data
+    try {
+      const { data, error } = await supabase
+        .from('playbooks')
+        .select('*')
+        .order('created_at', { ascending: false })
+      if (!error && data) playbooks.value = data
+    } catch (e) {
+      console.error('playbooks.loadPlaybooks failed:', e.message || e)
+    }
   }
 
   async function activateTemplate(templateId, clientId, csmId, currentPlan) {
-    const tpl = templates.find(t => t.id === templateId)
-    if (!tpl) return { error: 'template_not_found' }
-
-    if (!canActivate(currentPlan, templateId)) {
-      return { error: 'plan_insufficient' }
+    try {
+      const tpl = templates.find(t => t.id === templateId)
+      if (!tpl) return { error: 'template_not_found' }
+  
+      if (!canActivate(currentPlan, templateId)) {
+        return { error: 'plan_insufficient' }
+      }
+  
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return { error: 'not_authenticated' }
+  
+      const newPb = {
+        user_id: user.id,
+        template_id: tpl.id,
+        template_key: tpl.key,
+        icon: tpl.icon,
+        color: tpl.color,
+        client_id: clientId || null,
+        csm_id: csmId || null,
+        status: 'active',
+        steps: tpl.steps.map((key, i) => ({ id: i, title: key, done: false })),
+        started_at: new Date().toISOString().slice(0, 10),
+        completed_at: null,
+      }
+  
+      const { error } = await supabase.from('playbooks').insert([newPb])
+      if (!error) await loadPlaybooks()
+      return error ? { error: error.message } : { success: true }
+    } catch (e) {
+      console.error('playbooks.activateTemplate failed:', e.message || e)
     }
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return { error: 'not_authenticated' }
-
-    const newPb = {
-      user_id: user.id,
-      template_id: tpl.id,
-      template_key: tpl.key,
-      icon: tpl.icon,
-      color: tpl.color,
-      client_id: clientId || null,
-      csm_id: csmId || null,
-      status: 'active',
-      steps: tpl.steps.map((key, i) => ({ id: i, title: key, done: false })),
-      started_at: new Date().toISOString().slice(0, 10),
-      completed_at: null,
-    }
-
-    const { error } = await supabase.from('playbooks').insert([newPb])
-    if (!error) await loadPlaybooks()
-    return error ? { error: error.message } : { success: true }
   }
 
   async function toggleStep(playbookId, stepId) {
-    const pb = playbooks.value.find(p => p.id === playbookId)
-    if (!pb) return
-    const step = pb.steps.find(s => s.id === stepId)
-    if (step) {
-      step.done = !step.done
-      await supabase.from('playbooks').update({ steps: pb.steps }).eq('id', playbookId)
+    try {
+      const pb = playbooks.value.find(p => p.id === playbookId)
+      if (!pb) return
+      const step = pb.steps.find(s => s.id === stepId)
+      if (step) {
+        step.done = !step.done
+        const { error: stepErr } = await supabase.from('playbooks').update({ steps: pb.steps }).eq('id', playbookId)
+      if (stepErr) throw stepErr
+      }
+    } catch (e) {
+      console.error('playbooks.toggleStep failed:', e.message || e)
     }
   }
 
   async function completePlaybook(playbookId) {
-    const pb = playbooks.value.find(p => p.id === playbookId)
-    if (pb) {
-      pb.status = 'done'
-      pb.completed_at = new Date().toISOString().slice(0, 10)
-      pb.steps.forEach(s => s.done = true)
-      await supabase.from('playbooks').update({
-        status: 'done',
-        completed_at: pb.completed_at,
-        steps: pb.steps,
-      }).eq('id', playbookId)
+    try {
+      const pb = playbooks.value.find(p => p.id === playbookId)
+      if (pb) {
+        pb.status = 'done'
+        pb.completed_at = new Date().toISOString().slice(0, 10)
+        pb.steps.forEach(s => s.done = true)
+        const { error: updErr } = await supabase.from('playbooks').update({
+          status: 'done',
+          completed_at: pb.completed_at,
+          steps: pb.steps,
+        }).eq('id', playbookId)
+      }
+    } catch (e) {
+      console.error('playbooks.completePlaybook failed:', e.message || e)
     }
   }
 
   async function deletePlaybook(playbookId) {
-    playbooks.value = playbooks.value.filter(p => p.id !== playbookId)
-    await supabase.from('playbooks').delete().eq('id', playbookId)
+    try {
+      playbooks.value = playbooks.value.filter(p => p.id !== playbookId)
+      const { error: delErr } = await supabase.from('playbooks').delete().eq('id', playbookId)
+      if (delErr) throw delErr
+    } catch (e) {
+      console.error('playbooks.deletePlaybook failed:', e.message || e)
+    }
   }
 
   return {

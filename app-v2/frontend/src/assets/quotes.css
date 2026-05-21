@@ -17,7 +17,7 @@
 }
 .btn-primary:hover { background: var(--purple-dark); }
 .btn-outline {
-  background: #fff; color: var(--text-secondary); border: 1px solid var(--border);
+  background-color: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border);
   padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer;
 }
 .btn-outline:hover { border-color: var(--purple); color: var(--purple); }
@@ -34,7 +34,7 @@
 /* KPIs */
 .qt-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
 .qtk {
-  background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md);
+  background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md);
   padding: 20px; text-align: center; transition: all 0.2s;
 }
 .qtk:hover { box-shadow: var(--shadow-sm); transform: translateY(-1px); }
@@ -55,7 +55,7 @@
 .qt-list { display: flex; flex-direction: column; gap: 8px; }
 .qt-card {
   display: flex; justify-content: space-between; align-items: center;
-  background: #fff; border: 1px solid var(--border);
+  background-color: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-md); padding: 16px 20px; transition: all 0.15s;
 }
 .qt-card:hover { box-shadow: var(--shadow-sm); }
@@ -84,14 +84,14 @@
   justify-content: center; padding: 20px;
 }
 .modal-box {
-  background: #fff; border-radius: var(--radius-lg); width: 100%;
+  background-color: var(--bg-card); border-radius: var(--radius-lg); width: 100%;
   max-width: 520px; max-height: 90vh; overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0,0,0,0.2);
 }
 .modal-head {
   display: flex; align-items: center; justify-content: space-between;
   padding: 20px 24px; border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; background: #fff; z-index: 1;
+  position: sticky; top: 0; background-color: var(--bg-card); z-index: 1;
 }
 .modal-head h3 { font-size: 1rem; font-weight: 700; margin: 0; }
 .modal-close {
@@ -107,7 +107,7 @@
 
 /* Empty */
 .qt-empty {
-  text-align: center; padding: 60px 20px; background: #fff;
+  text-align: center; padding: 60px 20px; background-color: var(--bg-card);
   border: 1px solid var(--border); border-radius: var(--radius-md);
 }
 .empty-icon { font-size: 3rem; margin-bottom: 16px; }
@@ -120,7 +120,7 @@
 .fg label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
 .fi {
   padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
-  font-size: 0.85rem; outline: none; background: #fff; width: 100%;
+  font-size: 0.85rem; outline: none; background-color: var(--bg-card); width: 100%;
 }
 .fi:focus { border-color: var(--purple); }
 .ta { resize: vertical; }

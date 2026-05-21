@@ -163,7 +163,7 @@ function scrollBottom() {
 }
 
 async function clearHistory() {
-  if (!confirm(t('coach_clear_confirm') || "Effacer tout l'historique du chat ?")) return
+  if (!confirm(t('coach_clear_confirm'))) return
   await supabase.from('ai_messages').delete().eq('module', 'coach')
   messages.value = []
 }
@@ -174,7 +174,7 @@ async function clearHistory() {
 .coach-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-shrink: 0; }
 .coach-header h1 { font-size: 1.5rem; font-weight: 800; }
 .coach-counter { font-size: 0.82rem; color: var(--text-muted); background: var(--bg); padding: 6px 14px; border-radius: 8px; }
-.coach-chat { flex: 1; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.coach-chat { flex: 1; display: flex; flex-direction: column; background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
 .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
 .chat-welcome { display: flex; gap: 14px; padding: 20px; background: var(--purple-bg); border-radius: var(--radius-md); }
 .cw-avatar { font-size: 2rem; flex-shrink: 0; }
@@ -204,5 +204,5 @@ async function clearHistory() {
 .send-btn { background: var(--purple); color: #fff; border: none; border-radius: var(--radius-sm); padding: 10px 18px; font-size: 1.1rem; cursor: pointer; transition: all 0.15s; }
 .send-btn:hover:not(:disabled) { background: var(--purple-dark); }
 .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.quota-warning { text-align: center; padding: 8px; font-size: 0.78rem; color: #dc2626; background: #fef2f2; border-top: 1px solid #fecaca; }
+.quota-warning { text-align: center; padding: 8px; font-size: 0.78rem; color: var(--danger, #dc2626); background: var(--danger-bg, #fef2f2); border-top: 1px solid var(--danger-border, #fecaca); }
 </style>

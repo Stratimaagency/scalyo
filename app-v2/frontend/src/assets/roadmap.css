@@ -18,7 +18,7 @@
 .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 .btn-outline {
-  background: #fff; color: var(--text-secondary); border: 1px solid var(--border);
+  background-color: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border);
   padding: 9px 18px; border-radius: var(--radius-sm); font-size: 0.85rem;
   cursor: pointer; transition: all 0.2s;
 }
@@ -44,7 +44,7 @@
 /* KPIs */
 .rm-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
 .rmk {
-  background: #fff; border: 1px solid var(--border);
+  background-color: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-md); padding: 16px; text-align: center;
 }
 .rmk-val { font-size: 1.6rem; font-weight: 800; display: block; }
@@ -57,7 +57,7 @@
 
 /* Empty */
 .rm-empty {
-  background: #fff; border: 1px solid var(--border);
+  background-color: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-lg); padding: 72px 40px; text-align: center;
 }
 .rme-icon { font-size: 3.5rem; margin-bottom: 16px; }
@@ -68,7 +68,7 @@
 /* Cards list */
 .rm-list { display: flex; flex-direction: column; gap: 16px; }
 .rm-card {
-  background: #fff; border: 1px solid var(--border);
+  background-color: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-lg); overflow: hidden;
 }
 .rmc-header {
@@ -93,7 +93,7 @@
   background: none; border: none; font-size: 0.9rem; cursor: pointer;
   padding: 4px 8px; border-radius: 4px; opacity: 0.4; transition: all 0.15s;
 }
-.btn-del:hover { opacity: 1; background: #fee2e2; }
+.btn-del:hover { opacity: 1; background: var(--red-bg); }
 .del-msg { font-size: 0.78rem; color: var(--text-secondary); }
 .del-msg.warn { color: #ef4444; font-weight: 600; }
 
@@ -113,7 +113,7 @@
   display: flex; align-items: center; justify-content: center;
   font-size: 0.75rem; font-weight: 700; cursor: pointer; z-index: 1;
   position: relative; transition: all 0.2s;
-  border: 2px solid var(--border); background: #fff; color: var(--text-muted);
+  border: 2px solid var(--border); background-color: var(--bg-card); color: var(--text-muted);
 }
 .rmt-node:hover { transform: scale(1.15); }
 .rmt-node.done { background: var(--green); border-color: var(--green); color: #fff; }
@@ -135,7 +135,7 @@
 .rmt-add::before {
   content: '+'; width: 28px; height: 28px; border-radius: 50%;
   border: 2px dashed var(--purple); display: flex; align-items: center;
-  justify-content: center; font-size: 1rem; color: var(--purple); background: #fff;
+  justify-content: center; font-size: 1rem; color: var(--purple); background-color: var(--bg-card);
 }
 .rmc-empty {
   padding: 16px 20px; font-size: 0.82rem; color: var(--text-muted);
@@ -148,7 +148,7 @@
   z-index: 200; display: flex; justify-content: flex-end;
 }
 .so-panel {
-  width: 480px; max-width: 95vw; background: #fff; height: 100%;
+  width: 480px; max-width: 95vw; background-color: var(--bg-card); height: 100%;
   display: flex; flex-direction: column; box-shadow: -4px 0 24px rgba(0,0,0,0.12);
 }
 .so-head {
@@ -175,8 +175,8 @@
   border: 1.5px solid var(--border); border-radius: var(--radius-sm);
   cursor: pointer; transition: all 0.15s;
 }
-.tpl-card:hover { border-color: var(--purple); background: #faf9ff; }
-.tpl-card.selected { background: #f5f3ff; }
+.tpl-card:hover { border-color: var(--purple); background: var(--purple-bg); }
+.tpl-card.selected { background: var(--purple-bg); }
 .tpl-icon { font-size: 1.4rem; flex-shrink: 0; }
 .tpl-card strong { font-size: 0.85rem; display: block; margin-bottom: 2px; }
 .tpl-card p { font-size: 0.75rem; color: var(--text-muted); margin: 0; line-height: 1.4; }
@@ -199,7 +199,7 @@
 .fg label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
 .fi {
   padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
-  font-size: 0.85rem; outline: none; background: #fff; width: 100%;
+  font-size: 0.85rem; outline: none; background-color: var(--bg-card); width: 100%;
   transition: border-color 0.15s;
 }
 .fi:focus { border-color: var(--purple); }

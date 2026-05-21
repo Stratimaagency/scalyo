@@ -167,22 +167,14 @@ let demoCycleTimer = null
 onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true })
 
-  observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible')
-        observer.unobserve(e.target)
-      }
-    })
-  }, { threshold: 0.08 })
 
-  rootEl.value?.querySelectorAll('.anim-section').forEach(el => {
-    const rect = el.getBoundingClientRect()
-    if (rect.top > window.innerHeight) {
-      el.classList.add('anim-hidden')
-    }
-    observer.observe(el)
-  })
+  // Defer observer to ensure DOM layout is stable after Vue render
+  // Reveal all sections — scroll animation disabled pending proper implementation
+  setTimeout(() => {
+    rootEl.value?.querySelectorAll('.anim-section').forEach(el => {
+      el.classList.add('anim-visible')
+    })
+  }, 100)
 
   demoCycleTimer = setInterval(() => {
     activeDemo.value = (activeDemo.value + 1) % demoTabs.length

@@ -1,141 +1,180 @@
 <template>
-  <div class="integ-view">
-    <div class="iv-header">
-      <h1>🔌 {{ t('integ_title') }}</h1>
-      <p class="iv-sub">{{ t('integ_subtitle') }}</p>
-    </div>
+  <div class="integrations-page">
+    <header class="ig-header">
+      <h1>{{ t('integ_title') }}</h1>
+      <p class="ig-sub">{{ t('integ_subtitle') }}</p>
+    </header>
+    <div v-if="loading" class="ig-loading"><span class="spinner"></span></div>
+    <template v-else>
+      <div v-for="cat in catalog" :key="cat.id" class="ig-section">
+        <h2 class="ig-section-title"><i :class="'ti ' + cat.icon"></i> {{ cat.displayLabel }}</h2>
+        <div class="ig-grid">
+          <div v-for="integ in cat.integrations" :key="integ.id" class="ig-card" :class="{ 'ig-card-on': integStore.isConnected(integ.id) }">
+            <div class="ig-card-top">
+              <div class="ig-icon" :style="{ background: integ.color + '12', color: integ.color }">
+                <i :class="'ti ' + integ.icon"></i>
+              </div>
+              <div class="ig-card-info">
+                <div class="ig-name-row">
+                  <h3>{{ integ.name }}</h3>
+                  <span v-if="integStore.isConnected(integ.id)" class="ig-tag ig-tag-ok">{{ t('integ_connected') }}</span>
+                  <span v-else class="ig-tag ig-tag-plan">{{ planLabel(integ.plan) }}</span>
+                </div>
+                <p class="ig-desc">{{ integ.label[locale] || integ.label.fr }}</p>
+              </div>
+            </div>
+            <div class="ig-caps">
+              <span v-for="cap in integ.capabilities" :key="cap" class="ig-cap">
+                <i :class="'ti ' + getCapIcon(cap)"></i> {{ getCapLabel(cap) }}
+              </span>
+            </div>
+            <div class="ig-actions">
+              <template v-if="integStore.isConnected(integ.id)">
+                <button class="ig-btn ig-btn-secondary" @click="openSetup(integ)"><i class="ti ti-settings"></i> {{ t('integ_configure') }}</button>
+                <button class="ig-btn ig-btn-danger" @click="handleDisconnect(integ)">{{ t('integ_disconnect') }}</button>
+              </template>
+              <button v-else-if="!planAllows(integ.plan)" class="ig-btn ig-btn-upgrade" @click="$router.push({ name: 'paywall' })"><i class="ti ti-lock"></i> {{ t('integ_upgrade') }}</button>
+              <button v-else class="ig-btn ig-btn-primary" @click="openSetup(integ)"><i class="ti ti-plug"></i> {{ t('integ_connect') }}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
 
-    <!-- Tabs -->
-    <div class="iv-tabs">
-      <button class="iv-tab" :class="{ active: tab === 'api' }" @click="tab = 'api'">
-        🔑 API REST
-      </button>
-      <button class="iv-tab" :class="{ active: tab === 'webhook' }" @click="tab = 'webhook'">
-        ⚡ Webhooks
-      </button>
-      <button class="iv-tab" :class="{ active: tab === 'import' }" @click="tab = 'import'">
-        📥 Import CSV
-      </button>
-    </div>
-
-    <!-- API REST -->
-    <IntegApiTab
-      v-if="tab === 'api'"
-      :api-keys="apiKeys"
-      :api-base-url="apiBaseUrl"
-      :new-key-value="newKeyValue"
-      :key-copied="newKeyCopied"
-      @open-create="showCreateKey = true"
-      @revoke="revokeKey"
-      @key-copied="newKeyCopied = true"
-    />
-
-    <!-- Webhooks -->
-    <IntegWebhookTab
-      v-else-if="tab === 'webhook'"
-      :webhooks="webhooks"
-      :webhook-base-url="webhookBaseUrl"
-      @create="createWebhook"
-      @delete="deleteWebhook"
-    />
-
-    <!-- Import CSV -->
-    <div v-else-if="tab === 'import'" class="iv-section">
-      <div class="iv-card">
-        <h2>📥 {{ t('integ_import_title') }}</h2>
-        <p class="iv-card-sub">{{ t('integ_import_desc') }}</p>
-        <router-link to="/app/import" class="btn-goto-import">
-          🤖 {{ t('integ_goto_import') }} →
-        </router-link>
+    <div v-if="setupModal" class="ig-overlay" @click.self="closeModal">
+      <div class="ig-modal">
+        <div class="ig-modal-header">
+          <div class="ig-modal-title">
+            <div class="ig-icon ig-icon-sm" :style="{ background: setupModal.color + '12', color: setupModal.color }">
+              <i :class="'ti ' + setupModal.icon"></i>
+            </div>
+            <h3>{{ setupModal.name }}</h3>
+          </div>
+          <button class="ig-modal-close" @click="closeModal"><i class="ti ti-x"></i></button>
+        </div>
+        <div class="ig-modal-body">
+          <div v-if="setupModal.setupSteps" class="ig-steps">
+            <p class="ig-steps-title">{{ t('integ_setup_steps') }}</p>
+            <pre class="ig-steps-content">{{ setupModal.setupSteps[locale] || setupModal.setupSteps.fr }}</pre>
+            <a v-if="setupModal.helpUrl" :href="setupModal.helpUrl" target="_blank" rel="noopener" class="ig-help-link">
+              {{ t('integ_help_link') }} <i class="ti ti-external-link"></i>
+            </a>
+          </div>
+          <div v-for="field in setupModal.fields" :key="field.key" class="ig-field">
+            <label class="ig-label">{{ field.label[locale] || field.label.fr }}</label>
+            <input v-model="fieldValues[field.key]" :type="field.type || 'text'" :placeholder="field.placeholder || ''" class="ig-input" />
+          </div>
+          <p v-if="saveError" class="ig-msg ig-msg-error">{{ t('integ_save_error') }}</p>
+          <p v-if="saveSuccess" class="ig-msg ig-msg-ok">{{ t('integ_save_success') }}</p>
+        </div>
+        <div class="ig-modal-footer">
+          <button class="ig-btn ig-btn-primary" :disabled="saving || !allFieldsFilled" @click="handleSave">
+            {{ saving ? t('integ_saving') : (integStore.isConnected(setupModal.id) ? t('integ_update') : t('integ_connect')) }}
+          </button>
+          <button class="ig-btn ig-btn-ghost" @click="closeModal">{{ t('integ_cancel') }}</button>
+        </div>
       </div>
     </div>
-
-    <!-- Create Key Modal -->
-    <IntegCreateKeyModal
-      :open="showCreateKey"
-      @close="showCreateKey = false"
-      @create="createApiKey"
-    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { supabase } from '@/lib/supabase'
-import IntegApiTab from '@/components/integrations/IntegApiTab.vue'
-import IntegWebhookTab from '@/components/integrations/IntegWebhookTab.vue'
-import IntegCreateKeyModal from '@/components/integrations/IntegCreateKeyModal.vue'
+import { useAuthStore } from '@/stores/auth'
+import { useIntegrationStore } from '@/stores/integrations'
+import { getCapabilityInfo } from '@/config/integrations'
 import '@/assets/integrations.css'
 
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
+const auth = useAuthStore()
+const integStore = useIntegrationStore()
 
-const tab = ref('api')
-const apiKeys = ref([])
-const webhooks = ref([])
-const showCreateKey = ref(false)
-const newKeyValue = ref('')
-const newKeyCopied = ref(false)
+const loading = ref(true)
+const setupModal = ref(null)
+const fieldValues = ref({})
+const saving = ref(false)
+const saveError = ref(false)
+const saveSuccess = ref(false)
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
-const apiBaseUrl = computed(() => SUPABASE_URL + '/functions/v1/scalyo-api')
-const webhookBaseUrl = computed(() => SUPABASE_URL + '/functions/v1/scalyo-webhook')
+const catalog = computed(() => integStore.getCatalog(locale.value))
 
-async function loadApiKeys() {
-  const { data } = await supabase
-    .from('api_keys').select('*').eq('is_active', true)
-    .order('created_at', { ascending: false })
-  if (data) apiKeys.value = data
+const PLAN_ORDER = { starter: 0, growth: 1, elite: 2, enterprise: 3 }
+
+function planAllows(requiredPlan) {
+  return (PLAN_ORDER[auth.currentPlan] ?? -1) >= (PLAN_ORDER[requiredPlan] ?? 0)
 }
 
-async function loadWebhooks() {
-  const { data } = await supabase
-    .from('webhooks').select('*')
-    .order('created_at', { ascending: false })
-  if (data) webhooks.value = data
+function planLabel(plan) {
+  const labels = { starter: 'Starter+', growth: 'Growth+', elite: 'Elite+' }
+  return labels[plan] || plan
 }
 
-async function createApiKey({ name, scopes }) {
-  const rawKey = 'sk_' + Array.from(crypto.getRandomValues(new Uint8Array(32)))
-    .map(b => b.toString(16).padStart(2, '0')).join('')
-  const prefix = rawKey.slice(0, 12)
-  const keyBytes = new TextEncoder().encode(rawKey)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', keyBytes)
-  const keyHash = Array.from(new Uint8Array(hashBuffer))
-    .map(b => b.toString(16).padStart(2, '0')).join('')
+function getCapLabel(capId) { return getCapabilityInfo(capId, locale.value).label }
+function getCapIcon(capId) { return getCapabilityInfo(capId, locale.value).icon }
 
-  const { error } = await supabase.from('api_keys').insert([{
-    name, key_hash: keyHash, key_prefix: prefix, scopes
-  }])
-  if (!error) {
-    newKeyValue.value = rawKey
-    newKeyCopied.value = false
-    showCreateKey.value = false
-    await loadApiKeys()
+const allFieldsFilled = computed(() => {
+  if (!setupModal.value?.fields) return false
+  return setupModal.value.fields.every(f => (fieldValues.value[f.key] || '').trim().length > 0)
+})
+
+function openSetup(integ) {
+  setupModal.value = integ
+  saveError.value = false
+  saveSuccess.value = false
+  const existing = integStore.getConnection(integ.id)
+  const vals = {}
+  for (const f of integ.fields) {
+    vals[f.key] = existing?.config?.[f.key] || ''
+  }
+  fieldValues.value = vals
+}
+
+function closeModal() {
+  setupModal.value = null
+  fieldValues.value = {}
+  saveError.value = false
+  saveSuccess.value = false
+}
+
+async function handleSave() {
+  saving.value = true
+  saveError.value = false
+  saveSuccess.value = false
+  try {
+    const config = { ...fieldValues.value }
+    if (integStore.isConnected(setupModal.value.id)) {
+      await integStore.saveConfig(setupModal.value.id, config)
+    } else {
+      await integStore.connectWebhook(setupModal.value.id, config)
+    }
+    saveSuccess.value = true
+    await integStore.loadConnections()
+    setTimeout(() => closeModal(), 600)
+  } catch (err) {
+    saveError.value = true
+  } finally {
+    saving.value = false
   }
 }
 
-async function revokeKey(id) {
-  if (!confirm(t('integ_revoke_confirm'))) return
-  await supabase.from('api_keys').update({ is_active: false }).eq('id', id)
-  await loadApiKeys()
+async function handleDisconnect(integ) {
+  if (!confirm(t('integ_disconnect_confirm'))) return
+  try {
+    await integStore.disconnect(integ.id)
+    await integStore.loadConnections()
+  } catch (err) {
+    /* silent */
+  }
 }
 
-async function createWebhook() {
-  const secret = 'whsec_' + Array.from(crypto.getRandomValues(new Uint8Array(16)))
-    .map(b => b.toString(16).padStart(2, '0')).join('')
-  const { error } = await supabase.from('webhooks').insert([{
-    name: 'Webhook Zapier/Make', secret,
-    events: ['client.created', 'client.updated', 'task.created']
-  }])
-  if (!error) await loadWebhooks()
-}
-
-async function deleteWebhook(id) {
-  if (!confirm(t('integ_delete_webhook_confirm'))) return
-  await supabase.from('webhooks').delete().eq('id', id)
-  await loadWebhooks()
-}
-
-onMounted(() => { loadApiKeys(); loadWebhooks() })
+onMounted(async () => {
+  try {
+    await integStore.loadConnections()
+  } catch (err) {
+    /* silent */
+  } finally {
+    loading.value = false
+  }
+})
 </script>

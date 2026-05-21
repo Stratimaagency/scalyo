@@ -168,7 +168,7 @@ async function send(text) {
 .ai-fab-icon { font-size: 1.2rem; }
 .ai-fab-ctx { font-size: 0.75rem; opacity: 0.9; }
 
-.ai-panel { position: absolute; bottom: 56px; right: 0; width: 400px; height: 520px; background: #fff; border-radius: 16px; box-shadow: 0 12px 48px rgba(0,0,0,0.15); border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.ai-panel { position: absolute; bottom: 56px; right: 0; width: 400px; height: 520px; background-color: var(--bg-card); border-radius: 16px; box-shadow: 0 12px 48px rgba(0,0,0,0.15); border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
 .ai-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--border-light); background: linear-gradient(135deg, #f5f3ff, #ede9fe); }
 .ai-header-left { display: flex; align-items: center; gap: 10px; }
 .ai-header-icon { font-size: 1.4rem; }
@@ -186,7 +186,7 @@ async function send(text) {
 .ai-welcome { text-align: center; padding: 20px 0; }
 .ai-welcome p { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px; }
 .ai-suggestions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-.ai-sug { padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border); background: #fff; font-size: 0.78rem; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+.ai-sug { padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border); background-color: var(--bg-card); font-size: 0.78rem; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
 .ai-sug:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-bg); }
 
 .ai-msg { display: flex; gap: 8px; }

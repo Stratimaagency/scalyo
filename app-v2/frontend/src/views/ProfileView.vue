@@ -154,7 +154,7 @@ async function handleLogout() {
 .pv-sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
 .pv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .pv-card {
-  background: #fff;
+  background-color: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 24px;

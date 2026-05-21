@@ -148,7 +148,7 @@ function confettiStyle(i) {
   to   { transform: translate(var(--x), var(--y)) scale(1); opacity: 0.8; }
 }
 .success-card {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 24px;
   padding: 48px 40px;
   max-width: 460px;
@@ -187,7 +187,7 @@ function confettiStyle(i) {
 }
 .sc-sub {
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-bottom: 24px;
   line-height: 1.6;
 }
@@ -223,7 +223,7 @@ function confettiStyle(i) {
 }
 .sc-ni-icon { font-size: 1.1rem; }
 .btn-primary {
-  background: #7c3aed;
+  background: var(--purple);
   color: #fff;
   border: none;
   padding: 14px 32px;

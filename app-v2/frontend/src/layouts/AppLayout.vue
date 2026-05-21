@@ -12,7 +12,7 @@
       <nav class="sidebar-nav">
         <template v-for="section in sidebarSections" :key="section.label">
           <div v-if="!app.sidebarCollapsed && section.label" class="nav-section-label">{{ t(section.label) }}</div>
-          <template v-for="item in section.items" :key="item.name">
+          <template v-for="item in section.items.filter(i => !i.ownerOnly || auth.isOrgOwner)" :key="item.name">
             <div v-if="item.children" class="nav-group">
               <router-link :to="item.to" class="nav-item" :class="{ active: isActiveGroup(item) }" @click="app.closeMobileSidebar()">
                 <span class="nav-icon">{{ item.icon }}</span>
@@ -88,16 +88,11 @@
             </transition>
           </div>
 
-          <!-- User -->
-          <div class="topbar-user">
-            <div class="user-avatar" @click="$router.push('/app/profile')" style="cursor:pointer" title="Mon profil">{{ auth.user?.firstName?.[0] || 'U' }}</div>
-            <div class="user-info hide-mobile">
-              <span class="user-company">{{ auth.company?.name }}</span>
-              <span class="user-badges">
-                <span class="badge plan">{{ auth.company?.planLabel }}</span>
-                <span class="badge role">{{ auth.user?.roleLabel }}</span>
-              </span>
-            </div>
+
+          <!-- Topbar actions -->
+          <div class="topbar-actions">
+            <FeedbackWidget />
+            <AiAssistant v-if="isEliteOrAbove" />
           </div>
         </div>
       
@@ -120,10 +115,6 @@
 
     <!-- ONBOARDING -->
     <OnboardingWizard />
-
-    <!-- AI AGENT -->
-    <AiAssistant v-if="isEliteOrAbove" />
-
     <!-- CHAT FAB -->
     <button class="chat-fab" @click="app.toggleChat()" :class="{ active: app.chatOpen }">
       💬
@@ -146,6 +137,7 @@ import ScalyoLogo from '@/components/ScalyoLogo.vue'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
 import AiAssistant from '@/components/ai/AiAssistant.vue'
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard.vue'
+import FeedbackWidget from '@/components/FeedbackWidget.vue'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notifications'
@@ -204,7 +196,7 @@ const sidebarSections = [
     label: 'sidebar_dashboard_section',
     items: [
       { name: 'dashboard', icon: '📊', label: 'sidebar_dashboard', to: '/app/dashboard' },
-      { name: 'manager', icon: '👥', label: 'sidebar_manager', to: '/app/manager' },
+      { name: 'manager', icon: '👥', label: 'sidebar_manager', to: '/app/manager', ownerOnly: true },
     ],
   },
   {
@@ -246,6 +238,7 @@ const sidebarSections = [
       { name: 'workload', icon: '💚', label: 'sidebar_health_tracker', to: '/app/workload' },
       { name: 'wellbeing', icon: '🧘', label: 'sidebar_wellbeing', to: '/app/wellbeing' },
       { name: 'coach', icon: '🤖', label: 'sidebar_coach', to: '/app/coach' },
+      { name: 'chat', icon: '💬', label: 'sidebar_chat', to: '/app/chat' },
     ],
   },
   {
@@ -253,7 +246,6 @@ const sidebarSections = [
     items: [
       { name: 'email-studio', icon: '📧', label: 'sidebar_email_studio', to: '/app/email-studio' },
       { name: 'quotes', icon: '📄', label: 'sidebar_quotes', to: '/app/quotes' },
-      { name: 'import', icon: '📥', label: 'sidebar_import', to: '/app/import' },
       { name: 'integrations', icon: '🔌', label: 'sidebar_integrations', to: '/app/integrations' },
     ],
   },
@@ -276,6 +268,7 @@ const sidebarSections = [
     label: '',
     items: [
       { name: 'profile',  icon: '👤', label: 'sidebar_profile',  to: '/app/profile'  },
+      { name: 'team', icon: '👥', label: 'nav_team', to: '/app/team' },
       { name: 'settings', icon: '⚙️', label: 'sidebar_settings', to: '/app/settings' },
     ],
   },
@@ -307,7 +300,7 @@ async function handleLogout() {
 .app-layout.collapsed .main-wrapper { margin-left: var(--sidebar-collapsed); }
 
 /* ═══ SIDEBAR ═══ */
-.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-width); background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; transition: width var(--transition-slow); overflow-y: auto; overflow-x: hidden; }
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-width); background-color: var(--bg-card); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; transition: width var(--transition-slow); overflow-y: auto; overflow-x: hidden; }
 .app-layout.collapsed .sidebar { width: var(--sidebar-collapsed); }
 .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--border-light); flex-shrink: 0; }
 .logo-text { font-weight: 800; font-size: 1.15rem; background: linear-gradient(135deg, var(--purple), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -331,7 +324,7 @@ async function handleLogout() {
 .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; }
 
 /* ═══ TOPBAR ═══ */
-.topbar { height: var(--topbar-height); background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 12px; position: sticky; top: 0; z-index: 50; }
+.topbar { height: var(--topbar-height); background-color: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 12px; position: sticky; top: 0; z-index: 50; }
 .topbar-burger { display: none; flex-direction: column; gap: 4px; background: none; border: none; padding: 6px; }
 .topbar-burger span { display: block; width: 20px; height: 2px; background: var(--text); border-radius: 1px; }
 .topbar-left { flex: 1; }
@@ -342,7 +335,7 @@ async function handleLogout() {
 .topbar-notif { position: relative; }
 .notif-btn { background: none; border: none; font-size: 1.2rem; padding: 4px; position: relative; cursor: pointer; }
 .notif-badge { position: absolute; top: -2px; right: -4px; background: var(--red); color: #fff; font-size: 0.6rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.notif-dropdown { position: absolute; top: 100%; right: 0; margin-top: 8px; width: 360px; background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--border); z-index: 200; }
+.notif-dropdown { position: absolute; top: 100%; right: 0; margin-top: 8px; width: 360px; background-color: var(--bg-card); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--border); z-index: 200; }
 .notif-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--border-light); }
 .notif-header strong { font-size: 0.9rem; }
 .notif-header-actions { display: flex; align-items: center; gap: 8px; }
@@ -361,26 +354,23 @@ async function handleLogout() {
 .notif-unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--purple); flex-shrink: 0; margin-top: 6px; }
 .notif-empty { padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
 
-/* ─── User ─────────────────────────────────────────────────────────────────── */
-.topbar-user { display: flex; align-items: center; gap: 8px; }
-.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), var(--purple-dark)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
-.user-info { display: flex; flex-direction: column; }
-.user-company { font-size: 0.8rem; font-weight: 600; color: var(--text); line-height: 1.2; }
-.user-badges { display: flex; gap: 4px; margin-top: 2px; }
-.badge { font-size: 0.6rem; font-weight: 600; padding: 1px 6px; border-radius: 4px; }
-.badge.plan { background: var(--purple-bg); color: var(--purple); }
-.badge.role { background: var(--green-bg); color: var(--green); }
-
 /* ═══ MAIN CONTENT ═══ */
 .main-content { flex: 1; padding: 24px; max-width: 100%; }
 
 /* ═══ CHAT FAB ═══ */
-.chat-fab { position: fixed; bottom: 24px; right: 24px; width: 52px; height: 52px; border-radius: 50%; background: var(--purple); color: #fff; border: none; font-size: 1.4rem; box-shadow: var(--shadow-lg); z-index: 400; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+.chat-fab { position: fixed; bottom: 24px; right: 24px; width: 52px; height: 52px; border-radius: 50%; background: var(--purple); color: #fff; border: none; font-size: 1.4rem; box-shadow: var(--shadow-lg); z-index: 400; transition: all 0.2s; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .chat-fab:hover { transform: scale(1.08); box-shadow: 0 8px 30px rgba(124,58,237,0.3); }
 .chat-fab.active { background: var(--text); }
-.chat-fab-badge { position: absolute; top: -4px; right: -4px; background: var(--red); color: #fff; font-size: 0.6rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.chat-panel-wrapper { position: fixed; bottom: 88px; right: 24px; width: 680px; height: 520px; background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); z-index: 399; border: 1px solid var(--border); overflow: hidden; }
+.chat-fab-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: #fff; font-size: 0.6rem; font-weight: 700; min-width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.chat-panel-wrapper { position: fixed; bottom: 88px; right: 24px; width: 680px; height: 520px; background-color: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); z-index: 999; border: 1px solid var(--border); overflow: hidden; }
 
+/* ═══ TOPBAR ACTIONS ═══ */
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+.topbar-actions :deep(.feedback-widget) { position: relative; bottom: auto; right: auto; z-index: 100; }
+.topbar-actions :deep(.feedback-trigger) { width: 36px; height: 36px; font-size: 0.9rem; }
+.topbar-actions :deep(.feedback-panel) { position: absolute; top: 100%; right: 0; z-index: 1000; }
+.topbar-actions :deep(.ai-agent) { position: relative; bottom: auto; right: auto; z-index: 100; }
+.topbar-actions :deep(.ai-panel) { bottom: auto; top: 100%; }
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 1024px) {
   .sidebar { width: var(--sidebar-collapsed); }

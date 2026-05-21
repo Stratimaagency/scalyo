@@ -1,10 +1,13 @@
 <template>
   <div class="portfolio">
+    <!-- IMPORT PANEL -->
+    <StandardImport v-if="showImport" :fields="clientFields" :on-import="handleBulkImport" />
+
     <!-- HEADER -->
     <div class="port-header">
       <h1>💼 {{ t('port_title') }}</h1>
       <div class="port-actions">
-        <button class="btn-outline" @click="$router.push('/app/import')">{{ t('port_import') }}</button>
+        <button class="btn-outline" @click="showImport = !showImport">{{ t('import_btn_clients') }}</button>
         <button class="btn-outline" @click="exportCsv">{{ t('port_export') }}</button>
         <div v-if="resetStep === 0">
           <button class="btn-danger-outline" @click="resetStep = 1">{{ t('port_reset_all') }}</button>
@@ -72,6 +75,8 @@ import PortfolioTable from '@/components/portfolio/PortfolioTable.vue'
 import PortfolioForm from '@/components/portfolio/PortfolioForm.vue'
 import { fmtNum } from '@/components/portfolio/portfolioHelpers.js'
 import EmptyState from '@/components/EmptyState.vue'
+import StandardImport from '@/components/import/StandardImport.vue'
+import { clientFields } from '@/config/importFields.js'
 import '@/assets/portfolio.css'
 
 const { t } = useI18n({ useScope: 'global' })
@@ -83,13 +88,30 @@ const activeFilter = ref('all')
 const slideOpen = ref(false)
 const editId = ref(null)
 const resetStep = ref(0)
+const showImport = ref(false)
+
+var handleBulkImport = async function (rows) {
+  var count = 0
+  var errors = 0
+  for (var i = 0; i < rows.length; i++) {
+    try {
+      var result = await clients.addClient(rows[i])
+      if (result) count++
+      else errors++
+    } catch (e) {
+      errors++
+    }
+  }
+  if (count > 0) showImport.value = false
+  return count
+}
 
 function doResetAll() { clients.resetAll(); resetStep.value = 0 }
 
 const initForm = () => ({
   name: '', industry: 'SaaS', arr: 0, mrr: 0, health: 7, nps: 50,
   status: 'healthy', csmId: team.members[0]?.id || '', renewalDate: '',
-  cName: '', cEmail: '', cRole: '', churnRisk: 0.05
+  cName: '', cEmail: '', cRole: '', churnRisk: 5
 })
 
 const form = reactive(initForm())
@@ -104,7 +126,7 @@ const filterList = computed(() => [
 
 const filtered = computed(() => {
   let list = clients.clients
-  if (activeFilter.value !== 'all') list = list.filter(c => c.status === activeFilter.value)
+  if (activeFilter.value !== 'all') list = list.filter(c => clients.getEffectiveStatus(c) === activeFilter.value)
   if (search.value) {
     const q = search.value.toLowerCase()
     list = list.filter(c => c.name.toLowerCase().includes(q) || c.industry.toLowerCase().includes(q) || c.csm.toLowerCase().includes(q))

@@ -14,6 +14,7 @@ export function getConfig(env) {
     supabaseAnonKey: env.SUPABASE_ANON_KEY || SUPABASE_ANON_KEY,
     supabaseJwtSecret: env.SUPABASE_JWT_SECRET || '',
     stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET || '',
+    stripeSecretKey: env.STRIPE_SECRET_KEY || '',
     supabaseServiceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY || '',
     resendApiKey: env.RESEND_API_KEY || '',
   }

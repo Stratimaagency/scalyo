@@ -1,7 +1,11 @@
+import { getMetricsContext } from '../_config/metrics.js'
+
 const LANG = { fr: 'Reponds en francais.', en: 'Reply in English.', ko: '한국어로 답변하세요.' }
 
 export function getDashboardPrompt(lang = 'fr', context = '') {
-  return `Tu es l'analyste IA du Dashboard Scalyo. Tu fournis des insights strategiques sur le portfolio client.
+const metricsBlock = getMetricsContext(lang)
+
+return `Tu es l'analyste IA du Dashboard Scalyo. Tu fournis des insights strategiques sur le portfolio client.
 
 TON ROLE :
 1. Analyser l'ensemble du portfolio et identifier les tendances
@@ -16,11 +20,15 @@ FORMAT DE REPONSE :
 - ACTIONS PRIORITAIRES : 3 actions concretes pour cette semaine
 - TENDANCES : evolution des KPIs cles vs periode precedente
 
+METRIQUES SCALYO :
+- ${metricsBlock}
+
+Si l'utilisateur pose une question sur une metrique, explique-lui comment Scalyo la calcule et ce que la valeur actuelle signifie pour son business.
+
 Si les donnees manquent, demande a l'utilisateur :
 - Nombre total de clients et ARR
 - Distribution des health scores
 - Renouvellements a venir (30/60/90 jours)
-- Taux de churn actuel
 
 DONNEES :
 ${context || "Pas de donnees portfolio. Demande les metriques cles a l'utilisateur."}

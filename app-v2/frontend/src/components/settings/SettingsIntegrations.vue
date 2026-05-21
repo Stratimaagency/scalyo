@@ -236,7 +236,8 @@ async function saveConfig() {
   error.value = ''
   success.value = ''
   try {
-    if (form.value.key && !form.value.key.startsWith('re_')) {
+    form.value.key = form.value.key.trim()
+      if (form.value.key && !form.value.key.startsWith('re_')) {
       error.value = L('invalid_key')
       return
     }
@@ -319,7 +320,7 @@ async function togglePermission(member) {
 .ei-toggle { position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer; }
 .ei-toggle input { opacity: 0; width: 0; height: 0; }
 .ei-toggle-slider { position: absolute; inset: 0; background: #d1d5db; border-radius: 999px; transition: 0.2s; }
-.ei-toggle-slider::before { content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s; }
+.ei-toggle-slider::before { content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: var(--bg-card); border-radius: 50%; transition: 0.2s; }
 .ei-toggle input:checked + .ei-toggle-slider { background: var(--primary, #6366f1); }
 .ei-toggle input:checked + .ei-toggle-slider::before { transform: translateX(20px); }
 

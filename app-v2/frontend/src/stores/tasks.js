@@ -3,14 +3,20 @@ import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 
 async function getCurrentUserId() {
-  const { data: { user } } = await supabase.auth.getUser()
-  return user?.id
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    return user?.id
+  } catch (err) {
+    if (window.Sentry) window.Sentry.captureException(err)
+    return null
+  }
 }
 
 export const useTaskStore = defineStore('tasks', () => {
   const tasks = ref([])
   const projects = ref([])
   const loading = ref(false)
+  const lastError = ref(null)
 
   // ── Computed ──
   const tasksByStatus = computed(() => ({
@@ -99,93 +105,154 @@ export const useTaskStore = defineStore('tasks', () => {
       recommendations,
     }
   })
-
   // ── Load ──
   async function loadTasks() {
     loading.value = true
-    const [{ data: tasksData }, { data: projectsData }] = await Promise.all([
-      supabase.from('tasks').select('*').order('created_at', { ascending: false }),
-      supabase.from('projects').select('*').order('created_at', { ascending: false }),
-    ])
-    if (tasksData) tasks.value = tasksData.map(dbToTask)
-    if (projectsData) projects.value = projectsData.map(dbToProject)
-    loading.value = false
+    lastError.value = null
+    try {
+      const [tasksRes, projectsRes] = await Promise.all([
+        supabase.from('tasks').select('*').order('created_at', { ascending: false }),
+        supabase.from('projects').select('*').order('created_at', { ascending: false }),
+      ])
+      if (tasksRes.error) throw tasksRes.error
+      if (projectsRes.error) throw projectsRes.error
+      if (tasksRes.data) tasks.value = tasksRes.data.map(dbToTask)
+      if (projectsRes.data) projects.value = projectsRes.data.map(dbToProject)
+    } catch (err) {
+      lastError.value = err.message || 'Failed to load tasks'
+      if (window.Sentry) window.Sentry.captureException(err)
+    } finally {
+      loading.value = false
+    }
   }
 
   // ── Project CRUD ──
   async function addProject(project) {
-    const { data, error } = await supabase.from('projects').insert([await projectToDb(project)]).select().single()
-    if (!error && data) projects.value.unshift(dbToProject(data))
-    return data
+    lastError.value = null
+    try {
+      const { data, error } = await supabase.from('projects').insert([await projectToDb(project)]).select().single()
+      if (error) throw error
+      if (data) projects.value.unshift(dbToProject(data))
+      return data
+    } catch (err) {
+      lastError.value = err.message || 'Failed to add project'
+      if (window.Sentry) window.Sentry.captureException(err)
+      return null
+    }
   }
 
   async function updateProject(idOrProject, maybeData) {
-    // Support both signatures: updateProject(id, data) and updateProject(project)
-    let id, projectData
-    if (maybeData !== undefined) {
-      id = idOrProject
-      projectData = maybeData
-    } else {
-      id = idOrProject.id
-      projectData = idOrProject
-    }
-    const { error } = await supabase.from('projects').update(await projectToDb(projectData)).eq('id', id)
-    if (!error) {
+    lastError.value = null
+    try {
+      let id, projectData
+      if (maybeData !== undefined) {
+        id = idOrProject
+        projectData = maybeData
+      } else {
+        id = idOrProject.id
+        projectData = idOrProject
+      }
+      const { error } = await supabase.from('projects').update(await projectToDb(projectData)).eq('id', id)
+      if (error) throw error
       const idx = projects.value.findIndex(p => p.id === id)
       if (idx > -1) projects.value[idx] = { ...projects.value[idx], ...projectData }
+    } catch (err) {
+      lastError.value = err.message || 'Failed to update project'
+      if (window.Sentry) window.Sentry.captureException(err)
     }
   }
 
   async function deleteProject(id) {
-    await supabase.from('tasks').delete().eq('project_id', id)
-    await supabase.from('projects').delete().eq('id', id)
-    projects.value = projects.value.filter(p => p.id !== id)
-    tasks.value = tasks.value.filter(t => t.projectId !== id)
+    lastError.value = null
+    try {
+      const { error: tasksErr } = await supabase.from('tasks').delete().eq('project_id', id)
+      if (tasksErr) throw tasksErr
+      const { error: projErr } = await supabase.from('projects').delete().eq('id', id)
+      if (projErr) throw projErr
+      projects.value = projects.value.filter(p => p.id !== id)
+      tasks.value = tasks.value.filter(t => t.projectId !== id)
+    } catch (err) {
+      lastError.value = err.message || 'Failed to delete project'
+      if (window.Sentry) window.Sentry.captureException(err)
+    }
   }
 
   // ── Task CRUD ──
   async function addTask(task) {
-    const { data, error } = await supabase.from('tasks').insert([await taskToDb(task)]).select().single()
-    if (!error && data) tasks.value.unshift(dbToTask(data))
-    return data
+    lastError.value = null
+    try {
+      const { data, error } = await supabase.from('tasks').insert([await taskToDb(task)]).select().single()
+      if (error) throw error
+      if (data) tasks.value.unshift(dbToTask(data))
+      return data
+    } catch (err) {
+      lastError.value = err.message || 'Failed to add task'
+      if (window.Sentry) window.Sentry.captureException(err)
+      return null
+    }
   }
 
   async function updateTask(idOrTask, maybeData) {
-    let id, taskData
-    if (maybeData !== undefined) {
-      id = idOrTask
-      taskData = maybeData
-    } else {
-      id = idOrTask.id
-      taskData = idOrTask
-    }
-    const { error } = await supabase.from('tasks').update(await taskToDb(taskData)).eq('id', id)
-    if (!error) {
+    lastError.value = null
+    try {
+      let id, taskData
+      if (maybeData !== undefined) {
+        id = idOrTask
+        taskData = maybeData
+      } else {
+        id = idOrTask.id
+        taskData = idOrTask
+      }
+      const { error } = await supabase.from('tasks').update(await taskToDb(taskData)).eq('id', id)
+      if (error) throw error
       const idx = tasks.value.findIndex(t => t.id === id)
       if (idx > -1) tasks.value[idx] = { ...tasks.value[idx], ...taskData }
+    } catch (err) {
+      lastError.value = err.message || 'Failed to update task'
+      if (window.Sentry) window.Sentry.captureException(err)
     }
   }
 
   async function deleteTask(id) {
-    // Also delete subtasks
-    await supabase.from('tasks').delete().eq('parent_id', id)
-    await supabase.from('tasks').delete().eq('id', id)
-    tasks.value = tasks.value.filter(t => t.id !== id && t.parentId !== id)
+    lastError.value = null
+    try {
+      const { error: subErr } = await supabase.from('tasks').delete().eq('parent_id', id)
+      if (subErr) throw subErr
+      const { error: taskErr } = await supabase.from('tasks').delete().eq('id', id)
+      if (taskErr) throw taskErr
+      tasks.value = tasks.value.filter(t => t.id !== id && t.parentId !== id)
+    } catch (err) {
+      lastError.value = err.message || 'Failed to delete task'
+      if (window.Sentry) window.Sentry.captureException(err)
+    }
   }
 
   async function moveTask(taskId, newStatus) {
-    await updateTask(taskId, { status: newStatus })
+    try {
+      await updateTask(taskId, { status: newStatus })
+    } catch (err) {
+      lastError.value = err.message || 'Failed to move task'
+      if (window.Sentry) window.Sentry.captureException(err)
+    }
   }
 
   // ── Reset ──
   async function resetAll() {
-    const uid = await getCurrentUserId()
-    if (uid) {
-      await supabase.from('tasks').delete().eq('user_id', uid)
-      await supabase.from('projects').delete().eq('user_id', uid)
+    lastError.value = null
+    try {
+      const uid = await getCurrentUserId()
+      if (uid) {
+        const { error: tErr } = await supabase.from('tasks').delete().eq('user_id', uid)
+        if (tErr) throw tErr
+        const { error: pErr } = await supabase.from('projects').delete().eq('user_id', uid)
+        if (pErr) throw pErr
+      }
+      tasks.value = []
+      projects.value = []
+    } catch (err) {
+      lastError.value = err.message || 'Failed to reset tasks'
+      if (window.Sentry) window.Sentry.captureException(err)
     }
-    tasks.value = []
-    projects.value = []
   }
 
   // ── Mappers — COMPLETE with all Smart Matrice fields ──
@@ -224,6 +291,7 @@ export const useTaskStore = defineStore('tasks', () => {
 
   async function taskToDb(t) {
     const user_id = await getCurrentUserId()
+    if (!user_id) throw new Error('User not authenticated')
     const obj = {
       user_id,
       title: t.title || '',
@@ -262,11 +330,12 @@ export const useTaskStore = defineStore('tasks', () => {
 
   async function projectToDb(p) {
     const user_id = await getCurrentUserId()
+    if (!user_id) throw new Error('User not authenticated')
     return { user_id, name: p.name || p.title, color: p.color || '#7c3aed', status: p.status || 'active' }
   }
 
   return {
-    tasks, projects, loading,
+    tasks, projects, loading, lastError,
     tasksByStatus, urgentTasks, overdueTasks,
     predictions,
     loadTasks, addTask, updateTask, deleteTask, moveTask,
