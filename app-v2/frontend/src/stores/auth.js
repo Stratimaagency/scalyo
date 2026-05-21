@@ -98,8 +98,10 @@ else { user.value = null; profile.value = null }
 }
 async function fetchOrgRole(userId) {
   try {
-    const { data } = await supabase.from('organization_members').select('role').eq('user_id', userId).maybeSingle()
-    orgRole.value = data?.role || null
+    const orgId = profile.value?.organization_id
+    if (!orgId) { orgRole.value = null; return }
+    const { data } = await supabase.from('organizations').select('owner_id').eq('id', orgId).maybeSingle()
+    orgRole.value = data?.owner_id === userId ? 'owner' : 'member'
   } catch (e) { console.error('fetchOrgRole:', e) }
 }
 async function fetchProfile(userId) {
