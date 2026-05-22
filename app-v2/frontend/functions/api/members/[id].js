@@ -28,7 +28,7 @@ export async function onRequestDelete(context) {
     if (target.role === 'owner') return errorResponse(403, 'Cannot remove the owner')
 
     await db.remove('organization_members', 'id=eq.' + targetId)
-    await db.update('profiles', 'id=eq.' + target.user_id, { organization_id: null })
+    await db.update('profiles', 'id=eq.' + target.user_id, { organization_id: null, org_role: 'member' })
 
     // Log
     await db.insert('activity_log', {

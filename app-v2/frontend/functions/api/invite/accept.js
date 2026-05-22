@@ -33,6 +33,7 @@ export async function onRequestPost(context) {
     // Update profile with org id
     await db.update('profiles', 'id=eq.' + user.id, {
       organization_id: invitation.organization_id,
+      org_role: invitation.role || 'member',
     })
 
     // Mark invitation as accepted
