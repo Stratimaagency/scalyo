@@ -278,7 +278,7 @@ async function testConnection() {
 // ─── Toggle team permission ───────────────────────────────────
 async function togglePermission(member) {
   const newVal = !member.canSendEmail
-  await supabase.from('team_members')
+  await supabase.from('organization_members')
     .update({ can_send_email: newVal })
     .eq('id', member.id)
   const idx = team.members.findIndex(m => m.id === member.id)

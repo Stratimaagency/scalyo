@@ -10,7 +10,7 @@ const TABLES_TO_EXPORT = [
   'profiles',
   'clients',
   'tasks',
-  'team_members',
+  'organization_members',
   'notifications',
   'playbooks',
   'playbook_executions',

@@ -85,7 +85,15 @@ export const useTeamStore = defineStore('team', () => {
   async function addMember(member) {
     lastError.value = null
     try {
-      const { data, error } = await supabase.from('organization_members').insert([await memberToDb(member)]).select().single()
+      const authStore = useAuthStore()
+      const orgId = authStore.profile?.organization_id
+      if (!orgId) throw new Error('No organization')
+      const { data, error } = await supabase.from('organization_members').insert([{
+        organization_id: orgId,
+        user_id: member.userId,
+        role: member.role || 'member',
+        can_send_email: member.canSendEmail ?? false,
+      }]).select().single()
       if (error) {
         if (error.message?.includes('SEAT_LIMIT_REACHED')) {
           const err = new Error('SEAT_LIMIT_REACHED')
@@ -94,7 +102,7 @@ export const useTeamStore = defineStore('team', () => {
         }
         throw error
       }
-      if (data) members.value.push(dbToMember(data))
+      if (data) await loadMembers()
       return data
     } catch (err) {
       lastError.value = err.message || 'Failed to add member'
@@ -109,7 +117,7 @@ export const useTeamStore = defineStore('team', () => {
   async function updateMember(member) {
     lastError.value = null
     try {
-      const { error } = await supabase.from('organization_members').update(await memberToDb(member)).eq('id', member.id)
+      const { error } = await supabase.from('organization_members').update({ role: member.role || 'member', can_send_email: member.canSendEmail ?? false }).eq('id', member.id)
       if (error) throw error
       const idx = members.value.findIndex(m => m.id === member.id)
       if (idx > -1) members.value[idx] = { ...members.value[idx], ...member }
@@ -123,7 +131,7 @@ export const useTeamStore = defineStore('team', () => {
   async function deleteMember(id) {
     lastError.value = null
     try {
-      const { error } = await supabase.from('organization_members').delete().eq('id', id)
+      const { error } = await supabase.from('organization_members').delete().eq('user_id', id)
       if (error) throw error
       members.value = members.value.filter(m => m.id !== id)
     } catch (err) {
@@ -136,7 +144,7 @@ export const useTeamStore = defineStore('team', () => {
   async function resetAll() {
     lastError.value = null
     try {
-      const { error } = await supabase.from('organization_members').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+      const { error } = await supabase.from('organization_members').delete().eq('organization_id', useAuthStore().profile?.organization_id).neq('user_id', useAuthStore().user?.id)
       if (error) throw error
       members.value = []
     } catch (err) {
@@ -172,14 +180,10 @@ export const useTeamStore = defineStore('team', () => {
     }
   }
 
-  async function memberToDb(m) {
-    const user_id = await getCurrentUserId()
-    if (!user_id) throw new Error('User not authenticated')
+  function memberToDb(m) {
     return {
-      user_id, name: m.name, email: m.email || '', role: m.role || '',
-      wellbeing_score: m.wellbeingScore ?? 75, workload: m.workload ?? 60,
-      client_count: m.clientCount ?? 0, arr_managed: m.arrManaged ?? 0,
-      mood_history: m.moodHistory || [], can_send_email: m.canSendEmail ?? false, updated_at: new Date().toISOString(),
+      role: m.role || 'member',
+      can_send_email: m.canSendEmail ?? false,
     }
   }
 

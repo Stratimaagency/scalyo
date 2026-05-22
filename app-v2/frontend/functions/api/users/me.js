@@ -17,7 +17,7 @@ const TABLES_TO_DELETE = [
   'copils',
   'tasks',
   'clients',
-  'team_members',
+  'organization_members',
   'sent_emails',
   'chat_messages',
   'chat_channels',
