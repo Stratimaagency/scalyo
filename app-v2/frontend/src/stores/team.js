@@ -21,15 +21,15 @@ export const useTeamStore = defineStore('team', () => {
   function calcBurnoutRisk(member) {
     const wl = member.workload || 0
     const wb = member.wellbeingScore || 75
-    if (wl >= 90 && wb < 50) return 'Élevé'
-    if (wl >= 80 || wb < 60) return 'Faible'
-    return 'Aucun'
+    if (wl >= 90 && wb < 50) return 'high'
+    if (wl >= 80 || wb < 60) return 'low'
+    return 'none'
   }
 
   const enrichedMembers = computed(() => members.value.map(m => ({
     ...m,
     burnoutRisk: calcBurnoutRisk(m),
-    statusLabel: (m.workload || 0) >= 90 ? 'En surcharge' : (m.workload || 0) >= 75 ? 'Chargé' : 'En forme',
+    statusLabel: (m.workload || 0) >= 90 ? 'overloaded' : (m.workload || 0) >= 75 ? 'loaded' : 'good',
   })))
 
   // ─── Load ─────────────────────────────────────────────────────
