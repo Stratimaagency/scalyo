@@ -42,10 +42,10 @@ export const useTeamStore = defineStore('team', () => {
       if (!orgId) { members.value = []; return }
       const { data: omData, error } = await supabase
         .from('organization_members')
-        .select('user_id, role, created_at')
+        .select('user_id, role, joined_at')
         .eq('organization_id', orgId)
         .neq('user_id', authStore.user?.id)
-        .order('created_at', { ascending: true })
+        .order('joined_at', { ascending: true })
       if (error) throw error
       if (!omData?.length) { members.value = []; return }
       const userIds = omData.map(m => m.user_id)
