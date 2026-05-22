@@ -3,16 +3,6 @@ import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from './auth'
 
-async function getCurrentUserId() {
-  try {
-    const { data: { user } } = await supabase.auth.getUser()
-    return user?.id
-  } catch (err) {
-    if (window.Sentry) window.Sentry.captureException(err)
-    return null
-  }
-}
-
 export const useTeamStore = defineStore('team', () => {
   const members = ref([])
   const loading = ref(false)
@@ -117,7 +107,7 @@ export const useTeamStore = defineStore('team', () => {
   async function updateMember(member) {
     lastError.value = null
     try {
-      const { error } = await supabase.from('organization_members').update({ role: member.role || 'member', can_send_email: member.canSendEmail ?? false }).eq('id', member.id)
+      const { error } = await supabase.from('organization_members').update({ role: member.role || 'member', can_send_email: member.canSendEmail ?? false }).eq('user_id', member.id)
       if (error) throw error
       const idx = members.value.findIndex(m => m.id === member.id)
       if (idx > -1) members.value[idx] = { ...members.value[idx], ...member }
@@ -153,44 +143,10 @@ export const useTeamStore = defineStore('team', () => {
     }
   }
 
-  // ─── Record mood ──────────────────────────────────────────────
-  async function recordDailyMood(memberId, mood) {
-    lastError.value = null
-    try {
-      const member = members.value.find(m => m.id === memberId)
-      if (!member) return
-      const history = [...(member.moodHistory || []), { date: new Date().toISOString().slice(0, 10), mood }]
-      const { error } = await supabase.from('organization_members').update({ mood_history: history, updated_at: new Date().toISOString() }).eq('id', memberId)
-      if (error) throw error
-      member.moodHistory = history
-    } catch (err) {
-      lastError.value = err.message || 'Failed to record mood'
-      if (window.Sentry) window.Sentry.captureException(err)
-    }
-  }
-
-  // ─── Mappers ──────────────────────────────────────────────────
-  function dbToMember(r) {
-    return {
-      id: r.id, name: r.name, email: r.email || '', role: r.role || '',
-      wellbeingScore: r.wellbeing_score || 75, workload: r.workload || 60,
-      clientCount: r.client_count || 0, arrManaged: r.arr_managed || 0,
-      moodHistory: r.mood_history || [],
-      canSendEmail: r.can_send_email || false,
-    }
-  }
-
-  function memberToDb(m) {
-    return {
-      role: m.role || 'member',
-      can_send_email: m.canSendEmail ?? false,
-    }
-  }
-
   return {
     members, loading, lastError, teamHealthScore, healthyMembers, overloadedMembers,
     totalArrManaged, enrichedMembers,
     seatsUsed, calcBurnoutRisk, loadMembers,
-    addMember, updateMember, deleteMember, resetAll, recordDailyMood,
+    addMember, updateMember, deleteMember, resetAll,
   }
 })
