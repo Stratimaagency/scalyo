@@ -356,6 +356,8 @@ async function handleLogout() {
 
 /* ═══ MAIN CONTENT ═══ */
 .main-content { flex: 1; padding: 24px; max-width: 100%; }
+.main-content:has(.chat-layout) { padding: 0; }
+.chat-layout { height: calc(100vh - var(--topbar-height, 56px)); }
 
 /* ═══ CHAT FAB ═══ */
 .chat-fab { position: fixed; bottom: 24px; right: 24px; width: 52px; height: 52px; border-radius: 50%; background: var(--purple); color: #fff; border: none; font-size: 1.4rem; box-shadow: var(--shadow-lg); z-index: 400; transition: all 0.2s; display: flex; align-items: center; justify-content: center; cursor: pointer; }
