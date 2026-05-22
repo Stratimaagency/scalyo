@@ -44,6 +44,7 @@ export async function onRequestPost(context) {
     await db.update('profiles', 'id=eq.' + userId, {
       organization_id: org.id,
       is_alpha_tester: true,
+      org_role: 'owner',
     })
 
     // Mark promo code as used
