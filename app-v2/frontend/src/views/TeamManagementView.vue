@@ -65,6 +65,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+import { supabase } from '@/lib/supabase'
 import { getAvailableRolesForInvite, canPerform, isRoleAbove } from '@/config/plans.config.js'
 
 const { t } = useI18n({ useScope: 'global' })
@@ -90,7 +91,7 @@ onMounted(() => loadTeam())
 async function loadTeam() {
   loading.value = true
   try {
-    const token = authStore.session?.access_token
+    const token = (await supabase.auth.getSession()).data.session?.access_token
     if (!token) return
     const resp = await fetch('/api/members', { headers: { 'Authorization': 'Bearer ' + token } })
     if (!resp.ok) return
@@ -111,7 +112,7 @@ async function sendInvite() {
   try {
     const resp = await fetch('/api/invite', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authStore.session?.access_token },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (await supabase.auth.getSession()).data.session?.access_token },
       body: JSON.stringify({ email: inviteEmail.value.trim(), role: inviteRole.value })
     })
     const data = await resp.json()
@@ -134,7 +135,7 @@ async function removeMember(m) {
   try {
     await fetch('/api/members/' + m.id, {
       method: 'DELETE',
-      headers: { 'Authorization': 'Bearer ' + authStore.session?.access_token }
+      headers: { 'Authorization': 'Bearer ' + (await supabase.auth.getSession()).data.session?.access_token }
     })
     await loadTeam()
   } catch (e) { console.error('Remove error:', e) }
