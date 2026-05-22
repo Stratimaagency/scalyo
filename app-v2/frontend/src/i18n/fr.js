@@ -1414,6 +1414,18 @@ export default {
   chat_task_title: 'Titre de la tâche',
   chat_task_priority: 'Priorité',
   chat_task_due: 'Échéance',
+    chat_tpl_welcome_label: 'Bienvenue & premiers pas',
+    chat_tpl_welcome_meta: 'Onboarding',
+    chat_tpl_welcome_content: '📧 **Template : Bienvenue & premiers pas**\nObjet : Bienvenue chez [Entreprise] — votre guide de démarrage\nCorps : Bonjour [Prénom], je suis [Votre prénom], votre CSM dédié. Voici vos 3 premières actions...',
+    chat_tpl_qbr_label: 'Invitation QBR trimestriel',
+    chat_tpl_qbr_meta: 'QBR',
+    chat_tpl_qbr_content: '📧 **Template : Invitation QBR**\nObjet : QBR Q2 2026 — [Entreprise]\nCorps : Bonjour [Prénom], je vous propose un bilan trimestriel de 60 min...',
+    chat_tpl_risk_label: 'Relance compte à risque',
+    chat_tpl_risk_meta: 'Risque',
+    chat_tpl_risk_content: '📧 **Template : Relance compte à risque**\nObjet : [Prénom], une question rapide\nCorps : Je voulais m\'assurer que tout se passe bien...',
+    chat_tpl_renewal_label: 'Préparation renouvellement',
+    chat_tpl_renewal_meta: 'Renouvellement',
+    chat_tpl_renewal_content: '📧 **Template : Renouvellement**\nObjet : Renouvellement [Entreprise] — prochaines étapes\nCorps : Votre contrat arrive à échéance dans 30 jours...',
 
   // Auth
   login_title: 'Connexion',

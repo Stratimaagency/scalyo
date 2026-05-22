@@ -398,10 +398,10 @@ function shareItem(type) {
   shareMenuOpen.value = false
   if (type === 'email') {
     sharePickerItems.value = [
-      { id: 'welcome', label: 'Bienvenue & premiers pas', meta: 'Onboarding', content: '📧 **Template : Bienvenue & premiers pas**\nObjet : Bienvenue chez [Entreprise] — votre guide de démarrage\nCorps : Bonjour [Prénom], je suis [Votre prénom], votre CSM dédié. Voici vos 3 premières actions...' },
-      { id: 'qbr', label: 'Invitation QBR trimestriel', meta: 'QBR', content: '📧 **Template : Invitation QBR**\nObjet : QBR Q2 2026 — [Entreprise]\nCorps : Bonjour [Prénom], je vous propose un bilan trimestriel de 60 min...' },
-      { id: 'risk', label: 'Relance compte à risque', meta: 'Risque', content: '📧 **Template : Relance compte à risque**\nObjet : [Prénom], une question rapide\nCorps : Je voulais m\'assurer que tout se passe bien...' },
-      { id: 'renewal', label: 'Préparation renouvellement', meta: 'Renouvellement', content: '📧 **Template : Renouvellement**\nObjet : Renouvellement [Entreprise] — prochaines étapes\nCorps : Votre contrat arrive à échéance dans 30 jours...' },
+      { id: 'welcome', label: t('chat_tpl_welcome_label'), meta: t('chat_tpl_welcome_meta'), content: t('chat_tpl_welcome_content') },
+      { id: 'qbr', label: t('chat_tpl_qbr_label'), meta: t('chat_tpl_qbr_meta'), content: t('chat_tpl_qbr_content') },
+      { id: 'risk', label: t('chat_tpl_risk_label'), meta: t('chat_tpl_risk_meta'), content: t('chat_tpl_risk_content') },
+      { id: 'renewal', label: t('chat_tpl_renewal_label'), meta: t('chat_tpl_renewal_meta'), content: t('chat_tpl_renewal_content') },
     ]
     shareType.value = 'email'
     showSharePicker.value = true
