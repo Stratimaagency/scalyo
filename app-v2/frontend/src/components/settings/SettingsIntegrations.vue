@@ -280,7 +280,7 @@ async function togglePermission(member) {
   const newVal = !member.canSendEmail
   await supabase.from('organization_members')
     .update({ can_send_email: newVal })
-    .eq('id', member.id)
+    .eq('user_id', member.id)
   const idx = team.members.findIndex(m => m.id === member.id)
   if (idx > -1) team.members[idx].canSendEmail = newVal
 }
