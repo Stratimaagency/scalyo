@@ -65,11 +65,10 @@ const beginningArr = computed(() => {
   return past?.arr || null
 })
 
-const currentKpiValues = DATA_SOURCES
 
 // Save snapshot once after clients load — correct arg (kpiValues only)
 watch(() => clients.clients.length, (len) => {
-  if (len > 0) snapStore.saveSnapshot?.(currentKpiValues.value)
+  if (len > 0) snapStore.saveSnapshot?.(DATA_SOURCES.value)
 }, { once: true })
 
 // Catalog-based KPI config (source: kpiCatalog.js)
@@ -90,7 +89,7 @@ return selectedKpis.value.map(id => {
 const cat = catalogMap[id]
 if (!cat) return null
 const catIcon = categoryMap[cat.cat]?.icon || '📊'
-const currentValue = currentKpiValues.value[id] ?? null
+const currentValue = DATA_SOURCES.value[id] ?? null
 const display = formatKpiValue(currentValue, cat.format)
 const lowerIsBetter = !!cat.inverse
 const change = currentValue != null ? snapStore.calcChange(id, currentValue, snapStore.comparePeriod, lowerIsBetter) : null
