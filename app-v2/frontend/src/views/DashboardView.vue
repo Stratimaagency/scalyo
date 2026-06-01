@@ -15,7 +15,7 @@
 </div>
 
 <DashQuickActions />
-<KpiCustomizer :open="customizerOpen" :selected="selectedKpis" @close="customizerOpen = false" @update:selected="selectedKpis = $event" />
+<KpiCustomizer :open="customizerOpen" page-id="dashboard" :defaults="defaultKpis" v-model="selectedKpis" @close="customizerOpen = false" />
 </template>
 </div>
 </template>
