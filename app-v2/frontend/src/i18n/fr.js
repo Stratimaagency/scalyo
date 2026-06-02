@@ -46,6 +46,10 @@ export default {
   topbar_notifications: 'Notifications',
   topbar_mark_all_read: 'Tout marquer comme lu',
   topbar_no_notifications: 'Aucune notification',
+  notif_just_now: 'A l\'instant',
+  notif_minutes_ago: 'Il y a {n} min',
+  notif_hours_ago: 'Il y a {n}h',
+  notif_days_ago: 'Il y a {n}j',
 
   // Common
   save: 'Enregistrer',

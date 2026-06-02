@@ -43,6 +43,10 @@ export default {
   topbar_notifications: 'Notifications',
   topbar_mark_all_read: 'Mark all as read',
   topbar_no_notifications: 'No notifications',
+  notif_just_now: 'Just now',
+  notif_minutes_ago: '{n} min ago',
+  notif_hours_ago: '{n}h ago',
+  notif_days_ago: '{n}d ago',
 
   save: 'Save', cancel: 'Cancel', close: 'Close', delete: 'Delete', edit: 'Edit', add: 'Add',
   search: 'Search', filter: 'Filter', export: 'Export', import: 'Import', create: 'Create',

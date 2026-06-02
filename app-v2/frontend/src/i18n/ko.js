@@ -44,6 +44,10 @@ export default {
   topbar_notifications: '알림',
   topbar_mark_all_read: '모두 읽음 표시',
   topbar_no_notifications: '알림 없음',
+  notif_just_now: '방금',
+  notif_minutes_ago: '{n}분 전',
+  notif_hours_ago: '{n}시간 전',
+  notif_days_ago: '{n}일 전',
 
   save: '저장',
   search: '검색',
