@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
-import { askScalyoAI } from '@/utils/askScalyoAI'
 
 export const useNotificationStore = defineStore('notifications', () => {
   const notifications = ref([])
@@ -11,42 +10,45 @@ export const useNotificationStore = defineStore('notifications', () => {
   const unreadCount = computed(() => notifications.value.filter(n => !n.read).length)
 
   async function loadNotifications() {
-    const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .order('created_at', { ascending: false })
-    if (!error && data) {
-      notifications.value = data
-      enrichWithAI()
-    }
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .order('created_at', { ascending: false })
+      if (!error && data) {
+        notifications.value = data
+      }
+    } catch (e) { console.error('loadNotifications:', e) }
   }
-
   async function markRead(id) {
-    const n = notifications.value.find(n => n.id === id)
-    if (!n) return
-    n.read = true
-    const { error: readErr } = await supabase.from('notifications').update({ read: true }).eq('id', id)
-      if (readErr) throw readErr
+    try {
+      const n = notifications.value.find(n => n.id === id)
+      if (!n) return
+      n.read = true
+      const { data, error } = await supabase.from('notifications').update({ read: true }).eq('id', id)
+      if (error) console.error('markRead:', error)
+    } catch (e) { console.error('markRead:', e) }
   }
-
   async function markAllRead() {
-    notifications.value.forEach(n => n.read = true)
-    const ids = notifications.value.map(n => n.id)
-    if (ids.length) {
-      const { error: bulkErr } = await supabase.from('notifications').update({ read: true }).in('id', ids)
-      if (bulkErr) throw bulkErr
-    }
+    try {
+      notifications.value.forEach(n => n.read = true)
+      const ids = notifications.value.map(n => n.id)
+      if (ids.length) {
+        const { data, error } = await supabase.from('notifications').update({ read: true }).in('id', ids)
+        if (error) console.error('markAllRead:', error)
+      }
+    } catch (e) { console.error('markAllRead:', e) }
   }
-
   async function clearAll() {
-    const ids = notifications.value.map(n => n.id)
-    notifications.value = []
-    if (ids.length) {
-      const { error: delErr } = await supabase.from('notifications').delete().in('id', ids)
-      if (delErr) throw delErr
-    }
+    try {
+      const ids = notifications.value.map(n => n.id)
+      notifications.value = []
+      if (ids.length) {
+        const { data, error } = await supabase.from('notifications').delete().in('id', ids)
+        if (error) console.error('clearAll:', error)
+      }
+    } catch (e) { console.error('clearAll:', e) }
   }
-
   async function generateFromData(clients, tasks, teamMembers) {
     // Load current notifications from Supabase
     const { data: current } = await supabase
@@ -164,28 +166,9 @@ export const useNotificationStore = defineStore('notifications', () => {
     }
   }
 
-  async function enrichWithAI(lang) {
-    if (enriched.value) return
-    const unread = notifications.value.filter(n => !n.read).slice(0, 10)
-    if (!unread.length) return
-    try {
-      const result = await askScalyoAI({
-        module: 'notif',
-        message: 'Enrichis ces alertes avec des recommandations',
-        context: { notifications: unread.map(n => ({ type: n.type, title: n.title, body: n.body })) },
-        lang: lang || 'fr',
-      })
-      const text = result.response || result.reply || result.content || ''
-      unread.forEach((n, i) => { enrichments.value[n.id] = text })
-      enriched.value = true
-    } catch { /* silent — enrichment is optional */ }
-  }
 
   return {
     notifications, unreadCount,
     markRead, markAllRead, clearAll, generateFromData, loadNotifications,
-    enrichWithAI,
-    enrichments,
-    enriched,
   }
 }, { persist: false })

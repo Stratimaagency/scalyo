@@ -78,7 +78,7 @@
                     <div class="notif-content">
                       <strong>{{ n.title }}</strong>
                       <p>{{ n.body }}</p>
-                      <span class="notif-time">{{ fmtNotifDate(n.createdAt) }}</span>
+                      <span class="notif-time">{{ fmtNotifDate(n.created_at) }}</span>
                     </div>
                     <span v-if="!n.read" class="notif-unread-dot" />
                   </div>
@@ -177,15 +177,15 @@ function fmtNotifDate(iso) {
   const d = new Date(iso)
   const now = new Date()
   const diffMin = Math.round((now - d) / 60000)
-  if (diffMin < 2) return "à l'instant"
-  if (diffMin < 60) return `il y a ${diffMin} min`
+  if (diffMin < 2) return t('notif_just_now')
+  if (diffMin < 60) return t('notif_minutes_ago', { n: diffMin })
   const diffH = Math.round(diffMin / 60)
-  if (diffH < 24) return `il y a ${diffH}h`
+  if (diffH < 24) return t('notif_hours_ago', { n: diffH })
   const diffD = Math.round(diffH / 24)
-  if (diffD < 7) return `il y a ${diffD}j`
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+  if (diffD < 7) return t('notif_days_ago', { n: diffD })
+  const loc = locale.value === 'ko' ? 'ko-KR' : locale.value === 'en' ? 'en-GB' : 'fr-FR'
+  return d.toLocaleDateString(loc, { day: 'numeric', month: 'short' })
 }
-
 // ─── Sidebar ───────────────────────────────────────────────────────────────────
 function isActiveGroup(item) {
   return item.children?.some(c => route.name === c.name) || route.name === item.name
@@ -283,6 +283,8 @@ onMounted(async () => {
     const { useTaskStore } = await import('@/stores/tasks')
     const cs = useClientStore(); const ts = useTeamStore(); const tk = useTaskStore()
     await Promise.all([cs.loadClients(), ts.loadMembers(), tk.loadTasks()])
+    await notifications.loadNotifications()
+    notifications.generateFromData(cs.clients, tk.tasks, ts.members)
   } catch(e) { console.error('AppLayout loadStores:', e) }
 })
 
