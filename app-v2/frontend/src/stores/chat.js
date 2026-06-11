@@ -27,6 +27,7 @@ let realtimeSub = null
 let realtimeRetryCount = 0
 let realtimeRetryTimer = null
 let lastSendTime = 0
+let realtimeGaveUpListener = null
 
 const activeMessages = computed(() => activeChannel.value ? (messages.value[activeChannel.value] || []) : [])
 const pinnedMessages = computed(() => activeMessages.value.filter(m => m.pinned))
@@ -176,6 +177,18 @@ function scheduleRealtimeReconnect() {
   if (realtimeRetryCount >= MAX_REALTIME_RETRIES) {
     console.error('Chat realtime — max retries reached, giving up')
     connected.value = false
+    if (realtimeSub) { try { realtimeSub.unsubscribe() } catch (_) {} realtimeSub = null }
+    if (!realtimeGaveUpListener) {
+      realtimeGaveUpListener = () => {
+        if (document.visibilityState === 'visible') {
+          document.removeEventListener('visibilitychange', realtimeGaveUpListener)
+          realtimeGaveUpListener = null
+          realtimeRetryCount = 0
+          subscribeRealtime()
+        }
+      }
+      document.addEventListener('visibilitychange', realtimeGaveUpListener)
+    }
     return
   }
   const delay = REALTIME_RECONNECT_DELAYS[Math.min(realtimeRetryCount, REALTIME_RECONNECT_DELAYS.length - 1)]
@@ -190,6 +203,7 @@ function scheduleRealtimeReconnect() {
 function destroy() {
   if (realtimeSub) { try { realtimeSub.unsubscribe() } catch (_) {} realtimeSub = null }
   if (realtimeRetryTimer) { clearTimeout(realtimeRetryTimer); realtimeRetryTimer = null }
+  if (realtimeGaveUpListener) { document.removeEventListener('visibilitychange', realtimeGaveUpListener); realtimeGaveUpListener = null }
   connected.value = false
   realtimeRetryCount = 0
 }
