@@ -317,9 +317,10 @@ const copilId = ref(props.id || route.params.id || null)
 
 const meta = reactive({ title: '', subtitle: '', clientName: '', period: '', presenter: '', color: '#7c3aed' })
 
-onMounted(() => {
+onMounted(async () => {
   if (!copilId.value) {
-    const id = store.createCopil()
+    const id = await store.createCopil()
+    if (!id) { console.error('[kpis] copil creation failed — redirecting back'); router.replace('/app/kpis'); return }
     copilId.value = id
     router.replace('/app/kpis/' + id)
   }
