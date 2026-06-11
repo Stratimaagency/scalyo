@@ -1,6 +1,6 @@
 <template>
-  <ErrorBoundary>
   <div class="chat-layout">
+  <ErrorBoundary>
     <!-- Sidebar: channel list -->
     <aside class="chat-sidebar">
       <div class="chat-sidebar-header">
@@ -97,8 +97,8 @@
         </div>
       </template>
     </main>
-  </div>
   </ErrorBoundary>
+  </div>
 </template>
 
 <script setup>
