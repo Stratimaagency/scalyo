@@ -105,9 +105,11 @@
 
       <!-- CONTENT -->
       <main class="main-content">
-        <router-view v-slot="{ Component }">
+        <router-view v-slot="{ Component, route }">
           <transition name="fade" mode="out-in">
-            <component :is="Component" />
+            <div :key="route.fullPath" class="route-shell">
+              <component :is="Component" />
+            </div>
           </transition>
         </router-view>
       </main>
@@ -357,6 +359,7 @@ async function handleLogout() {
 
 /* ═══ MAIN CONTENT ═══ */
 .main-content { flex: 1; padding: 24px; max-width: 100%; }
+.route-shell { width: 100%; }
 .main-content:has(.chat-layout) { padding: 0; }
 .chat-layout { height: calc(100vh - var(--topbar-height, 56px)); }
 
