@@ -47,8 +47,9 @@ const trialUsed = computed(() => !!profile.value?.trial_used)
 const trialDaysLeft = computed(() => { if (!trialStartedAt.value) return 0; const elapsed = (Date.now() - trialStartedAt.value.getTime()) / (1000 * 60 * 60 * 24); return Math.max(0, TRIAL_DAYS - Math.floor(elapsed)) })
 const isOnTrial = computed(() => { if (hasActiveSubscription.value) return false; if (!trialStartedAt.value) return false; if (trialUsed.value) return false; return trialDaysLeft.value > 0 })
 const trialExpired = computed(() => { if (hasActiveSubscription.value) return false; if (isOnTrial.value) return false; if (!trialStartedAt.value && !trialUsed.value) return false; if (trialStartedAt.value && trialDaysLeft.value === 0) return true; if (trialUsed.value) return true; return false })
-const needsPayment = computed(() => trialExpired.value && !hasActiveSubscription.value)
-const currentPlan = computed(() => { const sub = profile.value?.stripe_subscription_id; if (!sub || sub === '' || sub === 'none') { if (isOnTrial.value && profile.value?.plan) return profile.value.plan; return null }; if (sub.startsWith('stripe_') || sub.startsWith('plan_')) return sub.split('_').pop(); return profile.value?.plan || 'active' })
+const isAlphaTester = computed(() => !!profile.value?.is_alpha_tester)
+const needsPayment = computed(() => trialExpired.value && !hasActiveSubscription.value && !isAlphaTester.value)
+const currentPlan = computed(() => { const sub = profile.value?.stripe_subscription_id; if (!sub || sub === '' || sub === 'none') { if ((isOnTrial.value || isAlphaTester.value) && profile.value?.plan) return profile.value.plan; return null }; if (sub.startsWith('stripe_') || sub.startsWith('plan_')) return sub.split('_').pop(); return profile.value?.plan || 'active' })
 const userLocale = computed(() => profile.value?.locale || 'fr')
 const seatsPaid = computed(() => profile.value?.seats_paid || 1)
 const onboardingCompleted = computed(() => profile.value?.onboarding_completed === true)
@@ -168,7 +169,7 @@ try { const { error } = await supabase.auth.resetPasswordForEmail(email, { redir
 return {
 user, profile, loading, error,
 isAuthenticated, fullName, greeting,
-hasActiveSubscription, isOnTrial, trialExpired, trialDaysLeft, trialUsed, needsPayment,
+hasActiveSubscription, isOnTrial, trialExpired, trialDaysLeft, trialUsed, needsPayment, isAlphaTester,
 userLocale, currentPlan, seatsPaid, onboardingCompleted, orgRole, isOrgOwner,
 init, login, register, logout, clearAllStores, saveLocale, fetchProfile, resetPassword
 }
