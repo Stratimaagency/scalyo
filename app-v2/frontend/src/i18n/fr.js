@@ -133,6 +133,7 @@ export default {
   period_7d: '7 jours',
   period_30d: '30 jours',
   period_90d: '90 jours',
+  task_all: 'Toutes',
   task_in_progress: 'En cours',
   task_todo: 'À faire',
   task_blocked: 'Bloqué',

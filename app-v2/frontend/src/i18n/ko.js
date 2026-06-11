@@ -94,6 +94,7 @@ export default {
   period_7d: '7일',
   period_30d: '30일',
   period_90d: '90일',
+  task_all: '전체',
   task_in_progress: '진행 중',
   task_todo: '할 일',
   task_blocked: '차단됨',
