@@ -39,6 +39,15 @@ export const useNotificationStore = defineStore('notifications', () => {
       }
     } catch (e) { console.error('markAllRead:', e) }
   }
+  async function markTypeRead(type) {
+    try {
+      const targets = notifications.value.filter(n => (n.type || 'other') === type && !n.read)
+      if (!targets.length) return
+      targets.forEach(n => { n.read = true })
+      const { data, error } = await supabase.from('notifications').update({ read: true }).in('id', targets.map(n => n.id))
+      if (error) console.error('markTypeRead:', error)
+    } catch (e) { console.error('markTypeRead:', e) }
+  }
   async function clearAll() {
     try {
       const ids = notifications.value.map(n => n.id)
@@ -169,6 +178,6 @@ export const useNotificationStore = defineStore('notifications', () => {
 
   return {
     notifications, unreadCount,
-    markRead, markAllRead, clearAll, generateFromData, loadNotifications,
+    markRead, markAllRead, markTypeRead, clearAll, generateFromData, loadNotifications,
   }
 }, { persist: false })
