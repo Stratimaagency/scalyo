@@ -7,7 +7,7 @@
       :title="t('ai_matrice_title')"
       :button-label="t('ai_matrice_btn')"
       :message="t('ai_matrice_prompt')"
-      :context="{ tasks: taskStore.tasks?.map(t => ({ title: t.title, priority: t.priority, status: t.status, dueDate: t.dueDate })) || [] }"
+      :context="{ tasks: tasks.tasks?.map(t => ({ title: t.title, priority: t.priority, status: t.status, dueDate: t.dueDate })) || [] }"
     />
 
     <!-- Unclassified -->

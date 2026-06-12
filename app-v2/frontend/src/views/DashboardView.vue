@@ -15,7 +15,7 @@
 </div>
 
 <DashQuickActions />
-<KpiCustomizer :open="customizerOpen" :selected="selectedKpis" @close="customizerOpen = false" @update:selected="selectedKpis = $event" />
+<KpiCustomizer :open="customizerOpen" page-id="dashboard" :defaults="defaultKpis" v-model="selectedKpis" @close="customizerOpen = false" />
 </template>
 </div>
 </template>
@@ -27,6 +27,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useClientStore } from '@/stores/clients'
 import { useTaskStore } from '@/stores/tasks'
 import { useSnapshotStore } from '@/stores/snapshots'
+import { KPI_CATALOG, KPI_CATEGORIES } from '@/data/kpiCatalog'
 import KpiCustomizer from '@/components/KpiCustomizer.vue'
 import DashHeader from '@/components/dashboard/DashHeader.vue'
 import DashKpiSection from '@/components/dashboard/DashKpiSection.vue'
@@ -64,48 +65,52 @@ const beginningArr = computed(() => {
   return past?.arr || null
 })
 
-const currentKpiValues = computed(() => ({
+
+// Save snapshot once after clients load — correct arg (kpiValues only)
+watch(() => clients.clients.length, (len) => {
+  if (len > 0) snapStore.saveSnapshot?.(DATA_SOURCES.value)
+}, { once: true })
+
+// Catalog-based KPI config (source: kpiCatalog.js)
+const catalogMap = Object.fromEntries(KPI_CATALOG.map(k => [k.id, k]))
+const categoryMap = Object.fromEntries(KPI_CATEGORIES.map(c => [c.id, c]))
+const DATA_SOURCES = computed(() => ({
   arr: clients.totalArr,
   health_score: clients.avgHealth,
   churn_rate: clients.getChurnRate(currentPeriodDays.value),
   nps: clients.avgNps,
   nrr: clients.getNrr(beginningArr.value, currentPeriodDays.value),
-  active_users: clients.activeCount
+  active_users: clients.activeCount,
 }))
-
-// Save snapshot once after clients load — correct arg (kpiValues only)
-watch(() => clients.clients.length, (len) => {
-  if (len > 0) snapStore.saveSnapshot?.(currentKpiValues.value)
-}, { once: true })
-
-const KPI_CONFIG = {
-  arr: { icon: '💰', format: 'currency', lowerIsBetter: false, warnBelow: null, warnAbove: null },
-  health_score: { icon: '💚', format: 'decimal', lowerIsBetter: false, warnBelow: 5, warnAbove: null },
-  churn_rate: { icon: '📉', format: 'percent', lowerIsBetter: true, warnBelow: null, warnAbove: 10 },
-  nps: { icon: '⭐', format: 'integer', lowerIsBetter: false, warnBelow: 30, warnAbove: null },
-  nrr: { icon: '🔄', format: 'percent', lowerIsBetter: false, warnBelow: 85, warnAbove: null },
-  active_users: { icon: '👥', format: 'integer', lowerIsBetter: false, warnBelow: null, warnAbove: null }
-}
+const WARN_RULES = { health_score: { below: 5 }, churn_rate: { above: 10 }, nps: { below: 30 }, nrr: { below: 85 } }
 
 const visibleKpis = computed(() => {
-  return selectedKpis.value.map(id => {
-    const config = KPI_CONFIG[id]
-    if (!config) return null
-    const currentValue = currentKpiValues.value[id]
-    const display = formatKpiValue(currentValue, config.format)
-    const change = snapStore.calcChange(id, currentValue, snapStore.comparePeriod, config.lowerIsBetter)
-    const warn = config.warnAbove != null ? currentValue > config.warnAbove : config.warnBelow != null ? currentValue < config.warnBelow : false
-    return { id, icon: config.icon, display, warn, change: change?.value ?? null, changeLabel: change?.label ?? '', changeClass: change?.class ?? 'neutral' }
-  }).filter(Boolean)
+return selectedKpis.value.map(id => {
+const cat = catalogMap[id]
+if (!cat) return null
+const catIcon = categoryMap[cat.cat]?.icon || '📊'
+const currentValue = DATA_SOURCES.value[id] ?? null
+const display = formatKpiValue(currentValue, cat.format)
+const lowerIsBetter = !!cat.inverse
+const change = currentValue != null ? snapStore.calcChange(id, currentValue, snapStore.comparePeriod, lowerIsBetter) : null
+const rule = WARN_RULES[id]
+const warn = rule && currentValue != null ? (rule.above != null ? currentValue > rule.above : rule.below != null ? currentValue < rule.below : false) : false
+const label = locale.value === 'en' ? (cat.labelEN || cat.label) : locale.value === 'ko' ? (cat.labelKO || cat.label) : cat.label
+return { id, icon: catIcon, label, display, warn, change: change?.value ?? null, changeLabel: change?.label ?? '', changeClass: change?.class ?? 'neutral' }
+}).filter(Boolean)
 })
 
 function formatKpiValue(v, format) {
-  if (v == null) return '\u2014'
-  const loc = LOCALE_MAP[locale.value] || 'fr-FR'
-  if (format === 'currency') { const cur = locale.value === 'ko' ? 'KRW' : 'EUR'; return new Intl.NumberFormat(loc, { style: 'currency', currency: cur, maximumFractionDigits: 0 }).format(v) }
-  if (format === 'percent') return new Intl.NumberFormat(loc, { maximumFractionDigits: 1 }).format(v) + '%'
-  if (format === 'decimal') return new Intl.NumberFormat(loc, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(v)
-  return String(v)
+if (v == null) return '\u2014'
+const loc = LOCALE_MAP[locale.value] || 'fr-FR'
+if (format === 'currency') { const cur = locale.value === 'ko' ? 'KRW' : 'EUR'; return new Intl.NumberFormat(loc, { style: 'currency', currency: cur, maximumFractionDigits: 0 }).format(v) }
+if (format === 'percentage' || format === 'percent') return new Intl.NumberFormat(loc, { maximumFractionDigits: 1 }).format(v) + '%'
+if (format === 'score' || format === 'decimal') return new Intl.NumberFormat(loc, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(v)
+if (format === 'ratio') return new Intl.NumberFormat(loc, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(v) + 'x'
+if (format === 'days') return String(Math.round(v)) + 'j'
+if (format === 'hours') return new Intl.NumberFormat(loc, { maximumFractionDigits: 1 }).format(v) + 'h'
+if (format === 'number' || format === 'integer') return new Intl.NumberFormat(loc, { maximumFractionDigits: 0 }).format(v)
+return String(v)
 }
 
 const circumference = (2 * Math.PI * 52).toFixed(1)

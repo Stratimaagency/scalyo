@@ -68,19 +68,19 @@
                 </div>
                 <div class="notif-list">
                   <div
-                    v-for="n in notifications.notifications"
-                    :key="n.id"
+                    v-for="g in groupedNotifications"
+                    :key="g.type"
                     class="notif-item"
-                    :class="{ unread: !n.read }"
-                    @click="onNotifClick(n)"
+                    :class="{ unread: g.unread > 0 }"
+                    @click="onNotifGroupClick(g)"
                   >
-                    <span class="notif-icon">{{ n.icon }}</span>
+                    <span class="notif-icon">{{ g.icon }}</span>
                     <div class="notif-content">
-                      <strong>{{ n.title }}</strong>
-                      <p>{{ n.body }}</p>
-                      <span class="notif-time">{{ fmtNotifDate(n.createdAt) }}</span>
+                      <strong>{{ g.label }}</strong>
+                      <p>{{ g.latest.body }}</p>
+                      <span class="notif-time">{{ fmtNotifDate(g.latest.created_at) }}</span>
                     </div>
-                    <span v-if="!n.read" class="notif-unread-dot" />
+                    <span v-if="g.unread" class="notif-badge-mini">{{ g.unread }}</span>
                   </div>
                   <div v-if="!notifications.notifications.length" class="notif-empty">{{ t('topbar_no_notifications') }}</div>
                 </div>
@@ -105,9 +105,11 @@
 
       <!-- CONTENT -->
       <main class="main-content">
-        <router-view v-slot="{ Component }">
+        <router-view v-slot="{ Component, route }">
           <transition name="fade" mode="out-in">
-            <component :is="Component" />
+            <div :key="route.fullPath" class="route-shell">
+              <component :is="Component" />
+            </div>
           </transition>
         </router-view>
       </main>
@@ -166,6 +168,30 @@ const notifRef = ref(null)
 onClickOutside(notifRef, () => { notifOpen.value = false })
 
 
+const NOTIF_GROUP_KEYS = { nps_drop: 'notif_group_nps_drop', churn_risk: 'notif_group_churn_risk', renewal: 'notif_group_renewal', task_overdue: 'notif_group_task_overdue' }
+
+const groupedNotifications = computed(() => {
+  const groups = {}
+  for (const n of notifications.notifications) {
+    const k = n.type || 'other'
+    if (!groups[k]) groups[k] = { type: k, icon: n.icon, count: 0, unread: 0, latest: n }
+    groups[k].count++
+    if (!n.read) groups[k].unread++
+    if (new Date(n.created_at) > new Date(groups[k].latest.created_at)) groups[k].latest = n
+  }
+  return Object.values(groups).map(g => ({
+    ...g,
+    label: g.count === 1
+      ? g.latest.title
+      : (NOTIF_GROUP_KEYS[g.type] ? t(NOTIF_GROUP_KEYS[g.type], { count: g.count }) : g.latest.title + ' (+' + (g.count - 1) + ')')
+  })).sort((a, b) => new Date(b.latest.created_at) - new Date(a.latest.created_at))
+})
+
+async function onNotifGroupClick(g) {
+  if (g.count === 1) { onNotifClick(g.latest); return }
+  try { await notifications.markTypeRead(g.type) } catch (e) { console.error('[notif] markTypeRead:', e.message || e) }
+}
+
 function onNotifClick(n) {
   notifications.markRead(n.id)
   notifOpen.value = false
@@ -177,15 +203,15 @@ function fmtNotifDate(iso) {
   const d = new Date(iso)
   const now = new Date()
   const diffMin = Math.round((now - d) / 60000)
-  if (diffMin < 2) return "à l'instant"
-  if (diffMin < 60) return `il y a ${diffMin} min`
+  if (diffMin < 2) return t('notif_just_now')
+  if (diffMin < 60) return t('notif_minutes_ago', { n: diffMin })
   const diffH = Math.round(diffMin / 60)
-  if (diffH < 24) return `il y a ${diffH}h`
+  if (diffH < 24) return t('notif_hours_ago', { n: diffH })
   const diffD = Math.round(diffH / 24)
-  if (diffD < 7) return `il y a ${diffD}j`
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+  if (diffD < 7) return t('notif_days_ago', { n: diffD })
+  const loc = locale.value === 'ko' ? 'ko-KR' : locale.value === 'en' ? 'en-GB' : 'fr-FR'
+  return d.toLocaleDateString(loc, { day: 'numeric', month: 'short' })
 }
-
 // ─── Sidebar ───────────────────────────────────────────────────────────────────
 function isActiveGroup(item) {
   return item.children?.some(c => route.name === c.name) || route.name === item.name
@@ -283,6 +309,8 @@ onMounted(async () => {
     const { useTaskStore } = await import('@/stores/tasks')
     const cs = useClientStore(); const ts = useTeamStore(); const tk = useTaskStore()
     await Promise.all([cs.loadClients(), ts.loadMembers(), tk.loadTasks()])
+    await notifications.loadNotifications()
+    notifications.generateFromData(cs.clients, tk.tasks, ts.members)
   } catch(e) { console.error('AppLayout loadStores:', e) }
 })
 
@@ -352,9 +380,11 @@ async function handleLogout() {
 .notif-time { font-size: 0.68rem; color: var(--text-muted); margin-top: 3px; display: block; }
 .notif-unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--purple); flex-shrink: 0; margin-top: 6px; }
 .notif-empty { padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+.notif-badge-mini { min-width: 18px; height: 18px; border-radius: 9px; background: var(--purple); color: #fff; font-size: 0.7rem; font-weight: 600; display: flex; align-items: center; justify-content: center; padding: 0 5px; flex-shrink: 0; margin-top: 4px; }
 
 /* ═══ MAIN CONTENT ═══ */
 .main-content { flex: 1; padding: 24px; max-width: 100%; }
+.route-shell { width: 100%; }
 .main-content:has(.chat-layout) { padding: 0; }
 .chat-layout { height: calc(100vh - var(--topbar-height, 56px)); }
 

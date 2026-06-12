@@ -1,6 +1,6 @@
 <template>
-  <ErrorBoundary>
   <div class="chat-layout">
+  <ErrorBoundary>
     <!-- Sidebar: channel list -->
     <aside class="chat-sidebar">
       <div class="chat-sidebar-header">
@@ -30,7 +30,7 @@
 
     <!-- Main: messages -->
     <div v-if="chatStore.lastError" class="chat-error-toast">
-        <span>{{ chatStore.lastError }}</span>
+        <span>{{ chatStore.lastError ? t('chat_err_' + chatStore.lastError) : '' }}</span>
         <button @click="chatStore.clearError()" class="btn-ghost">✕</button>
       </div>
       <main class="chat-main">
@@ -67,7 +67,7 @@
             <p class="message-content">{{ msg.content }}</p>
             <div v-if="msg.reactions && msg.reactions.length" class="message-reactions">
               <span v-for="(r, ri) in msg.reactions" :key="ri" class="reaction" @click="handleReaction(msg.id, r.emoji)">
-                {{ r.emoji }} {{ r.count }}
+                {{ r.emoji }} {{ r.users?.length || 0 }}
               </span>
             </div>
             <div class="message-actions">
@@ -97,8 +97,8 @@
         </div>
       </template>
     </main>
-  </div>
   </ErrorBoundary>
+  </div>
 </template>
 
 <script setup>
@@ -140,7 +140,6 @@ function formatTime(ts) {
 async function handleSend() {
   const content = newMessage.value.trim()
   if (!content) return
-  sending.value = true
   try {
     await chatStore.sendMessage(chatStore.activeChannel, content)
     newMessage.value = ''
@@ -148,7 +147,6 @@ async function handleSend() {
     scrollToBottom()
   } catch (e) {
     console.error('Chat send failed:', e.message || e)
-  } finally {
   }
 }
 

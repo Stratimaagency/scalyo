@@ -30,7 +30,7 @@
       >
         <span class="kpi-icon">{{ kpi.icon }}</span>
         <div class="kpi-value">{{ kpi.display }}</div>
-        <div class="kpi-label">{{ t('kpi_' + kpi.id) }}</div>
+        <div class="kpi-label">{{ kpi.label }}</div>
         <div v-if="kpi.change !== null" class="kpi-change" :class="kpi.changeClass">
           {{ kpi.changeLabel }}
         </div>
