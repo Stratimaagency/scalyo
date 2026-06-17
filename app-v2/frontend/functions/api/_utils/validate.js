@@ -1,6 +1,6 @@
 const VALID_MODULES = [
   'coach', 'nova', 'import', 'matrice', 'copil',
-  'playbook', 'email', 'dashboard', 'notif',
+  'playbook', 'email', 'dashboard', 'notif', 'wellbeing',
 ]
 
 const MAX_MESSAGE_LENGTH = 4000
