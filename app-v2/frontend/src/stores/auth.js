@@ -34,6 +34,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const TRIAL_DAYS = 14
 export const useAuthStore = defineStore('auth', () => {
 const user = ref(null)
+const session = ref(null)
 const profile = ref(null)
 const orgRole = ref(null)
 const loading = ref(false)
@@ -54,6 +55,19 @@ const userLocale = computed(() => profile.value?.locale || 'fr')
 const seatsPaid = computed(() => profile.value?.seats_paid || 1)
 const onboardingCompleted = computed(() => profile.value?.onboarding_completed === true)
 const isOrgOwner = computed(() => orgRole.value === 'owner')
+const company = computed(() => {
+  if (!profile.value) return null
+  return {
+    name: profile.value.company_name || '',
+    planLabel: currentPlan.value ? currentPlan.value.charAt(0).toUpperCase() + currentPlan.value.slice(1) : 'Starter',
+    country: profile.value.country || 'FR',
+    }
+})
+const displayName = computed(() => fullName.value)
+const roleLabel = computed(() => {
+  const map = { owner: 'Owner', admin: 'Admin', member: 'Member', viewer: 'Viewer' }
+  return map[orgRole.value] || 'User'
+  })
 function clearAllStores() {
 const keys = ['scalyo_clients','scalyo_tasks','scalyo_team','scalyo_projects','scalyo_kpis','scalyo_playbooks','scalyo_snapshots','scalyo_okr','scalyo_roadmap','scalyo_quotes','scalyo_dashboard_kpis']
 keys.forEach(k => localStorage.removeItem(k))
@@ -79,6 +93,7 @@ if (sessionError) { console.error('Auth init session error:', sessionError.messa
 const session = data?.session
 if (session && session.user) {
 user.value = session.user
+session.value = session
 await fetchProfile(session.user.id)
 await loadAllStores()
 }
@@ -92,8 +107,8 @@ loading.value = false
 }
 supabase.auth.onAuthStateChange(async (_event, session) => {
 try {
-if (session && session.user) { user.value = session.user; await fetchProfile(session.user.id) }
-else { user.value = null; profile.value = null }
+if (session && session.user) { user.value = session.user; session.value = session; await fetchProfile(session.user.id) }
+else { user.value = null; profile.value = null; session.value = null }
 } catch (e) { console.error('Auth state change error:', e.message || e) }
 })
 }
@@ -161,7 +176,7 @@ try { const { error: err } = await supabase.from('profiles').update({ locale }).
 }
 async function logout() {
 try { clearAllStores(); await clearAllStoreData(); await supabase.auth.signOut() } catch (e) {}
-finally { user.value = null; profile.value = null; loading.value = false; error.value = null }
+finally { user.value = null; profile.value = null; session.value = null; loading.value = false; error.value = null }
 }
 async function resetPassword(email) {
 try { const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password-confirm` }); if (error) return { error }; return { success: true } } catch (error) { return { error } }
@@ -171,6 +186,7 @@ user, profile, loading, error,
 isAuthenticated, fullName, greeting,
 hasActiveSubscription, isOnTrial, trialExpired, trialDaysLeft, trialUsed, needsPayment, isAlphaTester,
 userLocale, currentPlan, seatsPaid, onboardingCompleted, orgRole, isOrgOwner,
+session, company, displayName, roleLabel,
 init, login, register, logout, clearAllStores, saveLocale, fetchProfile, resetPassword
 }
 })
