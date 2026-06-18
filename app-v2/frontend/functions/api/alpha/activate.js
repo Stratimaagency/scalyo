@@ -22,6 +22,9 @@ export async function onRequestPost(context) {
     const planConfig = getPlan(promo.plan)
     const now = new Date()
     const expiresAt = new Date(now.getTime() + promo.valid_days * 24 * 60 * 60 * 1000)
+    // Founding : les 10 premières entreprises sont marquées is_founding
+    const foundingOrgs = await db.select('organizations', 'is_founding=eq.true')
+    const isFounding = foundingOrgs.length < 10
 
     // Create organization
     const [org] = await db.insert('organizations', {
@@ -31,6 +34,7 @@ export async function onRequestPost(context) {
       seats_paid: promo.max_seats,
       max_clients: planConfig ? planConfig.maxClients : null,
       trial_ends_at: expiresAt.toISOString(),
+      is_founding: isFounding,
     })
 
     // Create owner membership
