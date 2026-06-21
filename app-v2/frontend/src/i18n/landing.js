@@ -10,7 +10,7 @@ export const L = {
     nav_cta_mobile:"Choisir mon plan →",
     // Hero
     hero_badge:"AI-Powered Customer Success Platform",
-    hero_h1:"BLABvdsdvfezfA2222dzdazdBLA,<br/><span class=\"accent\">vos clients restent.</span>",
+    hero_h1:"Bonjour Lidia ça va ?,<br/><span class=\"accent\">vos clients restent.</span>",
     hero_sub:"Scalyo est un agent IA qui centralise, analyse et agit pour que votre équipe CS performe — sans perdre un seul client.",
     cta_free_14:"Choisir mon plan",
     see_pricing:"Voir les tarifs",
