@@ -1035,7 +1035,7 @@ export default {
   dashboard_reset: '초기화 데이터',
   dashboard_reset_confirm: '모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
 
-  integ_subtitle: '도구를 연결하여 고객 데이터를 중앙 관리하세요',
+  integ_subtitle: '도구를 연결하여 고객 데이터를 중앙 관리하세요. 이 기능은 현재 개발 중입니다.',
   integ_api_title: '공개 REST API',
   integ_api_desc: 'Access 귀하의 Scalyo 데이터 부터 any 도구 via 우리의 secure REST API.',
   integ_create_key: 'API 키 생성',
@@ -1873,7 +1873,7 @@ export default {
   onb_error: 'An error occurred. Please 다시 시도.',
   onb_saving: '저장 중...',
   integ_title: '연동',
-  integ_subtitle: '도구를 연결하여 고객 데이터를 중앙 관리하세요',
+  integ_subtitle: '도구를 연결하여 고객 데이터를 중앙 관리하세요. 이 기능은 현재 개발 중입니다.',
   integ_connected: '연결됨',
   integ_coming: '곧 출시 예정',
   integ_connect: '연결',

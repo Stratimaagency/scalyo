@@ -385,7 +385,7 @@ export default {
 
   // Integrations
   integ_title: 'Intégrations',
-  integ_subtitle: 'Connectez vos outils existants à Scalyo',
+  integ_subtitle: 'Connectez vos outils existants à Scalyo. Cette fonctionnalité est en cours de développement.',
   integ_available: 'Disponibles maintenant',
   integ_connect: 'Connecter',
   integ_missing: 'Une intégration manquante ?',
@@ -1707,7 +1707,7 @@ export default {
   dashboard_reset_confirm: 'Supprimer toutes les données ? Cette action est irréversible.',
 
   integ_title: 'Intégrations',
-  integ_subtitle: 'Connectez Scalyo à vos outils via API REST ou Webhooks.',
+  integ_subtitle: 'Connectez Scalyo à vos outils via API REST ou Webhooks. Cette fonctionnalité est en cours de développement.',
   integ_api_title: 'API REST publique',
   integ_api_desc: 'Accédez à vos données Scalyo depuis n\'importe quel outil via notre API REST sécurisée.',
   integ_create_key: 'Créer une clé API',
@@ -1928,7 +1928,7 @@ export default {
   onb_error: 'Une erreur est survenue. Réessayez.',
   onb_saving: 'Enregistrement...',
   integ_title: 'Integrations',
-  integ_subtitle: 'Connectez vos outils pour centraliser vos donnees client',
+  integ_subtitle: 'Connectez vos outils pour centraliser vos donnees client. Cette fonctionnalité est en cours de développement.',
   integ_connected: 'Connecte',
   integ_coming: 'Bientot',
   integ_connect: 'Connecter',
